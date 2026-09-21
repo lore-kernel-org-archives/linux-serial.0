@@ -1,163 +1,95 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E3524915A1;
-	Mon, 21 Sep 2026 12:17:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EFFE3C3F6F;
+	Mon, 21 Sep 2026 12:21:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789993028; cv=none; b=OuooDMW6+BBI0PT+5NWRzv8ITrk4IUzWe3c7vKfDpQMzZl0pfRC0L5O3hTYxW9S93Is9CeOru1p4e6mmzKI0x47VygyVVURdFk+x9arwx1PEGrTSm12z5rioF+cGOugpB9pkFfkV7EtLGqFj5iEZ3fpaA6+z+/o4d8r8geNjEqU=
+	t=1789993284; cv=none; b=Xpx3mWMXsjyK6dOw/ueH6FSkJL2hYgwQFsxh4rsHxvGw2UpV3t4ekyGTE93Et5nk24vNKeo5E7mb0eUYgUcZw3mxKmauDuesnio2lu5xI6gZapZE+DjLH8B966cux76q15xoIlJB6mv9JXZUGJCVF0eaPwHMZfkcmQym8g060SU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789993028; c=relaxed/simple;
-	bh=ZvoPMXKi+kTAHHftCUaVh2GWMj4V6IEf+COAM5XtRx4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=W3Rvsrt+dT+it21Gc9sncbYj1qXnAi9vcGnSKkkQeuLmgrayJeYst6EJQc4gQMKZJwzTA3HY/ITVv3ww/5QzMvY95IHPIf8i+xY//p2GCBNsB752ouYabVvopcjUgAt/kQdcYHsB1VkUGBbd1TZwq5KHPRHdpvbHzSaih50/Fc8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CVaXWEVH; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1789993284; c=relaxed/simple;
+	bh=x1eBDSEnp8xXV2Qaa6P1kJIKyiMhTWpft8UHmmtwQNU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=YoZplLglQ+A/8DZVKU8+47VdN66BYkO79ufZxWtf7ZSRQyWY6wrA40C37n8WXeAuLiiCjVmQJ1jFO3Rwd38TctVDJf0+1DXHHxaJDscu4h6/Rq9eRDNUDwpcL3mSKg+V3qw1UDS0zZ7rydvruvHdm+xiyG89llcqL6pBPgG7kkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=mhq6yoO2; arc=none smtp.client-ip=220.197.31.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CVaXWEVH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789993026; x=1821529026;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=ZvoPMXKi+kTAHHftCUaVh2GWMj4V6IEf+COAM5XtRx4=;
-  b=CVaXWEVHrJN7BvdhPlqDocQ7x44YPTvWVHyKQPKx9SGc9WxLgYlJ1apY
-   BF2pSezKCfZRDhEO8IR8C0uT4r/gxCEMHUuvuRyFfJZAIMi7J26xD6QU0
-   O9W71bQfmbFuWcNSyZRY6OFEmp5oy4MXm8V+WhILIOiQlffnqVTqtBFag
-   vDcIfv8aq2JGf6rnYyOkXwg+adcqfbO4ryqZksXZ5bb1kny8/0aHyTKOB
-   tbX3Mj9ObSzXH5/SvPcuF8x040jvkwv+LjjVHBJf9TjeEPmNfF1l/sHEU
-   qGUwiDHFL7jzZjroKmMoBtuKoeOOLckchlyaHNyE7o3YoYNfVBxvtZ5Vh
-   w==;
-X-CSE-ConnectionGUID: vxgfnu6DT4SRVLHaIETU2Q==
-X-CSE-MsgGUID: z7yaGyyrT6KwxPdyMimWHA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11911"; a="92998553"
-X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
-   d="scan'208";a="92998553"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 05:17:05 -0700
-X-CSE-ConnectionGUID: z7axeSIGQIGgGCVKlLqpkw==
-X-CSE-MsgGUID: YhAGcl0vT+GmC6IFckqO9A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
-   d="scan'208";a="272097535"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.215])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 05:17:03 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 21 Sep 2026 15:16:57 +0300 (EEST)
-To: Hui Peng <benquike@gmail.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] serial: core: allow third iteration in
- uart_get_baud_rate() fallback
-In-Reply-To: <20260921013027.659965-2-benquike@gmail.com>
-Message-ID: <5deff35c-902b-f402-36ec-083e5de6aab5@linux.intel.com>
-References: <20260919222627.3797854-1-benquike@gmail.com> <20260921013027.659965-2-benquike@gmail.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="mhq6yoO2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=x1eBDSEnp8xXV2Qaa6P1kJIKyiMhTWpft8UHmmtwQNU=; b=m
+	hq6yoO27MPQGcxvvmUKswwl0txbqYV7Xm/coLEOybz5sQF7jtjVcmP32p4FhtlDO
+	KnJX7Q455/r91xWQwQ+DiLiJyMftUuzBqmMkmN57F9opD1m/i09br2XcIkME6QEg
+	JYEdapnLO0he7VGKxxH4+lK2NuocPmCiSSpL4E8jGQ=
+Date: Mon, 21 Sep 2026 20:19:49 +0800 (CST)
+From: zl020895  <zl020895@163.com>
+To: "Bartosz Golaszewski" <brgl@kernel.org>
+Cc: longzhao@ambarella.com,
+	"Long Zhao via B4 Relay" <devnull+longzhao.ambarella.com@kernel.org>,
+	"Rob Herring" <robh@kernel.org>,
+	"Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+	"Conor Dooley" <conor+dt@kernel.org>,
+	"Michael Turquette" <mturquette@baylibre.com>,
+	"Stephen Boyd" <sboyd@kernel.org>,
+	"Jerome Brunet" <jbrunet@baylibre.com>,
+	"Linus Walleij" <linusw@kernel.org>,
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	"Jiri Slaby" <jirislaby@kernel.org>,
+	"Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	"Catalin Marinas" <catalin.marinas@arm.com>,
+	"Will Deacon" <will@kernel.org>, "Lee Jones" <lee@kernel.org>,
+	mfd@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"Arnd Bergmann" <arnd@arndb.de>,
+	"Krzysztof Kozlowski" <krzk@kernel.org>,
+	"Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Subject: Re:Re: [PATCH v8 09/18] gpiolib: regmap: add gpio_regmap_get_chip()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
+ 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
+In-Reply-To: <CAMRc=Mf7dtxvxBUF1fOuKw0mxdhCYPj=J4ckySPZUvcZ7a6cbQ@mail.gmail.com>
+References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
+ <20260921-cv75-v5-v8-9-282ff5d98dda@ambarella.com>
+ <CAMRc=Mf7dtxvxBUF1fOuKw0mxdhCYPj=J4ckySPZUvcZ7a6cbQ@mail.gmail.com>
+X-NTES-SC: AL_Qu2TC/WSvEkj7yacY+kcn0wRhug/UMa4u/sm3YNXc+sEvwvN1yAKfXhgLWTM3uu3ORuQqwGKex1g8e9feapSOav+wmljU0SfVFj33va5Mw==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1326732310-1789993017=:1213"
+Message-ID: <3e3a7197.9e4e.1a0c3e88117.Coremail.zl020895@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:ZCgvCgDnz3XlILFq0Q9MAA--.35W
+X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbCxgVIuWqxIOW++wAA3p
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-1326732310-1789993017=:1213
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-
-On Mon, 21 Sep 2026, Hui Peng wrote:
-
-> In uart_get_baud_rate(), when the requested baud rate is out of range
-> (try =3D=3D 0) and old is non-NULL, the function copies the old termios b=
-aud
-> rate into termios, sets old =3D NULL, and continues to try =3D=3D 1. If t=
-he
-> old baud rate is also out of range (for instance, after uport->uartclk
-> was lowered via TIOCSSERIAL so max =3D uport->uartclk / 16 is smaller tha=
-n
-> both the old and new baud rates), try =3D=3D 1 clips baud to [min + 1,
-> max - 1] and encodes it into termios via tty_termios_encode_baud_rate().
->=20
-> However, because the loop bound is for (try =3D 0; try < 2; try++), the
-> loop terminates immediately after try =3D=3D 1 without re-evaluating
-> baud =3D tty_termios_baud_rate(termios) for the clipped rate, hitting
-> WARN_ON(1) and returning 0, which then triggers a fatal divide-by-zero
-> (Oops: divide error) in uart_get_divisor():
->=20
->   WARNING: drivers/tty/serial/serial_core.c:548 at uart_get_baud_rate+0x1=
-36/0x260, CPU#1: init/1
->   ...
->   Oops: divide error: 0000 [#1] SMP KASAN PTI
->   CPU: 1 UID: 0 PID: 1 Comm: init Tainted: G        W        N  7.3.0-rc3=
--g5dd1818b15d9 #1 PREEMPT(lazy)
->   RIP: 0010:uart_get_divisor+0x5b/0x100
->   Call Trace:
->    <TASK>
->    serial8250_get_divisor+0x123/0x1a0
->    serial8250_do_set_termios+0x21e/0x1610
->    serial8250_set_termios+0x77/0x90
->    uart_change_line_settings+0xf6/0x720
->    uart_set_termios+0x1c1/0x5b0
->    tty_set_termios+0x5f7/0x920
->    set_termios+0x533/0x7d0
->    tty_mode_ioctl+0x8e4/0xd10
->    n_tty_ioctl_helper+0x3c/0x270
->    n_tty_ioctl+0x4e/0x2c0
->    tty_ioctl+0x1028/0x1480
->    __x64_sys_ioctl+0x184/0x1d0
->    do_syscall_64+0xda/0x4b0
->=20
-> Increase the loop limit to try < 3 so that the clipped baud rate encoded
-> on try =3D=3D 1 is evaluated and returned on try =3D=3D 2.
->=20
-> Tested in QEMU against Linux 7.3.0-rc3 by setting /dev/ttyS1 to B115200,
-> lowering baud_base to 9600 (max =3D 9600) via TIOCSSERIAL, and calling
-> tcsetattr() with B57600 (old =3D B115200), reproducing the WARNING and
-> Oops: divide error in uart_get_divisor() on the unfixed kernel and
-> verifying clean execution with 0 warnings/faults with the fix applied.
->=20
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Fixes: 091ea8e5d34e ("serial: core: prevent division by zero by always re=
-turning non-zero baud rate")
-> Cc: stable@vger.kernel.org
-> Assisted-by: LLM
-> Signed-off-by: Hui Peng <benquike@gmail.com>
-> ---
-> Changes in v2:
-> - Split out from the 8250_core.c and uart_set_info() changes into patch
->   2/3, add Cc: stable@vger.kernel.org, and include the QEMU reproducer te=
-st
->   details and kernel stack trace, as requested by Greg Kroah-Hartman.
->=20
->  drivers/tty/serial/serial_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 95774b0f1484..128fc056f5c9 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -501,7 +501,7 @@ uart_get_baud_rate(struct uart_port *port, struct kte=
-rmios *termios,
->  =09=09break;
->  =09}
-> =20
-> -=09for (try =3D 0; try < 2; try++) {
-> +=09for (try =3D 0; try < 3; try++) {
->  =09=09baud =3D tty_termios_baud_rate(termios);
-> =20
->  =09=09/*
->=20
-
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-
---=20
- i.
-
---8323328-1326732310-1789993017=:1213--
+SGkgQmFydCwKCkRvbmUsIHNlbnQgYXMgYSBmb2xsb3ctdXA6Cmh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2FsbC8yMDI2MDkyMS1ncGlvLWRvYy1mb2xsb3d1cC12MS0xLTYxODczODEyNGY0Y0BhbWJh
+cmVsbGEuY29tLwoKQmVzdCByZWdhcmRzLApMb25nIFpoYW8KCkF0IDIwMjYtMDktMjEgMTg6MzU6
+MDgsICJCYXJ0b3N6IEdvbGFzemV3c2tpIiA8YnJnbEBrZXJuZWwub3JnPiB3cm90ZToKPk9uIE1v
+biwgMjEgU2VwIDIwMjYgMDY6MjM6MjggKzAyMDAsIExvbmcgWmhhbyB2aWEgQjQgUmVsYXkKPjxk
+ZXZudWxsK2xvbmd6aGFvLmFtYmFyZWxsYS5jb21Aa2VybmVsLm9yZz4gc2FpZDoKPj4gRnJvbTog
+TG9uZyBaaGFvIDxsb25nemhhb0BhbWJhcmVsbGEuY29tPgo+Pgo+PiBMZXQgZHJpdmVycyB0aGF0
+IGltcGxlbWVudCBhIGN1c3RvbSBpcnFjaGlwIHJldHJpZXZlIHRoZSBncGlvX2NoaXAKPj4gYWZ0
+ZXIgcmVnaXN0cmF0aW9uLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBMb25nIFpoYW8gPGxvbmd6aGFv
+QGFtYmFyZWxsYS5jb20+Cj4+IC0tLQo+PiAgZHJpdmVycy9ncGlvL2dwaW8tcmVnbWFwLmMgIHwg
+NiArKysrKysKPj4gIGluY2x1ZGUvbGludXgvZ3Bpby9yZWdtYXAuaCB8IDEgKwo+PiAgMiBmaWxl
+cyBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKykKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3Bp
+by9ncGlvLXJlZ21hcC5jIGIvZHJpdmVycy9ncGlvL2dwaW8tcmVnbWFwLmMKPj4gaW5kZXggZmJk
+NGM3NTM1MjVhLi4yMWUwOTkzYjg5ZTIgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvZ3Bpby9ncGlv
+LXJlZ21hcC5jCj4+ICsrKyBiL2RyaXZlcnMvZ3Bpby9ncGlvLXJlZ21hcC5jCj4+IEBAIC0yOTUs
+NiArMjk1LDEyIEBAIHZvaWQgKmdwaW9fcmVnbWFwX2dldF9kcnZkYXRhKHN0cnVjdCBncGlvX3Jl
+Z21hcCAqZ3BpbykKPj4gIH0KPj4gIEVYUE9SVF9TWU1CT0xfR1BMKGdwaW9fcmVnbWFwX2dldF9k
+cnZkYXRhKTsKPj4KPj4gK3N0cnVjdCBncGlvX2NoaXAgKmdwaW9fcmVnbWFwX2dldF9jaGlwKHN0
+cnVjdCBncGlvX3JlZ21hcCAqZ3BpbykKPj4gK3sKPj4gKwlyZXR1cm4gJmdwaW8tPmdwaW9fY2hp
+cDsKPj4gK30KPj4gK0VYUE9SVF9TWU1CT0xfR1BMKGdwaW9fcmVnbWFwX2dldF9jaGlwKTsKPgo+
+UGxlYXNlIHByb3ZpZGUgYSBrZXJuZWwgZG9jIGZvciBhbGwgcHVibGljIEFQSXMuIEl0IHNob3Vs
+ZCBleHBsYWluIHRoYXQgdGhpcwo+bXVzdCBub3QgYmUgdXNlZCBvdXRzaWRlIG9mIGEgR1BJTyBj
+b250cm9sbGVyIGRyaXZlciBjb250ZXh0Lgo+Cj5CYXJ0Cg==
