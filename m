@@ -1,67 +1,67 @@
-Received: from mail-pj2-f12.google.com (mail-pj2-f12.google.com [74.125.227.140])
+Received: from mail-pj2-f34.google.com (mail-pj2-f34.google.com [74.125.227.162])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4AD577E24
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 17:19:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3D66577E5C
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 17:21:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.162
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790097596; cv=none; b=dEJtFXDp4keVG/yKKRlF1bv4/YdTRrB3u6TqPQ2lFsXecskxx4Jb+kGFAxmaWP8Lq6r8ihw0yoilOpyDG/Ch23a/ulK8Vv9z50iVRDX2WpeBqRPDOPbW+RhsmLUq+HToKt0ScNGdB+a1ZNnkBxUtpz7PYsTm8JmhiDCKwUDBBwU=
+	t=1790097722; cv=none; b=Y1Vx9QaYMt6raiEHDOcSa4sxQbybuM58aM19uUnF4PPEjGUiJ6naIkT7TdIcUKGveuZy/1x/eEepFePGqDZLD7Uddptmia2p7ybs4rX4OMmNXT0zFu8leS+njGVz4u5KzpdUPzhqrawbBWk0uUP5lMj9a9DhcHa+zbNnO7RwVcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790097596; c=relaxed/simple;
-	bh=6wTYl3fPn9nlTqWjvYm7Nq+9tWOEygh9IVzIKdiR2oA=;
+	s=arc-20240116; t=1790097722; c=relaxed/simple;
+	bh=r9jsv8Tj/NRGRSHDpREVf7hC5Izki0ZIYbPt+RpePlg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bkueuY3hnDq2bJFZA2O9Ls/CEE07LVnYptGiXpFQIivAl0hFuJDmudQQzDEyad+yQwAFN4XNJserhvyhyBDatp8jtpQwfGtJGGb6WYrAxLMPjkagg/T/Ng4ordydURt5S7nWHuf7xPlZonRAihtWOJXC+A1ktgO0M7RBVSj+qSg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R3fpi2YG; arc=none smtp.client-ip=74.125.227.140
+	 Content-Type:Content-Disposition:In-Reply-To; b=sIlokIq9bpLc4Je8yoC1rjANuOfvMSFGvhg1r+l/XnoFq9YG/eg70Jr5YRyNbTy0BzLL92gB2KaWiZRIvMRA4sg7QbzDpokwN485eLIIgWVNjoXJoEQHYlJ5n4js4mV+0MP+VGLAr7YhdNEPnnPEyrYB3lSIDUS4u86oW/p4B1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EdEheXsK; arc=none smtp.client-ip=74.125.227.162
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R3fpi2YG"
-Received: by mail-pj2-f12.google.com with SMTP id 98e67ed59e1d1-396ccb652d7so143896a91.0
-        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 10:19:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EdEheXsK"
+Received: by mail-pj2-f34.google.com with SMTP id d9443c01a7336-2d747eb79f7so475305ad.1
+        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 10:21:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790097594; x=1790702394; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1790097719; x=1790702519; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:sender:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=zCRq4hnTSVTOASY3u8FUiAUCCMw+X4n90vfRzUKE6C0=;
-        b=R3fpi2YGR1iw8Px21lKPuJxQa3xYXCv9Mpn2pp7nvZTr5cx5S8aK5HbtF3oqZWIFQM
-         RMZ3C0IacF5arX5aUdVWDSlMSotuYQA4Op5VFEMGn055iG+3zTrz5B/Kf8iog9lSXhZZ
-         B157y2CkT0mf/XtYGvnhueJQMfUPdVjeLDGegSgXKkejeOexHV8Jc5oDbrKf3Z2qa4mD
-         hts7qgawAiOZuCKQsdQAw5yKxpocn841NQ5Hu1VNYbKlO1f/HGPcNH19kCYQ/UPmaqF9
-         OYKbnmqRDwKR6tzbt0XUMzLli1e6tFFAlATxO9QSteifnJPhfcdMvKQ7lvc6fqOdrGg/
-         xkkA==
+        bh=g51CWbLnarIyJ0OhwzK8Z/JluNHOA330HfdYyzEXpGc=;
+        b=EdEheXsKdSTu4t3H0cohiMqMZFOwP85n1ZIkFKeBG2BJ/QHoe/tlaetP3McRWwmxi5
+         wG2OIsh+DyhS0F3RpOoBcHE+WQfoPuu5Gmk2rsBUJUpv4EQDPYpiOjxQpKcXiBOGsGDl
+         hOiW6R0oAQXXx5u+COYqDaPIBc761UiWxHc3JWJ07Q8KugpRi/bZN7qYMINHtPge7GRA
+         /Cmf4tMoxC945/u4cbMw2EGWthtlKcwAIA7arLsfEzXeUNtXCuQWZQirZGPM4gVRsPSI
+         0XHzHSM5c9kDqAAwsYY4c/6JNeRf403aMpA5POqx3YP2LtLJIV0IKiAP7f/7ZhgfjFId
+         xHCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790097594; x=1790702394;
+        d=1e100.net; s=20260707; t=1790097719; x=1790702519;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:sender:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=zCRq4hnTSVTOASY3u8FUiAUCCMw+X4n90vfRzUKE6C0=;
-        b=gbwfHWlDgXiG91xBA8npaHCglD/9RZSsBdFVYe2HjfdHeYTcC79eFOfbIXMgIIrCFu
-         Bsi88JgFXmMcErO2WVDj+fdpXUDX719negzZ+KhPRoK/D2IxCS29MAyGH3dAnMr1TDn3
-         MXTqSNTchX2vY9KDKYwtdKgZxNDUWam8NJD+88cm6k2HNFvnU2ptDvl6TCBstjVMtEQc
-         LgBMpiKHUHBfenWU+ZfOVSEBu/pSjy8fX9RrYmWRMFvuuRXkxUk+8nfD7noUcXlMfJ+e
-         dc3ww1MwrWoKCFcLDq+9+dS3e0+VZj9VSEIN9UZnAomeEabWi1GJANbvF14wcfH/67fG
-         m8aw==
-X-Forwarded-Encrypted: i=1; AKwUvBxuVkqbS0SN6uycfj3O0UWqiIrDOpZYSBsKaNf/LPvpTD0V7zatxBGBHlMXdli9e503DLdJw+1lRFBjdUw=@vger.kernel.org
-X-Gm-Message-State: AFuF++nkZ7JJLNX8d4EW6HoyTyAtMtcKjUwfxvvO1QibFRMz0iMIGRXh
-	1/7N2P6hd4FxafQS8hmFljkgB9uRDt/bCfIqshW+niMKCdCxHxTlLgs2
-X-Gm-Gg: AYBFou3/V0TwV0RNnPN12/RmEB9ad/Qnea8R6sAlYCOmo9HNiHjvQINic4hid+YNT3B
-	SmOwT6n61G+dnlD5+CT95REV2Q0jhQzS0Z0csM6QonNUFAYs8wNqhXKHrpbeo7H+6JMFO2yg8vh
-	KvKZFOKy+5cgk6HbzPy94aa212Xu1CYCPID47GT4CjXrte6J8L6L8UJmDQvOaiNvrUB6+V3SYUV
-	dImRWUEzFWzk4lUjx/frf43is1CrTs1/nLEGGFVGkwhXRhhgV2v4ieYjhnJBrPYmwEM4vjxyv82
-	nMYsXMFffuL1GThD9tKOiGCY/Ty82lcCWLZ09D95xPMlZe7NSjFEHlUsFqsSQX2AFIQ14/qNXm6
-	tfD5+D07gPbBS4CfxZNCKuxazU0HK0K4US8e58rxA07vaZUB7WRsthJSKoyHCqBZsJyTTPXAu+H
-	McQ/V5jo7HD4f10kBEuJsYbhhRM+RxrcWnsOkRhGXerHGIql++8trj6CO4CE9LLJbW79z3Ganm1
-	TNY0kGxZ/mhnw==
-X-Received: by 2002:a17:90b:2b4c:b0:39e:1ff0:331b with SMTP id 98e67ed59e1d1-3a07e4f7b61mr128059a91.2.1790097593735;
-        Tue, 22 Sep 2026 10:19:53 -0700 (PDT)
+        bh=g51CWbLnarIyJ0OhwzK8Z/JluNHOA330HfdYyzEXpGc=;
+        b=oBq4ajUThYwTR9M9Qv0GMvRFWnJ/yifJcTJJOJlTBjTSoUCqQWTGyuOieY5FxB/UdS
+         Rzd6BVCtifDaRNadm27LSPtyfLJXJ21miQUBDPojCszukAU9Mky/kUI9QOpxY7f+t7HQ
+         fPZOqUbPXEn3DaPbyCm2/2PujqY8uCu3cUYCYKqJ2qS1VmeZchmad6k6NE5abDEvhSKW
+         oqWBLlQx/8UtGL3snoGWQZ9wzX7eIy5z1qNnMMKmUSaHsRfJskrRStlhpWx5O9WJepK/
+         Wy7qS6rvgU3pK0CxBxAci1W5gerI1I1/Kp4sltEkcz4dR1aCnG07ciDWvvQjlwRs0H+c
+         u+kg==
+X-Forwarded-Encrypted: i=1; AKwUvByPFfTnmO7onmXvHUdNt2HP0tXlsapUQ8ayUDqLf/0huvUYdoq9XJMxuLCZLa5maenEb6DKxxns3Hdvho0=@vger.kernel.org
+X-Gm-Message-State: AFuF++kBqh40jwfiAXN4LfcdReNxZ7T7Z1y/weROawqczKBHoGCAnFM5
+	ks0ZkdR7bZ/l3fvSqNwbgNg7R687WacbwkF8WuY+4Us8X/L62CidScOi
+X-Gm-Gg: AYBFou1D3Pt8Xi8U//yE8S4IqMx3NPTw1zQ9pdRcm+Dv0T/9Oe/Qd1A7fs9wVO6xUOt
+	9k0sgsx/SoL51DqPO5VUv9br9/Iuv6xn2K1P595halGb4oM/ZB9WpaW4e/bnxMex/+NLqROHRn0
+	5I/fRnhv+p9kCPDok48gvm9YcXp11LmLqlgtiBhMxrYw6M8AhNJC9YBlobBY0B5QvgFNTMtrVQ5
+	D422CkWnU5EGljF5aHBzAsfEQyYAzR22CjLDNHXVm0XdNzhY+A352DNQkNSpTmOE8Gpl26ZSlI8
+	2JMeJ/qGqMMV5mjJdLpRv0ilia5Pbg+CRYDEgI5wlhqHfWClVDA50yadfq0bpx9Z6tLSr3LLacJ
+	sti7wgGTHRiJx79r5TxQW4gxtFBMCjYpCAu5rnG0Rh/KcAs4+zmfwNzQcGbtEn6yq+vYkNwKXxm
+	KyJbT3MFqK67CIhP60CcrxqQ6sdD2U9EP3FmC7BQLwGcvvHh8KCHO2XdMB4+f4awWsEH+eTwNTo
+	qwuzmto34Ha
+X-Received: by 2002:a17:903:228e:b0:2dd:ad73:c984 with SMTP id d9443c01a7336-2df69d5ac91mr681945ad.28.1790097718673;
+        Tue, 22 Sep 2026 10:21:58 -0700 (PDT)
 Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a07ddaf4f5sm336767a91.4.2026.09.22.10.19.53
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2df5d047c40sm13644575ad.50.2026.09.22.10.21.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 10:19:53 -0700 (PDT)
+        Tue, 22 Sep 2026 10:21:58 -0700 (PDT)
 Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Tue, 22 Sep 2026 10:19:52 -0700
+Date: Tue, 22 Sep 2026 10:21:57 -0700
 From: Guenter Roeck <linux@roeck-us.net>
 To: Petr Pavlu <petr.pavlu@suse.com>
 Cc: Wim Van Sebroeck <wim@linux-watchdog.org>,
@@ -99,11 +99,10 @@ Cc: Wim Van Sebroeck <wim@linux-watchdog.org>,
 	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-atm-general@lists.sourceforge.net,
 	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] watchdog: Replace __MODULE_STRING() with
- __stringify()
-Message-ID: <940e0763-9de3-4d55-90cc-8289d5525b17@roeck-us.net>
+Subject: Re: [PATCH 2/3] drivers: Replace __MODULE_STRING() with __stringify()
+Message-ID: <cc03390d-8fc7-422a-bbcf-93bfbb82276f@roeck-us.net>
 References: <20260922-module-string-v1-0-c18766690185@suse.com>
- <20260922-module-string-v1-1-c18766690185@suse.com>
+ <20260922-module-string-v1-2-c18766690185@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -112,9 +111,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260922-module-string-v1-1-c18766690185@suse.com>
+In-Reply-To: <20260922-module-string-v1-2-c18766690185@suse.com>
 
-On Tue, Sep 22, 2026 at 03:32:21PM +0200, Petr Pavlu wrote:
+On Tue, Sep 22, 2026 at 03:32:22PM +0200, Petr Pavlu wrote:
 > __MODULE_STRING() has been an alias for __stringify() since "[PATCH]
 > MODULE_PARM support for older modules" [1] in 2002-12. That change also
 > moved it to the graveyard section at the end of linux/module.h
@@ -124,9 +123,17 @@ On Tue, Sep 22, 2026 at 03:32:21PM +0200, Petr Pavlu wrote:
 > 
 > Link: https://git.kernel.org/tglx/history/c/136839a1b4 [1]
 > Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
-> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  drivers/comedi/comedi_fops.c                          |  5 +++--
+>  drivers/gpu/drm/drm_fb_helper.c                       |  3 ++-
+>  drivers/hwmon/fschmd.c                                |  3 ++-
+>  drivers/hwmon/nct7904.c                               |  5 +++--
+>  drivers/hwmon/sch56xx-common.c                        |  3 ++-
+>  drivers/hwmon/w83793.c                                |  5 +++--
 
-Applied to watchdog-next.
+I don't know how other subsystem maintainers want to handle it,
+but please send the hwmon patches separately; I'll want to apply
+it through the hwmon tree to avoid the potential of merge conflicts.
 
 Thanks,
 Guenter
