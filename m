@@ -1,89 +1,144 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF7AF4D178B
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:26:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB823F8709
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:26:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790061974; cv=none; b=R89cXofb0y3Tw7S85naNm19qwPkZQ58XoiJO7uL4wEJKbw2Ov9B6QESBoeYObQo2uqBFAvBQCBNQZLU4UFHJxR7567Dz/2u1dfZyL3h1/aA0guvxNNf8KOxcLfMdD+KOm+6Qy6fdtX+Y5eUguWgTTHf9lj+IfutIhzkjg4lfXEk=
+	t=1790061981; cv=none; b=jLdXV/cfruUc08Zv/3DkD5w+yAppLerGh/TjmkBDpj175b8cKZIJK8Xb4X2W+SAzJ9lW/R08Tt0irp3c3dpaFWzS3GIicB4WDQX/u4LROCSrcFR0qvTLMmZmITxN44c/QSxE+CeN3XbooTnPsBzHC0rBgspwdQKa2lUTvxQYY/E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790061974; c=relaxed/simple;
-	bh=gnWpQWAf2Ex2oJ3zXG70LBtRWnH3/op21r4JuH9R6k8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=J+OHnmfGZcAm1O8zPu9mScp7MlhkOJH/Ki+gJb5cDZ3Iu3laKMo/g4RMScsVJL4i7LJaGaFcjJWaztlDqfdxWCRJhpSGUvuQn84N+F5QsIWMqgSrMqCkCbdx+2bTpGsnmf9vUVWM6gsdZfJPs+DMJZvv4/Kpo1V1kEpngKOj1ic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LpPaCgMf; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790061981; c=relaxed/simple;
+	bh=NpaZsBG3v2ONu7MpNQhDjFvyJTphrtdxhYVx1AWKONI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BIwBbnNTbdIA75R63mM6LjX/aBrbQ//LwORJUGFmLR0gotAIHYPMPANbvseQAyoIfQGKBrdyUr4BJiLTTUhdOChQLhg+6aqk/8AoYLvVQMtrmXmcWWi8Y/hswxyBNEBfbmIyZJCPOxX7wndxsIThRRakFodlqIL6wXjJ59xNeGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=J5djkjGh; arc=none smtp.client-ip=74.125.225.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LpPaCgMf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923411F008A4
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:26:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790061972;
-	bh=gnWpQWAf2Ex2oJ3zXG70LBtRWnH3/op21r4JuH9R6k8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=LpPaCgMfm7Z/l2fIA8loLyB5vdxzaW1ZDVozibGGyVLMyp4L34Hz7A2+B9/dcNKb5
-	 07pLtUzBbf0bcXxMw6Nj384h0azqSOYWrria8j8hkyizjlWbHDUZtWZW76P3za9Gcz
-	 ko2nZYFjmS34xykMS4YPRHkovdmkhNPF98xXFdMJVT7se1qNpephkhu5d3ybtQy/nf
-	 HRkpnbN/WmnMPXDw8mbo/04rtkJ+i6dTaMFjRoG9OilOrxgp4KiHA4W1dxFZx5iNVr
-	 ZxG+hOdUqrbk6++INNyy+0nyoXMH9py+prmwqWFvw4Y5XDo890pjLP8FFgFpoTPx/6
-	 VMoIqNOq5sc1A==
-Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b5e4f17450so3351312e87.0
-        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 00:26:12 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBwm07fyuoyXQorZsd+j/KqDdCj8RL3kLK8sxoHTQZeJS9BPcPMJ4XYvFIjtPhiG36oHofcGqCHvCZ1Ci/U=@vger.kernel.org
-X-Gm-Message-State: AFuF++k2lXeh9NOUMYIlobssLfnDxH2b+CMHMn63EN11voFmxG9FLMGm
-	BN7FSwNxITKmB3nDC4HOjFobmaPcig+4TrM8LHzWOZ28pgWPiexDhgeL1FT1lU/n/pnWnM5KYGy
-	JQTpzzDpbyL42AF2NzM04HWkDlgcXoh0=
-X-Received: by 2002:a05:6512:3046:b0:5b6:183c:5ca2 with SMTP id
- 2adb3069b0e04-5b8c195c05emr4518896e87.64.1790061971274; Tue, 22 Sep 2026
- 00:26:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="J5djkjGh"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485b1d2874fso1373753f8f.0
+        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 00:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1790061977; x=1790666777; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=tV9ZgiYFru+aj6sJhaLwXAzLv5SWqi7Zpbwcao5o810=;
+        b=J5djkjGhJpFYM2GSd23sDjDtrOemOb+cAnYke12JKUc613u6GSjBOUbYrRutLPOact
+         6laArDOc3JtzpKziY2lSdHPzNJfrBxUFa7H3Qr+8XScDlyxBklT7JE/sQEnZBUDCg+tY
+         bswMRsdOmHsT+aQZ372QzZvnGmb9LNEHZU8BjATySaK/zEIgaqWIfzZJ6gnODe43K2+h
+         cVGrKTHPz5sWOgR015yfEja7eSKANP8c/Rjm1gdlWcgSIN3I5PLnpuzZSQ6PhIR/QwTX
+         FLWVcpQLuWwswleJKM0YU2T+WnwNg1D3MRPPqwB2AOj4cnDjKiJ1KQBfMnzrwYiI8RsS
+         mI+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790061977; x=1790666777;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=tV9ZgiYFru+aj6sJhaLwXAzLv5SWqi7Zpbwcao5o810=;
+        b=nR5/6exi/oXSUM0uPmFb6dh7r6Yq1lZoteNh/gAVP6WoQlcoeB8ZZc7uJdiUXMoYE5
+         6ahX02X8fLcBY/jqq5FB+Za7LIvAHlh3TDo4iO5yPVBfT3uyrNa7Qirog+Ta7BUK7GwV
+         r+H09rHCJCVu7uULZtm3ws7h7LkGhZJcbpgFEKAi5h3sdhwpTNX9F74JiScAowmYtWEf
+         kkdwGyIch4XrSCpOUM9I9ZzPg2awBrkbg5IUE4PaPt4Qp6sA3YnEeH8ZPkj2GkgiezMb
+         jYcZunGpyZl+/IQOZoQMAnA+WRdaac50/qx1fozP842in1GlhtXAZ7nTYWTGyjMeiAJ4
+         eNLA==
+X-Forwarded-Encrypted: i=1; AKwUvBxn3rqWEacydUdz6WkKIJEqkM8WUXfymJEMgR1rpfz2bpCGa3iekYeipq93pqehoUODJ/1tup8ADuD5KTk=@vger.kernel.org
+X-Gm-Message-State: AFuF++kGmmh402nHWZ94tSZdorLJywr7HcJ9r/4D78gpA/ax4tzRLBFY
+	81HLO9tIQGQhM2PgwiokN0ot0aVAUwIF1H6yEHnRnINgrmcDS2zd57iJ+8tfDrPonmc=
+X-Gm-Gg: AYBFou28EsKBX2JBZTZOHWUUsoVvPstiOOBpvjcfk9gGoGW0qeFzt1RPlit4MFvPTFj
+	gsN1BUvqTA09BXiswNEY6gOm+h2XlR5vrM8xEjAnM1AqBBCxV3MlIldYOjNd/yqCFGybPXLsFvJ
+	/T+Bw9ynmA4pCsOpm/RzL50CBf/LM3yfT8zBUB4+r2mFOGfpMzslw7/Oz5h0+rfp20tJWCLo6mO
+	bGtAm9f1IHmp5Nll4qDt7WgOv7n7ZuCy0v7KIdIyaW53d+4FYF8yCDllYc9GFgqAZ6ZV2DwSYEA
+	7oHVjpGok7MthORmqrwu6t8FW2ivWR7lUCWG7bfsMDyBo4jhAzw/YAyHx6Kkl+wRFk9QmPuQSQf
+	2y82hYwupIa/rgfqRNUhckC9wORtGuB7yBzhtSlqYSiXkKG/6s29UrUt+9aqSgCn34xtaytK18E
+	0Gxk0P1DQU69ePoyiaOeRbgcdaACsSakUSPoXwYwOGLLyyh/Yl7qy7oIR5+Rc/i1PVuCJPFmds
+X-Received: by 2002:a05:600c:4592:b0:49e:6836:5386 with SMTP id 5b1f17b1804b1-49fd8517e22mr33087645e9.0.1790061976974;
+        Tue, 22 Sep 2026 00:26:16 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fd8ce2646sm59215695e9.14.2026.09.22.00.26.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2026 00:26:16 -0700 (PDT)
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Samuel Thibault <samuel.thibault@ens-lyon.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Fushuai Wang <wangfushuai@baidu.com>,
+	Kees Cook <kees@kernel.org>,
+	Stepan Ionichev <sozdayvek@gmail.com>,
+	linux-serial@vger.kernel.org,
+	Manuel Lauss <manuel.lauss@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Petr Mladek <pmladek@suse.com>
+Subject: [PATCH 0/2] braille: nbcon: Allow using a serial driver converted to nbcon API as a Braille console
+Date: Tue, 22 Sep 2026 09:25:56 +0200
+Message-ID: <20260922072558.98854-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com> <20260921-cv75-v5-v8-13-282ff5d98dda@ambarella.com>
-In-Reply-To: <20260921-cv75-v5-v8-13-282ff5d98dda@ambarella.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 22 Sep 2026 09:25:57 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkAfQTGNGTqL_bMD7S_x-kRMtJY=nOEkVdHR4eEoUJVOg@mail.gmail.com>
-X-Gm-Features: AclHuK_tzDtaJ_wl5w9PHnR3CExWinf1MCYYaeMXhkMyxrZ9pQpsY3Z4mhWO3ik
-Message-ID: <CAD++jLkAfQTGNGTqL_bMD7S_x-kRMtJY=nOEkVdHR4eEoUJVOg@mail.gmail.com>
-Subject: Re: [PATCH v8 13/18] gpio: pl061: switch data path to gpio-regmap
-To: longzhao@ambarella.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Jerome Brunet <jbrunet@baylibre.com>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>, 
-	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 21, 2026 at 6:23=E2=80=AFAM Long Zhao via B4 Relay
-<devnull+longzhao.ambarella.com@kernel.org> wrote:
+Hi,
 
-> From: Long Zhao <longzhao@ambarella.com>
->
-> Keep a custom irqchip and irq domain. The gpio_chip is owned by
-> gpio-regmap, so gpio_regmap_get_chip() is used to wire the domain.
->
-> Check the chained-handler regmap_read() return and always
-> run chained_irq_exit(). irq_type keeps the MMIO write style
-> and uses cleanup helpers from the previous patch.
->
-> irq_set_parent() nests the GPIO irq_desc under the AMBA parent
-> for irq_set_wake() and lockdep; checked with PROVE_LOCKING on CV75.
->
-> Signed-off-by: Long Zhao <longzhao@ambarella.com>
+I have been working on v5 [1] of the patchset cleaning console registration
+code and I found that the system did not boot when I selected a Braille
+on the command line, for example:
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+     console=brl,ttyS0,115200 console=tty0
 
-Yours,
-Linus Walleij
+Bisection went down to the commit d3539347022a ("serial: 8250: Switch to
+nbcon console, take 2"). I found that the Braille console driver called
+braille_co->write() internally where braille_co pointed to the uart
+8250 driver.
+
+I added the support for the nbcon console API similar way as we did
+for kdb [2].
+
+Note 1: I believe that we have a bug in the kdb patch because we call
+        con->write() atomic callback after entering the unsafe mode.
+        But we should do so in the default "safe" mode.
+
+Note 2: I am not completely sure about the locking. It might be better
+        to use NBCON_PRIO_PANIC in panic().
+
+        Also I thought about using con->write_thread(). But I think
+	that we have to use the atomic variant because the Braille
+	console can be called from printk() via the VT code, aka
+	graphical console.
+
+Note 3: I do not have any device to read the Braille output so I am not
+	sure if the output is correct. I just checked the output on
+	the serial console and it is a bit suspicious. It looks like
+	it prints every message N-times when N is the length of the string.
+	And it adds one character in each iteration, for example:
+
+<paste>
+E>[                                       E>[                                       E>[  O                                    *>[  OK                                   A>[  OK                                   A>[  OK                                   A>[  OK  ]                                <>[  OK  ]                                <>[  OK  ] R                              N>[  OK  ] Re                             
+       >[  OK  ] Rea                            J>[  OK  ] Reac                           	>[  OK  ] Reach                          A>[  OK  ] Reache                         D>[  OK  ] Reached                        @>[  OK  ] Reached                        @>[  OK  ] Reached t           
+</paste>
+
+	But I think that this is not caused by the NBCON console API.
+
+[1] https://lore.kernel.org/all/20260604101459.393162-1-pmladek@suse.com/
+[2] https://lore.kernel.org/all/20251016-nbcon-kgdboc-v6-0-866aac60a80e@suse.com/
+
+Petr Mladek (2):
+  printk: nbcon: Introduce Braille helpers
+  braille: nbcon: Use nbcon atomic console callbacks
+
+ .../accessibility/braille/braille_console.c   | 38 +++++++++++-
+ drivers/tty/serial/8250/8250_port.c           |  5 +-
+ include/linux/console.h                       |  8 +++
+ kernel/printk/nbcon.c                         | 59 +++++++++++++++++++
+ 4 files changed, 107 insertions(+), 3 deletions(-)
+
+-- 
+2.55.0
+
