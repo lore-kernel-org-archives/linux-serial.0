@@ -1,119 +1,93 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53B52523791;
-	Tue, 22 Sep 2026 08:46:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202B0440658
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 08:53:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790066798; cv=none; b=UE0HwpcpMpc8zFaoijY15TLWmKl9z8MmT10+DqUw0byJvKIuwjXxEViFiGqPCqE9ft5D1xtm0JvpaaBM/3CtpYWdLkOrVvjLyqbYWwGqJdcbH1YCyCB3qKlIwtUzsZVR1qs0EuQI3jEcDkYGsYIegQZ2b7nys/b9VrkJOSA/KZg=
+	t=1790067188; cv=none; b=NdkUVYCMCjxoWPQQXCNPN+zo4+P5o0/5XjX9LeAmxcfb9boS40o+hK/Pq9kOcTtEdPzulyJWcvcQ6gwUBmCV5V4qbevcKIToTIX1ePeHrx9k24jims+S2qjQbqn6PxcC4mpR7qLakMyOerisSPmtoEavamRBGLrMALMFdQf631g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790066798; c=relaxed/simple;
-	bh=ZNYYHyDoTjq9ruH2pMc+PQRugyOSPe4AkRs5fFJPTQE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=tIRcm09ABvCzFeivOZMVeh3PfrV8Di7B8ruLlqclO9NdubMg8uZwcR0fKHbq1X57LAHbsuR34vadMgabb7Yx+fJdVQh+xwmvmdFlWY8PgayvGdcOSbWAAHF4WEhnzVNa/OazJaqXrmQF9svb7WqlX7eOxKJXABHhsSPOWSoU2nE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=JF/Z2oj9; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1790067188; c=relaxed/simple;
+	bh=pRTDJDK9EW1jEeZqKwFH96oBkO/dZl6A0f1ILw5pqSw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=As3UNHNbxmyMnIsLG3BKxCeHxY+e9sKuu8lDhWQp1bNUYXZOi/v8b41ISmyMg3gV+/uO6ywqFMzDhnfl3JhnTna/oVVbal2AL+qPCWwrq3+76f9FvsT9cPgrqMzUjLW8mvkRB5kEyVu/U+TczKzeVv6FVxjtrZLAiEu+DYUimW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KlhrzD68; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="JF/Z2oj9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=ZNYYHyDoTjq9ruH2pMc+PQRugyOSPe4AkRs5fFJPTQE=; b=J
-	F/Z2oj9v7aECMMjsG1GDp5uhtng06Nzv351AWkLzFpfDA22B1llx2mniq2uvHIcD
-	BFZLaHQAVK6iwfN/dc3/5BTd2XD4pVeIdvmKHiAWJz6Wau/KENWWfaY1NXYEP8wA
-	MWLyuHMIGznNWUcGTXc+Hb8eKLjlUUJhUd2kPiAcLw=
-Date: Tue, 22 Sep 2026 16:45:28 +0800 (CST)
-From: zl020895  <zl020895@163.com>
-To: "Linus Walleij" <linusw@kernel.org>
-Cc: longzhao@ambarella.com, "Arnd Bergmann" <arnd@arndb.de>,
-	"Krzysztof Kozlowski" <krzk@kernel.org>,
-	"Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	"Rob Herring" <robh@kernel.org>,
-	"Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-	"Conor Dooley" <conor+dt@kernel.org>,
-	"Michael Turquette" <mturquette@baylibre.com>,
-	"Stephen Boyd" <sboyd@kernel.org>,
-	"Jerome Brunet" <jbrunet@baylibre.com>,
-	"Bartosz Golaszewski" <brgl@kernel.org>,
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	"Jiri Slaby" <jirislaby@kernel.org>,
-	"Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	"Catalin Marinas" <catalin.marinas@arm.com>,
-	"Will Deacon" <will@kernel.org>, "Lee Jones" <lee@kernel.org>,
-	mfd@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH v8 08/18] gpiolib: regmap: add write_data_after_dir
- quirk
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <CAD++jLkSfPvuO=ZgqwYnbBBjxuu4ns1EDpHXQxKgWGqK9E130A@mail.gmail.com>
-References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
- <20260921-cv75-v5-v8-8-282ff5d98dda@ambarella.com>
- <CAD++jLkSfPvuO=ZgqwYnbBBjxuu4ns1EDpHXQxKgWGqK9E130A@mail.gmail.com>
-X-NTES-SC: AL_Qu2SAvyduU8p7iKZZekcn0wRhug/UMa4u/sm3YNXc84FpwPw5QMjZmNDNHL32tKTBxilqxOseRpTx8lTXqZ3sj05Ju8ZRNM+t6w3+JxA7Q==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KlhrzD68"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A74E41F008A6
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 08:53:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790067186;
+	bh=pRTDJDK9EW1jEeZqKwFH96oBkO/dZl6A0f1ILw5pqSw=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=KlhrzD68zCgzYUViZwYOFPRjRUzOuT7fyO3U3rwgTcrxAwfyub62TdnRVitovVoNp
+	 KWR1turWzPPoOsSjEPUqt/wh4YDf90diNBX7nNV/wALDLpdn3no6oQSm5JN6+t7cA8
+	 QgoUDdm21iIOWcklji8pn/dj35y9WuWqJBfhjrIhVgs5/w4j/Jho9oOIlIdxXWuDbn
+	 2GzOscwzHZZ1WjYL2JNx3hMyXsoOt8KKhLnbODpQzmtR0uF2b4e4r7L2mrlQWbfjIG
+	 +qvXp6/aJSnfv+UKTYepNt/zYwNG/0QZirBMWlcIaTxqup2954a3YhRCFQwu/wKdtc
+	 TYC/JDJkPEing==
+Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b5e4f1801fso3866092e87.2
+        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 01:53:06 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBx1fXEg6gbNz96W/geQORFRC5gQA08HN9Wk7ZLHJoGdPxNTq5An1CSRdSX/PNND1Et/tegjxjIJijq+sV0=@vger.kernel.org
+X-Gm-Message-State: AFuF++ljd6YfrR4okawekfCfFFM2oNnu6TaoYnUNrBV8M0aokSlrux+2
+	nbBLEayAm5F8LdFSubwGntZskv1By9b8AhhKX9efXiz/NYf4AWJH7EKBaTBCXfesNVKeclM08i8
+	sbeCd8Vg2yiszdsUKx2wY6QV0x5NdTcU=
+X-Received: by 2002:a05:6512:3e08:b0:5b6:172a:c36e with SMTP id
+ 2adb3069b0e04-5b8c17f2023mr4223635e87.8.1790067185256; Tue, 22 Sep 2026
+ 01:53:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <5360c3b9.7b09.1a0c84a9d1d.Coremail.zl020895@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:gygvCgDnN1YoQLJq3sAVAA--.40231W
-X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbCxQhh0mqyQCix7gAA3R
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com>
+ <CAD++jLkCNkcf-gn0FgvLZZTibLUvbKaH6L+=nRqkNZr2iKFqsQ@mail.gmail.com> <39641ec4.7a73.1a0c848bfa4.Coremail.zl020895@163.com>
+In-Reply-To: <39641ec4.7a73.1a0c848bfa4.Coremail.zl020895@163.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Tue, 22 Sep 2026 10:52:52 +0200
+X-Gmail-Original-Message-ID: <CAD++jLkZ9F3_KQwGDZyKaFYBzO9PXVq+5v8geFE+oOM47KmagQ@mail.gmail.com>
+X-Gm-Features: AclHuK9Y1QMax6-R6N3W6XKZsP5OW6rOHXGLWKISlcK8k5n-6-JwlZacROssNGg
+Message-ID: <CAD++jLkZ9F3_KQwGDZyKaFYBzO9PXVq+5v8geFE+oOM47KmagQ@mail.gmail.com>
+Subject: Re: Re: [PATCH v7 00/15] Ambarella CV75 SoC minimal bring-up
+To: zl020895 <zl020895@163.com>
+Cc: longzhao@ambarella.com, Arnd Bergmann <arnd@arndb.de>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Jerome Brunet <jbrunet@baylibre.com>, Bartosz Golaszewski <brgl@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Lee Jones <lee@kernel.org>, 
+	mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-SGkgTGludXMsCgpUaGFua3MgZm9yIHRoZSByZXZpZXcuCkkgd2lsbCBkbyBpbiB0aGUgbmV4dCBy
-ZXZpc2lvbi4KCkJlc3QgcmVnYXJkcywKTG9uZyBaaGFvCgpBdCAyMDI2LTA5LTIyIDE1OjE3OjQ4
-LCAiTGludXMgV2FsbGVpaiIgPGxpbnVzd0BrZXJuZWwub3JnPiB3cm90ZToKPkhpIExvbmcsCj4K
-PnRoaXMgaXMgc3RhcnRpbmcgdG8gbG9vayBnb29kIQo+Cj5PbiBNb24sIFNlcCAyMSwgMjAyNiBh
-dCA2OjIz4oCvQU0gTG9uZyBaaGFvIHZpYSBCNCBSZWxheQo+PGRldm51bGwrbG9uZ3poYW8uYW1i
-YXJlbGxhLmNvbUBrZXJuZWwub3JnPiB3cm90ZToKPgo+PiBGcm9tOiBMb25nIFpoYW8gPGxvbmd6
-aGFvQGFtYmFyZWxsYS5jb20+Cj4+Cj4+IFNvbWUgY29udHJvbGxlcnMgaWdub3JlIGRhdGEtcmVn
-aXN0ZXIgd3JpdGVzIHdoaWxlIGEgbGluZSBpcyBzdGlsbCBhbgo+PiBpbnB1dC4gT3B0aW9uYWxs
-eSB3cml0ZSB0aGUgb3V0cHV0IHZhbHVlIGFnYWluIGFmdGVyIHN3aXRjaGluZyB0aGUKPj4gZGly
-ZWN0aW9uLCBtYXRjaGluZyB0aGUgZXhpc3RpbmcgUEwwNjEgYmVoYXZpb3VyLgo+Pgo+PiBTaWdu
-ZWQtb2ZmLWJ5OiBMb25nIFpoYW8gPGxvbmd6aGFvQGFtYmFyZWxsYS5jb20+Cj4oLi4uKQo+Cj4+
-ICsrKyBiL2luY2x1ZGUvbGludXgvZ3Bpby9yZWdtYXAuaAo+PiBAQCAtNDgsNiArNDgsMTMgQEAg
-c3RydWN0IHJlZ21hcDsKPj4gICAqICAgICAgICAgICAgICAgICAgICAgKE9wdGlvbmFsKSBCaXRt
-YXAgcmVwcmVzZW50aW5nIHRoZSBmaXhlZCBkaXJlY3Rpb24gb2YKPj4gICAqICAgICAgICAgICAg
-ICAgICAgICAgdGhlIEdQSU8gbGluZXMuIFVzZWZ1bCB3aGVuIHRoZXJlIGFyZSBHUElPIGxpbmVz
-IHdpdGggYQo+PiAgICogICAgICAgICAgICAgICAgICAgICBmaXhlZCBkaXJlY3Rpb24gbWl4ZWQg
-dG9nZXRoZXIgaW4gdGhlIHNhbWUgcmVnaXN0ZXIuCj4+ICsgKiBAd3JpdGVfZGF0YV9hZnRlcl9k
-aXI6Cj4+ICsgKiAgICAgICAgICAgICAgICAgICAgIChPcHRpb25hbCkgV3JpdGUgdGhlIG91dHB1
-dCB2YWx1ZSBhZ2FpbiBhZnRlcgo+PiArICogICAgICAgICAgICAgICAgICAgICBzd2l0Y2hpbmcg
-YSBsaW5lIHRvIG91dHB1dCBpbiAtPmRpcmVjdGlvbl9vdXRwdXQoKS4KPj4gKyAqICAgICAgICAg
-ICAgICAgICAgICAgTmVlZGVkIGZvciBoYXJkd2FyZSB3aGljaCBpZ25vcmVzIGRhdGEgcmVnaXN0
-ZXIKPj4gKyAqICAgICAgICAgICAgICAgICAgICAgd3JpdGVzIHdoaWxlIHRoZSBsaW5lIGlzIGNv
-bmZpZ3VyZWQgYXMgYW4gaW5wdXQuCj4+ICsgKiAgICAgICAgICAgICAgICAgICAgIFRoaXMgaXMg
-YSBsZWdhY3kgcXVpcmsgKGUuZy4gQVJNIFBMMDYxKTsgbmV3IGhhcmR3YXJlCj4+ICsgKiAgICAg
-ICAgICAgICAgICAgICAgIG11c3Qgbm90IHVzZSBpdC4gRGlyZWN0aW9uIGNoYW5nZXMgd2lsbCBn
-bGl0Y2guCj4+ICAgKiBAZHJ2ZGF0YTogICAgICAgICAgIChPcHRpb25hbCkgUG9pbnRlciB0byBk
-cml2ZXIgc3BlY2lmaWMgZGF0YSB3aGljaCBpcwo+PiAgICogICAgICAgICAgICAgICAgICAgICBu
-b3QgdXNlZCBieSBncGlvLXJlbWFwIGJ1dCBpcyBwcm92aWRlZCAiYXMgaXMiIHRvIHRoZQo+PiAg
-ICogICAgICAgICAgICAgICAgICAgICBkcml2ZXIgY2FsbGJhY2socykuCj4+IEBAIC05NCw2ICsx
-MDEsNyBAQCBzdHJ1Y3QgZ3Bpb19yZWdtYXBfY29uZmlnIHsKPj4gICAgICAgICB1bnNpZ25lZCBp
-bnQgcmVnX2Rpcl9vdXRfYmFzZTsKPj4gICAgICAgICBpbnQgcmVnX3N0cmlkZTsKPj4gICAgICAg
-ICBpbnQgbmdwaW9fcGVyX3JlZzsKPj4gKyAgICAgICBib29sIHdyaXRlX2RhdGFfYWZ0ZXJfZGly
-Owo+PiAgICAgICAgIHN0cnVjdCBpcnFfZG9tYWluICppcnFfZG9tYWluOwo+PiAgICAgICAgIHVu
-c2lnbmVkIGxvbmcgKmZpeGVkX2RpcmVjdGlvbl9tYXNrOwo+PiAgICAgICAgIHVuc2lnbmVkIGxv
-bmcgKmZpeGVkX2RpcmVjdGlvbl9vdXRwdXQ7Cj4KPjEuIFlvdSBoYXZlIHB1dCB0aGUga2VybmVs
-ZG9jIGluIGEgY29tcGxldGVseSBkaWZmZXJlbnQgcGxhY2UgaW4gdGhlIG9yZGVyCj5vZiB0aGlu
-ZyB0aGFuIHdoZXJlIHlvdSBwdXQgdGhlIGZsYWcgaW4gdGhlIHN0cnVjdC4KPgo+Mi4gUHV0IGEg
-Y29tbWVudCBhYm92ZSB0aGUgYmVoYXZpb3VyIGZsYWdzIGJlY2F1c2UgdGhlcmUgd2lsbAo+aW52
-YXJpYWJseSBiZSBtb3JlIG9mIHRoZW0hIFNvbWV0aGluZyBsaWtlOgo+LyogUmVnbWFwIEdQSU8g
-YmVoYXZpb3VyIGZsYWdzICovCj4KPjMuIFB1dCBhIG5ld2xpbmUgYmVmb3JlICYgYWZ0ZXIgdGhl
-IGZsYWdzIHNvIHRoZXkgZW5kIHVwIGluIGEgc2VwYXJhdGUKPnNlY3Rpb24gb2YgdGhlIHN0cnVj
-dCwgc28gcGVvcGxlIGtub3cgd2hlcmUgdG8gYWRkIHRoZW0uCj4KPkkgd291bGQgcHV0IHRoZW06
-Cj4KPiAgICAgICAgc3RydWN0IGRldmljZSAqcGFyZW50Owo+ICAgICAgICBzdHJ1Y3QgcmVnbWFw
-ICpyZWdtYXA7Cj4gICAgICAgIHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25vZGU7Cj4KPiAgICAg
-ICAgY29uc3QgY2hhciAqbGFiZWw7Cj4gICAgICAgIGludCBuZ3BpbzsKPiAgICAgICAgY29uc3Qg
-Y2hhciAqY29uc3QgKm5hbWVzOwo+Cj5IRVJFCj4KPiAgICAgICAgdW5zaWduZWQgaW50IHJlZ19k
-YXRfYmFzZTsKPiAgICAgICAgdW5zaWduZWQgaW50IHJlZ19zZXRfYmFzZTsKPgo+WW91cnMsCj5M
-aW51cyBXYWxsZWlqCg==
+On Tue, Sep 22, 2026 at 10:44=E2=80=AFAM zl020895 <zl020895@163.com> wrote:
+
+> No LLM was used for coding or testing. Different developers are responsib=
+le for
+> different parts of the code. LLM was only used to polish commit messages.
+> Could you advise whether I still need to disclose this?
+
+We add it even if it just used for commit messages, we don't really
+differentiate.
+
+Maybe this is to coarse but it's what we have.
+
+The tag doesn't really mean much, it just mean "an LLM was
+involved with something related to this patch", it could
+have been used just for testing or review.
+
+Since we have Sashiko reviewing everything I guess in theory
+we should even add it if we looked at the Sashiko reviews,
+but nobody does that. So it's a bit arbitrary. Nobody's gonna
+be upset about either, it's just some helpful metadata.
+
+Yours,
+Linus Walleij
