@@ -1,157 +1,133 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BF2233A014
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 01:39:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 220322FE060
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 01:43:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790041171; cv=none; b=YBe6btFrFM9xo/OM0ULJk6h+moNryNQg49doL26YVRZ08/+gHjxed6CX1J+uoMrqoxB2/pe/Q6BZkjTnq3/N4bBdSwIzOJi3vvUCqIDHnjKl0TYM+/71HUY5QsrOF4NmbEPpsqekZAr+a5XPXWhnyCjReQplPtC5c3MW6F/M+7A=
+	t=1790041382; cv=none; b=RadSRex5IpMPQkqvxSDcxjEdsLk8N452FkX4d7Lx4Ea6JpKzlFhGdLoQ7CxJ9Jg8/wqjZ/abVsILA6DxjAy3rweNU1Ivh8EgooCdhdtdUoyr1EKhiyxS7E3j8050wf+wWRrw8jFD7xhywky9OlsmyuhpnsPM06BjsGB+PLGvkmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790041171; c=relaxed/simple;
-	bh=9yZ8Zsg1niHqId0bztnBgF6teKqT31lKgb55x0sZFCQ=;
+	s=arc-20240116; t=1790041382; c=relaxed/simple;
+	bh=aCwK7HJbaCMfRfZGRYIe1o2uR7sbKQhkARSdgGqJWDg=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=gNgYTdf2HZyaRlVRf1SVbp3dNp0Ms7kzF2EVBY0NSDgMYKziiSJ7RcRsnkkuQF1dWAO0H1EKCtNIxMQUMuUFPhI/SlQHD5t5pafNp1l1xGapXLLUNtZhWzgrkNtAaltSef5T713j7PhXzKh8XkdGKhknNfO6QI5irE784f0bqmo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hJ+wOZcn; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=IO6PnfnqDH3TrQzImfwSXKI/iBUVMHUcUEDRhrbANK73KJbKQPWgmV5EAJzLS1HhF0c0ENL39ShCRCM+ltqzh+x9V9jr4BwTGGiYJ/YnM7PPwNJzpRT3obFyG9XFBWxJMKRorGRokxhnYq0Y3cMcbMEgFPwic5FeGhzFUB3YJtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hGJIUE3I; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hJ+wOZcn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71DE51F000FF;
-	Tue, 22 Sep 2026 01:39:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hGJIUE3I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CBA91F000FF;
+	Tue, 22 Sep 2026 01:43:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790041168;
-	bh=NnIOHE/9jd1UK/McyGbn4ewMj8CS82rjU2dN/MMp7eY=;
+	s=k20260515; t=1790041380;
+	bh=a2/FPofsUDKDDUWdijC9zc7HNyduVgnKactlc6lxyk8=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=hJ+wOZcnG2Bp1GDodeg0v6L5X+DCUph9v6mPrJBOKDRPcq+cy3jN1rf+2YsEp/lVU
-	 MNXYO7ECMoCTvQLRfmRQdRJ6qV5bjpCLs5oS+ilMJygKjKuSl4bHH+UDCjl3grioZz
-	 ZTc2bLVrgRn84cSG6ByH3S1s3FwF0bevTDxW0vkwthJCPlK+G1wHFGDHm8cRiLRPaE
-	 XC9v09L4l6koRpczx7QWQm6qpgYn8g7jJy3bRfVy4QLFlvrt5kcj1nAI/m4nen2eMK
-	 v5Hd6HYd1C0pMYshQAOvap3SqCZ56xj24+YHLSWVorwn0SgEdrQgYYPkM4Z98LKcSB
-	 mVpGN0E6Ujp6Q==
+	b=hGJIUE3IbN9mMgBVxTSymR8np4zhVyiCrbgkx8zP5cvS9w+9plcAUAvVSYgSKsWm1
+	 IwRP8yHUNT93/cWZ9UWAa9qRLSjGzDk17PGsxG0j9Py1kF9jvCEVb08EKTUaFcuJ+g
+	 pHprIjdCHiDnOpknI71gzEPW52PMy2MKpELvQakoAUtwdX37qniIXr96ohaYnY2qnx
+	 Umta/julevn7mDDwhD8LJugjG5RmwQTgoOh5ngrzlZEnuvo4e8qILgHch/s4jIKuId
+	 SSgvyUfr05ikUxfaIH5sdShxw363SPl2VUwj3KzxQO6UVeOwKRbXa2E1RTrZZiHnKY
+	 5DIFJnCkV3gSw==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/6] vt: keyboard: publish npadch_value with release
- semantics
+Subject: Re: [PATCH 6/6] vt: keyboard: publish the shift_down[] counters
+ with release semantics
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Jaidev Shastri" <jaidevshastri@vt.edu>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260921-mb-keyboard-v1-2-d170228b80c0@vt.edu>
+In-Reply-To: <20260921-mb-keyboard-v1-6-d170228b80c0@vt.edu>
 References: <20260921-mb-keyboard-v1-0-d170228b80c0@vt.edu>
- <20260921-mb-keyboard-v1-2-d170228b80c0@vt.edu>
+ <20260921-mb-keyboard-v1-6-d170228b80c0@vt.edu>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 22 Sep 2026 01:39:28 +0000
-Message-Id: <20260922013928.71DE51F000FF@smtp.kernel.org>
+Date: Tue, 22 Sep 2026 01:42:59 +0000
+Message-Id: <20260922014300.6CBA91F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-- [Medium] vt: redundant memory barriers on npadch_value under spinlock
-- [Low] vt: broken lockless pattern with inverted flag/payload release
+- [Low] tty: vt: unnecessary memory barriers on shift_down
 --
 
-commit e52bca2cdc7445b0c1faf7ccdceda38d504afc27
+commit 00b20e2546808f30870c343c8e766b47b9bd3b39
 Author: Jaidev Shastri <jaidevshastri@vt.edu>
 
-vt: keyboard: publish npadch_value with release semantics
+vt: keyboard: publish the shift_down[] counters with release semantics
    =20
-k_ascii() accumulates the numeric keypad code in npadch_value after it
-has set npadch_active. k_shift() tests npadch_active and then emits
-npadch_value when the modifier is released. Store the accumulated value
-with smp_store_release() and read it with smp_load_acquire().
+The commit updates accesses to the shift_down[] array by adding
+smp_store_release() and smp_load_acquire() semantics. This change was based=
+ on
+a static analyzer report.
 
 > diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-> index 089f3b048beee..6f3472cd4f24d 100644
+> index 87970415a043c..e6112e0db1020 100644
 > --- a/drivers/tty/vt/keyboard.c
 > +++ b/drivers/tty/vt/keyboard.c
-> @@ -898,10 +898,13 @@ static void k_shift(struct vc_data *vc, unsigned ch=
+> @@ -823,7 +823,8 @@ static void k_pad(struct vc_data *vc, unsigned char v=
+alue, char up_flag)
+>  		return;		/* no action, if this is a key release */
+> =20
+>  	/* kludge... shift forces cursor/number keys */
+> -	if (vc_kbd_mode(kbd, VC_APPLIC) && !shift_down[KG_SHIFT]) {
+> +	/* Pairs with the smp_store_release() in k_shift(). */
+> +	if (vc_kbd_mode(kbd, VC_APPLIC) && !smp_load_acquire(&shift_down[KG_SHI=
+FT])) {
+
+[Severity: Low]
+Are these acquire semantics necessary?
+
+A key press or release triggers kbd_event(), acquiring the kbd_event_lock
+spinlock. This calls kbd_keycode() which invokes k_shift() and k_pad() via =
+the
+k_handler array.
+
+All functions accessing shift_down[] (k_shift(), k_pad(), and
+do_compute_shiftstate()) appear to be strictly executed under this spinlock,
+meaning there are no lockless readers for shift_down[] in the kernel. Did
+the static analyzer produce a false positive by failing to trace the
+spinlock across the function pointer invocations in k_handler[]?
+
+>  		applkey(vc, app_map[value], 1);
+>  		return;
+>  	}
+
+[ ... ]
+
+> @@ -890,15 +892,18 @@ static void k_shift(struct vc_data *vc, unsigned ch=
 ar value, char up_flag)
-> =20
->  	/* kludge */
->  	if (up_flag && shift_state !=3D old_state && npadch_active) {
-> +		/* Pairs with the smp_store_release() in k_ascii(). */
-> +		unsigned int npadch =3D smp_load_acquire(&npadch_value);
-> +
-
-[Severity: Medium]
-Are these memory barriers redundant?
-
-All invocations of k_shift() and k_ascii() occur under the kbd_event_lock.
-They are only dispatched via kbd_keycode(), which strictly executes within a
-scoped_guard(spinlock, &kbd_event_lock) in kbd_event().
-
-Because all accesses to npadch_value and npadch_active are serialized by
-this lock, concurrent execution is not possible here. The static analysis
-tool appears to have missed this locking context.
-
->  		if (kbd->kbdmode =3D=3D VC_UNICODE)
-> -			to_utf8(vc, npadch_value);
-> +			to_utf8(vc, npadch);
->  		else
-> -			put_queue(vc, npadch_value & 0xff);
-> +			put_queue(vc, npadch & 0xff);
->  		npadch_active =3D false;
->  	}
->  }
-> @@ -939,7 +942,8 @@ static void k_ascii(struct vc_data *vc, unsigned char=
- value, char up_flag)
->  		npadch_active =3D true;
+>  			clr_vc_kbd_led(kbd, VC_CAPSLOCK);
 >  	}
 > =20
-> -	npadch_value =3D npadch_value * base + value;
-> +	/* Pairs with the smp_load_acquire() in k_shift(). */
-> +	smp_store_release(&npadch_value, npadch_value * base + value);
+> +	cnt =3D shift_down[value];
+>  	if (up_flag) {
+>  		/*
+>  		 * handle the case that two shift or control
+>  		 * keys are depressed simultaneously
+>  		 */
+> -		if (shift_down[value])
+> -			shift_down[value]--;
+> +		if (cnt)
+> +			cnt--;
+>  	} else
+> -		shift_down[value]++;
+> +		cnt++;
+> +	/* Pairs with the smp_load_acquire() in k_pad(). */
+> +	smp_store_release(&shift_down[value], cnt);
 
 [Severity: Low]
-Does this inverted lockless pattern fail to provide the intended guarantees?
+Are these release semantics necessary?
 
-Even if concurrent execution were possible, the release and acquire
-semantics are applied to the data payload (npadch_value) rather than the
-condition flag (npadch_active).
+As mentioned above, since shift_down[] is already protected by the
+kbd_event_lock spinlock, are there any lockless readers that require these
+memory barriers? Also, as there are plain reads adjacent to the release
+store (e.g. cnt =3D shift_down[value] just above), the implementation would
+be flawed if lockless concurrency were actually present.
 
-Here, the producer updates npadch_active with a plain store before executing
-a release store on npadch_value. This allows the condition flag to become
-visible prematurely.
-
-In a correct lockless pattern, the producer updates the payload first and
-then executes a release store on the condition flag. The consumer would then
-execute an acquire load on the flag before reading the payload.
-
-
-While reviewing this file, I noticed a pre-existing issue nearby in k_shift=
-():
-
-drivers/tty/vt/keyboard.c:k_shift() {
-    ...
-	/* Pairs with the smp_load_acquire() in vt_get_shift_state(). */
-	smp_store_release(&shift_state, state);
-    ...
-}
-
-[Severity: Low]
-This is a pre-existing issue, but is the use of release/acquire barriers
-invalid for this standalone read?
-
-The shift_state variable is a standalone integer and does not act as a
-condition flag to synchronize dependent memory accesses. Applying heavyweig=
-ht
-memory barriers here adds unnecessary complexity and overhead on
-architectures where barriers are not free.
-
-The reader vt_get_shift_state() merely returns the shift_state value to
-userspace without taking kbd_event_lock:
-
-drivers/tty/vt/keyboard.c:vt_get_shift_state() {
-    ...
-	return smp_load_acquire(&shift_state);
-    ...
-}
-
-To safely perform a lockless read of a standalone variable and mitigate
-compiler tearing, READ_ONCE() and WRITE_ONCE() would be the correct and
-sufficient primitives.
+> =20
+>  	if (shift_down[value])
+>  		state =3D shift_state | BIT(value);
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260921-mb-keyboar=
-d-v1-0-d170228b80c0@vt.edu?part=3D2
+d-v1-0-d170228b80c0@vt.edu?part=3D6
