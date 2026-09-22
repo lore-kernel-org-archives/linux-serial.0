@@ -1,204 +1,92 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824D1385D72
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:26:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E59354E8DEB
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:28:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790062006; cv=none; b=fzsxx+Nye5BttoO4pgEHcUK1duwnGBVfmZ86n/FwV79fJZ/0aTNsYOfMSRGJAo5Jd0mDBt06TWlvFejdNXsMMs7Qgf/FvTNPZeAVroFi45G26Lw6OdadmumAjtAhVzUU8C2ZXVVTXX9/RzvSSDg8+9bd8v4mgEg5QjnTJI+w4UI=
+	t=1790062130; cv=none; b=vF5w8xWz15VN3xbOHY3ioVFtmcWxSgvFXyOJwgs0HUA+TECJbSNteF7jC1YAT+JntMLb9QSiqMIM17enxQ/cd2pZDnJWzWYjsczBLHloB51pwjkiXM0q2GiwKU/PBJhav+F4T1KR2h7roDx4i93x8BrSdUAXcXsTpXmrrv8TOA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790062006; c=relaxed/simple;
-	bh=4Z62Xv5PMHnfdSbbUYiP/gr3VyxZoYSTSx4wDC2uPe8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=b8JMQvO672XH7AQiiLzWLQXnKNjfY2RzoKGVhVSPaKOV0yI0sfThV+4GLIZKgEF+sA9jYfHJESTI5MGa8o8mlVqH7dW5KYazWceT5nFxK1pG5IHrUyCuUDSPDAf8NoagyKajx48xIMJBDmHEUcTyv3MZ57jPErLq7YbaNdOgkz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=RfVhhZr/; arc=none smtp.client-ip=74.125.225.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1790062130; c=relaxed/simple;
+	bh=jUNbiy0xDuTi7c+5s9qvfuW81PbsVIyH32dQ/SjREYU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sLo1UrCQfVHJKla8nlfhb34ceKhxm/2shDFY94uiux3oerQTD4SJf3ngTLttyPt5khW8qHse0ScgeYtmd9A4fobuTNWtAQbdgCGRo//f6sexZ7FLIqeeQstAEKgKbhf2grMyx07aBq4Y8BTPjNc2cWKDDaCsvIJEOEwulS+Vy4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OZp0caBb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="RfVhhZr/"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485b1d2874aso2765827f8f.1
-        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 00:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790062003; x=1790666803; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=mijCsOeT4dW/QaoqrTcbYmQViveRxBniaswO81wBCMI=;
-        b=RfVhhZr/6f/blD4HsgpAaq+LoKZI+yFQh38j8flKgtzR7KwCF/rwHFfuNmEMs5kxKr
-         aZ+RLgpc/bS7sdsLKzw4MvgRtKKFiP480nivJ4VQJEoPJIHppz1+mWgwn3UFHZEZ6iWc
-         bmCRk4JNTjO5zgczDAhpbL57XkHbbuaJusDUIEeWPt6hCtvaUhoBo5LX5zlZyZP6eumh
-         cC/Tqu0fRWn3583Qvws4c/1vXs+fhNLpN9UQ5URuipO/sVnTdIRkdy51PQ9UOw8X2eRZ
-         7TrVBs/RMpBHMfcckSttRyln2ayR7YXl8eYTXjLVa1gR4C+8OdLoI+A2oo8hWjYJJoT4
-         VG4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790062003; x=1790666803;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=mijCsOeT4dW/QaoqrTcbYmQViveRxBniaswO81wBCMI=;
-        b=csrzMIgJ8/zfimT0V+NQ/iKUJNEsSZxUuwJnUE2W8NQRCLvMXXfciZslyX4oMQSVj0
-         0mWKtIzUjvwPzT8s+roelYZBx0UcVhLcUi5DnU+0z65ubaW1Dwm2voaa+tV8XzND+l+/
-         EAa+G04MV2HnoEG9b1tH7IC1QpcAuYIMjLW2dbClbFrw6CyPnsyBAEucZAFcO0t0+QSG
-         MNR53UbKytZ9hd+CEBMQNTRxizZ/wZ2EkMtLfpD5v52YEZDmcy20FSYye2JxwUBj/zKK
-         jr3VhUN7gea6awjQvbq3OhH6mq+0XPnkOBnUXf6vQOw9sIEsYp+dLZqzvuO6QgISu/Pq
-         BxwQ==
-X-Forwarded-Encrypted: i=1; AKwUvBw9JrPUMLlstuGmHj2PwJs/3YqiwVR+nIkkH7zwzgu+OSf+bpCCepT1vS9W7pLqP0syP7/zzacp7HL+69A=@vger.kernel.org
-X-Gm-Message-State: AFuF++kiydcEMoMPDME8pM6AVpyn9Yqy3WYoECtKckSTqaNwPid9uVQZ
-	BGxMP16IJg4xoEnhsS74iZ4+rlGumhN8NWXuRt66Vlb38FpZCg8KZwS66TDDJa+gEDU=
-X-Gm-Gg: AYBFou0WhkMhyvGZol8M8JHT8yFKJ0HjhB9iqeLHP+aFU540aHcW20lwGvjdnELuBli
-	FCdE7oWckUB44cU0z22yyDiLZHg0okdY+Nazw2hKwtHqs/XKYX+nICP4XAKFoBSX0Y6F7yaskxt
-	3bD3oi0MbbqcuM6HpMawLz4p78U6pneumaJLlWSU1b5Uo0JFvspcqFDfWQKfnhsCyNVGXirrDf4
-	ELp7HHRno+lNGFZvbFnLMrF3TYKB1SsXXVg5UxKRTCWZfQWPxBA2l4moTJUgFp9rfalQM5BVOu/
-	Qm9VO52Vsw1AVRY06rqtXNABJX5rmkCYzDKuDRcx4nKhM8xytiiUXNjf/mNHnuEuw3dD46ZSS4q
-	a5uHXXpZEQK4RLUoM+uSHgNjTdIVYCigHiusnP69yyeVsQOuyH89nuuRIchK1C5xd4YRxkHz7SX
-	2ztuzkm+YqQqY5Z8n0CWYod8ee9hdn+K3hO6atyUF97BXfHyJ/fmkwqsv/oAgmPd1ayOOs1RFj
-X-Received: by 2002:a05:6000:38f:b0:487:27f9:83d with SMTP id ffacd0b85a97d-48727f90ba9mr11598775f8f.50.1790062002655;
-        Tue, 22 Sep 2026 00:26:42 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48862773ff0sm2915327f8f.9.2026.09.22.00.26.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 00:26:42 -0700 (PDT)
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>,
-	Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>,
-	linux-serial@vger.kernel.org,
-	Manuel Lauss <manuel.lauss@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 2/2] braille: nbcon: Use nbcon atomic console callbacks
-Date: Tue, 22 Sep 2026 09:25:58 +0200
-Message-ID: <20260922072558.98854-3-pmladek@suse.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260922072558.98854-1-pmladek@suse.com>
-References: <20260922072558.98854-1-pmladek@suse.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OZp0caBb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215841F00898
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:28:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790062127;
+	bh=RlS/01WyyurIPf4QsRysWjeX/pYeyMHVRzkWTplgkuo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=OZp0caBbpefIvj9oDAZUhKHN7HmbUmSQEDEtJyByiNinpZk0O8y4fxtBhC2HvSwG3
+	 nVn3uGo7rfGHO0FJAzg3l8b+9tkirrGKqpKntbc1kLUFH8BTKzyUGr51prwRh0TT8A
+	 jmKeyXJeVqznfFEmqluszLaZuv8CtgzLp19JetSlzAJSToGilc4NUXKXeZrCz2xhe6
+	 X7tA51sgsYuxNEbq10r+KXuYWZYb8M2U1qJxyJC9D5q3iqM8mHzzyusLZ8KQse/rV/
+	 VtDcdTYWoki9oBne42YfmbwPaJv9I98IdOA4Xf4FTY/WfuzkM8U5IDrx7TAxDxmisn
+	 0h0nFQkVVbtYg==
+Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b5e4f16c72so3068156e87.0
+        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 00:28:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByFqbrcYBtjjsW11N92xMwRnf+F8w1DHLZTSVVgZfi7cMgqIqAXDTXZTP0buP4F1+I3f80cvvZxE1MYguo=@vger.kernel.org
+X-Gm-Message-State: AFuF++kPKWfKMTR7F2vyYh1EmVPwuG/uLKybRer+Sfv8Mwq6k2cLuBeE
+	r/CSLytdGVGXHClepWJNXIu+rz48c3ONHCPVYg9ggcmvOnT+ZGp8dFhsGrP25paFUsxMrf7+6D2
+	sIfgdRmeU5u0x1L0bt1vQSCyWq+cR8pE=
+X-Received: by 2002:a05:6512:3d1d:b0:5ae:c8da:6254 with SMTP id
+ 2adb3069b0e04-5b8c18298d5mr3810337e87.22.1790062125682; Tue, 22 Sep 2026
+ 00:28:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com> <20260921-cv75-v5-v8-15-282ff5d98dda@ambarella.com>
+In-Reply-To: <20260921-cv75-v5-v8-15-282ff5d98dda@ambarella.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Tue, 22 Sep 2026 09:28:33 +0200
+X-Gmail-Original-Message-ID: <CAD++jLnL5h2AD5rYvUYGT_TvQ=m9CQd6bh_NT=T28G7hDGFLDw@mail.gmail.com>
+X-Gm-Features: AclHuK_pNJ1evLbofDMJ7O-GTWjLgf41H8iNHME4i3icaRDTTyzpN_Rs6YR6w7U
+Message-ID: <CAD++jLnL5h2AD5rYvUYGT_TvQ=m9CQd6bh_NT=T28G7hDGFLDw@mail.gmail.com>
+Subject: Re: [PATCH v8 15/18] pinctrl: ambarella: add CV75 pin controller
+To: longzhao@ambarella.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Jerome Brunet <jbrunet@baylibre.com>, Bartosz Golaszewski <brgl@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>, 
+	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The Braille console is integrated with the virtual terminal (VT) and
-writes its data using the legacy con->write() callback of the associated
-serial console driver.
+On Mon, Sep 21, 2026 at 6:23=E2=80=AFAM Long Zhao via B4 Relay
+<devnull+longzhao.ambarella.com@kernel.org> wrote:
 
-However, once the underlying console driver is converted to the NBCON
-API, it should use the con->write_atomic() callback, which must be
-synchronized by acquiring the nbcon console context.
+> From: Long Zhao <longzhao@ambarella.com>
+>
+> Add an Ambarella pinmux-only pinctrl driver with CV75 function/group
+> tables. GPIO is handled by the PL061 driver.
+>
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
-Adapt braille_write() to handle NBCON consoles:
+I feel I could just apply this patch.
 
-1. Acquire the nbcon console ownership using NBCON_PRIO_EMERGENCY
-   priority before printing, disabling local interrupts to prevent
-   any nested calls into the driver.
-2. Call the con->write_atomic() callback to write the buffer.
-3. Release the nbcon console ownership and restore local interrupts.
+> +       select GPIO_PL061
 
-Also, adjust __serial8250_console_write() in the 8250 serial driver to
-exclude Braille consoles from the newline prepending logic. The serial
-port is not used for standard printk logging which might be interrupted
-in the middle of the operation. In the Braille mode, the serial driver
-is supposed to write exactly what it gets. In fact, it does not print
-any newlines at all in this case.
+This doesn't matter so much, I can just assume this will appear in
+the merge window.
 
-Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
-Signed-off-by: Petr Mladek <pmladek@suse.com>
----
- .../accessibility/braille/braille_console.c   | 38 ++++++++++++++++++-
- drivers/tty/serial/8250/8250_port.c           |  5 ++-
- 2 files changed, 40 insertions(+), 3 deletions(-)
+If some bots complain it we can just ignore it.
 
-diff --git a/drivers/accessibility/braille/braille_console.c b/drivers/accessibility/braille/braille_console.c
-index 06b43b678d6e..cd1019d478db 100644
---- a/drivers/accessibility/braille/braille_console.c
-+++ b/drivers/accessibility/braille/braille_console.c
-@@ -62,14 +62,32 @@ static void braille_write(u16 *buf)
- {
- 	static u16 lastwrite[WIDTH];
- 	unsigned char data[1 + 1 + 2*WIDTH + 2 + 1], csum = 0, *c;
-+	struct nbcon_write_context wctxt = { };
-+	unsigned long flags;
-+
- 	u16 out;
- 	int i;
- 
- 	if (!braille_co)
- 		return;
- 
-+	if (braille_co->flags & CON_NBCON) {
-+		/*
-+		 * Braille console might be called from unknown context via
-+		 * vt_console_print() from console_unlock() from printk().
-+		 * Use the atomic callback and synchronize it just using
-+		 * the console context. Disable interrupts to prevent a nested
-+		 * call into the driver code which might cause a deadlock when
-+		 * trying to acquire the console ownership, see
-+		 * __nbcon_atomic_flush_pending_con().
-+		 */
-+		local_irq_save(flags);
-+		while (!nbcon_braille_try_acquire(braille_co, &wctxt))
-+			cpu_relax();
-+	}
-+
- 	if (!memcmp(lastwrite, buf, WIDTH * sizeof(*buf)))
--		return;
-+		goto release_nbcon;
- 	memcpy(lastwrite, buf, WIDTH * sizeof(*buf));
- 
- #define SOH 1
-@@ -102,7 +120,23 @@ static void braille_write(u16 *buf)
- 	*c++ = csum;
- 	*c++ = ETX;
- 
--	braille_co->write(braille_co, data, c - data);
-+	if (braille_co->flags & CON_NBCON) {
-+		if (braille_co->write_atomic &&
-+		    !braille_co->flags & CON_NBCON_ATOMIC_UNSAFE) {
-+			nbcon_write_context_set_buf(&wctxt, (char *)data, c - data);
-+			braille_co->write_atomic(braille_co, &wctxt);
-+		} else {
-+			pr_warn_once("Braille requires a safe braille_co->write_atomic callback\n");
-+		}
-+	} else {
-+		braille_co->write(braille_co, data, c - data);
-+	}
-+
-+release_nbcon:
-+	if (braille_co->flags & CON_NBCON) {
-+		nbcon_braille_release(&wctxt);
-+		local_irq_restore(flags);
-+	}
- }
- 
- /* Follow the VC cursor*/
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 38fa45e74a37..6eb0b439e433 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3417,8 +3417,11 @@ static void __serial8250_console_write(struct uart_8250_port *up,
- 	 * If the console printer did not fully output the previous line, it
- 	 * must have been handed or taken over. Insert a newline in order to
- 	 * maintain clean output.
-+	 *
-+	 * Braille consoles are an exception. The serial port is not used
-+	 * for printk(). The driver is supposed to write exactly what it gets.
- 	 */
--	if (!up->console_line_ended) {
-+	if (unlikely(!up->console_line_ended && !nbcon_is_braille(wctxt))) {
- 		if (use_fifo)
- 			__serial8250_console_fifo_write(up, wctxt, "\n", 1);
- 		else
--- 
-2.55.0
+Once the bindings are ACKed I will consider just apply the
+bindings and this patch to the pinctrl tree.
 
+Yours,
+Linus Walleij
