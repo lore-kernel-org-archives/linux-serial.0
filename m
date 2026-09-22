@@ -1,61 +1,63 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB823F8709
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:26:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52E0E3F4DD2
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 07:26:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790061981; cv=none; b=jLdXV/cfruUc08Zv/3DkD5w+yAppLerGh/TjmkBDpj175b8cKZIJK8Xb4X2W+SAzJ9lW/R08Tt0irp3c3dpaFWzS3GIicB4WDQX/u4LROCSrcFR0qvTLMmZmITxN44c/QSxE+CeN3XbooTnPsBzHC0rBgspwdQKa2lUTvxQYY/E=
+	t=1790061994; cv=none; b=rWPHMxfw4qidP2WHDoAfms9nJCQEX71hmcGFbHIHTjCF5BXfqSqmCA5EgqNTXpBMtrK5/UcmHVNIsbz/mGZOYjSoAdy2vR60zaQcBYjK4IZBSntAVXORLt54tHkVSaJJ3LGodKHm5jnQdaPqrb261j55huORsd5uExuiABVZUSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790061981; c=relaxed/simple;
-	bh=NpaZsBG3v2ONu7MpNQhDjFvyJTphrtdxhYVx1AWKONI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BIwBbnNTbdIA75R63mM6LjX/aBrbQ//LwORJUGFmLR0gotAIHYPMPANbvseQAyoIfQGKBrdyUr4BJiLTTUhdOChQLhg+6aqk/8AoYLvVQMtrmXmcWWi8Y/hswxyBNEBfbmIyZJCPOxX7wndxsIThRRakFodlqIL6wXjJ59xNeGU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=J5djkjGh; arc=none smtp.client-ip=74.125.225.76
+	s=arc-20240116; t=1790061994; c=relaxed/simple;
+	bh=UIeHGzko9PNGSAFX4WTjAsYcLZre5mbCyVd5/P2jJGM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=sF4D1MwWqesVvDW7iHOa7plgSNAh0S+naccfz6bdt8J271tkt6clnMKdd2hGIMkVTzI4zigZcAucLKeRUZ7xVKkEfprZRUDF9CLKer+UFvcfKZ0cqy6labDOTVFDDJQlaXygGUQyfSKvu2Di8spd3mGkChnWqmLQYA7ZkQKjf7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=EqBghxV6; arc=none smtp.client-ip=74.125.225.141
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="J5djkjGh"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485b1d2874fso1373753f8f.0
-        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 00:26:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="EqBghxV6"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49b912d37b5so22181815e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 00:26:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790061977; x=1790666777; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=tV9ZgiYFru+aj6sJhaLwXAzLv5SWqi7Zpbwcao5o810=;
-        b=J5djkjGhJpFYM2GSd23sDjDtrOemOb+cAnYke12JKUc613u6GSjBOUbYrRutLPOact
-         6laArDOc3JtzpKziY2lSdHPzNJfrBxUFa7H3Qr+8XScDlyxBklT7JE/sQEnZBUDCg+tY
-         bswMRsdOmHsT+aQZ372QzZvnGmb9LNEHZU8BjATySaK/zEIgaqWIfzZJ6gnODe43K2+h
-         cVGrKTHPz5sWOgR015yfEja7eSKANP8c/Rjm1gdlWcgSIN3I5PLnpuzZSQ6PhIR/QwTX
-         FLWVcpQLuWwswleJKM0YU2T+WnwNg1D3MRPPqwB2AOj4cnDjKiJ1KQBfMnzrwYiI8RsS
-         mI+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790061977; x=1790666777;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=suse.com; s=google; t=1790061990; x=1790666790; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=tV9ZgiYFru+aj6sJhaLwXAzLv5SWqi7Zpbwcao5o810=;
-        b=nR5/6exi/oXSUM0uPmFb6dh7r6Yq1lZoteNh/gAVP6WoQlcoeB8ZZc7uJdiUXMoYE5
-         6ahX02X8fLcBY/jqq5FB+Za7LIvAHlh3TDo4iO5yPVBfT3uyrNa7Qirog+Ta7BUK7GwV
-         r+H09rHCJCVu7uULZtm3ws7h7LkGhZJcbpgFEKAi5h3sdhwpTNX9F74JiScAowmYtWEf
-         kkdwGyIch4XrSCpOUM9I9ZzPg2awBrkbg5IUE4PaPt4Qp6sA3YnEeH8ZPkj2GkgiezMb
-         jYcZunGpyZl+/IQOZoQMAnA+WRdaac50/qx1fozP842in1GlhtXAZ7nTYWTGyjMeiAJ4
-         eNLA==
-X-Forwarded-Encrypted: i=1; AKwUvBxn3rqWEacydUdz6WkKIJEqkM8WUXfymJEMgR1rpfz2bpCGa3iekYeipq93pqehoUODJ/1tup8ADuD5KTk=@vger.kernel.org
-X-Gm-Message-State: AFuF++kGmmh402nHWZ94tSZdorLJywr7HcJ9r/4D78gpA/ax4tzRLBFY
-	81HLO9tIQGQhM2PgwiokN0ot0aVAUwIF1H6yEHnRnINgrmcDS2zd57iJ+8tfDrPonmc=
-X-Gm-Gg: AYBFou28EsKBX2JBZTZOHWUUsoVvPstiOOBpvjcfk9gGoGW0qeFzt1RPlit4MFvPTFj
-	gsN1BUvqTA09BXiswNEY6gOm+h2XlR5vrM8xEjAnM1AqBBCxV3MlIldYOjNd/yqCFGybPXLsFvJ
-	/T+Bw9ynmA4pCsOpm/RzL50CBf/LM3yfT8zBUB4+r2mFOGfpMzslw7/Oz5h0+rfp20tJWCLo6mO
-	bGtAm9f1IHmp5Nll4qDt7WgOv7n7ZuCy0v7KIdIyaW53d+4FYF8yCDllYc9GFgqAZ6ZV2DwSYEA
-	7oHVjpGok7MthORmqrwu6t8FW2ivWR7lUCWG7bfsMDyBo4jhAzw/YAyHx6Kkl+wRFk9QmPuQSQf
-	2y82hYwupIa/rgfqRNUhckC9wORtGuB7yBzhtSlqYSiXkKG/6s29UrUt+9aqSgCn34xtaytK18E
-	0Gxk0P1DQU69ePoyiaOeRbgcdaACsSakUSPoXwYwOGLLyyh/Yl7qy7oIR5+Rc/i1PVuCJPFmds
-X-Received: by 2002:a05:600c:4592:b0:49e:6836:5386 with SMTP id 5b1f17b1804b1-49fd8517e22mr33087645e9.0.1790061976974;
-        Tue, 22 Sep 2026 00:26:16 -0700 (PDT)
+        bh=fnhbPdt7hfIV/6LXnAHz3D7CDaGQANxV0Uyd8rSU9Jg=;
+        b=EqBghxV6CGX4X/gdDMrUese0eongaoXz+uf4DrLhsIvF+D9cbZwCWREx8a4SyotJh/
+         T6T5jAhCrxi9/hg4CYrTaz1hNKeKkARMmHLk+aZ2WrIz23DqGMt0yQO7PEuYIzRfXKJR
+         jKIZ9zuXsUQhjtlfCc/TUOp4xYeklNMzQv2c/Qxv8GD2bSHt6vaD6ZhhwYpcVb5UOR2b
+         8zrMV+/8SZX1DbkGHYZz5dg/kcr90DPTV+w9+3+j07j0O5QCt9G1YfklsOBknRXTQREY
+         yIBxIBA0GWV6eCI/crWOZJ0+63Dw/cvTxf2mRsNJuS9n1P+yQ43Y1HzHxE2MXaT0n/93
+         issw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790061990; x=1790666790;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=fnhbPdt7hfIV/6LXnAHz3D7CDaGQANxV0Uyd8rSU9Jg=;
+        b=ttHJo844ANSFIyN8VB5CBXOq5mbIG69dONTrOaPgN53RaLfevNL2Jw5BMMGkHbwF/F
+         AfVmwM0Ibo+946gjpRE6Qa2/F0SIc12WwRCOJ0lAushXO6DmK/zdMzMh94vHz9SAGxIe
+         HLPiqnJ86jAW3k5TZhs26XVblWaUtR9+/Zma4Sz40ilMvw1huUEenBUtIsoZ6kLawA1v
+         LT+LYDQw6SVEpfcykRgm4A4UjNiAdcCb8BM0OMhlCFMbknrFxMwzg6A9xD5rRJY1iAVT
+         A2sk2WVCd8npJVYCnK+C0R4sKRKnC8vuSZJ8SWT2oVs4dhVT/bNFIn/OJePTfOTRCR75
+         ey4w==
+X-Forwarded-Encrypted: i=1; AKwUvBx6SPsAgnpfpc3rxnc/2+u42UiuoVJMv9bSlkhsL2l71dqnEYDQ7dFvDMOfRk79dD9cVlD5hoEtQP7MkGE=@vger.kernel.org
+X-Gm-Message-State: AFuF++mXJj7TDGBYSH6iityfqBtv7p/uZtqHKD56BK8NYiAbN6/cLu3x
+	JwzhucoCojwGbe004DPJBeKTb6KikyosTqgYnxT5rCxkTQ5qt/8GM+I+rOgBRtqYFyo=
+X-Gm-Gg: AYBFou1aq1pfr3RAZzfuYqHHScpZ+JgnfyslqMsJozoBIes4VxWgnGjGldCXWv+EE/x
+	UuAPX2rlwQ3BvYrXAkdppnKCfy4tM+LkgJG5rqbqLjPTecnHuO5jJyR+E1ARJmJdDh1G4VdjpoC
+	sgxVTJnBXJz/4hQG/TzMLEp0jHxBvMh87Z+xyjgF5GLhEEeEsRA1sm1qvRCgvZQx5qefZzPFBkY
+	NAve7ChZWkppx8OVbXqnWrrW7GJK7iDjRr/wJYOUnvDpqBD/+oLGt78gO4iNd6OaLJfM8dKr0e2
+	qPTwL727cqLpPTJXepoYO9vzFS2FoxfDDxg9VwKsGBMKKC2qalaXbSstMrER0m/aExJ8wX6IJk5
+	jLdzRUh4QZ+rKjFpS0LcU7GnNvGPc4sEYduI/47xaK3psZTQnsRsooAy4Fcc3bnVGjkbUN1x3Hy
+	+uvsXtbTPEf0H1M7qaXJW5r097iV0vpMj3q0lWfgFm6faeK7vo+uj/uf2kypfx1fk8+UBFNPmN
+X-Received: by 2002:a05:600c:c0c3:10b0:49e:823a:9dec with SMTP id 5b1f17b1804b1-49fc5a10b5fmr167223725e9.3.1790061990534;
+        Tue, 22 Sep 2026 00:26:30 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fd8ce2646sm59215695e9.14.2026.09.22.00.26.15
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fd8cc05e9sm52966385e9.5.2026.09.22.00.26.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 00:26:16 -0700 (PDT)
+        Tue, 22 Sep 2026 00:26:30 -0700 (PDT)
 From: Petr Mladek <pmladek@suse.com>
 To: John Ogness <john.ogness@linutronix.de>
 Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
@@ -73,10 +75,12 @@ Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Manuel Lauss <manuel.lauss@gmail.com>,
 	linux-kernel@vger.kernel.org,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 0/2] braille: nbcon: Allow using a serial driver converted to nbcon API as a Braille console
-Date: Tue, 22 Sep 2026 09:25:56 +0200
-Message-ID: <20260922072558.98854-1-pmladek@suse.com>
+Subject: [PATCH 1/2] printk: nbcon: Introduce Braille helpers
+Date: Tue, 22 Sep 2026 09:25:57 +0200
+Message-ID: <20260922072558.98854-2-pmladek@suse.com>
 X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260922072558.98854-1-pmladek@suse.com>
+References: <20260922072558.98854-1-pmladek@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -85,60 +89,120 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+These helpers will be used when calling console->write_atomic
+in the Braille console driver.
 
-I have been working on v5 [1] of the patchset cleaning console registration
-code and I found that the system did not boot when I selected a Braille
-on the command line, for example:
+The Braille console is not registered as a standard printk console.
+Instead, it is integrated with the virtual terminal (VT) and writes
+data using the legacy con->write() callback of the associated serial
+console driver.
 
-     console=brl,ttyS0,115200 console=tty0
+When the underlying console driver is converted to the NBCON API, the
+Braille console needs to use the con->write_atomic() callback instead.
+This callback must be synchronized by acquiring the nbcon console context.
 
-Bisection went down to the commit d3539347022a ("serial: 8250: Switch to
-nbcon console, take 2"). I found that the Braille console driver called
-braille_co->write() internally where braille_co pointed to the uart
-8250 driver.
+Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+---
+ include/linux/console.h |  8 ++++++
+ kernel/printk/nbcon.c   | 59 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 67 insertions(+)
 
-I added the support for the nbcon console API similar way as we did
-for kdb [2].
-
-Note 1: I believe that we have a bug in the kdb patch because we call
-        con->write() atomic callback after entering the unsafe mode.
-        But we should do so in the default "safe" mode.
-
-Note 2: I am not completely sure about the locking. It might be better
-        to use NBCON_PRIO_PANIC in panic().
-
-        Also I thought about using con->write_thread(). But I think
-	that we have to use the atomic variant because the Braille
-	console can be called from printk() via the VT code, aka
-	graphical console.
-
-Note 3: I do not have any device to read the Braille output so I am not
-	sure if the output is correct. I just checked the output on
-	the serial console and it is a bit suspicious. It looks like
-	it prints every message N-times when N is the length of the string.
-	And it adds one character in each iteration, for example:
-
-<paste>
-E>[                                       E>[                                       E>[  O                                    *>[  OK                                   A>[  OK                                   A>[  OK                                   A>[  OK  ]                                <>[  OK  ]                                <>[  OK  ] R                              N>[  OK  ] Re                             
-       >[  OK  ] Rea                            J>[  OK  ] Reac                           	>[  OK  ] Reach                          A>[  OK  ] Reache                         D>[  OK  ] Reached                        @>[  OK  ] Reached                        @>[  OK  ] Reached t           
-</paste>
-
-	But I think that this is not caused by the NBCON console API.
-
-[1] https://lore.kernel.org/all/20260604101459.393162-1-pmladek@suse.com/
-[2] https://lore.kernel.org/all/20251016-nbcon-kgdboc-v6-0-866aac60a80e@suse.com/
-
-Petr Mladek (2):
-  printk: nbcon: Introduce Braille helpers
-  braille: nbcon: Use nbcon atomic console callbacks
-
- .../accessibility/braille/braille_console.c   | 38 +++++++++++-
- drivers/tty/serial/8250/8250_port.c           |  5 +-
- include/linux/console.h                       |  8 +++
- kernel/printk/nbcon.c                         | 59 +++++++++++++++++++
- 4 files changed, 107 insertions(+), 3 deletions(-)
-
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 502d1abe3f50..d780f6de303a 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -615,6 +615,10 @@ extern bool nbcon_allow_unsafe_takeover(void);
+ extern bool nbcon_kdb_try_acquire(struct console *con,
+ 				  struct nbcon_write_context *wctxt);
+ extern void nbcon_kdb_release(struct nbcon_write_context *wctxt);
++extern bool nbcon_is_braille(struct nbcon_write_context *wctxt);
++extern bool nbcon_braille_try_acquire(struct console *con,
++				      struct nbcon_write_context *wctxt);
++extern void nbcon_braille_release(struct nbcon_write_context *wctxt);
+ 
+ /*
+  * Check if the given console is currently capable and allowed to print
+@@ -678,8 +682,12 @@ static inline void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt) { }
+ static inline bool nbcon_kdb_try_acquire(struct console *con,
+ 					 struct nbcon_write_context *wctxt) { return false; }
+ static inline void nbcon_kdb_release(struct nbcon_write_context *wctxt) { }
++static inline bool nbcon_is_braille(struct nbcon_write_context *wctxt) { return false; }
+ static inline bool console_is_usable(struct console *con, short flags,
+ 				     bool use_atomic) { return false; }
++static inline bool nbcon_braille_try_acquire(struct console *con,
++					     struct nbcon_write_context *wctxt) { return false; }
++static inline void nbcon_braille_release(struct nbcon_write_context *wctxt) { }
+ #endif
+ 
+ extern int console_set_on_cmdline;
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index d17704fe93ae..a5e053ffe4da 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -2002,3 +2002,62 @@ void nbcon_kdb_release(struct nbcon_write_context *wctxt)
+ 	 */
+ 	__nbcon_atomic_flush_pending_con(ctxt->console, prb_next_reserve_seq(prb));
+ }
++
++/**
++ * nbcon_is_braille - Checks whether the nbcon write context is using Braille console
++ *
++ * @wctxt:	checked nbcon write context
++ *
++ * Return: True when the write context is associated with a Braille console.
++ *	   Othrewise, return false.
++ *
++ * Context: Can be called in any context but only when Braille console is
++ *	registered and the struct console could not disappear.
++ */
++bool nbcon_is_braille(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++	struct console *con = ctxt->console;
++
++	return con && con->flags & CON_BRL;
++}
++
++/**
++ * nbcon_braille_try_acquire - Try to acquire nbcon console for braille_write()
++ *
++ * @con:	The nbcon console to acquire
++ * @wctxt:	The nbcon write context to be used on success
++ *
++ * Context:	braille_write() for emitting a single buffer on Braille console.
++ *
++ * Return:	True if the console was acquired. False otherwise.
++ *
++ * Braille console is not registered as a proper printk consoles. Instead,
++ * it is integrated with the graphical virtual terminal.
++ *
++ * This function acquires the nbcon console using priority NBCON_PRIO_EMERGENCY.
++ */
++bool nbcon_braille_try_acquire(struct console *con,
++			   struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++
++	memset(ctxt, 0, sizeof(*ctxt));
++	ctxt->console = con;
++	ctxt->prio    = NBCON_PRIO_EMERGENCY;
++
++	return nbcon_context_try_acquire(ctxt, false);
++}
++
++/**
++ * nbcon_braille_release - Release the nbcon console
++ *
++ * @wctxt:	The nbcon write context initialized by a successful
++ *		nbcon_braille_try_acquire()
++ */
++void nbcon_braille_release(struct nbcon_write_context *wctxt)
++{
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++
++	nbcon_context_release(ctxt);
++}
 -- 
 2.55.0
 
