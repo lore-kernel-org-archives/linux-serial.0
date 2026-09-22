@@ -1,66 +1,65 @@
 Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C82654B1C1
-	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 13:33:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6659454A7CA
+	for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 13:33:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790084036; cv=none; b=NdnwT0btE74hDbxAxfKCrkIr3Tkud7uU5yRuz6WeE4eB1yMYpDU4w9+F+zZYo0KuVW9svxdU049a3XRskBAqatQlgMEcywf1LHLJtGCBbu/i6FsGFz7L9bdwdQQturwpNJ+vE8mpMjWdVv7LqkuPAWjGA2Z8mWUJPJ90xFsLdlw=
+	t=1790084039; cv=none; b=l9sHGz8wYquRGHQPv5OBHBlpG3Lkl9YzFQwmDpv+luVvYhGLIcaWY/ZXVDCXKmKMvj/fw85fGfZ9jl7T1ULLqf4wktk72oO0AiqGvEETHnUXySFQA0YWpI7DZ/rmhbAEH6H9o8T1XqCca9MI3/3P8aAwixIlvuXga12KHPln7ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790084036; c=relaxed/simple;
-	bh=UGV+ou0gldX2//qz4iS9XYo0qpuWYIU0wG3DLy0fcQo=;
+	s=arc-20240116; t=1790084039; c=relaxed/simple;
+	bh=evJmx6zU8fQkzEQbzllDZgDqYm6DXTHzmtk6SxxvFGU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LO6HslNtPsxDe9m7wuzOFrUdtMG1SuL0nYCc6Y6p+8I8ZSVBB62DjVNplO4Ic4e5pm3TARE9nfrdTm1JISHm+ck25Cjw4nvOIwbsaGP0PNz17IgYTQsToL5U9auw5UgI8SQFhwA2hgCCi12COYgmbhNTcBErHeAgFELPLwyTdVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=VxlXhTWz; arc=none smtp.client-ip=74.125.225.140
+	 MIME-Version:Content-Type; b=tLieIpw2DlnL++gkkmcfSarCh308EaI6VROt/CyhRxLjZh83KAbACPVv17UCxMuFQNH1pKLh6LW2QWB4qU3BsrnuC8ftNooDGdkTTFQdhv05gPDUkf0of68qKX4IHKSTJNroNjSF/Drc1WiasXeNkdaypyE+yT6XN80C7trFDgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=V/NRxjSv; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="VxlXhTWz"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ccfd61ecaso36622115e9.3
-        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 06:33:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="V/NRxjSv"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ccfd61ecaso36621835e9.3
+        for <linux-serial@vger.kernel.org>; Tue, 22 Sep 2026 06:33:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790084022; x=1790688822; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1790084021; x=1790688821; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=pi/ltDl53G+OLOHtz8yJJRdSjnsGwK1VjOjXk5caKu4=;
-        b=VxlXhTWzuvQ0xPeOxm37ATV3ROiYp2ufgpxHGMGFX18J1cBsQLf57NbMQStM2f8PRc
-         8wIx5G9fHkThGeUtTZ9p2gad4z+FuoNqFNxPeLtp36AZQgwO+ZEoO7L3UlkYQrG+clsG
-         PP3goJQoAImb0YadJrlZ1I0uYazgQ6fH+vNeaDO+AiVD7CRZbqbHyJLZfJfSb8onj6Me
-         Yq72pj8u/JwO0PCD9DZ3RMABjd8oLdv5RzsvibkSPZTnZ89cb529ykFy2zantaL2b6oo
-         YqdYlgvM/woePVOpIeyxQlqMmPo3gCBjXHOAVDekdNumHL/KUZYKRdlnT3UfRcwy/JvP
-         d/Yg==
+        bh=+NOMWYzzBQUqxYEAWm73IFv3IymMXxn/LCVJ6NlU6GM=;
+        b=V/NRxjSvCiaeBaxxeZYchVgjTDsacz8KydP8CM9b1Ksi2ZO7eQya6eICZhF6yBkz4z
+         Go1ueP89QcshuTyV6Je1jSAHQy/OiuvLT2wVtlhaU4x2KP3i+5mnhg8cV8l86xfJU/j+
+         z1MBWZLjZ6QSLPEjLp2KZTFbNk6m6ehn9w8a49/FzYICF4LVeeCeoCavSqyWnIC8fFIp
+         FVItL5omiV+u7iXG1Ju8aQ6uTAJH33vOuGW9vyeJj2t1T5Qu2zPKzf/gqdSldKggIT6D
+         hrH4lCs+uIpZXim8LDVdyQ4VLxrdMA5lS5dDjaAAC/vSOlgZFhrG3uSqddVyuwZRC3fn
+         7FVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790084022; x=1790688822;
+        d=1e100.net; s=20260707; t=1790084021; x=1790688821;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=pi/ltDl53G+OLOHtz8yJJRdSjnsGwK1VjOjXk5caKu4=;
-        b=mUQBVG+ICBJC/X2eI9U8V6ZPzUUxWeX4yGSb+k9AKKIo9hw+pffP1bS8Pzh9L92mu5
-         DhBQ6CoLClqJgm4+6OLWhLtkQ3U1yatWdAP4scIJ6BHkiR2D7k+rLgavqpnmHlKaXVaI
-         mu7+HwAhtTV9bZimC2nbKlt61ZL5KwNoOUaHltsVA0SO/AWN+T4LqX/Nwzyu4UkFUHvR
-         lF01vYw104vaPynuseTk3zGZ1Cxtm9TGuL/TsCzICIMk0ePgYeUKumRWRrWDO5CazwtX
-         pj5Q3fvImfX/3Jol0QM4nTuj84/EigPuAfJOAfK/Q0mhYXpOUgC6fe0/3wwzbvGGz+Re
-         Omkw==
-X-Forwarded-Encrypted: i=1; AKwUvBxJFAFfM9nDZ8ULz1RsNbZcv3AI6L/12ktzK0Gph72STjHMSQb44Q+YlSmNFxyLJDzf4+PugIP0ptUuybg=@vger.kernel.org
-X-Gm-Message-State: AFuF++mlR5w6VSol7vRrvG3EROznhaqhSWQAjVRq0wIE9NWjSdWxbPDy
-	JEllZM5/XTU1t0aPJZgjm2pwkrjlnGYjbXjH+hmpmnYzXuWxiNQE8vz6gwTJkTJ7l9U=
-X-Gm-Gg: AYBFou2ro+vvFR1jF4osrhC0xLwMTrNFTUjXVwhcweX2advLIH9vtn45yg3I56L35F0
-	7AdLD3p7jk7C6CnRvOQ7loqradH6QcdMHfwTucurw6Gvnad7q1BONnl3SCDdlFRb4SW8L45HVxH
-	GEzti8U3h1IdEZiFoiAL6VXvuP1nrKzPr8YFngxUUxTEsIYoHa6hPkDinuJuWt1uWuRScUIH3VC
-	7YPNp1Hdt6A8LUq7rXJuIEqG31fsQBXwxiTFroZPhoJXeVrYbdX0Scvw/5MQksbypYIs5sQ5TtX
-	YfTMaTIqXF07nKcF6Nfd40cP5doo0dOFRSP+S4zpyXXtoee0QN/0AMk/TAOTQ4eEXg+cpuLwQ2q
-	G/l+uKRdLSQ17Sfk+mBnKLGEQ7SpSJav//HOR4tZRMqnbhFFGDvIEyo18auzFEgtZ9XLcVEsNIs
-	m+d15b4NXfVKoeXvOmodDILqtNTn1hg1z4ZlXe0AeTqc7SmqMj//7kVSRMWibPb9t+KsSzsQuJp
-	EIwVtkhY7o7lv7VzbT0h42dV6Yxw9UrqMTNkIH/WoFm9MXDoblRToafox8O1k81Bq/dnH38CdAq
-	la0S4A==
-X-Received: by 2002:a05:600c:3f07:b0:49e:7caa:e7b2 with SMTP id 5b1f17b1804b1-49fc5756f60mr190416265e9.29.1790084022220;
-        Tue, 22 Sep 2026 06:33:42 -0700 (PDT)
+        bh=+NOMWYzzBQUqxYEAWm73IFv3IymMXxn/LCVJ6NlU6GM=;
+        b=XqKK8KoDsGbq5CUsM78pRVK13aU9Ve21Ewgc1A7MPo1rVV5kXYCQATYNBr79Bk/vcn
+         ADamRalTpsxx+6WHLxiV2ZOZ1n0yRQdzOQlDllxB8o+W/hd6hcJfuQ2oERgyq1NTTp3O
+         L4yVRv5UwTOgR/MO1H0JFDS7H3lhkwxPN/eYwae4mT51CmemwbPvpzcw8gs+Xyr+Ueyd
+         MhVgvxOAMooaYaMnIOjcCK/7PhXtoU/zquv5VBtVpKbJABC5WzZPKvEbwgROF/AeoLeV
+         op2udE8VPu7wp9NMCiHFpv4cUgEBOgsAlVNtYUsjA8u4KiKMUmK1i1/D6IWRSTuKZN1M
+         Xalw==
+X-Forwarded-Encrypted: i=1; AKwUvByzMXXTMrR2V/fB/ZZOmkJcbvIQ2m7wZLhfHMI7q+MfVGcO2butXdhgODv8KHUmmVJuoyUIkXh3YkJMI+g=@vger.kernel.org
+X-Gm-Message-State: AFuF++mfmZI7MOROzvga5DYT3FXoFo5D4Y5+q3QSCHseQVOuYi1WWNMN
+	crXKtu7rz1UigVnEavbUsWZmronPXj5yMLCZ+EnzWPf3AeLgiZZYz7QrBAXVC0Xh8Tg=
+X-Gm-Gg: AYBFou0DFsBvodVJbDhdTKT+w99Kk8h3WdBftZI2KbwfacRuSA/ls5LITNsRgb/OLQr
+	U7vOMyWphnT+RfUOnkhYXluFCxrHl+k0ITt+5V1QD2c0fccWsIao/dZryNvOd/yMPqLVHp/m8Ov
+	brTHKv7Gwu9rKpr41wznp9wiErRvshCDSQecuHRWh1eo8iX4upLSF7NYF7oY8GdaBwf0ZYmzy9g
+	DgDguiB/D2/d/PVlbHOsY5t0wlL+2/kyO/pH2rz/hV8n5IWKPKfHP7rjM9Qigo+gjm8lVWMj/rX
+	pOpzhp5QUrso1bOCfTdRKFZgMZxuIElDbH+agER/IVfBHR4FAJ6mqZxF2HeAobriza7437csa4b
+	BHK1Emvc4FLcEBO4EiAUoU89QDKq29IIG9e91ybshDS/AzBezEpNv8XgXa+uwuFhzHsBjSTwvE3
+	LVzUvAgBcHqyzYUuMvBqoDk/G1aw5fXXTSo2MhqE1OzdDwmavnm40JwaW5/Nz20+ZeCgRxsHsD6
+	d0IODSofInWEaVcs+2L+ALKUeqjx394WoinRn2vQvrhZRaY3NqJ3pEppRwgJI2skFVmEiM=
+X-Received: by 2002:a05:600c:3b2a:b0:49e:6861:50f7 with SMTP id 5b1f17b1804b1-49fc5687df8mr195929925e9.5.1790084020279;
+        Tue, 22 Sep 2026 06:33:40 -0700 (PDT)
 Received: from zovi.suse.cz (dynamic-2a00-1028-838d-271e-8e3b-4aff-fe4c-a100.ipv6.o2.cz. [2a00:1028:838d:271e:8e3b:4aff:fe4c:a100])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fdace76e8sm70243845e9.1.2026.09.22.06.33.40
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fdace76e8sm70243845e9.1.2026.09.22.06.33.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 06:33:41 -0700 (PDT)
+        Tue, 22 Sep 2026 06:33:39 -0700 (PDT)
 From: Petr Pavlu <petr.pavlu@suse.com>
 To: Wim Van Sebroeck <wim@linux-watchdog.org>,
 	Guenter Roeck <linux@roeck-us.net>,
@@ -107,9 +106,9 @@ Cc: linux-watchdog@vger.kernel.org,
 	linux-atm-general@lists.sourceforge.net,
 	linux-modules@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] drivers: Replace __MODULE_STRING() with __stringify()
-Date: Tue, 22 Sep 2026 15:32:22 +0200
-Message-ID: <20260922-module-string-v1-2-c18766690185@suse.com>
+Subject: [PATCH 1/3] watchdog: Replace __MODULE_STRING() with __stringify()
+Date: Tue, 22 Sep 2026 15:32:21 +0200
+Message-ID: <20260922-module-string-v1-1-c18766690185@suse.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260922-module-string-v1-0-c18766690185@suse.com>
 References: <20260922-module-string-v1-0-c18766690185@suse.com>
@@ -132,162 +131,989 @@ preparation for its removal.
 Link: https://git.kernel.org/tglx/history/c/136839a1b4 [1]
 Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
 ---
- drivers/comedi/comedi_fops.c                          |  5 +++--
- drivers/gpu/drm/drm_fb_helper.c                       |  3 ++-
- drivers/hwmon/fschmd.c                                |  3 ++-
- drivers/hwmon/nct7904.c                               |  5 +++--
- drivers/hwmon/sch56xx-common.c                        |  3 ++-
- drivers/hwmon/w83793.c                                |  5 +++--
- drivers/i2c/busses/i2c-kempld.c                       |  3 ++-
- drivers/net/ethernet/atheros/atl1e/atl1e_param.c      |  9 +++++----
- drivers/net/ethernet/atheros/atlx/atl1.c              |  3 ++-
- drivers/net/ethernet/atheros/atlx/atl2.c              | 11 ++++++-----
- drivers/net/ethernet/intel/e1000/e1000_param.c        | 15 ++++++++-------
- drivers/net/ethernet/intel/e1000e/param.c             | 16 ++++++----------
- drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_param.c |  7 ++++---
- drivers/platform/cznic/turris-omnia-mcu-watchdog.c    |  3 ++-
- drivers/rtc/rtc-ds1374.c                              |  3 ++-
- drivers/thunderbolt/tb.c                              |  3 ++-
- drivers/thunderbolt/tunnel.c                          |  5 +++--
- drivers/tty/serial/8250/8250_platform.c               |  3 ++-
- drivers/usb/atm/speedtch.c                            | 15 ++++++++-------
- drivers/usb/atm/usbatm.c                              | 17 +++++++++--------
- 20 files changed, 76 insertions(+), 61 deletions(-)
+ drivers/watchdog/acquirewdt.c             | 3 ++-
+ drivers/watchdog/advantech_ec_wdt.c       | 3 ++-
+ drivers/watchdog/advantechwdt.c           | 5 +++--
+ drivers/watchdog/airoha_wdt.c             | 5 +++--
+ drivers/watchdog/alim1535_wdt.c           | 5 +++--
+ drivers/watchdog/alim7101_wdt.c           | 5 +++--
+ drivers/watchdog/arm_smc_wdt.c            | 3 ++-
+ drivers/watchdog/armada_37xx_wdt.c        | 3 ++-
+ drivers/watchdog/aspeed_wdt.c             | 3 ++-
+ drivers/watchdog/at91rm9200_wdt.c         | 5 +++--
+ drivers/watchdog/at91sam9_wdt.c           | 5 +++--
+ drivers/watchdog/atcwdt200_wdt.c          | 5 +++--
+ drivers/watchdog/ath79_wdt.c              | 5 +++--
+ drivers/watchdog/bcm2835_wdt.c            | 3 ++-
+ drivers/watchdog/bcm47xx_wdt.c            | 5 +++--
+ drivers/watchdog/bcm7038_wdt.c            | 3 ++-
+ drivers/watchdog/booke_wdt.c              | 3 ++-
+ drivers/watchdog/cadence_wdt.c            | 5 +++--
+ drivers/watchdog/cgbc_wdt.c               | 7 ++++---
+ drivers/watchdog/da9052_wdt.c             | 5 +++--
+ drivers/watchdog/da9055_wdt.c             | 3 ++-
+ drivers/watchdog/davinci_wdt.c            | 5 +++--
+ drivers/watchdog/db8500_wdt.c             | 5 +++--
+ drivers/watchdog/dw_wdt.c                 | 3 ++-
+ drivers/watchdog/ebc-c384_wdt.c           | 5 +++--
+ drivers/watchdog/eurotechwdt.c            | 3 ++-
+ drivers/watchdog/exar_wdt.c               | 5 +++--
+ drivers/watchdog/f71808e_wdt.c            | 9 +++++----
+ drivers/watchdog/gef_wdt.c                | 3 ++-
+ drivers/watchdog/geodewdt.c               | 5 +++--
+ drivers/watchdog/gpio_wdt.c               | 3 ++-
+ drivers/watchdog/hpwdt.c                  | 3 ++-
+ drivers/watchdog/i6300esb.c               | 9 +++++----
+ drivers/watchdog/iTCO_wdt.c               | 5 +++--
+ drivers/watchdog/ib700wdt.c               | 5 +++--
+ drivers/watchdog/ibmasr.c                 | 3 ++-
+ drivers/watchdog/ie6xx_wdt.c              | 5 +++--
+ drivers/watchdog/imgpdc_wdt.c             | 5 +++--
+ drivers/watchdog/imx2_wdt.c               | 5 +++--
+ drivers/watchdog/imx7ulp_wdt.c            | 3 ++-
+ drivers/watchdog/imx_sc_wdt.c             | 3 ++-
+ drivers/watchdog/indydog.c                | 3 ++-
+ drivers/watchdog/intel_oc_wdt.c           | 5 +++--
+ drivers/watchdog/it87_wdt.c               | 7 ++++---
+ drivers/watchdog/jz4740_wdt.c             | 7 ++++---
+ drivers/watchdog/keembay_wdt.c            | 5 +++--
+ drivers/watchdog/kempld_wdt.c             | 7 ++++---
+ drivers/watchdog/lenovo_se10_wdt.c        | 5 +++--
+ drivers/watchdog/lenovo_se30_wdt.c        | 5 +++--
+ drivers/watchdog/lenovo_se30g2_se60_wdt.c | 5 +++--
+ drivers/watchdog/loongson1_wdt.c          | 5 +++--
+ drivers/watchdog/lpc18xx_wdt.c            | 5 +++--
+ drivers/watchdog/ma35d1_wdt.c             | 3 ++-
+ drivers/watchdog/max63xx_wdt.c            | 7 ++++---
+ drivers/watchdog/max77620_wdt.c           | 3 ++-
+ drivers/watchdog/mena21_wdt.c             | 3 ++-
+ drivers/watchdog/menf21bmc_wdt.c          | 3 ++-
+ drivers/watchdog/menz69_wdt.c             | 3 ++-
+ drivers/watchdog/meson_gxbb_wdt.c         | 5 +++--
+ drivers/watchdog/meson_wdt.c              | 3 ++-
+ drivers/watchdog/mixcomwd.c               | 3 ++-
+ drivers/watchdog/mpc8xxx_wdt.c            | 5 +++--
+ drivers/watchdog/mt7621_wdt.c             | 3 ++-
+ drivers/watchdog/mtk_wdt.c                | 3 ++-
+ drivers/watchdog/nct6694_wdt.c            | 3 ++-
+ drivers/watchdog/ni903x_wdt.c             | 5 +++--
+ drivers/watchdog/nic7018_wdt.c            | 5 +++--
+ drivers/watchdog/nv_tco.c                 | 5 +++--
+ drivers/watchdog/octeon-wdt-main.c        | 5 +++--
+ drivers/watchdog/omap_wdt.c               | 3 ++-
+ drivers/watchdog/orion_wdt.c              | 3 ++-
+ drivers/watchdog/pc87413_wdt.c            | 7 ++++---
+ drivers/watchdog/pcwd.c                   | 5 +++--
+ drivers/watchdog/pcwd_pci.c               | 5 +++--
+ drivers/watchdog/pcwd_usb.c               | 5 +++--
+ drivers/watchdog/pika_wdt.c               | 5 +++--
+ drivers/watchdog/pnx4008_wdt.c            | 5 +++--
+ drivers/watchdog/pseries-wdt.c            | 7 ++++---
+ drivers/watchdog/rc32434_wdt.c            | 5 +++--
+ drivers/watchdog/renesas_wdt.c            | 3 ++-
+ drivers/watchdog/rn5t618_wdt.c            | 3 ++-
+ drivers/watchdog/rt2880_wdt.c             | 3 ++-
+ drivers/watchdog/rti_wdt.c                | 5 +++--
+ drivers/watchdog/rzg2l_wdt.c              | 3 ++-
+ drivers/watchdog/rzv2h_wdt.c              | 3 ++-
+ drivers/watchdog/s32g_wdt.c               | 5 +++--
+ drivers/watchdog/s3c2410_wdt.c            | 7 ++++---
+ drivers/watchdog/sama5d4_wdt.c            | 5 +++--
+ drivers/watchdog/sbc60xxwdt.c             | 5 +++--
+ drivers/watchdog/sbc7240_wdt.c            | 5 +++--
+ drivers/watchdog/sbc8360.c                | 3 ++-
+ drivers/watchdog/sbc_epx_c3.c             | 3 ++-
+ drivers/watchdog/sbsa_gwdt.c              | 5 +++--
+ drivers/watchdog/sc1200wdt.c              | 3 ++-
+ drivers/watchdog/sch311x_wdt.c            | 5 +++--
+ drivers/watchdog/shwdt.c                  | 7 ++++---
+ drivers/watchdog/simatic-ipc-wdt.c        | 3 ++-
+ drivers/watchdog/sl28cpld_wdt.c           | 3 ++-
+ drivers/watchdog/smsc37b787_wdt.c         | 3 ++-
+ drivers/watchdog/softdog.c                | 5 +++--
+ drivers/watchdog/sp5100_tco.c             | 7 ++++---
+ drivers/watchdog/starfive-wdt.c           | 7 ++++---
+ drivers/watchdog/stmp3xxx_rtc_wdt.c       | 5 +++--
+ drivers/watchdog/stpmic1_wdt.c            | 3 ++-
+ drivers/watchdog/sun4v_wdt.c              | 5 +++--
+ drivers/watchdog/sunplus_wdt.c            | 3 ++-
+ drivers/watchdog/sunxi_wdt.c              | 3 ++-
+ drivers/watchdog/tegra_wdt.c              | 5 +++--
+ drivers/watchdog/tqmx86_wdt.c             | 3 ++-
+ drivers/watchdog/ts4800_wdt.c             | 3 ++-
+ drivers/watchdog/twl4030_wdt.c            | 3 ++-
+ drivers/watchdog/txx9wdt.c                | 7 ++++---
+ drivers/watchdog/uniphier_wdt.c           | 5 +++--
+ drivers/watchdog/via_wdt.c                | 5 +++--
+ drivers/watchdog/visconti_wdt.c           | 3 ++-
+ drivers/watchdog/w83627hf_wdt.c           | 5 +++--
+ drivers/watchdog/w83877f_wdt.c            | 5 +++--
+ drivers/watchdog/w83977f_wdt.c            | 5 +++--
+ drivers/watchdog/wafer5823wdt.c           | 5 +++--
+ drivers/watchdog/watchdog_dev.c           | 5 +++--
+ drivers/watchdog/wdat_wdt.c               | 5 +++--
+ drivers/watchdog/wdt.c                    | 5 +++--
+ drivers/watchdog/wdt977.c                 | 5 +++--
+ drivers/watchdog/wdt_pci.c                | 5 +++--
+ drivers/watchdog/wm831x_wdt.c             | 3 ++-
+ drivers/watchdog/wm8350_wdt.c             | 3 ++-
+ drivers/watchdog/xen_wdt.c                | 5 +++--
+ drivers/watchdog/xilinx_wwdt.c            | 5 +++--
+ drivers/watchdog/ziirave_wdt.c            | 3 ++-
+ 129 files changed, 352 insertions(+), 223 deletions(-)
 
-diff --git a/drivers/comedi/comedi_fops.c b/drivers/comedi/comedi_fops.c
-index c09bbe04be6c..05d14839c5a6 100644
---- a/drivers/comedi/comedi_fops.c
-+++ b/drivers/comedi/comedi_fops.c
-@@ -29,6 +29,7 @@
- #include <linux/io.h>
- #include <linux/uaccess.h>
- #include <linux/compat.h>
-+#include <linux/stringify.h>
+diff --git a/drivers/watchdog/acquirewdt.c b/drivers/watchdog/acquirewdt.c
+index 052f65c48a70..cb62800e89ed 100644
+--- a/drivers/watchdog/acquirewdt.c
++++ b/drivers/watchdog/acquirewdt.c
+@@ -64,6 +64,7 @@
+ #include <linux/init.h>			/* For __init/__exit/... */
+ #include <linux/uaccess.h>		/* For copy_to_user/put_user/... */
+ #include <linux/io.h>			/* For inb/outb/... */
++#include <linux/stringify.h>		/* For __stringify */
  
- #include "comedi_internal.h"
- 
-@@ -82,14 +83,14 @@ unsigned int comedi_default_buf_size_kb = CONFIG_COMEDI_DEFAULT_BUF_SIZE_KB;
- module_param(comedi_default_buf_size_kb, uint, 0644);
- MODULE_PARM_DESC(comedi_default_buf_size_kb,
- 		 "default asynchronous buffer size in KiB (default "
--		 __MODULE_STRING(CONFIG_COMEDI_DEFAULT_BUF_SIZE_KB) ")");
-+		 __stringify(CONFIG_COMEDI_DEFAULT_BUF_SIZE_KB) ")");
- 
- unsigned int comedi_default_buf_maxsize_kb =
- 	CONFIG_COMEDI_DEFAULT_BUF_MAXSIZE_KB;
- module_param(comedi_default_buf_maxsize_kb, uint, 0644);
- MODULE_PARM_DESC(comedi_default_buf_maxsize_kb,
- 		 "default maximum size of asynchronous buffer in KiB (default "
--		 __MODULE_STRING(CONFIG_COMEDI_DEFAULT_BUF_MAXSIZE_KB) ")");
-+		 __stringify(CONFIG_COMEDI_DEFAULT_BUF_MAXSIZE_KB) ")");
- 
- static DEFINE_MUTEX(comedi_board_minor_table_lock);
- static struct comedi_device
-diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
-index d4664ed468b2..36009bb02c25 100644
---- a/drivers/gpu/drm/drm_fb_helper.c
-+++ b/drivers/gpu/drm/drm_fb_helper.c
-@@ -31,6 +31,7 @@
- 
- #include <linux/console.h>
- #include <linux/export.h>
-+#include <linux/stringify.h>
- 
- #include <drm/drm_atomic.h>
- #include <drm/drm_drv.h>
-@@ -54,7 +55,7 @@ static int drm_fbdev_overalloc = CONFIG_DRM_FBDEV_OVERALLOC;
- module_param(drm_fbdev_overalloc, int, 0444);
- MODULE_PARM_DESC(drm_fbdev_overalloc,
- 		 "Overallocation of the fbdev buffer (%) [default="
--		 __MODULE_STRING(CONFIG_DRM_FBDEV_OVERALLOC) "]");
-+		 __stringify(CONFIG_DRM_FBDEV_OVERALLOC) "]");
- 
- /*
-  * In order to keep user-space compatibility, we want in certain use-cases
-diff --git a/drivers/hwmon/fschmd.c b/drivers/hwmon/fschmd.c
-index 019fc32bf318..df9418a86c83 100644
---- a/drivers/hwmon/fschmd.c
-+++ b/drivers/hwmon/fschmd.c
-@@ -35,6 +35,7 @@
- #include <linux/miscdevice.h>
- #include <linux/uaccess.h>
- #include <linux/kref.h>
-+#include <linux/stringify.h>
- 
- /* Addresses to scan */
- static const unsigned short normal_i2c[] = { 0x73, I2C_CLIENT_END };
-@@ -43,7 +44,7 @@ static const unsigned short normal_i2c[] = { 0x73, I2C_CLIENT_END };
- static bool nowayout = WATCHDOG_NOWAYOUT;
+ /* Module information */
+ #define DRV_NAME "acquirewdt"
+@@ -92,7 +93,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
  module_param(nowayout, bool, 0);
- MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
 -	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 +	__stringify(WATCHDOG_NOWAYOUT) ")");
  
- enum chips { fscpos, fscher, fscscy, fschrc, fschmd, fschds, fscsyl };
+ /*
+  *	Watchdog Operations
+diff --git a/drivers/watchdog/advantech_ec_wdt.c b/drivers/watchdog/advantech_ec_wdt.c
+index 7c380f90ca58..2470c4303267 100644
+--- a/drivers/watchdog/advantech_ec_wdt.c
++++ b/drivers/watchdog/advantech_ec_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
  
-diff --git a/drivers/hwmon/nct7904.c b/drivers/hwmon/nct7904.c
-index 976b8a008e44..04e1a8e6db37 100644
---- a/drivers/hwmon/nct7904.c
-+++ b/drivers/hwmon/nct7904.c
-@@ -23,6 +23,7 @@
- #include <linux/i2c.h>
- #include <linux/hwmon.h>
+ #define DRIVER_NAME		"advantech_ec_wdt"
+@@ -49,7 +50,7 @@ static ktime_t ec_timestamp;
+ 
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+-		 "Default Watchdog timer setting (" __MODULE_STRING(DEFAULT_TIME) "s). The range is from " __MODULE_STRING(MIN_TIME) " to " __MODULE_STRING(MAX_TIME) ".");
++		 "Default Watchdog timer setting (" __stringify(DEFAULT_TIME) "s). The range is from " __stringify(MIN_TIME) " to " __stringify(MAX_TIME) ".");
+ 
+ static void adv_ec_wdt_timing_gate(void)
+ {
+diff --git a/drivers/watchdog/advantechwdt.c b/drivers/watchdog/advantechwdt.c
+index 42d3f3771781..6d24a6bc8f90 100644
+--- a/drivers/watchdog/advantechwdt.c
++++ b/drivers/watchdog/advantechwdt.c
+@@ -37,6 +37,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ #define DRV_NAME "advantechwdt"
+@@ -71,13 +72,13 @@ static int timeout = WATCHDOG_TIMEOUT;	/* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. 1<= timeout <=63, default="
+-		__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		__stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-		__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	Watchdog Operations
+diff --git a/drivers/watchdog/airoha_wdt.c b/drivers/watchdog/airoha_wdt.c
+index 4bd333189b87..c535c48ab6a8 100644
+--- a/drivers/watchdog/airoha_wdt.c
++++ b/drivers/watchdog/airoha_wdt.c
+@@ -20,6 +20,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
  #include <linux/watchdog.h>
 +#include <linux/stringify.h>
  
- #define VENDOR_ID_REG		0x7A	/* Any bank */
- #define NUVOTON_ID		0x50
-@@ -113,12 +114,12 @@
- static int timeout;
- module_param(timeout, int, 0);
- MODULE_PARM_DESC(timeout, "Watchdog timeout in minutes. 1 <= timeout <= 255, default="
--			__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
-+			__stringify(WATCHDOG_TIMEOUT) ".");
+ /* Base address of timer and watchdog registers */
+ #define TIMER_CTRL			0x0
+@@ -44,12 +45,12 @@ struct airoha_wdt_desc {
+ static int heartbeat = WDT_HEARTBEAT;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeats in seconds. (default="
+-		 __MODULE_STRING(WDT_HEARTBEAT) ")");
++		 __stringify(WDT_HEARTBEAT) ")");
  
  static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int airoha_wdt_start(struct watchdog_device *wdog_dev)
+ {
+diff --git a/drivers/watchdog/alim1535_wdt.c b/drivers/watchdog/alim1535_wdt.c
+index 1ecbd1ac5c3a..d2f8d3331fe4 100644
+--- a/drivers/watchdog/alim1535_wdt.c
++++ b/drivers/watchdog/alim1535_wdt.c
+@@ -18,6 +18,7 @@
+ #include <linux/pci.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ 
+ #define WATCHDOG_NAME "ALi_M1535"
+ #define WATCHDOG_TIMEOUT 60	/* 60 sec default timeout */
+@@ -34,13 +35,13 @@ static int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Watchdog timeout in seconds. (0 < timeout < 18000, default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++				__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	ali_start	-	start watchdog countdown
+diff --git a/drivers/watchdog/alim7101_wdt.c b/drivers/watchdog/alim7101_wdt.c
+index 03a559b41f5b..e9611c76a269 100644
+--- a/drivers/watchdog/alim7101_wdt.c
++++ b/drivers/watchdog/alim7101_wdt.c
+@@ -36,6 +36,7 @@
+ #include <linux/pci.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ #define WDT_ENABLE 0x9C
+@@ -64,7 +65,7 @@ static int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Watchdog timeout in seconds. (1<=timeout<=3600, default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++				__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static int use_gpio; /* Use the pic (for a1d revision alim7101) */
+ module_param(use_gpio, int, 0);
+@@ -82,7 +83,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	Whack the dog
+diff --git a/drivers/watchdog/arm_smc_wdt.c b/drivers/watchdog/arm_smc_wdt.c
+index bbba23ace7b8..c73ed1dcdfcb 100644
+--- a/drivers/watchdog/arm_smc_wdt.c
++++ b/drivers/watchdog/arm_smc_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ #include <uapi/linux/psci.h>
+@@ -191,7 +192,7 @@ MODULE_PARM_DESC(timeout, "Watchdog heartbeat in seconds");
+ 
  module_param(nowayout, bool, 0);
  MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 -			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 +			__stringify(WATCHDOG_NOWAYOUT) ")");
  
- static const unsigned short normal_i2c[] = {
- 	0x2d, 0x2e, I2C_CLIENT_END
-diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
-index a385aae3bb0f..febb8ba7dc2c 100644
---- a/drivers/hwmon/sch56xx-common.c
-+++ b/drivers/hwmon/sch56xx-common.c
-@@ -18,13 +18,14 @@
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Julius Werner <jwerner@chromium.org>");
+diff --git a/drivers/watchdog/armada_37xx_wdt.c b/drivers/watchdog/armada_37xx_wdt.c
+index a17a7911771a..d62b02c40b0e 100644
+--- a/drivers/watchdog/armada_37xx_wdt.c
++++ b/drivers/watchdog/armada_37xx_wdt.c
+@@ -16,6 +16,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -70,7 +71,7 @@ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds");
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-			   __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			   __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct armada_37xx_watchdog {
+ 	struct watchdog_device wdt;
+diff --git a/drivers/watchdog/aspeed_wdt.c b/drivers/watchdog/aspeed_wdt.c
+index 48454ac86074..d4bd41cb801e 100644
+--- a/drivers/watchdog/aspeed_wdt.c
++++ b/drivers/watchdog/aspeed_wdt.c
+@@ -17,12 +17,13 @@
+ #include <linux/of_irq.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ struct aspeed_wdt_scu {
+ 	const char *compatible;
+ 	u32 reset_status_reg;
+diff --git a/drivers/watchdog/at91rm9200_wdt.c b/drivers/watchdog/at91rm9200_wdt.c
+index d5afcc634221..8c292d246981 100644
+--- a/drivers/watchdog/at91rm9200_wdt.c
++++ b/drivers/watchdog/at91rm9200_wdt.c
+@@ -23,6 +23,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
  #include <linux/watchdog.h>
  #include <linux/uaccess.h>
- #include <linux/slab.h>
-+#include <linux/stringify.h>
- #include "sch56xx-common.h"
+@@ -36,13 +37,13 @@ static struct regmap *regmap_st;
  
- /* Insmod parameters */
+ module_param(wdt_time, int, 0);
+ MODULE_PARM_DESC(wdt_time, "Watchdog time in seconds. (default="
+-				__MODULE_STRING(WDT_DEFAULT_TIME) ")");
++				__stringify(WDT_DEFAULT_TIME) ")");
+ 
+ #ifdef CONFIG_WATCHDOG_NOWAYOUT
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ #endif
+ 
+ 
+diff --git a/drivers/watchdog/at91sam9_wdt.c b/drivers/watchdog/at91sam9_wdt.c
+index 80ba04df54ad..f966da602011 100644
+--- a/drivers/watchdog/at91sam9_wdt.c
++++ b/drivers/watchdog/at91sam9_wdt.c
+@@ -32,6 +32,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/of.h>
+ #include <linux/of_irq.h>
++#include <linux/stringify.h>
+ 
+ #include "at91sam9_wdt.h"
+ 
+@@ -70,12 +71,12 @@
+ static int heartbeat;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeats in seconds. "
+-	"(default = " __MODULE_STRING(WDT_HEARTBEAT) ")");
++	"(default = " __stringify(WDT_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define to_wdt(wdd) container_of(wdd, struct at91wdt, wdd)
+ struct at91wdt {
+diff --git a/drivers/watchdog/atcwdt200_wdt.c b/drivers/watchdog/atcwdt200_wdt.c
+index 7e757c217b0b..ceedc3f67632 100644
+--- a/drivers/watchdog/atcwdt200_wdt.c
++++ b/drivers/watchdog/atcwdt200_wdt.c
+@@ -19,6 +19,7 @@
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* Register definitions */
+@@ -570,11 +571,11 @@ module_platform_driver(atcwdt_driver);
+ 
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds (default="
+-		 __MODULE_STRING(ATCWDT_TIMEOUT) ")");
++		 __stringify(ATCWDT_TIMEOUT) ")");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("CL Wang <cl634@andestech.com>");
+diff --git a/drivers/watchdog/ath79_wdt.c b/drivers/watchdog/ath79_wdt.c
+index 7df703e9852a..02783c1ec526 100644
+--- a/drivers/watchdog/ath79_wdt.c
++++ b/drivers/watchdog/ath79_wdt.c
+@@ -32,6 +32,7 @@
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #define DRIVER_NAME	"ath79-wdt"
+ 
+@@ -50,12 +51,12 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-			   "(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			   "(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int timeout = WDT_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds "
+-			  "(default=" __MODULE_STRING(WDT_TIMEOUT) "s)");
++			  "(default=" __stringify(WDT_TIMEOUT) "s)");
+ 
+ static unsigned long wdt_flags;
+ 
+diff --git a/drivers/watchdog/bcm2835_wdt.c b/drivers/watchdog/bcm2835_wdt.c
+index 6fd8b1b8e386..1a0fc66cc093 100644
+--- a/drivers/watchdog/bcm2835_wdt.c
++++ b/drivers/watchdog/bcm2835_wdt.c
+@@ -20,6 +20,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ 
+ #define PM_RSTC				0x1c
+ #define PM_RSTS				0x20
+@@ -229,7 +230,7 @@ MODULE_PARM_DESC(heartbeat, "Initial watchdog heartbeat in seconds");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_ALIAS("platform:bcm2835-wdt");
+ MODULE_AUTHOR("Lubomir Rintel <lkundrak@v3.sk>");
+diff --git a/drivers/watchdog/bcm47xx_wdt.c b/drivers/watchdog/bcm47xx_wdt.c
+index e13ec0975bef..0d7e8a87074a 100644
+--- a/drivers/watchdog/bcm47xx_wdt.c
++++ b/drivers/watchdog/bcm47xx_wdt.c
+@@ -21,6 +21,7 @@
+ #include <linux/watchdog.h>
+ #include <linux/timer.h>
+ #include <linux/jiffies.h>
++#include <linux/stringify.h>
+ 
+ #define DRV_NAME		"bcm47xx_wdt"
+ 
+@@ -33,12 +34,12 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ 
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog time in seconds. (default="
+-				__MODULE_STRING(WDT_DEFAULT_TIME) ")");
++				__stringify(WDT_DEFAULT_TIME) ")");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static inline struct bcm47xx_wdt *bcm47xx_wdt_get(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/bcm7038_wdt.c b/drivers/watchdog/bcm7038_wdt.c
+index e038dd66b819..1117026cf959 100644
+--- a/drivers/watchdog/bcm7038_wdt.c
++++ b/drivers/watchdog/bcm7038_wdt.c
+@@ -12,6 +12,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/platform_data/bcm7038_wdt.h>
+ #include <linux/pm.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define WDT_START_1		0xff00
+@@ -228,7 +229,7 @@ module_platform_driver(bcm7038_wdt_driver);
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Driver for Broadcom 7038 SoCs Watchdog");
+ MODULE_AUTHOR("Justin Chen");
+diff --git a/drivers/watchdog/booke_wdt.c b/drivers/watchdog/booke_wdt.c
+index 1b1fb389b89b..1224d1737e87 100644
+--- a/drivers/watchdog/booke_wdt.c
++++ b/drivers/watchdog/booke_wdt.c
+@@ -12,6 +12,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/smp.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #include <asm/reg_booke.h>
+@@ -43,7 +44,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #ifdef CONFIG_PPC_E500
+ 
+diff --git a/drivers/watchdog/cadence_wdt.c b/drivers/watchdog/cadence_wdt.c
+index ad46b33ce5f2..0d635fb8b0f7 100644
+--- a/drivers/watchdog/cadence_wdt.c
++++ b/drivers/watchdog/cadence_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define CDNS_WDT_DEFAULT_TIMEOUT	10
+@@ -52,12 +53,12 @@ static int nowayout = WATCHDOG_NOWAYOUT;
+ module_param(wdt_timeout, int, 0644);
+ MODULE_PARM_DESC(wdt_timeout,
+ 		 "Watchdog time in seconds. (default="
+-		 __MODULE_STRING(CDNS_WDT_DEFAULT_TIMEOUT) ")");
++		 __stringify(CDNS_WDT_DEFAULT_TIMEOUT) ")");
+ 
+ module_param(nowayout, int, 0644);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /**
+  * struct cdns_wdt - Watchdog device structure
+diff --git a/drivers/watchdog/cgbc_wdt.c b/drivers/watchdog/cgbc_wdt.c
+index 702b055ba6f4..a90e6af13bed 100644
+--- a/drivers/watchdog/cgbc_wdt.c
++++ b/drivers/watchdog/cgbc_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/limits.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #include <linux/mfd/cgbc.h>
+@@ -38,19 +39,19 @@ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. (>=0, default="
+-		 __MODULE_STRING(CGBC_WDT_DEFAULT_TIMEOUT) ")");
++		 __stringify(CGBC_WDT_DEFAULT_TIMEOUT) ")");
+ 
+ static unsigned int pretimeout = CGBC_WDT_DEFAULT_PRETIMEOUT;
+ module_param(pretimeout, uint, 0);
+ MODULE_PARM_DESC(pretimeout,
+ 		 "Watchdog pretimeout in seconds. (>=0, default="
+-		 __MODULE_STRING(CGBC_WDT_DEFAULT_PRETIMEOUT) ")");
++		 __stringify(CGBC_WDT_DEFAULT_PRETIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct cgbc_wdt_data {
+ 	struct cgbc_device_data	*cgbc;
+diff --git a/drivers/watchdog/da9052_wdt.c b/drivers/watchdog/da9052_wdt.c
+index afb7887c3a1e..959cba0a8819 100644
+--- a/drivers/watchdog/da9052_wdt.c
++++ b/drivers/watchdog/da9052_wdt.c
+@@ -17,6 +17,7 @@
+ #include <linux/types.h>
+ #include <linux/kernel.h>
+ #include <linux/jiffies.h>
++#include <linux/stringify.h>
+ 
+ #include <linux/mfd/da9052/reg.h>
+ #include <linux/mfd/da9052/da9052.h>
+@@ -34,13 +35,13 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int timeout;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. (default = "
+-	__MODULE_STRING(WDT_DEFAULT_TIMEOUT) ")");
++	__stringify(WDT_DEFAULT_TIMEOUT) ")");
+ 
+ static const struct {
+ 	u8 reg_val;
+diff --git a/drivers/watchdog/da9055_wdt.c b/drivers/watchdog/da9055_wdt.c
+index 9d5a2009466f..cbb87855bd6a 100644
+--- a/drivers/watchdog/da9055_wdt.c
++++ b/drivers/watchdog/da9055_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/watchdog.h>
+ #include <linux/delay.h>
++#include <linux/stringify.h>
+ 
+ #include <linux/mfd/da9055/core.h>
+ #include <linux/mfd/da9055/reg.h>
+@@ -23,7 +24,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define DA9055_DEF_TIMEOUT	4
+ #define DA9055_TWDMIN		256
+diff --git a/drivers/watchdog/davinci_wdt.c b/drivers/watchdog/davinci_wdt.c
+index 6ea0434f45c2..fcee686315c3 100644
+--- a/drivers/watchdog/davinci_wdt.c
++++ b/drivers/watchdog/davinci_wdt.c
+@@ -19,6 +19,7 @@
+ #include <linux/device.h>
+ #include <linux/clk.h>
+ #include <linux/err.h>
++#include <linux/stringify.h>
+ 
+ #define MODULE_NAME "DAVINCI-WDT: "
+ 
+@@ -250,8 +251,8 @@ MODULE_DESCRIPTION("DaVinci Watchdog Driver");
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 		 "Watchdog heartbeat period in seconds from 1 to "
+-		 __MODULE_STRING(MAX_HEARTBEAT) ", default "
+-		 __MODULE_STRING(DEFAULT_HEARTBEAT));
++		 __stringify(MAX_HEARTBEAT) ", default "
++		 __stringify(DEFAULT_HEARTBEAT));
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:davinci-wdt");
+diff --git a/drivers/watchdog/db8500_wdt.c b/drivers/watchdog/db8500_wdt.c
+index 70ccea13288d..7e11c28997ec 100644
+--- a/drivers/watchdog/db8500_wdt.c
++++ b/drivers/watchdog/db8500_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/watchdog.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ 
+ #include <linux/mfd/db8500-prcmu.h>
+ 
+@@ -27,13 +28,13 @@ static unsigned int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++				__stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int db8500_wdt_start(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/dw_wdt.c b/drivers/watchdog/dw_wdt.c
+index 39031445d754..c1d40d7b2165 100644
+--- a/drivers/watchdog/dw_wdt.c
++++ b/drivers/watchdog/dw_wdt.c
+@@ -27,6 +27,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm.h>
+ #include <linux/reset.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define WDOG_CONTROL_REG_OFFSET		    0x00
+@@ -66,7 +67,7 @@ static const u32 dw_wdt_fix_tops[DW_WDT_NUM_TOPS] = {
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-		 "(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 "(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ enum dw_wdt_rmod {
+ 	DW_WDT_RMOD_RESET = 1,
+diff --git a/drivers/watchdog/ebc-c384_wdt.c b/drivers/watchdog/ebc-c384_wdt.c
+index 8ef4b0df3855..39cc1f7e1cdb 100644
+--- a/drivers/watchdog/ebc-c384_wdt.c
++++ b/drivers/watchdog/ebc-c384_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/types.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define MODULE_NAME		"ebc-c384_wdt"
+@@ -30,12 +31,12 @@
  static bool nowayout = WATCHDOG_NOWAYOUT;
  module_param(nowayout, bool, 0);
  MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 -	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 +	__stringify(WATCHDOG_NOWAYOUT) ")");
  
- #define SIO_SCH56XX_LD_EM	0x0C	/* Embedded uController Logical Dev */
- #define SIO_UNLOCK_KEY		0x55	/* Key to enable Super-I/O */
-diff --git a/drivers/hwmon/w83793.c b/drivers/hwmon/w83793.c
-index c6ef04c69856..e1f2708b5db6 100644
---- a/drivers/hwmon/w83793.c
-+++ b/drivers/hwmon/w83793.c
-@@ -34,6 +34,7 @@
- #include <linux/notifier.h>
- #include <linux/reboot.h>
- #include <linux/jiffies.h>
+ static unsigned timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds (default="
+-	__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++	__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static int ebc_c384_wdt_start(struct watchdog_device *wdev)
+ {
+diff --git a/drivers/watchdog/eurotechwdt.c b/drivers/watchdog/eurotechwdt.c
+index 10c647b1226a..4d671c4e148a 100644
+--- a/drivers/watchdog/eurotechwdt.c
++++ b/drivers/watchdog/eurotechwdt.c
+@@ -56,6 +56,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
 +#include <linux/stringify.h>
  
- /* Default values */
- #define WATCHDOG_TIMEOUT 2	/* 2 minute default timeout */
-@@ -57,13 +58,13 @@ static int timeout = WATCHDOG_TIMEOUT;	/* default timeout in minutes */
+ 
+ static unsigned long eurwdt_is_open;
+@@ -77,7 +78,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  * Some symbolic names
+diff --git a/drivers/watchdog/exar_wdt.c b/drivers/watchdog/exar_wdt.c
+index db62c9797406..553be158a725 100644
+--- a/drivers/watchdog/exar_wdt.c
++++ b/drivers/watchdog/exar_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define DRV_NAME	"exar_wdt"
+@@ -70,13 +71,13 @@ static int timeout = WATCHDOG_TIMEOUT;
  module_param(timeout, int, 0);
  MODULE_PARM_DESC(timeout,
- 	"Watchdog timeout in minutes. 2<= timeout <=255 (default="
+ 		 "Watchdog timeout in seconds. 1<=timeout<=15300, default="
+-		 __MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		 __stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int exar_sio_enter(const unsigned short config_port,
+ 			  const unsigned char key)
+diff --git a/drivers/watchdog/f71808e_wdt.c b/drivers/watchdog/f71808e_wdt.c
+index 6a16d3d0bb1e..2790061a68f3 100644
+--- a/drivers/watchdog/f71808e_wdt.c
++++ b/drivers/watchdog/f71808e_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/ioport.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define DRVNAME "f71808e_wdt"
+@@ -81,20 +82,20 @@ static int timeout = WATCHDOG_TIMEOUT;	/* default timeout in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. 1<= timeout <="
+-			__MODULE_STRING(WATCHDOG_MAX_TIMEOUT) " (default="
+-			__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++			__stringify(WATCHDOG_MAX_TIMEOUT) " (default="
++			__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static unsigned int pulse_width = WATCHDOG_PULSE_WIDTH;
+ module_param(pulse_width, uint, 0);
+ MODULE_PARM_DESC(pulse_width,
+ 	"Watchdog signal pulse width. 0(=level), 1, 25, 30, 125, 150, 5000 or 6000 ms"
+-			" (default=" __MODULE_STRING(WATCHDOG_PULSE_WIDTH) ")");
++			" (default=" __stringify(WATCHDOG_PULSE_WIDTH) ")");
+ 
+ static unsigned int f71862fg_pin = WATCHDOG_F71862FG_PIN;
+ module_param(f71862fg_pin, uint, 0);
+ MODULE_PARM_DESC(f71862fg_pin,
+ 	"Watchdog f71862fg reset output pin configuration. Choose pin 56 or 63"
+-			" (default=" __MODULE_STRING(WATCHDOG_F71862FG_PIN)")");
++			" (default=" __stringify(WATCHDOG_F71862FG_PIN)")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0444);
+diff --git a/drivers/watchdog/gef_wdt.c b/drivers/watchdog/gef_wdt.c
+index bf6f733dfb5f..4d39588a49c3 100644
+--- a/drivers/watchdog/gef_wdt.c
++++ b/drivers/watchdog/gef_wdt.c
+@@ -34,6 +34,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #include <sysdev/fsl_soc.h>
+ 
+@@ -70,7 +71,7 @@ static DEFINE_SPINLOCK(gef_wdt_spinlock);
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ 
+ static int gef_wdt_toggle_wdc(int enabled_predicate, int field_shift)
+diff --git a/drivers/watchdog/geodewdt.c b/drivers/watchdog/geodewdt.c
+index 5b80ade1c681..437cc0a53654 100644
+--- a/drivers/watchdog/geodewdt.c
++++ b/drivers/watchdog/geodewdt.c
+@@ -16,6 +16,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #include <linux/cs5535.h>
+ 
+@@ -34,13 +35,13 @@ static int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. 1<= timeout <=131, default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++				__stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static struct platform_device *geodewdt_platform_device;
+ static unsigned long wdt_flags;
+diff --git a/drivers/watchdog/gpio_wdt.c b/drivers/watchdog/gpio_wdt.c
+index 1abc7d0b78a6..2cd79c8f60dc 100644
+--- a/drivers/watchdog/gpio_wdt.c
++++ b/drivers/watchdog/gpio_wdt.c
+@@ -11,13 +11,14 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define SOFT_TIMEOUT_MIN	1
+ #define SOFT_TIMEOUT_DEF	60
+diff --git a/drivers/watchdog/hpwdt.c b/drivers/watchdog/hpwdt.c
+index 8af1fad2de0b..7b9eb4e4b6e7 100644
+--- a/drivers/watchdog/hpwdt.c
++++ b/drivers/watchdog/hpwdt.c
+@@ -20,6 +20,7 @@
+ #include <linux/pci.h>
+ #include <linux/pci_ids.h>
+ #include <linux/types.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ #ifdef CONFIG_HPWDT_NMI_DECODING
+ #include <asm/nmi.h>
+@@ -432,7 +433,7 @@ MODULE_PARM_DESC(timeout, "Alias of soft_margin");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ module_param(kdumptimeout, int, 0444);
+ MODULE_PARM_DESC(kdumptimeout, "Timeout applied for crash kernel transition in seconds");
+diff --git a/drivers/watchdog/i6300esb.c b/drivers/watchdog/i6300esb.c
+index a30835f547b3..006d263cf135 100644
+--- a/drivers/watchdog/i6300esb.c
++++ b/drivers/watchdog/i6300esb.c
+@@ -37,6 +37,7 @@
+ #include <linux/ioport.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ 
+ /* Module and version information */
+ #define ESB_MODULE_NAME "i6300ESB timer"
+@@ -74,19 +75,19 @@
+ #define ESB_HEARTBEAT_MIN	1
+ #define ESB_HEARTBEAT_MAX	2046
+ #define ESB_HEARTBEAT_DEFAULT	30
+-#define ESB_HEARTBEAT_RANGE __MODULE_STRING(ESB_HEARTBEAT_MIN) \
+-	"<heartbeat<" __MODULE_STRING(ESB_HEARTBEAT_MAX)
++#define ESB_HEARTBEAT_RANGE __stringify(ESB_HEARTBEAT_MIN) \
++	"<heartbeat<" __stringify(ESB_HEARTBEAT_MAX)
+ static int heartbeat; /* in seconds */
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 	"Watchdog heartbeat in seconds. (" ESB_HEARTBEAT_RANGE
+-	", default=" __MODULE_STRING(ESB_HEARTBEAT_DEFAULT) ")");
++	", default=" __stringify(ESB_HEARTBEAT_DEFAULT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /* internal variables */
+ struct esb_dev {
+diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
+index 1dec9cd155b1..0a8bf28f5768 100644
+--- a/drivers/watchdog/iTCO_wdt.c
++++ b/drivers/watchdog/iTCO_wdt.c
+@@ -60,6 +60,7 @@
+ #include <linux/ioport.h>		/* For io-port access */
+ #include <linux/uaccess.h>		/* For copy_to_user/put_user/... */
+ #include <linux/io.h>			/* For inb/outb/... */
++#include <linux/stringify.h>		/* For __stringify */
+ #include <linux/platform_data/itco_wdt.h>
+ #include <linux/mfd/intel_pmc_bxt.h>
+ 
+@@ -115,13 +116,13 @@ static int heartbeat = WATCHDOG_TIMEOUT;  /* in seconds */
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog timeout in seconds. "
+ 	"5..76 (TCO v1) or 3..614 (TCO v2), default="
 -				__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
 +				__stringify(WATCHDOG_TIMEOUT) ")");
  
@@ -298,532 +1124,2399 @@ index c6ef04c69856..e1f2708b5db6 100644
 -				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 +				__stringify(WATCHDOG_NOWAYOUT) ")");
  
+ static int turn_SMI_watchdog_clear_off = 1;
+ module_param(turn_SMI_watchdog_clear_off, int, 0);
+diff --git a/drivers/watchdog/ib700wdt.c b/drivers/watchdog/ib700wdt.c
+index 5ce6101d236d..3806d86eb36a 100644
+--- a/drivers/watchdog/ib700wdt.c
++++ b/drivers/watchdog/ib700wdt.c
+@@ -41,6 +41,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ static struct platform_device *ibwdt_platform_device;
+@@ -96,13 +97,13 @@ static int timeout = WATCHDOG_TIMEOUT;	/* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. 0<= timeout <=30, default="
+-		__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		__stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ 
  /*
-  * Address 0x00, 0x0d, 0x0e, 0x0f in all three banks are reserved
-diff --git a/drivers/i2c/busses/i2c-kempld.c b/drivers/i2c/busses/i2c-kempld.c
-index 9b4c7cba62b6..d0438960c272 100644
---- a/drivers/i2c/busses/i2c-kempld.c
-+++ b/drivers/i2c/busses/i2c-kempld.c
-@@ -13,6 +13,7 @@
- #include <linux/i2c.h>
- #include <linux/delay.h>
- #include <linux/mfd/kempld.h>
+diff --git a/drivers/watchdog/ibmasr.c b/drivers/watchdog/ibmasr.c
+index cf845f865945..53bd84e6d57f 100644
+--- a/drivers/watchdog/ibmasr.c
++++ b/drivers/watchdog/ibmasr.c
+@@ -21,6 +21,7 @@
+ #include <linux/dmi.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
 +#include <linux/stringify.h>
  
- #define KEMPLD_I2C_PRELOW	0x0b
- #define KEMPLD_I2C_PREHIGH	0x0c
-@@ -66,7 +67,7 @@ struct kempld_i2c_data {
- static unsigned int bus_frequency = KEMPLD_I2C_FREQ_STD;
- module_param(bus_frequency, uint, 0);
- MODULE_PARM_DESC(bus_frequency, "Set I2C bus frequency in kHz (default="
--				__MODULE_STRING(KEMPLD_I2C_FREQ_STD)")");
-+				__stringify(KEMPLD_I2C_FREQ_STD)")");
  
- static int i2c_bus = -1;
- module_param(i2c_bus, int, 0);
-diff --git a/drivers/net/ethernet/atheros/atl1e/atl1e_param.c b/drivers/net/ethernet/atheros/atl1e/atl1e_param.c
-index 6b1d6df8da97..ff3423a4dc2e 100644
---- a/drivers/net/ethernet/atheros/atl1e/atl1e_param.c
-+++ b/drivers/net/ethernet/atheros/atl1e/atl1e_param.c
-@@ -7,6 +7,7 @@
-  */
+ enum {
+@@ -413,7 +414,7 @@ module_exit(ibmasr_exit);
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
  
- #include <linux/netdevice.h>
-+#include <linux/stringify.h>
- 
- #include "atl1e.h"
- 
-@@ -181,7 +182,7 @@ void atl1e_check_options(struct atl1e_adapter *adapter)
- 			.type = range_option,
- 			.name = "Transmit Ddescription Count",
- 			.err  = "using default of "
--				__MODULE_STRING(ATL1E_DEFAULT_TX_DESC_CNT),
-+				__stringify(ATL1E_DEFAULT_TX_DESC_CNT),
- 			.def  = ATL1E_DEFAULT_TX_DESC_CNT,
- 			.arg  = { .r = { .min = ATL1E_MIN_TX_DESC_CNT,
- 					 .max = ATL1E_MAX_TX_DESC_CNT} }
-@@ -200,7 +201,7 @@ void atl1e_check_options(struct atl1e_adapter *adapter)
- 			.type = range_option,
- 			.name = "Memory size of rx buffer(KB)",
- 			.err  = "using default of "
--				__MODULE_STRING(ATL1E_DEFAULT_RX_MEM_SIZE),
-+				__stringify(ATL1E_DEFAULT_RX_MEM_SIZE),
- 			.def  = ATL1E_DEFAULT_RX_MEM_SIZE,
- 			.arg  = { .r = { .min = ATL1E_MIN_RX_MEM_SIZE,
- 					 .max = ATL1E_MAX_RX_MEM_SIZE} }
-@@ -220,7 +221,7 @@ void atl1e_check_options(struct atl1e_adapter *adapter)
- 			.type = range_option,
- 			.name = "Interrupt Moderate Timer",
- 			.err  = "using default of "
--				__MODULE_STRING(INT_MOD_DEFAULT_CNT),
-+				__stringify(INT_MOD_DEFAULT_CNT),
- 			.def  = INT_MOD_DEFAULT_CNT,
- 			.arg  = { .r = { .min = INT_MOD_MIN_CNT,
- 					 .max = INT_MOD_MAX_CNT} }
-@@ -239,7 +240,7 @@ void atl1e_check_options(struct atl1e_adapter *adapter)
- 			.type = range_option,
- 			.name = "Speed/Duplex Selection",
- 			.err  = "using default of "
--				__MODULE_STRING(MEDIA_TYPE_AUTO_SENSOR),
-+				__stringify(MEDIA_TYPE_AUTO_SENSOR),
- 			.def  = MEDIA_TYPE_AUTO_SENSOR,
- 			.arg  = { .r = { .min = MEDIA_TYPE_AUTO_SENSOR,
- 					 .max = MEDIA_TYPE_10M_HALF} }
-diff --git a/drivers/net/ethernet/atheros/atlx/atl1.c b/drivers/net/ethernet/atheros/atlx/atl1.c
-index 98a4d089270e..aef5de6287dc 100644
---- a/drivers/net/ethernet/atheros/atlx/atl1.c
-+++ b/drivers/net/ethernet/atheros/atlx/atl1.c
-@@ -56,6 +56,7 @@
- #include <linux/slab.h>
+ MODULE_DESCRIPTION("IBM Automatic Server Restart driver");
+ MODULE_AUTHOR("Andrey Panin");
+diff --git a/drivers/watchdog/ie6xx_wdt.c b/drivers/watchdog/ie6xx_wdt.c
+index 5a7bb7e84653..eda515b917cc 100644
+--- a/drivers/watchdog/ie6xx_wdt.c
++++ b/drivers/watchdog/ie6xx_wdt.c
+@@ -17,6 +17,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/uaccess.h>
  #include <linux/spinlock.h>
- #include <linux/string.h>
 +#include <linux/stringify.h>
- #include <linux/tcp.h>
- #include <linux/timer.h>
- #include <linux/types.h>
-@@ -198,7 +199,7 @@ static void atl1_check_options(struct atl1_adapter *adapter)
- 			.type = range_option,
- 			.name = "Interrupt Moderator Timer",
- 			.err = "using default of "
--				__MODULE_STRING(DEFAULT_INT_MOD_CNT),
-+				__stringify(DEFAULT_INT_MOD_CNT),
- 			.def = DEFAULT_INT_MOD_CNT,
- 			.arg = {.r = {.min = MIN_INT_MOD_CNT,
- 					.max = MAX_INT_MOD_CNT} }
-diff --git a/drivers/net/ethernet/atheros/atlx/atl2.c b/drivers/net/ethernet/atheros/atlx/atl2.c
-index 5560d5cc3169..853d2e1eb954 100644
---- a/drivers/net/ethernet/atheros/atlx/atl2.c
-+++ b/drivers/net/ethernet/atheros/atlx/atl2.c
-@@ -29,6 +29,7 @@
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/string.h>
-+#include <linux/stringify.h>
- #include <linux/tcp.h>
- #include <linux/timer.h>
- #include <linux/types.h>
-@@ -2921,7 +2922,7 @@ static void atl2_check_options(struct atl2_adapter *adapter)
- 	/* Bytes of Transmit Memory */
- 	opt.type = range_option;
- 	opt.name = "Bytes of Transmit Memory";
--	opt.err = "using default of " __MODULE_STRING(ATL2_DEFAULT_TX_MEMSIZE);
-+	opt.err = "using default of " __stringify(ATL2_DEFAULT_TX_MEMSIZE);
- 	opt.def = ATL2_DEFAULT_TX_MEMSIZE;
- 	opt.arg.r.min = ATL2_MIN_TX_MEMSIZE;
- 	opt.arg.r.max = ATL2_MAX_TX_MEMSIZE;
-@@ -2939,7 +2940,7 @@ static void atl2_check_options(struct atl2_adapter *adapter)
- 	/* Receive Memory Block Count */
- 	opt.type = range_option;
- 	opt.name = "Number of receive memory block";
--	opt.err = "using default of " __MODULE_STRING(ATL2_DEFAULT_RXD_COUNT);
-+	opt.err = "using default of " __stringify(ATL2_DEFAULT_RXD_COUNT);
- 	opt.def = ATL2_DEFAULT_RXD_COUNT;
- 	opt.arg.r.min = ATL2_MIN_RXD_COUNT;
- 	opt.arg.r.max = ATL2_MAX_RXD_COUNT;
-@@ -2960,7 +2961,7 @@ static void atl2_check_options(struct atl2_adapter *adapter)
- 	/* Interrupt Moderate Timer */
- 	opt.type = range_option;
- 	opt.name = "Interrupt Moderate Timer";
--	opt.err = "using default of " __MODULE_STRING(INT_MOD_DEFAULT_CNT);
-+	opt.err = "using default of " __stringify(INT_MOD_DEFAULT_CNT);
- 	opt.def = INT_MOD_DEFAULT_CNT;
- 	opt.arg.r.min = INT_MOD_MIN_CNT;
- 	opt.arg.r.max = INT_MOD_MAX_CNT;
-@@ -2973,7 +2974,7 @@ static void atl2_check_options(struct atl2_adapter *adapter)
- 	/* Flash Vendor */
- 	opt.type = range_option;
- 	opt.name = "SPI Flash Vendor";
--	opt.err = "using default of " __MODULE_STRING(FLASH_VENDOR_DEFAULT);
-+	opt.err = "using default of " __stringify(FLASH_VENDOR_DEFAULT);
- 	opt.def = FLASH_VENDOR_DEFAULT;
- 	opt.arg.r.min = FLASH_VENDOR_MIN;
- 	opt.arg.r.max = FLASH_VENDOR_MAX;
-@@ -2986,7 +2987,7 @@ static void atl2_check_options(struct atl2_adapter *adapter)
- 	/* MediaType */
- 	opt.type = range_option;
- 	opt.name = "Speed/Duplex Selection";
--	opt.err = "using default of " __MODULE_STRING(MEDIA_TYPE_AUTO_SENSOR);
-+	opt.err = "using default of " __stringify(MEDIA_TYPE_AUTO_SENSOR);
- 	opt.def = MEDIA_TYPE_AUTO_SENSOR;
- 	opt.arg.r.min = MEDIA_TYPE_AUTO_SENSOR;
- 	opt.arg.r.max = MEDIA_TYPE_10M_HALF;
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_param.c b/drivers/net/ethernet/intel/e1000/e1000_param.c
-index f4154ca7fcb4..5faf6d6280c8 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_param.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_param.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright(c) 1999 - 2006 Intel Corporation. */
  
-+#include <linux/stringify.h>
- #include "e1000.h"
+ #define DRIVER_NAME "ie6xx_wdt"
  
- /* This is the only thing that needs to be changed to adjust the
-@@ -259,7 +260,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 			.type = range_option,
- 			.name = "Transmit Descriptors",
- 			.err  = "using default of "
--				__MODULE_STRING(E1000_DEFAULT_TXD),
-+				__stringify(E1000_DEFAULT_TXD),
- 			.def  = E1000_DEFAULT_TXD,
- 			.arg  = { .r = {
- 				.min = E1000_MIN_TXD,
-@@ -287,7 +288,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 			.type = range_option,
- 			.name = "Receive Descriptors",
- 			.err  = "using default of "
--				__MODULE_STRING(E1000_DEFAULT_RXD),
-+				__stringify(E1000_DEFAULT_RXD),
- 			.def  = E1000_DEFAULT_RXD,
- 			.arg  = { .r = {
- 				.min = E1000_MIN_RXD,
-@@ -354,7 +355,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 		opt = (struct e1000_option) {
- 			.type = range_option,
- 			.name = "Transmit Interrupt Delay",
--			.err  = "using default of " __MODULE_STRING(DEFAULT_TIDV),
-+			.err  = "using default of " __stringify(DEFAULT_TIDV),
- 			.def  = DEFAULT_TIDV,
- 			.arg  = { .r = { .min = MIN_TXDELAY,
- 					 .max = MAX_TXDELAY }}
-@@ -372,7 +373,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 		opt = (struct e1000_option) {
- 			.type = range_option,
- 			.name = "Transmit Absolute Interrupt Delay",
--			.err  = "using default of " __MODULE_STRING(DEFAULT_TADV),
-+			.err  = "using default of " __stringify(DEFAULT_TADV),
- 			.def  = DEFAULT_TADV,
- 			.arg  = { .r = { .min = MIN_TXABSDELAY,
- 					 .max = MAX_TXABSDELAY }}
-@@ -390,7 +391,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 		opt = (struct e1000_option) {
- 			.type = range_option,
- 			.name = "Receive Interrupt Delay",
--			.err  = "using default of " __MODULE_STRING(DEFAULT_RDTR),
-+			.err  = "using default of " __stringify(DEFAULT_RDTR),
- 			.def  = DEFAULT_RDTR,
- 			.arg  = { .r = { .min = MIN_RXDELAY,
- 					 .max = MAX_RXDELAY }}
-@@ -408,7 +409,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 		opt = (struct e1000_option) {
- 			.type = range_option,
- 			.name = "Receive Absolute Interrupt Delay",
--			.err  = "using default of " __MODULE_STRING(DEFAULT_RADV),
-+			.err  = "using default of " __stringify(DEFAULT_RADV),
- 			.def  = DEFAULT_RADV,
- 			.arg  = { .r = { .min = MIN_RXABSDELAY,
- 					 .max = MAX_RXABSDELAY }}
-@@ -426,7 +427,7 @@ void e1000_check_options(struct e1000_adapter *adapter)
- 		opt = (struct e1000_option) {
- 			.type = range_option,
- 			.name = "Interrupt Throttling Rate (ints/sec)",
--			.err  = "using default of " __MODULE_STRING(DEFAULT_ITR),
-+			.err  = "using default of " __stringify(DEFAULT_ITR),
- 			.def  = DEFAULT_ITR,
- 			.arg  = { .r = { .min = MIN_ITR,
- 					 .max = MAX_ITR }}
-diff --git a/drivers/net/ethernet/intel/e1000e/param.c b/drivers/net/ethernet/intel/e1000e/param.c
-index 3132d8f2f207..c6f400e6cdea 100644
---- a/drivers/net/ethernet/intel/e1000e/param.c
-+++ b/drivers/net/ethernet/intel/e1000e/param.c
-@@ -4,6 +4,7 @@
- #include <linux/netdevice.h>
+@@ -49,14 +50,14 @@ static unsigned int timeout = DEFAULT_TIME;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Default Watchdog timer setting ("
+-		__MODULE_STRING(DEFAULT_TIME) "s)."
++		__stringify(DEFAULT_TIME) "s)."
+ 		"The range is from 1 to 600");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-		__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static u8 resetmode = 0x10;
+ module_param(resetmode, byte, 0);
+diff --git a/drivers/watchdog/imgpdc_wdt.c b/drivers/watchdog/imgpdc_wdt.c
+index 65cc8396aa59..bb6227c40de4 100644
+--- a/drivers/watchdog/imgpdc_wdt.c
++++ b/drivers/watchdog/imgpdc_wdt.c
+@@ -43,6 +43,7 @@
  #include <linux/module.h>
- #include <linux/pci.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
 +#include <linux/stringify.h>
+ #include <linux/watchdog.h>
  
- #include "e1000.h"
+ /* registers */
+@@ -71,12 +72,12 @@
+ static int heartbeat;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeats in seconds "
+-	"(default=" __MODULE_STRING(PDC_WDT_DEF_TIMEOUT) ")");
++	"(default=" __stringify(PDC_WDT_DEF_TIMEOUT) ")");
  
-@@ -238,8 +239,7 @@ void e1000e_check_options(struct e1000_adapter *adapter)
- 		static const struct e1000_option opt = {
- 			.type = range_option,
- 			.name = "Transmit Interrupt Delay",
--			.err  = "using default of "
--				__MODULE_STRING(DEFAULT_TIDV),
-+			.err  = "using default of " __stringify(DEFAULT_TIDV),
- 			.def  = DEFAULT_TIDV,
- 			.arg  = { .r = { .min = MIN_TXDELAY,
- 					 .max = MAX_TXDELAY } }
-@@ -258,8 +258,7 @@ void e1000e_check_options(struct e1000_adapter *adapter)
- 		static const struct e1000_option opt = {
- 			.type = range_option,
- 			.name = "Transmit Absolute Interrupt Delay",
--			.err  = "using default of "
--				__MODULE_STRING(DEFAULT_TADV),
-+			.err  = "using default of " __stringify(DEFAULT_TADV),
- 			.def  = DEFAULT_TADV,
- 			.arg  = { .r = { .min = MIN_TXABSDELAY,
- 					 .max = MAX_TXABSDELAY } }
-@@ -278,8 +277,7 @@ void e1000e_check_options(struct e1000_adapter *adapter)
- 		static struct e1000_option opt = {
- 			.type = range_option,
- 			.name = "Receive Interrupt Delay",
--			.err  = "using default of "
--				__MODULE_STRING(DEFAULT_RDTR),
-+			.err  = "using default of " __stringify(DEFAULT_RDTR),
- 			.def  = DEFAULT_RDTR,
- 			.arg  = { .r = { .min = MIN_RXDELAY,
- 					 .max = MAX_RXDELAY } }
-@@ -301,8 +299,7 @@ void e1000e_check_options(struct e1000_adapter *adapter)
- 		static struct e1000_option opt = {
- 			.type = range_option,
- 			.name = "Receive Absolute Interrupt Delay",
--			.err  = "using default of "
--				__MODULE_STRING(DEFAULT_RADV),
-+			.err  = "using default of " __stringify(DEFAULT_RADV),
- 			.def  = DEFAULT_RADV,
- 			.arg  = { .r = { .min = MIN_RXABSDELAY,
- 					 .max = MAX_RXABSDELAY } }
-@@ -324,8 +321,7 @@ void e1000e_check_options(struct e1000_adapter *adapter)
- 		static const struct e1000_option opt = {
- 			.type = range_option,
- 			.name = "Interrupt Throttling Rate (ints/sec)",
--			.err  = "using default of "
--				__MODULE_STRING(DEFAULT_ITR),
-+			.err  = "using default of " __stringify(DEFAULT_ITR),
- 			.def  = DEFAULT_ITR,
- 			.arg  = { .r = { .min = MIN_ITR,
- 					 .max = MAX_ITR } }
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_param.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_param.c
-index 81fc5a6e3221..6a1a6678bd1a 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_param.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_param.c
-@@ -7,7 +7,8 @@
-  */
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
  
- #include "pch_gbe.h"
--#include <linux/module.h>	/* for __MODULE_STRING */
-+#include <linux/module.h>
+ struct pdc_wdt_dev {
+ 	struct watchdog_device wdt_dev;
+diff --git a/drivers/watchdog/imx2_wdt.c b/drivers/watchdog/imx2_wdt.c
+index 4b3a192ee3e8..58aa5f999f4f 100644
+--- a/drivers/watchdog/imx2_wdt.c
++++ b/drivers/watchdog/imx2_wdt.c
+@@ -29,6 +29,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
 +#include <linux/stringify.h>
+ #include <linux/watchdog.h>
  
- #define OPTION_UNSET   -1
- #define OPTION_DISABLED 0
-@@ -440,7 +441,7 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
- 			.type = range_option,
- 			.name = "Transmit Descriptors",
- 			.err  = "using default of "
--				__MODULE_STRING(PCH_GBE_DEFAULT_TXD),
-+				__stringify(PCH_GBE_DEFAULT_TXD),
- 			.def  = PCH_GBE_DEFAULT_TXD,
- 			.arg  = { .r = { .min = PCH_GBE_MIN_TXD,
- 					 .max = PCH_GBE_MAX_TXD } }
-@@ -456,7 +457,7 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
- 			.type = range_option,
- 			.name = "Receive Descriptors",
- 			.err  = "using default of "
--				__MODULE_STRING(PCH_GBE_DEFAULT_RXD),
-+				__stringify(PCH_GBE_DEFAULT_RXD),
- 			.def  = PCH_GBE_DEFAULT_RXD,
- 			.arg  = { .r = { .min = PCH_GBE_MIN_RXD,
- 					 .max = PCH_GBE_MAX_RXD } }
-diff --git a/drivers/platform/cznic/turris-omnia-mcu-watchdog.c b/drivers/platform/cznic/turris-omnia-mcu-watchdog.c
-index 3ad146ec1d80..daabd88eb913 100644
---- a/drivers/platform/cznic/turris-omnia-mcu-watchdog.c
-+++ b/drivers/platform/cznic/turris-omnia-mcu-watchdog.c
-@@ -9,6 +9,7 @@
- #include <linux/device.h>
- #include <linux/i2c.h>
+ #define DRIVER_NAME "imx2-wdt"
+@@ -79,12 +80,12 @@ struct imx2_wdt_device {
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds (default="
+-				__MODULE_STRING(IMX2_WDT_DEFAULT_TIME) ")");
++				__stringify(IMX2_WDT_DEFAULT_TIME) ")");
+ 
+ static const struct watchdog_info imx2_wdt_info = {
+ 	.identity = "imx2+ watchdog",
+diff --git a/drivers/watchdog/imx7ulp_wdt.c b/drivers/watchdog/imx7ulp_wdt.c
+index 855dc9d5083a..f61936194aea 100644
+--- a/drivers/watchdog/imx7ulp_wdt.c
++++ b/drivers/watchdog/imx7ulp_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define WDOG_CS			0x0
+@@ -51,7 +52,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0000);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct imx_wdt_hw_feature {
+ 	bool prescaler_enable;
+diff --git a/drivers/watchdog/imx_sc_wdt.c b/drivers/watchdog/imx_sc_wdt.c
+index 1280b9b1ec2a..fc39f9db4c06 100644
+--- a/drivers/watchdog/imx_sc_wdt.c
++++ b/drivers/watchdog/imx_sc_wdt.c
+@@ -11,6 +11,7 @@
  #include <linux/moduleparam.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define DEFAULT_TIMEOUT 60
+@@ -39,7 +40,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0000);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct imx_sc_wdt_device {
+ 	struct watchdog_device wdd;
+diff --git a/drivers/watchdog/indydog.c b/drivers/watchdog/indydog.c
+index d3092d261345..5268b1feb7ce 100644
+--- a/drivers/watchdog/indydog.c
++++ b/drivers/watchdog/indydog.c
+@@ -22,6 +22,7 @@
+ #include <linux/reboot.h>
+ #include <linux/init.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ #include <asm/sgi/mc.h>
+ 
+ static unsigned long indydog_alive;
+@@ -33,7 +34,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void indydog_start(void)
+ {
+diff --git a/drivers/watchdog/intel_oc_wdt.c b/drivers/watchdog/intel_oc_wdt.c
+index a39892c10770..d1e9a3f62369 100644
+--- a/drivers/watchdog/intel_oc_wdt.c
++++ b/drivers/watchdog/intel_oc_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define INTEL_OC_WDT_TOV		GENMASK(9, 0)
+@@ -48,12 +49,12 @@ struct intel_oc_wdt {
+ static int heartbeat;
+ module_param(heartbeat, uint, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeats in seconds. (default="
+-		 __MODULE_STRING(WDT_HEARTBEAT) ")");
++		 __stringify(WDT_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int intel_oc_wdt_start(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/it87_wdt.c b/drivers/watchdog/it87_wdt.c
+index 1d9f8591f38d..087250ab036a 100644
+--- a/drivers/watchdog/it87_wdt.c
++++ b/drivers/watchdog/it87_wdt.c
+@@ -29,6 +29,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/printk.h>
 +#include <linux/stringify.h>
  #include <linux/types.h>
- #include <linux/units.h>
  #include <linux/watchdog.h>
-@@ -25,7 +26,7 @@ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds");
+ 
+@@ -105,13 +106,13 @@ static bool nowayout = DEFAULT_NOWAYOUT;
+ 
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds, default="
+-		__MODULE_STRING(DEFAULT_TIMEOUT));
++		__stringify(DEFAULT_TIMEOUT));
+ module_param(testmode, int, 0);
+ MODULE_PARM_DESC(testmode, "Watchdog test mode (1 = no reboot), default="
+-		__MODULE_STRING(DEFAULT_TESTMODE));
++		__stringify(DEFAULT_TESTMODE));
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started, default="
+-		__MODULE_STRING(WATCHDOG_NOWAYOUT));
++		__stringify(WATCHDOG_NOWAYOUT));
+ 
+ /* Superio Chip */
+ 
+diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
+index 395bde79e292..9dec1b822410 100644
+--- a/drivers/watchdog/jz4740_wdt.c
++++ b/drivers/watchdog/jz4740_wdt.c
+@@ -19,6 +19,7 @@
+ #include <linux/err.h>
+ #include <linux/of.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ 
+ #define DEFAULT_HEARTBEAT 5
+ #define MAX_HEARTBEAT     2048
+@@ -27,14 +28,14 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned int heartbeat = DEFAULT_HEARTBEAT;
+ module_param(heartbeat, uint, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 		"Watchdog heartbeat period in seconds from 1 to "
+-		__MODULE_STRING(MAX_HEARTBEAT) ", default "
+-		__MODULE_STRING(DEFAULT_HEARTBEAT));
++		__stringify(MAX_HEARTBEAT) ", default "
++		__stringify(DEFAULT_HEARTBEAT));
+ 
+ struct jz4740_wdt_drvdata {
+ 	struct watchdog_device wdt;
+diff --git a/drivers/watchdog/keembay_wdt.c b/drivers/watchdog/keembay_wdt.c
+index 7c8e53921e40..11b4b26f7b88 100644
+--- a/drivers/watchdog/keembay_wdt.c
++++ b/drivers/watchdog/keembay_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* Non-secure watchdog register offsets */
+@@ -39,12 +40,12 @@
+ static unsigned int timeout = WDT_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout period in seconds (default = "
+-		 __MODULE_STRING(WDT_TIMEOUT) ")");
++		 __stringify(WDT_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default = "
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct keembay_wdt {
+ 	struct watchdog_device	wdd;
+diff --git a/drivers/watchdog/kempld_wdt.c b/drivers/watchdog/kempld_wdt.c
+index e6c7a2906680..b4cde48d2b10 100644
+--- a/drivers/watchdog/kempld_wdt.c
++++ b/drivers/watchdog/kempld_wdt.c
+@@ -21,6 +21,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/watchdog.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/mfd/kempld.h>
+ 
+ #define KEMPLD_WDT_STAGE_TIMEOUT(x)	(0x1b + (x) * 4)
+@@ -85,19 +86,19 @@ static unsigned int timeout = DEFAULT_TIMEOUT;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. (>=0, default="
+-	__MODULE_STRING(DEFAULT_TIMEOUT) ")");
++	__stringify(DEFAULT_TIMEOUT) ")");
+ 
+ static unsigned int pretimeout = DEFAULT_PRETIMEOUT;
+ module_param(pretimeout, uint, 0);
+ MODULE_PARM_DESC(pretimeout,
+ 	"Watchdog pretimeout in seconds. (>=0, default="
+-	__MODULE_STRING(DEFAULT_PRETIMEOUT) ")");
++	__stringify(DEFAULT_PRETIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int kempld_wdt_set_stage_action(struct kempld_wdt_data *wdt_data,
+ 					struct kempld_wdt_stage *stage,
+diff --git a/drivers/watchdog/lenovo_se10_wdt.c b/drivers/watchdog/lenovo_se10_wdt.c
+index 503e220263f9..1eaf86c85cc0 100644
+--- a/drivers/watchdog/lenovo_se10_wdt.c
++++ b/drivers/watchdog/lenovo_se10_wdt.c
+@@ -10,6 +10,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
+ #include <linux/string.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -48,13 +49,13 @@ static int timeout; /* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. 1 <= timeout <= 255, default="
+-		 __MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		 __stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct se10_wdt {
+ 	struct watchdog_device wdd;
+diff --git a/drivers/watchdog/lenovo_se30_wdt.c b/drivers/watchdog/lenovo_se30_wdt.c
+index 1c73bb7eeeee..127ea9a1933f 100644
+--- a/drivers/watchdog/lenovo_se30_wdt.c
++++ b/drivers/watchdog/lenovo_se30_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define IOREGION_OFFSET	4 /* Use EC port 1 */
+@@ -28,13 +29,13 @@ static int timeout; /* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. 1 <= timeout <= 255, default="
+-		 __MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		 __stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define LNV_SE30_NAME	"lenovo-se30-wdt"
+ #define LNV_SE30_ID	0x0110
+diff --git a/drivers/watchdog/lenovo_se30g2_se60_wdt.c b/drivers/watchdog/lenovo_se30g2_se60_wdt.c
+index f31ecdb82ad0..c87abdb1a1b2 100644
+--- a/drivers/watchdog/lenovo_se30g2_se60_wdt.c
++++ b/drivers/watchdog/lenovo_se30g2_se60_wdt.c
+@@ -10,6 +10,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
+ #include <linux/string.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -37,13 +38,13 @@ static int timeout; /* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. 1 <= timeout <= 255, default="
+-		 __MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		 __stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct se_30g2_60_wdt {
+ 	struct watchdog_device wdd;
+diff --git a/drivers/watchdog/loongson1_wdt.c b/drivers/watchdog/loongson1_wdt.c
+index 2417519717cc..7f8de11f1b4a 100644
+--- a/drivers/watchdog/loongson1_wdt.c
++++ b/drivers/watchdog/loongson1_wdt.c
+@@ -9,6 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* Loongson Watchdog Register Definitions */
+@@ -19,12 +20,12 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned int heartbeat;
+ module_param(heartbeat, uint, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. (default="
+-		 __MODULE_STRING(DEFAULT_HEARTBEAT) ")");
++		 __stringify(DEFAULT_HEARTBEAT) ")");
+ 
+ struct ls1x_wdt_pdata {
+ 	u32 timer_offset;
+diff --git a/drivers/watchdog/lpc18xx_wdt.c b/drivers/watchdog/lpc18xx_wdt.c
+index 3e8e80bbcb93..633119e4b126 100644
+--- a/drivers/watchdog/lpc18xx_wdt.c
++++ b/drivers/watchdog/lpc18xx_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* Registers */
+@@ -41,12 +42,12 @@
+ static int heartbeat;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeats in seconds (default="
+-		 __MODULE_STRING(LPC18XX_WDT_DEF_TIMEOUT) ")");
++		 __stringify(LPC18XX_WDT_DEF_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct lpc18xx_wdt_dev {
+ 	struct watchdog_device	wdt_dev;
+diff --git a/drivers/watchdog/ma35d1_wdt.c b/drivers/watchdog/ma35d1_wdt.c
+index 119d58f338bf..ede4bee594f1 100644
+--- a/drivers/watchdog/ma35d1_wdt.c
++++ b/drivers/watchdog/ma35d1_wdt.c
+@@ -20,6 +20,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_wakeirq.h>
+ #include <linux/property.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -355,7 +356,7 @@ MODULE_PARM_DESC(timeout, "Watchdog heartbeat in seconds");
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(
+ 	nowayout,
+-	"Watchdog cannot be stopped once started (default=" __MODULE_STRING(
++	"Watchdog cannot be stopped once started (default=" __stringify(
+ 		WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_AUTHOR("Zi-Yu Chen <zychennvt@gmail.com>");
+diff --git a/drivers/watchdog/max63xx_wdt.c b/drivers/watchdog/max63xx_wdt.c
+index e9073df1a7de..aefda26bbcec 100644
+--- a/drivers/watchdog/max63xx_wdt.c
++++ b/drivers/watchdog/max63xx_wdt.c
+@@ -23,6 +23,7 @@
+ #include <linux/io.h>
+ #include <linux/slab.h>
+ #include <linux/property.h>
++#include <linux/stringify.h>
+ 
+ #define DEFAULT_HEARTBEAT 60
+ #define MAX_HEARTBEAT     60
+@@ -283,12 +284,12 @@ MODULE_DESCRIPTION("max63xx Watchdog Driver");
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 		 "Watchdog heartbeat period in seconds from 1 to "
+-		 __MODULE_STRING(MAX_HEARTBEAT) ", default "
+-		 __MODULE_STRING(DEFAULT_HEARTBEAT));
++		 __stringify(MAX_HEARTBEAT) ", default "
++		 __stringify(DEFAULT_HEARTBEAT));
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ module_param(nodelay, int, 0);
+ MODULE_PARM_DESC(nodelay,
+diff --git a/drivers/watchdog/max77620_wdt.c b/drivers/watchdog/max77620_wdt.c
+index ed5a98cea525..79148cbad4f2 100644
+--- a/drivers/watchdog/max77620_wdt.c
++++ b/drivers/watchdog/max77620_wdt.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+@@ -255,7 +256,7 @@ MODULE_DESCRIPTION("Max77620 watchdog timer driver");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
+ MODULE_AUTHOR("Luca Ceresoli <luca.ceresoli@bootlin.com>");
+diff --git a/drivers/watchdog/mena21_wdt.c b/drivers/watchdog/mena21_wdt.c
+index 99d2359d5a8a..a762462c25c5 100644
+--- a/drivers/watchdog/mena21_wdt.c
++++ b/drivers/watchdog/mena21_wdt.c
+@@ -17,6 +17,7 @@
+ #include <linux/delay.h>
+ #include <linux/bitops.h>
+ #include <linux/of.h>
++#include <linux/stringify.h>
+ 
+ #define NUM_GPIOS 6
+ 
+@@ -37,7 +38,7 @@ struct a21_wdt_drv {
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-			    __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			    __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned int a21_wdt_get_bootstatus(struct a21_wdt_drv *drv)
+ {
+diff --git a/drivers/watchdog/menf21bmc_wdt.c b/drivers/watchdog/menf21bmc_wdt.c
+index 81ebdfc371f4..bb8eda18fbad 100644
+--- a/drivers/watchdog/menf21bmc_wdt.c
++++ b/drivers/watchdog/menf21bmc_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/watchdog.h>
+ #include <linux/platform_device.h>
+ #include <linux/i2c.h>
++#include <linux/stringify.h>
+ 
+ #define DEVNAME "menf21bmc_wdt"
+ 
+@@ -28,7 +29,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct menf21bmc_wdt {
+ 	struct watchdog_device wdt;
+diff --git a/drivers/watchdog/menz69_wdt.c b/drivers/watchdog/menz69_wdt.c
+index 3fe23451135d..962c6867bc07 100644
+--- a/drivers/watchdog/menz69_wdt.c
++++ b/drivers/watchdog/menz69_wdt.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mcb.h>
+ #include <linux/module.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ struct men_z069_drv {
+@@ -29,7 +30,7 @@ struct men_z069_drv {
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-			    __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			    __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int men_z069_wdt_start(struct watchdog_device *wdt)
+ {
+diff --git a/drivers/watchdog/meson_gxbb_wdt.c b/drivers/watchdog/meson_gxbb_wdt.c
+index a48622d11ad7..fb276060e831 100644
+--- a/drivers/watchdog/meson_gxbb_wdt.c
++++ b/drivers/watchdog/meson_gxbb_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -31,12 +32,12 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog heartbeat in seconds="
+-		 __MODULE_STRING(DEFAULT_TIMEOUT) ")");
++		 __stringify(DEFAULT_TIMEOUT) ")");
+ 
+ struct meson_gxbb_wdt {
+ 	void __iomem *reg_base;
+diff --git a/drivers/watchdog/meson_wdt.c b/drivers/watchdog/meson_wdt.c
+index 44db4ebc8599..80a4f8771335 100644
+--- a/drivers/watchdog/meson_wdt.c
++++ b/drivers/watchdog/meson_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -218,7 +219,7 @@ MODULE_PARM_DESC(timeout, "Watchdog heartbeat in seconds");
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Carlo Caione <carlo@caione.org>");
+diff --git a/drivers/watchdog/mixcomwd.c b/drivers/watchdog/mixcomwd.c
+index 1ecd5c48a005..db358df2f222 100644
+--- a/drivers/watchdog/mixcomwd.c
++++ b/drivers/watchdog/mixcomwd.c
+@@ -52,6 +52,7 @@
+ #include <linux/timer.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ 
+ /*
+  * We have two types of cards that can be probed:
+@@ -107,7 +108,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void mixcomwd_ping(void)
+ {
+diff --git a/drivers/watchdog/mpc8xxx_wdt.c b/drivers/watchdog/mpc8xxx_wdt.c
+index a4b497ecfa20..0d5a360b5629 100644
+--- a/drivers/watchdog/mpc8xxx_wdt.c
++++ b/drivers/watchdog/mpc8xxx_wdt.c
+@@ -22,6 +22,7 @@
+ #include <linux/watchdog.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ #include <sysdev/fsl_soc.h>
+ 
+ #define WATCHDOG_TIMEOUT 10
+@@ -57,7 +58,7 @@ static u16 timeout;
+ module_param(timeout, ushort, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. (1<timeout<65535, default="
+-	__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++	__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static bool reset = 1;
+ module_param(reset, bool, 0);
+@@ -67,7 +68,7 @@ MODULE_PARM_DESC(reset,
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-		 "(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 "(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void mpc8xxx_wdt_keepalive(struct mpc8xxx_wdt_ddata *ddata)
+ {
+diff --git a/drivers/watchdog/mt7621_wdt.c b/drivers/watchdog/mt7621_wdt.c
+index db47b131f780..9e0ebec43c88 100644
+--- a/drivers/watchdog/mt7621_wdt.c
++++ b/drivers/watchdog/mt7621_wdt.c
+@@ -16,6 +16,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ 
+ #define SYSC_RSTSTAT			0x38
+ #define WDT_RST_CAUSE			BIT(1)
+@@ -41,7 +42,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static inline void rt_wdt_w32(void __iomem *base, unsigned int reg, u32 val)
+ {
+diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
+index d9c30e4c80e3..46a83660f098 100644
+--- a/drivers/watchdog/mtk_wdt.c
++++ b/drivers/watchdog/mtk_wdt.c
+@@ -31,6 +31,7 @@
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ #include <linux/interrupt.h>
++#include <linux/stringify.h>
+ 
+ #define WDT_MAX_TIMEOUT		31
+ #define WDT_MIN_TIMEOUT		2
+@@ -526,7 +527,7 @@ MODULE_PARM_DESC(timeout, "Watchdog heartbeat in seconds");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Matthias Brugger <matthias.bgg@gmail.com>");
+diff --git a/drivers/watchdog/nct6694_wdt.c b/drivers/watchdog/nct6694_wdt.c
+index bc3689bd4b6b..169a6736e9ea 100644
+--- a/drivers/watchdog/nct6694_wdt.c
++++ b/drivers/watchdog/nct6694_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define DEVICE_NAME "nct6694-wdt"
+@@ -50,7 +51,7 @@ MODULE_PARM_DESC(pretimeout, "Watchdog pre-timeout in seconds");
  static bool nowayout = WATCHDOG_NOWAYOUT;
  module_param(nowayout, bool, 0);
  MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 -			   __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 +			   __stringify(WATCHDOG_NOWAYOUT) ")");
  
- static int omnia_wdt_start(struct watchdog_device *wdt)
- {
-diff --git a/drivers/rtc/rtc-ds1374.c b/drivers/rtc/rtc-ds1374.c
-index 8c247215d611..2ed6777e7035 100644
---- a/drivers/rtc/rtc-ds1374.c
-+++ b/drivers/rtc/rtc-ds1374.c
-@@ -26,6 +26,7 @@
- #include <linux/workqueue.h>
- #include <linux/slab.h>
- #include <linux/pm.h>
+ enum {
+ 	NCT6694_ACTION_NONE = 0,
+diff --git a/drivers/watchdog/ni903x_wdt.c b/drivers/watchdog/ni903x_wdt.c
+index c72a9ee9cb8e..68b7c485726b 100644
+--- a/drivers/watchdog/ni903x_wdt.c
++++ b/drivers/watchdog/ni903x_wdt.c
+@@ -9,6 +9,7 @@
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
 +#include <linux/stringify.h>
- #ifdef CONFIG_RTC_DRV_DS1374_WDT
- #include <linux/fs.h>
- #include <linux/ioctl.h>
-@@ -381,7 +382,7 @@ MODULE_PARM_DESC(wdt_margin, "Watchdog timeout in seconds (default 32s)");
+ #include <linux/watchdog.h>
+ 
+ #define NIWD_CONTROL	0x01
+@@ -46,13 +47,13 @@ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. (default="
+-		 __MODULE_STRING(NIWD_DEFAULT_TIMEOUT) ")");
++		 __stringify(NIWD_DEFAULT_TIMEOUT) ")");
+ 
+ static int nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, int, S_IRUGO);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void ni903x_start(struct ni903x_wdt *wdt)
+ {
+diff --git a/drivers/watchdog/nic7018_wdt.c b/drivers/watchdog/nic7018_wdt.c
+index 8169423801f0..2b122ba8733a 100644
+--- a/drivers/watchdog/nic7018_wdt.c
++++ b/drivers/watchdog/nic7018_wdt.c
+@@ -8,6 +8,7 @@
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -34,13 +35,13 @@ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. (default="
+-		 __MODULE_STRING(WDT_DEFAULT_TIMEOUT) ")");
++		 __stringify(WDT_DEFAULT_TIMEOUT) ")");
+ 
  static bool nowayout = WATCHDOG_NOWAYOUT;
  module_param(nowayout, bool, 0);
- MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default ="
--		__MODULE_STRING(WATCHDOG_NOWAYOUT)")");
-+		__stringify(WATCHDOG_NOWAYOUT)")");
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started. (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
  
- static const struct watchdog_info ds1374_wdt_info = {
- 	.identity       = "DS1374 Watchdog",
-diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
-index 47753a5c0f2e..a2459e44e320 100644
---- a/drivers/thunderbolt/tb.c
-+++ b/drivers/thunderbolt/tb.c
-@@ -11,6 +11,7 @@
- #include <linux/delay.h>
+ struct nic7018_wdt {
+ 	u16 io_base;
+diff --git a/drivers/watchdog/nv_tco.c b/drivers/watchdog/nv_tco.c
+index f16cee5173d5..0d671b8bb391 100644
+--- a/drivers/watchdog/nv_tco.c
++++ b/drivers/watchdog/nv_tco.c
+@@ -32,6 +32,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ 
+ #include "nv_tco.h"
+ 
+@@ -55,12 +56,12 @@ static struct platform_device *nv_tco_platform_device;
+ static int heartbeat = WATCHDOG_HEARTBEAT;  /* in seconds */
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. (2<heartbeat<39, "
+-			    "default=" __MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
++			    "default=" __stringify(WATCHDOG_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started"
+-		" (default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		" (default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  * Some TCO specific functions
+diff --git a/drivers/watchdog/octeon-wdt-main.c b/drivers/watchdog/octeon-wdt-main.c
+index 0615bb816082..171b46d780e6 100644
+--- a/drivers/watchdog/octeon-wdt-main.c
++++ b/drivers/watchdog/octeon-wdt-main.c
+@@ -55,6 +55,7 @@
+ #include <linux/cpu.h>
+ #include <linux/irq.h>
+ #include <linux/irqdomain.h>
++#include <linux/stringify.h>
+ 
+ #include <asm/mipsregs.h>
+ #include <asm/uasm.h>
+@@ -93,13 +94,13 @@ static int heartbeat = WD_TIMO;
+ module_param(heartbeat, int, 0444);
+ MODULE_PARM_DESC(heartbeat,
+ 	"Watchdog heartbeat in seconds. (0 < heartbeat, default="
+-				__MODULE_STRING(WD_TIMO) ")");
++				__stringify(WD_TIMO) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0444);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int disable;
+ module_param(disable, int, 0444);
+diff --git a/drivers/watchdog/omap_wdt.c b/drivers/watchdog/omap_wdt.c
+index 95c7e44b7baa..2a6de73e6f0b 100644
+--- a/drivers/watchdog/omap_wdt.c
++++ b/drivers/watchdog/omap_wdt.c
+@@ -38,6 +38,7 @@
+ #include <linux/io.h>
+ #include <linux/slab.h>
  #include <linux/pm_runtime.h>
- #include <linux/platform_data/x86/apple.h>
++#include <linux/stringify.h>
+ #include <linux/platform_data/omap-wd-timer.h>
+ 
+ #include "omap_wdt.h"
+@@ -45,7 +46,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned timer_margin;
+ module_param(timer_margin, uint, 0);
+diff --git a/drivers/watchdog/orion_wdt.c b/drivers/watchdog/orion_wdt.c
+index 0ea946823b0a..5d56e93f0406 100644
+--- a/drivers/watchdog/orion_wdt.c
++++ b/drivers/watchdog/orion_wdt.c
+@@ -22,6 +22,7 @@
+ #include <linux/err.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
 +#include <linux/stringify.h>
  
- #include "tb.h"
- #include "tb_regs.h"
-@@ -47,7 +48,7 @@ static unsigned int asym_threshold = TB_ASYM_THRESHOLD;
- module_param_named(asym_threshold, asym_threshold, uint, 0444);
- MODULE_PARM_DESC(asym_threshold,
- 		"threshold (Mb/s) when to Gen 4 switch link symmetry. 0 disables. (default: "
--		__MODULE_STRING(TB_ASYM_THRESHOLD) ")");
-+		__stringify(TB_ASYM_THRESHOLD) ")");
+ /* RSTOUT mask register physical address for Orion5x, Kirkwood and Dove */
+ #define ORION_RSTOUT_MASK_OFFSET	0x20108
+@@ -687,7 +688,7 @@ MODULE_PARM_DESC(heartbeat, "Initial watchdog heartbeat in seconds");
  
- /**
-  * struct tb_cm - Simple Thunderbolt connection manager
-diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
-index 7e8284575dff..ad4916748789 100644
---- a/drivers/thunderbolt/tunnel.c
-+++ b/drivers/thunderbolt/tunnel.c
-@@ -11,6 +11,7 @@
- #include <linux/list.h>
- #include <linux/ktime.h>
- #include <linux/string_helpers.h>
-+#include <linux/stringify.h>
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
  
- #include "tunnel.h"
- #include "tb.h"
-@@ -89,12 +90,12 @@ static int dprx_timeout = TB_DPRX_TIMEOUT;
- module_param(dprx_timeout, int, 0444);
- MODULE_PARM_DESC(dprx_timeout,
- 		 "DPRX capability read timeout in ms, -1 waits forever (default: "
--		 __MODULE_STRING(TB_DPRX_TIMEOUT) ")");
-+		 __stringify(TB_DPRX_TIMEOUT) ")");
- 
- static unsigned int dma_credits = TB_DMA_CREDITS;
- module_param(dma_credits, uint, 0444);
- MODULE_PARM_DESC(dma_credits, "specify custom credits for DMA tunnels (default: "
--                __MODULE_STRING(TB_DMA_CREDITS) ")");
-+		 __stringify(TB_DMA_CREDITS) ")");
- 
- static bool bw_alloc_mode = true;
- module_param(bw_alloc_mode, bool, 0444);
-diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index af946d12e764..e060e0427fc9 100644
---- a/drivers/tty/serial/8250/8250_platform.c
-+++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -16,6 +16,7 @@
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("platform:orion_wdt");
+diff --git a/drivers/watchdog/pc87413_wdt.c b/drivers/watchdog/pc87413_wdt.c
+index fbf835d112b8..29dab0e669bf 100644
+--- a/drivers/watchdog/pc87413_wdt.c
++++ b/drivers/watchdog/pc87413_wdt.c
+@@ -30,6 +30,7 @@
  #include <linux/moduleparam.h>
- #include <linux/once.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ /* #define DEBUG 1 */
+@@ -577,15 +578,15 @@ MODULE_LICENSE("GPL");
+ 
+ module_param_hw(io, int, ioport, 0);
+ MODULE_PARM_DESC(io, MODNAME " I/O port (default: "
+-					__MODULE_STRING(IO_DEFAULT) ").");
++					__stringify(IO_DEFAULT) ").");
+ 
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Watchdog timeout in minutes (default="
+-				__MODULE_STRING(DEFAULT_TIMEOUT) ").");
++				__stringify(DEFAULT_TIMEOUT) ").");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+diff --git a/drivers/watchdog/pcwd.c b/drivers/watchdog/pcwd.c
+index d4ea7d6ccd6a..3370a9155276 100644
+--- a/drivers/watchdog/pcwd.c
++++ b/drivers/watchdog/pcwd.c
+@@ -72,6 +72,7 @@
+ #include <linux/spinlock.h>	/* For spin_lock/spin_unlock/... */
+ #include <linux/uaccess.h>	/* For copy_to_user/put_user/... */
+ #include <linux/io.h>		/* For inb/outb/... */
++#include <linux/stringify.h>	/* For __stringify */
+ 
+ /* Module and version information */
+ #define WATCHDOG_VERSION "1.20"
+@@ -203,13 +204,13 @@ static int heartbeat = WATCHDOG_HEARTBEAT;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. "
+ 	"(2 <= heartbeat <= 7200 or 0=delay-time from dip-switches, default="
+-				__MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
++				__stringify(WATCHDOG_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	Internal functions
+diff --git a/drivers/watchdog/pcwd_pci.c b/drivers/watchdog/pcwd_pci.c
+index a489b426f2ba..377e5a61faef 100644
+--- a/drivers/watchdog/pcwd_pci.c
++++ b/drivers/watchdog/pcwd_pci.c
+@@ -47,6 +47,7 @@
+ #include <linux/spinlock.h>	/* For spin_lock/spin_unlock/... */
+ #include <linux/uaccess.h>	/* For copy_to_user/put_user/... */
+ #include <linux/io.h>		/* For inb/outb/... */
++#include <linux/stringify.h>	/* For __stringify */
+ 
+ /* Module and version information */
+ #define WATCHDOG_VERSION "1.03"
+@@ -140,12 +141,12 @@ static int heartbeat = WATCHDOG_HEARTBEAT;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. "
+ 	"(0<heartbeat<65536 or 0=delay-time from dip-switches, default="
+-				__MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
++				__stringify(WATCHDOG_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-					__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++					__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	Internal functions
+diff --git a/drivers/watchdog/pcwd_usb.c b/drivers/watchdog/pcwd_usb.c
+index d7c18c990649..15511c816add 100644
+--- a/drivers/watchdog/pcwd_usb.c
++++ b/drivers/watchdog/pcwd_usb.c
+@@ -39,6 +39,7 @@
+ #include <linux/mutex.h>	/* For mutex locking */
+ #include <linux/hid.h>		/* For HID_REQ_SET_REPORT & HID_DT_REPORT */
+ #include <linux/uaccess.h>	/* For copy_to_user/put_user/... */
++#include <linux/stringify.h>	/* For __stringify */
+ 
+ 
+ /* Module and Version Information */
+@@ -57,12 +58,12 @@ static int heartbeat = WATCHDOG_HEARTBEAT;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. "
+ 	"(0<heartbeat<65536 or 0=delay-time from dip-switches, default="
+-				__MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
++				__stringify(WATCHDOG_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /* The vendor and product id's for the USB-PC Watchdog card */
+ #define USB_PCWD_VENDOR_ID	0x0c98
+diff --git a/drivers/watchdog/pika_wdt.c b/drivers/watchdog/pika_wdt.c
+index 87b8988d2520..09fc76aaa051 100644
+--- a/drivers/watchdog/pika_wdt.c
++++ b/drivers/watchdog/pika_wdt.c
+@@ -25,6 +25,7 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/stringify.h>
+ 
+ #define DRV_NAME "PIKA-WDT"
+ 
+@@ -39,12 +40,12 @@
+ static int heartbeat = WDT_HEARTBEAT;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeats in seconds. "
+-	"(default = " __MODULE_STRING(WDT_HEARTBEAT) ")");
++	"(default = " __stringify(WDT_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static struct {
+ 	void __iomem *fpga;
+diff --git a/drivers/watchdog/pnx4008_wdt.c b/drivers/watchdog/pnx4008_wdt.c
+index 87a44a5675a1..a7c39849cbfd 100644
+--- a/drivers/watchdog/pnx4008_wdt.c
++++ b/drivers/watchdog/pnx4008_wdt.c
+@@ -30,6 +30,7 @@
+ #include <linux/of.h>
+ #include <linux/delay.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ 
+ /* WatchDog Timer - Chapter 23 Page 207 */
+ 
+@@ -237,8 +238,8 @@ MODULE_DESCRIPTION("PNX4008 Watchdog Driver");
+ module_param(heartbeat, uint, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 		 "Watchdog heartbeat period in seconds from 1 to "
+-		 __MODULE_STRING(MAX_HEARTBEAT) ", default "
+-		 __MODULE_STRING(DEFAULT_HEARTBEAT));
++		 __stringify(MAX_HEARTBEAT) ", default "
++		 __stringify(DEFAULT_HEARTBEAT));
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+diff --git a/drivers/watchdog/pseries-wdt.c b/drivers/watchdog/pseries-wdt.c
+index e97b943e1d3c..5f531a03a0fc 100644
+--- a/drivers/watchdog/pseries-wdt.c
++++ b/drivers/watchdog/pseries-wdt.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/time64.h>
+ #include <linux/watchdog.h>
+ #include <asm/papr-watchdog.h>
+@@ -26,18 +27,18 @@ static const unsigned long pseries_wdt_action[] = {
+ static unsigned int action = WATCHDOG_ACTION;
+ module_param(action, uint, 0444);
+ MODULE_PARM_DESC(action, "Action taken when watchdog expires (default="
+-		 __MODULE_STRING(WATCHDOG_ACTION) ")");
++		 __stringify(WATCHDOG_ACTION) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0444);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define WATCHDOG_TIMEOUT 60
+ static unsigned int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, uint, 0444);
+ MODULE_PARM_DESC(timeout, "Initial watchdog timeout in seconds (default="
+-		 __MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++		 __stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ struct pseries_wdt {
+ 	struct watchdog_device wd;
+diff --git a/drivers/watchdog/rc32434_wdt.c b/drivers/watchdog/rc32434_wdt.c
+index 0e5c5c96af58..5301a93abf55 100644
+--- a/drivers/watchdog/rc32434_wdt.c
++++ b/drivers/watchdog/rc32434_wdt.c
+@@ -27,6 +27,7 @@
+ #include <linux/spinlock.h>		/* For spin_lock/spin_unlock/... */
+ #include <linux/uaccess.h>		/* For copy_to_user/put_user/... */
+ #include <linux/io.h>			/* For devm_ioremap */
++#include <linux/stringify.h>		/* For __stringify */
+ 
+ #include <asm/mach-rc32434/integ.h>	/* For the Watchdog registers */
+ 
+@@ -57,12 +58,12 @@ extern unsigned int idt_cpu_freq;
+ static int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout value, in seconds (default="
+-		__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++		__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /* apply or and nand masks to data read from addr and write back */
+ #define SET_BITS(addr, or, nand) \
+diff --git a/drivers/watchdog/renesas_wdt.c b/drivers/watchdog/renesas_wdt.c
+index 97bcd32bade5..8c0041ce5552 100644
+--- a/drivers/watchdog/renesas_wdt.c
++++ b/drivers/watchdog/renesas_wdt.c
+@@ -16,6 +16,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/smp.h>
++#include <linux/stringify.h>
+ #include <linux/sys_soc.h>
+ #include <linux/watchdog.h>
+ 
+@@ -44,7 +45,7 @@ static const unsigned int clk_divs[] = { 1, 4, 16, 32, 64, 128, 1024, 4096 };
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct rwdt_priv {
+ 	void __iomem *base;
+diff --git a/drivers/watchdog/rn5t618_wdt.c b/drivers/watchdog/rn5t618_wdt.c
+index 87d06d210ac9..14056af36445 100644
+--- a/drivers/watchdog/rn5t618_wdt.c
++++ b/drivers/watchdog/rn5t618_wdt.c
+@@ -9,6 +9,7 @@
+ #include <linux/mfd/rn5t618.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define DRIVER_NAME "rn5t618-wdt"
+@@ -21,7 +22,7 @@ MODULE_PARM_DESC(timeout, "Initial watchdog timeout in seconds");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct rn5t618_wdt {
+ 	struct watchdog_device wdt_dev;
+diff --git a/drivers/watchdog/rt2880_wdt.c b/drivers/watchdog/rt2880_wdt.c
+index c8edd83bb502..38f31d302a4b 100644
+--- a/drivers/watchdog/rt2880_wdt.c
++++ b/drivers/watchdog/rt2880_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/watchdog.h>
+ #include <linux/moduleparam.h>
  #include <linux/platform_device.h>
 +#include <linux/stringify.h>
  
- #include <linux/serial_8250.h>
+ #include <asm/mach-ralink/ralink_regs.h>
  
-@@ -382,6 +383,6 @@ module_param_hw(share_irqs, bool, other, 0644);
- MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
+@@ -51,7 +52,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-		__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		__stringify(WATCHDOG_NOWAYOUT) ")");
  
- module_param(nr_uarts, uint, 0644);
--MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
-+MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __stringify(CONFIG_SERIAL_8250_NR_UARTS) ")");
- 
- MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
-diff --git a/drivers/usb/atm/speedtch.c b/drivers/usb/atm/speedtch.c
-index 9d28c652bcd8..95cd8ce99a64 100644
---- a/drivers/usb/atm/speedtch.c
-+++ b/drivers/usb/atm/speedtch.c
-@@ -19,6 +19,7 @@
- #include <linux/moduleparam.h>
- #include <linux/slab.h>
- #include <linux/stat.h>
+ static inline void rt_wdt_w32(void __iomem *base, unsigned int reg, u32 val)
+ {
+diff --git a/drivers/watchdog/rti_wdt.c b/drivers/watchdog/rti_wdt.c
+index 7c1bd83b056a..6a64adbe1a8e 100644
+--- a/drivers/watchdog/rti_wdt.c
++++ b/drivers/watchdog/rti_wdt.c
+@@ -17,6 +17,7 @@
+ #include <linux/of_reserved_mem.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
 +#include <linux/stringify.h>
- #include <linux/timer.h>
  #include <linux/types.h>
- #include <linux/usb/ch9.h>
-@@ -77,31 +78,31 @@ static unsigned int num_ModemOption;
- module_param(altsetting, uint, S_IRUGO | S_IWUSR);
- MODULE_PARM_DESC(altsetting,
- 		"Alternative setting for data interface (bulk_default: "
--		__MODULE_STRING(DEFAULT_BULK_ALTSETTING) "; isoc_default: "
--		__MODULE_STRING(DEFAULT_ISOC_ALTSETTING) ")");
-+		__stringify(DEFAULT_BULK_ALTSETTING) "; isoc_default: "
-+		__stringify(DEFAULT_ISOC_ALTSETTING) ")");
+ #include <linux/watchdog.h>
  
- module_param(dl_512_first, bool, S_IRUGO | S_IWUSR);
- MODULE_PARM_DESC(dl_512_first,
- 		 "Read 512 bytes before sending firmware (default: "
--		 __MODULE_STRING(DEFAULT_DL_512_FIRST) ")");
-+		 __stringify(DEFAULT_DL_512_FIRST) ")");
+@@ -414,8 +415,8 @@ MODULE_DESCRIPTION("K3 RTI Watchdog Driver");
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 		 "Watchdog heartbeat period in seconds from 1 to "
+-		 __MODULE_STRING(MAX_HEARTBEAT) ", default "
+-		 __MODULE_STRING(DEFAULT_HEARTBEAT));
++		 __stringify(MAX_HEARTBEAT) ", default "
++		 __stringify(DEFAULT_HEARTBEAT));
  
- module_param(enable_isoc, bool, S_IRUGO | S_IWUSR);
- MODULE_PARM_DESC(enable_isoc,
- 		"Use isochronous transfers if available (default: "
--		__MODULE_STRING(DEFAULT_ENABLE_ISOC) ")");
-+		__stringify(DEFAULT_ENABLE_ISOC) ")");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:rti-wdt");
+diff --git a/drivers/watchdog/rzg2l_wdt.c b/drivers/watchdog/rzg2l_wdt.c
+index 509f9dffdacd..592ea7ce6d69 100644
+--- a/drivers/watchdog/rzg2l_wdt.c
++++ b/drivers/watchdog/rzg2l_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_domain.h>
+ #include <linux/pm_runtime.h>
++#include <linux/stringify.h>
+ #include <linux/reset.h>
+ #include <linux/units.h>
+ #include <linux/watchdog.h>
+@@ -41,7 +42,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
  
- module_param(sw_buffering, bool, S_IRUGO | S_IWUSR);
- MODULE_PARM_DESC(sw_buffering,
- 		 "Enable software buffering (default: "
--		 __MODULE_STRING(DEFAULT_SW_BUFFERING) ")");
-+		 __stringify(DEFAULT_SW_BUFFERING) ")");
+ enum rz_wdt_type {
+ 	WDT_RZG2L,
+diff --git a/drivers/watchdog/rzv2h_wdt.c b/drivers/watchdog/rzv2h_wdt.c
+index 83540dd9a37b..a8db85e85c73 100644
+--- a/drivers/watchdog/rzv2h_wdt.c
++++ b/drivers/watchdog/rzv2h_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/reset.h>
++#include <linux/stringify.h>
+ #include <linux/units.h>
+ #include <linux/watchdog.h>
  
- module_param(BMaxDSL, uint, S_IRUGO | S_IWUSR);
- MODULE_PARM_DESC(BMaxDSL,
--		"default: " __MODULE_STRING(DEFAULT_B_MAX_DSL));
-+		"default: " __stringify(DEFAULT_B_MAX_DSL));
+@@ -48,7 +49,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
  
- module_param(ModemMode, byte, S_IRUGO | S_IWUSR);
- MODULE_PARM_DESC(ModemMode,
--		"default: " __MODULE_STRING(DEFAULT_MODEM_MODE));
-+		"default: " __stringify(DEFAULT_MODEM_MODE));
+ enum rzv2h_wdt_count_source {
+ 	COUNT_SOURCE_LOCO,
+diff --git a/drivers/watchdog/s32g_wdt.c b/drivers/watchdog/s32g_wdt.c
+index 6422a694fc65..bd8740153c17 100644
+--- a/drivers/watchdog/s32g_wdt.c
++++ b/drivers/watchdog/s32g_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
  
- module_param_array(ModemOption, byte, &num_ModemOption, S_IRUGO);
- MODULE_PARM_DESC(ModemOption, "default: 0x10,0x00,0x00,0x00,0x20");
-diff --git a/drivers/usb/atm/usbatm.c b/drivers/usb/atm/usbatm.c
-index 7b0c791399ea..d4052d206e00 100644
---- a/drivers/usb/atm/usbatm.c
-+++ b/drivers/usb/atm/usbatm.c
-@@ -64,6 +64,7 @@
- #include <linux/signal.h>
+ #define DRIVER_NAME "s32g-swt"
+@@ -42,12 +43,12 @@ struct s32g_wdt_device {
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static unsigned int timeout_param = S32G_WDT_DEFAULT_TIMEOUT;
+ module_param(timeout_param, uint, 0);
+ MODULE_PARM_DESC(timeout_param, "Watchdog timeout in seconds (default="
+-		 __MODULE_STRING(S32G_WDT_DEFAULT_TIMEOUT) ")");
++		 __stringify(S32G_WDT_DEFAULT_TIMEOUT) ")");
+ 
+ static bool early_enable;
+ module_param(early_enable, bool, 0);
+diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wdt.c
+index e31f93db0509..8ae60b919c12 100644
+--- a/drivers/watchdog/s3c2410_wdt.c
++++ b/drivers/watchdog/s3c2410_wdt.c
+@@ -28,6 +28,7 @@
+ #include <linux/regmap.h>
+ #include <linux/delay.h>
+ #include <linux/math64.h>
++#include <linux/stringify.h>
+ 
+ #define S3C2410_WTCON		0x00
+ #define S3C2410_WTDAT		0x04
+@@ -154,12 +155,12 @@ module_param(nowayout,   bool, 0);
+ module_param(soft_noboot, int, 0);
+ 
+ MODULE_PARM_DESC(tmr_margin, "Watchdog tmr_margin in seconds. (default="
+-		__MODULE_STRING(S3C2410_WATCHDOG_DEFAULT_TIME) ")");
++		__stringify(S3C2410_WATCHDOG_DEFAULT_TIME) ")");
+ MODULE_PARM_DESC(tmr_atboot,
+ 		"Watchdog is started at boot time if set to 1, default="
+-			__MODULE_STRING(S3C2410_WATCHDOG_ATBOOT));
++			__stringify(S3C2410_WATCHDOG_ATBOOT));
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			__stringify(WATCHDOG_NOWAYOUT) ")");
+ MODULE_PARM_DESC(soft_noboot, "Watchdog action, set to 1 to ignore reboots, 0 to reboot (default 0)");
+ 
+ /**
+diff --git a/drivers/watchdog/sama5d4_wdt.c b/drivers/watchdog/sama5d4_wdt.c
+index ecdd9aeab79c..85efe4db40f0 100644
+--- a/drivers/watchdog/sama5d4_wdt.c
++++ b/drivers/watchdog/sama5d4_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/of_irq.h>
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #include "at91sam9_wdt.h"
+@@ -42,12 +43,12 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(wdt_timeout, int, 0);
+ MODULE_PARM_DESC(wdt_timeout,
+ 	"Watchdog timeout in seconds. (default = "
+-	__MODULE_STRING(WDT_DEFAULT_TIMEOUT) ")");
++	__stringify(WDT_DEFAULT_TIMEOUT) ")");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static inline bool wdt_enabled(struct sama5d4_wdt *wdt)
+ {
+diff --git a/drivers/watchdog/sbc60xxwdt.c b/drivers/watchdog/sbc60xxwdt.c
+index 03eaf48c8f0f..fffe58dcbf93 100644
+--- a/drivers/watchdog/sbc60xxwdt.c
++++ b/drivers/watchdog/sbc60xxwdt.c
+@@ -58,6 +58,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ #define OUR_NAME "sbc60xxwdt"
+@@ -98,13 +99,13 @@ static int timeout = WATCHDOG_TIMEOUT;	/* in seconds, multiplied by HZ to
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. (1<=timeout<=3600, default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++				__stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void wdt_timer_ping(struct timer_list *);
+ static DEFINE_TIMER(timer, wdt_timer_ping);
+diff --git a/drivers/watchdog/sbc7240_wdt.c b/drivers/watchdog/sbc7240_wdt.c
+index 21a1f0b32070..077abbdbf582 100644
+--- a/drivers/watchdog/sbc7240_wdt.c
++++ b/drivers/watchdog/sbc7240_wdt.c
+@@ -23,6 +23,7 @@
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
+ #include <linux/atomic.h>
++#include <linux/stringify.h>
+ 
+ #define SBC7240_ENABLE_PORT		0x443
+ #define SBC7240_DISABLE_PORT		0x043
+@@ -34,8 +35,8 @@
+ static int timeout = SBC7240_TIMEOUT;	/* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds. (1<=timeout<="
+-		 __MODULE_STRING(SBC7240_MAX_TIMEOUT) ", default="
+-		 __MODULE_STRING(SBC7240_TIMEOUT) ")");
++		 __stringify(SBC7240_MAX_TIMEOUT) ", default="
++		 __stringify(SBC7240_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+diff --git a/drivers/watchdog/sbc8360.c b/drivers/watchdog/sbc8360.c
+index a9fd1615b4c3..dafef1df9719 100644
+--- a/drivers/watchdog/sbc8360.c
++++ b/drivers/watchdog/sbc8360.c
+@@ -48,6 +48,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ static unsigned long sbc8360_is_open;
+@@ -199,7 +200,7 @@ MODULE_PARM_DESC(timeout, "Index into timeout table (0-63) (default=27 (60s))");
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	Kernel methods.
+diff --git a/drivers/watchdog/sbc_epx_c3.c b/drivers/watchdog/sbc_epx_c3.c
+index 1d291dc0a4a6..b17bd1db7b10 100644
+--- a/drivers/watchdog/sbc_epx_c3.c
++++ b/drivers/watchdog/sbc_epx_c3.c
+@@ -25,6 +25,7 @@
+ #include <linux/ioport.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ 
+ static int epx_c3_alive;
+ 
+@@ -33,7 +34,7 @@ static int epx_c3_alive;
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-					__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++					__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define EPXC3_WATCHDOG_CTL_REG 0x1ee /* write 1 to enable, 0 to disable */
+ #define EPXC3_WATCHDOG_PET_REG 0x1ef /* write anything to pet once enabled */
+diff --git a/drivers/watchdog/sbsa_gwdt.c b/drivers/watchdog/sbsa_gwdt.c
+index e04d42cc7774..3d271b1efb56 100644
+--- a/drivers/watchdog/sbsa_gwdt.c
++++ b/drivers/watchdog/sbsa_gwdt.c
+@@ -46,6 +46,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/uaccess.h>
+ #include <linux/watchdog.h>
+ #include <asm/arch_timer.h>
+@@ -103,7 +104,7 @@ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 		 "Watchdog timeout in seconds. (>=0, default="
+-		 __MODULE_STRING(DEFAULT_TIMEOUT) ")");
++		 __stringify(DEFAULT_TIMEOUT) ")");
+ 
+ /*
+  * action refers to action taken when watchdog gets WS0
+@@ -120,7 +121,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, S_IRUGO);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  * Arm Base System Architecture 1.0 introduces watchdog v1 which
+diff --git a/drivers/watchdog/sc1200wdt.c b/drivers/watchdog/sc1200wdt.c
+index 1d3300c98d43..34cd57420c86 100644
+--- a/drivers/watchdog/sc1200wdt.c
++++ b/drivers/watchdog/sc1200wdt.c
+@@ -42,6 +42,7 @@
+ #include <linux/semaphore.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #define SC1200_MODULE_VER	"build 20020303"
+ #define SC1200_MODULE_NAME	"sc1200wdt"
+@@ -92,7 +93,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ 
+ 
+diff --git a/drivers/watchdog/sch311x_wdt.c b/drivers/watchdog/sch311x_wdt.c
+index 9670a1ea57cb..a2a0b5c2b55b 100644
+--- a/drivers/watchdog/sch311x_wdt.c
++++ b/drivers/watchdog/sch311x_wdt.c
+@@ -31,6 +31,7 @@
+ #include <linux/spinlock.h>		/* For spin_lock/spin_unlock/... */
+ #include <linux/uaccess.h>		/* For copy_to_user/put_user/... */
+ #include <linux/io.h>			/* For inb/outb/... */
++#include <linux/stringify.h>		/* For __stringify */
+ 
+ /* Module and version information */
+ #define DRV_NAME	"sch311x_wdt"
+@@ -68,13 +69,13 @@ static int timeout = WATCHDOG_TIMEOUT;	/* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. 1<= timeout <=15300, default="
+-		__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++		__stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-		__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  *	Super-IO functions
+diff --git a/drivers/watchdog/shwdt.c b/drivers/watchdog/shwdt.c
+index 719f100aae60..8adecf54b9bc 100644
+--- a/drivers/watchdog/shwdt.c
++++ b/drivers/watchdog/shwdt.c
+@@ -30,6 +30,7 @@
+ #include <linux/io.h>
+ #include <linux/clk.h>
+ #include <linux/err.h>
++#include <linux/stringify.h>
+ #include <asm/watchdog.h>
+ 
+ #define DRV_NAME "sh-wdt"
+@@ -329,14 +330,14 @@ MODULE_ALIAS("platform:" DRV_NAME);
+ module_param(clock_division_ratio, int, 0);
+ MODULE_PARM_DESC(clock_division_ratio,
+ 	"Clock division ratio. Valid ranges are from 0x5 (1.31ms) "
+-	"to 0x7 (5.25ms). (default=" __MODULE_STRING(WTCSR_CKS_4096) ")");
++	"to 0x7 (5.25ms). (default=" __stringify(WTCSR_CKS_4096) ")");
+ 
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 	"Watchdog heartbeat in seconds. (1 <= heartbeat <= 3600, default="
+-				__MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
++				__stringify(WATCHDOG_HEARTBEAT) ")");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+diff --git a/drivers/watchdog/simatic-ipc-wdt.c b/drivers/watchdog/simatic-ipc-wdt.c
+index 1e91f0a560ff..addeecccf2e9 100644
+--- a/drivers/watchdog/simatic-ipc-wdt.c
++++ b/drivers/watchdog/simatic-ipc-wdt.c
+@@ -22,6 +22,7 @@
+ #include <linux/sizes.h>
+ #include <linux/util_macros.h>
+ #include <linux/watchdog.h>
++#include <linux/stringify.h>
+ 
+ #define WD_ENABLE_IOADR			0x62
+ #define WD_TRIGGER_IOADR		0x66
+@@ -42,7 +43,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0000);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static struct resource gp_status_reg_227e_res =
+ 	DEFINE_RES_IO_NAMED(GP_STATUS_REG_227E, SZ_1, KBUILD_MODNAME);
+diff --git a/drivers/watchdog/sl28cpld_wdt.c b/drivers/watchdog/sl28cpld_wdt.c
+index c0b5e5fff5d7..e32b757372eb 100644
+--- a/drivers/watchdog/sl28cpld_wdt.c
++++ b/drivers/watchdog/sl28cpld_wdt.c
+@@ -10,6 +10,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /*
+@@ -30,7 +31,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int timeout;
+ module_param(timeout, int, 0);
+diff --git a/drivers/watchdog/smsc37b787_wdt.c b/drivers/watchdog/smsc37b787_wdt.c
+index 9f2c2ab4e2f1..0ee36ae3113e 100644
+--- a/drivers/watchdog/smsc37b787_wdt.c
++++ b/drivers/watchdog/smsc37b787_wdt.c
+@@ -55,6 +55,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ /* enable support for minutes as units? */
+@@ -611,4 +612,4 @@ MODULE_PARM_DESC(timeout, "range is 1-255 units, default is 60");
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+diff --git a/drivers/watchdog/softdog.c b/drivers/watchdog/softdog.c
+index 0820e35ad2e3..0ff125958b8a 100644
+--- a/drivers/watchdog/softdog.c
++++ b/drivers/watchdog/softdog.c
+@@ -24,6 +24,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ #include <linux/workqueue.h>
+@@ -33,13 +34,13 @@ static unsigned int soft_margin = TIMER_MARGIN;	/* in seconds */
+ module_param(soft_margin, uint, 0);
+ MODULE_PARM_DESC(soft_margin,
+ 	"Watchdog soft_margin in seconds. (0 < soft_margin < 65536, default="
+-					__MODULE_STRING(TIMER_MARGIN) ")");
++					__stringify(TIMER_MARGIN) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int soft_noboot;
+ module_param(soft_noboot, int, 0);
+diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
+index 72ad59649ccc..c4809858a6fe 100644
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -39,6 +39,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/types.h>
+ #include <linux/watchdog.h>
+ 
+@@ -69,18 +70,18 @@ static struct pci_dev *sp5100_tco_pci;
+ static bool action = WATCHDOG_ACTION;
+ module_param(action, bool, 0);
+ MODULE_PARM_DESC(action, "Action taken when watchdog expires, 0 to reset, 1 to poweroff (default="
+-		 __MODULE_STRING(WATCHDOG_ACTION) ")");
++		 __stringify(WATCHDOG_ACTION) ")");
+ 
+ #define WATCHDOG_HEARTBEAT 60	/* 60 sec default heartbeat. */
+ static int heartbeat = WATCHDOG_HEARTBEAT;  /* in seconds */
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. (default="
+-		 __MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
++		 __stringify(WATCHDOG_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started."
+-		" (default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		" (default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  * Some TCO specific functions
+diff --git a/drivers/watchdog/starfive-wdt.c b/drivers/watchdog/starfive-wdt.c
+index 5a3254c83d3b..044b4fdb7350 100644
+--- a/drivers/watchdog/starfive-wdt.c
++++ b/drivers/watchdog/starfive-wdt.c
+@@ -12,6 +12,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/reset.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* JH7100 Watchdog register define */
+@@ -72,12 +73,12 @@ module_param(early_enable, bool, 0);
+ module_param(nowayout, bool, 0);
+ 
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. (default="
+-		 __MODULE_STRING(STARFIVE_WDT_DEFAULT_TIME) ")");
++		 __stringify(STARFIVE_WDT_DEFAULT_TIME) ")");
+ MODULE_PARM_DESC(early_enable,
+ 		 "Watchdog is started at boot time if set to 1, default="
+-		 __MODULE_STRING(STARFIVE_WDT_EARLY_ENA));
++		 __stringify(STARFIVE_WDT_EARLY_ENA));
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct starfive_wdt_variant {
+ 	unsigned int control;		/* Watchdog Control Register for reset enable */
+diff --git a/drivers/watchdog/stmp3xxx_rtc_wdt.c b/drivers/watchdog/stmp3xxx_rtc_wdt.c
+index 060447101f48..c9cbf9728a2a 100644
+--- a/drivers/watchdog/stmp3xxx_rtc_wdt.c
++++ b/drivers/watchdog/stmp3xxx_rtc_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/stmp3xxx_rtc_wdt.h>
+ #include <linux/notifier.h>
+ #include <linux/reboot.h>
++#include <linux/stringify.h>
+ 
+ #define WDOG_TICK_RATE 1000 /* 1 kHz clock */
+ #define STMP3XXX_DEFAULT_TIMEOUT 19
+@@ -21,8 +22,8 @@
+ static int heartbeat = STMP3XXX_DEFAULT_TIMEOUT;
+ module_param(heartbeat, uint, 0);
+ MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat period in seconds from 1 to "
+-		 __MODULE_STRING(STMP3XXX_MAX_TIMEOUT) ", default "
+-		 __MODULE_STRING(STMP3XXX_DEFAULT_TIMEOUT));
++		 __stringify(STMP3XXX_MAX_TIMEOUT) ", default "
++		 __stringify(STMP3XXX_DEFAULT_TIMEOUT));
+ 
+ static int wdt_start(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/stpmic1_wdt.c b/drivers/watchdog/stpmic1_wdt.c
+index 45d0c543466f..17f0cdecd22c 100644
+--- a/drivers/watchdog/stpmic1_wdt.c
++++ b/drivers/watchdog/stpmic1_wdt.c
+@@ -9,6 +9,7 @@
+ #include <linux/of.h>
+ #include <linux/regmap.h>
  #include <linux/slab.h>
- #include <linux/stat.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* WATCHDOG CONTROL REGISTER bit */
+@@ -25,7 +26,7 @@
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct stpmic1_wdt {
+ 	struct stpmic1 *pmic;
+diff --git a/drivers/watchdog/sun4v_wdt.c b/drivers/watchdog/sun4v_wdt.c
+index 8db86ad5ee3d..ad56d778776e 100644
+--- a/drivers/watchdog/sun4v_wdt.c
++++ b/drivers/watchdog/sun4v_wdt.c
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ #include <asm/hypervisor.h>
+ #include <asm/mdesc.h>
+@@ -27,12 +28,12 @@
+ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds (default="
+-	__MODULE_STRING(WDT_TIMEOUT) ")");
++	__stringify(WDT_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, S_IRUGO);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int sun4v_wdt_stop(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/sunplus_wdt.c b/drivers/watchdog/sunplus_wdt.c
+index ae0c11a15a05..f2e45907d882 100644
+--- a/drivers/watchdog/sunplus_wdt.c
++++ b/drivers/watchdog/sunplus_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/reset.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define WDT_CTRL		0x00
+@@ -38,7 +39,7 @@ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds");
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++			__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct sp_wdt_priv {
+ 	struct watchdog_device wdev;
+diff --git a/drivers/watchdog/sunxi_wdt.c b/drivers/watchdog/sunxi_wdt.c
+index 3db34524ed13..1e55c5fd43b8 100644
+--- a/drivers/watchdog/sunxi_wdt.c
++++ b/drivers/watchdog/sunxi_wdt.c
+@@ -20,6 +20,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/types.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define WDT_MAX_TIMEOUT         16
+@@ -357,7 +358,7 @@ MODULE_PARM_DESC(timeout, "Watchdog heartbeat in seconds");
+ 
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-		"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Carlo Caione <carlo.caione@gmail.com>");
+diff --git a/drivers/watchdog/tegra_wdt.c b/drivers/watchdog/tegra_wdt.c
+index d5de6c0657a5..6b3f65c4d593 100644
+--- a/drivers/watchdog/tegra_wdt.c
++++ b/drivers/watchdog/tegra_wdt.c
+@@ -9,6 +9,7 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* minimum and maximum watchdog trigger timeout, in seconds */
+@@ -67,13 +68,13 @@ static int heartbeat = WDT_HEARTBEAT;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 	"Watchdog heartbeats in seconds. (default = "
+-	__MODULE_STRING(WDT_HEARTBEAT) ")");
++	__stringify(WDT_HEARTBEAT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int tegra_wdt_start(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/tqmx86_wdt.c b/drivers/watchdog/tqmx86_wdt.c
+index 83860e94ce9d..1da45a3f8cf3 100644
+--- a/drivers/watchdog/tqmx86_wdt.c
++++ b/drivers/watchdog/tqmx86_wdt.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/timer.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* default timeout (secs) */
+@@ -23,7 +24,7 @@ static unsigned int timeout;
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. (1<=timeout<=4096, default="
+-				__MODULE_STRING(WDT_TIMEOUT) ")");
++				__stringify(WDT_TIMEOUT) ")");
+ struct tqmx86_wdt {
+ 	struct watchdog_device wdd;
+ 	void __iomem *io_base;
+diff --git a/drivers/watchdog/ts4800_wdt.c b/drivers/watchdog/ts4800_wdt.c
+index 24b1ad52102e..1bfc8db323c6 100644
+--- a/drivers/watchdog/ts4800_wdt.c
++++ b/drivers/watchdog/ts4800_wdt.c
+@@ -12,13 +12,14 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /* possible feed values */
+ #define TS4800_WDT_FEED_2S       0x1
+diff --git a/drivers/watchdog/twl4030_wdt.c b/drivers/watchdog/twl4030_wdt.c
+index 69a622646d75..d5e06dcf74d9 100644
+--- a/drivers/watchdog/twl4030_wdt.c
++++ b/drivers/watchdog/twl4030_wdt.c
+@@ -12,13 +12,14 @@
+ #include <linux/watchdog.h>
+ #include <linux/platform_device.h>
+ #include <linux/mfd/twl.h>
++#include <linux/stringify.h>
+ 
+ #define TWL4030_WATCHDOG_CFG_REG_OFFS	0x3
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int twl4030_wdt_write(unsigned char val)
+ {
+diff --git a/drivers/watchdog/txx9wdt.c b/drivers/watchdog/txx9wdt.c
+index 305349844b4f..161a779dc74d 100644
+--- a/drivers/watchdog/txx9wdt.c
++++ b/drivers/watchdog/txx9wdt.c
+@@ -16,6 +16,7 @@
+ #include <linux/clk.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ #include <asm/txx9tmr.h>
+ 
+ #define WD_TIMER_CCD	7		/* 1/256 */
+@@ -27,14 +28,14 @@ static unsigned int timeout = TIMER_MARGIN;	/* in seconds */
+ module_param(timeout, uint, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. "
+-	"(0<timeout<((2^" __MODULE_STRING(TXX9_TIMER_BITS) ")/(IMCLK/256)), "
+-	"default=" __MODULE_STRING(TIMER_MARGIN) ")");
++	"(0<timeout<((2^" __stringify(TXX9_TIMER_BITS) ")/(IMCLK/256)), "
++	"default=" __stringify(TIMER_MARGIN) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static struct txx9_tmr_reg __iomem *txx9wdt_reg;
+ static struct clk *txx9_imclk;
+diff --git a/drivers/watchdog/uniphier_wdt.c b/drivers/watchdog/uniphier_wdt.c
+index 8e9242c23022..d09fb2acfdde 100644
+--- a/drivers/watchdog/uniphier_wdt.c
++++ b/drivers/watchdog/uniphier_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* WDT timer setting register */
+@@ -245,12 +246,12 @@ module_platform_driver(uniphier_wdt_driver);
+ module_param(timeout, uint, 0000);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout seconds in power of 2. (0 < timeout < 128, default="
+-				__MODULE_STRING(WDT_DEFAULT_TIMEOUT) ")");
++				__stringify(WDT_DEFAULT_TIMEOUT) ")");
+ 
+ module_param(nowayout, bool, 0000);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ MODULE_AUTHOR("Keiji Hayashibara <hayashibara.keiji@socionext.com>");
+ MODULE_DESCRIPTION("UniPhier Watchdog Device Driver");
+diff --git a/drivers/watchdog/via_wdt.c b/drivers/watchdog/via_wdt.c
+index be4ca619da65..effa9bc8d354 100644
+--- a/drivers/watchdog/via_wdt.c
++++ b/drivers/watchdog/via_wdt.c
+@@ -18,6 +18,7 @@
+ #include <linux/jiffies.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
 +#include <linux/stringify.h>
  #include <linux/timer.h>
- #include <linux/wait.h>
- #include <linux/kthread.h>
-@@ -103,26 +104,26 @@ static unsigned int snd_buf_bytes = UDSL_DEFAULT_SND_BUF_SIZE;
- module_param(num_rcv_urbs, uint, S_IRUGO);
- MODULE_PARM_DESC(num_rcv_urbs,
- 		 "Number of urbs used for reception (range: 0-"
--		 __MODULE_STRING(UDSL_MAX_RCV_URBS) ", default: "
--		 __MODULE_STRING(UDSL_DEFAULT_RCV_URBS) ")");
-+		 __stringify(UDSL_MAX_RCV_URBS) ", default: "
-+		 __stringify(UDSL_DEFAULT_RCV_URBS) ")");
+ #include <linux/watchdog.h>
  
- module_param(num_snd_urbs, uint, S_IRUGO);
- MODULE_PARM_DESC(num_snd_urbs,
- 		 "Number of urbs used for transmission (range: 0-"
--		 __MODULE_STRING(UDSL_MAX_SND_URBS) ", default: "
--		 __MODULE_STRING(UDSL_DEFAULT_SND_URBS) ")");
-+		 __stringify(UDSL_MAX_SND_URBS) ", default: "
-+		 __stringify(UDSL_DEFAULT_SND_URBS) ")");
+@@ -56,12 +57,12 @@
+ static int timeout = WDT_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds, between 1 and 1023 "
+-	"(default = " __MODULE_STRING(WDT_TIMEOUT) ")");
++	"(default = " __stringify(WDT_TIMEOUT) ")");
  
- module_param(rcv_buf_bytes, uint, S_IRUGO);
- MODULE_PARM_DESC(rcv_buf_bytes,
- 		 "Size of the buffers used for reception, in bytes (range: 1-"
--		 __MODULE_STRING(UDSL_MAX_BUF_SIZE) ", default: "
--		 __MODULE_STRING(UDSL_DEFAULT_RCV_BUF_SIZE) ")");
-+		 __stringify(UDSL_MAX_BUF_SIZE) ", default: "
-+		 __stringify(UDSL_DEFAULT_RCV_BUF_SIZE) ")");
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default = " __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default = " __stringify(WATCHDOG_NOWAYOUT) ")");
  
- module_param(snd_buf_bytes, uint, S_IRUGO);
- MODULE_PARM_DESC(snd_buf_bytes,
- 		 "Size of the buffers used for transmission, in bytes (range: 1-"
--		 __MODULE_STRING(UDSL_MAX_BUF_SIZE) ", default: "
--		 __MODULE_STRING(UDSL_DEFAULT_SND_BUF_SIZE) ")");
-+		 __stringify(UDSL_MAX_BUF_SIZE) ", default: "
-+		 __stringify(UDSL_DEFAULT_SND_BUF_SIZE) ")");
+ static struct watchdog_device wdt_dev;
+ static struct resource wdt_res;
+diff --git a/drivers/watchdog/visconti_wdt.c b/drivers/watchdog/visconti_wdt.c
+index 7795e7fbf67e..fc4f0d4d3d55 100644
+--- a/drivers/watchdog/visconti_wdt.c
++++ b/drivers/watchdog/visconti_wdt.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define WDT_CNT			0x00
+@@ -29,7 +30,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(
+ 	nowayout,
+-	"Watchdog cannot be stopped once started (default=" __MODULE_STRING(WATCHDOG_NOWAYOUT)")");
++	"Watchdog cannot be stopped once started (default=" __stringify(WATCHDOG_NOWAYOUT)")");
+ 
+ struct visconti_wdt_priv {
+ 	struct watchdog_device wdev;
+diff --git a/drivers/watchdog/w83627hf_wdt.c b/drivers/watchdog/w83627hf_wdt.c
+index db77599e43a0..5aa4d9c0fc00 100644
+--- a/drivers/watchdog/w83627hf_wdt.c
++++ b/drivers/watchdog/w83627hf_wdt.c
+@@ -35,6 +35,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/dmi.h>
++#include <linux/stringify.h>
+ 
+ #define WATCHDOG_NAME "w83627hf/thf/hg/dhg WDT"
+ #define WATCHDOG_TIMEOUT 60		/* 60 sec default timeout */
+@@ -55,13 +56,13 @@ static int timeout;			/* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Watchdog timeout in seconds. 1 <= timeout <= 255, default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ".");
++				__stringify(WATCHDOG_TIMEOUT) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int early_disable;
+ module_param(early_disable, int, 0);
+diff --git a/drivers/watchdog/w83877f_wdt.c b/drivers/watchdog/w83877f_wdt.c
+index 53db59ef774b..3187ea9d1b57 100644
+--- a/drivers/watchdog/w83877f_wdt.c
++++ b/drivers/watchdog/w83877f_wdt.c
+@@ -54,6 +54,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #define OUR_NAME "w83877f_wdt"
+ 
+@@ -84,14 +85,14 @@ static int timeout = WATCHDOG_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 	"Watchdog timeout in seconds. (1<=timeout<=3600, default="
+-				__MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++				__stringify(WATCHDOG_TIMEOUT) ")");
  
  
- /* receive */
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void wdt_timer_ping(struct timer_list *);
+ static DEFINE_TIMER(timer, wdt_timer_ping);
+diff --git a/drivers/watchdog/w83977f_wdt.c b/drivers/watchdog/w83977f_wdt.c
+index 3776030fa7c6..019fbf65eeb4 100644
+--- a/drivers/watchdog/w83977f_wdt.c
++++ b/drivers/watchdog/w83977f_wdt.c
+@@ -25,6 +25,7 @@
+ #include <linux/reboot.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
++#include <linux/stringify.h>
+ 
+ 
+ #define WATCHDOG_VERSION  "1.00"
+@@ -49,7 +50,7 @@ static	DEFINE_SPINLOCK(spinlock);
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Watchdog timeout in seconds (15..7635), default="
+-				__MODULE_STRING(DEFAULT_TIMEOUT) ")");
++				__stringify(DEFAULT_TIMEOUT) ")");
+ module_param(testmode, int, 0);
+ MODULE_PARM_DESC(testmode, "Watchdog testmode (1 = no reboot), default=0");
+ 
+@@ -57,7 +58,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  * Start the watchdog
+diff --git a/drivers/watchdog/wafer5823wdt.c b/drivers/watchdog/wafer5823wdt.c
+index 291109349e73..c564d51fe5a5 100644
+--- a/drivers/watchdog/wafer5823wdt.c
++++ b/drivers/watchdog/wafer5823wdt.c
+@@ -36,6 +36,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #define WATCHDOG_NAME "Wafer 5823 WDT"
+ #define PFX WATCHDOG_NAME ": "
+@@ -61,13 +62,13 @@ static int timeout = WD_TIMO;  /* in seconds */
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout,
+ 		"Watchdog timeout in seconds. 1 <= timeout <= 255, default="
+-				__MODULE_STRING(WD_TIMO) ".");
++				__stringify(WD_TIMO) ".");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static void wafwdt_ping(void)
+ {
+diff --git a/drivers/watchdog/watchdog_dev.c b/drivers/watchdog/watchdog_dev.c
+index d7895009a2de..1e1c3431b007 100644
+--- a/drivers/watchdog/watchdog_dev.c
++++ b/drivers/watchdog/watchdog_dev.c
+@@ -44,6 +44,7 @@
+ #include <linux/types.h>	/* For standard types (like size_t) */
+ #include <linux/watchdog.h>	/* For watchdog specific items */
+ #include <linux/uaccess.h>	/* For copy_to_user/put_user/... */
++#include <linux/stringify.h>	/* For __stringify */
+ 
+ #include "watchdog_core.h"
+ #include "watchdog_pretimeout.h"
+@@ -1314,9 +1315,9 @@ int watchdog_dev_resume(struct watchdog_device *wdd)
+ module_param(handle_boot_enabled, bool, 0444);
+ MODULE_PARM_DESC(handle_boot_enabled,
+ 	"Watchdog core auto-updates boot enabled watchdogs before userspace takes over (default="
+-	__MODULE_STRING(IS_ENABLED(CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED)) ")");
++	__stringify(IS_ENABLED(CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED)) ")");
+ 
+ module_param(open_timeout, uint, 0644);
+ MODULE_PARM_DESC(open_timeout,
+ 	"Maximum time (in seconds, 0 means infinity) for userspace to take over a running watchdog (default="
+-	__MODULE_STRING(CONFIG_WATCHDOG_OPEN_TIMEOUT) ")");
++	__stringify(CONFIG_WATCHDOG_OPEN_TIMEOUT) ")");
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 55ea16e73652..a418da46bda2 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #define MAX_WDAT_ACTIONS ACPI_WDAT_ACTION_RESERVED
+@@ -54,14 +55,14 @@ struct wdat_wdt {
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define WDAT_DEFAULT_TIMEOUT	30
+ 
+ static int timeout = WDAT_DEFAULT_TIMEOUT;
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds (default="
+-		 __MODULE_STRING(WDAT_DEFAULT_TIMEOUT) ")");
++		 __stringify(WDAT_DEFAULT_TIMEOUT) ")");
+ 
+ static int wdat_wdt_read(struct wdat_wdt *wdat,
+ 	 const struct wdat_instruction *instr, u32 *value)
+diff --git a/drivers/watchdog/wdt.c b/drivers/watchdog/wdt.c
+index 3980d60bacd8..d8681ee547ee 100644
+--- a/drivers/watchdog/wdt.c
++++ b/drivers/watchdog/wdt.c
+@@ -43,6 +43,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #include "wd501p.h"
+ 
+@@ -60,13 +61,13 @@ static int wd_heartbeat;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 	"Watchdog heartbeat in seconds. (0 < heartbeat < 65536, default="
+-				__MODULE_STRING(WD_TIMO) ")");
++				__stringify(WD_TIMO) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 	"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /* You must set these - there is no sane way to probe for this board. */
+ static int io = 0x240;
+diff --git a/drivers/watchdog/wdt977.c b/drivers/watchdog/wdt977.c
+index 4f449ac4dda4..f0fb82dc3c93 100644
+--- a/drivers/watchdog/wdt977.c
++++ b/drivers/watchdog/wdt977.c
+@@ -34,6 +34,7 @@
+ #include <linux/reboot.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #include <asm/mach-types.h>
+ 
+@@ -59,7 +60,7 @@ static	DEFINE_SPINLOCK(spinlock);
+ 
+ module_param(timeout, int, 0);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds (60..15300, default="
+-				__MODULE_STRING(DEFAULT_TIMEOUT) ")");
++				__stringify(DEFAULT_TIMEOUT) ")");
+ module_param(testmode, int, 0);
+ MODULE_PARM_DESC(testmode, "Watchdog testmode (1 = no reboot), default=0");
+ 
+@@ -67,7 +68,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /*
+  * Start the watchdog
+diff --git a/drivers/watchdog/wdt_pci.c b/drivers/watchdog/wdt_pci.c
+index 3918a600f2a0..4b1ef22d0df2 100644
+--- a/drivers/watchdog/wdt_pci.c
++++ b/drivers/watchdog/wdt_pci.c
+@@ -49,6 +49,7 @@
+ #include <linux/pci.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ 
+ #define WDT_IS_PCI
+@@ -72,13 +73,13 @@ static int wd_heartbeat;
+ module_param(heartbeat, int, 0);
+ MODULE_PARM_DESC(heartbeat,
+ 		"Watchdog heartbeat in seconds. (0<heartbeat<65536, default="
+-				__MODULE_STRING(WD_TIMO) ")");
++				__stringify(WD_TIMO) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		"Watchdog cannot be stopped once started (default="
+-				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++				__stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ /* Support for the Fan Tachometer on the PCI-WDT501 */
+ static int tachometer;
+diff --git a/drivers/watchdog/wm831x_wdt.c b/drivers/watchdog/wm831x_wdt.c
+index d96ad8f38bd2..1aeb532dfeba 100644
+--- a/drivers/watchdog/wm831x_wdt.c
++++ b/drivers/watchdog/wm831x_wdt.c
+@@ -13,6 +13,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/watchdog.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ 
+ #include <linux/mfd/wm831x/core.h>
+ #include <linux/mfd/wm831x/pdata.h>
+@@ -22,7 +23,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ struct wm831x_wdt_drvdata {
+ 	struct watchdog_device wdt;
+diff --git a/drivers/watchdog/wm8350_wdt.c b/drivers/watchdog/wm8350_wdt.c
+index c82c1b77d91b..5eca195eac18 100644
+--- a/drivers/watchdog/wm8350_wdt.c
++++ b/drivers/watchdog/wm8350_wdt.c
+@@ -14,13 +14,14 @@
+ #include <linux/platform_device.h>
+ #include <linux/watchdog.h>
+ #include <linux/uaccess.h>
++#include <linux/stringify.h>
+ #include <linux/mfd/wm8350/core.h>
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout,
+ 		 "Watchdog cannot be stopped once started (default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static DEFINE_MUTEX(wdt_mutex);
+ 
+diff --git a/drivers/watchdog/xen_wdt.c b/drivers/watchdog/xen_wdt.c
+index b343f421dc72..3bc323d886d0 100644
+--- a/drivers/watchdog/xen_wdt.c
++++ b/drivers/watchdog/xen_wdt.c
+@@ -17,6 +17,7 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ #include <xen/xen.h>
+ #include <asm/xen/hypercall.h>
+@@ -30,12 +31,12 @@ static time64_t wdt_expires;
+ static unsigned int timeout;
+ module_param(timeout, uint, S_IRUGO);
+ MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds "
+-	"(default=" __MODULE_STRING(WATCHDOG_TIMEOUT) ")");
++	"(default=" __stringify(WATCHDOG_TIMEOUT) ")");
+ 
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, S_IRUGO);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started "
+-	"(default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++	"(default=" __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static inline time64_t set_timeout(struct watchdog_device *wdd)
+ {
+diff --git a/drivers/watchdog/xilinx_wwdt.c b/drivers/watchdog/xilinx_wwdt.c
+index 799ce8d22b2f..b7cdf8140666 100644
+--- a/drivers/watchdog/xilinx_wwdt.c
++++ b/drivers/watchdog/xilinx_wwdt.c
+@@ -12,6 +12,7 @@
+ #include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ /* Max timeout is calculated at 100MHz source clock */
+@@ -47,11 +48,11 @@ static int closed_window_percent;
+ module_param(wwdt_timeout, int, 0);
+ MODULE_PARM_DESC(wwdt_timeout,
+ 		 "Watchdog time in seconds. (default="
+-		 __MODULE_STRING(XWWDT_DEFAULT_TIMEOUT) ")");
++		 __stringify(XWWDT_DEFAULT_TIMEOUT) ")");
+ module_param(closed_window_percent, int, 0);
+ MODULE_PARM_DESC(closed_window_percent,
+ 		 "Watchdog closed window percentage. (default="
+-		 __MODULE_STRING(XWWDT_CLOSE_WINDOW_PERCENT) ")");
++		 __stringify(XWWDT_CLOSE_WINDOW_PERCENT) ")");
+ /**
+  * struct xwwdt_device - Watchdog device structure
+  * @base: base io address of WDT device
+diff --git a/drivers/watchdog/ziirave_wdt.c b/drivers/watchdog/ziirave_wdt.c
+index f3bb935c08c2..10d4eaa8592a 100644
+--- a/drivers/watchdog/ziirave_wdt.c
++++ b/drivers/watchdog/ziirave_wdt.c
+@@ -18,6 +18,7 @@
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/types.h>
++#include <linux/stringify.h>
+ #include <linux/watchdog.h>
+ 
+ #include <linux/unaligned.h>
+@@ -94,7 +95,7 @@ MODULE_PARM_DESC(reset_duration,
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0);
+ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started default="
+-		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
++		 __stringify(WATCHDOG_NOWAYOUT) ")");
+ 
+ static int ziirave_wdt_revision(struct i2c_client *client,
+ 				struct ziirave_wdt_rev *rev, u8 command)
 
 -- 
 2.55.0
