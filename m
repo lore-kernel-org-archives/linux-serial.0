@@ -1,109 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1216E45D5D0;
-	Mon, 21 Sep 2026 18:50:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA9FE3624DE;
+	Tue, 22 Sep 2026 01:20:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790016625; cv=none; b=k7jZ+r9f6hka8SqtpCrYyTzwMneplNx38Zu+n5qJn0oipUG+jzY91N0RZ+g2Dn/Upto+REXyFeJZ5jlLkc3NRH4fBxx9PeREqgBDQo3PxYCqfYaG+QG6INyuKgmien3b70JnwyDjO6LRA1SFlGsWPi3ji5mW8O+hutbkXNYDiqc=
+	t=1790040013; cv=none; b=Cb2ODWJjYdGHf91I4ToiF88sh0243DRkbCQKaIJqSxGxC2/UKiRJFZOMCickd8uF7Wo3ZzBEkrdH/62SCA4baqw8iJ2EhqRAkfgumpEWJfnnglf0VvI/Gylam/oeS1rCXZGuy6iBubLnYSC3Csi9UGe5nx2ZAfObrWGLsKlt8S0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790016625; c=relaxed/simple;
-	bh=nW0IMAV4z5cfa3B7MmgaURhZ4gjSCCrc7R9V/r34I/w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JV6f81T+3mQdE+KBJAqSrtglJHAvWjnaE6yUTMGGzjxOX39l+xydhpxiOFqHJV7SVfitBjWTSyk4+jwItCLMujNdxgFdzQ2LY3zyUcodq1bhZLRu+/Zcb39v8YQHc9cg/eMyKUa0v4KXSJxsQ2fZg2rnK7gQslQToCo/qgI/LFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=QbGrg8LE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790040013; c=relaxed/simple;
+	bh=Z86KznxgeTUIZD2SxMmTodrmCZvMPJnEO7LZsVetIxQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=cdkYceDKob0CY+yizLpQGx8oRp+twZBmz5MRrK5fn+CtXCtZWyA4tR5VL4/Ka5epq0UaxAcpyVDIa2TLS33JZpQNHZ0lc1CBLpH5Wt5j7smp0yC/ZZBRLX8l1blEzlcFHXXNvnD8XhF98R1J8WMICNPaqYPOQrbAn4Nw5/OmlgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RCsZaIzi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="QbGrg8LE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06D4E1F000FF;
-	Mon, 21 Sep 2026 18:50:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790016623;
-	bh=bGNaovLE/0JqFTMgkr4D4XAvXALgacDL2ZDGo2aiMkc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=QbGrg8LEp8qfzuwYXoZG0YCvChhgz0TPgC3ipJgVW/TT0zaIOFU1kVRfnxsEWb9oC
-	 fJ4JdirRXadvrsufjlUY6Ss1rt89OBD03KSGsjtInm633XSnYHwI7y7TWTWVtWT4A1
-	 erW0BPX1bFfyK5yGx1fkyYjRTpd4w3PPrMeY+vUQ=
-Date: Mon, 21 Sep 2026 20:50:19 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Sang-Hoon Choi <csh0052@gmail.com>
-Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-remoteproc@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Changyul Lee <lcy8047@gmail.com>
-Subject: Re: [RFC] tty: rpmsg: possible lookup-to-reference lifetime race
-Message-ID: <2026092154-anger-sensually-aae8@gregkh>
-References: <179000811428.1227592.8003229121862460039.idr-bug-84@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RCsZaIzi"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 45232C2BCB3;
+	Tue, 22 Sep 2026 01:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790040013;
+	bh=Z86KznxgeTUIZD2SxMmTodrmCZvMPJnEO7LZsVetIxQ=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=RCsZaIziqhY96cXeXwjkVyFGsU/aU6xafZ2yF3NJqQiz0QOgt4wHLDnGsVFbB1A9+
+	 lafWep2xCLGmj07PinnDxEYkgIQVb2soHARij1bBz9+LfhYiF57gUWWCTrvFY1FiJJ
+	 9vQXdHIAsynQnmzhEHr4GtE9lCL8Eq+5I0WmeQWkSgJuEAnYRpVF/ed5Nes20I6gzo
+	 4AJCa1IDvUXC+HM2rPAXBLdGOUHFTjOkufNdHD957LzLnWU9tsrUPKumAHNRHZZo5G
+	 8/IyoRAsxGGRiO/KK3Qfd96/dp5o3xIqgaAJPiKISrxjhIHbzpERlhSBBS4zzC2a7d
+	 qqHrS9RIG6aTw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300A0C982E6;
+	Tue, 22 Sep 2026 01:20:13 +0000 (UTC)
+From: Jaidev Shastri via B4 Relay <devnull+jaidevshastri.vt.edu@kernel.org>
+Date: Mon, 21 Sep 2026 21:20:12 -0400
+Subject: [PATCH] serial: amba-pl011: publish amba_ports[] entries with
+ release semantics
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <179000811428.1227592.8003229121862460039.idr-bug-84@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260921-mb-pl011-v1-1-b378bb057d43@vt.edu>
+X-B4-Tracking: v=1; b=H4sIAMvXsWoC/yXMzQrCMBAE4Fcpe3YlP0bRVykeku3GRjSWrBah9
+ N1N6vEbZmYB4ZJY4NItUHhOkl65Qu86oNHnG2MaqsEoc1Rno/EZcHoordG6GImsGpyLUOtT4Zi
+ +21V//Vs+4c70bvvWCF4YQ/GZxhZtnE97i4UOsK4/S1adcYwAAAA=
+X-Change-ID: 20260921-mb-pl011-35ffcc30d55f
+To: Russell King <linux@armlinux.org.uk>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Jaidev Shastri <jaidevshastri@vt.edu>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790040012; l=2804;
+ i=jaidevshastri@vt.edu; s=20260921; h=from:subject:message-id;
+ bh=HVyVKJUfeShA9Cl/yJ9Y9hzw2YOBdrEEPbai4gSDMk8=;
+ b=Uus3PlpLesgrSLqCkQkUW5L4vrXYNJGcYbo55wSXb1LkDNXlCMzWUUa3MDn9II5WNo+ldABIV
+ vOhrLS5voi8BXCPkm/gFc1cd7TDeut2PvYh0k79XPM7pyg5gBDjzLr6
+X-Developer-Key: i=jaidevshastri@vt.edu; a=ed25519;
+ pk=J7+xYJRlTPds+pv5hbqFFRqGCpDeJDzmZT1ggRwj7/0=
+X-Endpoint-Received: by B4 Relay for jaidevshastri@vt.edu/20260921 with
+ auth_id=1044
+X-Original-From: Jaidev Shastri <jaidevshastri@vt.edu>
+Reply-To: jaidevshastri@vt.edu
 
-On Tue, Sep 22, 2026 at 01:28:34AM +0900, Sang-Hoon Choi wrote:
-> Hi,
-> 
-> I would like to report a possible lifetime gap between looking up a port
-> in tty_idr and acquiring its reference in rpmsg_tty_install().
-> 
-> The source reviewed is mainline commit
-> 5dd1818b15d98d4a20806cd00b1b40320b06004f.
-> 
-> The install path calls idr_find() without idr_lock, stores the result in
-> tty->driver_data, and calls tty_port_get(&cport->port). The port destructor
-> removes the IDR entry under idr_lock, drops the mutex, and frees cport.
-> 
-> If the last reference is dropped during that lookup-to-get interval, the
-> following order appears possible:
-> 
->     rpmsg_tty_install()              rpmsg_tty_destruct_port()
->     -------------------              -------------------------
+From: Jaidev Shastri <jaidevshastri@vt.edu>
 
-Why would these ever run at the same time?  How can that happen?
+pl011_setup_port() fills the port structure and then stores its address
+into amba_ports[] with a plain store. The console callbacks read the
+slot through co->index with plain loads.
+
+Store the slot with smp_store_release() and read it with
+smp_load_acquire().
+
+Found with MBCheck, a static herd7-based memory consistency checker.
+
+Signed-off-by: Jaidev Shastri <jaidevshastri@vt.edu>
+---
+ drivers/tty/serial/amba-pl011.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c4824c201..696c12ca9 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2536,7 +2536,8 @@ static int pl011_console_setup(struct console *co, char *options)
+ 	 */
+ 	if (co->index >= UART_NR)
+ 		co->index = 0;
+-	uap = amba_ports[co->index];
++	/* Pairs with the smp_store_release() in pl011_setup_port(). */
++	uap = smp_load_acquire(&amba_ports[co->index]);
+ 	if (!uap)
+ 		return -ENODEV;
+ 
+@@ -2574,7 +2575,8 @@ static int pl011_console_setup(struct console *co, char *options)
+ 
+ static int pl011_console_exit(struct console *co)
+ {
+-	struct uart_amba_port *uap = amba_ports[co->index];
++	/* Pairs with the smp_store_release() in pl011_setup_port(). */
++	struct uart_amba_port *uap = smp_load_acquire(&amba_ports[co->index]);
+ 
+ 	clk_disable_unprepare(uap->clk);
+ 
+@@ -2644,7 +2646,8 @@ static int pl011_console_match(struct console *co, char *name, int idx,
+ static void
+ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt)
+ {
+-	struct uart_amba_port *uap = amba_ports[co->index];
++	/* Pairs with the smp_store_release() in pl011_setup_port(). */
++	struct uart_amba_port *uap = smp_load_acquire(&amba_ports[co->index]);
+ 	unsigned int old_cr = 0;
+ 
+ 	if (!nbcon_enter_unsafe(wctxt))
+@@ -2672,7 +2675,8 @@ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt
+ static void
+ pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt)
+ {
+-	struct uart_amba_port *uap = amba_ports[co->index];
++	/* Pairs with the smp_store_release() in pl011_setup_port(). */
++	struct uart_amba_port *uap = smp_load_acquire(&amba_ports[co->index]);
+ 	unsigned int old_cr = 0;
+ 
+ 	if (!nbcon_enter_unsafe(wctxt))
+@@ -2983,7 +2987,8 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	if (ret)
+ 		return ret;
+ 
+-	amba_ports[index] = uap;
++	/* Pairs with the smp_load_acquire() in the console callbacks. */
++	smp_store_release(&amba_ports[index], uap);
+ 
+ 	return 0;
+ }
+
+---
+base-commit: 93f51579e7df248780214094418f205253383cc5
+change-id: 20260921-mb-pl011-35ffcc30d55f
+
+Best regards,
+--  
+Jaidev Shastri <jaidevshastri@vt.edu>
 
 
->     cport = idr_find(...)
->                                      take idr_lock
->                                      idr_remove(...)
->                                      drop idr_lock
->                                      kfree(cport)
->     tty_port_get(&cport->port)
-> 
-> tty_port_get() uses kref_get_unless_zero(), but this cannot protect memory
-> that has already been freed. The install path also does not check for a
-> missing ID or a failed reference acquisition before tty_port_install().
-> 
-> TTY installation is serialized by tty_mutex, but the RPMsg remove path
-> does not explicitly take that mutex around its final tty_port_put().
-> The destructor can consequently run from RPMsg removal, not just from
-> TTY cleanup. I have not established all cross-subsystem ordering rules.
-> 
-> A draft takes idr_lock across idr_find() and tty_port_get(), and returns
-> -ENODEV if no live reference is obtained. This uses the mutex already
-> taken by the destructor before removing the entry. Its scope is this
-> lookup/destruction gap; it does not establish safety of every probe or
-> remove interaction.
-> 
-> The draft was compile-checked as rpmsg_tty.o with W=1 in an x86
-> allmodconfig build at the commit above and passed checkpatch. There is
-> no runtime reproducer with an RPMsg endpoint or sanitizer trace. Device
-> permissions and the ability to remove the endpoint also remain relevant
-> to any security assessment.
-> 
-> Does another TTY or RPMsg lifetime rule prevent this particular overlap?
-> 
-> Reported-by: Changyul Lee <lcy8047@gmail.com>
-> Assisted-by: LLM
-
-Why not have your LLM make a patch for this that you can test and get
-credit for the fix if there really is an issue?
-
-And again, how can those two things ever run at the same time in a real
-system controlled by a normal user (i.e. not root permissions)?
-
-thanks,
-
-greg k-h
