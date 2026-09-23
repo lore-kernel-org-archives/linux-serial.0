@@ -1,52 +1,53 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B3DD5328C1
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 15:03:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE5A3B05B1
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 15:06:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790175827; cv=none; b=Fm+nDpqX5Kx7Gj5l4OENXnKs/qXsVRjfqroCYTezrxfuaph7wdK40ZpNU4ZmzPKIIUw66Oyi0t64yZv7/JqfQQGPri/hE5lkQdLcw/P8ZXoFcl+ZWgp1o1Z5T+OHacCUbVwtZj+pEIFe6cGZ1EUsLZIpK0XNVxg94gv4O/E+VzQ=
+	t=1790175976; cv=none; b=XN/t0gNeS50GZVZPJnuVB6uDFuO0BfRBCELDtmSXf4Uvai15UAOzcbgR6I+yb8FInaD/ZnhoAGRfjTmOqXPtyGWh8auS48HFl7SI5Zs23QyoRUMDbtPooi6VtmnVyBY9FmE8kEehU02ZEa2w5LZz0s6AgeFbXnR+pch0yyrCDr0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790175827; c=relaxed/simple;
-	bh=vm8DfcGaHB4o5h2Wfy4Zcw6bZGcIdGO5a47D1fnQG8c=;
+	s=arc-20240116; t=1790175976; c=relaxed/simple;
+	bh=W8mCp3SJrCu4CBEqSbc4yuvWfyqV1/A4EX/v4gQIyvI=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=b7sPjy6OM62xambUN4HXQQpH4+fdToIqkV5/6NiTHf4dmFzj+zhjeaKTPkrbVUeHPDVegfIgrgK9FEG/L0sb8lyycRTdeSlGf/2dWLcyTBJTX69Gt4L42uh5CJhNHE5Pvd0rMlm5TAeGqUkYJz3kcxnly9mZubBqfqQBsrxTcPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=li+Jige5; arc=none smtp.client-ip=185.67.36.66
+	 Content-Type:MIME-Version; b=SyNF6EpwrlDNR/YCviJV+aDeX+h5KnujC486tTY/ZSdtRIHeaPeXRaXTxrAF9dUb6O0pq56Rg3j73TF3hj11ObiVWDIRiI1OPn7tt8bc5m7BJ7kYWOgLFTgLiwdK2jlKRdt7zm48WQ2aAoCjxkip4d9icGGs46/vtkQZZibVpGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=dUhDHp1O; arc=none smtp.client-ip=185.67.36.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="li+Jige5"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="dUhDHp1O"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id AC71F240106
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 17:03:39 +0200 (CEST)
+	by mout01.posteo.de (Postfix) with ESMTPS id D6183240029
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 17:06:09 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1790175819;
-	bh=am+EEP9x2y4Q4D6pvNnvpVas5UQInaB5agNOi330j2g=;
+	s=1984.8680eb; t=1790175969;
+	bh=uEgYgG2jtpKqiEwQEWofsJ4lh37upe+OlrEoikITC34=;
 	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
 	 MIME-Version:OpenPGP:From;
-	b=li+Jige5QVGVgtVMczKqpME/SBYtb+HSnOXJipUZ1Llh+KQsaXSn/H8f2Ec4VMxfU
-	 S1Utmlhyd0Fip2QykPKCM28+PTt1TlivZUBZPzeAHItAZ5OimdcSO4SPXvmbGV835y
-	 K/+AXmSSwlGRkbKu8qgh20YH+y7SaNtN4Otu6yq9BSI3bWKovtzSRg/NpDDAVKSTjB
-	 Q/evhBGCBYEdzvllrBC+NK1Hv5MpT5F8p2MJOJja0JwljXBWdcm5gqD5LB3iNR/8VC
-	 rDPEO3KhSvcI9+K5Pvyp5k91W7LVEUN8XvxNEysmfqJiqZgRPLhFx6vlCUN9Nsfsg8
-	 44NhFH9JSDRoA==
+	b=dUhDHp1OUpnfUasNBkFTQn3Qy1oMMMERHkE3RzNc9KDn9ean8msh6xLpynV9oGOAp
+	 b09yCVlnCBmOwaFbhThbOs+v5JnskGIneGE+ztRMDsSNovkKDIfQXyt+rqezbvv81Q
+	 E/0HZ/orNvk33taziSVjvMyYtYX5vc8s7E/5b5qWz7oHr9g1PWfshGY5/krzz9BPUS
+	 +CFRtuQxpawTPFuq0pXfRpR2hsxerydyZtnvaGZtY6ioq41T9lk50E2sgMEagyoqz6
+	 G7qg3mDRMvxh/x7gjggiZq8Tgj+eIyjTuWiNGIHLb/Xqewg05xSr84ZD60swSwlIwS
+	 QYuSC6cfaSo6A==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4hqgFz6DBbz6txm;
-	Wed, 23 Sep 2026 17:03:35 +0200 (CEST)
-Message-ID: <f6ced1d1d86e9033568569ae981de97f4a368d90.camel@posteo.de>
+	by submission (posteo.de) with ESMTPSA id 4hqgJs27jgz9rxD;
+	Wed, 23 Sep 2026 17:06:05 +0200 (CEST)
+Message-ID: <708eb7c004c0cce22d71bc8fbd68b44aa3b704a3.camel@posteo.de>
 Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
  receive_buf callback calls
 From: Markus Probst <markus.probst@posteo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Gary Guo <gary@garyguo.net>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>
 Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>, 
  Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng
- <boqun@kernel.org>, Gary Guo	 <gary@garyguo.net>, =?ISO-8859-1?Q?Bj=F6rn?=
- Roy Baron	 <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
- <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Danilo Krummrich
- <dakr@kernel.org>, Daniel Almeida	 <daniel.almeida@collabora.com>, Tamir
- Duberstein <tamird@kernel.org>,  Alexandre Courbot <acourbot@nvidia.com>,
- Onur =?ISO-8859-1?Q?=D6zkan?= <work@onurozkan.dev>, Eric Biggers	
+ <boqun@kernel.org>,  =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron	
+ <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, Andreas
+ Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross	 <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
+ Daniel Almeida	 <daniel.almeida@collabora.com>, Tamir Duberstein
+ <tamird@kernel.org>,  Alexandre Courbot <acourbot@nvidia.com>, Onur
+ =?ISO-8859-1?Q?=D6zkan?= <work@onurozkan.dev>, Eric Biggers	
  <ebiggers@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes	
  <ljs@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett"	
  <liam@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, Jiri Slaby	
@@ -54,14 +55,14 @@ Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
 	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org, 
 	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	driver-core@lists.linux.dev
-Date: Wed, 23 Sep 2026 15:03:38 +0000
-In-Reply-To: <2026092327-tinwork-native-7a87@gregkh>
+Date: Wed, 23 Sep 2026 15:06:08 +0000
+In-Reply-To: <DLMQUEKCSXRS.2OBTL1GV4FXVV@garyguo.net>
 References: 
 	<20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de>
 	 <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
 	 <2026092356-chatting-dust-3de9@gregkh>
 	 <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
-	 <2026092327-tinwork-native-7a87@gregkh>
+	 <DLMQUEKCSXRS.2OBTL1GV4FXVV@garyguo.net>
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  keydata=mQINBGiDvXgBEADAXUceKafpl46S35UmDh2wRvvx+UfZbcTjeQOlSwKP7YVJ4JOZrVs93
  qReNLkOWguIqPBxR9blQ4nyYrqSCV+MMw/3ifyXIm6Pw2YRUDg+WTEOjTixRCoWDgUj1nOsvJ9tVA
@@ -107,7 +108,7 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  dQNGrZ91M9nlIBKw8Y7c7xZ4098qX2b8JX/CxD+gC1r4C8vuA3GkhFLx+KlkON7LyiJPkrePp6Qky
  jfGillcaQOqFZ3WwVqyzG1BUfTow==
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-xmF05cdqHl0WI0YWGhnl"
+	protocol="application/pgp-signature"; boundary="=-qFTq82k4Jz8KYLv/i1pk"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -117,12 +118,12 @@ MIME-Version: 1.0
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
 
---=-xmF05cdqHl0WI0YWGhnl
+--=-qFTq82k4Jz8KYLv/i1pk
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2026-09-23 at 16:26 +0200, Greg Kroah-Hartman wrote:
-> On Wed, Sep 23, 2026 at 01:31:49PM +0000, Markus Probst wrote:
+On Wed, 2026-09-23 at 14:52 +0100, Gary Guo wrote:
+> On Wed Sep 23, 2026 at 2:31 PM BST, Markus Probst wrote:
 > > On Wed, 2026-09-23 at 12:35 +0200, Greg Kroah-Hartman wrote:
 > > > On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
 > > > > These functions will be used to simply the serdev rust abstraction.=
@@ -140,87 +141,6 @@ ust
 > > > >  include/linux/serdev.h              |  6 +++++
 > > > >  3 files changed, 93 insertions(+), 1 deletion(-)
 > > > >=20
-> > > > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> > > > index 7500efcdfc21..7d24f16710cb 100644
-> > > > --- a/drivers/tty/serdev/core.c
-> > > > +++ b/drivers/tty/serdev/core.c
-> > > > @@ -187,6 +187,51 @@ void serdev_device_close(struct serdev_device =
-*serdev)
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(serdev_device_close);
-> > > > =20
-> > > > +/**
-> > > > + * serdev_device_pause_rx() - pause data receive
-> > > > + * @serdev:	serdev device
-> > > > + *
-> > > > + * Pause calls to receive_buf.
-> > > > + *
-> > > > + * The caller must guarantee that this does not run concurrently w=
-ith
-> > > > + * `serdev_device_open` or `serdev_device_close`.
-> > > > + *
-> > > > + * Note that if a call to receive_buf is currently executed, the f=
-unction will
-> > > > + * sleep until it has finished.
-> > > > + */
-> > > > +void serdev_device_pause_rx(struct serdev_device *serdev)
-> > > > +{
-> > > > +	struct serdev_controller *ctrl =3D serdev->ctrl;
-> > > > +
-> > > > +	if (!ctrl || !ctrl->ops->pause_rx)
-> > > > +		return;
-> > > > +
-> > > > +	ctrl->ops->pause_rx(ctrl);
-> > > > +}
-> > > > +EXPORT_SYMBOL_GPL(serdev_device_pause_rx);
-> > > > +
-> > > > +/**
-> > > > + * serdev_device_resume_rx() - resume data receive
-> > > > + * @serdev:	serdev device
-> > > > + *
-> > > > + * Resume calls to receive_buf.
-> > > > + *
-> > > > + * The caller must guarantee that this does not run concurrently w=
-ith
-> > > > + * `serdev_device_open` or `serdev_device_close`.
-> > > > + *
-> > > > + * This can be called even if not paused to ensure data receive is=
- active.
-> > > > + */
-> > > > +void serdev_device_resume_rx(struct serdev_device *serdev)
-> > > > +{
-> > > > +	struct serdev_controller *ctrl =3D serdev->ctrl;
-> > > > +
-> > > > +	if (!ctrl || !ctrl->ops->resume_rx)
-> > > > +		return;
-> > > > +
-> > > > +	ctrl->ops->resume_rx(ctrl);
-> > > > +}
-> > > > +EXPORT_SYMBOL_GPL(serdev_device_resume_rx);
-> > > > +
-> > > >  static void devm_serdev_device_close(void *serdev)
-> > > >  {
-> > > >  	serdev_device_close(serdev);
-> > > > @@ -398,6 +443,7 @@ EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
-> > > >  static int serdev_drv_probe(struct device *dev)
-> > > >  {
-> > > >  	const struct serdev_device_driver *sdrv =3D to_serdev_device_driv=
-er(dev->driver);
-> > > > +	struct serdev_device *sdev =3D to_serdev_device(dev);
-> > > >  	int ret;
-> > > > =20
-> > > >  	ret =3D dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
-> > > > @@ -405,7 +451,9 @@ static int serdev_drv_probe(struct device *dev)
-> > > >  	if (ret)
-> > > >  		return ret;
-> > > > =20
-> > > > -	return sdrv->probe(to_serdev_device(dev));
-> > > > +	serdev_device_resume_rx(sdev);
-> > > > +
-> > > > +	return sdrv->probe(sdev);
-> > > >  }
-> > > > =20
-> > > >  static void serdev_drv_remove(struct device *dev)
 > > > > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serd=
 ev/serdev-ttyport.c
 > > > > index bab1b143b8a6..e8aa89e733bd 100644
@@ -255,12 +175,7 @@ c to resume.
 > > >=20
 > > I can use locks to make it less "fragile". But I don't I think I need
 > > them.
->=20
-> Always use them first, and then remove and do "tricky" things if you
-> really can measure the need and can prove that they are not needed.
-Ok.
-
->=20
+> >=20
 > > > WHat's the issue here, you
 > > > need this to be "flushed" before this call:
 > > >=20
@@ -275,109 +190,42 @@ ng
 > > This should be an acquire load operation (paired with the release store
 > > operation in `ttyport_resume_rx`).
 >=20
-> Where is the load?  This feels wrong.
-
-`test_bit(SERPORT_PAUSE_RX, &serport->flags)`.
-
-As Gary pointed out, there is `test_bit_acquire`, but `test_bit` and a
-memory barrier should have the same effect.
+> Then you should use `test_bit_acquire`.
+Ok. For some reason there is no equivalent `set_bit_release`.
 
 >=20
-> > It ensures that any writes before calling `ttyport_resume_rx` are
-> > visible in the `serdev_controller_receive_buf` invocation.
->=20
-> writes from where?  There wasn't a write before this that I can see in
-> the diff, hence my confusion.
-Writes by the caller of `serdev_device_resume_rx`.
->=20
-> > For instance, in the Rust abstraction the following will be called in
-> > order in probe (with the following patches):
-> >=20
-> > - serdev_device_pause_rx
-> > - serdev_device_open
-> > - dev_set_drvdata
-> > - serdev_device_resume_rx
-> >=20
-> > This atomic lock effectively ensures in this example that the set
-> > device driver data is visible to `ttyport_receive_buf` before
-> > `SERPORT_PAUSE_RX` is unset in `ttyport_resume_rx`.
->=20
-> This feels rough.  In talking with others today, serdev really should be
-> reworked to be a "real" bus here, which should solve these issues,
-> right?  Perhaps that's the better idea overall instead of these fragile
-> links?
->=20
-So that there wouldn't be a tty layer in between anymore?
-
-I would be interested in how this would be implemented?
-
-If every serial port driver needs to register to both tty and serdev,
-it would likely introduce a lot of boilerplate code.
-
-> That might also solve the other issues with serdev where people
-> want to use it for dynamic devices (i.e. USB devices).
-First time I read serdev having issues with dynamic devices.
-
-Can you share details on this issue?
-
->=20
-> Thoughts?
->=20
-> > > >  	dev_WARN_ONCE(&ctrl->dev, ret > count,
-> > > > @@ -156,6 +166,32 @@ static void ttyport_close(struct serdev_contro=
-ller *ctrl)
-> > > >  	tty_release_struct(tty, serport->tty_idx);
-> > > >  }
-> > > > =20
-> > > > +static void ttyport_pause_rx(struct serdev_controller *ctrl)
-> > > > +{
-> > > > +	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
-> > > > +	struct tty_struct *tty =3D serport->tty;
-> > > > +
-> > > > +	set_bit(SERPORT_PAUSE_RX, &serport->flags);
-> > > > +
-> > > > +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
-> > >=20
-> > > What keeps this bit from being set right after you test it?
-> > The statement "The caller must guarantee that this does not run
-> > concurrently with `serdev_device_open` or `serdev_device_close`." in
-> > the kdoc of `serdev_device_pause_rx` does.
->=20
-> Oh that's going to be impossible to keep working :)
-I will add a mutex lock in the next revision, which removes this
-requirement.
-
-It should also allow to call `serdev_device_close` with the device
-already closed without causing a use-after-free.
+> However, this isn't sufficient because there's no synchronization between=
+ this
+> bit test with the bit set inside pause_rx.
+Will be replaced with a mutex in the next revision.
 
 Thanks
 - Markus Probst
 
 >=20
-> thanks,
->=20
-> greg k-h
+> Best,
+> Gary
 
---=-xmF05cdqHl0WI0YWGhnl
+--=-qFTq82k4Jz8KYLv/i1pk
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqz6jobFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPStGQP/R9YJCv9mt+Z0BdHPp4Y
-NiKMaeELEeUpV0oTRWWYeTCDmP3qzpkY9eaHrSS0+GKjFJP85R/4vT0XSHslSjs2
-WwNOZN0g9nxyeTw33x5Ui77Bxo2uyvCWNZT+LCrph87udGXHHTab1NwCVFf3QeRZ
-vCC9bfvA9K9ylTMTce1juPMCyT14vYkiT+PzXBpRM4Z0wRvwqg+wpM/peGIu5Qx/
-rtmf9MpC5ElDoyv3yKQaxtHi7UAl8UHNlD+M4nhkakvPBIIhfm2Z8FFrHmjoKggQ
-/4yUiY+2W8wRpWTuhLBGOOSi7inCNVhJ8lpuVZzXUD97fSr0AReUDMOj1xngKC20
-h2og1CURcjeG2oX8yJf3RbnNOLNICMmmObQHi8refYdlTU4Xwg2Dq3JO4sZ4SZXl
-KWOANOeCHDKSD+BY2+YYwNYgvvSojhlkiQsKjvj4w88j2i7ThsmG4KC10c0sWxxW
-2EDECDIwIrzuXdSvcnnW39chY0r2Sws7+iS4jLsRaJ7omc4VtiSfnA+JivR+BpTa
-Itm9fSrFjWr19Wnu5Kp5BgPqaqA7VIPfnZs2m9uhU+YRxxDitOlCG6P1ytxwudZ4
-ShvigeRVq5nuw5Gu990Sf72l4sdpu4t2TYXwsm0tIcOVvPSVOhIqiklP0STGEQjS
-Y0MwyDb4mc/8LjMjX3lPs36e
-=dOR0
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqz6twbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSOk0QALLiTzfWtOf81gvgqjYo
+mhW2jo2bqdGVcOHTrqDJY4ms9BRnQmAzJyMamlKEEks3mG6I0QtCAv41lntVXHeW
+jvcOXO54yyQWxVwS+J+M+y8z//MLdvO7mb5v91vYBEY1jnMwl60PHnuKUuVTLms7
+qN+zvihG68OVGFVTInb3CPN4N93cgZkM2gNl+2r/NJxci1tYJN/DgosHvFD2n2UA
+X1ZkfXBMYxiOClRI5V0M36HL3LNM1tNa7Z32Mvl1D4ym09eUoLhPOT+EPONi65cm
+WqBwSFQrWwCffcIzetd68CG6G6C9aPjbXValmd3kUAbsxWFdahghADq35wNb1kNE
+Ga7tcuqL6lpoT46U0wTkDtp8iBk76AjoMK3RtO8SxFxdnstvCVnk8XuqL77QR6tT
+Fd0lMktEYiCm/prxsbwC9jQqRZNEWMTPKGYr21rU2mClvElu4pRceWwzuxsm8D/i
+G7T6runz97OxPDxhdjqGdXLtl8yMF6ds8S7/yxx9DqbtzLp+IhZye+HPsstIECWj
+Xf+ElC8wyTVoCHosvVx6uw1TAKj/mxnq/A2adTvxHYEEiHGOEcMxMENmqZOaKk0G
+Q1U4Ec9RqiAP9Kri1LPxf0pPmiB7rFHtcpfsd79f4KbLI2Owu/bvxqJ7pEQLLAPo
+dFPE9V81NqqyfF4mWkx7RIC0
+=m2Wa
 -----END PGP SIGNATURE-----
 
---=-xmF05cdqHl0WI0YWGhnl--
+--=-qFTq82k4Jz8KYLv/i1pk--
