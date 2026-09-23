@@ -1,222 +1,218 @@
-Received: from mail-yx2-f42.google.com (mail-yx2-f42.google.com [74.125.224.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CWXP265CU008.outbound.protection.outlook.com (mail-ukwestazon11020115.outbound.protection.outlook.com [52.101.195.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8509351D516
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 13:42:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC185304B2;
+	Wed, 23 Sep 2026 13:52:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.195.115
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790170933; cv=pass; b=XS3dwF+yySljiYlveQuAP1wVl3eaosm6exlUhZql6n6z9WEVM6VdXzt557k/a7+8DqXxZYc8TuFkfiTDnCSLsD/VV9ygOQx3fUrooUmgqRRHqej5RJyUkNfxY/bnpGkq2JZC0WM25HfYbHJ12rkWhSOSzzrM8P0/kYJM4x+7cRE=
+	t=1790171534; cv=fail; b=asz8jQ37OdmY1ABG4Clb9r4Pd+7LWPr4GZl9LH6PEJVipxeBQ4wKyUq5NY6fXZwyhO3c8IxFfIg50+79H69Uragegki1vyaLiO+FNUksrTSzNZrO1XQXGS/c8JuiUvA8Jwiq2WDS2domad2FhsPU/8alThb5i7OV3okHYJmZ5Hs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790170933; c=relaxed/simple;
-	bh=xv9ucU4YRdbUBDfAYkIA3JSvD5XSlmVKrP6os4daOsQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PXi0JKED+hoHvavPbhiQlGB33PPgSyUqJ6VlCC/qVPruwkw6xJxVBQhOkiY9ByEj7NQVg5P7vyNrTVZCbecEygVdIoMQgdDiwtXqs1HbOqij7NPYCIMg9kEzw8rtYVHnq8KPRQMVtNhs476s28NtTStva83B7XyGcCNZu/+rjac=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rwyQbJq+; arc=pass smtp.client-ip=74.125.224.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790171534; c=relaxed/simple;
+	bh=Hin5EKSXrJvYW3IXu/CUNAMIXEpWuVD+FshVSZOnpRw=;
+	h=Content-Type:Date:Message-Id:From:To:Cc:Subject:References:
+	 In-Reply-To:MIME-Version; b=mldIaH3DOPmCIltGcr31oATP0XUe4KbatV6/SASQ5HEkchxJsG62aPvtAhqh2iLzZX+DpfqbHnpvywD7ZTz9h2TQexcdEH4IGrbpQN2qvT+EHSaNDJs7ME9uwohs4RPEBfYTWNBDt0PB29nZTukKvR/kGr0bnB//NirP84aS+ZM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=uHh6at0l; arc=fail smtp.client-ip=52.101.195.115
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rwyQbJq+"
-Received: by mail-yx2-f42.google.com with SMTP id 00721157ae682-8961cca9193so16781177b3.3
-        for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 06:42:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790170928; cv=none;
-        d=google.com; s=arc-20260327;
-        b=YaQKD/1/Ordo/T0YclSQ9BDCJaR2FHsDTo5rx7c1a3lMy04FG0YkJVQhPFhurBuHzZ
-         PJy63+isWW5Ex4JSLNDpetVrhb3t4hBKzsl6NzIVyYAp/gd3w1gJCkiG6JTzptHP29kH
-         +l4QiaUXG8QL+sfhcnwj/hDYEs8CcSouVsPIqWsvVNR8uCjk08PCjp6isFRSebczKDIR
-         Atka7tokRdpH2LhVr85Jg4kdZToQPgdE/hJpTcz0TQd+tHtS8CBaR53kiQ1rwCnJEo2U
-         wXt6D64P3YAl86JijPFw5IysNSnS0y3veekyeU7Jurwi9fVqREcWSI97ByueNqq6wnah
-         O+/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gUppNMSnE+FI5UWVFsCQivlVTUZFB5M60mvANc0iVpM=;
-        fh=Zuk8MZc5pzousrKU+HXH4U0fYG43fFY/cTIJ59ASEnw=;
-        b=T6bjSWmi+IZGye32zu9OOuLc2xWdrmOrJQVel6TdtI2RmNo0VPV5dQVWFD3JwujPwK
-         OdPZRDgmCnHVw6FCtNqmF+ofihmzm38iaN1SSEL1vsAChUDr8iTLO3HPbUb3liGZ66bb
-         tN/F5JWUkgEisHxz0sp3xTjiDRlmAjF9U2ttoXJqblWVOBIgHMr+i+c0nrAAbdC2OnVP
-         FX9zrnqVuEoraIcTSXfWjuvpd+GLO14U3fb8Wk6Vocj4PMcEC7WMqa2Rd1BP497jwId5
-         yikHImI+WgjkxEV481Krn5W+McY6P7eminxb+U+aKq1+Z/omI6vXEfapkqz4mFTAI5a2
-         +sZg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790170928; x=1790775728; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=gUppNMSnE+FI5UWVFsCQivlVTUZFB5M60mvANc0iVpM=;
-        b=rwyQbJq+l0tkyofv5rlLPNrnOjNUjjW667r206Et/FFqa13865pNrxufVuK/OV02YS
-         UeheoNa/oa+arMeXvNcHskBqBjAOfemc/QY3d5qSuB/aatD1DMJLF/hAuWO7fjbHJfOp
-         hrcdB5LPvI4zAoaQWhN9hzrEBB1F08a7jJPhPpPdDmpZq4FaoAtfA2MROe5uMfahBYSq
-         sncW89ys5jVHhOB2FaIdRJZDqvtKzFzin51Nx7Qo+qox8UxhcstSebk9PXROzVKm/N6y
-         dkiOYNEEAY5rgc2hB/v/poU944iM1ADHgMAJWkfs/sbx04AifNuwLB4SGPYUKdjFQ3D8
-         IgQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790170928; x=1790775728;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=gUppNMSnE+FI5UWVFsCQivlVTUZFB5M60mvANc0iVpM=;
-        b=AAIm1FkxioSTdUsO3KEBWJnXAqTzfWF4oZ+COmhQDbeTCdzTGK0f8Bw84jPDQEjD9f
-         Zl9S6j3ulQnifrp5rUw8pkQgifGE/iO34Dcyh6L0gDpZa68sHr6x+tnQhU8ELty1pXuA
-         XL1UDpkoJuATpylPjT2LQ9qxavD243CIATUnDWwArpaFOt34cjcn5MP203PnXRgXD8Dz
-         hi+xSCKoee1np3juKX627gVklGsiPF3+m8NdT+K4kObUvErRg0UO+kTlIhvreLalZg8Y
-         hzEYX+0qX/xWR9hRnpr+34jbHkchTQIrMZ8fhibbD35Q8VTx60Y4uBHY+f0Lcitgfv0h
-         1lZg==
-X-Forwarded-Encrypted: i=1; AKwUvByDwSl39mTRNGP8w9xuiYM27ltiZbJEW9kBC3ZdRsAK26KGHsgUuIH6l/7PZpoP8jw01+oCfMJUtS3V3+c=@vger.kernel.org
-X-Gm-Message-State: AFuF++nKTD71oNTXh3WrE8ORiVBdgjkdieP4O9nJRN9Kp3pdBVYVQf4M
-	T66ep5IVuBbI0hqmn6lmYYrhx3K+YE0RmsU4FFm0LP6ldcY6PX4skgDVO3EhBaOHOtoXksQvcAl
-	IDbtbN8w/NzIReT4bnXnJSavopyYJFDA=
-X-Gm-Gg: AYBFou3iH07Myze5uCPqhnZMnArYX+e7HiTIMKWFCJ+C1ycSAVU8vMs+XYPoOYpBs9y
-	4/TJPCsu1AyLMIIql2KhfcfOu5AgNXS5ouylIndaOi38qXMR1ydWFCh1E30MvWfwR4DLY65RY4Q
-	3pg8wJMyRGfuKQ7B6xmCWEzQtJa2j2PRVdTR87bdlz0RdY3RLWYJb0wabVxS6LqxL5nPeEj/3jG
-	io5J9GIVXxfyOetNcY6wEHIdpIQBGSyYUX81aRwtf/EvMVqxfdeEmlv62N37MM6VbxyRTk1VrLo
-	KfnBI7WeqazhmFQf2NFP/k0hOOHA1hPpXFDziIv1+0sugapUfvlpfIrn6/zGTbJdESPwNyBN24B
-	ANPy3JG1U7GXWxJT+ipVCGSl0mbH3XdouMGZqr4oK+nY=
-X-Received: by 2002:a05:690c:c3e4:b0:872:1e2e:b496 with SMTP id
- 00721157ae682-8a45b0a1042mr11972247b3.31.1790170928179; Wed, 23 Sep 2026
- 06:42:08 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="uHh6at0l"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nlxkiWx0n2NRoaI9XzZwT37gkKxc26pmrneUxwqb9KcPrvgJSmsRqVMcNhkjczH2BrSYCc+TkZQXm1iVOfJCkGRQ4arsU4lkYtlydFrM4vF1ulZx0rfvcVVHzDJ+QVpJPR+Yc5xefAMyi9EkcvSKatYX44TJdBFaabYaxuKWjrvkiBjVD0soGHkaKF3YeLyCaLuSXEiwkG9bv8Ecaius2fQr70Ii1hbnL9pGouuAn/eq6xSu/XCZV3kIPh77u77iT9eoEcGmPLkcXQ05DtxU1XkEiwZ1W4nowYBKyF+Sl8pu1bL+YB38Wv/DsnIUBIaBL2756Tj3+eSrJirECOZ/6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=biKKDDb5TM42skkUDESqhKhzvm+b4cUsZncVArJ/g74=;
+ b=b51/+dezp+zgwf4QTP5ngh1YUUAj9cszkTGreB04TlxUjGHPe19TJ1rpZ2Df7+rhMnCOnf7PnUnEcNHZfooDFVmZEvgO4ZRHsjphwTtEAUVxlu8UuxQaHUAO2HGj9QdhXVhVUv/ZfkyhFOpTnCn9ht3yN4S7G9QnkxhESRE6aKmsJMdgFl3qhRoYAi0V6ZpcaCuBjn3SnrligX3L02o9xz6ybYg2zDeqc3mpSyQhpOmZFWxHLCxzHVpkVXO2/WiVpDSmZT8dEoF8G6GIV+YqMdwZQLz571TO+PPjp5eIjcE4WFO9zg9EFF3kQHdaIVCjLVAh6PYZGoA7SP+fpuN2nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
+ dkim=pass header.d=garyguo.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=biKKDDb5TM42skkUDESqhKhzvm+b4cUsZncVArJ/g74=;
+ b=uHh6at0lIw+Afj1TJ9mayjQeniTJqUX3FS61ZJYswbM/qLUepFOFD/+DDxYH2CHdgYCUi7rorxP5vSiQ4tSmAvTg/BlweUp/RBToIH/lRHsSwyj8PPF0X7ILXz1oRbOLpKNIEFjO7drMnZlQddm5aNx75m2asayZyWrW0CHvVr8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=garyguo.net;
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4ab::19)
+ by LO0P265MB9178.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4a2::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.14; Wed, 23 Sep
+ 2026 13:52:09 +0000
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1]) by LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1%6]) with mapi id 15.21.0451.014; Wed, 23 Sep 2026
+ 13:52:09 +0000
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 23 Sep 2026 14:52:07 +0100
+Message-Id: <DLMQUEKCSXRS.2OBTL1GV4FXVV@garyguo.net>
+From: "Gary Guo" <gary@garyguo.net>
+To: "Markus Probst" <markus.probst@posteo.de>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>
+Cc: "Ayush Singh" <ayush@beagleboard.org>, "Johan Hovold"
+ <johan@kernel.org>, "Alex Elder" <elder@kernel.org>, "Miguel Ojeda"
+ <ojeda@kernel.org>, "Boqun Feng" <boqun@kernel.org>, "Gary Guo"
+ <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
+ Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
+ "Trevor Gross" <tmgross@umich.edu>, "Danilo Krummrich" <dakr@kernel.org>,
+ "Daniel Almeida" <daniel.almeida@collabora.com>, "Tamir Duberstein"
+ <tamird@kernel.org>, "Alexandre Courbot" <acourbot@nvidia.com>,
+ =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, "Eric Biggers"
+ <ebiggers@kernel.org>, "Ard Biesheuvel" <ardb@kernel.org>, "Lorenzo
+ Stoakes" <ljs@kernel.org>, "Vlastimil Babka" <vbabka@kernel.org>, "Liam R.
+ Howlett" <liam@infradead.org>, "Uladzislau Rezki" <urezki@gmail.com>, "Jiri
+ Slaby" <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ <greybus-dev@lists.linaro.org>, <linux-serial@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <driver-core@lists.linux.dev>
+Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
+ receive_buf callback calls
+X-Mailer: aerc 0.22.0
+References: <20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de> <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de> <2026092356-chatting-dust-3de9@gregkh> <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
+In-Reply-To: <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
+X-ClientProxiedBy: CWLP123CA0253.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:400:19e::18) To LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:4ab::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260907173000.1254045-1-nithibert@gmail.com> <2026092308-stinger-number-5fe7@gregkh>
-In-Reply-To: <2026092308-stinger-number-5fe7@gregkh>
-From: Nicolas Thibert <nithibert@gmail.com>
-Date: Wed, 23 Sep 2026 15:41:55 +0200
-X-Gm-Features: AcwNN1WBTtTV6R4K2fgHwGlqy86R2x4Y5knHaNxQ49lSd0hs6xEZ-pIfBOpA5nM
-Message-ID: <CAKA8V_8vpizeoH+FNY+tK2c6=mdPGV_1VBN9C3d_+Gibe_dS0Q@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_of: set UART_CAP_NOTEMT for rts-gpios RS485 direction
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LOAP265MB8560:EE_|LO0P265MB9178:EE_
+X-MS-Office365-Filtering-Correlation-Id: 46b80fca-ddc9-4386-b576-08df1979dc6d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|10070799003|366016|7416014|376014|23010399003|1800799024|6133799003|10067099003|56012099006|4143699003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	M+Bl8tQQUvHlW98s9BrU3ybxMU5Z/SrEoK+h8BSbz8lVdw6UYoi5cf8DHFzjnCQLrTHr68UmFcO6RSKdGzz50cQCRFVShsI9DGF7XsICn/PAYv6MxsV3i3IeBvOx8+kzvi+61H8/TgFs1Qxsu77+v7craG6lg2iCqJlgcogsVKDt1ds+0ovAlSxsT98W57/DpYtCfjHRpiOZf7Y8otr6sxGivwdNxieg12p56ta0bEyoS03YPwfrIfjogQ7lfuMqCdIc37pUlTz40f11BA6pClZBebrBeVoMaQA1F2cQhi0j9141TrIztJUkQ+Siu2cK2/aH9cN/lAdMLRFO4Gke033WvMX5vF4G12eOkGYkA6rkGORROnhUR82+jgRiQ4Uzr0LBTyV6bDAHE1Q7zCmWfE8H9w9cR3dgq304M8A5xcyc2jbXwzVNR0AlS9i3WMMa9EmRJAEjKmL6NNkQkcLw8jsBxYiNlSE8g0sIEgp03ukp9+QcgYVpNn2F64uFVVLERhTIMMvirNIH22imPwFfV1QKNQ2s0B+DS3gLZXEecvAHaclQm/8WwWAXxDg0O1XZvjc9COVOxi+iH9yTdQxhnmV8oIe+Z+Fh5KTV4tmhct5b2S7/3R/SY9S2aYm0KIoIZBuLRb/iWTH251eigIdhyfyqyyYc/y2yb//Os/+s37M=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(366016)(7416014)(376014)(23010399003)(1800799024)(6133799003)(10067099003)(56012099006)(4143699003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VE5zZWh6Ullqc0JlZlJaa3h6bERIdS9pWXdrYnN3Z2YyZzlKak1UQXFnWXpa?=
+ =?utf-8?B?NFdUcHMwdlRoNXBnR1gwcWhGZ2FSQWkxU3ZjaGk3UFZ2bnJKNmJFVFBaU0cw?=
+ =?utf-8?B?NDV3a0NGM2NIMGlDdjB0Y1hlbUdSaHNTK3hyL2JBV1lNeEczaGFEOE9LNElP?=
+ =?utf-8?B?VXB5TlZYRmN4RkJMWXdQV3FNbHUrL01nendaRzFvUWFxekZuRmx0L3QrSi9w?=
+ =?utf-8?B?aHlBSHVEWDJFSk9DNk1kTVFOMHYxejBuSzNxMjNCWW5tbWc4SUgwVjY5aXNy?=
+ =?utf-8?B?S2ltL3FoZktBaTgzL3ZTaHJQTTVIbGpCQUxYSzNSSDhZQVl4bEZoNGJ0YTJn?=
+ =?utf-8?B?ZGlaSGUzUm5LblE2eXl6cm0raHNudU1ZZytxZUtpeUIvSW1EeFZaejhzb09q?=
+ =?utf-8?B?UmlDWFFaWmYyek95a05vdHU1MWNEanFhZ2I0MkZHTnFFd25OUVZ0UVROL1VP?=
+ =?utf-8?B?T05DcE40VnE1NTFsdjdWdnlEM0RMWGE1N0t4NnVOWHpRRWxpZENwaWs5UEFU?=
+ =?utf-8?B?aDgwdDd5cXR4U1dCSHJweVlTRmNZUTR0dGV4QUI4SUdFbFZWMlUxVXBXNEtT?=
+ =?utf-8?B?NGJsbG5hbXFVYXJYM3hsVWRjWDEvZHNaSkZZYVlsTS91TWZWM2ZwWktRWmhY?=
+ =?utf-8?B?c2pQNTVVb1laQjRhd1VjZklrK0VOMWxKL29PckhaeTFZT1F2QmZVYXlJejJ3?=
+ =?utf-8?B?TTNoeHNXQW1XekRKUVk2QjdjeW9LTy93SmNyYmxOa2t5LzBsZ1dGV0ZVN0h5?=
+ =?utf-8?B?VStDcDh1NTE0cTAwdUZOZ1NYSWlTQUMzekdiUFp0dnRGRTdkeHkxQ1pFMVhI?=
+ =?utf-8?B?dkZRK3UxemYrcTBCREp1Y1lpUkdJeEJQenN6UHhYN2VvWlJhN3Baa3d5L0RH?=
+ =?utf-8?B?Mm9tRlhSeTczRXV0NzY4aFFBOVpORXgxM3NkRzNyQlNhaFJNd0VRSkU1b2R4?=
+ =?utf-8?B?dDE0WnlsWkpBS0Z4b09IWVZlOWU3ZXAzVklVRmpNRSsxKzlLWUtyZEFhNjNm?=
+ =?utf-8?B?Ujl2bDRjMVU2bDVFNERkdFFhSE93TFcybjFmOExLRkxIL0VTcDlmOFQzWG5L?=
+ =?utf-8?B?bnYrdDV1NmpiaWk0MjRDTW5WdG53Qmx2RGs4aFVuN281N2U2bXJKdnFGeHEy?=
+ =?utf-8?B?U25EdEo5THdpRTgvb3MwN0JhV2FreWNUb3ZKK29TU29ESGoraHRzVEhNclAy?=
+ =?utf-8?B?dmk1SmN2M1lESVJCYmc5K1JDQlB5TEk1ZzFzdHBGc000WTJxN3h1K1FqNjRJ?=
+ =?utf-8?B?SE5ZNXBqUDNoVXBqVVlmY2xRcTBUb2tISUJDWVhFaDRsSjlCWlhTRVdSSDBD?=
+ =?utf-8?B?UlpScEVIaFZRVGFDQUIzVG11L3NwVGU4Vmoyb2l3a2JZWTNIanUrdmpRaTJU?=
+ =?utf-8?B?S3ZhQnZrenlzQTRjVjRxSm1VNzdBSmNLVG02VExiVG0rUlkxMXZocXQzMXBl?=
+ =?utf-8?B?a25vemZrdnRXUUM1ZmMrUERWeW5VTDMxNllFYlZZdkFTOGtQdmFZMFBpdXBm?=
+ =?utf-8?B?WHdHLzV4SDlwcis3eUUybmw0d2ljS0duSjdCNjdMV3hxM3F2S28zZHRXanBa?=
+ =?utf-8?B?SU1zNU9jd0QrV2t3YTIreHp1NHZBdzNDY3ZwcnN1OEozN25GVk9aVkR5V1Zy?=
+ =?utf-8?B?YWRSckc4Kzgzd3N5c2F3dXNLUmxzK1hITVhPSUIvQ296ZEh1TTg5TU53c0ZX?=
+ =?utf-8?B?Vk85VkdaOGw0aTNDNTFsamVQS3N3V1BicDNMVTJGck11MFFtdkN2UG15bnBu?=
+ =?utf-8?B?RVlWclVxeUJSd2YyTUo5VHZJeWtDZHcyckYwaTRPcFY0aXQ5YzhDVDRESWN5?=
+ =?utf-8?B?WGVRVjc2cnVGM0l3SjhkVUVUUUwxejcranFhYUFneUlXbFFva05abWF5dVBw?=
+ =?utf-8?B?NWxzRDRVTTFOQ2RsZzMyMllXa29McWtTUnZRWmY0UU8xbC9SY3NHaEJxL3Bo?=
+ =?utf-8?B?UFRCNVlQb1duN3ErUDUrZXUzdk4yN2MvOXR3a08wakJYNzdJOFlkenpsdXB4?=
+ =?utf-8?B?cndYeW5mWVJBNGthWnh2bkdIbVR4Q3NvUGRpUGh5QkFXSjJjOWs2b1hXRHFr?=
+ =?utf-8?B?aUJvVWNPbnlOWGduMEk2aWNGNWRlTng1SUV4SExPL0o4QThSbU5XSzlZU25z?=
+ =?utf-8?B?ZFIxTVQ4V0grVFlSMmlCQXRHcit3R0xWYWg1RTdUdnV3RGF3Q3lZbllyL2dE?=
+ =?utf-8?B?SU82R29GbmFWazhUMUF0bit1b0h1KzcrTXR2cTB0ZGZKZktvSUtETVpxSk83?=
+ =?utf-8?B?S05KeXU5bm91ZXlWY240MGwzbnJWcXdYUTR0aWlOWXF5a3prY2Y5bmF3UjBx?=
+ =?utf-8?B?UnZ5bEd2eGIvUkhtQm9vQzAwY3lzTHlZWGZaSmZORjl0RzFpUnJFUT09?=
+X-OriginatorOrg: garyguo.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46b80fca-ddc9-4386-b576-08df1979dc6d
+X-MS-Exchange-CrossTenant-AuthSource: LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 13:52:09.0932
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kMn4H9a3/7P31fx7GpObwR1dGdkPo/IF/w7zRrHII6/kpGs9D4sXu5cVR5PbQsDBtvI1aVkWbncejxra92t+Tw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO0P265MB9178
 
-Hello,
+On Wed Sep 23, 2026 at 2:31 PM BST, Markus Probst wrote:
+> On Wed, 2026-09-23 at 12:35 +0200, Greg Kroah-Hartman wrote:
+>> On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
+>> > These functions will be used to simply the serdev rust abstraction. It
+>> > also contributes to the fixing of 2 race conditions in the serdev rust
+>> > abstraction.
+>> >=20
+>> > Signed-off-by: Markus Probst <markus.probst@posteo.de>
+>> > ---
+>> >  drivers/tty/serdev/core.c           | 50 ++++++++++++++++++++++++++++=
+++++++++-
+>> >  drivers/tty/serdev/serdev-ttyport.c | 38 ++++++++++++++++++++++++++++
+>> >  include/linux/serdev.h              |  6 +++++
+>> >  3 files changed, 93 insertions(+), 1 deletion(-)
+>> >=20
+>> > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/=
+serdev-ttyport.c
+>> > index bab1b143b8a6..e8aa89e733bd 100644
+>> > --- a/drivers/tty/serdev/serdev-ttyport.c
+>> > +++ b/drivers/tty/serdev/serdev-ttyport.c
+>> > @@ -7,8 +7,10 @@
+>> >  #include <linux/tty.h>
+>> >  #include <linux/tty_driver.h>
+>> >  #include <linux/poll.h>
+>> > +#include "../tty.h"
+>> > =20
+>> >  #define SERPORT_ACTIVE		1
+>> > +#define SERPORT_PAUSE_RX	2
+>> > =20
+>> >  struct serport {
+>> >  	struct tty_port *port;
+>> > @@ -32,6 +34,14 @@ static size_t ttyport_receive_buf(struct tty_port *=
+port, const u8 *cp,
+>> >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+>> >  		return 0;
+>> > =20
+>> > +	if (test_bit(SERPORT_PAUSE_RX, &serport->flags))
+>> > +		return 0;
+>> > +
+>> > +	/*
+>> > +	 * Ensure writes by the driver are visible before allowing traffic t=
+o resume.
+>> > +	 */
+>> > +	smp_mb__after_atomic();
+>>=20
+>> This scares me.  Why not use a real lock?=C2=A0
+>>=20
+> I can use locks to make it less "fragile". But I don't I think I need
+> them.
+>
+>> WHat's the issue here, you
+>> need this to be "flushed" before this call:
+>>=20
+>> > +
+>> >  	ret =3D serdev_controller_receive_buf(ctrl, cp, count);
+>>=20
+>> here?
+>>=20
+>> And you just tested a bit, you didn't set a bit, so what are you trying
+>> to ensure is written exactly?
+> This should be an acquire load operation (paired with the release store
+> operation in `ttyport_resume_rx`).
 
-Comment was just to understand the modification done. I think the
-double submission is because I first try in standard mail but then
-with git-email
-I tested it on my QCA4531 (QCA953x base) board with an RS485 converter
-(CA-IS2092A). The converter use a standard GPIO to drive the bus
-between input and output. When declaring such device in dts, the GPIO
-was not used remaining in a steady state and preventing from receiving
-RS485 answers
-Mod neede for such a dts :
-&uart {
-    pinctrl-names =3D "default";
-    rts-gpios =3D <&gpio 3 GPIO_ACTIVE_HIGH>;
-    linux,rs485-enabled-at-boot-time;
-    status =3D "okay";
-};
+Then you should use `test_bit_acquire`.
 
-Regards
+However, this isn't sufficient because there's no synchronization between t=
+his
+bit test with the bit set inside pause_rx.
 
-Nicolas
+Best,
+Gary
 
-Le mer. 23 sept. 2026 =C3=A0 14:20, Greg KH <gregkh@linuxfoundation.org> a =
-=C3=A9crit :
->
-> On Mon, Sep 07, 2026 at 07:30:00PM +0200, Nicolas Thibert wrote:
-> > __stop_tx() (8250_port.c) only calls the RS485 rs485_stop_tx() hook
-> > (which de-asserts the direction GPIO/RTS line) once it has observed
-> > both UART_LSR_THRE and UART_LSR_TEMT for the last byte. If TEMT is
-> > never seen and the driver hasn't set UART_CAP_NOTEMT, the function
-> > returns without scheduling any retry -- the direction line is left
-> > asserted (driver enabled) forever, with nothing to un-stick it short
-> > of another kernel-visible LSR event.
-> >
-> > of_platform_serial_setup()/of_platform_serial_probe() unconditionally
-> > wire up the generic em485 GPIO-RTS RS485 support
-> > (rs485_config/rs485_start_tx/rs485_stop_tx) for every port they
-> > register, but never set UART_CAP_NOTEMT, so any board using this
-> > driver whose 16550-compatible core doesn't reliably surface TEMT for
-> > its shift register hits the stuck-direction-GPIO case above.
-> >
-> > Confirmed live on an ath79 QCA9531 board (SoC-internal ns16550a-
-> > compatible UART, RS485 transceiver DE/RE tied together on a GPIO via
-> > rts-gpios, linux,rs485-enabled-at-boot-time): the direction GPIO
-> > correctly asserts for the duration of a transmit, but never
-> > de-asserts afterwards -- confirmed by sampling the GPIO's debugfs
-> > state through and after a multi-hundred-byte write, on both the first
-> > transmit and repeated back-to-back transmits. Setting
-> > UART_CAP_NOTEMT, which makes __stop_tx() fall back to a frame-time-
-> > based timer instead of waiting indefinitely on TEMT, makes the
-> > direction GPIO reliably return low right after each transmit
-> > completes.
-> >
-> > Scope the fix to ports that declare a GPIO-controlled direction line
-> > (rts-gpios), rather than setting it unconditionally for every port
-> > this driver registers: this is the class of hardware actually
-> > affected (RTS state has to be explicitly un-stuck by software, unlike
-> > a UART's native RTS pin), and it avoids adding the extra frame-time
-> > margin to ports relying on the native RTS pin, which this has not
-> > been observed to need.
-> >
-> > Set it in of_platform_serial_probe(), after the existing
-> > "if (port8250.port.fifosize) port8250.capabilities =3D UART_CAP_FIFO;"
-> > assignment, rather than in of_platform_serial_setup(): that later
-> > plain assignment (not "|=3D") unconditionally overwrites
-> > port8250.capabilities on any port whose "fifo-size" DT property is
-> > set, silently discarding a capability bit set earlier in setup(). Not
-> > observed on the reporter's own board (it has no "fifo-size" property,
-> > so port.fifosize stays 0 and that assignment is skipped), but a real
-> > regression waiting to happen on any other of_platform_serial user
-> > that does set "fifo-size" -- which is a common, documented property
-> > for this binding.
->
-> Please rewrite this to be in english and says things properly.
->
-> >
-> > Signed-off-by: Nicolas Thibert <nithibert@gmail.com>
-> > Assisted-by: LLM (Claude Sonnet 5, Anthropic)
->
-> signed-off-by goes last.
->
-> > ---
-> >  drivers/tty/serial/8250/8250_of.c | 18 ++++++++++++++++++
-> >  1 file changed, 18 insertions(+)
-> >
-> > --- a/drivers/tty/serial/8250/8250_of.c
-> > +++ b/drivers/tty/serial/8250/8250_of.c
-> > @@ -233,6 +233,24 @@ static int of_platform_serial_probe(struct platfor=
-m_device *ofdev)
-> >                       &port8250.overrun_backoff_time_ms) !=3D 0)
-> >               port8250.overrun_backoff_time_ms =3D 0;
-> >
-> > +     /*
-> > +      * This generic driver never enables a dedicated line-status
-> > +      * interrupt on TEMT, so for ports whose RS485 direction is
-> > +      * controlled via a GPIO (rts-gpios) rather than the native RTS
-> > +      * pin, __stop_tx() (8250_port.c) can see THRE without TEMT on th=
-e
-> > +      * last byte and bail out without ever retrying -- leaving the
-> > +      * direction GPIO stuck asserted after the last byte sent, on
-> > +      * hardware whose shift register doesn't reliably surface TEMT.
-> > +      * UART_CAP_NOTEMT makes it fall back to a frame-time-based timer
-> > +      * instead of waiting on that interrupt. Scoped to rts-gpios user=
-s
-> > +      * only, to avoid changing timing for ports relying on the native
-> > +      * RTS pin, which this has not been observed to affect. Set here,
-> > +      * after the fifosize-based capabilities assignment above, so it
-> > +      * isn't clobbered by it.
-> > +      */
->
-> Is this comment really needed?
->
->
-> > +     if (of_property_present(ofdev->dev.of_node, "rts-gpios"))
->
-> What will change from this now on existing systems?
->
-> How was this tested?
->
-> And why was this sent twice?
->
-> thanks,
->
-> greg k-h
