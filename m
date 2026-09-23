@@ -1,228 +1,354 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 874CA490BF8;
-	Wed, 23 Sep 2026 13:30:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45A5377A89
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 13:31:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790170217; cv=none; b=hQgt2e3lwOWHTJHKlWpNr9TaZfVj4fccB2bklR+HD3ptZH9sCXs8VVkCN39CbfZ8tTbH6X/RcSBbN+o2hxkblw41iXpL0+ur3Whf7W7oCBKjc4/jjkK4lLtnA5pna4EEXknk59WwmjP2UjlDX8ichHxH7Gh8yb2E9S9NYENJM+E=
+	t=1790170317; cv=none; b=X4Cjv+/D+SaTPgX8kHYjIloxO4Tz0PUAcH9DVzZOSr2pFBxCypGCq50kfvvrDXZfTESq8JMiJaulYJJe3GSootpTcmkAPNxXxwUMBtfI10k2CKcydi9cp/D5hHPLmYEIL96riEjswc/kiQWYbnjPB7US1VpNGJpm/sQvO89tdO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790170217; c=relaxed/simple;
-	bh=p7cWrz6rn5SogIHVI+ZJpKP8PBqIMdGUotO0FpW/XGE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZA3qq9MmKfnMuWY3BRy/Si5zX4X1w8PxBR5kjmz8dJLnCLkJZAMPgCyR/kbN6om1Zcn/6Ba/txPgP89PGWPvoL9Tw1svPBuQyuXqGL1i13E248VFPqcuY96w465bgkxIJk4xsehl3NyIgD9AFKyfIzWZlhJzNsTdNm5QfKNRLII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=Nky7tt5q; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=kDgfB1G1; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=rekdm16k; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=d/nk7Ka7; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1790170317; c=relaxed/simple;
+	bh=5nxX6dp8DDtAiiY/fJP0IjGNNSnwnrx/4A5bdqLvMKE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=XIoQiKjrrtBeOG/RH8BZ92IrQcExGYPnOBgyMqY1KJzxCk6mzWc4SQ6FDrWEgZMGQpeCQnLtrKc3u3OIZJKL8P5S1VoYBbubEhJuX4Bdwn5TH3hy5YcYx+K/4WdsUP7aELSaeYZku7M9uQqe9JCOJi/CP6NlWasRIEoF51WwpeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=fk0kbuHx; arc=none smtp.client-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="Nky7tt5q";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="kDgfB1G1";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="rekdm16k";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="d/nk7Ka7"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 3DC9D21D79;
-	Wed, 23 Sep 2026 13:30:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1790170209; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=3Hq0v5VBFDF3TXbxclB5+CyIeTc5tQ4PQXj7ReNQkIE=;
-	b=Nky7tt5qMtEactjLDeJY9MgD+mpavC4FaPqT5HpNV/H67RWWnZZu6RpwH6HbubV/1+sIfY
-	zg5P4HZMOVibeeX5k5KPaCmNqS30JgacmJ5zYHp58pS80k1Eu+Z3HldbfjlfjDByLfBVPh
-	IFsOR4a7rZZzSMJTrKHDwHa/whJzMEc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1790170209;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=3Hq0v5VBFDF3TXbxclB5+CyIeTc5tQ4PQXj7ReNQkIE=;
-	b=kDgfB1G1P1PL8fbSZjw+2Uc3QNQt/sCcM4ogSQhiBJrMHIpvIZ5Ni8xbdHWzdhbjfElkjf
-	34CDgrPYdS4oeeCQ==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=rekdm16k;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="d/nk7Ka7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1790170205; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=3Hq0v5VBFDF3TXbxclB5+CyIeTc5tQ4PQXj7ReNQkIE=;
-	b=rekdm16k3Ii9UHugUzrj25XDtseZeAPhgSHzI2niHNsjlIrDPtqY0pMZSRcUXtSwW6HINU
-	AiIOaLR8LNVl71/l2Tms68fCaR9jXbN4NLimfoBDhupL8gXyqKdWliEI4/OI9nU1qvpevQ
-	nmi6izQLUTwnu3F6mcK4RJyEq94JJnw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1790170205;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=3Hq0v5VBFDF3TXbxclB5+CyIeTc5tQ4PQXj7ReNQkIE=;
-	b=d/nk7Ka7gbDf1WCMCamnHndFpIt6NgkprWOjSiH9HxGaJjZHFOEf2NBKz59tSw1Yb7hugZ
-	s1emSLygQlBGMXCw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id D3DF5134E8;
-	Wed, 23 Sep 2026 13:30:04 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id mEsmKlzUs2qZKAAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Wed, 23 Sep 2026 13:30:04 +0000
-Message-ID: <24cf3f9b-bc81-4f55-8ae2-416a2c46b881@suse.de>
-Date: Wed, 23 Sep 2026 15:30:04 +0200
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="fk0kbuHx"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout01.posteo.de (Postfix) with ESMTPS id 19D99240027
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 15:31:52 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1790170312;
+	bh=wGCiWecGOgpeuSnRUc7veF+BLjBlyufTqs69WvVzBNY=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=fk0kbuHx4c80OFyvNdH5fpoP2yjU5/cwOhR415HHLT0/p0+Hhr8Zcl71vONKBor+Y
+	 y0nHlSsELsckfrdEMxgsZTHrphi6JrqFBQc73xnY5Frar6Ahw0xWes+yKGaqA+f6c2
+	 XZ2JGV0CzN47d4w3gBo1JFTODzMfJGEBkHNtD90qlEQK1fKBFSycwrvguCRU06+tQH
+	 2QTHUt0aZhbrpDEsKWizXB05/qFWQuDh9HzNv9GQfw84PSDdnglptMwnCCRBmmIUmu
+	 n27NhAONnYvgra8SF46Nmwt5IO89rMzAPmDFQPXLQMla+UqH3YDOwZKj/07OcIeVGM
+	 CtFr80STSrsXw==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4hqdD20PYvz6tsb;
+	Wed, 23 Sep 2026 15:31:46 +0200 (CEST)
+Message-ID: <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
+Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
+ receive_buf callback calls
+From: Markus Probst <markus.probst@posteo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>, 
+ Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng
+ <boqun@kernel.org>, Gary Guo	 <gary@garyguo.net>, =?ISO-8859-1?Q?Bj=F6rn?=
+ Roy Baron	 <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>,
+ Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
+ <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Danilo Krummrich
+ <dakr@kernel.org>, Daniel Almeida	 <daniel.almeida@collabora.com>, Tamir
+ Duberstein <tamird@kernel.org>,  Alexandre Courbot <acourbot@nvidia.com>,
+ Onur =?ISO-8859-1?Q?=D6zkan?= <work@onurozkan.dev>, Eric Biggers	
+ <ebiggers@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes	
+ <ljs@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett"	
+ <liam@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, Jiri Slaby	
+ <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	driver-core@lists.linux.dev
+Date: Wed, 23 Sep 2026 13:31:49 +0000
+In-Reply-To: <2026092356-chatting-dust-3de9@gregkh>
+References: 
+	<20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de>
+	 <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
+	 <2026092356-chatting-dust-3de9@gregkh>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=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
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-69hyOdobKMKNJBb5gHBc"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/5] vt: Add cursor-size helpers
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: deller@gmx.de, jirislaby@kernel.org, simona@ffwll.ch,
- linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-serial@vger.kernel.org, sashiko-reviews@lists.linux.dev
-References: <20260915123304.1027277-1-tzimmermann@suse.de>
- <20260915123304.1027277-2-tzimmermann@suse.de>
- <2026092347-try-railroad-7b00@gregkh>
-Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <2026092347-try-railroad-7b00@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -4.51
-X-Rspamd-Queue-Id: 3DC9D21D79
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Level: 
-X-Rspamd-Action: no action
-X-Spamd-Result: default: False [-4.51 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	RCVD_TLS_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de];
-	ARC_NA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TO_DN_SOME(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCPT_COUNT_SEVEN(0.00)[8];
-	MID_RHS_MATCH_FROM(0.00)[];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[gmx.de,kernel.org,ffwll.ch,vger.kernel.org,lists.freedesktop.org,lists.linux.dev];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	FROM_EQ_ENVFROM(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:mid,suse.com:url];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+]
-X-Spam-Flag: NO
-
-Hi
-
-Am 23.09.26 um 14:57 schrieb Greg KH:
-[...]
->> + * Returns:
->> + * The index of the cursor's first scanline within the character cell
->> + */
->> +unsigned int vc_cursor_start(unsigned int cell_height, unsigned int cursor_size)
->> +{
->> +	const unsigned int cursor_default_size = CUR_SIZE(READ_ONCE(cur_default));
->> +
->> +retry:
->> +	switch (cursor_size) {
->> +	case CUR_NONE:
->> +		return cell_height;
->> +	case CUR_UNDERLINE:
->> +		if (cell_height < 10)
->> +			return cell_height - 1;
->> +		else
->> +			return cell_height - 3;
->> +	case CUR_LOWER_THIRD:
->> +		return cell_height - cell_height / 3;
->> +	case CUR_LOWER_HALF:
->> +		return cell_height - cell_height / 2;
->> +	case CUR_TWO_THIRDS:
->> +		return cell_height - (cell_height * 2) / 3;
->> +	case CUR_BLOCK:
->> +		return 0;
->> +	default:
->> +		pr_warn_once("Unknown cursor %u\n", cursor_size);
-> Can userspace trigger this?  If not, who can?
-
-Yes. There's the "vt.cur_default" parameter on the kernel's command line 
-[1], and apparently there's some escape sequence. [2]  The cursor size 
-is the lowest 4 bits of that value, while
-
-[1] https://elixir.bootlin.com/linux/v7.2.6/source/drivers/tty/vt/vt.c#L167
-[2] https://elixir.bootlin.com/linux/v7.2.6/source/drivers/tty/vt/vt.c#L2523
-
-Apart from that, I just noticed that this switch should certainly handle 
-CUR_DEF without printing a warning.
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
 
->
->> +		if (cursor_size != cursor_default_size)
->> +			cursor_size = cursor_default_size;
->> +		else
->> +			cursor_size = CUR_UNDERLINE;
-> Why underline as a default?
+--=-69hyOdobKMKNJBb5gHBc
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This has been the default all along. It is the default value of the 
-cur_default parameter and picked up by vt when starting up a console. 
-[3] VGA BIOSes tend to default to underline as well AFAICT. Only the old 
-cursor code in fbcon falls back to full-size blocks if nothing else 
-works. Using underline harmonizes behavior across components.
+On Wed, 2026-09-23 at 12:35 +0200, Greg Kroah-Hartman wrote:
+> On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
+> > These functions will be used to simply the serdev rust abstraction. It
+> > also contributes to the fixing of 2 race conditions in the serdev rust
+> > abstraction.
+> >=20
+> > Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> > ---
+> >  drivers/tty/serdev/core.c           | 50 +++++++++++++++++++++++++++++=
++++++++-
+> >  drivers/tty/serdev/serdev-ttyport.c | 38 ++++++++++++++++++++++++++++
+> >  include/linux/serdev.h              |  6 +++++
+> >  3 files changed, 93 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index 7500efcdfc21..7d24f16710cb 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -187,6 +187,51 @@ void serdev_device_close(struct serdev_device *ser=
+dev)
+> >  }
+> >  EXPORT_SYMBOL_GPL(serdev_device_close);
+> > =20
+> > +/**
+> > + * serdev_device_pause_rx() - pause data receive
+> > + * @serdev:	serdev device
+> > + *
+> > + * Pause calls to receive_buf.
+> > + *
+> > + * The caller must guarantee that this does not run concurrently with
+> > + * `serdev_device_open` or `serdev_device_close`.
+> > + *
+> > + * Note that if a call to receive_buf is currently executed, the funct=
+ion will
+> > + * sleep until it has finished.
+> > + */
+> > +void serdev_device_pause_rx(struct serdev_device *serdev)
+> > +{
+> > +	struct serdev_controller *ctrl =3D serdev->ctrl;
+> > +
+> > +	if (!ctrl || !ctrl->ops->pause_rx)
+> > +		return;
+> > +
+> > +	ctrl->ops->pause_rx(ctrl);
+> > +}
+> > +EXPORT_SYMBOL_GPL(serdev_device_pause_rx);
+> > +
+> > +/**
+> > + * serdev_device_resume_rx() - resume data receive
+> > + * @serdev:	serdev device
+> > + *
+> > + * Resume calls to receive_buf.
+> > + *
+> > + * The caller must guarantee that this does not run concurrently with
+> > + * `serdev_device_open` or `serdev_device_close`.
+> > + *
+> > + * This can be called even if not paused to ensure data receive is act=
+ive.
+> > + */
+> > +void serdev_device_resume_rx(struct serdev_device *serdev)
+> > +{
+> > +	struct serdev_controller *ctrl =3D serdev->ctrl;
+> > +
+> > +	if (!ctrl || !ctrl->ops->resume_rx)
+> > +		return;
+> > +
+> > +	ctrl->ops->resume_rx(ctrl);
+> > +}
+> > +EXPORT_SYMBOL_GPL(serdev_device_resume_rx);
+> > +
+> >  static void devm_serdev_device_close(void *serdev)
+> >  {
+> >  	serdev_device_close(serdev);
+> > @@ -398,6 +443,7 @@ EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
+> >  static int serdev_drv_probe(struct device *dev)
+> >  {
+> >  	const struct serdev_device_driver *sdrv =3D to_serdev_device_driver(d=
+ev->driver);
+> > +	struct serdev_device *sdev =3D to_serdev_device(dev);
+> >  	int ret;
+> > =20
+> >  	ret =3D dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
+> > @@ -405,7 +451,9 @@ static int serdev_drv_probe(struct device *dev)
+> >  	if (ret)
+> >  		return ret;
+> > =20
+> > -	return sdrv->probe(to_serdev_device(dev));
+> > +	serdev_device_resume_rx(sdev);
+> > +
+> > +	return sdrv->probe(sdev);
+> >  }
+> > =20
+> >  static void serdev_drv_remove(struct device *dev)
+> > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/s=
+erdev-ttyport.c
+> > index bab1b143b8a6..e8aa89e733bd 100644
+> > --- a/drivers/tty/serdev/serdev-ttyport.c
+> > +++ b/drivers/tty/serdev/serdev-ttyport.c
+> > @@ -7,8 +7,10 @@
+> >  #include <linux/tty.h>
+> >  #include <linux/tty_driver.h>
+> >  #include <linux/poll.h>
+> > +#include "../tty.h"
+> > =20
+> >  #define SERPORT_ACTIVE		1
+> > +#define SERPORT_PAUSE_RX	2
+> > =20
+> >  struct serport {
+> >  	struct tty_port *port;
+> > @@ -32,6 +34,14 @@ static size_t ttyport_receive_buf(struct tty_port *p=
+ort, const u8 *cp,
+> >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+> >  		return 0;
+> > =20
+> > +	if (test_bit(SERPORT_PAUSE_RX, &serport->flags))
+> > +		return 0;
+> > +
+> > +	/*
+> > +	 * Ensure writes by the driver are visible before allowing traffic to=
+ resume.
+> > +	 */
+> > +	smp_mb__after_atomic();
+>=20
+> This scares me.  Why not use a real lock?=C2=A0
+>=20
+I can use locks to make it less "fragile". But I don't I think I need
+them.
 
-[3] https://elixir.bootlin.com/linux/v7.2.6/source/drivers/tty/vt/vt.c#L2297
+> WHat's the issue here, you
+> need this to be "flushed" before this call:
+>=20
+> > +
+> >  	ret =3D serdev_controller_receive_buf(ctrl, cp, count);
+>=20
+> here?
+>=20
+> And you just tested a bit, you didn't set a bit, so what are you trying
+> to ensure is written exactly?
+This should be an acquire load operation (paired with the release store
+operation in `ttyport_resume_rx`).
 
-Best regards
-Thomas
+It ensures that any writes before calling `ttyport_resume_rx` are
+visible in the `serdev_controller_receive_buf` invocation.
 
->
+
+For instance, in the Rust abstraction the following will be called in
+order in probe (with the following patches):
+
+- serdev_device_pause_rx
+- serdev_device_open
+- dev_set_drvdata
+- serdev_device_resume_rx
+
+This atomic lock effectively ensures in this example that the set
+device driver data is visible to `ttyport_receive_buf` before
+`SERPORT_PAUSE_RX` is unset in `ttyport_resume_rx`.
+
+>=20
+>=20
+> > =20
+> >  	dev_WARN_ONCE(&ctrl->dev, ret > count,
+> > @@ -156,6 +166,32 @@ static void ttyport_close(struct serdev_controller=
+ *ctrl)
+> >  	tty_release_struct(tty, serport->tty_idx);
+> >  }
+> > =20
+> > +static void ttyport_pause_rx(struct serdev_controller *ctrl)
+> > +{
+> > +	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
+> > +	struct tty_struct *tty =3D serport->tty;
+> > +
+> > +	set_bit(SERPORT_PAUSE_RX, &serport->flags);
+> > +
+> > +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+>=20
+> What keeps this bit from being set right after you test it?
+The statement "The caller must guarantee that this does not run
+concurrently with `serdev_device_open` or `serdev_device_close`." in
+the kdoc of `serdev_device_pause_rx` does.
+>=20
+>=20
+>=20
+> > +		tty_buffer_flush_work(tty->port);
+> > +}
+> > +
+> > +static void ttyport_resume_rx(struct serdev_controller *ctrl)
+> > +{
+> > +	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
+> > +	struct tty_struct *tty =3D serport->tty;
+> > +
+> > +	/*
+> > +	 * Ensure writes by the driver are visible before allowing traffic to=
+ resume.
+> > +	 */
+> > +	smp_mb__before_atomic();
+> > +	clear_bit(SERPORT_PAUSE_RX, &serport->flags);
+> > +
+> > +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+>=20
+> Same here.  Are you sure you don't need locks?  This feels wrong.
+Same as above.
+
+Thanks
+- Markus Probst
+
+>=20
 > thanks,
->
+>=20
 > greg k-h
 
--- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
-GF: Stefan Gaiser, Jochen Jaser, Abhinav Puri, (HRB 36809, AG Nürnberg)
+--=-69hyOdobKMKNJBb5gHBc
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
+-----BEGIN PGP SIGNATURE-----
 
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqz1MEbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSdo4QAKqh+41BIzuT07DLtuHX
+qipyb598cM9aO5TTZR/y4p41aobSRfaDFJmG8hXktXo53cpp20XKt6SslxlBefGi
+mvrrPbBlM2tZHw8Z0sASMBGSN8eQCoUgbAnOT6KM27aTDs0itD/OjY/GmUTlQVdr
+C/qV28ISajCrRIorI/CB8M9iGxJaD88SsDJoU7dnnaRJgkoADGxbiTweltUxUdhb
+Vs+hJURxIy6MS3f0mrs4kS1GXJo2gnSpRKT8akqdZqEkr1oSI33Fi1eHs/JE2LN+
+AyGeqxg7F5BIoZdd3GTNXtA+Ykr5si82Oy/dyphLxmrfWQHvZ0vmCfOpyJaehc1W
+JQaOKzmKtZfkctpNUqcmgbYS3pjGv2KfvYiWbT5z/I5vCog5GMiidwn/cD++QCUD
+2ek2Oxk+B1XloPEPeHg+Dj2R2+osuMCA+NROEBxtjaEk7LvLZxrlWOm9udhZtG/S
+Ro+EE6VB9O3MfuJOkYNgETbNdzMyTtMGj1zXBiY8N9JapxfKB6ZnGbvZUncjTjzh
+r5yuO3Bp3jOuax0uZyunuPbEeux7qrC4KkBDr8WTwtnv/2jCpw8wqT14H4rR903f
+WO3XTuUXarprGS2pWZp0xD0K4S5Vw1ua8+IWwl81IH73/TeXwLFfvTCKTSScfj3d
+WyavN7LBbOeLFcSPyKDPyACr
+=kPQr
+-----END PGP SIGNATURE-----
+
+--=-69hyOdobKMKNJBb5gHBc--
