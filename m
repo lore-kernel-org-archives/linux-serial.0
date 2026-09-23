@@ -1,121 +1,147 @@
-Received: from smtp-8fad.mail.infomaniak.ch (smtp-8fad.mail.infomaniak.ch [83.166.143.173])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE3514399CC
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 10:03:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.166.143.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D00485936;
+	Wed, 23 Sep 2026 10:15:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790157835; cv=none; b=MhdcQRaoadvxWKT95KhbMx48CXM0kPnR0qoOdIXA8c4SH1Yeq++xg/8mtbqNFtHSfXjPIGL98UPmKm5B2o3ukKzXOgfx569gsEgGK7SKkWs+GLx4v1GDN/kb4qNe7xxgmDU49rxlFcw6eTjLyCXM1DD5Fb6DhSqRs5eWlo28jeE=
+	t=1790158548; cv=none; b=pZ+ENxf1KStKnBdUuhtBjkHhsuy4mEkhpSEyeOXxWEmOYiK7X9yenE0//K3M/4xymUby82d/qjgln/cIY1I8dizRWBsPtYJ0d/Xt2OD4HcBfLXCmpkX+QknHfhL7/0OGp9ClDkLZqx16PdSnKIu5NPhYNTGVY8wr6x37jGS3l9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790157835; c=relaxed/simple;
-	bh=PVOIsDn6pcFMAnCEhiCYpLCKy7D9K3ZTe6HdGtIuI10=;
+	s=arc-20240116; t=1790158548; c=relaxed/simple;
+	bh=IPqOfsGa0DArR4DFEj+yLFOa0Iyhls9HPZyVcFmiROo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uHNRZHhkWY5N2H4KzVjSOms/eHiYbUnxZ20r5z/zhqixYhPsytjR+nktYlfVTD29zZmk1rOY4mnaNBOVcovLVSQDpuKYlCjPAJcQ0jehxf3/EAV61rypXPxzbeby6pIeUyjBPu78WGQ4ceSOALZ5vP88ueBax7xAb9T0db+IChw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net; spf=pass smtp.mailfrom=digikod.net; dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b=ly8X49xa; arc=none smtp.client-ip=83.166.143.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=digikod.net
+	 Content-Type:Content-Disposition:In-Reply-To; b=POp/9qmgSoRKwui1o83dcyUxGeL8BI0YSDZD8QMpv6EJzNXRMQzQCMD04wcM6X3nHBFKK6iawg8HSzfV49NxERdGcj4FZnCGYSJtPhM38FAg8tvEpxIgm4C13l4ZSaCHM21OvPQIjgSPPqZrGTeCMNMkzJX6/uP2HQvvRSE0MrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=1TUgeNDJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b="ly8X49xa"
-Received: from smtp-3-0000.mail.infomaniak.ch (smtp-3-0000.mail.infomaniak.ch [10.4.36.107])
-	by smtp-4-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4hqXbz6wvDzVFw;
-	Wed, 23 Sep 2026 12:03:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digikod.net;
-	s=20191114; t=1790157823;
-	bh=jo5BAFeQ+LQMNxWpXBTUI1R+keGwdWmCoZUbkfVBPP0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ly8X49xaBN00w1Yusa2OTlLmc1kPySCRdt+LFYEYasvgHYTjOB5ZFecuPP7M1L7/v
-	 isFSZo6xT4odfBnqvkysYLoITYDBqhMOAxlDwEGc2c7XbeARMxpUL9xKJdBgLuoA8R
-	 9+cR6+wgyVsUx+FE3DMyMV1eRfF0Q0nGDMIklb2s=
-Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4hqXby4P0Hzxfk;
-	Wed, 23 Sep 2026 12:03:42 +0200 (CEST)
-Date: Wed, 23 Sep 2026 12:03:38 +0200
-From: =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-To: Christopher Lusk <clusk@northecho.dev>
-Cc: =?utf-8?Q?G=C3=BCnther?= Noack <gnoack3000@gmail.com>, 
-	=?utf-8?Q?G=C3=BCnther?= Noack <gnoack@google.com>, Oleg Nesterov <oleg@redhat.com>, 
-	Jiri Slaby <jirislaby@kernel.org>, Shuah Khan <shuah@kernel.org>, 
-	Tahera Fahimi <fahimitahera@gmail.com>, Paul Moore <paul@paul-moore.com>, 
-	Casey Schaufler <casey@schaufler-ca.com>, John Johansen <john.johansen@canonical.com>, 
-	linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] Landlock signal scope and TIOCSIG
-Message-ID: <20260923.eehieph7UaX1@digikod.net>
-References: <20260913221958.839429-1-clusk@northecho.dev>
- <20260914.b8a029f9abb8@gnoack.org>
- <20260914134013.1457130-1-clusk@northecho.dev>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1TUgeNDJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579C51F000FF;
+	Wed, 23 Sep 2026 10:15:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1790158542;
+	bh=cCkKiUkI5CBIxSOf3Rl7yoSbI+AcG0DMzQZmanndQ7Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=1TUgeNDJyGUoHMu/7rF9Ji1boADsBw1BJyz35sEUatTZhXYmj08V9bUcE1ybhn28W
+	 EdImQ5WA/1qzuUeX26KQCb/97MOuqzjtUCUVc1gddBnydJ1akeGHsEhBYWZM6uMsqb
+	 oshEVtAX94ty+yZr6i8IqJQpqD++YdebYHPlWl9g=
+Date: Wed, 23 Sep 2026 12:15:38 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Myeonghun Pak <mhun512@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+	linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, Ijae Kim <ae878000@gmail.com>
+Subject: Re: [PATCH] tty: serial: meson: fix UART driver lifetime
+Message-ID: <2026092344-unlawful-hurling-c87e@gregkh>
+References: <20260913034148.15068-1-mhun512@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260914134013.1457130-1-clusk@northecho.dev>
-X-Infomaniak-Routing: alpha
+In-Reply-To: <20260913034148.15068-1-mhun512@gmail.com>
 
-Hi Christopher,
-
-I agree with Günther and I'd like to bring, from my point of view, the
-most important thing about TTY master FDs: they are mean to send
-arbitrary data/signals to TTY slaves, and in most cases this mean inject
-keys and then commands.  So TTY master FDs should be seen as a
-(legitimate) way to control another process, even if that might not
-always be the case.
-
-A case in point would be an SSH or sudo/su command attached to a slave
-TTY.  The process able to write on the related master TTY FD should be
-considered as privileged as the slave command.  This illustrates why
-human-computer interfaces (including TTYs, desktop interfaces...) are so
-critical.
-
-Also, just adding these LSM hook changes would break exisiting LSM's
-security policies.
-
-Updating the Landlock doc with this rationale is defenitely a good idea.
-
-Testing this invariant is also valiable, so it would be nice to tweak a
-bit your test and include it with the doc update.
-
-Regards,
- Mickaël
-
-
-On Mon, Sep 14, 2026 at 09:40:13AM -0400, Christopher Lusk wrote:
-> Hello Günther,
+On Sat, Sep 12, 2026 at 11:41:48PM -0400, Myeonghun Pak wrote:
+> Moving Amlogic UART registration into probe left the first driver
+> registration behind if uart_add_one_port() failed. Adding the separate
+> ttyS driver later also exposed a global last-port test: removing the last
+> port of one driver kept it registered whenever the other had a port.
 > 
-> Thanks for digging into this so carefully, and for the clear write-up.
+> Track whether probe registered the driver and undo it when port addition
+> fails. On remove, retain the current driver only if a remaining port maps
+> to that driver. Serialize the shared lifecycle decisions against parallel
+> probe and remove operations.
 > 
-> Your capability framing convinces me.  Controlling who may attach to (or
-> open a master for) the PTY is the right layer, and the master FD is best
-> thought of as the capability, the same way socketpair() is.
+> This issue was identified during our ongoing static-analysis research while
+> reviewing kernel code.
 > 
-> You are also right that the series is incomplete as a fix: the same three
-> signals arrive through the n_tty control-character path (Ctrl-C / Ctrl-\ /
-> Ctrl-Z) that my patch does not touch, and PTYs additionally raise SIGWINCH,
-> SIGHUP and SIGCONT.  That reinforces your point rather than mine.  Chasing
-> individual signal-delivery paths inside the TTY layer is the wrong layer,
-> and a per-ioctl hook would only paper over one entry into a mechanism that
-> is working as designed.
+> Fixes: bcb5645f99ef ("tty: serial: meson: redesign the module to platform_driver")
+> Fixes: e71aab9d6132 ("tty: serial: meson: apply ttyS devname instead of ttyAML for new SoCs")
+> Cc: stable@vger.kernel.org
+> Assisted-by: OpenAI:GPT-5.6
+> Co-developed-by: Ijae Kim <ae878000@gmail.com>
+> Signed-off-by: Ijae Kim <ae878000@gmail.com>
+> Signed-off-by: Myeonghun Pak <mhun512@gmail.com>
+> ---
+>  drivers/tty/serial/meson_uart.c | 52 +++++++++++++++++++++++++--------
+>  1 file changed, 40 insertions(+), 12 deletions(-)
 > 
-> One question, mostly so I have the line right in my own notes rather than
-> to relitigate: how do you see this relative to the SIGIO/fowner path that
-> 4b80320ca7ed brought under SCOPE_SIGNAL?  My read of the distinction is
-> that in the SIGIO case the sandboxed process unilaterally selects the target
-> by arming the owner, whereas here the recipients have voluntarily attached
-> to the terminal and the TTY driver delivers job-control signals over that
-> attachment.  If that is the intended boundary, it is a clean one, and I am
-> happy to treat TTY-driven signals as outside the guarantee.
-> 
-> If it is useful, I would be glad to send a small documentation patch making
-> that explicit: a note in the SCOPE_SIGNAL / IPC-scoping section of
-> landlock.rst that TTY-driver signal delivery (TIOCSIG and the
-> control-character path) is not mediated by SCOPE_SIGNAL, with the practical
-> guidance to control PTY attachment instead.  I will drop the task_kill
-> approach.
-> 
-> Thanks again for the thorough look.
-> 
-> Christopher
-> 
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index a6cb2a535..4bd9d9826 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/io.h>
+>  #include <linux/iopoll.h>
+>  #include <linux/module.h>
+> +#include <linux/mutex.h>
+>  #include <linux/kernel.h>
+>  #include <linux/of.h>
+>  #include <linux/platform_device.h>
+> @@ -80,6 +81,7 @@ static struct uart_driver meson_uart_driver_ttyAML;
+>  static struct uart_driver meson_uart_driver_ttyS;
+>  
+>  static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+> +static DEFINE_MUTEX(meson_uart_mutex);
+>  
+>  struct meson_uart_data {
+>  	struct uart_driver *uart_driver;
+> @@ -692,6 +694,16 @@ static struct uart_driver *meson_uart_current(const struct meson_uart_data *pd)
+>  		pd->uart_driver : &meson_uart_driver_ttyAML;
+>  }
+>  
+> +static bool meson_uart_has_ports(struct uart_driver *uart_driver)
+
+As you require a lock to be held here, document it properly so the
+compiler will catch it when you get it wrong.
+
+> +{
+> +	for (int id = 0; id < AML_UART_PORT_NUM; id++)
+> +		if (meson_ports[id] &&
+> +		    meson_uart_current(meson_ports[id]->private_data) == uart_driver)
+> +			return true;
+> +
+> +	return false;
+> +}
+> +
+>  static int meson_uart_probe(struct platform_device *pdev)
+>  {
+>  	const struct meson_uart_data *priv_data;
+> @@ -702,6 +714,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>  	int ret = 0;
+>  	int irq;
+>  	bool has_rtscts;
+> +	bool registered = false;
+>  
+>  	if (pdev->dev.of_node)
+>  		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
+> @@ -731,11 +744,6 @@ static int meson_uart_probe(struct platform_device *pdev)
+>  	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
+>  	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
+>  
+> -	if (meson_ports[pdev->id]) {
+> -		return dev_err_probe(&pdev->dev, -EBUSY,
+> -				     "port %d already allocated\n", pdev->id);
+> -	}
+> -
+>  	port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), GFP_KERNEL);
+>  	if (!port)
+>  		return -ENOMEM;
+> @@ -748,11 +756,22 @@ static int meson_uart_probe(struct platform_device *pdev)
+>  
+>  	uart_driver = meson_uart_current(priv_data);
+>  
+> +	mutex_lock(&meson_uart_mutex);
+
+guard?
+
+thanks,
+
+greg k-h
