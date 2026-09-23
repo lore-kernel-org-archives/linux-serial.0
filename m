@@ -1,208 +1,383 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61233AD517
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 14:39:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B3DD5328C1
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 15:03:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790174363; cv=none; b=SJfiL/1t3Zp39bXvoJH9pJxsR37Nx6XD81vndRva7awu2fOFszIFgMWtIv9ZaTZxPVslj330TsRK51Cs5RIlfzNWVhbLNlAsmfUkDzHmRq0IoLl26DTe4OoGiudQo1XCAU8e2fPcftpDy7UdpcQ6xxG86Vq0quuI8vjHWJYrzjQ=
+	t=1790175827; cv=none; b=Fm+nDpqX5Kx7Gj5l4OENXnKs/qXsVRjfqroCYTezrxfuaph7wdK40ZpNU4ZmzPKIIUw66Oyi0t64yZv7/JqfQQGPri/hE5lkQdLcw/P8ZXoFcl+ZWgp1o1Z5T+OHacCUbVwtZj+pEIFe6cGZ1EUsLZIpK0XNVxg94gv4O/E+VzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790174363; c=relaxed/simple;
-	bh=VFt5QFeL1qyvdUpQVKVvwCAbcdKtX7gDJTZ4RTPKRFY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WxDJwDm/4fuq4ejM4qoNIJ2a7FUvL9ob+XrQzJHdpu3AZOcxaexn6Gk3VFEaSd9jWJsw4shmRkVxYG20NJHuEgC9BiA4SeR0m+WOeIqZz6OnY/3bXNHo6Gslp+CNbrKFNjq7aOCTCK3l+QzOl95B2+0vncz2yOz18sePMr511w8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YVVQkkDk; arc=none smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1790175827; c=relaxed/simple;
+	bh=vm8DfcGaHB4o5h2Wfy4Zcw6bZGcIdGO5a47D1fnQG8c=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=b7sPjy6OM62xambUN4HXQQpH4+fdToIqkV5/6NiTHf4dmFzj+zhjeaKTPkrbVUeHPDVegfIgrgK9FEG/L0sb8lyycRTdeSlGf/2dWLcyTBJTX69Gt4L42uh5CJhNHE5Pvd0rMlm5TAeGqUkYJz3kcxnly9mZubBqfqQBsrxTcPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=li+Jige5; arc=none smtp.client-ip=185.67.36.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YVVQkkDk"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912d37b6so5730685e9.0
-        for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 07:39:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790174360; x=1790779160; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=vcGfrVG5c5yPpAOOLi+CwRHdzd99wiF/Zu4kVwYdMqw=;
-        b=YVVQkkDkn14qIcIPV1C/wFmEEpUtc7fQA7C9IXfwqrZ3Zo1GuiUBBZejMHKQsepG4P
-         F12+/nZZzJrzQTedePjZKFYRGMKb/IwiUhm5UI8QV/LWBQ/iLk9XhZ7a0IGe0wCLpkGO
-         Lr5bpvoFWf9bZhpRmCGagT+fSMbEmXJNdb+MJQ5URIGZoqFhoBadomUGEUPAMLuW6j2D
-         T5f5r9Btgx43OWzf9PYHc6CquxW090JiHthuCOwKTlSX5fh9UBTOIxx0kUB9NxzyMWgM
-         yRRm3bQuFg0AlA7BF1IMhCTh6r2zx1IRMSNErVhV9rIezSNU+99VPDJjzy7pP9W4EiUZ
-         ifPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790174360; x=1790779160;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vcGfrVG5c5yPpAOOLi+CwRHdzd99wiF/Zu4kVwYdMqw=;
-        b=pEySF6ETJ4t/nvLGU3NIHzvhjeKnMhC6XE6JHUX9zwZNQjlScM5t6iP5EG/4OhoqU1
-         gm0CS5AcQXiQnJ4aXXBDpKVbGLN1XZvV9JtneV0IPLk1aWcuIg+8GVjdjcStgsQkTZy9
-         mixQn86Awk8TAbVnGCjKNpyM2bhMQzwaDwHDp3i0Xyk6Q4sEiw8xxHmVgkb0s6dLG60q
-         Km9Bj/VdAeR7NsIBEpCN+mHPXyBvWLI6JN96ZsqLBx0VtxDLi6LBWZR/APuTrn8apV4A
-         EkCrQds3yoyw0Ec+U3/YsaK8XIS3bhSIrBnN76S27MytUzWqNI8n/rdJt3ztyluFs4Od
-         rqiA==
-X-Forwarded-Encrypted: i=1; AKwUvBySKXimBsLHuKz+bHlf+jXShSx4FnURhEopdWWVeiD52QXQNgVGa0e4DMKOWyKYo6qdcRDFtia9A18JJs4=@vger.kernel.org
-X-Gm-Message-State: AFuF++likM3R5KdPSzFxOortbHs/ERQXKSYuvjml1a5GRCMLd2vigJKx
-	DfFed7lhC2N2TNZrn8i0ir9ofckFSMhvFqgsnvNexTXsYG6yrhmxSr4UGeN4Jdap5BI=
-X-Gm-Gg: AYBFou3LeHKR4R4iSEL9BZw6SwApdNdnA2CbiOYVdZURt2FHuq7jFw7sGljzxWKU5Ao
-	HH7EazqUa2IbIMeoAEmTo5cfUF1WJVjNqrzoHWIjdMq8pfgrw68uLAgu3v0JVzld59D8iD6iM6d
-	2dOs/Kg1c9zGzYBOHj1G4H21T9+nUfQnswwFhoagaTO67ph6ibH4PTtpxwvMOlBYBT4jx0lFaiM
-	Cgx6DNZuc6jLVO7qAEWwhYpMPBFvsFMCsFa/Hvt5jMt3qpCLjcXNaUAmuWi9Q53XFhOsTZ61MR/
-	klrHHisrwAwkAdOJX1Ym2xBVPFX7uooUySPvBVbPANIGd1iGiK3Bgqa35Vaf6+iluL1P+/pwCHg
-	MASYqFgzySfjGneP06KtF9iWQ0pj9Hm0uDt7hWATkIyO6wWYbdwQAVXGGg5FaJyKOtFj3NEHDCS
-	qpRU/bKPdk5tWboRS64iKuu8dYkphe1RwZHMrBuZVMMwjFjhpI2Qnn4n1Mh+En4VSccXMbQMfNe
-	h2qBu7FsOK6+lM=
-X-Received: by 2002:a05:600c:a013:b0:49f:ce78:3571 with SMTP id 5b1f17b1804b1-49fdf10d03emr36763305e9.34.1790174359895;
-        Wed, 23 Sep 2026 07:39:19 -0700 (PDT)
-Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fde185329sm82257335e9.1.2026.09.23.07.39.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2026 07:39:19 -0700 (PDT)
-Date: Wed, 23 Sep 2026 16:39:17 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
-	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] braille: nbcon: Use nbcon atomic console callbacks
-Message-ID: <arPklfHCncdWHGT4@pathway.suse.cz>
-References: <20260922072558.98854-1-pmladek@suse.com>
- <20260922072558.98854-3-pmladek@suse.com>
- <20260922073728.2ADCD1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="li+Jige5"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout02.posteo.de (Postfix) with ESMTPS id AC71F240106
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 17:03:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1790175819;
+	bh=am+EEP9x2y4Q4D6pvNnvpVas5UQInaB5agNOi330j2g=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=li+Jige5QVGVgtVMczKqpME/SBYtb+HSnOXJipUZ1Llh+KQsaXSn/H8f2Ec4VMxfU
+	 S1Utmlhyd0Fip2QykPKCM28+PTt1TlivZUBZPzeAHItAZ5OimdcSO4SPXvmbGV835y
+	 K/+AXmSSwlGRkbKu8qgh20YH+y7SaNtN4Otu6yq9BSI3bWKovtzSRg/NpDDAVKSTjB
+	 Q/evhBGCBYEdzvllrBC+NK1Hv5MpT5F8p2MJOJja0JwljXBWdcm5gqD5LB3iNR/8VC
+	 rDPEO3KhSvcI9+K5Pvyp5k91W7LVEUN8XvxNEysmfqJiqZgRPLhFx6vlCUN9Nsfsg8
+	 44NhFH9JSDRoA==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4hqgFz6DBbz6txm;
+	Wed, 23 Sep 2026 17:03:35 +0200 (CEST)
+Message-ID: <f6ced1d1d86e9033568569ae981de97f4a368d90.camel@posteo.de>
+Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
+ receive_buf callback calls
+From: Markus Probst <markus.probst@posteo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>, 
+ Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng
+ <boqun@kernel.org>, Gary Guo	 <gary@garyguo.net>, =?ISO-8859-1?Q?Bj=F6rn?=
+ Roy Baron	 <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>,
+ Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
+ <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Danilo Krummrich
+ <dakr@kernel.org>, Daniel Almeida	 <daniel.almeida@collabora.com>, Tamir
+ Duberstein <tamird@kernel.org>,  Alexandre Courbot <acourbot@nvidia.com>,
+ Onur =?ISO-8859-1?Q?=D6zkan?= <work@onurozkan.dev>, Eric Biggers	
+ <ebiggers@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes	
+ <ljs@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett"	
+ <liam@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, Jiri Slaby	
+ <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	driver-core@lists.linux.dev
+Date: Wed, 23 Sep 2026 15:03:38 +0000
+In-Reply-To: <2026092327-tinwork-native-7a87@gregkh>
+References: 
+	<20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de>
+	 <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
+	 <2026092356-chatting-dust-3de9@gregkh>
+	 <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
+	 <2026092327-tinwork-native-7a87@gregkh>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=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
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-xmF05cdqHl0WI0YWGhnl"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260922073728.2ADCD1F000FF@smtp.kernel.org>
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-On Tue 2026-09-22 07:37:27, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
-> - [High] braille: operator precedence bug disables braille atomic write
-> - [High] braille: infinite spinlock in braille_write() during same-CPU unsafe takeover
-> --
-> 
-> commit a7f38c0383481bd6ad9c244405d8d201d604569b
-> Author: Petr Mladek <pmladek@suse.com>
-> 
-> braille: nbcon: Use nbcon atomic console callbacks
-> 
-> This commit adapts the braille console driver to support the new NBCON API.
-> It introduces logic to acquire the nbcon console ownership before printing
-> and uses the atomic write callback to output the buffer. The serial8250
-> driver is also adjusted to skip prepending newlines for braille consoles.
-> 
-> > diff --git a/drivers/accessibility/braille/braille_console.c b/drivers/accessibility/braille/braille_console.c
-> > --- a/drivers/accessibility/braille/braille_console.c
-> > +++ b/drivers/accessibility/braille/braille_console.c
-> > @@ -62,14 +62,32 @@ static void braille_write(u16 *buf)
-> 
-> [ ... ]
-> 
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		/*
-> > +		 * Braille console might be called from unknown context via
-> > +		 * vt_console_print() from console_unlock() from printk().
-> > +		 * Use the atomic callback and synchronize it just using
-> > +		 * the console context. Disable interrupts to prevent a nested
-> > +		 * call into the driver code which might cause a deadlock when
-> > +		 * trying to acquire the console ownership, see
-> > +		 * __nbcon_atomic_flush_pending_con().
-> > +		 */
-> > +		local_irq_save(flags);
-> > +		while (!nbcon_braille_try_acquire(braille_co, &wctxt))
-> > +			cpu_relax();
-> 
-> [Severity: High]
-> Could this loop become an infinite spinlock if triggered from a nested
-> context on the same CPU?
-> 
-> If an interrupt preempts the underlying nbcon console driver (such as 8250)
-> while it is in an unsafe region, and that interrupt triggers a printk(),
-> the legacy VT console might be flushed via console_unlock(), eventually
-> calling braille_write().
-> 
-> Since local interrupts are disabled here, the preempted nbcon context on
-> this same CPU can never resume to release the console. Because
-> nbcon_context_try_acquire() rejects handovers to the same CPU when the
-> console is in an unsafe state, won't this loop spin indefinitely?
 
-For me, it is not easy to be sure but it looks to me that this code
-is called deep in the generic vt code when handling vt_notifier_list
-and keyboard_notifier_list. I guess that they already have to
-synchronized against each other. At least the vt_notifier_list
-operations seem to be synchronized using the console lock.
+--=-xmF05cdqHl0WI0YWGhnl
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Anyway, the disabled interrupts should prevent nesting except
-by NMI. But I believe that the VT code should not be called
-in NMI because it uses locks. The only exception might be
-panic().
+On Wed, 2026-09-23 at 16:26 +0200, Greg Kroah-Hartman wrote:
+> On Wed, Sep 23, 2026 at 01:31:49PM +0000, Markus Probst wrote:
+> > On Wed, 2026-09-23 at 12:35 +0200, Greg Kroah-Hartman wrote:
+> > > On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
+> > > > These functions will be used to simply the serdev rust abstraction.=
+ It
+> > > > also contributes to the fixing of 2 race conditions in the serdev r=
+ust
+> > > > abstraction.
+> > > >=20
+> > > > Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> > > > ---
+> > > >  drivers/tty/serdev/core.c           | 50 +++++++++++++++++++++++++=
++++++++++++-
+> > > >  drivers/tty/serdev/serdev-ttyport.c | 38 +++++++++++++++++++++++++=
++++
+> > > >  include/linux/serdev.h              |  6 +++++
+> > > >  3 files changed, 93 insertions(+), 1 deletion(-)
+> > > >=20
+> > > > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > > > index 7500efcdfc21..7d24f16710cb 100644
+> > > > --- a/drivers/tty/serdev/core.c
+> > > > +++ b/drivers/tty/serdev/core.c
+> > > > @@ -187,6 +187,51 @@ void serdev_device_close(struct serdev_device =
+*serdev)
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(serdev_device_close);
+> > > > =20
+> > > > +/**
+> > > > + * serdev_device_pause_rx() - pause data receive
+> > > > + * @serdev:	serdev device
+> > > > + *
+> > > > + * Pause calls to receive_buf.
+> > > > + *
+> > > > + * The caller must guarantee that this does not run concurrently w=
+ith
+> > > > + * `serdev_device_open` or `serdev_device_close`.
+> > > > + *
+> > > > + * Note that if a call to receive_buf is currently executed, the f=
+unction will
+> > > > + * sleep until it has finished.
+> > > > + */
+> > > > +void serdev_device_pause_rx(struct serdev_device *serdev)
+> > > > +{
+> > > > +	struct serdev_controller *ctrl =3D serdev->ctrl;
+> > > > +
+> > > > +	if (!ctrl || !ctrl->ops->pause_rx)
+> > > > +		return;
+> > > > +
+> > > > +	ctrl->ops->pause_rx(ctrl);
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(serdev_device_pause_rx);
+> > > > +
+> > > > +/**
+> > > > + * serdev_device_resume_rx() - resume data receive
+> > > > + * @serdev:	serdev device
+> > > > + *
+> > > > + * Resume calls to receive_buf.
+> > > > + *
+> > > > + * The caller must guarantee that this does not run concurrently w=
+ith
+> > > > + * `serdev_device_open` or `serdev_device_close`.
+> > > > + *
+> > > > + * This can be called even if not paused to ensure data receive is=
+ active.
+> > > > + */
+> > > > +void serdev_device_resume_rx(struct serdev_device *serdev)
+> > > > +{
+> > > > +	struct serdev_controller *ctrl =3D serdev->ctrl;
+> > > > +
+> > > > +	if (!ctrl || !ctrl->ops->resume_rx)
+> > > > +		return;
+> > > > +
+> > > > +	ctrl->ops->resume_rx(ctrl);
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(serdev_device_resume_rx);
+> > > > +
+> > > >  static void devm_serdev_device_close(void *serdev)
+> > > >  {
+> > > >  	serdev_device_close(serdev);
+> > > > @@ -398,6 +443,7 @@ EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
+> > > >  static int serdev_drv_probe(struct device *dev)
+> > > >  {
+> > > >  	const struct serdev_device_driver *sdrv =3D to_serdev_device_driv=
+er(dev->driver);
+> > > > +	struct serdev_device *sdev =3D to_serdev_device(dev);
+> > > >  	int ret;
+> > > > =20
+> > > >  	ret =3D dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
+> > > > @@ -405,7 +451,9 @@ static int serdev_drv_probe(struct device *dev)
+> > > >  	if (ret)
+> > > >  		return ret;
+> > > > =20
+> > > > -	return sdrv->probe(to_serdev_device(dev));
+> > > > +	serdev_device_resume_rx(sdev);
+> > > > +
+> > > > +	return sdrv->probe(sdev);
+> > > >  }
+> > > > =20
+> > > >  static void serdev_drv_remove(struct device *dev)
+> > > > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serd=
+ev/serdev-ttyport.c
+> > > > index bab1b143b8a6..e8aa89e733bd 100644
+> > > > --- a/drivers/tty/serdev/serdev-ttyport.c
+> > > > +++ b/drivers/tty/serdev/serdev-ttyport.c
+> > > > @@ -7,8 +7,10 @@
+> > > >  #include <linux/tty.h>
+> > > >  #include <linux/tty_driver.h>
+> > > >  #include <linux/poll.h>
+> > > > +#include "../tty.h"
+> > > > =20
+> > > >  #define SERPORT_ACTIVE		1
+> > > > +#define SERPORT_PAUSE_RX	2
+> > > > =20
+> > > >  struct serport {
+> > > >  	struct tty_port *port;
+> > > > @@ -32,6 +34,14 @@ static size_t ttyport_receive_buf(struct tty_por=
+t *port, const u8 *cp,
+> > > >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+> > > >  		return 0;
+> > > > =20
+> > > > +	if (test_bit(SERPORT_PAUSE_RX, &serport->flags))
+> > > > +		return 0;
+> > > > +
+> > > > +	/*
+> > > > +	 * Ensure writes by the driver are visible before allowing traffi=
+c to resume.
+> > > > +	 */
+> > > > +	smp_mb__after_atomic();
+> > >=20
+> > > This scares me.  Why not use a real lock?=C2=A0
+> > >=20
+> > I can use locks to make it less "fragile". But I don't I think I need
+> > them.
+>=20
+> Always use them first, and then remove and do "tricky" things if you
+> really can measure the need and can prove that they are not needed.
+Ok.
 
-An improvement might be to use NBCON_PRIO_PANIC in panic.
-Something like (on top of 1st patch):
+>=20
+> > > WHat's the issue here, you
+> > > need this to be "flushed" before this call:
+> > >=20
+> > > > +
+> > > >  	ret =3D serdev_controller_receive_buf(ctrl, cp, count);
+> > >=20
+> > > here?
+> > >=20
+> > > And you just tested a bit, you didn't set a bit, so what are you tryi=
+ng
+> > > to ensure is written exactly?
+> > This should be an acquire load operation (paired with the release store
+> > operation in `ttyport_resume_rx`).
+>=20
+> Where is the load?  This feels wrong.
 
---- a/kernel/printk/nbcon.c
-+++ b/kernel/printk/nbcon.c
-@@ -2044,7 +2044,14 @@ bool nbcon_braille_try_acquire(struct console *con,
- 
- 	memset(ctxt, 0, sizeof(*ctxt));
- 	ctxt->console = con;
--	ctxt->prio    = NBCON_PRIO_EMERGENCY;
-+	ctxt->prio = nbcon_get_default_prio();
-+
-+	/*
-+	 * The Braille console might be used in an interrupt context but
-+	 * NBCON_PRIO_EMERGENCY is associated with task context.
-+	 */
-+	if (ctxt->prio < NBCON_PRIO_EMERGENCY)
-+		ctxt->prio = NBCON_PRIO_EMERGENCY;
- 
- 	return nbcon_context_try_acquire(ctxt, false);
- }
+`test_bit(SERPORT_PAUSE_RX, &serport->flags)`.
 
-> [ ... ]
-> 
-> > -	braille_co->write(braille_co, data, c - data);
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		if (braille_co->write_atomic &&
-> > +		    !braille_co->flags & CON_NBCON_ATOMIC_UNSAFE) {
-> 
-> [Severity: High]
-> Does this operator precedence evaluate as intended?
-> 
-> Because the logical not (!) operator has higher precedence than the bitwise
-> and (&) operator, this expression parses as:
-> 
-> (!braille_co->flags) & CON_NBCON_ATOMIC_UNSAFE
-> 
-> Since braille_co->flags is known to be non-zero (as CON_NBCON was just
-> checked above), evaluating the logical not against the flags yields 0. This
-> makes the condition permanently false, which bypasses the braille atomic
-> write callback unconditionally.
-> 
-> Should this be grouped with parentheses to evaluate the bitwise and first?
+As Gary pointed out, there is `test_bit_acquire`, but `test_bit` and a
+memory barrier should have the same effect.
 
-Grr, sure, it should be:
+>=20
+> > It ensures that any writes before calling `ttyport_resume_rx` are
+> > visible in the `serdev_controller_receive_buf` invocation.
+>=20
+> writes from where?  There wasn't a write before this that I can see in
+> the diff, hence my confusion.
+Writes by the caller of `serdev_device_resume_rx`.
+>=20
+> > For instance, in the Rust abstraction the following will be called in
+> > order in probe (with the following patches):
+> >=20
+> > - serdev_device_pause_rx
+> > - serdev_device_open
+> > - dev_set_drvdata
+> > - serdev_device_resume_rx
+> >=20
+> > This atomic lock effectively ensures in this example that the set
+> > device driver data is visible to `ttyport_receive_buf` before
+> > `SERPORT_PAUSE_RX` is unset in `ttyport_resume_rx`.
+>=20
+> This feels rough.  In talking with others today, serdev really should be
+> reworked to be a "real" bus here, which should solve these issues,
+> right?  Perhaps that's the better idea overall instead of these fragile
+> links?
+>=20
+So that there wouldn't be a tty layer in between anymore?
 
-		    !(braille_co->flags & CON_NBCON_ATOMIC_UNSAFE)) {
+I would be interested in how this would be implemented?
 
-I'll fix this in v2.
+If every serial port driver needs to register to both tty and serdev,
+it would likely introduce a lot of boilerplate code.
 
-I am going to wait with v2 a bit just in case anyone would like to
-comment on v1...
+> That might also solve the other issues with serdev where people
+> want to use it for dynamic devices (i.e. USB devices).
+First time I read serdev having issues with dynamic devices.
 
-Best Regards,
-Petr
+Can you share details on this issue?
+
+>=20
+> Thoughts?
+>=20
+> > > >  	dev_WARN_ONCE(&ctrl->dev, ret > count,
+> > > > @@ -156,6 +166,32 @@ static void ttyport_close(struct serdev_contro=
+ller *ctrl)
+> > > >  	tty_release_struct(tty, serport->tty_idx);
+> > > >  }
+> > > > =20
+> > > > +static void ttyport_pause_rx(struct serdev_controller *ctrl)
+> > > > +{
+> > > > +	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
+> > > > +	struct tty_struct *tty =3D serport->tty;
+> > > > +
+> > > > +	set_bit(SERPORT_PAUSE_RX, &serport->flags);
+> > > > +
+> > > > +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+> > >=20
+> > > What keeps this bit from being set right after you test it?
+> > The statement "The caller must guarantee that this does not run
+> > concurrently with `serdev_device_open` or `serdev_device_close`." in
+> > the kdoc of `serdev_device_pause_rx` does.
+>=20
+> Oh that's going to be impossible to keep working :)
+I will add a mutex lock in the next revision, which removes this
+requirement.
+
+It should also allow to call `serdev_device_close` with the device
+already closed without causing a use-after-free.
+
+Thanks
+- Markus Probst
+
+>=20
+> thanks,
+>=20
+> greg k-h
+
+--=-xmF05cdqHl0WI0YWGhnl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqz6jobFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPStGQP/R9YJCv9mt+Z0BdHPp4Y
+NiKMaeELEeUpV0oTRWWYeTCDmP3qzpkY9eaHrSS0+GKjFJP85R/4vT0XSHslSjs2
+WwNOZN0g9nxyeTw33x5Ui77Bxo2uyvCWNZT+LCrph87udGXHHTab1NwCVFf3QeRZ
+vCC9bfvA9K9ylTMTce1juPMCyT14vYkiT+PzXBpRM4Z0wRvwqg+wpM/peGIu5Qx/
+rtmf9MpC5ElDoyv3yKQaxtHi7UAl8UHNlD+M4nhkakvPBIIhfm2Z8FFrHmjoKggQ
+/4yUiY+2W8wRpWTuhLBGOOSi7inCNVhJ8lpuVZzXUD97fSr0AReUDMOj1xngKC20
+h2og1CURcjeG2oX8yJf3RbnNOLNICMmmObQHi8refYdlTU4Xwg2Dq3JO4sZ4SZXl
+KWOANOeCHDKSD+BY2+YYwNYgvvSojhlkiQsKjvj4w88j2i7ThsmG4KC10c0sWxxW
+2EDECDIwIrzuXdSvcnnW39chY0r2Sws7+iS4jLsRaJ7omc4VtiSfnA+JivR+BpTa
+Itm9fSrFjWr19Wnu5Kp5BgPqaqA7VIPfnZs2m9uhU+YRxxDitOlCG6P1ytxwudZ4
+ShvigeRVq5nuw5Gu990Sf72l4sdpu4t2TYXwsm0tIcOVvPSVOhIqiklP0STGEQjS
+Y0MwyDb4mc/8LjMjX3lPs36e
+=dOR0
+-----END PGP SIGNATURE-----
+
+--=-xmF05cdqHl0WI0YWGhnl--
