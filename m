@@ -1,109 +1,257 @@
-Received: from vsvhrvbk.outbound-mail.sendgrid.net (vsvhrvbk.outbound-mail.sendgrid.net [134.128.88.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A41F5328C7
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 14:01:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.128.88.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C7353B14AB;
+	Wed, 23 Sep 2026 14:28:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790172082; cv=none; b=kq5fDB5dB3YHTjCPtVEWvV6Tl/JPTcut/TYJ3uVQ2VFc55LHxaSEzH6QypemPiVPw9dBztzltLnPbQ29C46SWWwak6jAz9EWXpbMadaHguDZhRFiKC476TBk3+cjPhwxHERnR48TX0XQpMRKqgs+Tl0Fz7Ue7b78Vn2vNOMMcUM=
+	t=1790173718; cv=none; b=MLC3RdxL4kqB7SwGd/QtwHVqbMBdUL6OxDI7lKDvvS5KcodG7E3dXRb5x59MIex+okYeabYNFk4a7gM90FclEOzQBLfak5MgNsRFa26wtM2ZOY54fKSWzw7MTrXiWT4OSQB1Oy19Hqt9bnZbicJ+lBWi6wPKnTM+QRQyGBgks6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790172082; c=relaxed/simple;
-	bh=VtCAOF3URoYoFtvn3phbkHKKn+WK22yhRZJIY5QUryU=;
-	h=From:Subject:Date:Message-Id:MIME-Version:To:Cc:Content-Type; b=FG3R0aTXFI6sbW0v27NtSfVgspHwt9+Xwo8JLoyfT203lklmF9x9n7YXK79HoBow+3P7B/0DGErD4UFML9JswFsUTicaKdFZfaue24D4SJwBbvXitwZ8JXVQ6LON+LZH2sek+EveWLb86DIWE5gJLuBHG8PjBKTzTMpuv3G9R6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=flowbird.group; spf=pass smtp.mailfrom=em8284.flowbird.group; dkim=pass (2048-bit key) header.d=flowbird.group header.i=@flowbird.group header.b=mDui+zbQ; arc=none smtp.client-ip=134.128.88.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=flowbird.group
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=em8284.flowbird.group
+	s=arc-20240116; t=1790173718; c=relaxed/simple;
+	bh=XSERXU2ZdNZYUopBn50o2i3OZ219cAqBQhhbjm3F8e0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VzzqpFa3SIyNMA0jg2l3AeA1TOlu7ihrYaNTTWr7f3c4OXiPH9mOp2g6R/BGbLOfU1CB7cN06SJDawVP6TIkfJss5qx3JW95nRruJVPwiKX04Nlx6fHbukWfrJxiWchJnn0LGa0q9U3q63BkYo3kU/jxaEsGaBiCarrKE3yE4TY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fntGoFcc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flowbird.group header.i=@flowbird.group header.b="mDui+zbQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flowbird.group;
-	h=from:subject:date:mime-version:to:cc:content-transfer-encoding:
-	content-type:cc:content-type:date:from:subject:to;
-	s=s1; t=1790172077;
-	bh=yPwdXincuadvk1qnquPvV+ndT1MCQhh1Fha4ubgEw18=;
-	b=mDui+zbQXLrxyEO3GXdFMr2lu3IWAb2RsKot/K1w9KHgOUZ+1F7M6PVx9oh5JN0F0FBa
-	Qew+gHBRQIjDVlxhFeakomcVzFRxHZEA0vn1I+ouxLHtG+pUIQMKx6Msrah1A4PFuYzSxK
-	xgmRq1X34WCw8e5fuY1gN2RVmjuE4Z5Llp3SjWSormHeUMjYffL63AAevchloQkGttqRR2
-	6q1XWGQbBbJ5Tnlxq8E1D8PvVZIICH5W2UvvcFbN5BLb40HRF2H4TdeMVAo5hGq/C2Q8nY
-	HsSEuQZG++MBFLa4XzPUzxbfP7xjL7huhPYGcXoNb0fgN8BBgAaVij9iQk7v5Hxg==
-Received: by recvd-654b7d464-9fg2j with SMTP id recvd-654b7d464-9fg2j-1-6AB3DBAD-57
-	2026-09-23 14:01:17.324560652 +0000 UTC m=+79740.228257346
-Received: from FR-BES-DKT15120.home (unknown)
-	by geopod-ismtpd-9 (SG)
-	with ESMTP
-	id lvMj_yaWQuiHaU3lj77woA
-	Wed, 23 Sep 2026 14:01:17.034 +0000 (UTC)
-From: Martin Fuzzey <martin.fuzzey@flowbird.group>
-Subject: [PATCH] serial: sc16is7xx: fix data corruption due to unexpected
- xon/xoff
-Date: Wed, 23 Sep 2026 14:01:17 +0000 (UTC)
-Message-Id: <20260923140116.340406-1-martin.fuzzey@flowbird.group>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fntGoFcc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 653BC1F000FF;
+	Wed, 23 Sep 2026 14:28:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1790173716;
+	bh=83/PBegOGy52s6j5W1iw8J1pOtvUqqXH+Cg7DByM+jU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=fntGoFcc2GkbEDmzEVk6q3fFj8+o3DOS/c5Uo+rT0Qj1FEcUgiJ9yQ15PNaPGKpIL
+	 gdmdWIoZQ0LIv3ftOTKmXxbv3UwX9yH7OIbmP8q7Qkf0WPuedlvO7z9lfyEJXpl+kX
+	 l5nNyLDf5T6BDI7lmrt6ND5Z8chIuuMWWeRS+zdg=
+Date: Wed, 23 Sep 2026 16:26:18 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
+	Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Eric Biggers <ebiggers@kernel.org>,
+	Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org,
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev
+Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
+ receive_buf callback calls
+Message-ID: <2026092327-tinwork-native-7a87@gregkh>
+References: <20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de>
+ <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
+ <2026092356-chatting-dust-3de9@gregkh>
+ <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-SG-EID: 
- =?us-ascii?Q?u001=2EmxcfyuLMH4=2Fbg2doT3ED5Nkn+NRIhYpRg=2FjjzcGJxXskVm5GzbVM6ryOL?=
- =?us-ascii?Q?ZDTHCknSk3Bx4wVetjJrUM6AGHj5vqZhoOo=2FP+S?=
- =?us-ascii?Q?eUiwnxscbnaaNspiYhRwjAaCD3JVzCL91QfKDQi?=
- =?us-ascii?Q?NgjoeJPNAhO9MlhyJ=2FE1I5ebCF0+bt20fsqRtpR?=
- =?us-ascii?Q?y4I1rEQ9ST8W3h8rM9EDMVOZICn18sJmigaaxz6?=
- =?us-ascii?Q?O3tp=2FTJV=2FOetXHMh8v=2FoaGDwepEZ1Yy48dTEcN1?=
- =?us-ascii?Q?oORZOtAtkPKOXOrnMaVxNagNFA=3D=3D?=
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-X-Entity-ID: u001.LMXSJIKpad5A1O6egCWHyQ==
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
 
-The hardware supports automatically sending XON/OFF based on the
-FIFO status and that is already implemented by the driver.
-However that capability was not announced with the UPF_SOFT_FLOW bit.
+On Wed, Sep 23, 2026 at 01:31:49PM +0000, Markus Probst wrote:
+> On Wed, 2026-09-23 at 12:35 +0200, Greg Kroah-Hartman wrote:
+> > On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
+> > > These functions will be used to simply the serdev rust abstraction. It
+> > > also contributes to the fixing of 2 race conditions in the serdev rust
+> > > abstraction.
+> > > 
+> > > Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> > > ---
+> > >  drivers/tty/serdev/core.c           | 50 ++++++++++++++++++++++++++++++++++++-
+> > >  drivers/tty/serdev/serdev-ttyport.c | 38 ++++++++++++++++++++++++++++
+> > >  include/linux/serdev.h              |  6 +++++
+> > >  3 files changed, 93 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > > index 7500efcdfc21..7d24f16710cb 100644
+> > > --- a/drivers/tty/serdev/core.c
+> > > +++ b/drivers/tty/serdev/core.c
+> > > @@ -187,6 +187,51 @@ void serdev_device_close(struct serdev_device *serdev)
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(serdev_device_close);
+> > >  
+> > > +/**
+> > > + * serdev_device_pause_rx() - pause data receive
+> > > + * @serdev:	serdev device
+> > > + *
+> > > + * Pause calls to receive_buf.
+> > > + *
+> > > + * The caller must guarantee that this does not run concurrently with
+> > > + * `serdev_device_open` or `serdev_device_close`.
+> > > + *
+> > > + * Note that if a call to receive_buf is currently executed, the function will
+> > > + * sleep until it has finished.
+> > > + */
+> > > +void serdev_device_pause_rx(struct serdev_device *serdev)
+> > > +{
+> > > +	struct serdev_controller *ctrl = serdev->ctrl;
+> > > +
+> > > +	if (!ctrl || !ctrl->ops->pause_rx)
+> > > +		return;
+> > > +
+> > > +	ctrl->ops->pause_rx(ctrl);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(serdev_device_pause_rx);
+> > > +
+> > > +/**
+> > > + * serdev_device_resume_rx() - resume data receive
+> > > + * @serdev:	serdev device
+> > > + *
+> > > + * Resume calls to receive_buf.
+> > > + *
+> > > + * The caller must guarantee that this does not run concurrently with
+> > > + * `serdev_device_open` or `serdev_device_close`.
+> > > + *
+> > > + * This can be called even if not paused to ensure data receive is active.
+> > > + */
+> > > +void serdev_device_resume_rx(struct serdev_device *serdev)
+> > > +{
+> > > +	struct serdev_controller *ctrl = serdev->ctrl;
+> > > +
+> > > +	if (!ctrl || !ctrl->ops->resume_rx)
+> > > +		return;
+> > > +
+> > > +	ctrl->ops->resume_rx(ctrl);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(serdev_device_resume_rx);
+> > > +
+> > >  static void devm_serdev_device_close(void *serdev)
+> > >  {
+> > >  	serdev_device_close(serdev);
+> > > @@ -398,6 +443,7 @@ EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
+> > >  static int serdev_drv_probe(struct device *dev)
+> > >  {
+> > >  	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+> > > +	struct serdev_device *sdev = to_serdev_device(dev);
+> > >  	int ret;
+> > >  
+> > >  	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
+> > > @@ -405,7 +451,9 @@ static int serdev_drv_probe(struct device *dev)
+> > >  	if (ret)
+> > >  		return ret;
+> > >  
+> > > -	return sdrv->probe(to_serdev_device(dev));
+> > > +	serdev_device_resume_rx(sdev);
+> > > +
+> > > +	return sdrv->probe(sdev);
+> > >  }
+> > >  
+> > >  static void serdev_drv_remove(struct device *dev)
+> > > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> > > index bab1b143b8a6..e8aa89e733bd 100644
+> > > --- a/drivers/tty/serdev/serdev-ttyport.c
+> > > +++ b/drivers/tty/serdev/serdev-ttyport.c
+> > > @@ -7,8 +7,10 @@
+> > >  #include <linux/tty.h>
+> > >  #include <linux/tty_driver.h>
+> > >  #include <linux/poll.h>
+> > > +#include "../tty.h"
+> > >  
+> > >  #define SERPORT_ACTIVE		1
+> > > +#define SERPORT_PAUSE_RX	2
+> > >  
+> > >  struct serport {
+> > >  	struct tty_port *port;
+> > > @@ -32,6 +34,14 @@ static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
+> > >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+> > >  		return 0;
+> > >  
+> > > +	if (test_bit(SERPORT_PAUSE_RX, &serport->flags))
+> > > +		return 0;
+> > > +
+> > > +	/*
+> > > +	 * Ensure writes by the driver are visible before allowing traffic to resume.
+> > > +	 */
+> > > +	smp_mb__after_atomic();
+> > 
+> > This scares me.  Why not use a real lock? 
+> > 
+> I can use locks to make it less "fragile". But I don't I think I need
+> them.
 
-When the port is opened with the default of XON enabled the driver
-configures that in the hardware.
-If userspace does not want XON/OFF (which is normally the case) it will
-use TCSETS to disactivate it. However the serial core optimises this
-to only notify the driver if someting imporant has changed, and for
-XON/XOFF thit is only if the  driver declares UPF_SOFT_FLOW.
+Always use them first, and then remove and do "tricky" things if you
+really can measure the need and can prove that they are not needed.
 
-So we end up with unwanted XON/XOFF in the data stream.
+> > WHat's the issue here, you
+> > need this to be "flushed" before this call:
+> > 
+> > > +
+> > >  	ret = serdev_controller_receive_buf(ctrl, cp, count);
+> > 
+> > here?
+> > 
+> > And you just tested a bit, you didn't set a bit, so what are you trying
+> > to ensure is written exactly?
+> This should be an acquire load operation (paired with the release store
+> operation in `ttyport_resume_rx`).
 
-The problem only occurs if nothing else needed to be set by termios,
-ie if the user space requested values are the same as the default values,
-except for XON/XOFF.
-Since the default speed is 9600 this means that the problem only occurs
-when requesting 9600, otherwise the call to the driver will be made to
-change the speed, and that will also clear the XON/XOFF.
-As 9600 is quite rare these days that probably explains why this hasn't
-already been seen.
+Where is the load?  This feels wrong.
 
-It also only occurs on the first port open after boot since the subsequent
-opens will use the "logical state" set by TCSETS but not communicated to
-the driver the first time.
+> It ensures that any writes before calling `ttyport_resume_rx` are
+> visible in the `serdev_controller_receive_buf` invocation.
 
-Signed-off-by: Martin Fuzzey <martin.fuzzey@arrive.com>
-Cc: stable@vger.kernel.org
----
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+writes from where?  There wasn't a write before this that I can see in
+the diff, hence my confusion.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 9b152ead050f..f0a9a3dcd0e4 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1485,7 +1485,7 @@ static int sc16is7xx_setup_channel(struct sc16is7xx_one *one, int i,
- 	/* Initialize port data */
- 	port->type	= PORT_SC16IS7XX;
- 	port->fifosize	= SC16IS7XX_FIFO_SIZE;
--	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
-+	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY | UPF_SOFT_FLOW;
- 	port->iobase	= i;
- 	/*
- 	 * Use all ones as membase to make sure uart_configure_port() in
--- 
-2.25.1
+> For instance, in the Rust abstraction the following will be called in
+> order in probe (with the following patches):
+> 
+> - serdev_device_pause_rx
+> - serdev_device_open
+> - dev_set_drvdata
+> - serdev_device_resume_rx
+> 
+> This atomic lock effectively ensures in this example that the set
+> device driver data is visible to `ttyport_receive_buf` before
+> `SERPORT_PAUSE_RX` is unset in `ttyport_resume_rx`.
 
+This feels rough.  In talking with others today, serdev really should be
+reworked to be a "real" bus here, which should solve these issues,
+right?  Perhaps that's the better idea overall instead of these fragile
+links?  That might also solve the other issues with serdev where people
+want to use it for dynamic devices (i.e. USB devices).
+
+Thoughts?
+
+> > >  	dev_WARN_ONCE(&ctrl->dev, ret > count,
+> > > @@ -156,6 +166,32 @@ static void ttyport_close(struct serdev_controller *ctrl)
+> > >  	tty_release_struct(tty, serport->tty_idx);
+> > >  }
+> > >  
+> > > +static void ttyport_pause_rx(struct serdev_controller *ctrl)
+> > > +{
+> > > +	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+> > > +	struct tty_struct *tty = serport->tty;
+> > > +
+> > > +	set_bit(SERPORT_PAUSE_RX, &serport->flags);
+> > > +
+> > > +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+> > 
+> > What keeps this bit from being set right after you test it?
+> The statement "The caller must guarantee that this does not run
+> concurrently with `serdev_device_open` or `serdev_device_close`." in
+> the kdoc of `serdev_device_pause_rx` does.
+
+Oh that's going to be impossible to keep working :)
+
+thanks,
+
+greg k-h
