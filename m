@@ -1,69 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28C4D2E229F;
-	Wed, 23 Sep 2026 09:46:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12AD747D452;
+	Wed, 23 Sep 2026 09:46:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790156775; cv=none; b=ufy6oV+AlzpdJr6oExqIYAU4evtCkUTudr4HmGA6lvpaY9OwB0eu9ob5uMWaIvWuYcxGvnkYjvLZFB+r1XPKyLI1K9nGdL6CzAK5UTycdGcxO+mwdbGrHaeHz7fWocqTaNrnLup0FC6KWW/5mDZVzYPx56x6v4HdEEF6o44c/dQ=
+	t=1790156779; cv=none; b=AUVEd6ujPtkOX7TN6RcyWYkwSpS6Llj9eXPlM8yloF4/jos8dMPgCPX92hlFghKsgmErD0bBPVX630F2cnmbv17/D/EavAVg0JRLIB2WN4NdtV78+CsOnNVHD3FXt1vm4TSELI2+LH+7jMxPYJ1np7ZDY6Y+TQ33EiPWP2gLtz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790156775; c=relaxed/simple;
-	bh=PMVYgZO8cP6y5ckMpLn+PFVGTgT8mBDdbyL2LKP5ON4=;
+	s=arc-20240116; t=1790156779; c=relaxed/simple;
+	bh=LJTIqZsPEUPlVXOK/rHFv13b58M63O91P2MXJ9CatjM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tAjIfh8a1HxTLBj5q1eqsP3ejsTNnGrkBzMWrKidFEAQXJcsy52lCfd4excAMKRtDYv6PlY3knRUipLtan5hNOKpFXURG2SWgdyAvA7nkuBWwYheX0Ngp1oMsYXivL3g+3o4M8o2GyVqXarefsyK32n2E6MFkhzqb/JHwgq9pIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=M/D1iPoF; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=KINwek+d0d3woyCgQP2spbHLeTLQNCYkjS5odw0N1TrQ/QBVIg6Riye+auiRD44p4Q41n1xAMbFtxs1C+vWjYsqADU5/vYHVmf7CV9YW9Rf8bhPHMPLYdOXWbf6wvIt2pdUEM7LYPljH/9iNh8MO+K0LHiYxMpr9S5nrHmIMRI0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=XjoZ6+QN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="M/D1iPoF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0D0A1F000FF;
-	Wed, 23 Sep 2026 09:46:12 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="XjoZ6+QN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C68C31F000FF;
+	Wed, 23 Sep 2026 09:46:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790156773;
-	bh=T6Qi8YPK1RXqDrx7q/dk8raUpjNTcrjbKdaAJ9D+O7U=;
+	s=korg; t=1790156777;
+	bh=XK6Xdxe15IdLMTyDt3yGKI1mP52p4jn9ANXRWki1w7k=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=M/D1iPoFzrqn2W6mcgJ1LRF5Focn/2Y/OUIg5hYwYiMMSR8CT5ZIZD6NWIRtkXhk3
-	 oujVm9FkeETC48xHPmtDrloCMSOmZ/vL27gXOV2pX36pL3yyN4jfhW6fI28IWXFgQc
-	 0QzjkhcjfBTTo3h+lTK1ooSJmJ+pUx4b6t4Eufug=
-Date: Wed, 23 Sep 2026 11:39:59 +0200
+	b=XjoZ6+QN1MuJCm3EaTj+jpluqceF+/0gqvTaQRYJtEwE8f9EBF+Ppu9e8AzDQU3eC
+	 hO1pL6hywB4bvEeRk+ZgLceffms3gvNvKjyN2NNxL5I3cMBXSCPhOc3/td1xwkN21Q
+	 D/7I2lIIoxHqjTKgqIHy5mDY0vLPJXmrLGVcWh+M=
+Date: Wed, 23 Sep 2026 11:42:17 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Guenter Roeck <linux@roeck-us.net>, Ian Abbott <abbotti@mev.co.uk>,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Rudolf Marek <r.marek@assembler.cz>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Chris Snook <chris.snook@gmail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
-	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Andreas Noever <andreas.noever@gmail.com>,
-	Mika Westerberg <westeri@kernel.org>,
-	Yehezkel Bernat <YehezkelShB@gmail.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Duncan Sands <duncan.sands@free.fr>,
-	Chas Williams <3chas3@gmail.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Daniel Gomez <da.gomez@kernel.org>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Aaron Tomlin <atomlin@atomlin.com>, linux-watchdog@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-	linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-	intel-wired-lan@lists.osuosl.org, linux-rtc@vger.kernel.org,
-	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-atm-general@lists.sourceforge.net,
-	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] drivers: Replace __MODULE_STRING() with __stringify()
-Message-ID: <2026092352-demote-rewire-6df6@gregkh>
-References: <20260922-module-string-v1-0-c18766690185@suse.com>
- <20260922-module-string-v1-2-c18766690185@suse.com>
+To: Sang-Hoon Choi <csh0052@gmail.com>
+Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-remoteproc@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Changyul Lee <lcy8047@gmail.com>
+Subject: Re: [PATCH] tty: rpmsg: close port lookup-to-get race
+Message-ID: <2026092327-stew-margin-1e89@gregkh>
+References: <179000811428.1227592.8003229121862460039.idr-bug-84@gmail.com>
+ <2026092154-anger-sensually-aae8@gregkh>
+ <20260923001647.1337001-1-csh0052@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -72,17 +43,91 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260922-module-string-v1-2-c18766690185@suse.com>
+In-Reply-To: <20260923001647.1337001-1-csh0052@gmail.com>
 
-On Tue, Sep 22, 2026 at 03:32:22PM +0200, Petr Pavlu wrote:
-> __MODULE_STRING() has been an alias for __stringify() since "[PATCH]
-> MODULE_PARM support for older modules" [1] in 2002-12. That change also
-> moved it to the graveyard section at the end of linux/module.h
+On Wed, Sep 23, 2026 at 12:17:41AM +0900, Sang-Hoon Choi wrote:
+> rpmsg_tty_install() obtains cport from tty_idr before taking a port
+> reference. rpmsg_tty_destruct_port() removes the entry under idr_lock
+> and frees cport. If channel removal drops the last reference between
+> idr_find() and tty_port_get(), the install path dereferences freed
+> memory.
 > 
-> Replace the remaining uses of __MODULE_STRING() with __stringify() in
-> preparation for its removal.
-> 
-> Link: https://git.kernel.org/tglx/history/c/136839a1b4 [1]
-> Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
+> The first-open path and channel removal can run concurrently.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+How?  What causes channel removel?
+
+> tty_mutex
+> serializes TTY initialization, but rpmsg_tty_remove() does not take that
+> mutex. tty_unregister_device() prevents later opens through cdev_del(),
+> but cdev_del() does not wait for an open which has already entered the
+> driver. Before rpmsg_tty_install() finishes, the port is not attached to
+> the new TTY, so tty_port_tty_hangup() does not close this interval.
+> 
+> RPMsg channel removal may be initiated asynchronously by the remote
+> processor or transport. In the test, the local process only needs
+> permission to open the TTY node; channel removal is initiated
+> independently.
+> 
+> I reproduced this with a UML kernel built with KASAN and a synthetic
+> RPMsg device using the real rpmsg_tty probe and remove paths. Test-only
+> synchronization forces removal after idr_find() and before
+> tty_port_get(). The opening process drops to UID 1000 and GID 1000 first.
+> The unpatched kernel reports:
+> 
+>   BUG: KASAN: slab-use-after-free in rpmsg_tty_install
+>   Read of size 4 ... by task init/23
+>   CPU: 0 UID: 1000 PID: 23
+> 
+> The allocation stack ends in rpmsg_tty_probe(). The free stack is
+> rpmsg_tty_remove() -> tty_port_put() -> rpmsg_tty_destruct_port(), and
+> the invalid read is in rpmsg_tty_install().
+> 
+> Take idr_lock across idr_find() and tty_port_get(). If the entry is gone
+> or its reference count has reached zero, fail the installation with
+> -ENODEV. With the same forced overlap, the UID 1000 open returns ENODEV
+> and KASAN stays quiet.
+> 
+> The test uses a synthetic transport and deliberately widens the race
+> window. It demonstrates the lifetime bug and an unprivileged opener, but
+> does not show that an unprivileged user can deliberately cause channel
+> removal on every RPMsg platform. I am therefore reporting this as a
+> normal lifetime bug.
+> 
+> Fixes: 7c0408d80579 ("tty: add rpmsg driver")
+> Reported-by: Changyul Lee <lcy8047@gmail.com>
+> Link: https://lore.kernel.org/all/179000811428.1227592.8003229121862460039.idr-bug-84@gmail.com/
+> Assisted-by: LLM
+> Signed-off-by: Sang-Hoon Choi <csh0052@gmail.com>
+> ---
+> Greg, thanks for the feedback. I went back and reproduced the race under
+> KASAN before preparing this patch. I can also provide the test-only
+> instrumentation and the complete KASAN log if useful.
+> 
+>  drivers/tty/rpmsg_tty.c | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/rpmsg_tty.c b/drivers/tty/rpmsg_tty.c
+> index c5fd6d9b3..b2765bae2 100644
+> --- a/drivers/tty/rpmsg_tty.c
+> +++ b/drivers/tty/rpmsg_tty.c
+> @@ -49,12 +49,19 @@ static int rpmsg_tty_cb(struct rpmsg_device *rpdev, void *data, int len, void *p
+>  
+>  static int rpmsg_tty_install(struct tty_driver *driver, struct tty_struct *tty)
+>  {
+> -	struct rpmsg_tty_port *cport = idr_find(&tty_idr, tty->index);
+> -	struct tty_port *port;
+> +	struct rpmsg_tty_port *cport;
+> +	struct tty_port *port = NULL;
+>  
+> -	tty->driver_data = cport;
+> +	mutex_lock(&idr_lock);
+
+guard()?
+
+And if this is a "real" issue, that can affect things, why not use the
+built-in locking that idr has to resolve this issue in a much faster way
+than this mutex?
+
+thanks,
+
+greg k-h
