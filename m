@@ -1,147 +1,131 @@
-Received: from mail-ed2-f35.google.com (mail-ed2-f35.google.com [74.125.228.99])
+Received: from mail-pz2-f43.google.com (mail-pz2-f43.google.com [74.125.228.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83D7153B329
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 18:33:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7194F51EE14
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 20:41:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790188434; cv=pass; b=a1Ozb2MSog8x7j5MKgM3PljzIi+P5ZKXMGTF7Viepg/EkG/O0rWl4cnqAiHgYzw6PQWzWRVPNtuKNaGhd7htTXyXqH4eFOgWHlHskcSkArXI7u+XVFI7zp7RhADnRCDKW1yCgIiuu55N2gPcPVqgTX0zSOGLa0/irnP/g0WttXg=
+	t=1790196110; cv=pass; b=FZeE5U/8L6uMC46BAxo01tyMumWwiqJ+140WXgGviUpJkMafWa/0CPbkDljNQd1E3dHhRTs1SAD5EbXE+L++hUxaLoOgp6AGNw8SdmSRR7K5CmmMT0vKNy4P5dDLTNJv7JBE5Ax/hTqJtLpoRDP2wE3G6i4zMOEWNJYWhymEoD0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790188434; c=relaxed/simple;
-	bh=CElcEHTV8j9fLleWJFKVU60iC5Y2Vn5eBcn2vHfWwRE=;
+	s=arc-20240116; t=1790196110; c=relaxed/simple;
+	bh=Lo63KNDxHLfQPbHehQEJ2TckClhkCTu4ZWquj/U3zkE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uyGSxXgnqh2ojwD1m905IUonMcNg3J2sQA2L381ivDHrp3VXD5IkFYTf3ugiKO0uc34pKocH+51rk1f/SVedEshrqw5/0S8iGrtSRtCSomj+G0ieHBXI7EYYc3fR/djMRlPzpkaY5L6eCbZy23eqye9fhI+HiTwLiceeq4nwZFA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ISOlrzXW; arc=pass smtp.client-ip=74.125.228.99
+	 To:Cc:Content-Type; b=o5MX7stXuBabRgO7THoie8l3JfwpzXo3wD9WGw/5Xkd27lwMQ2YPSMkZ6ZVMjQYoWl57K9QcDwiLgXgFKMw71ajo1eLy8CwRVl5cllp1oRtS2rA4+p1lG+bdTTq3I78l84lVpOf1/vUmF/MpuKPbyzxgZAN0CR7euEQjuo2M1A4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KK/8AOIN; arc=pass smtp.client-ip=74.125.228.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ISOlrzXW"
-Received: by mail-ed2-f35.google.com with SMTP id 4fb4d7f45d1cf-6aa1da63791so1891381a12.1
-        for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 11:33:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790188431; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KK/8AOIN"
+Received: by mail-pz2-f43.google.com with SMTP id 41be03b00d2f7-cc4c08393dfso961786a12.3
+        for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 13:41:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790196107; cv=none;
         d=google.com; s=arc-20260327;
-        b=o6tt2/BFABlQjcvVbVQMoQjSBa/E50V8Rzd500Uup+P6kUDjf3eIPwvySsDHT/+pR1
-         v5KhL2Tq2E7wEre9V5Zo7M/1d0qLRAddHmoKyigFqpppcwG7R/1skYHPL/g2EyS6cwd/
-         cfK2U4jAF3XMQis2kBcdUpGNEu/XxZTxZ7YDoSItAxJhNdi1sRtJZfRWG2P6MO7QbkTQ
-         XfbTpNeLAmeRWVYVaHAxQFuLI4kJLREoCcVBUthbBmPCRGsMwHn0yvYrh75y08+4jOl5
-         7EqKSXFVw1lqt6LdHfcWiG+k/5bf5Xt1A0caaOpma6y6WouuN1/dT5mCH1ZLTXzBdZUD
-         HitQ==
+        b=esMQ/1EAQNebqqHm6RNybeRi4WgPRn3o3YbAjGBH3AfI7PcD0X9LSQqBP8N4DuHTIo
+         QyJXE4b2ACgzczJMwlY+GSKBqyNDXmW0QRVQLpLs+NaTVlR8RaEkgDhwtSnavJruEFSQ
+         +DCWwDlXkJ/Tf4fy1vbzokTtAlAbNwv4RNx5ZODZxxBDmgeJSwknlcmqBQ5iYtAwxmaP
+         3ke4QTGEU1xJj7Icw+v5PWLXeVsY/kSTmMlTDPuqckB29ltWXovGAThT3ot0QH1RxFqQ
+         5KfJCPAZQEO7K4mp/r53Bw92cRGf0n6V0T85c2wmJYBFH24LXbXnhIwXKxtsWDC57Hk6
+         oEfQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=xWLnpLG+/xCQzg9TUwjuoEhhJm7Z/sPAqn8dxe76jpM=;
-        fh=Qs8o4c02DbEnLt6ItQ0zf2/0vp3J+hILC3S+ZClGB8s=;
-        b=h2BbKtA2Cb+TQKdCblV43qJXrRVV6rwhFtryBibii9GAAWrfNj1bv0qQWjyMB7K5F3
-         khQ6wA0IuD2PUaBK+dob53DKjmwpMN33xiD7OIYjsNJyS/dxTRU/mr+QP97FIbIOAgyU
-         dCCwXy06TfPEevJuIGnwQ3bayfe9EBoIpCH2TGoNuvAw9V7p/H84s/qK4aLyGQOKvfqZ
-         D+wxJ57SSwBHXSkhhWGS6Gm8IjuTL+xsUrpuVvnOrm/vDpjeYjtxUaze6TOOkXYvcw27
-         Bl0cl88q8yIVGBzh7/DTt9HIp9XVjrnage1InApGoKABT4y2AUNfZgIlwy7cO6d0fL0j
-         NabQ==;
+        bh=4Rk90bsYMJt5ZclNkQTVUd9tGxjSt+PKuql/N4zT35M=;
+        fh=kzw3tnYeH7Ed//p3gi5qo1bdblxS77gKSNGd2l85ask=;
+        b=CygUVSCl0CVrvhOath4mJtd7gg4Qxlw8Yil8oUZCvg/FXP8Vy1YarJlApyiqBRfe+w
+         Akhoi+pwGkMkN9IdZrKtk3quUYILPdy1PRNGuryXYoE23qcLPgyXDs0mrYq7Ubl4b32l
+         m3+etwRZQnZyqxWkEExPJ4Dkn5axFcFa4VjYP28e3CWF5OC9UrdAyRGK91cIwsItrXc/
+         zcJqopeFWUTxkUW/OmSTmcZ5dNo70laXUXaVp5jnbnVolWxT4uM6rnFWw79CjKx+95uJ
+         dlzh8X33AF106k7gUd731aSPO8MIGoEKwYurFOl9PT7tYq209yZQ8/PdoPuULMKnrMD+
+         hrNg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790188431; x=1790793231; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1790196107; x=1790800907; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=xWLnpLG+/xCQzg9TUwjuoEhhJm7Z/sPAqn8dxe76jpM=;
-        b=ISOlrzXWsccaU25hNuSdFL0u52nvkxBpHw44C+Znba6emZx7ibOrDHPdSktH7iLTnr
-         0m4OjmYqoL3j47ONYuS+Jgwdj/ClZcN76i+OD7O36Fpw0GKviz+3DVwgkvLoXd2ZF03S
-         47t3YyXiExjQo+//K5m89otBMrzt0tcGlEAEenRHjIr/zZikgFXoEFtJUYUAYROlVwqr
-         AUjGUlUrwB/AdW7QBWGclSB0UxaAoXxPNQKmGFnZmFAvsqw1DIAPjgjngXX+J0Cv3ANC
-         xqBAcsPocVcEUPB7SglKSaQD4KlVm+15Pg6jayskF+jBBeRKIoAArSjEQHnSQszTueIa
-         H7sA==
+        bh=4Rk90bsYMJt5ZclNkQTVUd9tGxjSt+PKuql/N4zT35M=;
+        b=KK/8AOINc0pNtu+Va64iP13bQU9eUYg3oIdIw8s5Ci2/hAZyKMasJbc21mcIBaMp2O
+         tYDn71VCJne7qmvFIbkSfOQ/51qo95qR7NsgA5HBIJEriMBbIhIvxiFYZhsSfmlWhj2V
+         Vfv2VUQ6HmCAmTfEMxlOFKZ0bIEGYG8HvdNWoulJmu00uqDqYcrm572G+Y1kXMLXCI0h
+         BPAqhpskB+T7ptQ0nH2EPTVCCdJXsQTMQ37wOQ2jNVh6G5sfmAsa/Fa2/tNTWzhpdRDv
+         DxsuWGzD2/LV+CqwV+Q4qRy8QHf9rlVGHeyYSkjCeO/gj+hk+AjLRzeXR28FKXo1+zSG
+         4mKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790188431; x=1790793231;
+        d=1e100.net; s=20260707; t=1790196107; x=1790800907;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=xWLnpLG+/xCQzg9TUwjuoEhhJm7Z/sPAqn8dxe76jpM=;
-        b=yKh4gekXg3JdE+jyfyOJVnrqlGyZtGmwcvX6D5zmPuS0yYZPT0leqi0qpuSb99vJRW
-         cSH3PMZBMsJMrdBW+Z8wdGq3zzCyiaAN5o72BF5zUlEScJNRFazK5CAkIMDF6l3+siUP
-         gBlMgNKClJC0NNKn7i3+Y5iW3JF1+o1mgPabtGRZS5JnwJBPkMXvAeFdehIr24+Y/1He
-         dabLihRZk3nFX15ua9npMX9KCwrRwVLcqIYSbN6VECQoofazHiLdHjzqmkXWEnHtJYpF
-         +UoGV7jNut03qt3tYXqI+SoauO4P5cWNELQfdtqVg3sQFIk1jF1gTz1S4TyMu/eWS6YS
-         kI6w==
-X-Gm-Message-State: AFuF++nRG8W6gsSiMrTLqjX+W3e5emFDpUOH5jC9Q2W8vls11bpg6PwX
-	OB6VMIQ3HXls0o03ZxfX+zrYHB30K7SRvpc4DjzPKhFhrtk8UOWJ/iEQKaCT/4zW/waO4O3p8U8
-	TPZxkoAXRbNALpL/O0H4FGTUSy3iHi+fDwHm0
-X-Gm-Gg: AYBFou0t7/WnuMhM7zL3uQW/4z5vWdDPCb4oKRstNPXgiLfdgnSyyxH/2TD+1a0GBSO
-	dad1WpnWRdUNBdKy+r9+Bvbg0K9sy7S2ljzmvq845H0JoKH6QqYBX8MDOIOBYkXfnxmpIFBmpqP
-	okFQCx18fR/2vXjOFU2/qjhDxS+jSXtsRXPcO5QbzKDNo0634nDLBwCZ5wknNGPH1rlHQ9Dy65M
-	nO8rHVTGUrMjsLkLJ7Bjs6jwdAeqq0XsVF6+WcmcAfYglTXYLjgoWiO4dGQuvxFDeg2apceLu+4
-	iWdaHmvHBhEcGuwyYhArLmBoMNieSbdo+vAAaOWWhpfBv/UiRJe2WwDdAV5rQAxvGUZt97LWMvz
-	Zqfs6FdAuD9MZW2MiuqTzyYm77MdV4sqXJPv6QJ4COKGd3hJGTjmsgc/emXV+W79KySH9adkKwL
-	I3PoqeKmCNN5CHxVV0jQcSXJsfCzbTOGg/he2TX5dJxZPohFNTxKpkW1jXPXyEGtiYzz+UzrDBu
-	IgT
-X-Received: by 2002:a05:6402:44da:b0:6a9:232b:ec6d with SMTP id
- 4fb4d7f45d1cf-6aac90c176amr37825a12.41.1790188430470; Wed, 23 Sep 2026
- 11:33:50 -0700 (PDT)
+        bh=4Rk90bsYMJt5ZclNkQTVUd9tGxjSt+PKuql/N4zT35M=;
+        b=MtEjIJhFxlJunFCl1ipGk7Ucd0dKMjhMwuaBFEt+sR7dxud2rqbxBzQzx8pbpYR7yE
+         5kI9+8taQSn/SN1n1hs6LoHgmtafnjZlhWcLlNZVnpl3CvGYeBChrpDWsP8DkOQVnkfT
+         AuAgvsye/91QBMP2YWA5BzFqc1mfiYcf4bdVWKbV65DUM6W78IogiLyvUdqahXAWVW0l
+         eSMiXeFhLzIOMhybDIhY+yBh/k7E5MZRTm7O4UyA91Ca7ZF3Lm6DWKZdT4d2gCXG923t
+         2vk5z/tgWiUpdd3y9YjsT4+qqaBJZ5qxb1A4QfSnO8/tLwmjgCAXU49Z7PGGuWbdOgIw
+         olpg==
+X-Forwarded-Encrypted: i=1; AKwUvBzX1uoZHiW+9fwYl6i+Myn7QkyoYDihW8P9mw/eLn3GqD/84i7dJ7C7fO6RRW4LZKtQ3+I6nt88qb6mFWI=@vger.kernel.org
+X-Gm-Message-State: AFuF++mFlmcBKh1Ax9sSSLdn6kJwMUAS9sztQ9VfGL2OogJwA4cponQR
+	74VNybI7wnj2CYilAKtQa4U8WiC3wzfuWnmCzDg3PHCP0OGRUE/30j85hes1TUz00EKZk6ZQsV7
+	SlQUmZr5QJjdNIWOH1EYYSBUtjIUXFPs=
+X-Gm-Gg: AYBFou2RgOqoLbktX+0PKRt4VR72cPvlDnwfXqMmuGZt0rByDSZBV4uJk0j+k8BuINF
+	PwM7j2QQnvRdD+GPQGDRsSIbmaFIZvgiPZ7OzzZbmCSOM/wI5RxezSfR2Ia+Fwd9jXUmELVBOvh
+	wUzen0mHG0V4rTb0LvHoQX86wc7CfwLQxwQxQ6HjJhr0ZmOQfaeYQX2e3NYpw+Wv1juCP6Orn9z
+	Sy+5gk5LS3bT12PRoBQhNhSa4Wn5HUKG2qMKRVMAg1E2VFEknqGKY+Neqi+EwHhYH9jEgTpOL94
+	DX4SbhT5DqYf4Ki0TEcarwHRN8Gxhj4AeH2g9aglcq88Vg/+QUhRK6nupVgy1hcMmgaJwC/ZMcb
+	MlI2IKvV86PREsIfw+oKD1nLvAyinCBxf1xV4dUpN
+X-Received: by 2002:a05:6a20:d522:b0:3dd:f9ff:f88 with SMTP id
+ adf61e73a8af0-3de0ea1cc41mr281016637.59.1790196106915; Wed, 23 Sep 2026
+ 13:41:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260902221709.340393-1-rosenp@gmail.com> <2026092326-python-dugout-7b05@gregkh>
-In-Reply-To: <2026092326-python-dugout-7b05@gregkh>
-From: Rosen Penev <rosenp@gmail.com>
-Date: Wed, 23 Sep 2026 11:33:37 -0700
-X-Gm-Features: AclHuK8NujiV0_j5LaQJveo-PMbdxd-TdSj89jEnHI-dYfRz6WNVHLu2U9RoDK8
-Message-ID: <CAKxU2N8nYJVWftvmPaOytxj2Cd97kKS9-LRcJ-sWzttibqYJdQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: Add Armada 38x earlycon support
+References: <20260819144458.253967-1-joaofl@gmail.com> <2026092313-snare-goggles-ed1c@gregkh>
+In-Reply-To: <2026092313-snare-goggles-ed1c@gregkh>
+From: =?UTF-8?Q?Jo=C3=A3o_Loureiro?= <joaofl@gmail.com>
+Date: Wed, 23 Sep 2026 22:41:09 +0200
+X-Gm-Features: AcwNN1Vp4K1x9c17_VZLSp1YwuVUe8d-gHRrdZOHa6Ix1f3X9Cm2yhfxp6piCjw
+Message-ID: <CAJMWnCiJsNXsEe9JWDGBzHBGiUToco31ysoHF_Loj-9=YMQ3GQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: fsl_lpuart: add support for GPIO-controlled modem lines
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Sherry Sun <sherry.sun@nxp.com>, 
+	Frank Li <frank.li@nxp.com>, Alexander Dahl <ada@thorsis.com>, linux-serial@vger.kernel.org, 
+	imx@lists.linux.dev, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 23, 2026 at 5:22=E2=80=AFAM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Wed, Sep 23, 2026 at 02:53PM +0200, Greg Kroah-Hartman wrote:
+> On Wed, Aug 19, 2026 at 04:44:53PM +0200, Jo=C3=A3o Loureiro wrote:
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -1301,6 +1301,7 @@ config SERIAL_FSL_LPUART
+> >       tristate "Freescale lpuart serial port support"
+> >       depends on HAS_DMA
+> >       select SERIAL_CORE
+> > +     select SERIAL_MCTRL_GPIO if GPIOLIB
 >
-> On Wed, Sep 02, 2026 at 03:17:09PM -0700, Rosen Penev wrote:
-> > Register the Armada 38x UART compatible with the built-in 8250
-> > earlycon implementation so stdout-path can enable an early console
-> > without adding a generic ns16550a compatible to the device tree.
-> >
-> > Keeping the vendor-specific compatible avoids exposing the UART to the
-> > generic OF 8250 runtime driver while preserving the DesignWare driver
-> > Armada-specific runtime handling.
-> >
-> > Assisted-by: Codex:GPT-5
-> > Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_early.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/=
-8250/8250_early.c
-> > index 44ec209f37c4..265d49850e15 100644
-> > --- a/drivers/tty/serial/8250/8250_early.c
-> > +++ b/drivers/tty/serial/8250/8250_early.c
-> > @@ -175,6 +175,7 @@ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
-> >  EARLYCON_DECLARE(uart, early_serial8250_setup);
-> >  OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
-> >  OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
-> > +OF_EARLYCON_DECLARE(uart, "marvell,armada-38x-uart", early_serial8250_=
-setup);
-> >  OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setu=
-p);
-> >  OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
-> >
-> > --
-> > 2.55.0
-> >
->
-> How was this tested?
-This is actually a bugfix to avoid having to add "ns16550a" in dts,
-which arose from a dt bindings commit asking why "ns16550a" is even
-needed.
+> Why not depends?
 
-Anyway, the actual earlycon functionality was probably tested on a
-Turris Omnia given the author of 62480772263a
->
-> thanks,
->
-> greg k-h
+Because SERIAL_MCTRL_GPIO is a hidden symbol.  It is declared as a bare
+"tristate" with no prompt at the end of the same Kconfig file, so it can
+only ever be enabled by a select.  With "depends on SERIAL_MCTRL_GPIO"
+nothing could ever satisfy the dependency and SERIAL_FSL_LPUART would
+become unselectable.
+
+The dependency is also not a hard one.  serial_mctrl_gpio.h provides
+no-op static inlines for the !CONFIG_GPIOLIB case, so fsl_lpuart still
+builds and behaves exactly as before when GPIOLIB is off; the GPIO modem
+lines are an optional extra rather than a requirement.  A depends would
+silently drop LPUART from those configurations.
+
+Finally, this is what every other user of the helpers does:
+SERIAL_ATMEL, SERIAL_IMX, SERIAL_SH_SCI, SERIAL_STM32, SERIAL_MXS_AUART,
+SERIAL_SA1100, SERIAL_CLPS711X and SERIAL_AR933X all spell it as
+"select SERIAL_MCTRL_GPIO if GPIOLIB" in the same file, so this keeps
+fsl_lpuart consistent with them.
+
+Thanks,
+Jo=C3=A3o
