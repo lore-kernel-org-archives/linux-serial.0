@@ -1,257 +1,208 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C7353B14AB;
-	Wed, 23 Sep 2026 14:28:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61233AD517
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 14:39:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790173718; cv=none; b=MLC3RdxL4kqB7SwGd/QtwHVqbMBdUL6OxDI7lKDvvS5KcodG7E3dXRb5x59MIex+okYeabYNFk4a7gM90FclEOzQBLfak5MgNsRFa26wtM2ZOY54fKSWzw7MTrXiWT4OSQB1Oy19Hqt9bnZbicJ+lBWi6wPKnTM+QRQyGBgks6k=
+	t=1790174363; cv=none; b=SJfiL/1t3Zp39bXvoJH9pJxsR37Nx6XD81vndRva7awu2fOFszIFgMWtIv9ZaTZxPVslj330TsRK51Cs5RIlfzNWVhbLNlAsmfUkDzHmRq0IoLl26DTe4OoGiudQo1XCAU8e2fPcftpDy7UdpcQ6xxG86Vq0quuI8vjHWJYrzjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790173718; c=relaxed/simple;
-	bh=XSERXU2ZdNZYUopBn50o2i3OZ219cAqBQhhbjm3F8e0=;
+	s=arc-20240116; t=1790174363; c=relaxed/simple;
+	bh=VFt5QFeL1qyvdUpQVKVvwCAbcdKtX7gDJTZ4RTPKRFY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VzzqpFa3SIyNMA0jg2l3AeA1TOlu7ihrYaNTTWr7f3c4OXiPH9mOp2g6R/BGbLOfU1CB7cN06SJDawVP6TIkfJss5qx3JW95nRruJVPwiKX04Nlx6fHbukWfrJxiWchJnn0LGa0q9U3q63BkYo3kU/jxaEsGaBiCarrKE3yE4TY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fntGoFcc; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=WxDJwDm/4fuq4ejM4qoNIJ2a7FUvL9ob+XrQzJHdpu3AZOcxaexn6Gk3VFEaSd9jWJsw4shmRkVxYG20NJHuEgC9BiA4SeR0m+WOeIqZz6OnY/3bXNHo6Gslp+CNbrKFNjq7aOCTCK3l+QzOl95B2+0vncz2yOz18sePMr511w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YVVQkkDk; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fntGoFcc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 653BC1F000FF;
-	Wed, 23 Sep 2026 14:28:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790173716;
-	bh=83/PBegOGy52s6j5W1iw8J1pOtvUqqXH+Cg7DByM+jU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=fntGoFcc2GkbEDmzEVk6q3fFj8+o3DOS/c5Uo+rT0Qj1FEcUgiJ9yQ15PNaPGKpIL
-	 gdmdWIoZQ0LIv3ftOTKmXxbv3UwX9yH7OIbmP8q7Qkf0WPuedlvO7z9lfyEJXpl+kX
-	 l5nNyLDf5T6BDI7lmrt6ND5Z8chIuuMWWeRS+zdg=
-Date: Wed, 23 Sep 2026 16:26:18 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Markus Probst <markus.probst@posteo.de>
-Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
-	Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
-	Eric Biggers <ebiggers@kernel.org>,
-	Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YVVQkkDk"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912d37b6so5730685e9.0
+        for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 07:39:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1790174360; x=1790779160; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=vcGfrVG5c5yPpAOOLi+CwRHdzd99wiF/Zu4kVwYdMqw=;
+        b=YVVQkkDkn14qIcIPV1C/wFmEEpUtc7fQA7C9IXfwqrZ3Zo1GuiUBBZejMHKQsepG4P
+         F12+/nZZzJrzQTedePjZKFYRGMKb/IwiUhm5UI8QV/LWBQ/iLk9XhZ7a0IGe0wCLpkGO
+         Lr5bpvoFWf9bZhpRmCGagT+fSMbEmXJNdb+MJQ5URIGZoqFhoBadomUGEUPAMLuW6j2D
+         T5f5r9Btgx43OWzf9PYHc6CquxW090JiHthuCOwKTlSX5fh9UBTOIxx0kUB9NxzyMWgM
+         yRRm3bQuFg0AlA7BF1IMhCTh6r2zx1IRMSNErVhV9rIezSNU+99VPDJjzy7pP9W4EiUZ
+         ifPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790174360; x=1790779160;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=vcGfrVG5c5yPpAOOLi+CwRHdzd99wiF/Zu4kVwYdMqw=;
+        b=pEySF6ETJ4t/nvLGU3NIHzvhjeKnMhC6XE6JHUX9zwZNQjlScM5t6iP5EG/4OhoqU1
+         gm0CS5AcQXiQnJ4aXXBDpKVbGLN1XZvV9JtneV0IPLk1aWcuIg+8GVjdjcStgsQkTZy9
+         mixQn86Awk8TAbVnGCjKNpyM2bhMQzwaDwHDp3i0Xyk6Q4sEiw8xxHmVgkb0s6dLG60q
+         Km9Bj/VdAeR7NsIBEpCN+mHPXyBvWLI6JN96ZsqLBx0VtxDLi6LBWZR/APuTrn8apV4A
+         EkCrQds3yoyw0Ec+U3/YsaK8XIS3bhSIrBnN76S27MytUzWqNI8n/rdJt3ztyluFs4Od
+         rqiA==
+X-Forwarded-Encrypted: i=1; AKwUvBySKXimBsLHuKz+bHlf+jXShSx4FnURhEopdWWVeiD52QXQNgVGa0e4DMKOWyKYo6qdcRDFtia9A18JJs4=@vger.kernel.org
+X-Gm-Message-State: AFuF++likM3R5KdPSzFxOortbHs/ERQXKSYuvjml1a5GRCMLd2vigJKx
+	DfFed7lhC2N2TNZrn8i0ir9ofckFSMhvFqgsnvNexTXsYG6yrhmxSr4UGeN4Jdap5BI=
+X-Gm-Gg: AYBFou3LeHKR4R4iSEL9BZw6SwApdNdnA2CbiOYVdZURt2FHuq7jFw7sGljzxWKU5Ao
+	HH7EazqUa2IbIMeoAEmTo5cfUF1WJVjNqrzoHWIjdMq8pfgrw68uLAgu3v0JVzld59D8iD6iM6d
+	2dOs/Kg1c9zGzYBOHj1G4H21T9+nUfQnswwFhoagaTO67ph6ibH4PTtpxwvMOlBYBT4jx0lFaiM
+	Cgx6DNZuc6jLVO7qAEWwhYpMPBFvsFMCsFa/Hvt5jMt3qpCLjcXNaUAmuWi9Q53XFhOsTZ61MR/
+	klrHHisrwAwkAdOJX1Ym2xBVPFX7uooUySPvBVbPANIGd1iGiK3Bgqa35Vaf6+iluL1P+/pwCHg
+	MASYqFgzySfjGneP06KtF9iWQ0pj9Hm0uDt7hWATkIyO6wWYbdwQAVXGGg5FaJyKOtFj3NEHDCS
+	qpRU/bKPdk5tWboRS64iKuu8dYkphe1RwZHMrBuZVMMwjFjhpI2Qnn4n1Mh+En4VSccXMbQMfNe
+	h2qBu7FsOK6+lM=
+X-Received: by 2002:a05:600c:a013:b0:49f:ce78:3571 with SMTP id 5b1f17b1804b1-49fdf10d03emr36763305e9.34.1790174359895;
+        Wed, 23 Sep 2026 07:39:19 -0700 (PDT)
+Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fde185329sm82257335e9.1.2026.09.23.07.39.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Sep 2026 07:39:19 -0700 (PDT)
+Date: Wed, 23 Sep 2026 16:39:17 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Samuel Thibault <samuel.thibault@ens-lyon.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev
-Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
- receive_buf callback calls
-Message-ID: <2026092327-tinwork-native-7a87@gregkh>
-References: <20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de>
- <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
- <2026092356-chatting-dust-3de9@gregkh>
- <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
+	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
+	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] braille: nbcon: Use nbcon atomic console callbacks
+Message-ID: <arPklfHCncdWHGT4@pathway.suse.cz>
+References: <20260922072558.98854-1-pmladek@suse.com>
+ <20260922072558.98854-3-pmladek@suse.com>
+ <20260922073728.2ADCD1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2fcec4f3cd70a41e282505ff5c99b19e5809aead.camel@posteo.de>
+In-Reply-To: <20260922073728.2ADCD1F000FF@smtp.kernel.org>
 
-On Wed, Sep 23, 2026 at 01:31:49PM +0000, Markus Probst wrote:
-> On Wed, 2026-09-23 at 12:35 +0200, Greg Kroah-Hartman wrote:
-> > On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
-> > > These functions will be used to simply the serdev rust abstraction. It
-> > > also contributes to the fixing of 2 race conditions in the serdev rust
-> > > abstraction.
-> > > 
-> > > Signed-off-by: Markus Probst <markus.probst@posteo.de>
-> > > ---
-> > >  drivers/tty/serdev/core.c           | 50 ++++++++++++++++++++++++++++++++++++-
-> > >  drivers/tty/serdev/serdev-ttyport.c | 38 ++++++++++++++++++++++++++++
-> > >  include/linux/serdev.h              |  6 +++++
-> > >  3 files changed, 93 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> > > index 7500efcdfc21..7d24f16710cb 100644
-> > > --- a/drivers/tty/serdev/core.c
-> > > +++ b/drivers/tty/serdev/core.c
-> > > @@ -187,6 +187,51 @@ void serdev_device_close(struct serdev_device *serdev)
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(serdev_device_close);
-> > >  
-> > > +/**
-> > > + * serdev_device_pause_rx() - pause data receive
-> > > + * @serdev:	serdev device
-> > > + *
-> > > + * Pause calls to receive_buf.
-> > > + *
-> > > + * The caller must guarantee that this does not run concurrently with
-> > > + * `serdev_device_open` or `serdev_device_close`.
-> > > + *
-> > > + * Note that if a call to receive_buf is currently executed, the function will
-> > > + * sleep until it has finished.
-> > > + */
-> > > +void serdev_device_pause_rx(struct serdev_device *serdev)
-> > > +{
-> > > +	struct serdev_controller *ctrl = serdev->ctrl;
-> > > +
-> > > +	if (!ctrl || !ctrl->ops->pause_rx)
-> > > +		return;
-> > > +
-> > > +	ctrl->ops->pause_rx(ctrl);
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(serdev_device_pause_rx);
-> > > +
-> > > +/**
-> > > + * serdev_device_resume_rx() - resume data receive
-> > > + * @serdev:	serdev device
-> > > + *
-> > > + * Resume calls to receive_buf.
-> > > + *
-> > > + * The caller must guarantee that this does not run concurrently with
-> > > + * `serdev_device_open` or `serdev_device_close`.
-> > > + *
-> > > + * This can be called even if not paused to ensure data receive is active.
-> > > + */
-> > > +void serdev_device_resume_rx(struct serdev_device *serdev)
-> > > +{
-> > > +	struct serdev_controller *ctrl = serdev->ctrl;
-> > > +
-> > > +	if (!ctrl || !ctrl->ops->resume_rx)
-> > > +		return;
-> > > +
-> > > +	ctrl->ops->resume_rx(ctrl);
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(serdev_device_resume_rx);
-> > > +
-> > >  static void devm_serdev_device_close(void *serdev)
-> > >  {
-> > >  	serdev_device_close(serdev);
-> > > @@ -398,6 +443,7 @@ EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
-> > >  static int serdev_drv_probe(struct device *dev)
-> > >  {
-> > >  	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-> > > +	struct serdev_device *sdev = to_serdev_device(dev);
-> > >  	int ret;
-> > >  
-> > >  	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
-> > > @@ -405,7 +451,9 @@ static int serdev_drv_probe(struct device *dev)
-> > >  	if (ret)
-> > >  		return ret;
-> > >  
-> > > -	return sdrv->probe(to_serdev_device(dev));
-> > > +	serdev_device_resume_rx(sdev);
-> > > +
-> > > +	return sdrv->probe(sdev);
-> > >  }
-> > >  
-> > >  static void serdev_drv_remove(struct device *dev)
-> > > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> > > index bab1b143b8a6..e8aa89e733bd 100644
-> > > --- a/drivers/tty/serdev/serdev-ttyport.c
-> > > +++ b/drivers/tty/serdev/serdev-ttyport.c
-> > > @@ -7,8 +7,10 @@
-> > >  #include <linux/tty.h>
-> > >  #include <linux/tty_driver.h>
-> > >  #include <linux/poll.h>
-> > > +#include "../tty.h"
-> > >  
-> > >  #define SERPORT_ACTIVE		1
-> > > +#define SERPORT_PAUSE_RX	2
-> > >  
-> > >  struct serport {
-> > >  	struct tty_port *port;
-> > > @@ -32,6 +34,14 @@ static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
-> > >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-> > >  		return 0;
-> > >  
-> > > +	if (test_bit(SERPORT_PAUSE_RX, &serport->flags))
-> > > +		return 0;
-> > > +
-> > > +	/*
-> > > +	 * Ensure writes by the driver are visible before allowing traffic to resume.
-> > > +	 */
-> > > +	smp_mb__after_atomic();
-> > 
-> > This scares me.  Why not use a real lock? 
-> > 
-> I can use locks to make it less "fragile". But I don't I think I need
-> them.
-
-Always use them first, and then remove and do "tricky" things if you
-really can measure the need and can prove that they are not needed.
-
-> > WHat's the issue here, you
-> > need this to be "flushed" before this call:
-> > 
-> > > +
-> > >  	ret = serdev_controller_receive_buf(ctrl, cp, count);
-> > 
-> > here?
-> > 
-> > And you just tested a bit, you didn't set a bit, so what are you trying
-> > to ensure is written exactly?
-> This should be an acquire load operation (paired with the release store
-> operation in `ttyport_resume_rx`).
-
-Where is the load?  This feels wrong.
-
-> It ensures that any writes before calling `ttyport_resume_rx` are
-> visible in the `serdev_controller_receive_buf` invocation.
-
-writes from where?  There wasn't a write before this that I can see in
-the diff, hence my confusion.
-
-> For instance, in the Rust abstraction the following will be called in
-> order in probe (with the following patches):
+On Tue 2026-09-22 07:37:27, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
+> - [High] braille: operator precedence bug disables braille atomic write
+> - [High] braille: infinite spinlock in braille_write() during same-CPU unsafe takeover
+> --
 > 
-> - serdev_device_pause_rx
-> - serdev_device_open
-> - dev_set_drvdata
-> - serdev_device_resume_rx
+> commit a7f38c0383481bd6ad9c244405d8d201d604569b
+> Author: Petr Mladek <pmladek@suse.com>
 > 
-> This atomic lock effectively ensures in this example that the set
-> device driver data is visible to `ttyport_receive_buf` before
-> `SERPORT_PAUSE_RX` is unset in `ttyport_resume_rx`.
+> braille: nbcon: Use nbcon atomic console callbacks
+> 
+> This commit adapts the braille console driver to support the new NBCON API.
+> It introduces logic to acquire the nbcon console ownership before printing
+> and uses the atomic write callback to output the buffer. The serial8250
+> driver is also adjusted to skip prepending newlines for braille consoles.
+> 
+> > diff --git a/drivers/accessibility/braille/braille_console.c b/drivers/accessibility/braille/braille_console.c
+> > --- a/drivers/accessibility/braille/braille_console.c
+> > +++ b/drivers/accessibility/braille/braille_console.c
+> > @@ -62,14 +62,32 @@ static void braille_write(u16 *buf)
+> 
+> [ ... ]
+> 
+> > +	if (braille_co->flags & CON_NBCON) {
+> > +		/*
+> > +		 * Braille console might be called from unknown context via
+> > +		 * vt_console_print() from console_unlock() from printk().
+> > +		 * Use the atomic callback and synchronize it just using
+> > +		 * the console context. Disable interrupts to prevent a nested
+> > +		 * call into the driver code which might cause a deadlock when
+> > +		 * trying to acquire the console ownership, see
+> > +		 * __nbcon_atomic_flush_pending_con().
+> > +		 */
+> > +		local_irq_save(flags);
+> > +		while (!nbcon_braille_try_acquire(braille_co, &wctxt))
+> > +			cpu_relax();
+> 
+> [Severity: High]
+> Could this loop become an infinite spinlock if triggered from a nested
+> context on the same CPU?
+> 
+> If an interrupt preempts the underlying nbcon console driver (such as 8250)
+> while it is in an unsafe region, and that interrupt triggers a printk(),
+> the legacy VT console might be flushed via console_unlock(), eventually
+> calling braille_write().
+> 
+> Since local interrupts are disabled here, the preempted nbcon context on
+> this same CPU can never resume to release the console. Because
+> nbcon_context_try_acquire() rejects handovers to the same CPU when the
+> console is in an unsafe state, won't this loop spin indefinitely?
 
-This feels rough.  In talking with others today, serdev really should be
-reworked to be a "real" bus here, which should solve these issues,
-right?  Perhaps that's the better idea overall instead of these fragile
-links?  That might also solve the other issues with serdev where people
-want to use it for dynamic devices (i.e. USB devices).
+For me, it is not easy to be sure but it looks to me that this code
+is called deep in the generic vt code when handling vt_notifier_list
+and keyboard_notifier_list. I guess that they already have to
+synchronized against each other. At least the vt_notifier_list
+operations seem to be synchronized using the console lock.
 
-Thoughts?
+Anyway, the disabled interrupts should prevent nesting except
+by NMI. But I believe that the VT code should not be called
+in NMI because it uses locks. The only exception might be
+panic().
 
-> > >  	dev_WARN_ONCE(&ctrl->dev, ret > count,
-> > > @@ -156,6 +166,32 @@ static void ttyport_close(struct serdev_controller *ctrl)
-> > >  	tty_release_struct(tty, serport->tty_idx);
-> > >  }
-> > >  
-> > > +static void ttyport_pause_rx(struct serdev_controller *ctrl)
-> > > +{
-> > > +	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-> > > +	struct tty_struct *tty = serport->tty;
-> > > +
-> > > +	set_bit(SERPORT_PAUSE_RX, &serport->flags);
-> > > +
-> > > +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
-> > 
-> > What keeps this bit from being set right after you test it?
-> The statement "The caller must guarantee that this does not run
-> concurrently with `serdev_device_open` or `serdev_device_close`." in
-> the kdoc of `serdev_device_pause_rx` does.
+An improvement might be to use NBCON_PRIO_PANIC in panic.
+Something like (on top of 1st patch):
 
-Oh that's going to be impossible to keep working :)
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -2044,7 +2044,14 @@ bool nbcon_braille_try_acquire(struct console *con,
+ 
+ 	memset(ctxt, 0, sizeof(*ctxt));
+ 	ctxt->console = con;
+-	ctxt->prio    = NBCON_PRIO_EMERGENCY;
++	ctxt->prio = nbcon_get_default_prio();
++
++	/*
++	 * The Braille console might be used in an interrupt context but
++	 * NBCON_PRIO_EMERGENCY is associated with task context.
++	 */
++	if (ctxt->prio < NBCON_PRIO_EMERGENCY)
++		ctxt->prio = NBCON_PRIO_EMERGENCY;
+ 
+ 	return nbcon_context_try_acquire(ctxt, false);
+ }
 
-thanks,
+> [ ... ]
+> 
+> > -	braille_co->write(braille_co, data, c - data);
+> > +	if (braille_co->flags & CON_NBCON) {
+> > +		if (braille_co->write_atomic &&
+> > +		    !braille_co->flags & CON_NBCON_ATOMIC_UNSAFE) {
+> 
+> [Severity: High]
+> Does this operator precedence evaluate as intended?
+> 
+> Because the logical not (!) operator has higher precedence than the bitwise
+> and (&) operator, this expression parses as:
+> 
+> (!braille_co->flags) & CON_NBCON_ATOMIC_UNSAFE
+> 
+> Since braille_co->flags is known to be non-zero (as CON_NBCON was just
+> checked above), evaluating the logical not against the flags yields 0. This
+> makes the condition permanently false, which bypasses the braille atomic
+> write callback unconditionally.
+> 
+> Should this be grouped with parentheses to evaluate the bitwise and first?
 
-greg k-h
+Grr, sure, it should be:
+
+		    !(braille_co->flags & CON_NBCON_ATOMIC_UNSAFE)) {
+
+I'll fix this in v2.
+
+I am going to wait with v2 a bit just in case anyone would like to
+comment on v1...
+
+Best Regards,
+Petr
