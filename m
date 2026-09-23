@@ -1,223 +1,147 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed2-f35.google.com (mail-ed2-f35.google.com [74.125.228.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 091AB538D69
-	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 15:59:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790179186; cv=none; b=X8i1JtO46WgKn+otfFMM8eGt9tERkdNZnaGzysLJJwghzg2s32+YTthozESmZTSWyN2sQbYddZRWAA1V0n46chLAeYtespqm75wzrN8O+T5lgQA8BN4zU/Tp+G/ddoEvz40XSrwQUe8GxoxNTwd+jiiH1OMB1/dNFpKPkPRN9WQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790179186; c=relaxed/simple;
-	bh=S4sFlisaC8O3zgD+kGxA4xEknznZCvoeYv8Oak6hpr8=;
-	h=Date:From:To:CC:Subject:In-Reply-To:Message-ID:MIME-Version:
-	 Content-Type; b=L13VcdhTk9XqNpnFwxYPM22QSuryMI2z/+bcxV+95b3GyF/YCUet0NWBKqpBHv/1FFSqdehzZLI4gArYb9cvzHZ/DG4hVPu70yVGXi57PDLDLabFZbCl7U2I8hSjlDu9+X1vergqd683IQ4lMvXNMPk5OThq4qk50Zh3ruy24f4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=IeqMtE+j; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=OyPWSQTn; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83D7153B329
+	for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 18:33:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.99
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790188434; cv=pass; b=a1Ozb2MSog8x7j5MKgM3PljzIi+P5ZKXMGTF7Viepg/EkG/O0rWl4cnqAiHgYzw6PQWzWRVPNtuKNaGhd7htTXyXqH4eFOgWHlHskcSkArXI7u+XVFI7zp7RhADnRCDKW1yCgIiuu55N2gPcPVqgTX0zSOGLa0/irnP/g0WttXg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790188434; c=relaxed/simple;
+	bh=CElcEHTV8j9fLleWJFKVU60iC5Y2Vn5eBcn2vHfWwRE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uyGSxXgnqh2ojwD1m905IUonMcNg3J2sQA2L381ivDHrp3VXD5IkFYTf3ugiKO0uc34pKocH+51rk1f/SVedEshrqw5/0S8iGrtSRtCSomj+G0ieHBXI7EYYc3fR/djMRlPzpkaY5L6eCbZy23eqye9fhI+HiTwLiceeq4nwZFA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ISOlrzXW; arc=pass smtp.client-ip=74.125.228.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="IeqMtE+j";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="OyPWSQTn"
-DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1790179178; bh=bhlp4VhL8v7Ns1qW5hgWGRs
-	IKPhpkhLGHULFe8vGGkg=; b=IeqMtE+j0e/L1CWjRCceoYDn7fO+FJBAGFS6xrfalCnEEz9swJ
-	z+T0VO4fTbzZEJ0eYV6fk4L+NsFxCK403crwsHEv/mHwwgR5ucHDbSKZBOIZoIlqYz1BWiaJGd9
-	M8v/uTLajlwmn7I3sB+dTEmbD+1k/VeCJG4iAyDsgqrtUJzGIMCHHm8tM5HsmmRzRV1hgBh8Syq
-	ylQGk67B2Dz0wZP8WUZY9MWTKjDXuhk1rkbMW//9loYjpYhDEArW/MmZArtKck1YZu1t2zQNTJu
-	24yo0SBeI6+SfTyqFpmbqNrayXvDTcimw0KM6BW4cIRjhJJdXqv0Q2QeocJusDIyN3A==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1790179178; bh=bhlp4VhL8v7Ns1qW5hgWGRs
-	IKPhpkhLGHULFe8vGGkg=; b=OyPWSQTneBsus40K/2r8uZjPNXxHdhsLqAuf2PL6aa1hUPpHBU
-	Zf28lvdoXNQVS0PT4XgWPFQpE+D6mUpfaxAg==;
-Date: Wed, 23 Sep 2026 16:59:38 +0100
-From: Bradley Morgan <brads@mainlining.org>
-To: pmladek@suse.com
-CC: gregkh@linuxfoundation.org, john.ogness@linutronix.de,
- linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
- oliver.sang@intel.com, rostedt@goodmis.org, senozhatsky@chromium.org
-Subject: =?US-ASCII?Q?Re=3A_=5Blinux-next=3Amaster=5D_=5Bserial=5D__d353934702=3A_?=
- =?US-ASCII?Q?BUG=3Akernel=5Freboot-without-warning=5Fin=5Ftest=5Fstage?=
-In-Reply-To: <arPQwKbl7wM6IM3x@pathway.suse.cz>
-Message-ID: <7CB4E0A4-05CA-4C74-91CB-FEFB3B7F5872@mainlining.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ISOlrzXW"
+Received: by mail-ed2-f35.google.com with SMTP id 4fb4d7f45d1cf-6aa1da63791so1891381a12.1
+        for <linux-serial@vger.kernel.org>; Wed, 23 Sep 2026 11:33:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790188431; cv=none;
+        d=google.com; s=arc-20260327;
+        b=o6tt2/BFABlQjcvVbVQMoQjSBa/E50V8Rzd500Uup+P6kUDjf3eIPwvySsDHT/+pR1
+         v5KhL2Tq2E7wEre9V5Zo7M/1d0qLRAddHmoKyigFqpppcwG7R/1skYHPL/g2EyS6cwd/
+         cfK2U4jAF3XMQis2kBcdUpGNEu/XxZTxZ7YDoSItAxJhNdi1sRtJZfRWG2P6MO7QbkTQ
+         XfbTpNeLAmeRWVYVaHAxQFuLI4kJLREoCcVBUthbBmPCRGsMwHn0yvYrh75y08+4jOl5
+         7EqKSXFVw1lqt6LdHfcWiG+k/5bf5Xt1A0caaOpma6y6WouuN1/dT5mCH1ZLTXzBdZUD
+         HitQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=xWLnpLG+/xCQzg9TUwjuoEhhJm7Z/sPAqn8dxe76jpM=;
+        fh=Qs8o4c02DbEnLt6ItQ0zf2/0vp3J+hILC3S+ZClGB8s=;
+        b=h2BbKtA2Cb+TQKdCblV43qJXrRVV6rwhFtryBibii9GAAWrfNj1bv0qQWjyMB7K5F3
+         khQ6wA0IuD2PUaBK+dob53DKjmwpMN33xiD7OIYjsNJyS/dxTRU/mr+QP97FIbIOAgyU
+         dCCwXy06TfPEevJuIGnwQ3bayfe9EBoIpCH2TGoNuvAw9V7p/H84s/qK4aLyGQOKvfqZ
+         D+wxJ57SSwBHXSkhhWGS6Gm8IjuTL+xsUrpuVvnOrm/vDpjeYjtxUaze6TOOkXYvcw27
+         Bl0cl88q8yIVGBzh7/DTt9HIp9XVjrnage1InApGoKABT4y2AUNfZgIlwy7cO6d0fL0j
+         NabQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790188431; x=1790793231; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=xWLnpLG+/xCQzg9TUwjuoEhhJm7Z/sPAqn8dxe76jpM=;
+        b=ISOlrzXWsccaU25hNuSdFL0u52nvkxBpHw44C+Znba6emZx7ibOrDHPdSktH7iLTnr
+         0m4OjmYqoL3j47ONYuS+Jgwdj/ClZcN76i+OD7O36Fpw0GKviz+3DVwgkvLoXd2ZF03S
+         47t3YyXiExjQo+//K5m89otBMrzt0tcGlEAEenRHjIr/zZikgFXoEFtJUYUAYROlVwqr
+         AUjGUlUrwB/AdW7QBWGclSB0UxaAoXxPNQKmGFnZmFAvsqw1DIAPjgjngXX+J0Cv3ANC
+         xqBAcsPocVcEUPB7SglKSaQD4KlVm+15Pg6jayskF+jBBeRKIoAArSjEQHnSQszTueIa
+         H7sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790188431; x=1790793231;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=xWLnpLG+/xCQzg9TUwjuoEhhJm7Z/sPAqn8dxe76jpM=;
+        b=yKh4gekXg3JdE+jyfyOJVnrqlGyZtGmwcvX6D5zmPuS0yYZPT0leqi0qpuSb99vJRW
+         cSH3PMZBMsJMrdBW+Z8wdGq3zzCyiaAN5o72BF5zUlEScJNRFazK5CAkIMDF6l3+siUP
+         gBlMgNKClJC0NNKn7i3+Y5iW3JF1+o1mgPabtGRZS5JnwJBPkMXvAeFdehIr24+Y/1He
+         dabLihRZk3nFX15ua9npMX9KCwrRwVLcqIYSbN6VECQoofazHiLdHjzqmkXWEnHtJYpF
+         +UoGV7jNut03qt3tYXqI+SoauO4P5cWNELQfdtqVg3sQFIk1jF1gTz1S4TyMu/eWS6YS
+         kI6w==
+X-Gm-Message-State: AFuF++nRG8W6gsSiMrTLqjX+W3e5emFDpUOH5jC9Q2W8vls11bpg6PwX
+	OB6VMIQ3HXls0o03ZxfX+zrYHB30K7SRvpc4DjzPKhFhrtk8UOWJ/iEQKaCT/4zW/waO4O3p8U8
+	TPZxkoAXRbNALpL/O0H4FGTUSy3iHi+fDwHm0
+X-Gm-Gg: AYBFou0t7/WnuMhM7zL3uQW/4z5vWdDPCb4oKRstNPXgiLfdgnSyyxH/2TD+1a0GBSO
+	dad1WpnWRdUNBdKy+r9+Bvbg0K9sy7S2ljzmvq845H0JoKH6QqYBX8MDOIOBYkXfnxmpIFBmpqP
+	okFQCx18fR/2vXjOFU2/qjhDxS+jSXtsRXPcO5QbzKDNo0634nDLBwCZ5wknNGPH1rlHQ9Dy65M
+	nO8rHVTGUrMjsLkLJ7Bjs6jwdAeqq0XsVF6+WcmcAfYglTXYLjgoWiO4dGQuvxFDeg2apceLu+4
+	iWdaHmvHBhEcGuwyYhArLmBoMNieSbdo+vAAaOWWhpfBv/UiRJe2WwDdAV5rQAxvGUZt97LWMvz
+	Zqfs6FdAuD9MZW2MiuqTzyYm77MdV4sqXJPv6QJ4COKGd3hJGTjmsgc/emXV+W79KySH9adkKwL
+	I3PoqeKmCNN5CHxVV0jQcSXJsfCzbTOGg/he2TX5dJxZPohFNTxKpkW1jXPXyEGtiYzz+UzrDBu
+	IgT
+X-Received: by 2002:a05:6402:44da:b0:6a9:232b:ec6d with SMTP id
+ 4fb4d7f45d1cf-6aac90c176amr37825a12.41.1790188430470; Wed, 23 Sep 2026
+ 11:33:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 8bit
+References: <20260902221709.340393-1-rosenp@gmail.com> <2026092326-python-dugout-7b05@gregkh>
+In-Reply-To: <2026092326-python-dugout-7b05@gregkh>
+From: Rosen Penev <rosenp@gmail.com>
+Date: Wed, 23 Sep 2026 11:33:37 -0700
+X-Gm-Features: AclHuK8NujiV0_j5LaQJveo-PMbdxd-TdSj89jEnHI-dYfRz6WNVHLu2U9RoDK8
+Message-ID: <CAKxU2N8nYJVWftvmPaOytxj2Cd97kKS9-LRcJ-sWzttibqYJdQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250: Add Armada 38x earlycon support
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 23 September 2026 14:14:40 BST, Petr Mladek <pmladek@suse.com> wrote:
->On Wed 2026-09-23 12:47:22, John Ogness wrote:
->> (Added printk folks To/Cc.)
->> 
->> Hi Oliver,
->> 
->> On 2026-08-06, kernel test robot <oliver.sang@intel.com> wrote:
->> > similar to
->> > https://lore.kernel.org/all/202602271552.c972ef9e-lkp@intel.com/
->> > we still found we have kernel_reboot-without-warning_in_test_stage by
->this
->> > change in our tests.
->> >
->> > hard for us to understand the connection, and we cannot capture more
->useful
->> > information from serail. just report FYI what we observed in our
->tests.
->> >
->> >
->> > kernel test robot noticed
->"BUG:kernel_reboot-without-warning_in_test_stage" on:
->> >
->> > commit: d3539347022ad4eeb9dbd29c50bfca17b9d8a146 ("serial: 8250:
->Switch to nbcon console, take 2")
->> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
->master
->> >
->> > in testcase: boot
->> >
->> > config: i386-randconfig-2006-20250825
->> > compiler: gcc-14
->> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2
->-m 32G
->> >
->> > (please refer to attached dmesg/kmsg for entire log/backtrace)
->> >
->> >
->> > If you fix the issue in a separate patch/commit (i.e. not just a new
->version of
->> > the same patch/commit), kindly add following tags
->> > | Reported-by: kernel test robot <oliver.sang@intel.com>
->> > | Closes:
->https://lore.kernel.org/oe-lkp/202608061008.48a1e76e-lkp@intel.com
->> >
->> >
->> >
->> > [   65.107802][  T272] INFO: lkp CACHE_DIR is /tmp/cache
->> > [   65.107809][  T272]
->> > BUG: kernel reboot-without-warning in test stage
->> >
->> >
->> >
->> > The kernel config and materials to reproduce are available at:
->> >
->https://download.01.org/0day-ci/archive/20260806/202608061008.48a1e76e-lkp@intel.com
->> 
->> This problem is because the kernel buffer is not flushed before
->> performing the sysrq-triggered emergency restart. The following patch
->> sort of addresses this:
->> 
->> ----- BEGIN RFC PATCH -----
->> diff --git a/kernel/reboot.c b/kernel/reboot.c
->> index 695c33e75efd9..5d1ff39b21f90 100644
->> --- a/kernel/reboot.c
->> +++ b/kernel/reboot.c
->> @@ -8,6 +8,7 @@
->>  #define pr_fmt(fmt)	"reboot: " fmt
->>  
->>  #include <linux/atomic.h>
->> +#include <linux/console.h>
->>  #include <linux/ctype.h>
->>  #include <linux/export.h>
->>  #include <linux/kexec.h>
->> @@ -92,8 +93,11 @@ static BLOCKING_NOTIFIER_HEAD(reboot_notifier_list);
->>  void emergency_restart(void)
->>  {
->>  	kmsg_dump(KMSG_DUMP_EMERG);
->> +	nbcon_cpu_emergency_enter();
->> +	printk_trigger_flush();
->>  	system_state = SYSTEM_RESTART;
->>  	machine_emergency_restart();
->> +	nbcon_cpu_emergency_exit();
->>  }
->>  EXPORT_SYMBOL_GPL(emergency_restart);
->>  
->> ----- END RFC PATCH -----
->> 
->> @pmladek:
->> 
->> It is necessary to put the CPU into an emergency state, otherwise atomic
->> printing will not be used. This is kind of a best effort, as opposed to
->> panic() where eventually unsafe flushes are attempted. So if the sysrq-b
->> is triggered while another CPU is printing to the console, the user
->> still might not see any of the pending messages on reset.
->> 
->> Any comments from your side on this?
+On Wed, Sep 23, 2026 at 5:22=E2=80=AFAM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
->I think that it is a reasonable approach in principle.
+> On Wed, Sep 02, 2026 at 03:17:09PM -0700, Rosen Penev wrote:
+> > Register the Armada 38x UART compatible with the built-in 8250
+> > earlycon implementation so stdout-path can enable an early console
+> > without adding a generic ns16550a compatible to the device tree.
+> >
+> > Keeping the vendor-specific compatible avoids exposing the UART to the
+> > generic OF 8250 runtime driver while preserving the DesignWare driver
+> > Armada-specific runtime handling.
+> >
+> > Assisted-by: Codex:GPT-5
+> > Signed-off-by: Rosen Penev <rosenp@gmail.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_early.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/=
+8250/8250_early.c
+> > index 44ec209f37c4..265d49850e15 100644
+> > --- a/drivers/tty/serial/8250/8250_early.c
+> > +++ b/drivers/tty/serial/8250/8250_early.c
+> > @@ -175,6 +175,7 @@ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+> >  EARLYCON_DECLARE(uart, early_serial8250_setup);
+> >  OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
+> >  OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+> > +OF_EARLYCON_DECLARE(uart, "marvell,armada-38x-uart", early_serial8250_=
+setup);
+> >  OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setu=
+p);
+> >  OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
+> >
+> > --
+> > 2.55.0
+> >
 >
->The above patch handles only emergency_restart(). The similar problem
->would be even in other code paths where the system is going down.
->I think about using NBCON_EMERGENCY_PRIO automatically in all
->these states, something like:
->
->diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
->index d17704fe93ae..48446926dc50 100644
->--- a/kernel/printk/nbcon.c
->+++ b/kernel/printk/nbcon.c
->@@ -1446,6 +1446,10 @@ enum nbcon_prio nbcon_get_default_prio(void)
-> 	if (panic_on_this_cpu())
-> 		return NBCON_PRIO_PANIC;
-> 
->+	/* Do not rely on kthreads when the system is going down. */
->+	if (system_state > SYSTEM_RUNNING)
->+		return NBCON_PRIO_EMERGENCY;
->+
-> 	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
-> 	if (*cpu_emergency_nesting)
-> 		return NBCON_PRIO_EMERGENCY;
->diff --git a/kernel/reboot.c b/kernel/reboot.c
->index d177d89fcc33..776784a82499 100644
->--- a/kernel/reboot.c
->+++ b/kernel/reboot.c
->@@ -8,6 +8,7 @@
-> #define pr_fmt(fmt)	"reboot: " fmt
-> 
-> #include <linux/atomic.h>
->+#include <linux/console.h>
-> #include <linux/ctype.h>
-> #include <linux/export.h>
-> #include <linux/kexec.h>
->@@ -94,6 +95,7 @@ void emergency_restart(void)
-> {
-> 	kmsg_dump(KMSG_DUMP_EMERG);
-> 	system_state = SYSTEM_RESTART;
->+	printk_trigger_flush();
-> 	machine_emergency_restart();
-> }
-> EXPORT_SYMBOL_GPL(emergency_restart);
->@@ -102,6 +104,7 @@ void kernel_restart_prepare(char *cmd)
-> {
-> 	blocking_notifier_call_chain(&reboot_notifier_list, SYS_RESTART, cmd);
-> 	system_state = SYSTEM_RESTART;
->+	printk_trigger_flush();
-> 	usermodehelper_disable();
-> 	device_shutdown();
-> }
->@@ -305,6 +308,7 @@ static void kernel_shutdown_prepare(enum system_states state)
-> 	blocking_notifier_call_chain(&reboot_notifier_list,
-> 		(state == SYSTEM_HALT) ? SYS_HALT : SYS_POWER_OFF, NULL);
-> 	system_state = state;
->+	printk_trigger_flush();
-> 	usermodehelper_disable();
-> 	device_shutdown();
-> }
->
+> How was this tested?
+This is actually a bugfix to avoid having to add "ns16550a" in dts,
+which arose from a dt bindings commit asking why "ns16550a" is even
+needed.
 
-Hmm....  this is ok? 
-
-Reviewed-by: Bradley Morgan <brads@mainlining.org> (this review was based on correctness :D)
-
->Note that it would use NBCON_EMERGENCY_PRIO even in SYSTEM_SUSPEND
->state. But I think that it does not have any real effect because
->it seems to be done after the consoles are suspended. at least
->in hibernation_platform_enter().
+Anyway, the actual earlycon functionality was probably tested on a
+Turris Omnia given the author of 62480772263a
 >
->Best Regards,
->Petr
+> thanks,
 >
->
-
---- Thanks!
-"I'm not a very positive person" - Linus torvalds
+> greg k-h
