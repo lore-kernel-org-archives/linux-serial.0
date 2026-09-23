@@ -1,91 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 787384A0904;
-	Wed, 23 Sep 2026 12:55:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42DAC49DB99;
+	Wed, 23 Sep 2026 12:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790168111; cv=none; b=FYylaWNA5C4LMdzOOLfdNu0mTZBDYEjYHB6x3vwPZoasjmt/sRjuZI53SVHweQbFXb9fovvb5p/acZmn6c1i60SouhVX0zViMOt37hUVohegWZGYfJrPBU0pwAAYTI0m+iV4uwnaiNtZFKk/1O7Mg7GDCRiQ1banJw1/5TPQBTU=
+	t=1790168172; cv=none; b=aC8obccCmU8JQXm9tDguERc9QYawDqm1+Kv1UUMAlurJdOw06YvI8IkPZWHt425lMDmvuG9WSeYOAfipF52RAR6x9/D1ABhjd8qu6rYA9qYBx1Ffdkj7i6msds46iNML9M395Zqff6pifcxRuViBduUg6R5Q4eOSXBkGt8JgARk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790168111; c=relaxed/simple;
-	bh=ewgQahr390TzVb6MmAWj4RoBL/NNZ+4Sp+7ieTmGsbk=;
+	s=arc-20240116; t=1790168172; c=relaxed/simple;
+	bh=3sSP4Pn3z6ALETc0ZMBZlUCy45qLtaqtPePVor8ofoQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lPwtYuHNDtA5GQNtE+C+K07v9vfEY0j/UldiBxK2VLsNxZRt9SQksV0crxlQrY+9tIMh+ZJ21mGX+MxY+rj63NCupPFA6U1UfFGwLpTSMYaXKM8MK+stWRKWzALHL0iPKu2WXr7e0NqqiuPMSwAguMNx+WdYsK5gxm+Pl68U5WM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZYcrNT7P; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=ak16e41M4a7s8bT0ZG5y8w6cXGP5xBevGbt83uzYyfIOJxCowGZLjRMQQQd9G7Mx9l4vsdVeEIi+kFJwHYfDnP5v2t1hXBl715iTGY08L5+GteRh/2bipF58dZG9sA6aJRk8XtzTWw/i7ah/yFcH6jnurAQFQNRi3pNEtO0Uprw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Ktg31nqx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZYcrNT7P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B2801F000FF;
-	Wed, 23 Sep 2026 12:55:09 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Ktg31nqx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 385211F00898;
+	Wed, 23 Sep 2026 12:56:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790168110;
-	bh=FRi3C+epsIdutFBlhwS+gFpit1TLgJroCohgwHrl8Ns=;
+	s=korg; t=1790168170;
+	bh=uQ+gbSkfoyyrEl5NHA6J/S5gznBt22JeGTI7PKrUUTw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZYcrNT7P0hjDlcFWhTnT6+Mxr6YY6Iiktuhuedn/b37B8n+/jnAQd7UEma7I6Gkz/
-	 hgCoughMEp760bK5dumjUrd8WmsOyZaShg4e4uSPR1v18S6XRaCA1wF4LW+XcQ/ar/
-	 jRVTbV5/bnhbKBwk61V2FmWW2pvfHaEU6V9Psd74=
-Date: Wed, 23 Sep 2026 14:55:07 +0200
+	b=Ktg31nqxaSYAwdZhY6jQiB9tn+T6+a8yMUvdp+I4M9ovxgaJspGlvOYwFBF4k5W/5
+	 9gAr4Oia4921Tr7W8eBS7h6OBdRl8Vkb1tthbcC4GG6ci7Y8kOjHnKRwhEVBu8J3VQ
+	 b7R4E3WhMxmPBgJcv52y3/j6XR75xXHuv0OaeQSc=
+Date: Wed, 23 Sep 2026 14:56:07 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Jan =?utf-8?B?xIxlcm3DoWs=?= <sairon@sairon.cz>
-Cc: jirislaby@kernel.org, florian.fainelli@broadcom.com, rjui@broadcom.com,
-	sbranden@broadcom.com, phil@raspberrypi.com, stefan@agner.ch,
-	bcm-kernel-feedback-list@broadcom.com, linux-serial@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] serial: 8250_bcm2835aux: Add support for RTS/CTS
- auto flow control
-Message-ID: <2026092346-snap-kosher-b487@gregkh>
-References: <cover.1786030659.git.sairon@sairon.cz>
- <7e5ed3fb37ee4e113706c258d792121b868861a9.1786030659.git.sairon@sairon.cz>
+To: =?iso-8859-1?Q?=D6mer?= Mete Kaya <omermetekaya0@gmail.com>
+Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	syzbot+d84934b4184d7f9a1aed@syzkaller.appspotmail.com
+Subject: Re: [PATCH] tty: fix lock order inversion in tty_buffer_flush()
+Message-ID: <2026092316-treadmill-disparity-8a38@gregkh>
+References: <20260804140251.8197-1-omermetekaya0@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7e5ed3fb37ee4e113706c258d792121b868861a9.1786030659.git.sairon@sairon.cz>
+In-Reply-To: <20260804140251.8197-1-omermetekaya0@gmail.com>
 
-On Thu, Aug 06, 2026 at 05:42:04PM +0200, Jan Čermák wrote:
-> The bcm2835aux mini UART can automatically de-assert RTS based on the RX
-> FIFO fill level and gate the transmitter on CTS, but the driver never
-> made use of it. Wire it up:
+On Tue, Aug 04, 2026 at 05:02:51PM +0300, �mer Mete Kaya wrote:
+> tty_buffer_flush() calls ld->ops->flush_buffer() while holding
+> buf->lock. For the N_TTY line discipline, flush_buffer() is
+> n_tty_flush_buffer(), which acquires termios_rwsem.
 > 
-> - Enable AUTORTS/AUTOCTS (with the RTS4 threshold and inverted, i.e.
->   conventional active-low, polarity) whenever CRTSCTS is set on ports
->   declaring the "uart-has-rtscts" property, advertised via
->   UPF_HARD_FLOW.
+> However, the documented stable lock order (see tty.h) is:
+>   termios_rwsem -> buf->lock
 > 
-> - Gate the AUTORTS function on TIOCM_RTS in set_mctrl() so that
->   clearing RTS (port close, TIOCMBIC, B0) actually de-asserts the pin
->   while auto flow control is active.
+> Calling flush_buffer() under buf->lock inverts this order and creates
+> a circular locking dependency detected by lockdep:
 > 
-> - Implement throttle()/unthrottle() by disabling the RX interrupts and
->   letting the FIFO fill up, making the hardware de-assert RTS - the
->   same approach as in 8250_omap. Re-sync this state on termios and
->   rs485 changes, as those paths may re-enable the RX interrupts (or
->   leave them disabled) behind the throttle's back.
+>   &buf->lock -> console_lock -> &port->mutex -> &tty->termios_rwsem
+>                                                 -> &buf->lock
 > 
-> - Never enable auto flow control together with rs485, which uses RTS
->   as the transceiver direction control. As the software CTS fallback
->   of the serial core cannot work without a modem status interrupt,
->   strip CRTSCTS whenever it cannot be handled in hardware.
+> Fix this by moving the flush_buffer() call outside buf->lock.
+> The buffer data has already been discarded at this point, so the
+> ordering change is safe.
 > 
-> - Restore RXEN when rs485 is disabled, as the emulation may be torn
->   down without the rs485_stop_tx() callback ever being called, which
->   would leave the receiver disabled.
-> 
-> Assisted-by: Claude:claude-fable-5
-> Signed-off-by: Jan Čermák <sairon@sairon.cz>
+> Reported-by: syzbot+d84934b4184d7f9a1aed@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=d84934b4184d7f9a1aed
+
+Did syzbot actually test this?  How did you test this?
+
+Did you forget an Assisted-by: tag?
+
+> Signed-off-by: �mer Mete Kaya <omermetekaya0@gmail.com>
 > ---
->  drivers/tty/serial/8250/8250_bcm2835aux.c | 160 +++++++++++++++++++++-
->  1 file changed, 156 insertions(+), 4 deletions(-)
+>  drivers/tty/tty_buffer.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> index 96be90db5..bb7b7fbcb 100644
+> --- a/drivers/tty/tty_buffer.c
+> +++ b/drivers/tty/tty_buffer.c
+> @@ -244,11 +244,15 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+>  	buf->head->read = buf->head->commit;
+>  	buf->head->lookahead = buf->head->read;
+>  
+> -	if (ld && ld->ops->flush_buffer)
+> -		ld->ops->flush_buffer(tty);
+> -
+>  	atomic_dec(&buf->priority);
+>  	mutex_unlock(&buf->lock);
+> +	/*
+> +	 * Call flush_buffer() outside buf->lock: n_tty_flush_buffer()
+> +	 * acquires termios_rwsem, but the required lock order is
+> +	 * termios_rwsem -> buf->lock, not the other way around.
+> +	 */
+> +	if (ld && ld->ops->flush_buffer)
+> +		ld->ops->flush_buffer(tty);
 
-There are some bot review comments on this:
-	https://sashiko.dev/#/patchset/7e5ed3fb37ee4e113706c258d792121b868861a9.1786030659.git.sairon@sairon.cz
-
-Can you address them and submit a new version?
+This feels wrong, what is going to break with this change?  What commit
+does this change fix?
 
 thanks,
 
