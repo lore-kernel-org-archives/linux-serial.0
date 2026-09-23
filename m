@@ -1,38 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8877E414414;
-	Wed, 23 Sep 2026 10:32:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B64148EC91;
+	Wed, 23 Sep 2026 10:35:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790159535; cv=none; b=Jl/AWAQ1D+RCAUR00UifH7U0ofIwH/muawC/7U3+S8YBs35ErZzuIzH+GwWn+lkzxgviwmXnvHmqHv/DDXGmqZhGm+FVADmZp1/pb45cuiUIgW0bbY3cZP08aD21V/ajuYw1Upto9BWeFObXUxgP6qo7WCqT6abZ5dPBbw9WrG8=
+	t=1790159761; cv=none; b=TSyLTjjSDoSMs0lUcZeQW4mD9qZeZtQ8UALnrTqbuirjJbb4izvbHwkg3ED/1Ma9wJ9wKubTwC5Z4xEwnhXeQA0kIdVfWekJ2sxbASuB8EzS60Q3BkQDKe9sAUviUWvcXvN4UdEcN9OIc2ekRN+VEmgNTX575AxWQuPTgkV9ypY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790159535; c=relaxed/simple;
-	bh=cF/njPo9j8sWXcdGcEVgzeYY4ZHTPdGLMqVhs94iLH4=;
+	s=arc-20240116; t=1790159761; c=relaxed/simple;
+	bh=eZIHb0J5aaBGeIdNifmxvKv3Vw/+/WIteprI/Fa0klk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B6teFvaLwlXfymouttei1lPiukBPjsB6eMNoKy2NgbiDgBv8NzszscVUlIZP333XC1GEC59A6Z/QyXEwcfeC9tVO7dz9smKwL/tmh5fNE7ADfyGnpT9LUxAYMNIdiCk+uvcigHrz3zTS/BsGR7441+Rfk7esYvh5pnstw8X0xE8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=0FmDAODm; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=XtKcoBkQ563Q3stbd+KEFvBsYon4anBPGJBj+YDWcBi7W2X3D+JCVA+xKpYBy1/qEZTamzGivHHSQqaZXeVZi64YR7DIN8l6XbGLp4Uk9K5MMdU7H36D+pkLVY+z934EcbkwA7JUU+3UnCJWP0CdQdOA7phzBmzWsppdIWeJnS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=wmuSkB+N; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0FmDAODm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42EC11F000FF;
-	Wed, 23 Sep 2026 10:32:00 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="wmuSkB+N"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CB881F000FF;
+	Wed, 23 Sep 2026 10:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790159522;
-	bh=cpuCu5v1M9XfKbLexcgtG6aXcXIggBSNrBJURPKiOI8=;
+	s=korg; t=1790159742;
+	bh=NzYqyRImwYBZyIwILNRFj1XIoNhIukvodGkX+t4dqx4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=0FmDAODmcxVfwZLNR9rZEXlbpRpomC44Gv6lT+IXPYnPTrPF1FGN1X6M9Qa0bERtQ
-	 dhm1mluz8WLI+JNEYy23F3cAxWpybSWy8lKwFDOOdaCkHD/Yw9ZNTGReUWQIJBN2ki
-	 uUUTW9ybj4ow/kSuc6soxXEfNKp2t5XM0CXrNPtQ=
-Date: Wed, 23 Sep 2026 12:31:58 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Ginger Li <ginger.jzllee@gmail.com>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Maarten.Brock@sttls.nl
-Subject: Re: [PATCH v2] serial: max3100: Fix a data race on s->rts in
- max3100_work()
-Message-ID: <2026092348-police-filth-8d32@gregkh>
-References: <20260922053151.11260-1-ginger.jzllee@gmail.com>
- <20260922170239.33485-1-ginger.jzllee@gmail.com>
+	b=wmuSkB+NF6zhenRzL6ZxseHK0xfUQm55nueP399xmc5vKVdJ4+9GFCzKp1UAo4UjD
+	 Rc1EHV8hSgTinHbN7TTeJ/LV/+k6ng1H2i0JVVFTZlozSje8HiceldUJe8+jcscTuI
+	 bvrLRp2yk/fFaK5fl5XxDZb48OSB5+hqRVLuprFE=
+Date: Wed, 23 Sep 2026 12:35:38 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
+	Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Eric Biggers <ebiggers@kernel.org>,
+	Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org,
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev
+Subject: Re: [PATCH v2 1/3] tty: serdev: Export functions to pause
+ receive_buf callback calls
+Message-ID: <2026092356-chatting-dust-3de9@gregkh>
+References: <20260920-rust_serdev_probe_refactor-v2-0-43b855162f5d@posteo.de>
+ <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,110 +61,171 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260922170239.33485-1-ginger.jzllee@gmail.com>
+In-Reply-To: <20260920-rust_serdev_probe_refactor-v2-1-43b855162f5d@posteo.de>
 
-On Wed, Sep 23, 2026 at 01:02:39AM +0800, Ginger Li wrote:
-> max3100_set_mctrl() stores the new RTS state and raises s->rts_commit to tell
-> max3100_work() that it has to program it:
+On Sun, Sep 20, 2026 at 02:29:58PM +0000, Markus Probst wrote:
+> These functions will be used to simply the serdev rust abstraction. It
+> also contributes to the fixing of 2 race conditions in the serdev rust
+> abstraction.
 > 
-> 	spin_lock(&s->conf_lock);
-> 	if (s->rts != rts) {
-> 		s->rts = rts;
-> 		s->rts_commit = 1;
-> 	}
-> 	if (s->loopback_commit || s->rts_commit)
-> 		max3100_dowork(s);
-> 	spin_unlock(&s->conf_lock);
-> 
-> max3100_work() consumes s->rts_commit under s->conf_lock, but reads s->rts
-> itself outside of the lock, both when it services that pending update and when
-> it later transmits a character, so the state it programs into the hardware can
-> be stale.
-> 
-> Read s->rts into a local variable in the s->conf_lock protected snapshot at
-> the top of the loop, before s->rts_commit is consumed, in the same way as
-> s->conf is read before s->conf_commit.
-> 
-> Fixes: 7831d56b0a35 ("tty: MAX3100")
-> Signed-off-by: Ginger Li <ginger.jzllee@gmail.com>
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
 > ---
-> v2:
->  - read s->rts into "rts" before s->rts_commit is consumed, as suggested by
->    Maarten
->  - mention s->rts_commit in the commit message
->  - left the s->rts / s->rts_commit split alone; folding both into one byte
->    would be a separate cleanup
-> ---
->  drivers/tty/serial/max3100.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  drivers/tty/serdev/core.c           | 50 ++++++++++++++++++++++++++++++++++++-
+>  drivers/tty/serdev/serdev-ttyport.c | 38 ++++++++++++++++++++++++++++
+>  include/linux/serdev.h              |  6 +++++
+>  3 files changed, 93 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-> --- a/drivers/tty/serial/max3100.c
-> +++ b/drivers/tty/serial/max3100.c
-> @@ -236,6 +236,7 @@ static void max3100_work(struct work_struct *w)
->  	struct tty_port *tport = &s->port.state->port;
->  	unsigned char ch;
->  	int conf, cconf, cloopback, crts;
-> +	bool rts;
->  	int rxchars;
->  	u16 tx, rx;
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index 7500efcdfc21..7d24f16710cb 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -187,6 +187,51 @@ void serdev_device_close(struct serdev_device *serdev)
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_close);
 >  
-> @@ -249,6 +250,7 @@ static void max3100_work(struct work_struct *w)
->  		s->conf_commit = 0;
->  		cloopback = s->loopback_commit;
->  		s->loopback_commit = 0;
-> +		rts = s->rts;
->  		crts = s->rts_commit;
->  		s->rts_commit = 0;
->  		spin_unlock(&s->conf_lock);
-> @@ -258,7 +260,7 @@ static void max3100_work(struct work_struct *w)
->  			max3100_sr(s, 0x4001, &rx);
->  		if (crts) {
->  			max3100_sr(s, MAX3100_WD | MAX3100_TE |
-> -				   (s->rts ? MAX3100_RTS : 0), &rx);
-> +				   (rts ? MAX3100_RTS : 0), &rx);
->  			rxchars += max3100_handlerx(s, rx);
->  		}
+> +/**
+> + * serdev_device_pause_rx() - pause data receive
+> + * @serdev:	serdev device
+> + *
+> + * Pause calls to receive_buf.
+> + *
+> + * The caller must guarantee that this does not run concurrently with
+> + * `serdev_device_open` or `serdev_device_close`.
+> + *
+> + * Note that if a call to receive_buf is currently executed, the function will
+> + * sleep until it has finished.
+> + */
+> +void serdev_device_pause_rx(struct serdev_device *serdev)
+> +{
+> +	struct serdev_controller *ctrl = serdev->ctrl;
+> +
+> +	if (!ctrl || !ctrl->ops->pause_rx)
+> +		return;
+> +
+> +	ctrl->ops->pause_rx(ctrl);
+> +}
+> +EXPORT_SYMBOL_GPL(serdev_device_pause_rx);
+> +
+> +/**
+> + * serdev_device_resume_rx() - resume data receive
+> + * @serdev:	serdev device
+> + *
+> + * Resume calls to receive_buf.
+> + *
+> + * The caller must guarantee that this does not run concurrently with
+> + * `serdev_device_open` or `serdev_device_close`.
+> + *
+> + * This can be called even if not paused to ensure data receive is active.
+> + */
+> +void serdev_device_resume_rx(struct serdev_device *serdev)
+> +{
+> +	struct serdev_controller *ctrl = serdev->ctrl;
+> +
+> +	if (!ctrl || !ctrl->ops->resume_rx)
+> +		return;
+> +
+> +	ctrl->ops->resume_rx(ctrl);
+> +}
+> +EXPORT_SYMBOL_GPL(serdev_device_resume_rx);
+> +
+>  static void devm_serdev_device_close(void *serdev)
+>  {
+>  	serdev_device_close(serdev);
+> @@ -398,6 +443,7 @@ EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
+>  static int serdev_drv_probe(struct device *dev)
+>  {
+>  	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+> +	struct serdev_device *sdev = to_serdev_device(dev);
+>  	int ret;
 >  
-> @@ -277,7 +279,7 @@ static void max3100_work(struct work_struct *w)
->  			}
->  			if (tx != 0xffff) {
->  				max3100_calc_parity(s, &tx);
-> -				tx |= MAX3100_WD | (s->rts ? MAX3100_RTS : 0);
-> +				tx |= MAX3100_WD | (rts ? MAX3100_RTS : 0);
->  				max3100_sr(s, tx, &rx);
->  				rxchars += max3100_handlerx(s, rx);
->  			}
-> -- 
-> 2.43.0
-> 
+>  	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
+> @@ -405,7 +451,9 @@ static int serdev_drv_probe(struct device *dev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	return sdrv->probe(to_serdev_device(dev));
+> +	serdev_device_resume_rx(sdev);
+> +
+> +	return sdrv->probe(sdev);
+>  }
+>  
+>  static void serdev_drv_remove(struct device *dev)
+> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> index bab1b143b8a6..e8aa89e733bd 100644
+> --- a/drivers/tty/serdev/serdev-ttyport.c
+> +++ b/drivers/tty/serdev/serdev-ttyport.c
+> @@ -7,8 +7,10 @@
+>  #include <linux/tty.h>
+>  #include <linux/tty_driver.h>
+>  #include <linux/poll.h>
+> +#include "../tty.h"
+>  
+>  #define SERPORT_ACTIVE		1
+> +#define SERPORT_PAUSE_RX	2
+>  
+>  struct serport {
+>  	struct tty_port *port;
+> @@ -32,6 +34,14 @@ static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
+>  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+>  		return 0;
+>  
+> +	if (test_bit(SERPORT_PAUSE_RX, &serport->flags))
+> +		return 0;
+> +
+> +	/*
+> +	 * Ensure writes by the driver are visible before allowing traffic to resume.
+> +	 */
+> +	smp_mb__after_atomic();
 
-Hi,
+This scares me.  Why not use a real lock?  WHat's the issue here, you
+need this to be "flushed" before this call:
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+> +
+>  	ret = serdev_controller_receive_buf(ctrl, cp, count);
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+here?
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
+And you just tested a bit, you didn't set a bit, so what are you trying
+to ensure is written exactly?
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+
+>  
+>  	dev_WARN_ONCE(&ctrl->dev, ret > count,
+> @@ -156,6 +166,32 @@ static void ttyport_close(struct serdev_controller *ctrl)
+>  	tty_release_struct(tty, serport->tty_idx);
+>  }
+>  
+> +static void ttyport_pause_rx(struct serdev_controller *ctrl)
+> +{
+> +	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+> +	struct tty_struct *tty = serport->tty;
+> +
+> +	set_bit(SERPORT_PAUSE_RX, &serport->flags);
+> +
+> +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+
+What keeps this bit from being set right after you test it?
+
+
+
+> +		tty_buffer_flush_work(tty->port);
+> +}
+> +
+> +static void ttyport_resume_rx(struct serdev_controller *ctrl)
+> +{
+> +	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+> +	struct tty_struct *tty = serport->tty;
+> +
+> +	/*
+> +	 * Ensure writes by the driver are visible before allowing traffic to resume.
+> +	 */
+> +	smp_mb__before_atomic();
+> +	clear_bit(SERPORT_PAUSE_RX, &serport->flags);
+> +
+> +	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+
+Same here.  Are you sure you don't need locks?  This feels wrong.
 
 thanks,
 
-greg k-h's patch email bot
+greg k-h
