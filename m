@@ -1,189 +1,259 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11023141.outbound.protection.outlook.com [52.101.83.141])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD253A2549;
-	Thu, 24 Sep 2026 08:32:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.141
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790238767; cv=fail; b=QnGFZcP3stg/VHSJBx2UKX7drIScHJsG11hVIZ3mONhOrFJz9Dr/nhUKIJze0jT+8DkZ7qJHrcMvid233q/ce3froSRcDxdcG0OEBOClgzGp2m5M6FTwIAdLPtkw13pO5zb6fiLAzR1raqOVu0dm1pO/XC5ksh2iubP6mbdDUMc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790238767; c=relaxed/simple;
-	bh=EjT9pGxLuxwaFZ0y/Tiadh7lglCrxg7GhQXxv2+LKcM=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=naSnSjQzUFDbh0Reo9QI3y4w+/5ww3aXUdCR6fJKA97k5mSGLaMwXjxjm5AUgQVIT7ieTWC92lmsHqlOFXbriBe2fOoyr/HrkFXh5qq5zCZ+E6VXl2Lrldz4WjmGWk1gcT4qtqSUaNqCDSkBCyBKxww7ZqwVNKUztUfrz+11+/M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl; spf=pass smtp.mailfrom=sttls.nl; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=oDMh6ii4; arc=fail smtp.client-ip=52.101.83.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sttls.nl
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5FA632D0EE;
+	Thu, 24 Sep 2026 08:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790239188; cv=none; b=cDv4XUXZd5IECu5pwj2gkKfhqpqEE0y3AWtQyLcsqqdQ8kdtGX2pjKxPNTg1Lb7e313MdBOVMLt+b77jUJBXpt+S52WC6Cgk9cASabv60Fd5TOfqhmr0pu6DdfoVYjG4uxfA2QzDWX0I99hX8+ukTTP+YK/sQcNFKJzcU/DKkf0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790239188; c=relaxed/simple;
+	bh=Tt2bpkdEluqHRxtBY7MKoCj5UmzG/Kly1kN0FydimLs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=LHsverfgXYciHbxiWCui66ebM9aq20h2INmwzZxNH2CHkFUo//FEdiMF3JNnd93QdAwVmpr3xVUlEUevI1FDLNij34L+DUPjt98ELv/QSr/BJNQddWWhfdF691PcLKQGFWHylgO0n15J1qL/3nlEZU8xbOKjm9xBcjALUTeb2H0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=aITOphml; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="oDMh6ii4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GF7Rid2zYL7QkMvIniODJwBCa4mK2dcDYYmmZcisA73cvou1/ljrRV1Ha/79V8xDeGA6mH4qZ97kTwF3tuoIXmug3IjP0eFx+b+dlv7eUZv0faZDtQejSDly+kPDNyyxOKLaNtP8Vct3ZpAXRjGYfcya1SnTIff9lRSnwnjTmc3Plcb0qBa5lFPwh+2dgwy8RY3t64wWrBapIcCCJ9YE3ts8cLoXKfoe6+VuXDDM0zzrHyNpen7TEK+gq7N2d+XV7ztgzB0yk9MJ79dulpUS6T/MsiW20yzgElIYBRLxjyoSwyKAoNJGyvwP9Avvqvy2Mz4bgOnYE0P+WVwKjisSIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EjT9pGxLuxwaFZ0y/Tiadh7lglCrxg7GhQXxv2+LKcM=;
- b=RZovg/3QK8+IVju7Flzz078YVwIjtZRnwkdydIEgX5KkhDiSk7wcHxXUzo2/WtYjooMts+YYI/Ry7HP/DxqkV/gDPlnP4NR5cPgvE3I1e5moy+ZSMNfNaGwdoUfVE3RyZLHC6929HQFY1v8zas0AXmqkEi/YqlmJtJ6AMAZtu6wmpOOHsdRVqUVF3PLyPvkJXFLUabHq5TH9pHZ52AMh6ATqIJNaUEeFAKMS7MYtqXR77SHzWVQFOUK8s4rHe/n/6AJl63+a4ttX7KQRZn+vHLk854e3Y0rjpvjF45vcAkLV7yXH3MX780w5mbUKK5VJVV3zfcSUfhgaDC65s7XT7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 20.93.157.195) smtp.rcpttodomain=gmail.com smtp.mailfrom=sttls.nl; dmarc=pass
- (p=none sp=none pct=100) action=none header.from=sttls.nl; dkim=none (message
- not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EjT9pGxLuxwaFZ0y/Tiadh7lglCrxg7GhQXxv2+LKcM=;
- b=oDMh6ii4IpInA4myfPbcG1W3klGpEq1lWufYFs2oYSsusHpARIBtvINEiImXwDnVc88pelJFypIB2e+0vP37Drxa7PXej8MtDV2trMIxT0vio957WDdlOr9fSiB2ZJAQD6eLG1MLjGxG5qClU2XNWjyMeYo8aW2QWVC+4bINEdmu9eGO3ZeG99FgNzikGloDv/jVuLFwB1bSJqYRb9Afaa/BNJwwZNAOOQQeJ85OJKDEhpYVTa1XRnXHQmUve58h1Wr233aA+schHmNpl3BOYTgi7ifh6CRqfBPewVzNch3FFMouX92UvcY3GAVMZ1Wrj45m72t8VkKqjlcjTQ0fFA==
-Received: from DUZPR01CA0055.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:469::19) by GVUPR05MB12702.eurprd05.prod.outlook.com
- (2603:10a6:150:330::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.18; Thu, 24 Sep
- 2026 08:32:40 +0000
-Received: from DU6PEPF0000A7E1.eurprd02.prod.outlook.com
- (2603:10a6:10:469:cafe::41) by DUZPR01CA0055.outlook.office365.com
- (2603:10a6:10:469::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.18 via Frontend Transport; Thu,
- 24 Sep 2026 08:32:40 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 20.93.157.195) smtp.mailfrom=sttls.nl; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=sttls.nl;
-Received-SPF: Pass (protection.outlook.com: domain of sttls.nl designates
- 20.93.157.195 as permitted sender) receiver=protection.outlook.com;
- client-ip=20.93.157.195; helo=westeu11-emailsignatures-cloud.codetwo.com;
- pr=C
-Received: from westeu11-emailsignatures-cloud.codetwo.com (20.93.157.195) by
- DU6PEPF0000A7E1.mail.protection.outlook.com (10.167.8.40) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Thu, 24 Sep 2026 08:32:39 +0000
-Received: from DB6PR07CU003.outbound.protection.outlook.com (40.93.64.95) by westeu11-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Thu, 24 Sep 2026 08:32:39 +0000
-Received: from GV2PR05MB11941.eurprd05.prod.outlook.com
- (2603:10a6:150:2cf::21) by DB9PR05MB10424.eurprd05.prod.outlook.com
- (2603:10a6:10:450::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.18; Thu, 24 Sep
- 2026 08:32:35 +0000
-Received: from GV2PR05MB11941.eurprd05.prod.outlook.com
- ([fe80::86e3:136c:737e:e29a]) by GV2PR05MB11941.eurprd05.prod.outlook.com
- ([fe80::86e3:136c:737e:e29a%3]) with mapi id 15.21.0451.014; Thu, 24 Sep 2026
- 08:32:35 +0000
-From: Maarten Brock <Maarten.Brock@sttls.nl>
-To: Ginger Li <ginger.jzllee@gmail.com>, "jirislaby@kernel.org"
-	<jirislaby@kernel.org>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] serial: max3100: Fix a data race on s->rts in
- max3100_work()
-Thread-Topic: [PATCH v2] serial: max3100: Fix a data race on s->rts in
- max3100_work()
-Thread-Index: AQHdSrQ0OfrVpZejHUSsRylLfJiPN7bdaG7g
-Date: Thu, 24 Sep 2026 08:32:34 +0000
-Message-ID: <GV2PR05MB11941D5360C9A4D678E9A6E1E83812@GV2PR05MB11941.eurprd05.prod.outlook.com>
-References: <20260922053151.11260-1-ginger.jzllee@gmail.com>
- <20260922170239.33485-1-ginger.jzllee@gmail.com>
-In-Reply-To: <20260922170239.33485-1-ginger.jzllee@gmail.com>
-Accept-Language: en-US, nl-NL
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sttls.nl;
-x-ms-traffictypediagnostic:
-	GV2PR05MB11941:EE_|DB9PR05MB10424:EE_|DU6PEPF0000A7E1:EE_|GVUPR05MB12702:EE_
-X-MS-Office365-Filtering-Correlation-Id: f66c0086-5a16-4bfe-216f-08df1a16653a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|10067099003|56012099006|22082099003|18002099003|4143699003|38070700021;
-X-Microsoft-Antispam-Message-Info-Original:
- W3XiBcIs81Gl72tEGslm+kgkWDytJuQ/4fdOh4HuRPy+woLx7mJtgqEEpHBflMkVtSz9nxWIc5KPBR0C+AEHhVpmoyBNgK0LWuAD4rXXCkJoitCB0JwsFBP1JmbSQfDZZjbsEP78coZW7scUkrTgjPt69lS79H80ZbzX1C+R8MUd7G5aLaS6buFBrGhCF48HcG6NX/bdMUdpVcovAQlTcuQ4IlDz6f9N1f3BwFDS6qJHI7URkUsVRuQzF6C5BfsqIOuUITPp8lnKRqB50tDQzonyFV9fnISn2tYlBRVx7J8HzeuoBvYZwnTUuV65Xmw+oFeUMLeikP2BBg53fWiTLao9mh+9OWhDs1qwpIBnYhAW1MmAESeUBV2wSt55hjCsF7AXwIQ9jaOdyfP1O6i57LeT0vqtViFwwFDkEpYtHMH4WDgyIzwdfeAagYkrHRLU6emP0FDPaCAG8HvrhuV238Rjjme1mndxKUsYJUqE+kwAuMNnCRiPgEdA05pPRpjaOqN8E3tEWnCLcKBh1U9uC+lfD00c8+NMNC14+265LQgO4OtfzRXaeqyz1lWOZWR+JCk8AQ3/xGxTly4Pvyqd59T89h0r3TAAvow6OIPXa2nE2zMOGAcRn1ek9Ktkf62Jfu9V0eUc9/c3rYnGpmWTKuM1T9cUV8P8sx0gdMJkACeu8Mbxcf22bjQDFIXfMuYuDLjLruz6Zyo8WZl/kmRQ/9bRc3FlW+4mpKxW9KxZK3g=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR05MB11941.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(10067099003)(56012099006)(22082099003)(18002099003)(4143699003)(38070700021);DIR:OUT;SFP:1102;
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="aITOphml"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1790239184;
+	bh=Tt2bpkdEluqHRxtBY7MKoCj5UmzG/Kly1kN0FydimLs=;
+	h=From:Subject:Date:To:Cc:From;
+	b=aITOphmlBj1JyNO9dlUxxs5d8Gy6xRNvT6CbtZePVIktUEOBpDnA2KQ6AVCF6013B
+	 8vawMh5EqH4O2eql5x/ZF5n2rYQzGtxKU38qbpJSr9cYDPgK3oc2/mx1TphIqqTnaw
+	 JwlVtq9bLoyKOtGoCSTkaZUPnuEUiZMVEIZghJkrOlQkUex5jd6tiL4Ibm/JfDP5km
+	 Zc3DtPyGWRY05n6JD2hqswDqgU/MPd3mxkwzUBsJ71kqFeejePXDBVeAmZC+2ltl0N
+	 hAiF1hdWoj+pA1mcyCBSjvWnbnnhTtDL93FF8q9dTX8P3wvj57koOC3pL+N+nFK0eU
+	 ldIUzPvNZMuJQ==
+Received: from yukiji.home (unknown [100.64.0.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: laeyraud)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 4652A17E0371;
+	Thu, 24 Sep 2026 10:39:44 +0200 (CEST)
+From: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+Subject: [PATCH v3 0/4] Add support for the Mediatek Genio 520-EVK and
+ 720-EVK boards
+Date: Thu, 24 Sep 2026 10:38:09 +0200
+Message-Id: <20260924-add-mediatek-genio-520-720-evk-v3-0-2ec5c80677d4@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: NamXqKAEZmoS9OG/Sqy7oq0GxOc4H73NJ/P5ssODF9tlRD1t0v0xVaw1KO05dISzWKmsGm8G6GOVc8BKPGla7mxYdOuNHSAb0snk2TX3EJqN0l+EORoGeK8BTxTuw8pa8YtyU+acH5gGQdsJFjnkrWpuSITow0fQSd1yWXaZ8vo+bvQBu5BVIKsTwjUZeFpZxpUwYJtqSoxDHzXrrF+Czp5YOVWGGY9TWcme9uhODdY/xdujVjtSb8t2y9v9g6r0eONo1LuAC2rb/1B8TvzoeUmFOFRZDGOo7/Whx3rYw1q77Me+LljyOgG0RG5kwS6JRu2cnkUwI2kTSmQdL3UFxQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR05MB10424
-X-CodeTwo-MessageID: 6201b278-a4cc-4b81-9c41-cc63aa9289c4.20260924083239@westeu11-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DU6PEPF0000A7E1.eurprd02.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	44195ba6-cd09-4da6-2b86-08df1a166253
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|35042699022|14060799003|82310400026|1800799024|36860700016|23010399003|10067099003|56012099006|4143699003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	aEkeS7JyEZihIJJmlyIobvcWloKExY5Fgba/+XiAXmu5PBqhvz5eWaFp9HsVLPahTFqGcJBF7tbl1E9SJm38k9F4a9g4Bha4Nh2fyJ9rXdIsDJvzA5MmYD4XtG4GyvdxP4WFgRVAPu0TZTFI2AkmTGSUinM9C5ZFLjSJcF4ZdiouWvpSTg388pLCaS6ZgvGe8GcSO1evyOvvJ2RShcyniQerLXpQ/FXV47RYWtPepkCqmDDXk6pbcRIHIbVE0sdAuBVGh6R8YaBWRW/YkhQbpitfPL/RdWv2PmbfmrtyyqS/Ki+z9yTgN1wT4Npin+gBzFh9xfAKKJZPwtBkY5GMlH4tScbeU6ZsfyU3lAbrIq2+KQAxL+gSkYd0qtvh2rTVD29pkqbZ0qDhwnlXzev5dPgQogruBpxcylJmTlWuO63340qZs7It6CfJh7+kJFt8nVvGsGHBsxoHXTSG3nL3BkiI3hM0fU9t5KCDsz32MVbmAzDxPmgOY8BgwkfQYisOMero5NJe1P4AE0csElEjZBOntnHI5UyqUolZYLz3iWFwE5xt0SfNcSAA+Sn0vR8sQPE5sO/S0W7EvkWH5bBlN3tBoL2LwhdcUZ0dflM8eAIExe7lZVl8cr6HzX21zxWXZkeBUjGA4w8DqJtfRcMku+cifzrnALKBKrNIuHmZ+SfCI3vMuJUXwitA/z8xV9QrpIbh5i9hWWrPY2osaqp8cA==
-X-Forefront-Antispam-Report:
-	CIP:20.93.157.195;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu11-emailsignatures-cloud.codetwo.com;PTR:westeu11-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(376014)(35042699022)(14060799003)(82310400026)(1800799024)(36860700016)(23010399003)(10067099003)(56012099006)(4143699003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	FbQcg++R/dqkB98CLrxjEL0nVopUXCJIErNUhYV3UvvIuOBPO6BCyl27cusesbY1BA1U14H46bKdM1V5G2cC7dQqwBhgKgdwgNVMtPcFE3ae6gFXu7Vsjbu9rJsMNsxd7yU695A3HuqsZ0siajfUMuOlzfHcrEXEqI5BDtOQegquW3q6mnj5YIhUFTSIMkzbOeVgE7HnLlFyP3JvKUiOWj7ZgoqoX2hYcgRdCuE4LzvpK9xIp/IJo/W5TpTA4yleljMGFLfAwcUv6yOX+eYN5ai0o24NdPLXln4fe6py8pikk5cMvZ2IydQ13ovvQPx/fd7OYaEngpvWMXII+1hB9ZCrF6ho9XBgcZp0R49Kt/JcnZs1AyP1OyPxQL/ugsdigp7PF2gLrAc7IXIxd5DcUfZvw2qSSHDKKdB3vQHSQM6OGEyb3R6XKp4vZhtdV3KA
-X-OriginatorOrg: sttls.nl
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2026 08:32:39.8785
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f66c0086-5a16-4bfe-216f-08df1a16653a
-X-MS-Exchange-CrossTenant-Id: 86583a9a-af49-4f90-b51f-a573c9641d6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=86583a9a-af49-4f90-b51f-a573c9641d6a;Ip=[20.93.157.195];Helo=[westeu11-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU6PEPF0000A7E1.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVUPR05MB12702
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WR3U7DMAyFX6XqNa7yn2ZCaO+BEMoad4u2NtBkZ
+ WPau5N2mxAItAtfOJG/43N8KiMOHmO5KE7lgKOPPvS54Q9F2Wxsv0bwLvclI0xSymqwzkGHztu
+ EW1hj7wNIRkDnwnELRFHFuNZGC1dmyNuArT/MAs8vl37A933WSZfHcmUjQhO6zqdF0eMhQdZSx
+ DA+zXcYo523WBSPlw8ioEs1rQ00u9BsI8RjTNjBDBoVEJCuZUK3UhleL5uw29lVGGyVRZ7+Ykr
+ KiCRKcKkryqWhQCGk18amzbE67Jc3u/8DSJ2Lc8pVpTWRef4zhzdVtcb785NbAe6js813tlePI
+ 8uGBCcrlxOV2JrfhqZUNz6mMBznK450jvXqi9872Egz37XaiBWznFj8yZ/xI7shFdGE3kVOK1P
+ jpLMiL1yL38jz+fwFbQlrJ3kCAAA=
+X-Change-ID: 20251128-add-mediatek-genio-520-720-evk-06162377974d
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Sean Wang <sean.wang@mediatek.com>
+Cc: kernel@collabora.com, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+ Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790239184; l=8930;
+ i=louisalexis.eyraud@collabora.com; s=20250113; h=from:subject:message-id;
+ bh=Tt2bpkdEluqHRxtBY7MKoCj5UmzG/Kly1kN0FydimLs=;
+ b=jG9bJhK/EMs08/u6J1gBtXCHK6ge5cjOQ9YT+Elf8tk75bCePneBfXTVO+347Blikprca6J+6
+ qn/sa6sWHKPC/eluVQbb3daXsNbcUwOjFN2J65TfW/TseUCspVq2nb6
+X-Developer-Key: i=louisalexis.eyraud@collabora.com; a=ed25519;
+ pk=CHFBDB2Kqh4EHc6JIqFn69GhxJJAzc0Zr4e8QxtumuM=
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHaW5nZXIgTGkgPGdpbmdlci5q
-emxsZWVAZ21haWwuY29tPg0KPiBTZW50OiBUdWVzZGF5IDIyIFNlcHRlbWJlciAyMDI2IDE5OjAz
-DQo+IFRvOiBqaXJpc2xhYnlAa2VybmVsLm9yZzsgZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmcN
-Cj4gQ2M6IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtl
-cm5lbC5vcmc7IE1hYXJ0ZW4gQnJvY2sgPE1hYXJ0ZW4uQnJvY2tAc3R0bHMubmw+DQo+IFN1Ympl
-Y3Q6IFtQQVRDSCB2Ml0gc2VyaWFsOiBtYXgzMTAwOiBGaXggYSBkYXRhIHJhY2Ugb24gcy0+cnRz
-IGluIG1heDMxMDBfd29yaygpDQo+IA0KPiBtYXgzMTAwX3NldF9tY3RybCgpIHN0b3JlcyB0aGUg
-bmV3IFJUUyBzdGF0ZSBhbmQgcmFpc2VzIHMtPnJ0c19jb21taXQgdG8gdGVsbA0KPiBtYXgzMTAw
-X3dvcmsoKSB0aGF0IGl0IGhhcyB0byBwcm9ncmFtIGl0Og0KPiANCj4gCXNwaW5fbG9jaygmcy0+
-Y29uZl9sb2NrKTsNCj4gCWlmIChzLT5ydHMgIT0gcnRzKSB7DQo+IAkJcy0+cnRzID0gcnRzOw0K
-PiAJCXMtPnJ0c19jb21taXQgPSAxOw0KPiAJfQ0KPiAJaWYgKHMtPmxvb3BiYWNrX2NvbW1pdCB8
-fCBzLT5ydHNfY29tbWl0KQ0KPiAJCW1heDMxMDBfZG93b3JrKHMpOw0KPiAJc3Bpbl91bmxvY2so
-JnMtPmNvbmZfbG9jayk7DQo+IA0KPiBtYXgzMTAwX3dvcmsoKSBjb25zdW1lcyBzLT5ydHNfY29t
-bWl0IHVuZGVyIHMtPmNvbmZfbG9jaywgYnV0IHJlYWRzIHMtPnJ0cw0KPiBpdHNlbGYgb3V0c2lk
-ZSBvZiB0aGUgbG9jaywgYm90aCB3aGVuIGl0IHNlcnZpY2VzIHRoYXQgcGVuZGluZyB1cGRhdGUg
-YW5kIHdoZW4NCj4gaXQgbGF0ZXIgdHJhbnNtaXRzIGEgY2hhcmFjdGVyLCBzbyB0aGUgc3RhdGUg
-aXQgcHJvZ3JhbXMgaW50byB0aGUgaGFyZHdhcmUgY2FuDQo+IGJlIHN0YWxlLg0KPiANCj4gUmVh
-ZCBzLT5ydHMgaW50byBhIGxvY2FsIHZhcmlhYmxlIGluIHRoZSBzLT5jb25mX2xvY2sgcHJvdGVj
-dGVkIHNuYXBzaG90IGF0DQo+IHRoZSB0b3Agb2YgdGhlIGxvb3AsIGJlZm9yZSBzLT5ydHNfY29t
-bWl0IGlzIGNvbnN1bWVkLCBpbiB0aGUgc2FtZSB3YXkgYXMNCj4gcy0+Y29uZiBpcyByZWFkIGJl
-Zm9yZSBzLT5jb25mX2NvbW1pdC4NCj4gDQo+IEZpeGVzOiA3ODMxZDU2YjBhMzUgKCJ0dHk6IE1B
-WDMxMDAiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBHaW5nZXIgTGkgPGdpbmdlci5qemxsZWVAZ21haWwu
-Y29tPg0KDQpSZXZpZXdlZC1ieTogTWFhcnRlbiBCcm9jayA8bWFhcnRlbi5icm9ja0BzdHRscy5u
-bD4NCg0KPiAtLS0NCj4gdjI6DQo+ICAtIHJlYWQgcy0+cnRzIGludG8gInJ0cyIgYmVmb3JlIHMt
-PnJ0c19jb21taXQgaXMgY29uc3VtZWQsIGFzIHN1Z2dlc3RlZCBieQ0KPiAgICBNYWFydGVuDQo+
-ICAtIG1lbnRpb24gcy0+cnRzX2NvbW1pdCBpbiB0aGUgY29tbWl0IG1lc3NhZ2UNCj4gIC0gbGVm
-dCB0aGUgcy0+cnRzIC8gcy0+cnRzX2NvbW1pdCBzcGxpdCBhbG9uZTsgZm9sZGluZyBib3RoIGlu
-dG8gb25lIGJ5dGUNCj4gICAgd291bGQgYmUgYSBzZXBhcmF0ZSBjbGVhbnVwDQo+IC0tLQ0KPiAg
-ZHJpdmVycy90dHkvc2VyaWFsL21heDMxMDAuYyB8IDYgKysrKy0tDQo+ICAxIGZpbGUgY2hhbmdl
-ZCwgNCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvdHR5L3NlcmlhbC9tYXgzMTAwLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWF4MzEwMC5j
-DQo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tYXgzMTAwLmMNCj4gKysrIGIvZHJpdmVycy90
-dHkvc2VyaWFsL21heDMxMDAuYw0KPiBAQCAtMjM2LDYgKzIzNiw3IEBAIHN0YXRpYyB2b2lkIG1h
-eDMxMDBfd29yayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKncpDQo+ICAJc3RydWN0IHR0eV9wb3J0ICp0
-cG9ydCA9ICZzLT5wb3J0LnN0YXRlLT5wb3J0Ow0KPiAgCXVuc2lnbmVkIGNoYXIgY2g7DQo+ICAJ
-aW50IGNvbmYsIGNjb25mLCBjbG9vcGJhY2ssIGNydHM7DQo+ICsJYm9vbCBydHM7DQo+ICAJaW50
-IHJ4Y2hhcnM7DQo+ICAJdTE2IHR4LCByeDsNCj4gDQo+IEBAIC0yNDksNiArMjUwLDcgQEAgc3Rh
-dGljIHZvaWQgbWF4MzEwMF93b3JrKHN0cnVjdCB3b3JrX3N0cnVjdCAqdykNCj4gIAkJcy0+Y29u
-Zl9jb21taXQgPSAwOw0KPiAgCQljbG9vcGJhY2sgPSBzLT5sb29wYmFja19jb21taXQ7DQo+ICAJ
-CXMtPmxvb3BiYWNrX2NvbW1pdCA9IDA7DQo+ICsJCXJ0cyA9IHMtPnJ0czsNCj4gIAkJY3J0cyA9
-IHMtPnJ0c19jb21taXQ7DQo+ICAJCXMtPnJ0c19jb21taXQgPSAwOw0KPiAgCQlzcGluX3VubG9j
-aygmcy0+Y29uZl9sb2NrKTsNCj4gQEAgLTI1OCw3ICsyNjAsNyBAQCBzdGF0aWMgdm9pZCBtYXgz
-MTAwX3dvcmsoc3RydWN0IHdvcmtfc3RydWN0ICp3KQ0KPiAgCQkJbWF4MzEwMF9zcihzLCAweDQw
-MDEsICZyeCk7DQo+ICAJCWlmIChjcnRzKSB7DQo+ICAJCQltYXgzMTAwX3NyKHMsIE1BWDMxMDBf
-V0QgfCBNQVgzMTAwX1RFIHwNCj4gLQkJCQkgICAocy0+cnRzID8gTUFYMzEwMF9SVFMgOiAwKSwg
-JnJ4KTsNCj4gKwkJCQkgICAocnRzID8gTUFYMzEwMF9SVFMgOiAwKSwgJnJ4KTsNCj4gIAkJCXJ4
-Y2hhcnMgKz0gbWF4MzEwMF9oYW5kbGVyeChzLCByeCk7DQo+ICAJCX0NCj4gDQo+IEBAIC0yNzcs
-NyArMjc5LDcgQEAgc3RhdGljIHZvaWQgbWF4MzEwMF93b3JrKHN0cnVjdCB3b3JrX3N0cnVjdCAq
-dykNCj4gIAkJCX0NCj4gIAkJCWlmICh0eCAhPSAweGZmZmYpIHsNCj4gIAkJCQltYXgzMTAwX2Nh
-bGNfcGFyaXR5KHMsICZ0eCk7DQo+IC0JCQkJdHggfD0gTUFYMzEwMF9XRCB8IChzLT5ydHMgPyBN
-QVgzMTAwX1JUUyA6IDApOw0KPiArCQkJCXR4IHw9IE1BWDMxMDBfV0QgfCAocnRzID8gTUFYMzEw
-MF9SVFMgOiAwKTsNCj4gIAkJCQltYXgzMTAwX3NyKHMsIHR4LCAmcngpOw0KPiAgCQkJCXJ4Y2hh
-cnMgKz0gbWF4MzEwMF9oYW5kbGVyeChzLCByeCk7DQo+ICAJCQl9DQo+IC0tDQo+IDIuNDMuMA0K
+This patch series adds the support for the Mediatek Genio 520-EVK (based
+on MT8371 SoC) and Mediatek Genio 720-EVK (based on MT8391 SoC).
+
+MT8371 and MT8391 SoC are less powerful variants of MT8189 SoC
+with the following differences:
+  - Arm Cortex-A78 CPU core maximum frequency (2.2 Ghz for MT8371, 2.6
+    Ghz for MT8391, 3 Ghz for MT8189).
+  - Arm Mali G57 MC2 GPU core maximum frequency (880 Mhz for MT8371,
+    1.1 Ghz for MT8189 and MT8391)
+  - ISP engine number (1 for MT8371, 2 for MT8189 and MT8391)
+MT8371 and MT8391 SoC hardware register maps are identical to MT8189.
+
+The Genio 520/720-EVK boards have following features:
+  - MT8371 (or MT8391) SoC
+  - MT6365 PMIC
+  - MT6319 Buck IC
+  - MT6375 Charger IC
+  - 8GB LPDDR5 RAM
+  - 64GB eMMC 5.1
+  - 128GB UFS
+  - 20V DC Jack
+  - USB Type-C Power Adapter
+  - Micro SD card slot
+  - Push Button x 4 (Power, Reset, Download and Home Key)
+  - LED x 3 (System Power, Reset, DC-IN Power)
+  - USB Type-C Connector (USB 3.2) x 2
+  - USB Type-C Connector (USB 2.0) x 1
+  - 3.5mm Earphone Jack x 1 (with Microphone Input)
+  - 3.5mm Line Out Audio Jack x 1
+  - Analog Microphone x 1
+  - Digital Microphone x 2
+  - Gigabit Ethernet with RJ45 connector
+  - DP x 1 (Mode over USB Type-C)
+  - LVDS port x 1
+  - eDP port x 1
+  - UART x2 with serial-to-usb converters and USB Type-C connectors
+  - UART Port x 2 on Pin Header
+  - M.2 Slot x 2
+  - I2C Capacitive Touch Pad
+  - 4-Lane DSI x 1
+  - 4-Data Lane CSI x 2
+  - I2S Pin header
+  - 40-Pin 2.54mm Pin Header x 1
+  - CAN Bus x 1 (RS232 Connector)
+
+The series adds two include files for mt8189 (mt8189.dtsi) and common
+board definitions (mt8391-genio-common.dtsi) and a devicetree file for
+each board.
+In regard to the current MT8189 SoC upstream support and this series
+provides the following basic hardware enablement for:
+  - CPU
+  - system and base clocks (including fhctl support) 
+  - spmi and regulators
+  - power domain controller and all domains (excluding multimedia and
+    graphics related ones)
+  - UART 0/1/2/3 with DMA support
+  - eMMC and SD card
+  - watchdog
+  - timer
+  - efuse and socinfo
+  - auxadc
+  - PCIe controller and Wifi PCIe M.2 module
+  - Ethernet controller
+
+The series is based on linux-next next-20260923 tag, and the
+following patch series are currently required:
+- MT8189: Add support for system and base clock controllers [1]
+- mt8189: Add pinmux macro header file [2]
+- dt-bindings: timer: mediatek,timer: Add compatible for MT8189 [3]
+- net/stmmac: Add Mediatek MT8189 support [4]
+
+[1] https://lore.kernel.org/linux-mediatek/20260904-mt8189-clocks-system-base-v6-0-5df247f56938@collabora.com/
+[2] https://lore.kernel.org/linux-mediatek/20251205064357.13591-1-ot_cathy.xu@mediatek.com/
+[3] https://lore.kernel.org/linux-mediatek/20250825033136.7705-1-zhanzhan.ge@mediatek.com/
+[4] https://lore.kernel.org/linux-mediatek/20260924-dwmac-mediatek-mt8189-v2-0-430bd74d5ef9@collabora.com/
+
+---
+Changes in v3:
+- Rebased on next-20260923 tag
+- Updated series prerequisites with most recent versions and add MT8189
+  Ethernet GMAC driver series as new one.
+- Added Reviewed-by trailers in patchs 1 and 2
+- Patch 3:
+  - Reordered device nodes by base address in mt8189.dtsi (C. Tsai)
+  - Fixed spmi address range in mt8189.dtsi (Sashiko)
+  - Add Ethernet nodes in mt8391-genio-common.dtsi and in mt8189.dtsi
+- Link to v2: https://lore.kernel.org/r/20260701-add-mediatek-genio-520-720-evk-v2-0-19d5da4ef984@collabora.com
+
+Changes in v2:
+- Added Acked-by trailers in patchs 1 and 2
+- Reworded patchs 2, 3 and 4 subjects to remove redundant parts
+- Patch 3:
+  - Moved aliases from mt8189.dtsi to mt8391-genio-common.dtsi
+  - Renamed fixed-clock names in mt8189.dtsi
+  - Removed the multimedia and graphics related clock controller nodes
+    and aligned remaining clock-controller compatibles to match the
+    latest mt8189 clock series revision ([1])
+  - Added missing aud_adc_ext fixed clock (used as parent in
+    clk-mt8189-vlpckgen.c)
+  - Removed _clk suffix from all clock controller aliases
+  - Added UART DMA controller node and use
+  - Added PCIE host controller node and use
+  - Added MT8189 powerdomain controller node and SoC power domain
+    definitions (excluding the multimedia and graphics related ones)
+  - Added ARM DSU PMU support with fail status to handle its optional
+    support in firmware/bootloaders.
+  - Added extra clocks in MMC0 and MMC1 nodes, that are now required
+    with latest mt8189 clock series revisions ([1] and [4])
+  - Replaced mt6359.dtsi include by mt6365.dtsi and added the supply
+    definitions and compatible related to this PMIC
+  - Added the MT6319 PMIC supply definitions
+  - Added the MT6319 PMIC definitions and aliases with two different
+    USID and enabled the expected one in Genio 720-EVK devicetree to
+    fix this PMIC not being properly detected on Genio 520-EVK in v1.
+  - Added the needed definitions, pinctrl and regulator to enable wifi
+    module support
+- Enabled the MT6319 PMIC with correct USID in Genio 520-EVK devicetree
+  in patch 4.
+- Link to v1: https://lore.kernel.org/r/20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com
+
+---
+Louis-Alexis Eyraud (4):
+      dt-bindings: serial: mediatek,uart: Add compatible for MT8189 SoC
+      dt-bindings: arm: mediatek: add Mediatek Genio 520/720-EVK boards
+      arm64: dts: mediatek: add Genio 720-EVK board
+      arm64: dts: mediatek: add Genio 520-EVK board
+
+ .../devicetree/bindings/arm/mediatek.yaml          |   10 +
+ .../devicetree/bindings/serial/mediatek,uart.yaml  |    1 +
+ arch/arm64/boot/dts/mediatek/Makefile              |    2 +
+ arch/arm64/boot/dts/mediatek/mt8189.dtsi           | 1009 ++++++++++++++++++++
+ .../boot/dts/mediatek/mt8371-genio-520-evk.dts     |   32 +
+ .../boot/dts/mediatek/mt8391-genio-720-evk.dts     |   27 +
+ .../boot/dts/mediatek/mt8391-genio-common.dtsi     |  798 ++++++++++++++++
+ 7 files changed, 1879 insertions(+)
+---
+base-commit: 4d7e75152b01862a4ec598435d79a81c4b254dd6
+change-id: 20251128-add-mediatek-genio-520-720-evk-06162377974d
+prerequisite-message-id: <20260904-mt8189-clocks-system-base-v6-0-5df247f56938@collabora.com>
+prerequisite-patch-id: f383e7157010179243963badff8c663d0ca21592
+prerequisite-patch-id: 742dfe3c56d88bad5dbdae49b34ecf8639db1bdb
+prerequisite-patch-id: 9c9c64b8b3879f230ba18a0d11cbeb584ce2977c
+prerequisite-patch-id: 7b1af194800ee6075aeb7933e2b55ac57e1dc5e2
+prerequisite-patch-id: 8c8e59354c22f2fa141599efaddc1d28da97c910
+prerequisite-patch-id: 560ea66d94464ee05a72499d1bd8adb3830fe9d0
+prerequisite-patch-id: def65116008ad75bae741bacc67552227446449d
+prerequisite-patch-id: 226e61bec983c3cdd39a64d0b5aa64994c6873c4
+prerequisite-patch-id: 988df54e8bb41d0cc56104398da9c8f669eef878
+prerequisite-patch-id: 9a3f954e6efaed40f57a23e721505f5e2abf538e
+prerequisite-patch-id: ac2ae94b727d7e4f2576601e09ed481248e6c099
+prerequisite-patch-id: 5cf430a386ebd823b14ad79aa05e8b723510f2e8
+prerequisite-patch-id: 49a0b4ca405cfbc9854dea09df664f60c7467fb9
+prerequisite-patch-id: 998d0587e6bb0ee244afeb5344cd3e9438d933ca
+prerequisite-patch-id: c23a23ce86063191e84218c496151104c270bead
+prerequisite-patch-id: 9c596a2b6b48b1c646e2aa6fdb12c2fc853f44f2
+prerequisite-patch-id: f0978bcc3be8c1986a00e41aab540c911508ae07
+prerequisite-patch-id: 8ce69ea826d8ebdb9103dab20941b018a10ef230
+prerequisite-patch-id: 7f544c1d5400bb2f6e964f53eeaacb52878bfce9
+prerequisite-patch-id: e2027aa2ac9d98bc9bc577dc0ef5bcb664380c51
+prerequisite-patch-id: 29b5901b08e6c967da57d83d90fdcac50657e4ad
+prerequisite-patch-id: 4442d5bd4b04a393301f974a3aaeabef7a693aac
+prerequisite-patch-id: c6be163e56e8187c47e4ee6adbab4c7877b5b5e9
+prerequisite-patch-id: 12f43414850b4a72ba37967ff7f765e426abd9e5
+prerequisite-patch-id: 9b00d856ced9bea88911a5af4d5e5dd003e66b15
+prerequisite-patch-id: 967e506aa16b20c211cb74080f83e38a7dffecd1
+prerequisite-patch-id: 2943831ea7bc0c4075580adf69e033f9057f4b19
+prerequisite-message-id: <20251205064357.13591-1-ot_cathy.xu@mediatek.com>
+prerequisite-patch-id: 7f2d960cde2f0e0a307721150e83b7b05b9a60d7
+prerequisite-message-id: <20250825033136.7705-1-zhanzhan.ge@mediatek.com>
+prerequisite-patch-id: 7aeee7d452186b3bc1c11722b7ddb7dfbae7d396
+prerequisite-message-id: <20260924-dwmac-mediatek-mt8189-v2-0-430bd74d5ef9@collabora.com>
+prerequisite-patch-id: cedfd27a6d86ef771ea29570d7aeaa1de6700d76
+prerequisite-patch-id: d71281b728b70a0c3e6628fcf667df5fce81f2de
+prerequisite-patch-id: f08f0f9abf6ddb4856e6f83f09afbd9a6bd58c69
+prerequisite-patch-id: 547ff4e2a908f87e94fff37f8e0a5cd7b6a06deb
+prerequisite-patch-id: 3b288113483ca2c4181fcc1141f03c4dfc05c43e
+prerequisite-patch-id: a7497035d432d4454a9e9ddf09b4dbef89a060ed
+prerequisite-patch-id: 26b2574fc9d0ead6e8ab193fca387cf6e816dce4
+
+Best regards,
+-- 
+Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+
