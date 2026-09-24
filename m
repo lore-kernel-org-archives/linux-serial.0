@@ -1,123 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7363832E12E;
-	Thu, 24 Sep 2026 12:30:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8358B368D4A
+	for <linux-serial@vger.kernel.org>; Thu, 24 Sep 2026 12:40:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790253006; cv=none; b=X8r906M9LRQT02SWPw6MCMg83KytDrTj7leIKvfdLxrigXjrXgTwWw0ouufrSZIHyJCZvI0ub06CJ4hcf4RMlBhmGz2OLyPo4N5++NPfOspzMijpA0VcunEBJlBORQU/BH8tGsdiMOahOBOrq2oMsy6dw8wYvqtULoDWoffZGKA=
+	t=1790253647; cv=none; b=a3DSCGGhIx+11WR2HZaZTNRVZZPqNCcmYokS5CLBBqJ670UK8oDaPc5wgxAeUbpknz0LDocht/hEqFz4F4qx1b4e+5MZ3wkPwDIAUA2CVmgKwofFAL/mNxlPlOZfSIAmr+DRRusQP9s0gEFOQharjUtPhW4FfZWCLTEdG94Epzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790253006; c=relaxed/simple;
-	bh=f+MVWQmcnSQ+UPKx5gJICWDkBFHUiYEkQVbJJEz2JWw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rca7qf09h35/PIBHdAKDwU0iFFSL+YlLpv83qXazMBGP/UD5jQ/zfcAj7bO+R+qJWHqQNT6zcexGisUYJE3G6YfsGnQAUyjNq9OYIHUM7tRlbGxbNpka7V8tEMIYEMjldmVTl1TKSMVNirIi4LhIOXWOEBsWKCjaHisiUSn7Hkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GHtCv02O; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790253647; c=relaxed/simple;
+	bh=s3+yd3TP+IHikb14hTk+QxD4B62vNARJz+QMdxFrB+w=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=knsiP7gQUZ5e0FYPb2r+85ip3h8w5tP04n4rN3gP+eIq/LSPQZDxOJMseaABDg/tlXzTU9f6SBJuTvyrxRhO7amJZC2JMPz9oVAiz5yfwKkw79+703cZwb0KVn+XPS7XnGCpEvT1/Eck8JnsAjgSUA2xQJ41Tfl7BUCILjKsBWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dxf1chlC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GHtCv02O"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790253006; x=1821789006;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=f+MVWQmcnSQ+UPKx5gJICWDkBFHUiYEkQVbJJEz2JWw=;
-  b=GHtCv02OYLk42DQ6HoSPaeAqy8hEzl1qmPg13zV+7VJDYAJbMmHryATP
-   Kzmscov3Ru9saUI5lMXxErtCSK1gPPwKCFYqxybRIglqMg8n+Hr4Eznpl
-   WFMlbCZpcXf2b/fI+1aS2sxwy+dZtBXekn0sKgFZCoF9Q3K9WDnq616kV
-   mEIo/yWBRRRlEJtdkGZfEAffYEyGunQT0e+v6/VpH+UMRi3bBGZv8xmQ+
-   v6TR8h84SrpUuklBSFASmRfSyUVUCXDZerCbzhpNnaxq80S0rOsn8SrP/
-   S0+DWFPMvPNSLemJDUvY6MSEWU4H7qe0qBR5I4EGONX0H91XKRug9f89s
-   Q==;
-X-CSE-ConnectionGUID: WdhdDCGqTimDO4yFWfKmoQ==
-X-CSE-MsgGUID: PrlFyoHtSuKBDOxCMMEUPA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="112806613"
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="112806613"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 05:30:06 -0700
-X-CSE-ConnectionGUID: PcJOzqv7S4WNy8FZlClREQ==
-X-CSE-MsgGUID: DpXCHyF+Spi3++WnhdBkUg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="311927677"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.199])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 05:29:58 -0700
-Date: Thu, 24 Sep 2026 15:29:56 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Hui Peng <benquike@gmail.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	john.ogness@linutronix.de, ilpo.jarvinen@linux.intel.com,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v4 2/3] serial: core: allow third iteration in
- uart_get_baud_rate() fallback
-Message-ID: <arUXxEZo2374oRpO@ashevche-desk.local>
-References: <20260924060511.2364717-1-benquike@gmail.com>
- <20260924060511.2364717-3-benquike@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dxf1chlC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C4AF1F000FF;
+	Thu, 24 Sep 2026 12:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790253642;
+	bh=3OS0OCTrh8R60RvjWD8frNjlWDREVk8g+8pQmRYzmxs=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=dxf1chlC2hmjwYZZcMEeOiArd72TmFhzBCqGJaZb7Z494ktXnbFmP58/ddUgiG760
+	 uL9+hRpjMU8GWh3cjRBC4UnIeLYsojCgdyy0+qFYD5Gd07UvS0EfGd8gljjjZfMJ0j
+	 coHPuwxU6iSBtSDxFyDj7i1pzkRE+PobAMCPHIi/WsE5NZsZ8EOv6R9Dc0NBt0ZZqV
+	 4pBg02Dr5i+WvNPF0543xBIJVh9jzKqSfdD//splAD5yIHyYKNBVvFX+YxhJlgU1Hj
+	 wiPom2RZIuj9562qgJ0+2+iXVo7XJ1hT0TZt4fNA2pIpaU2zBefKme1h6MfdVi6lw0
+	 Q4ouiRO83l36A==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v2 2/2] serial: 8250_port: properly handle runtime PM in
+ IRQ
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260924122549.668680-3-andriy.shevchenko@linux.intel.com>
+References: <20260924122549.668680-1-andriy.shevchenko@linux.intel.com>
+ <20260924122549.668680-3-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 24 Sep 2026 12:40:41 +0000
+Message-Id: <20260924124042.1C4AF1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260924060511.2364717-3-benquike@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Sep 24, 2026 at 06:04:45AM +0000, Hui Peng wrote:
-> In uart_get_baud_rate(), when the requested baud rate is out of range
-> (try == 0) and old is non-NULL, the function copies the old termios baud
-> rate into termios, sets old = NULL, and continues to try == 1. If the
-> old baud rate is also out of range (for instance, after uport->uartclk
-> was lowered via TIOCSSERIAL so max = uport->uartclk / 16 is smaller than
-> both the old and new baud rates), try == 1 clips baud to [min + 1,
-> max - 1] and encodes it into termios via tty_termios_encode_baud_rate().
-> 
-> However, because the loop bound is for (try = 0; try < 2; try++), the
-> loop terminates immediately after try == 1 without re-evaluating
-> baud = tty_termios_baud_rate(termios) for the clipped rate, hitting
-> WARN_ON(1) and returning 0, which then triggers a fatal divide-by-zero
-> (Oops: divide error) in uart_get_divisor():
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [High] serial: 8250: missing port->dev NULL check in serial8250_default_h=
+andle_irq()
+--
 
->   WARNING: drivers/tty/serial/serial_core.c:548 at uart_get_baud_rate+0x136/0x260, CPU#1: init/1
->   ...
->   Oops: divide error: 0000 [#1] SMP KASAN PTI
->   CPU: 1 UID: 0 PID: 1 Comm: init Tainted: G        W        N  7.3.0-rc3-g5dd1818b15d9 #1 PREEMPT(lazy)
->   RIP: 0010:uart_get_divisor+0x5b/0x100
->   Call Trace:
->    <TASK>
->    serial8250_get_divisor+0x123/0x1a0
->    serial8250_do_set_termios+0x21e/0x1610
->    serial8250_set_termios+0x77/0x90
->    uart_change_line_settings+0xf6/0x720
->    uart_set_termios+0x1c1/0x5b0
->    tty_set_termios+0x5f7/0x920
->    set_termios+0x533/0x7d0
->    tty_mode_ioctl+0x8e4/0xd10
->    n_tty_ioctl_helper+0x3c/0x270
->    n_tty_ioctl+0x4e/0x2c0
->    tty_ioctl+0x1028/0x1480
->    __x64_sys_ioctl+0x184/0x1d0
->    do_syscall_64+0xda/0x4b0
+commit 128116d52224b04215dd65b2f4f799e8c14bdec7
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Submitting Patches suggests to leave only ~3-5 *significant (or important)
-lines of traceback. At very brief look the last 7 do not add any valuable
-information.
+serial: 8250_port: properly handle runtime PM in IRQ
 
-> Increase the loop limit to try < 3 so that the clipped baud rate encoded
-> on try == 1 is evaluated and returned on try == 2.
-> 
-> Tested in QEMU against Linux 7.3.0-rc3 by setting /dev/ttyS1 to B115200,
-> lowering baud_base to 9600 (max = 9600) via TIOCSSERIAL, and calling
-> tcsetattr() with B57600 (old = B115200), reproducing the WARNING and
-> Oops: divide error in uart_get_divisor() on the unfixed kernel and
-> verifying clean execution with 0 warnings/faults with the fix applied.
+This commit updates the 8250 driver IRQ handler to explicitly check the
+runtime PM status before processing the interrupt. It returns immediately
+if the device is powered off, assuming it is a shared interrupt.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index c0bcc0742a60c..1e62460b19ab9 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1878,13 +1878,22 @@ EXPORT_SYMBOL_GPL(serial8250_handle_irq);
+> =20
+>  static int serial8250_default_handle_irq(struct uart_port *port)
+>  {
+[ ... ]
+> +	/* if driver suspended, return, probably shared interrupt */
+> +	pm_status =3D pm_runtime_get_if_active(port->dev);
 
+[Severity: High]
+Will this trigger a kernel panic if the port has no associated device?=20
+Some ports, such as legacy ISA serial ports, might have a NULL port->dev.=20
+Calling pm_runtime_get_if_active() with a NULL pointer would unconditionall=
+y=20
+dereference it.
 
+> +	if (!pm_status)
+> +		return 0;
+> =20
+>  	iir =3D serial_port_in(port, UART_IIR);
+> -	return serial8250_handle_irq(port, iir);
+> +	ret =3D serial8250_handle_irq(port, iir);
+> +
+> +	if (pm_status > 0)
+> +		pm_runtime_put_autosuspend(port->dev);
+
+[Severity: High]
+Similarly, does this put operation need a check to ensure port->dev is valid
+before passing it to pm_runtime_put_autosuspend()?
+
+> +
+> +	return ret;
+>  }
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260924122549.6686=
+80-1-andriy.shevchenko@linux.intel.com?part=3D2
