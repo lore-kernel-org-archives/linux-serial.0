@@ -1,140 +1,141 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1CB74052D9;
-	Thu, 24 Sep 2026 08:54:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3CCE441027;
+	Thu, 24 Sep 2026 09:08:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.248.49.38
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790240096; cv=none; b=hxqlJxSHLjEWOAEKN9zlxz0SdSuFXKDCJKKJEex7fNuQ3kt2Lscx9320lZWGd1czP3netQv/vNknSgW2B6BybgMi2185rELQ5LbxTfm2BCtW2cB8Onn+pFmZ0RmGEUza1jOGbGJmoskthC4hwj0Q5m4syPwRSv3vcgxYifrVyy8=
+	t=1790240932; cv=none; b=pAZgZNN6B6ugs2EvnluegN9oTirfcjAUPKykDD4ZOqp4ydgTTyaGaQut7uT+35fGEmPbcN7amKSqw89qiWhvd/n9amMD6NsxmcZCwIlvUsFH1Xn5OzmxNwsqnahOizG5+S9/tac+zJH0sE2keouSGJRIDp8lS23D1UiOslot2qs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790240096; c=relaxed/simple;
-	bh=wTakLQ//2ozlHA6m7gZJ0de66/8qfvwcBvnGwcVC3uk=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=pGfrxyC/qSq2icOjbSzR7YKSpFj0awaXSEdgNL4cQfobdNC0z1od7ua/BJQB4AAUBrXR+BW+l1M9xIKfZDytbOSqAd9w0n/bMRP9htj9QUYDGmMRn+7uaqE0is21KQWYrqtH5+IW0wIO0tsq+aLCYzaz1xH5t/uSudPZMRq5JAM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V4jmXyQT; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V4jmXyQT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3135B1F000FF;
-	Thu, 24 Sep 2026 08:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790240095;
-	bh=70H8SheMSlcbawkRcJQdsqUV1W6CBrJ/umkobmFKXYo=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=V4jmXyQTeI5fsEk5Jq2LEttK1IBv2Bb0vPr25bOacKJS2UVbNFu/CNtlpHScNIpAR
-	 j2TifoEnwf9BfPhYh4khos7TOzcKRHK1He/oa5HAJaXFAmwJB0KS0Gla2R9Y+WwTeB
-	 hlJnmn1rRrPPxKtjlJ4DK9CP1gDn8wjzTOV7Xy6EtNGbxVOgiPYiTrsgFROLJU/aTT
-	 DUUu+ivK3FAAyhITkQIMrOXoDL0C4O5CAbScKCf64CRl+dQn3F8TWO1mwiscjEnRfb
-	 sVnA504huvkjuLbOaclPjb9m1M0MckEEztH9hCcyl0R7zJzVR9I+Aomb+STTTj392k
-	 M5/ba/0HsgyPQ==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 3/4] arm64: dts: mediatek: add Genio 720-EVK board
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Louis-Alexis Eyraud" <louisalexis.eyraud@collabora.com>
-Cc: conor+dt@kernel.org, robh@kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-In-Reply-To: <20260924-add-mediatek-genio-520-720-evk-v3-3-2ec5c80677d4@collabora.com>
-References: <20260924-add-mediatek-genio-520-720-evk-v3-0-2ec5c80677d4@collabora.com>
- <20260924-add-mediatek-genio-520-720-evk-v3-3-2ec5c80677d4@collabora.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 24 Sep 2026 08:54:54 +0000
-Message-Id: <20260924085455.3135B1F000FF@smtp.kernel.org>
+	s=arc-20240116; t=1790240932; c=relaxed/simple;
+	bh=903anojqqM2pdzEa9uiMMZh41KL1D4UgSxuRDd+fY5s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:Cc:
+	 In-Reply-To:Content-Type; b=pVzQJ74mG0LIqh0zcnxIrBLctuqUFJEuCf0XoA2MQqe+gaYdiZ9OQMv3n2Fmjnt54m4higOesSJN3cS2VLV/JvHzuJDu+aJsruwJmp+LfrcfDrS6s1SPG8etAF6iy7QGhruzIBuawnQfEmWkO/lGOysxD3mJtrrGJLbDGuNZOpc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=socionext.com; spf=pass smtp.mailfrom=socionext.com; arc=none smtp.client-ip=202.248.49.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=socionext.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=socionext.com
+Received: from unknown (HELO iyokan3-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 24 Sep 2026 18:07:39 +0900
+Received: from mail.mfilter.local (mail-arc02.css.socionext.com [10.213.46.40])
+	by iyokan3-ex.css.socionext.com (Postfix) with ESMTP id A9FBD20914A4;
+	Thu, 24 Sep 2026 18:07:39 +0900 (JST)
+Received: from iyokan3.css.socionext.com ([172.31.9.53]) by m-FILTER with ESMTP; Thu, 24 Sep 2026 18:07:39 +0900
+Received: from [192.168.1.135] (unknown [10.213.44.71])
+	by iyokan3.css.socionext.com (Postfix) with ESMTP id 81E0110A019;
+	Thu, 24 Sep 2026 18:07:38 +0900 (JST)
+Message-ID: <97e4ab26-b147-4cf4-97f9-307903f14e61@socionext.com>
+Date: Thu, 24 Sep 2026 18:07:37 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
+To: Malathi A <malathi.a2000@gmail.com>
+References: <20260917040511.103232-1-malathi.a2000@gmail.com>
+Content-Language: en-US
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Masami Hiramatsu <mhiramat@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20260917040511.103232-1-malathi.a2000@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
-- [Medium] dts: incorrect mmc1 cd-gpios active polarity
-- [Low] build: missing dt-binding header files
---
+Hi Malathi,
 
-commit 333fee68bbe7dfc450967c253534e7bdd3fb61f2
-Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-arm64: dts: mediatek: add Genio 720-EVK board
+On 2026/09/17 13:05, Malathi A wrote:
+> uniphier_uart_probe() enables priv->clk by hand and is then responsible
+> for disabling it again on every error path. It misses one: when
+> uart_read_port_properties() fails the function returns directly, leaving
+> the clock prepared and enabled. The neighbouring path, taken when
+> serial8250_register_8250_port() fails, does call clk_disable_unprepare(),
+> which shows the leak is an oversight rather than intent.
+> 
+> Rather than adding another manual unwind, switch to
+> devm_clk_get_enabled() so the clock is released by devres. That removes
+> the error path entirely, along with the explicit disables in the
+> register failure path and in uniphier_uart_remove().
+> 
+> The clock is still disabled and re-enabled by hand across system sleep,
+> which stays balanced: only SET_SYSTEM_SLEEP_PM_OPS is used, so the
+> device cannot be unbound while suspended and devres always sees an
+> enabled clock at detach.
+> 
+> Found by smatch:
+> 
+>    drivers/tty/serial/8250/8250_uniphier.c:232 uniphier_uart_probe() warn:
+> 'priv->clk' from clk_prepare_enable() not released on lines: 205.
+> 
+> Fixes: 26e8349c0d76 ("serial: 8250_uniphier: Switch to use
+> uart_read_port_properties()")
+> Signed-off-by: Malathi A <malathi.a2000@gmail.com>
+> ---
+> Changes in v2:
+> - Use devm_clk_get_enabled() instead of adding a clk_disable_unprepare()
+>    to the failing path, as suggested in review. This also lets the
+>    explicit disables in the serial8250_register_8250_port() error path and
+>    in uniphier_uart_remove() go away.
+> - Reworded the commit message accordingly.
+> 
+>   drivers/tty/serial/8250/8250_uniphier.c | 10 ++--------
+>   1 file changed, 2 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_uniphier.c
+> b/drivers/tty/serial/8250/8250_uniphier.c
+> index e3db60bf50c9..6fffac12277a 100644
+> --- a/drivers/tty/serial/8250/8250_uniphier.c
+> +++ b/drivers/tty/serial/8250/8250_uniphier.c
+> @@ -180,16 +180,12 @@ static int uniphier_uart_probe(struct
+> platform_device *pdev)
+>   
+>   	memset(&up, 0, sizeof(up));
+>   
+> -	priv->clk = devm_clk_get(dev, NULL);
+> +	priv->clk = devm_clk_get_enabled(dev, NULL);
+>   	if (IS_ERR(priv->clk)) {
+> -		dev_err(dev, "failed to get clock\n");
+> +		dev_err(dev, "failed to get and enable clock\n");
+>   		return PTR_ERR(priv->clk);
+>   	}
+>   
+> -	ret = clk_prepare_enable(priv->clk);
+> -	if (ret)
+> -		return ret;
+> -
+>   	up.port.uartclk = clk_get_rate(priv->clk);
+>   
+>   	spin_lock_init(&priv->atomic_write_lock);
+> @@ -222,7 +218,6 @@ static int uniphier_uart_probe(struct platform_device
+> *pdev)
+>   	ret = serial8250_register_8250_port(&up);
+>   	if (ret < 0) {
+>   		dev_err(dev, "failed to register 8250 port\n");
+> -		clk_disable_unprepare(priv->clk);
+>   		return ret;
+>   	}
+>   	priv->line = ret;
+> @@ -237,7 +232,6 @@ static void uniphier_uart_remove(struct
+> platform_device *pdev)
+>   	struct uniphier8250_priv *priv = platform_get_drvdata(pdev);
+>   
+>   	serial8250_unregister_port(priv->line);
+> -	clk_disable_unprepare(priv->clk);
+>   }
+>   
+>   static int __maybe_unused uniphier_uart_suspend(struct device *dev)
 
-This commit adds support for the MediaTek MT8189 SoC and its variants.
-It also introduces the devicetree for the Genio 720-EVK board based on
-the MT8391 SoC variant.
+I'm a bit concerned about the error path in uniphier_uart_resume().
+The clock may have been disabled in uniphier_uart_suspend(), and
+clk_prepare_enable() can fail when trying to enable it again.
 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/d=
-ts/mediatek/mt8189.dtsi
-> new file mode 100644
-> index 0000000000000..b64882a931519
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-> @@ -0,0 +1,1009 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Copyright (c) 2025 MediaTek Inc.
-> + *
-> + * Copyright (c) 2025 Collabora Ltd.
-> + * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-> + */
-> +
-> +#include <dt-bindings/clock/mediatek,mt8189-clk.h>
+In that case, wouldn't devres try to disable an already disabled
+clock on detach?
 
-[Severity: Low]
-Does this include reference a missing dt-binding header file? This is
-currently absent from the tree, which will cause a preprocessor error during
-device tree compilation.
+Thank you,
 
-[ ... ]
-
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi b/arch=
-/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi
-> new file mode 100644
-> index 0000000000000..00c9f3c078f5e
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi
-> @@ -0,0 +1,798 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Copyright (c) 2025 Collabora Ltd.
-> + * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-> + */
-> +
-> +#include "mt6365.dtsi"
-> +
-> +#include <dt-bindings/gpio/gpio.h>
-> +#include <dt-bindings/input/input.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/leds/common.h>
-> +#include <dt-bindings/spmi/spmi.h>
-> +#include "mt8189-pinfunc.h"
-
-[Severity: Low]
-Does this reference a missing pin configuration header file? Similar to the
-clock header above, this file appears to be missing and will cause the
-compilation step to fail.
-
-[ ... ]
-
-> +&mmc1 {
-> +	bus-width =3D <4>;
-> +	cap-sd-highspeed;
-> +	cd-gpios =3D <&pio 2 GPIO_ACTIVE_HIGH>;
-
-[Severity: Medium]
-Is GPIO_ACTIVE_HIGH the intended polarity for this card detect pin?
-
-Further down in this file, the mmc1_default_pins block configures this
-physical pin with a pull-up resistor:
-
-	mmc1_default_pins: mmc1-default-pins {
-		...
-		pins-insert {
-			pinmux =3D <PINMUX_GPIO2__FUNC_GPIO2>;
-			bias-pull-up;
-		};
-	};
-
-This pull-up implies the empty slot state is HIGH, and card insertion shorts
-it to LOW. If the active state is declared as GPIO_ACTIVE_HIGH, will the mmc
-core incorrectly interpret an empty slot as having a card inserted, and an
-inserted card as being removed? Should this be GPIO_ACTIVE_LOW instead?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260924-add-mediat=
-ek-genio-520-720-evk-v3-0-2ec5c80677d4@collabora.com?part=3D3
+---
+Best Regards
+Kunihiko Hayashi
