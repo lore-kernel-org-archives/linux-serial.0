@@ -1,166 +1,159 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023119.outbound.protection.outlook.com [40.107.159.119])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf2-f13.google.com (mail-lf2-f13.google.com [74.125.229.205])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B40649B5AD;
-	Thu, 24 Sep 2026 16:02:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.119
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790265735; cv=fail; b=fnt6QhZDaFoYekxh8r8/nU4HEUYmt8zug6a9J4mt1WC/o0BMhqly6QIsI0ahVpUeP+owx3VLaORuY6ZY3LRvWHR9TaUnydwo1ocHoj5ptb6JUNtk8mPG3lYZXytqFzZnMArdCezCpQ0NM7GTy3MUmmiz/Dainzmc+QlepTzv+Tc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790265735; c=relaxed/simple;
-	bh=RO9lTtr5YhFn3MTRuIiUE/Trz7Ze96ujVTx6GMotq5c=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A2OaE0M4OU+fgBAgzKm/PYCX2w8fN9scvwBmVsGOboGJ9KW2PxSezcTAkYIrzGejIiy+VzBLdqPFX2qEbZfkTDEGeyOlcg7GJDLlSb/unP3p4e8sQZiLn0e6CfIfxqBClz6sKadZblkdoAAaX+PxGAq6c174ZQextlDGqHwE+mA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de; spf=pass smtp.mailfrom=ziehl-abegg.de; dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b=bTS+ibnE; arc=fail smtp.client-ip=40.107.159.119
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziehl-abegg.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91DB7420486
+	for <linux-serial@vger.kernel.org>; Thu, 24 Sep 2026 19:22:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.205
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790277761; cv=none; b=He+dpK1OkTv+iFyMFoaXpf7ps0XLQCFWZY6mlJiLfN2r6lXC0JND9RT6724l1DnFDHtfdjV4BGMgdZunr0D0dP80HnyaKaOO/VxLEj26Dp2vqeArV98rMwTK5tp0flgs+U7CTAh/rHW3cJV68j20bYfILfylUNjRSgfxJ0TkS2A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790277761; c=relaxed/simple;
+	bh=iVnn/yWYt0uoOwaIx73gymaQbCmlXyeA4KKM5jbjgZY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XHEm1mDUEa9HJSAAIxwivThc83kVpEeyt+IwTZfpkeEFFfbbyBeo4nf+1CQzgz3w2IJgh/T1v61ojcJbw4gNh5pWnbqa949Bq9yhw1Ch60aX0hzjALOfSVD1Oye41dQmDmyWg/l+xGxfqHSkfq0VPP8E4B3hrOKjFy3xOQL+1c8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IvpDw5su; arc=none smtp.client-ip=74.125.229.205
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b="bTS+ibnE"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gNXwxUKyR/6gCf15j/DIwUlDExvq6nVVdCpuScVUSJaWe5tUavOA/MMuhUJ3XS+JidEh2YdxJGhZCWLj66UwRndv8T5RCmvloykWhJKTPD2Z4Zw2YcZMboWmi4E/9XvN4jyfxe3NZ2xek7lX40iQOkZAN34tmdOpxSZslyoGk8gU3eZp2q4T/ml4j0xNk1SbKe2FQRtplwNgp4H9cDZ1X9gae9zpv9RqusX5WxtAvF7A/UrpxcMS/8A2+WDLJ3m5YxIASMC5XE4u82cGgUunRZUpkbCaGVLpJFIHagt1E4aLkStsNP0XqRThvjJBv7aqgj2RCptVRhk8H2ttTuwkYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RO9lTtr5YhFn3MTRuIiUE/Trz7Ze96ujVTx6GMotq5c=;
- b=u6dEwI1KayfNlmjnXmWRRNpeplHPOrthyMQtSYGSOFy36BPOfjTNvF8sx9uBwbUB85fRbZefDfQz/e5akacJ4OUQKaL0wnKNwoW8Sbpv1oaNdrmLtauTFDLTcrGytHF8otw24qvjPieS9tfiZ9rB9tWYBXZYgvnpUuzWmxG6RwtF6oVaERIayXnI4c2AnM/mDv3mH3XnBmHgWF5AJY84LspB1IV0YmmoA0OoFnWqRtNN7lB1miLIJpl6J8TBEUvux3f06zMZM6cFljG8FSKqwdmnmvBWHXHhbvuwTMX6W7ePIaEEh14j3GBceteC0V7P3cZO3qlE05wgxlCyhzcJig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 13.74.137.176) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=ziehl-abegg.de; dmarc=pass (p=quarantine sp=quarantine pct=100)
- action=none header.from=ziehl-abegg.de; dkim=none (message not signed);
- arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziehl-abegg.de;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RO9lTtr5YhFn3MTRuIiUE/Trz7Ze96ujVTx6GMotq5c=;
- b=bTS+ibnElufm54q/NOow9mtv2YDpp7B5VGnkJ8ZJ9r2qMIb/UxkiT4zwvguBZ71juL0ygc9zXfGicYvW+upwpsyO51HNpNPnwQZrOcd8zXvlel2YxAUt3rlr5B8hcXR4bVI1nW4qzLr0ypQATvH/COxe2IKAjWaI01IC8YJuP3I=
-Received: from AS4PR10CA0005.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:5dc::13)
- by GV2PR02MB11276.eurprd02.prod.outlook.com (2603:10a6:150:2a8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.18; Thu, 24 Sep
- 2026 16:02:07 +0000
-Received: from DU6PEPF0000A7E4.eurprd02.prod.outlook.com
- (2603:10a6:20b:5dc:cafe::85) by AS4PR10CA0005.outlook.office365.com
- (2603:10a6:20b:5dc::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.18 via Frontend Transport; Thu,
- 24 Sep 2026 16:02:07 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 13.74.137.176) smtp.mailfrom=ziehl-abegg.de; dkim=none (message not
- signed) header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
-Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
- designates 13.74.137.176 as permitted sender)
- receiver=protection.outlook.com; client-ip=13.74.137.176;
- helo=eu21-emailsignatures-cloud.codetwo.com; pr=C
-Received: from eu21-emailsignatures-cloud.codetwo.com (13.74.137.176) by
- DU6PEPF0000A7E4.mail.protection.outlook.com (10.167.8.43) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Thu, 24 Sep 2026 16:02:06 +0000
-Received: from DUZPR08CU001.outbound.protection.outlook.com (40.93.64.69) by eu21-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Thu, 24 Sep 2026 16:02:05 +0000
-Received: from ZR0P278CA0156.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:41::6) by
- AS8PR02MB6598.eurprd02.prod.outlook.com (2603:10a6:20b:257::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.18; Thu, 24 Sep 2026 16:02:04 +0000
-Received: from MI3PEPF0000849A.eurprd03.prod.outlook.com
- (2603:10a6:910:41:cafe::3e) by ZR0P278CA0156.outlook.office365.com
- (2603:10a6:910:41::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.18 via Frontend Transport; Thu,
- 24 Sep 2026 16:02:03 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
- is 178.15.18.66) smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
- header.d=none;dmarc=fail action=quarantine header.from=ziehl-abegg.de;
-Received-SPF: Fail (protection.outlook.com: domain of ziehl-abegg.de does not
- designate 178.15.18.66 as permitted sender) receiver=protection.outlook.com;
- client-ip=178.15.18.66; helo=mail.za.ziehl-abegg.de;
-Received: from mail.za.ziehl-abegg.de (178.15.18.66) by
- MI3PEPF0000849A.mail.protection.outlook.com (10.167.240.185) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.21.451.8 via Frontend Transport; Thu, 24 Sep 2026 16:02:03 +0000
-Received: from localhost (10.1.201.87) by vEX02.za.ziehl-abegg.de
- (10.1.201.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Thu, 24 Sep
- 2026 18:02:02 +0200
-From: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-To: <hugo@hugovil.com>
-CC: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-	<hvilleneuve@dimonoff.com>, <stable@vger.kernel.org>,
-	<tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>
-Subject: Re: [PATCH 1/2] serial: sc16is7xx: fix TX gap caused by kfifo circular buffer wrap-around
-Date: Thu, 24 Sep 2026 18:01:55 +0200
-Message-ID: <20260924160156.1770103-1-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260924095320.3038105d452dcfbe44cabc60@hugovil.com>
-References: <20260924095320.3038105d452dcfbe44cabc60@hugovil.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IvpDw5su"
+Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b8c1b8d7b5so170027e87.0
+        for <linux-serial@vger.kernel.org>; Thu, 24 Sep 2026 12:22:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790277755; x=1790882555; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=4gD+Y3tWn5iaTX1eAHi+6XyiDWI/B2Sv0Ag166lzTeY=;
+        b=IvpDw5sunj7vaZvnMnWlaI6Sb89Nr8qywMp4BD2beTccAO2rS24Q+mLATs8GpWD6i7
+         RzIPnNZ4PI7FJe6lBKS3by81PqUXRDTICMWHYzH+aDpANfLj3fAiFsGyrCb43TBZoMM0
+         Uslr7x/iHJ2qKDUprhbNvj+HVW2yR45JsBeD6KGHHDRXhZEzAf5W2K4rfVKsY1ZZaiSb
+         7DoAKu5JEVF4qZg48Rx9ITEVoAyGFWtDbUgt815uqlK5wQ24nUluoyoBaG5+xAo9HTYT
+         Whg7Zvm6dLrhYVbOcmA30V4hQlWLVyKAhCF1xBEfdInAY2DvkxeCYG2JRXDGvrMLbin5
+         Z9qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790277755; x=1790882555;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4gD+Y3tWn5iaTX1eAHi+6XyiDWI/B2Sv0Ag166lzTeY=;
+        b=JZHdHDr19QnsoG398AOQr8JRqEZSRF7dIxJgg7AsjJ+zqUgEim0LMZyW0e2oTBUFw+
+         xcg7zoQbT2+CUGmq2Ad3KGSubzaL0X5qYu4nIrba3IhI05W2pA1IXvWRsLTYFQXAiE2E
+         zKKz7hPLDcYXHThngbGb3WuZt++8h0rk+J+Akqz+Te4V7iFTZsvfp3xmuEllsZVP9AjD
+         EeIO1uMAUAQJN6Q/jtpK8Rs0CIjyfSz1kgEGJzn+sJ8DdHy9op5/kwwKM6WXcSzyehRM
+         Po7fcVqMgBjy2XfdvCY22p9dK9eSzvB9R7Ntw1cPgumStMhXCfvCjILmEbZ2jetZ9zfG
+         /ydg==
+X-Forwarded-Encrypted: i=1; AKwUvBwh01NQoBc2LjjmT9wogKEHytCp9ASmUJ++VMkzgzH9lpTMOEPbaweG32jYQS7+DBmonhfr7Z/sWiQZrhI=@vger.kernel.org
+X-Gm-Message-State: AFuF++nEogQRbmxBmPEK/nP0Etsr++8sXUO7vgZE1tuY5MWUQOo+00wr
+	bu08ByENyDgz2OxvdfYzGayYYzbNpVlRvAJ9C0mB2ewJ1TFVFC0f6kRJ
+X-Gm-Gg: AYBFou0fm3n1vp0UDwDNwE7tSNPheMyOFyQfZNvsZBYuCjdXq9XLBPI7F5Z3lCJSvSk
+	7SQ/JN/Pz+TFp6ZRaGBx5a6tKNudIAyexUxIRhKqiTOxbW24qdzWZv4KbKLNdVhGHLPzAXQHpsz
+	QPG+Li+G8jzfWuvn+a/PBTL2QFugLAuBe+PoPL6TklH6VGQbkLqi+rulbIjxPqWJIfDyej5uJNd
+	URDt+DVxDqKDX3fE91IK51MYDlLoEysEWU0iHWqkH8O4EeBype8Yi4c7cH9n9e/RejE9cXciJEZ
+	+kvXu8BjL3B0lWAe79YBBg8cZmKD/rLrpyvlHCVTuuQv7nnExxYiGUkrZpdd2CbgJJZrzWsKyV0
+	uH41d0EWC/QVOmYEDh6ntfs3qDZ9rOZxXDrq1SeJQJTlkClX8k8Vp9SVrEh5Jy+m/TjjsxuhhfJ
+	zOWBOt+zNled9j11fLh4is2fvrySXQF6pcMbFcW008J3SkaWzV5YhHscXtlqGnzmdc6FCHfj5jD
+	T47+PB/l8ZhxWbk7hXSeMVZBCsOLDbaEQOc5MYl9x64xFsxDgwGSolVMiF4fhnQOLHfumF55Z8T
+	6hzQ4u4=
+X-Received: by 2002:a05:6512:3401:b0:5b8:bc5e:d0fe with SMTP id 2adb3069b0e04-5b8df09adb0mr1266044e87.40.1790277754785;
+        Thu, 24 Sep 2026 12:22:34 -0700 (PDT)
+Received: from localhost.localdomain (95-25-156-252.broadband.corbina.ru. [95.25.156.252])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8e68d2302sm17273e87.29.2026.09.24.12.22.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2026 12:22:34 -0700 (PDT)
+From: Igor Putko <igorpetindev@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Rob Herring <robh@kernel.org>,
+	Vignesh R <vigneshr@ti.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Igor Putko <igorpetindev@gmail.com>,
+	syzbot+843bf2f48f4d12e6682e@syzkaller.appspotmail.com
+Subject: [PATCH] serial: core: shut down initialized port on removal
+Date: Thu, 24 Sep 2026 22:22:24 +0300
+Message-ID: <20260924192224.3175-1-igorpetindev@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: vEX02.za.ziehl-abegg.de (10.1.201.106) To
- vEX02.za.ziehl-abegg.de (10.1.201.106)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3239-9.1.2019-30216.007
-X-TM-AS-Result: No-10--4.333300-8.000000
-X-TMASE-MatchedRID: wQVy7q402w0rKmlbgU92WGyJrxBqx5NCQahV9NsL7Q9ffiFFvXJUvpmg
-	kd7c0mklq1OKGmdZqMHck2GkR6TlRRmmC6fFx8ruGqxL/yNoD8pcCdOe5Y5LZlaL9DHCw6UK7gb
-	7lp3Fk2FaOxpgjiWHddvIAMT/07Oi9VRkPJa+sq6LADIP+HEIvG1CdFlcEYhnSBiYOLSG2rZCO9
-	M3Dn5+lVDz9Vf6OkwjnEA+10Hs8LuCEq3ZCBanrjuGNnVAYS/wUwWE+0Rl6FsSQBCR9Dbh0/WgJ
-	21rFsx3
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.333300-8.000000
-X-TMASE-Version: SMEX-14.0.0.3239-9.1.2019-30216.007
-X-TM-SNTS-SMTP: D5FFB790C2631E1278B357551DF7464B138805DACC8AAA0A3F6CA1388CB7A1212000:8
-X-EOPAttributedMessage: 1
-X-MS-TrafficTypeDiagnostic:
-	MI3PEPF0000849A:EE_|AS8PR02MB6598:EE_|DU6PEPF0000A7E4:EE_|GV2PR02MB11276:EE_
-X-MS-Office365-Filtering-Correlation-Id: a53fedba-b918-4493-ffca-08df1a552ea8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|82310400026|36860700016|1800799024|376014|23010399003|10067099003|56012099006|18002099003|22082099003|11063799006;
-X-Microsoft-Antispam-Message-Info-Original:
- Yhhg1F1mD5kynin5FATVd6ei9DELgwy2iE7FKUFc6wJCJ+PmY1UQQhKOIcdYhpU1mDjATqLkUq1Zkb3HV1NgYv6DKjaJhxkQniWowAXxfz91uABnSCvDDX7EIiMHHlqWqAAI4ZB9Yasx1SmD/kD8JX+ztYcm0nadHWEp1POt4LYOl+2/L/rm4Ax9n1CsKoG7dsKYpaXTzjabF00osDtRQaLLhZDoI37Hq8pvAJ4XM09twUXhKet9okzloxBy2omPn6ideJYUFfRtoP7gszbIfYt4yIatWModJd/FSdyb5NptjIvIVFWpGT3nH3T5T8M/bmOV+fS3JForeILp2LlpRNB9uCd3akY90FKFFK8u4x0W4au3+opentVr8ZFt6ePILQr90UrL37qwNnKLoi6ey3ua43NEqIZFcpS+MmXk2MeDMUOo5dcyIewdlL6KYuRpFmhA78Dk6TW+uetPE0oGc/YU78Mzlsmu7ivN0huUcxGWlaJopSQ25Z0d9Wl8kNKzSPbph1nryJZEVrsl3InNuFlI/qyl2JsqOEDjtGIuFja0m9xzGoCnZdIULgTy4jsioygV6mdVLXOc83de5RQdaoT7N4/ToW5jFW+d5fZaDJeZIYJ9x54+79nI9Lf2M6NPUZZ7SoSWpbY8nWbj0OrxYj2/NIwQgjuogWfGIxZ10mep0/+WkaR97gHPO+6a4cMO
-X-Forefront-Antispam-Report-Untrusted:
- CIP:178.15.18.66;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.za.ziehl-abegg.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(1800799024)(376014)(23010399003)(10067099003)(56012099006)(18002099003)(22082099003)(11063799006);DIR:OUT;SFP:1102;
-X-Exchange-RoutingPolicyChecked: 2JEq0NtCcaP/Uf3l1jDcGdVW4Smo3awx9Zm80dktqko8AkGaM+MuC9ZXqOMsCob8o23+6OEXveIKHWGLjSea0bTZo2QkBZr0H+/AyyVeuA/dY6i6tT+G3bD5aY211Ni4lBhRIZASdZX+4pp7PsesSR8Zf0ZWdAU1+RfZpUlPnJMlSpSPj4bNPccdBvAhDPU0wz41RDeKi13jL3L8+EzAwLRH8dCHoMlFw7gC8Sap3LBXQgnPCS4S66RgcyDhpFWHEKYTXpyvG08m3xFDNltiAZ7EGTeS5tvl5re47/TN7UQc5PAvDBsoBxsZYcCWhRz+AwCW2mr3vylZHwo1os0D5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB6598
-X-CodeTwo-MessageID: 16fc2827-15af-40ee-b0e5-8e8218c2f894.20260924160205@eu21-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DU6PEPF0000A7E4.eurprd02.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	1edf7c91-3057-4f5f-db81-08df1a552cc1
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|23010399003|36860700016|35042699022|376014|14060799003|10067099003|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	DYxvkFXUt0WyLvIrUZg7lbpN832uIk+9WCH/yC58wPNb0CB7r31gR94HUAarYJdiLaIYThkbdWihX+TRisDauvgnLknHFFOUE7Y+5rFX7YR01eIhRu/xCKDbZNNRWQnJBLhX02Rsh4UrsA+RUFSYog61XY63hIHxwasb9ilwEzE3rNAZ+boca1DNqtMRgNrTFCeIxgWrk4lLm/CkyQRd5F/uNf8rU5HZHBRys8C6S+FCxnRgtSrJaNl/Rg6mxGKBGJEdkhdtwTOJOJCglaQSOADjIrUdu6vgL0vQ1Q9FrijykttgOYbjf79s4vrdoxJOb0b5gcrN/j41k+2PI6QqHoBvzLa5/81bXa596VIu7n5MTBppQ19C6jGyGA16UOmXoyPQ3lBMYGeI437DWbRXTzx0tI+H50DVyycFK5hMXItLvXmhM7T9VUiFB5qUvGLPtuELhtZPdfnvaraZTVCGPhMu2JJxtzZ66qHBtWd4SsbbgA8iArEIev9Q9Xz+vJhjUUQRCB2Lgp1DOWk20O8v/sOjMqDqM7p1RqEWULPjiAD10fV0dpiLyWm1XVwZ/ww3h6y4ECtXoLicXkMS99apiS28i9482n2UhoSInnTecf9sH2VHU6VXy7Lf4dGLOe2aR+JGdNEZ+5kbIhlqxA5cAfN5KgFuVoIAuioGr3GjlPV49pZ4Ne0KvDtjPnPF7rDJ
-X-Forefront-Antispam-Report:
-	CIP:13.74.137.176;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:eu21-emailsignatures-cloud.codetwo.com;PTR:eu21-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(23010399003)(36860700016)(35042699022)(376014)(14060799003)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	qy72YUoduKphLfYCn6jQu4kELLYueMwHW9656t7MlZyFxkcqkg6vib9btvXamWtGjpOCACyNmlCyZu3BDOmndmp2IAaWo8nqnfJ3Zx5q9+DzCtYSfGVma6WoBHJzPbEYRiv1UkKHVAVMF1+7qrXRbS+EAforkKTeghr052jErFs821VVApiW0778tBx3EaoFDcQyeMp60TVN+RHgIAXoP6CPKX67pmyq/ymWtE3rWXyxqkIsHOz/PR86m6G3xCUjva8bHuNLMAAeW15TBuS15Q/lZvEeXOIyan2eSDlzd70F9tdy4q/GpfY7kKFF6GAJDglpeOMytriP7dX0rLcsHGgfWV03BstQoOh74JUyNcGyA4yjFSFOJkLTItQtHbmovvJsBKnW7DXMKiUsSgUhjX6Ba2EVFGfkzrAAkTSf0IDN3V0VoBa3qlDorCdrXyXN
-X-OriginatorOrg: ziehl-abegg.de
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2026 16:02:06.7168
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a53fedba-b918-4493-ffca-08df1a552ea8
-X-MS-Exchange-CrossTenant-Id: 11a5c065-3ef5-41f0-92f9-a77cbf208c03
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=11a5c065-3ef5-41f0-92f9-a77cbf208c03;Ip=[13.74.137.176];Helo=[eu21-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU6PEPF0000A7E4.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR02MB11276
+Content-Transfer-Encoding: 8bit
 
-Hi Hugo,
+When a serial port configured as a console is opened and subsequently
+closed, tty_port_shutdown() skips invoking port->ops->shutdown() because
+port->console is true. As a result, tty_port_initialized() remains true
+and the port's interrupt handler stays registered in the irq subsystem.
 
-Yes, I am preparing a resubmission with your suggestions incorporated. I
-will send this fix as a standalone v2 patch and resubmit the remaining TX
-refill changes as a separate v2 series that depends on it.
+If the underlying device is later unbound or removed (e.g. via sysfs
+unbind), serial_core_remove_one_port() unregisters the console, frees
+uport->name with kfree(), and clears state->uart_port without ever
+shutting down the port or freeing its IRQ. Consequently, the irqaction
+remains linked in the genirq descriptor with action->name pointing to
+freed memory.
 
-Thanks for following up and for the review.
+When another device later requests the same IRQ line, __setup_irq()
+encounters the stale action, detects a flags mismatch, and attempts to
+print old->name in pr_err(), triggering a KASAN use-after-free read:
 
-Regards
-Paul
+  BUG: KASAN: slab-use-after-free in string_nocheck lib/vsprintf.c:648
+  BUG: KASAN: slab-use-after-free in string+0x471/0x4d0 lib/vsprintf.c:730
+  Read of size 1 at addr ffff88802643b8a0 by task syz.0.818/8415
+  Call Trace:
+   <TASK>
+   string_nocheck lib/vsprintf.c:648
+   string+0x471/0x4d0 lib/vsprintf.c:730
+   vsnprintf+0x422/0x1300 lib/vsprintf.c:2949
+   vprintk_store+0x3b3/0xbe0 kernel/printk/printk.c:2307
+   vprintk_emit+0x139/0x6b0 kernel/printk/printk.c:2455
+   _printk+0xcf/0x110 kernel/printk/printk.c:2504
+   __setup_irq.cold+0x3be/0x3f1 kernel/irq/manage.c:1821
+   request_threaded_irq+0x261/0x3e0 kernel/irq/manage.c:2184
+   pcl812_attach+0x1b62/0x2300 drivers/comedi/drivers/pcl812.c:1174
+   ...
+
+Fix this by clearing port->console after unregistering the console and
+calling uart_shutdown(NULL, state) under port->mutex if the port remains
+initialized, ensuring the interrupt and hardware resources are freed
+before kfree(uport->name).
+
+Reported-by: syzbot+843bf2f48f4d12e6682e@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=843bf2f48f4d12e6682e
+Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
+Fixes: f7048b15900f ("tty: serial_core: Add name field to uart_port struct")
+Signed-off-by: Igor Putko <igorpetindev@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 95774b0f1484..030735da6b8c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3210,8 +3210,15 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
+ 	/*
+ 	 * If the port is used as a console, unregister it
+ 	 */
+-	if (uart_console(uport))
++	if (uart_console(uport)) {
+ 		unregister_console(uport->cons);
++		port->console = false;
++	}
++
++	guard(mutex)(&port->mutex);
++
++	if (tty_port_initialized(port))
++		uart_shutdown(NULL, state);
+ 
+ 	/*
+ 	 * Free the port IO and memory resources, if any.
+@@ -3227,7 +3234,6 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
+ 	uport->type = PORT_UNKNOWN;
+ 	uport->port_dev = NULL;
+ 
+-	guard(mutex)(&port->mutex);
+ 	WARN_ON(atomic_dec_return(&state->refcount) < 0);
+ 	wait_event(state->remove_wait, !atomic_read(&state->refcount));
+ 	state->uart_port = NULL;
+-- 
+2.47.3
+
