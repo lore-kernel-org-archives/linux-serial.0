@@ -1,62 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 229C5442B16
-	for <linux-serial@vger.kernel.org>; Thu, 24 Sep 2026 11:11:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 450A73ADB98;
+	Thu, 24 Sep 2026 11:40:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790248267; cv=none; b=BGAOeqG1nqCXX+dI6B11RZ8YpVugGOBylRxXBoqA7BhnXpxrGZSHtyQUxNoKmjSXsg7eVeW7y5LfgpTJfE5Gh+iwKHrDgKGk9DeB7NQc+ivqAgt/FI8OpOU7fT2YZ7iOT43M0Pn78IrPU5j1nMg2rbswsliOZGCivdwE+2MvopA=
+	t=1790250044; cv=none; b=H/RG16kTxPHoyvt3ATuogpF1DPyqMBqXbfrMYdaPu9p4mRkk3HVdLRST8816Uav9NlpfiR8FaKXxbegFOwEEnqxz+G04R/6uJyrShybC1+yG1e6OI6jRV9q0qs6x+ua1m2+pCYVMCqzGnT6YW6z8F7T9VYHTKUEQ0qK9a1CBoQo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790248267; c=relaxed/simple;
-	bh=t5jKFDHySY9d0AXvbasD7yY5egWib+1KrMWZI3h8vyI=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=c7H5YiO1LBJEMsEMndUs8wuqHB4bgB55zZNe4D0uw4BEJMgT87UFP7Ec1sDo8mgUpiw3gPVwpNJqNSe6kbKbcmN2YkzGtEDHERChDuFh7FkmwJ+OxIVhVVrA7Z9bx7R+s5cYt/ETbnehIvRzNQ1UEPoXHQmpe/mLgSbyB5eH4XM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cdPO4ZEN; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790250044; c=relaxed/simple;
+	bh=LI65mtCnBcAAZ+mIIBZkm54ZhyyssX97Tme+Lzrpx88=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=EKZLYOx4+uc33IVWqW3DLWSZ1mk/7SacLLQegCsaqROVCwx68GM+4r9fDLXGXeKZxM93EZ5WODq45DqAccu5PIKtAWTHxa2ItOG2iAg/FdZdQ29+VQ5uGTK1o9i2KC+vgvEIczq5DZbpyKkrK+U90B/uWVb73ShsDy7/EAMTKYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ECWpVYQu; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cdPO4ZEN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9287A1F000FF;
-	Thu, 24 Sep 2026 11:11:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790248265;
-	bh=t5jKFDHySY9d0AXvbasD7yY5egWib+1KrMWZI3h8vyI=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=cdPO4ZENG/A4pPpZzOI3n6aRSWCZkxvHgjAsKp0d6tBLiMaxDbMBtE2H5/0s/BRv7
-	 oTuxOjaM1/vjR2wuQmWQkZSlFi341mqI7dMS6KDnYbOsE6Tz+lyLCXKq1iJPevWFID
-	 jvk7pBk3Xl64mSQjDN4RSLNIzq0NZa+A4SuYuGAxByLZACTLJSGpB59QBRCU0bKTNw
-	 WQes+b/BKWFE/e/+zeggw2UjowBbNd0Q0lVHLip9bTJy9rkEY3RZklqTaJ68/960G+
-	 wyE2eILtPgYdreC5yIfYkyT3iC6FcwWiTOjiXzeFLaVd2nBDJmVfy5/WhoPLcHXcb8
-	 mhCc1K52kyOmw==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: ma35d1: unmap MMIO on remove
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Guangshuo Li" <lgs201920130244@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260924110400.1556396-1-lgs201920130244@gmail.com>
-References: <20260924110400.1556396-1-lgs201920130244@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 24 Sep 2026 11:11:05 +0000
-Message-Id: <20260924111105.9287A1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ECWpVYQu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790250042; x=1821786042;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=LI65mtCnBcAAZ+mIIBZkm54ZhyyssX97Tme+Lzrpx88=;
+  b=ECWpVYQu6WbMY4Z7eR0Kqs9GAPdRd2PEghS9VBvHxRaHpwdc3lrPEio+
+   3PdL4I00uk8KYbv+M3UG29hp69RHNm/1PsNB9sts68TOvWuGxG3MVxr6z
+   J7sjOiA0CdBTMQAc2HP9JR68YyLdpHH5eCRkPyF3j+RIr9I3FrOLaisGz
+   +01WbjSDAyxku7Dh0XJnOh87uVBj5u9mDbcW/BDHDNhK4Czqhct0Sw+VO
+   HRBs9QLWwDLxWCDn9dfOZoDciMDOLKyuScfkV+Ypn2qV7YaH1bVyiTomI
+   5D+jYLZtg/+gUoAz0FxUE6hWP2nTWv4VKqVD8UdjHGEQeh4S5xvT9YyuA
+   A==;
+X-CSE-ConnectionGUID: P7B1x5BxT2qPBuwBgzL3ew==
+X-CSE-MsgGUID: IGviOJjPSiidT9lOZx7V7Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="90243367"
+X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
+   d="scan'208";a="90243367"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 04:40:36 -0700
+X-CSE-ConnectionGUID: YnsHjVvZS/ONfe4m/RJdJw==
+X-CSE-MsgGUID: suiSdnqSSr+9FqtUjJtuXw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
+   d="scan'208";a="277158463"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.183])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 04:40:32 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Thu, 24 Sep 2026 14:40:29 +0300 (EEST)
+To: Hui Peng <benquike@gmail.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] serial: core: reject baud_base values that overflow
+ port->uartclk in uart_set_info()
+In-Reply-To: <20260924065510.2587569-1-benquike@gmail.com>
+Message-ID: <5e819651-e077-d7a1-d950-752e3320a436@linux.intel.com>
+References: <20260924060511.2364717-1-benquike@gmail.com> <2026092417-seducing-stank-af6d@gregkh> <20260924065510.2587569-1-benquike@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-1169037781-1790250029=:1187"
 
-> ma35d1serial_probe() maps up->port.membase with ioremap(), but
-> ma35d1serial_remove() does not perform the matching iounmap(). The probe
-> error path already releases this mapping after disabling the clock.
->=20
-> Add iounmap() to the remove path after clk_disable_unprepare() to match
-> the resource cleanup order used by ma35d1serial_probe().
->=20
-> Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver suppo=
-rt")
-> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+--8323328-1169037781-1790250029=:1187
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+
+On Thu, 24 Sep 2026, Hui Peng wrote:
+
+> In uart_set_info(), new_info->baud_base is multiplied by 16 and stored in
+> uport->uartclk (an unsigned int):
+>=20
+>   uport->uartclk =3D new_info->baud_base * 16;
+>=20
+> While uart_set_info() checks if (uartclk =3D=3D 0) and
+> if (new_info->baud_base < 9600), when new_info->baud_base exceeds
+> UINT_MAX / 16 with low bits set (for example, 0x10000001), multiplying
+> by 16 wraps around in 32-bit unsigned arithmetic to a small non-zero valu=
+e
+> (16), bypassing both uartclk =3D=3D 0 and new_info->baud_base < 9600 and
+> setting uport->uartclk =3D 16 (baud_base =3D 1, well below the required
+> minimum of 9600 * 16).
+>=20
+> Reject new_info->baud_base > UINT_MAX / 16 before multiplying by 16 in
+> uart_set_info().
+>=20
+> Tested in QEMU against Linux 7.3.0-rc3 by calling ioctl(fd, TIOCSSERIAL,
+> &ss) with ss.baud_base =3D 0x10000001 on /dev/ttyS1: on the unfixed kerne=
+l
+> TIOCSSERIAL succeeds (ret =3D 0) and wraps uport->uartclk to 16
+> (TIOCGSERIAL reports baud_base =3D 1), whereas with the fix applied
+> TIOCSSERIAL returns -EINVAL and preserves the existing uport->uartclk.
+>=20
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Fixes: 6eabce6608d6 ("serial: core: check uartclk for zero to avoid divid=
+e by zero")
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM
+> Signed-off-by: Hui Peng <benquike@gmail.com>
+> ---
+> Changes in v4:
+> - Check new_info->baud_base > UINT_MAX / 16 before multiplying by 16,
+>   as suggested by Ilpo J=C3=A4rvinen.
+>=20
+> Changes in v3:
+> - Add missing #include <linux/limits.h> for UINT_MAX and move the
+>   new_info->baud_base > UINT_MAX / 16 check to the uartclk =3D=3D 0 check=
+, as
+>   suggested by Ilpo J=C3=A4rvinen.
+>=20
+>  drivers/tty/serial/serial_core.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index 95774b0f1484..75bb1eaa27e7 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/console.h>
+>  #include <linux/gpio/consumer.h>
+>  #include <linux/kernel.h>
+> +#include <linux/limits.h>
+>  #include <linux/of.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/proc_fs.h>
+> @@ -931,8 +932,13 @@ static int uart_set_info(struct tty_struct *tty, str=
+uct tty_port *port,
+>  =09old_custom_divisor =3D uport->custom_divisor;
+> =20
+>  =09if (!(uport->flags & UPF_FIXED_PORT)) {
+> -=09=09unsigned int uartclk =3D new_info->baud_base * 16;
+> +=09=09unsigned int uartclk;
+> +
+>  =09=09/* check needs to be done here before other settings made */
+> +=09=09if (new_info->baud_base > UINT_MAX / 16)
+> +=09=09=09return -EINVAL;
+> +
+> +=09=09uartclk =3D new_info->baud_base * 16;
+>  =09=09if (uartclk =3D=3D 0)
+>  =09=09=09return -EINVAL;
+>  =09}
+>=20
+
+Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260924110400.1556=
-396-1-lgs201920130244@gmail.com?part=3D1
+ i.
 
+--8323328-1169037781-1790250029=:1187--
