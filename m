@@ -1,114 +1,114 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A013423E9E;
-	Fri, 25 Sep 2026 13:08:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84FC91A6839;
+	Fri, 25 Sep 2026 13:37:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790341700; cv=none; b=LP+Sr4hpnA38jukqvfPSOh3UG5be2Qng47UKcwYY4I/VAsIYlBn2rWicm6UB19wmsx4AZNmmVKwdPiPuHU1rlEDFmmKH/yBKQaAeNwNtnkLa1rnOx7ljLeSB7WS2E3mC4YtsCuiEk/Q3enF1JAgE+NJWNhnHzzl9HD4VzY0UpoY=
+	t=1790343474; cv=none; b=beUViK2f7TrjkgQ9gSKR0IHAE2JTpIG7q0Lu66M9vTS5zbwqBUoGq80BaocbcA6ZR+fPCLqBUAhXDoGr4xWn6NUlMTfazQmRb4EscFLjxyam0RCW9UHkojXxvdJr0W5u+PYYfqp+aHE94u6Ye2ElDSPuZZRu+MWvzcj1AO4dUTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790341700; c=relaxed/simple;
-	bh=OOHQmuyrL25kqkCZqwa8qh0JcuLmeA8y4zINbr00OqQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=DzP6LPu12Hp3WfDAzztWPt/xhnKc/4/+bUCpDq7EWkfFTlZZNS3m+0JkIoa3TAfBWGWYt2rNY8DcY0mzbBJ1Y/GHcETwPHyv2qKKJiQgWXPjdR1sNpZE/+SEsfKfWQzjvIgdwie0oqGSYcmBqhBxi/hj6a/vWB/mhi3vR83Vsc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=sfqUjwlf; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=eortJuak; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1790343474; c=relaxed/simple;
+	bh=no8+looG0WsomoDxrT8Jj4yE0i92R+oAVoUxuTXdUlw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YQf9MJdsyDQ4ht/PpOcDAwqE6iSoH3yAVrekpSulrn9tTFustyVXlFygATUOTvR7IZCgWhRScudLO75vX7cYn7RMuyZZZDY4czb0TH+Xnpz3nnHX+p9+0f11ugaquSbj+5b6B4uQH5P8uTNiTVGPsmJnIKg+YQw3IYQXlALh3ZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F0OvQzGw; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="sfqUjwlf";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="eortJuak"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1790341696;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Rq8dz6RxaneKO4tjFDWwQjCHeL3xL6UCFoY4Jf8dOSM=;
-	b=sfqUjwlfUJX86woRUBAgZoqxPry0KcfURizFvLLSNRYT2azcKQR0Xyp69AooW6h8ABcd/0
-	LTXWSibbFpPyOltKfUXVnrlwzLvdhXEWSOgDB+jk64driOiMDrxKvJTgayakC8ys2XYj0S
-	GfMHJG94hRqnRPjTOxCINejAMSSTjDw4FFv3Z1Un8P/O2dYONaI8zuASEoAHBAgskOH9fs
-	FGRLnOpjbd7ZnzVCNXHreYhhHBdfDL50M+NUHD/BuPYEZeiHey37spS0dIatTFqUeGT0wg
-	8vBMueAPkaR4qmXUGfyLa8UQpm9r2cuE+Y8Rd4tlxrt0eF+u7cm008DUl0dcPA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1790341696;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Rq8dz6RxaneKO4tjFDWwQjCHeL3xL6UCFoY4Jf8dOSM=;
-	b=eortJuakmNBtIDdy4AVTgMl7go5uBY9Q7Dut1Snt+twqGLFzL191I/zIjfxGrIVulEMItb
-	NWBjd/zl8j2qFnAQ==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
- <rostedt@goodmis.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, Samuel
- Thibault <samuel.thibault@ens-lyon.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
- =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
- Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
- linux-serial@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
- linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 0/2] braille: nbcon: Allow using a serial driver
- converted to nbcon API as a Braille console
-In-Reply-To: <20260922072558.98854-1-pmladek@suse.com>
-References: <20260922072558.98854-1-pmladek@suse.com>
-Date: Fri, 25 Sep 2026 15:14:16 +0206
-Message-ID: <87ik3tiim7.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F0OvQzGw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790343472; x=1821879472;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=no8+looG0WsomoDxrT8Jj4yE0i92R+oAVoUxuTXdUlw=;
+  b=F0OvQzGwZmhDXInV55FOvDCtl8wYPALwTgi4IpHux++AnWjmllkulSXg
+   jIdCNjp2HUoMCZRpL2N8oJ+qLFCu7ukY5Qsy/8TqvpBRa0DOEJ5NFM9wU
+   zLrfsD8RD0OipHSFfh+8g4gGyHokyx0E8roKvMc6gy27/2lUVzTRKNK9b
+   7J7udgbucVspTyM403ORW4MZieVg+rQpQI/MdfcFTMMqGpJh6vyNwiTV1
+   G5lmFJyvhyGAay+cWvGx0sTMDRzO3cHfckfy8wAcge1vDtqRk+wEuIDn4
+   icurDRtYBhmZwJ1Lk/IuFHOBJ9p6AbGUzAoPkw9p5o3//n74eUI/9jMCu
+   w==;
+X-CSE-ConnectionGUID: yEg6YvExTv2dPf/36J5aIA==
+X-CSE-MsgGUID: 6tNG9tvDTWeWY5VkMt7i1w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="101300675"
+X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
+   d="scan'208";a="101300675"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 06:37:52 -0700
+X-CSE-ConnectionGUID: LTl/mEoASz21F6/05k7vHw==
+X-CSE-MsgGUID: QXWscqDORNukc7p06SItzQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
+   d="scan'208";a="279042879"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.27])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 06:37:50 -0700
+Date: Fri, 25 Sep 2026 16:37:47 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc: Malathi A <malathi.a2000@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
+Message-ID: <arZ5KxIp55qA6UA7@ashevche-desk.local>
+References: <20260917040511.103232-1-malathi.a2000@gmail.com>
+ <97e4ab26-b147-4cf4-97f9-307903f14e61@socionext.com>
+ <arUvJyvChXXcasSu@ashevche-desk.local>
+ <3ea1f574-ddb5-46a6-9bc1-7a8ea84c54bd@socionext.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3ea1f574-ddb5-46a6-9bc1-7a8ea84c54bd@socionext.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 2026-09-22, Petr Mladek <pmladek@suse.com> wrote:
-> I have been working on v5 [1] of the patchset cleaning console registration
-> code and I found that the system did not boot when I selected a Braille
-> on the command line, for example:
->
->      console=brl,ttyS0,115200 console=tty0
->
-> Bisection went down to the commit d3539347022a ("serial: 8250: Switch to
-> nbcon console, take 2"). I found that the Braille console driver called
-> braille_co->write() internally where braille_co pointed to the uart
-> 8250 driver.
+On Fri, Sep 25, 2026 at 08:32:20PM +0900, Kunihiko Hayashi wrote:
+> On 2026/09/24 23:09, Andy Shevchenko wrote:
+> > On Thu, Sep 24, 2026 at 06:07:37PM +0900, Kunihiko Hayashi wrote:
+> > > On 2026/09/17 13:05, Malathi A wrote:
 
-The Braille console blindly calling (struct console).write() is
-obviously bad. This needs to be fixed. And not just because of the
-8250. Other NBCON drivers already exist mainline and have this same
-issue.
+...
 
-> I added the support for the nbcon console API similar way as we did
-> for kdb [2].
+> > > I'm a bit concerned about the error path in uniphier_uart_resume().
+> > > The clock may have been disabled in uniphier_uart_suspend(), and
+> > > clk_prepare_enable() can fail when trying to enable it again.
+> > > 
+> > > In that case, wouldn't devres try to disable an already disabled
+> > > clock on detach?
+> > 
+> > Isn't there is a guarantee that the .remove() is called with PM runtime on
 
-kdb does not need to care about latencies. The Braille consoles do. I
-will comment more on this in the related patch.
+After reading a code of driver core I see that this is the opposite actually.
+The PM runtime might be off.
 
-> Note 1: I believe that we have a bug in the kdb patch because we call
->         con->write() atomic callback after entering the unsafe mode.
->         But we should do so in the default "safe" mode.
+> > and get, meaning it's called with the enabled clock? But if not the case,
+> > we might use PM runtime force operations (resume and suspend in the
+> > respective cases.
+> 
+> My concern was just the case where clk_prepare_enable() in the system
+> resume callback fails, leaving the clock disabled before devres cleanup.
+> 
+> This driver currently only uses SET_SYSTEM_SLEEP_PM_OPS(), so I wasn't
+> considering runtime PM here.
 
-Why do you believe this? kdb operates within an unsafe section so that
-other CPUs cannot take ownership. (BTW: For kdb the other CPUs are
-supposed to be quiesced, so there should not be any ownership attempts
-anyway. The unsafe section is just an extra precaution.)
+So, in such a case how do you see the scenario when system is resumed (Right?
+Otherwise we can't do anything, like detaching driver from the device.) and
+clock is disabled?
 
-> Note 2: I am not completely sure about the locking. It might be better
->         to use NBCON_PRIO_PANIC in panic().
+> I don't have a strong opinion on whether runtime PM should be involved,
+> but if it guarantees that the clock is enabled before .remove(),
+> that would address my concern.
 
-Why does it matter? printk() is not trying to do any Braille printing
-during panic, so it will not attempt to acquire the Braille console.
+-- 
+With Best Regards,
+Andy Shevchenko
 
->       Also I thought about using con->write_thread(). But I think
-> 	that we have to use the atomic variant because the Braille
-> 	console can be called from printk() via the VT code, aka
-> 	graphical console.
 
-How can it be called from printk()? Even printk() writing to VT is only
-if it is registered as a console. Braille consoles are not registered.
-Please explain.
-
-Note that ->write_thread() is the only NBCON callback guaranteed to
-exist.
-
-John
