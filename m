@@ -1,118 +1,185 @@
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C6445FFCF
-	for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 13:40:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAE924A4824;
+	Fri, 25 Sep 2026 13:48:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790343651; cv=none; b=QfVno+aG3HpEpEgqQ4j1NdDwshGV/ZEvF+yQ5fAhb2+Mxzw2FY2szOXcUQyxvAS4klGLFuy1A0O+rycrX5uGrMOHV4NdwPUgFcZ1vpGVW/7qxltottA4Eif32SvnuvOzK1cOwRBF9gkbny0KJxWEtDUifESxPVE3KEIIzIjU7gQ=
+	t=1790344137; cv=none; b=QdyMM3yudEb5K+vt+QG/EmrqPzrFhYCLxsO6JxGEQ2V8PxAZ1akbkO+V3i61e2I8QZTKCioXG9+HzJtNK2JL+BvqOIJhgkgS0cETeOnOJhoOv29bwuMswJ2BRiZUSZDuKOhoxBKLyq/onB1c8HX+9MNez7JXZJlpr2AKJoiqM5o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790343651; c=relaxed/simple;
-	bh=+PpNwi1vZXqxml2VLergyEeRQSzjLzkApjMsctYbraM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=bRF8hesaydfW+0yo+Fg3AjSpAu4Wpwa/YYD1gzj5z5Ci1XqHokXne0V6MVKlm0nYfwkT7VzqUupK9HhpgubmQgIy9ltDw1WdC7mhP/8AHQzsluAfijgSCJ4tGbAuK4GspG+uq0gC8AjTW14Kx1h36FibniD33mAye8RRvKHPIc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=Rmo5b+ZE; arc=none smtp.client-ip=185.171.202.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1790344137; c=relaxed/simple;
+	bh=77/6/CXC5eEqOAbDf2VL5do3xXWQl21bE1WQ8hsWW4w=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=CANYiwHD7Nht+3jh13c2Ggsr8tJ2Kyqadv9WjCE1XDzj+SvylNXWia5SYYJZYf+XHPhe3vLLcPY07SwCim6VTMH74166DUfSJQC+0gDYn2D+LVTKnxW5p+g4EBiG1mS9jcsDttDG4jd57tETt2O9A8riji9go7GXBf1/3eWHl+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=TIEOfqiF; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=vfZ14JnL; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="Rmo5b+ZE"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id 18DBCC653F3;
-	Fri, 25 Sep 2026 13:41:35 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 29A646073B;
-	Fri, 25 Sep 2026 13:40:47 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C07A210329294;
-	Fri, 25 Sep 2026 15:40:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1790343642; h=from:subject:date:message-id:to:mime-version:content-type:
-	 content-transfer-encoding:content-language:in-reply-to:references;
-	bh=aqURjQmVUYurOv/7ZRWKH6px/QZh0hv5ba7S/b8JXTQ=;
-	b=Rmo5b+ZE3x4/KSY9Ppmxa7mAbK/3NPEmqXeiotMmPhXRAUUvvuMLxfYYezVp7AJAL+8CAn
-	16t+iW2/RJlwl1SgJBWFLqHy5KkAEUKH1UEjOVxgw/MyOAkeEJkYk30s3Age8TpD02aTF3
-	8Yr13FC8qbY4hRZzFWYvmZRL6Ri3HH8AybHnU9fLl30OJrs3Mv43Y4Q8+QsA5PdSiQHtPD
-	LDcawsP3rffpQD9Tb9zLTbUp86VcnmMVhGBcNtLb3ktrAjRx+cT58cEYgT4YXw4FXX12ZL
-	bkx0/3FAUGWVCVAhuCWy1U6giT5eLLRb0/aiuvIKvsglwf7PG8loxTkARR5c6A==
-Message-ID: <908e8237-f17a-46b1-be55-41a3c9146750@bootlin.com>
-Date: Fri, 25 Sep 2026 15:40:39 +0200
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="TIEOfqiF";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vfZ14JnL"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1790344133;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tYq97oBUtqR+GJo2BO+H3oAKBSljqVFGPXkhvtP6W3g=;
+	b=TIEOfqiFnn2bA05tS7ahPWr6OCJYpVsTTbd1idE1tBQ28eaCWu6n2b62YA4ea8SHqGZxXl
+	dF2O+L35o1ZdSz9itUt42YRUpLB+48/aM5dLT5ONq7odRYy68WINrHWqnbk8vYhvC/CBxT
+	/BhNMFTU4T9JcIj1+3CLuqbhVgS/VPL7/Q+YWNRnHYGPtyeK6R9j9e6GO6Hc7OAKPJ8hsx
+	ZgUCGvWYFtDP24v7LEh96qpQxQ/pgA6dhoJnracxMRsLsTKVgnd1vT8rPoZEsl6eqIu6gI
+	BFY5ZE/usZz+POcjKJuOuTMvya7v94wu+icZ5QszlSPi+7zrgSGXb1qPWaL7kQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1790344133;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tYq97oBUtqR+GJo2BO+H3oAKBSljqVFGPXkhvtP6W3g=;
+	b=vfZ14JnLmaRieMbG3YR5Q1yn/4Xrf8ae0Oi8uKfMCxwnXAcJlIYBx5yehqnoQ0Eh/F+dyZ
+	U7RYzo1dmj9sb5BQ==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
+ <rostedt@goodmis.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, Samuel
+ Thibault <samuel.thibault@ens-lyon.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
+ =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
+ Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
+ linux-serial@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
+ linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 1/2] printk: nbcon: Introduce Braille helpers
+In-Reply-To: <20260922072558.98854-2-pmladek@suse.com>
+References: <20260922072558.98854-1-pmladek@suse.com>
+ <20260922072558.98854-2-pmladek@suse.com>
+Date: Fri, 25 Sep 2026 15:54:52 +0206
+Message-ID: <87fqyxigqj.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with
- DEFINE_SIMPLE_DEV_PM_OPS
-To: Li Jun <lijun01@kylinos.cn>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, nicolas.ferre@microchip.com,
- alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
- linux-serial@vger.kernel.org
-References: <20260908113719.4078979-1-lijun01@kylinos.cn>
-From: Richard GENOUD <richard.genoud@bootlin.com>
-Content-Language: en-US, fr
-Organization: Bootlin
-In-Reply-To: <20260908113719.4078979-1-lijun01@kylinos.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain
 
-Le 08/09/2026 à 13:37, Li Jun a écrit :
-> Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
-> This also drops the __maybe_unused annotations on the suspend/resume
-> callbacks, since pm_sleep_ptr() inside the new macro already handles
-> the case where CONFIG_PM_SLEEP is disabled.
-> When CONFIG_PM=y but CONFIG_PM_SLEEP=n (a valid configuration that
-> enables runtime PM but disables system suspend/hibernation), this
-> keeps a completely empty dev_pm_ops structure -- all callbacks are
-> NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
-> 
-Acked-by: Richard Genoud <richard.genoud@bootlin.com>
+On 2026-09-22, Petr Mladek <pmladek@suse.com> wrote:
+> These helpers will be used when calling console->write_atomic
+> in the Braille console driver.
+>
+> The Braille console is not registered as a standard printk console.
+> Instead, it is integrated with the virtual terminal (VT) and writes
+> data using the legacy con->write() callback of the associated serial
+> console driver.
+>
+> When the underlying console driver is converted to the NBCON API, the
+> Braille console needs to use the con->write_atomic() callback instead.
+> This callback must be synchronized by acquiring the nbcon console context.
+>
+> Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
 
-> Signed-off-by: Li Jun <lijun01@kylinos.cn>
+This is not 8250 specific. But I am not sure which commit you want to
+mark as Fixes.
+
+For 62627bf0cadf ("kdb: Adapt kdb_msg_write to work with NBCON
+consoles") there was no Fixes tag.
+
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 > ---
->   drivers/tty/serial/atmel_serial.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 5d8c1cfc1c60..c3880259e3bc 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2723,7 +2723,7 @@ static bool atmel_serial_clk_will_stop(void)
->   #endif
->   }
->   
-> -static int __maybe_unused atmel_serial_suspend(struct device *dev)
-> +static int atmel_serial_suspend(struct device *dev)
->   {
->   	struct uart_port *port = dev_get_drvdata(dev);
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> @@ -2765,7 +2765,7 @@ static int __maybe_unused atmel_serial_suspend(struct device *dev)
->   	return 0;
->   }
->   
-> -static int __maybe_unused atmel_serial_resume(struct device *dev)
-> +static int atmel_serial_resume(struct device *dev)
->   {
->   	struct uart_port *port = dev_get_drvdata(dev);
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> @@ -2996,7 +2996,7 @@ static void atmel_serial_remove(struct platform_device *pdev)
->   	pdev->dev.of_node = NULL;
->   }
->   
-> -static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
-> +static DEFINE_SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
->   			 atmel_serial_resume);
->   
->   static struct platform_driver atmel_serial_driver = {
-> @@ -3005,7 +3005,7 @@ static struct platform_driver atmel_serial_driver = {
->   	.driver		= {
->   		.name			= "atmel_usart_serial",
->   		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
-> -		.pm			= pm_ptr(&atmel_serial_pm_ops),
-> +		.pm			= pm_sleep_ptr(&atmel_serial_pm_ops),
->   	},
->   };
->   
+>  include/linux/console.h |  8 ++++++
+>  kernel/printk/nbcon.c   | 59 +++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 67 insertions(+)
+>
+> diff --git a/include/linux/console.h b/include/linux/console.h
+> index 502d1abe3f50..d780f6de303a 100644
+> --- a/include/linux/console.h
+> +++ b/include/linux/console.h
+> @@ -615,6 +615,10 @@ extern bool nbcon_allow_unsafe_takeover(void);
+>  extern bool nbcon_kdb_try_acquire(struct console *con,
+>  				  struct nbcon_write_context *wctxt);
+>  extern void nbcon_kdb_release(struct nbcon_write_context *wctxt);
+> +extern bool nbcon_is_braille(struct nbcon_write_context *wctxt);
+> +extern bool nbcon_braille_try_acquire(struct console *con,
+> +				      struct nbcon_write_context *wctxt);
+> +extern void nbcon_braille_release(struct nbcon_write_context *wctxt);
+>  
+>  /*
+>   * Check if the given console is currently capable and allowed to print
+> @@ -678,8 +682,12 @@ static inline void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt) { }
+>  static inline bool nbcon_kdb_try_acquire(struct console *con,
+>  					 struct nbcon_write_context *wctxt) { return false; }
+>  static inline void nbcon_kdb_release(struct nbcon_write_context *wctxt) { }
+> +static inline bool nbcon_is_braille(struct nbcon_write_context *wctxt) { return false; }
+>  static inline bool console_is_usable(struct console *con, short flags,
+>  				     bool use_atomic) { return false; }
+> +static inline bool nbcon_braille_try_acquire(struct console *con,
+> +					     struct nbcon_write_context *wctxt) { return false; }
+> +static inline void nbcon_braille_release(struct nbcon_write_context *wctxt) { }
+>  #endif
+>  
+>  extern int console_set_on_cmdline;
+> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+> index d17704fe93ae..a5e053ffe4da 100644
+> --- a/kernel/printk/nbcon.c
+> +++ b/kernel/printk/nbcon.c
+> @@ -2002,3 +2002,62 @@ void nbcon_kdb_release(struct nbcon_write_context *wctxt)
+>  	 */
+>  	__nbcon_atomic_flush_pending_con(ctxt->console, prb_next_reserve_seq(prb));
+>  }
+> +
+> +/**
+> + * nbcon_is_braille - Checks whether the nbcon write context is using Braille console
+> + *
+> + * @wctxt:	checked nbcon write context
+> + *
+> + * Return: True when the write context is associated with a Braille console.
+> + *	   Othrewise, return false.
+> + *
+> + * Context: Can be called in any context but only when Braille console is
+> + *	registered and the struct console could not disappear.
+> + */
+> +bool nbcon_is_braille(struct nbcon_write_context *wctxt)
+> +{
+> +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
+> +	struct console *con = ctxt->console;
+> +
+> +	return con && con->flags & CON_BRL;
+> +}
+> +
+> +/**
+> + * nbcon_braille_try_acquire - Try to acquire nbcon console for braille_write()
+> + *
+> + * @con:	The nbcon console to acquire
+> + * @wctxt:	The nbcon write context to be used on success
+> + *
+> + * Context:	braille_write() for emitting a single buffer on Braille console.
+> + *
+> + * Return:	True if the console was acquired. False otherwise.
+> + *
+> + * Braille console is not registered as a proper printk consoles. Instead,
+> + * it is integrated with the graphical virtual terminal.
+> + *
+> + * This function acquires the nbcon console using priority NBCON_PRIO_EMERGENCY.
+> + */
+> +bool nbcon_braille_try_acquire(struct console *con,
+> +			   struct nbcon_write_context *wctxt)
+> +{
+> +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
+> +
+> +	memset(ctxt, 0, sizeof(*ctxt));
+> +	ctxt->console = con;
+> +	ctxt->prio    = NBCON_PRIO_EMERGENCY;
+> +
+> +	return nbcon_context_try_acquire(ctxt, false);
+> +}
 
-Thanks!
+This is really the same thing as nbcon_kdb_try_acquire().
+
+As you mentioned in your cover letter, it is a bug that
+nbcon_kdb_try_acquire() enters an unsafe section because @unsafe is a
+bool rather than a usage counter.
+
+Since we have limited bits for struct nbcon_state, we need to stop
+entering unsafe within nbcon_kdb_try_acquire(). As I mentioned in the
+response to your cover letter, all the other CPUs should be quiesced
+anyway.
+
+John
