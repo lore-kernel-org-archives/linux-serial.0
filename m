@@ -1,87 +1,58 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A8334C2251
-	for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 15:41:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9C43BE643
+	for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 17:00:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790350897; cv=none; b=P7Xq24KJJaCcwKhVWqxtsLYAAIb31W14EnG/uf5bdORwDKtjovrYQ7lG85/omdsF0GqyebjhA7SIkUZmJgSKd8UpSZbvhGXHjyGs0T5RPzOGtI6X6ZGEac1g0RgBkWtpCp3vdZPRlWDboBjRwIGp6CZyim9dtlC/KLAF45X0mug=
+	t=1790355631; cv=none; b=IEUYjbOxvqBmu6icvMW9RcTV9DD4TP3OEOkqHIeUu3ZtWMgXWrLLSotsT2WDlCodUME0KnwMt1iCyllT6A569wz1Wqsl0srXyyLsi8e0lNRDZ+RhAN6U3inHLXJwwNq3mIvLv5262L9vrGvt5RIQuYMHecjGqtxUSdXKHRM4i2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790350897; c=relaxed/simple;
-	bh=3R6CO7ae6XgFsFygK7xExQ3Bpgoz6R34BruMnh6urg8=;
+	s=arc-20240116; t=1790355631; c=relaxed/simple;
+	bh=trGfb5h3aihrsj132AhSyMKG2jvzs9a9TvuhCmuHUE0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pa5wTo6E05KzmNaWZoBiiaZ4gyPzWGq8AGCVoAFuvK+vO+OEQTeiaxO3H9XtGKWY2DDJZlLu87khXlCoKil7H4sDiYgOQZgjeHZAEHbPlDhKe2Or8bA3C3GSGpwG42aNo17RriElBLhNCYuMFWRYlsyN6LD1nr1yLdgW1ToqSxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Jm4JXdeX; arc=none smtp.client-ip=74.125.225.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=G9+Rwm2gPVT6WH8dkKc4pMOYfzIkTjkobDyDwXVl+sUlbjJBkfs1qY1eUuxO42aeaH+Nc3hlrsmSqm9/nl+0TbRWPAb0lkPRqIvUHTgMi+XjfNm6NAmuvumul1nHkmzZCQGLzJbQkJsyvaXnI8uvEHivm6lMtPHOiSe+6MLDwls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NqRAiY7E; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Jm4JXdeX"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485933b24c3so667399f8f.0
-        for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 08:41:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790350889; x=1790955689; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=N+5FVubCF+Zu5SZLI3VcWmoWT2YqUlyln8LNS2KK86o=;
-        b=Jm4JXdeXXacQBmCIref6ErV+1cb0X8oc12UIr5d6SWYaFHyHLBw/JwVhexrU9pXKi7
-         Wwy+lC5VN4l5MNM0RSXKvetGSrSm/Me+IZRKBkxG27VywRWyhoQSv9jEmYFF6puIVMiy
-         6/IQdG/fvjOK2GhPNzYIyI8dUcJIo+6E7tXmbgdaHjeMpAlYdF9mSI5QVT5GW2k3zJDC
-         7TriBu4pFwCjpAWyEsyniVgjk83/05ErIG8RYk1rpu8fZs/6SwQ0gR+PCMZlBlb8Axlx
-         rJ36pnxXT+IRj3pFOsNMsgSXC/XmkrzYhZ7dKRQdvZ3tohH2D7HS235q2rAIJmk9HKug
-         X6xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790350889; x=1790955689;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=N+5FVubCF+Zu5SZLI3VcWmoWT2YqUlyln8LNS2KK86o=;
-        b=vUsE+S2niqQpoxOAFEVjh5slAp7IWcEnFv7PIG2FQNGX+TqHUNfh0eu9ZpAdYx8yM2
-         +vv98aIo27mslAhUU8NX0ozubISn7AXVIsqCOO9kXMpu7pgMOYqg2OvvFozhbGMzWvMV
-         bp8k5AcgjWmzEBv+hgox+/aEKcxXli8VyIabS7iuRCHXcPWWgQt79WSN0NxzEWpxA8Qs
-         5klVZerbsVeaNxQD9atD0MKKgIsv3Is3aew0dPa7fsEGWFTd2Dqeg1xshgQFJCHx9S4V
-         VnvXC+vQ4aQPEZ2ZUiu74/bxyFd8fEQxa1ls51a7PZmOC2AT/CrKZ+QsPQ7mTkvjxGGk
-         XHdA==
-X-Forwarded-Encrypted: i=1; AKwUvByUbkFYjaHnz+fGpaaqoYtr5dWcrLxaGop2tgA8bpzgefJAD/Y5rnyVsdn0udvTDKpOy+Llqvo/Ag0walg=@vger.kernel.org
-X-Gm-Message-State: AFuF++n6NNZkQ7OJNB++rRFeOhYIGQhnmvs6idKYa9Qs6X6a74NkyEVf
-	D46AtCnq5VuVEbE2+c6sCI1BbDyGYVNqgZM0Wy6NwGGOYx4ywOvo2CwdFJXo6ZbRaGA=
-X-Gm-Gg: AYBFou360UanLNc6UMp6efnrVDA+k5wn4A3gXXqHGSjiPPBUDtKls0mIcZ3P/iApxLf
-	3u7YKyEMgus3f49+ng5SXH1B+0/E6Ce4CHy53hNlfF97DgxBXDAVqyMS1xiMqbdQ33k9uIE/QSK
-	nlK5HxWwf9M9eK7xD8LCIgbJE3m/7LdxtH1keVSWk4qebcBSayzNgtZHjA/om39gtpXEYhI4BVe
-	6JsxZYsQQ+hJ3vzz9lZGU78wXtXgMiUqT39CbYD0+QgvcvPW+P/oIyt954eG1d1wnpdylIWNVi/
-	OQ7PN8Lp1+pTiHoXlQHfdWdPC8zBURHdQ1zu2oNkfRcSDl21T5sbXgrwAMQiKVLCIpW76mnTThF
-	t0VOG7ICi1/NoUrbO0zPwjCOXceLCLGUDT4ywou/m0SbqDnqrjRtztx4z9o5i7AhPFzWetozCpk
-	KUIB1lkMParFe945axNEbxjr6teG/l3/iBLQMmHDScjC+0ptXLSc4QBEoEqsHVqkDNqQhdo4Ox
-X-Received: by 2002:a05:6000:1888:b0:487:2777:6354 with SMTP id ffacd0b85a97d-488717166dfmr14312566f8f.48.1790350888733;
-        Fri, 25 Sep 2026 08:41:28 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4887a2acb4dsm8108936f8f.0.2026.09.25.08.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2026 08:41:28 -0700 (PDT)
-Date: Fri, 25 Sep 2026 17:41:26 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
-	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] braille: nbcon: Allow using a serial driver
- converted to nbcon API as a Braille console
-Message-ID: <araWJhKdVZnfCQcg@pathway.suse.cz>
-References: <20260922072558.98854-1-pmladek@suse.com>
- <87ik3tiim7.fsf@jogness.linutronix.de>
- <araAvkIB5XatHPNk@pathway.suse.cz>
- <87a4p5iejg.fsf@jogness.linutronix.de>
- <araJ-EBntyqOGPkT@pathway.suse.cz>
- <877bk9id6f.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NqRAiY7E"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790355611; x=1821891611;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=trGfb5h3aihrsj132AhSyMKG2jvzs9a9TvuhCmuHUE0=;
+  b=NqRAiY7E5uDF02hg9Va87PUDYZmI0CkJc7OASDzbB9e9JDl0CVzFpl4J
+   Oy/SoHJkekOwYmOG6pdnrohJZUkcKBUzpmAn5gH69KUhZo3unow1kxfmO
+   jVPwluheeOGE6cfO7p21cLDUMs64k3xur2zNCNLzsV9WU3xohHdMv1yMo
+   AH1v1fpadrfKJp5N4icgu+/eRksk7eV+fA8ExYm/0OAqlL7cCzO3myEDx
+   1DQ5PqlVprFGfWbg5xabg3HFcK+8rhRmoH537eOYXsS8Swx8PidIM0Ffu
+   nYRYwlV8HZvcW8iJb8cIUCJqh2mkjVDKYePp7JrQ24U9Zpm6oSzpMAELn
+   w==;
+X-CSE-ConnectionGUID: RskuDU2rSlS3B7tsFAL4MA==
+X-CSE-MsgGUID: mLe3GdpIR7GM3IcOvGC7jA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11916"; a="112931455"
+X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
+   d="scan'208";a="112931455"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 10:00:08 -0700
+X-CSE-ConnectionGUID: trxOHcR0T9mkE3PUghq/gA==
+X-CSE-MsgGUID: qazJTVfLSqaQ5iNF8wCLoQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
+   d="scan'208";a="272970527"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.27])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 10:00:06 -0700
+Date: Fri, 25 Sep 2026 20:00:04 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: sashiko-reviews@lists.linux.dev
+Cc: linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] serial: 8250_port: properly handle runtime PM in
+ IRQ
+Message-ID: <araolO22LVK_Nq1-@ashevche-desk.local>
+References: <20260924122549.668680-1-andriy.shevchenko@linux.intel.com>
+ <20260924122549.668680-3-andriy.shevchenko@linux.intel.com>
+ <20260924124042.1C4AF1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,36 +61,73 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <877bk9id6f.fsf@jogness.linutronix.de>
+In-Reply-To: <20260924124042.1C4AF1F000FF@smtp.kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri 2026-09-25 17:11:44, John Ogness wrote:
-> On 2026-09-25, Petr Mladek <pmladek@suse.com> wrote:
-> >> > This shows that braille_write() is called form printk() even when
-> >> > braille_co is not in console_list. It is called via vt_console_print()
-> >> > because the graphical console driver (ttyX) is registered.
-> >> 
-> >> But isn't that a bug? I thought Braille consoles were not supposed to be
-> >> handled by printk(). Even in this new series you added that exact
-> >> comment.
-> >
-> > I believe that it is not a bug. I understand it the way that the
-> > Braille device should show everything that is shown on the virtual
-> > terminal. It should show the printk() messages when they are
-> > printed there by the related console driver.
-> >
-> > It is just that printk() is only one source of messages shown
-> > on the terminal. The vt code maintains what is displayed.
+On Thu, Sep 24, 2026 at 12:40:41PM +0000, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+> - [High] serial: 8250: missing port->dev NULL check in serial8250_default_handle_irq()
+> --
+
+Isn't this a preexisting issue since serial8250_rpm_get() is implemented this way
+https://elixir.bootlin.com/linux/v7.3-rc3/source/drivers/tty/serial/8250/8250_port.c#L517
+?
+
+Yes, only for platforms with UART_CAP_RPM, but it doesn't matter, they have no
+special handling for the port in this case. (And pm_runtime_get_if_active() actually
+works properly on those which do not set that flag as we only check pm_status for 0
+and don't care for the other cases.)
+
+> commit 128116d52224b04215dd65b2f4f799e8c14bdec7
+> Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > 
-> But how do you register "the terminal" so that printk messages appear
-> there?
+> serial: 8250_port: properly handle runtime PM in IRQ
+> 
+> This commit updates the 8250 driver IRQ handler to explicitly check the
+> runtime PM status before processing the interrupt. It returns immediately
+> if the device is powered off, assuming it is a shared interrupt.
+> 
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > index c0bcc0742a60c..1e62460b19ab9 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -1878,13 +1878,22 @@ EXPORT_SYMBOL_GPL(serial8250_handle_irq);
+> >  
+> >  static int serial8250_default_handle_irq(struct uart_port *port)
+> >  {
+> [ ... ]
+> > +	/* if driver suspended, return, probably shared interrupt */
+> > +	pm_status = pm_runtime_get_if_active(port->dev);
+> 
+> [Severity: High]
+> Will this trigger a kernel panic if the port has no associated device? 
+> Some ports, such as legacy ISA serial ports, might have a NULL port->dev. 
+> Calling pm_runtime_get_if_active() with a NULL pointer would unconditionally 
+> dereference it.
+> 
+> > +	if (!pm_status)
+> > +		return 0;
+> >  
+> >  	iir = serial_port_in(port, UART_IIR);
+> > -	return serial8250_handle_irq(port, iir);
+> > +	ret = serial8250_handle_irq(port, iir);
+> > +
+> > +	if (pm_status > 0)
+> > +		pm_runtime_put_autosuspend(port->dev);
+> 
+> [Severity: High]
+> Similarly, does this put operation need a check to ensure port->dev is valid
+> before passing it to pm_runtime_put_autosuspend()?
 
-I used on the command line:
+Same as above. We check pm_status. It can't be positive if above case failed
+already.
 
-	console=brl,ttyS0,115200 console=tty0
+> > +	return ret;
+> >  }
 
-The serial console driver is not in console_list. But it shows
-all printk() messages because tty0 is in console_list and
-the messages are shown there.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Best Regards,
-Petr
+
