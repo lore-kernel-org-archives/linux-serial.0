@@ -1,133 +1,127 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pz2-f12.google.com (mail-pz2-f12.google.com [74.125.228.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9C43BE643
-	for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 17:00:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFCF33CB2FA
+	for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 18:15:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790355631; cv=none; b=IEUYjbOxvqBmu6icvMW9RcTV9DD4TP3OEOkqHIeUu3ZtWMgXWrLLSotsT2WDlCodUME0KnwMt1iCyllT6A569wz1Wqsl0srXyyLsi8e0lNRDZ+RhAN6U3inHLXJwwNq3mIvLv5262L9vrGvt5RIQuYMHecjGqtxUSdXKHRM4i2I=
+	t=1790360135; cv=none; b=mgeLH2chrh72Ako6/VNqUWGm/DQbVDe5JR0sAZuVXHYuPU0LbPb4jHvFoRkFYTKQaeSuBoEXXArIv6M+/qLTOLgsB4zt3XBGj7DpC+YU1DX6OiexTcpQoIqmO5eUC5EnBB8LXSKwuXBNiUokZuPfZ9uN6QUHbwCDQi6c1J7sH0s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790355631; c=relaxed/simple;
-	bh=trGfb5h3aihrsj132AhSyMKG2jvzs9a9TvuhCmuHUE0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G9+Rwm2gPVT6WH8dkKc4pMOYfzIkTjkobDyDwXVl+sUlbjJBkfs1qY1eUuxO42aeaH+Nc3hlrsmSqm9/nl+0TbRWPAb0lkPRqIvUHTgMi+XjfNm6NAmuvumul1nHkmzZCQGLzJbQkJsyvaXnI8uvEHivm6lMtPHOiSe+6MLDwls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NqRAiY7E; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790360135; c=relaxed/simple;
+	bh=D/qNw9UAh8WrokAnq0jEmYXVQQVZjClahEe4SFSygBs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=d4bRZN5oVAGuYJqsp4+qbsoFrZjdm1yKlxoGsPObKNYFWUcm23xWpz9IWJ4obzT5RS9UrXW/vWpNshY9kC8dpHBN9SzZ9zgFmTkNGdQfMbn1/L81i1iVw0SYMM8HIldPDt5+slfB2rE2NNgNq7l2yplVXCj1MDO02YmdRB0v1A8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EZ0ZiPMP; arc=none smtp.client-ip=74.125.228.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NqRAiY7E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790355611; x=1821891611;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=trGfb5h3aihrsj132AhSyMKG2jvzs9a9TvuhCmuHUE0=;
-  b=NqRAiY7E5uDF02hg9Va87PUDYZmI0CkJc7OASDzbB9e9JDl0CVzFpl4J
-   Oy/SoHJkekOwYmOG6pdnrohJZUkcKBUzpmAn5gH69KUhZo3unow1kxfmO
-   jVPwluheeOGE6cfO7p21cLDUMs64k3xur2zNCNLzsV9WU3xohHdMv1yMo
-   AH1v1fpadrfKJp5N4icgu+/eRksk7eV+fA8ExYm/0OAqlL7cCzO3myEDx
-   1DQ5PqlVprFGfWbg5xabg3HFcK+8rhRmoH537eOYXsS8Swx8PidIM0Ffu
-   nYRYwlV8HZvcW8iJb8cIUCJqh2mkjVDKYePp7JrQ24U9Zpm6oSzpMAELn
-   w==;
-X-CSE-ConnectionGUID: RskuDU2rSlS3B7tsFAL4MA==
-X-CSE-MsgGUID: mLe3GdpIR7GM3IcOvGC7jA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11916"; a="112931455"
-X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
-   d="scan'208";a="112931455"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 10:00:08 -0700
-X-CSE-ConnectionGUID: trxOHcR0T9mkE3PUghq/gA==
-X-CSE-MsgGUID: qazJTVfLSqaQ5iNF8wCLoQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
-   d="scan'208";a="272970527"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.27])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 10:00:06 -0700
-Date: Fri, 25 Sep 2026 20:00:04 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: sashiko-reviews@lists.linux.dev
-Cc: linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] serial: 8250_port: properly handle runtime PM in
- IRQ
-Message-ID: <araolO22LVK_Nq1-@ashevche-desk.local>
-References: <20260924122549.668680-1-andriy.shevchenko@linux.intel.com>
- <20260924122549.668680-3-andriy.shevchenko@linux.intel.com>
- <20260924124042.1C4AF1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EZ0ZiPMP"
+Received: by mail-pz2-f12.google.com with SMTP id d2e1a72fcca58-85469f204f6so632428b3a.2
+        for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 11:15:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790360133; x=1790964933; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=hSjAv0OuWBW4Au8AUzMyyhP6gGploPWcJ53nZfLOcdc=;
+        b=EZ0ZiPMP4MJdu+kZmZ8yGxo6kxCBg/MFhIG3q6L+jQlSzDtExNps3PgnxdzWqTnngm
+         brdBBo4bs1r1o8Tz3y1ySjNE3lPuqA54eFLZqfJFx7/2UPwYO7QU4AFkXjlZK9Ghx8gH
+         oogGIQqbfDp3BcZMhsDc50FCDMY6XHb+uYUZNP0F0RaZMDQbSSOZaj1gJDnmqFLGx29l
+         ObmCaa7TXB7Vfhu6dERyd3lUhce3DUn1y0l7sgVRI7v9XrtqXa1qsyROOPUfKuWISOZQ
+         jAh/ZenFDL3z8BGiHk0bbjfP5QGMevrDR9pqFfkPn+4TJlP0dtqqPZuiD+kslBNYPU6L
+         onTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790360133; x=1790964933;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=hSjAv0OuWBW4Au8AUzMyyhP6gGploPWcJ53nZfLOcdc=;
+        b=wAa4xHs2xU0Z37gOOLLgNjpcgg64iBW1lx46NgfhXnTh3uxkvDx5CW9mNjiv7aVthB
+         +hDDWPjoJ+Dvj+2vZRLYWZL+qP7h5YbkD1B+ogRytW3+Uqe3N/z28lHXT0YDcgpFiOgn
+         L8jEt2KJdWOCY+NCGMp+Ml12PX3R7xAmnlADPHCdOjWNDGMpkcfIK2Z80nON9lrebAt1
+         DG3z24HqgXLzwMR/vZeDQRKNxLZP/0Ufi1vgkrnY0uYZ85VHdPXcCiUeMySaPKI6OjuJ
+         OhVX356bQ286djiKEFE+qsdnjVL+N4RuyF+BdQUbNuZwDc96RGCrG5xVFYGYnBzO54vE
+         j+Cw==
+X-Gm-Message-State: AFuF++lVKiWjx6gvsylxeD4nzqGApbWBMfXYKGG2wtYK8lA43+VDQZh4
+	w4QYUTpQcIctZ29PGoac/jXRZ09p954UWYaUfxsci6mwR2Xu9TIrGPQOHY2Pnw==
+X-Gm-Gg: AYBFou1+wkLtx4VlipAyCh1CrbS+3pcDFePttQWjEZCV+VxqxchHT6eKRTUVOP2jJfM
+	Ws6+lPZUelEn3KHvZhlt4w6PiHGt3ZblC6WufVcR1XAC9logRjH5v4IELxvhLUts5ik1yQ9fbZD
+	zbQ3uDvydYf9QFbcGjc8jL6ODR2kffClrupECZYdXmcvyJyk3u8oV9RI/Qkd8PWqSaWnV4PiN3J
+	sE3GK1rlh2iR9lIHUT3dsDyzbXfSn63t0KorF2JKwmPDYfU1wStlRQRbynBT+yATT1FplZrO8ZJ
+	iLBfWqbnpVoE5/GzNNHU5zbZZBgSZBva2d1r6c+gHg9zJKmnuXOvL3fkXNNpDaSBNnZUfKxhV1r
+	zzxXoXb4iqYmbe6GtHylJs7RufimuiPkUlASDSoeZ2LJBbedi2RNiWO4gl7LHeJxZE1Lanje/m6
+	xyJd0E+svVSDPwKkuu216QDHe83By2IRi/ZQCz0r+JL38Z+Irj6GVM6iM3YWlzH+WsXPbt5OZzO
+	Lk8vuiOlxcr3iq9ifchHHp8Xr9Bdmg3A10CmJ4veDGUbMe55dXIqYYMaFEq9mBm4nxFp+GMdTXH
+	/9Z09xTH4xCWM5WR6Rnhv1YbMh8/GjVtayBfHO6DvtTMw0vs
+X-Received: by 2002:a05:6a00:440d:b0:87b:3bcc:bce2 with SMTP id d2e1a72fcca58-87e9b69f75bmr5713648b3a.33.1790360132795;
+        Fri, 25 Sep 2026 11:15:32 -0700 (PDT)
+Received: from ryzen.lan ([2601:644:8000:7a86::e34])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-87fea18ff77sm1605440b3a.14.2026.09.25.11.15.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2026 11:15:31 -0700 (PDT)
+From: Rosen Penev <rosenp@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rosen Penev <rosenp@gmail.com>,
+	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS)
+Subject: [PATCH] serial: cpm_uart: use irq variable for platform_get_irq()
+Date: Fri, 25 Sep 2026 11:15:30 -0700
+Message-ID: <20260925181530.52953-1-rosenp@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260924124042.1C4AF1F000FF@smtp.kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Sep 24, 2026 at 12:40:41PM +0000, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> - [High] serial: 8250: missing port->dev NULL check in serial8250_default_handle_irq()
-> --
+struct uart_port has its irq member as an unsigned int, which does not
+work when platform_get_irq() returns an error.
 
-Isn't this a preexisting issue since serial8250_rpm_get() is implemented this way
-https://elixir.bootlin.com/linux/v7.3-rc3/source/drivers/tty/serial/8250/8250_port.c#L517
-?
+Use a local irq variable to handle this and write to struct uart_port's
+irq member when platform_get_irq() succeeds. On success, it returns an
+IRQ >= 0, which is representable by unsigned int.
 
-Yes, only for platforms with UART_CAP_RPM, but it doesn't matter, they have no
-special handling for the port in this case. (And pm_runtime_get_if_active() actually
-works properly on those which do not set that flag as we only check pm_status for 0
-and don't care for the other cases.)
+Fixes: 831603b3e8aa ("serial: cpm_uart: replace irq_of_parse_and_map with platform_get_irq")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202609251916.1XlVHLwd-lkp@intel.com/
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ drivers/tty/serial/cpm_uart.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-> commit 128116d52224b04215dd65b2f4f799e8c14bdec7
-> Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> serial: 8250_port: properly handle runtime PM in IRQ
-> 
-> This commit updates the 8250 driver IRQ handler to explicitly check the
-> runtime PM status before processing the interrupt. It returns immediately
-> if the device is powered off, assuming it is a shared interrupt.
-> 
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > index c0bcc0742a60c..1e62460b19ab9 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -1878,13 +1878,22 @@ EXPORT_SYMBOL_GPL(serial8250_handle_irq);
-> >  
-> >  static int serial8250_default_handle_irq(struct uart_port *port)
-> >  {
-> [ ... ]
-> > +	/* if driver suspended, return, probably shared interrupt */
-> > +	pm_status = pm_runtime_get_if_active(port->dev);
-> 
-> [Severity: High]
-> Will this trigger a kernel panic if the port has no associated device? 
-> Some ports, such as legacy ISA serial ports, might have a NULL port->dev. 
-> Calling pm_runtime_get_if_active() with a NULL pointer would unconditionally 
-> dereference it.
-> 
-> > +	if (!pm_status)
-> > +		return 0;
-> >  
-> >  	iir = serial_port_in(port, UART_IIR);
-> > -	return serial8250_handle_irq(port, iir);
-> > +	ret = serial8250_handle_irq(port, iir);
-> > +
-> > +	if (pm_status > 0)
-> > +		pm_runtime_put_autosuspend(port->dev);
-> 
-> [Severity: High]
-> Similarly, does this put operation need a check to ensure port->dev is valid
-> before passing it to pm_runtime_put_autosuspend()?
-
-Same as above. We check pm_status. It can't be positive if above case failed
-already.
-
-> > +	return ret;
-> >  }
-
+diff --git a/drivers/tty/serial/cpm_uart.c b/drivers/tty/serial/cpm_uart.c
+index 39f54bb7b485..ca0acccd3dd8 100644
+--- a/drivers/tty/serial/cpm_uart.c
++++ b/drivers/tty/serial/cpm_uart.c
+@@ -1517,6 +1517,7 @@ static int cpm_uart_probe(struct platform_device *ofdev)
+ {
+ 	int index = probe_index++;
+ 	struct uart_cpm_port *pinfo = &cpm_uart_ports[index];
++	int irq;
+ 	int ret;
+ 
+ 	pinfo->port.line = index;
+@@ -1524,14 +1525,15 @@ static int cpm_uart_probe(struct platform_device *ofdev)
+ 	if (index >= UART_NR)
+ 		return -ENODEV;
+ 
++	irq = platform_get_irq(ofdev, 0);
++	if (irq < 0)
++		return irq;
++
+ 	platform_set_drvdata(ofdev, pinfo);
+ 
+ 	/* initialize the device pointer for the port */
+ 	pinfo->port.dev = &ofdev->dev;
+-
+-	pinfo->port.irq = platform_get_irq(ofdev, 0);
+-	if (pinfo->port.irq < 0)
+-		return pinfo->port.irq;
++	pinfo->port.irq = irq;
+ 
+ 	ret = cpm_uart_init_port(ofdev->dev.of_node, pinfo);
+ 	if (!ret)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.55.0
 
