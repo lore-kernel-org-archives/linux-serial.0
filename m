@@ -1,112 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42F644C754A
-	for <linux-serial@vger.kernel.org>; Fri, 25 Sep 2026 18:59:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B9C3ABD9F;
+	Fri, 25 Sep 2026 19:05:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790362799; cv=none; b=Cz2G0adz6tNR6ytMY/bCDp0cUM6Tl4eMZOlyF4J4bi8xibR0xMuBXDyllp5+nxC8//koIdAKgcmZEEDEQfFFWNX0nxxDUyjaCghy0feJ7tQ3L0IxgBovfDT6CUx8UfF17eaWyUBKlmXHxwTSVj5672bRZmiPHU5YP0d+OXeS4FQ=
+	t=1790363145; cv=none; b=N1hOOqb74uzQ4O2TX6KdjB28jmc0OZkV93ZVl1W/iav1MH+otkCqhJUeKyOFJWNb9jk3UtxSkTp3OScZbRzsKvrfldAXevICYkkSM3uQRnOq7SNEfvjWsX2hulfFlYMSWTr8tflF5SsgthHQHnY9EcuFNFxAsEar8+DQlG3u3go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790362799; c=relaxed/simple;
-	bh=KRq4RMdDu6Uo8DHyLNd0M3yKz1Cxvy4TJdNE8dpCHe0=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=eHSbcruAs9S2Xaj2iFU/eYvCNbYvxbFGJ1nur8XQU0VchAryZCQUlkza3A5HmbaTlRFo4GA8tRaxshaNU9T75dXzUYUC4qDBAaE2fMja68D/XohPP4tHHtckg6wu32X2aYGpFXulUpil3ChM7wTp5Lyf9j8rltftmsu+H5pLmdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VXcD/hYU; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790363145; c=relaxed/simple;
+	bh=elI3ndbbhBmvASENdTlkY+6JNvUJYZefSPOf7MVUxGU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ZMKE94wkI89UWCpXW4j7iapROhGUxEPZo4OFxWzzqFQIU4uUUElTtuzy2tO5zhGdSn2alPjbY/svF7l7ZL9Pieu6G18+fNTJ9Zz+7HMhF4c+ChFbwaMoVQxO6v6IPv1maEpxzh4blSb5QZbR8ryBo5DRe93gzpA4RfHxcE/DLEs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=LLNi/p8V; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=urVUsIHD; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VXcD/hYU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDD6E1F000FF;
-	Fri, 25 Sep 2026 18:59:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790362797;
-	bh=xjjOPDSJCa3jXlgOwyRtDTiOL4tuvhbLhru9HBBappM=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=VXcD/hYUDflJSx50AIIu0qc7P0OmjpyHoJwCfkK8Ol2Qci5bNZxSc/IsPedd+GN+m
-	 Fx07qC7hP7NMED5tSYBEgAk/vGTgsZ/DkU7G/9QyDqCu+oV6qJgvhSuPtsJp0J+gZ/
-	 da8UvqtwIWEHEh3b9nJ8TfifGi8PP/pgp8ceNmtp8c9iU3PgZ8Rh6n+UcZ7Q3loCUC
-	 EIkR0FuqagBtKOZ+xvDDqEbuUNKbiKHxRAR9rtb+eLfT24NG8aQEw+QNUdsO+iEf4n
-	 ehZcZ8hOtkLc4wchbTHDpF3yLMMg3RzFrMl2Jefrrz+0DI4uKolMVcXhlsqoSEOYXZ
-	 Kcz6Aeg9ljm7g==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: hvc: use modern IRQ acquisition API
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Rosen Penev" <rosenp@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260925185011.61259-1-rosenp@gmail.com>
-References: <20260925185011.61259-1-rosenp@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 25 Sep 2026 18:59:57 +0000
-Message-Id: <20260925185957.CDD6E1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="LLNi/p8V";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="urVUsIHD"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1790363142;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lBxMnJ+dOew+Q/sTY5BE4f8DMTfXtPkBbGx83N82kOE=;
+	b=LLNi/p8VmXKZOXhheB6RGP6zQiVRasPvxp+PEghhdLHwpjDpBcsy3/iB87SXE7m6/UZ7/f
+	rMXjARjkfGGys6XB+kdyJnGK/BSVCTWEGPBCw3P57WZhmO3ENgmqNSOh66gwi++MvVke8Q
+	A/ox/VDj01Sq7sQhlbpGA8BS3nm3r9CIzDRaeOvL7xHXtqH6o/yfUF5nz2zH9nFBCDZgST
+	Gk+oYMxgHcHfdEG9V6RvD6Fsh4eMiP/RQCC0wWKeGRBbJDSJqCJ/amrNkK5BTH/HkrQp+U
+	y+DjQe8EOyvOvYV1VLBKnauPX9e109KtdLQk+E0VxJAS/m3+DGAK+fa7TDx8OQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1790363142;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lBxMnJ+dOew+Q/sTY5BE4f8DMTfXtPkBbGx83N82kOE=;
+	b=urVUsIHDkdrTbGZnIQ+79YCQ5HwEHVdL+/AmPPOjcPn1allodZw1bwEBneVi09nOqZyT8A
+	RtvBhgDS+hkuqECA==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
+ <rostedt@goodmis.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, Samuel
+ Thibault <samuel.thibault@ens-lyon.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
+ =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
+ Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
+ linux-serial@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] braille: nbcon: Allow using a serial driver
+ converted to nbcon API as a Braille console
+In-Reply-To: <araWJhKdVZnfCQcg@pathway.suse.cz>
+References: <20260922072558.98854-1-pmladek@suse.com>
+ <87ik3tiim7.fsf@jogness.linutronix.de> <araAvkIB5XatHPNk@pathway.suse.cz>
+ <87a4p5iejg.fsf@jogness.linutronix.de> <araJ-EBntyqOGPkT@pathway.suse.cz>
+ <877bk9id6f.fsf@jogness.linutronix.de> <araWJhKdVZnfCQcg@pathway.suse.cz>
+Date: Fri, 25 Sep 2026 21:11:41 +0206
+Message-ID: <87ld8pp2wq.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] tty: hvc: permanent probe failure on -EPROBE_DEFER due to state co=
-rruption
---
+On 2026-09-25, Petr Mladek <pmladek@suse.com> wrote:
+> I used on the command line:
+>
+> 	console=brl,ttyS0,115200 console=tty0
+>
+> The serial console driver is not in console_list. But it shows
+> all printk() messages because tty0 is in console_list and
+> the messages are shown there.
 
-commit 3ec0d2af78ba8c496b4a45223b1fb5f9769284c2
-Author: Rosen Penev <rosenp@gmail.com>
+Got it. So from the perspective of printk() we have a legacy
+console. The legacy console is (mis)using the write callback of a
+console driver to write to the underlying device. And since the driver
+for the underlying device is NBCON, these contexts do not match. But
+actually it is more complicated than that, because the console driver
+callback is being used for all vt updates, not just those from printk().
 
-serial: hvc: use modern IRQ acquisition API
+Since the 8250 driver (and so far all NBCON UART drivers) use the port
+lock for the ->device_lock() callback, it would be enough to do:
 
-This patch updates the hvc_opal driver to use platform_get_irq_optional()
-for acquiring its interrupt. It adds handling for -EPROBE_DEFER and other
-negative error codes returned by the new API.
+	con->device_lock();
+	con->write_thread();
+	con->device_unlock();
 
-> diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
-> index 402da9e7c5346..ce726b8b5ab00 100644
-> --- a/drivers/tty/hvc/hvc_opal.c
-> +++ b/drivers/tty/hvc/hvc_opal.c
-[ ... ]
-> @@ -209,8 +209,10 @@ static int hvc_opal_probe(struct platform_device *de=
-v)
->  		dev->dev.of_node,
->  		boot ? " (boot console)" : "");
-> =20
-> -	irq =3D irq_of_parse_and_map(dev->dev.of_node, 0);
-> -	if (!irq) {
-> +	irq =3D platform_get_irq_optional(dev, 0);
-> +	if (irq =3D=3D -EPROBE_DEFER)
-> +		return irq;
+if it is NBCON. That would at least provide proper locking (port lock)
+for the underlying device during runtime. The only downside is that
+panic could deadlock if the panic occurred while a CPU is holding the
+port lock.
 
-[Severity: High]
-Can this early return cause a memory leak and permanent probe failure on re=
-try?
-
-Earlier in hvc_opal_probe(), the driver allocates a struct hvc_opal_priv and
-saves it in a global array:
-
-drivers/tty/hvc/hvc_opal.c:hvc_opal_probe() {
-    ...
-    } else if (hvc_opal_privs[termno] =3D=3D NULL) {
-        pv =3D kzalloc_obj(struct hvc_opal_priv);
-        if (!pv)
-            return -ENOMEM;
-        pv->proto =3D proto;
-        hvc_opal_privs[termno] =3D pv;
-    ...
-}
-
-If platform_get_irq_optional() returns -EPROBE_DEFER here, the function
-returns immediately without freeing pv or clearing hvc_opal_privs[termno].
-
-When the driver is later re-probed, it will see that hvc_opal_privs[termno]
-is no longer NULL and fail with -ENXIO:
-
-drivers/tty/hvc/hvc_opal.c:hvc_opal_probe() {
-    ...
-    } else {
-        pr_err("hvc_opal: Device %pOF has duplicate terminal number #%d\n",
-               dev->dev.of_node, termno);
-        return -ENXIO;
-    }
-}
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260925185011.6125=
-9-1-rosenp@gmail.com?part=3D1
+John
