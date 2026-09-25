@@ -1,69 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4077C43D4FD;
-	Fri, 25 Sep 2026 05:34:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA1E047884D;
+	Fri, 25 Sep 2026 09:44:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790314468; cv=none; b=k03qhohs211h9xSwBb/j5KIrZQBYwNXH9uJ9KCIw9vwux6UZbaeQadLKqh/xarhAff4/vNLyEi+8g1KTRSrfz67L8xy8oLR16UD5PB3WEgi3Q0A35drMLTRoMsM+rL9+qzkKpXG9lKLh+JcltL2DPu8bkS5mii/tIm0AEhxu4ig=
+	t=1790329450; cv=none; b=qR6FdbP6NR7wP5BLx9tgPCe/CVP8bIfQfaAPBXxQSKRW6MAcRg0QbWxD3Ziha1huLjETjz8LsNkep0XtfZkml7uxaaL2au7CZz8NE8EmGdtVRmPh/bY2N+PaqrKFTE4AxVOWlFyqGTZlv2VGxvV93fMTKk/rlpT4YJTpDyu7M1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790314468; c=relaxed/simple;
-	bh=LbpmQwG4eSE8HnRC/kPz/tuqdnXSZJrx1Pv46QRmb9g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kx7gdyxB+8uSNbZ/HTc6BY2TUgvQiVOLfex0d6xGSeIFmrw/oo5YNcY4OkEuWFhJQ+l2Sk+xvzE5Q6JRgev/brb/Vgyutu5E1Bi0MKufr7GkFGXNJufLllnDjtihPfc03PAz7MQynOt8N8iIK+vUPWMxmKVFSCoPWcRLXLsZf3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=L8Q3vfz1; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790329450; c=relaxed/simple;
+	bh=+uGEF6cyfJn7ZvbN7VEIpK5iV5SqkmmzHZTYvxJYZdo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rh4xiPrO1QJEAXjoW/bzKBlhnIEgMvJpfwsS0ZeyLr09YcBmy1lVPKwO51v5NV4UmGNjjW8YIckisMgOlWW/9nFEUA16U9BtkrjggbeZT+th/uiMSZAJBJmTwfAVsICKowmyFGwwmxD9gjlzDaDfdmza2J1sGK/gQ82jiWSijxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WbWYKcvn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="L8Q3vfz1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5200D1F00898;
-	Fri, 25 Sep 2026 05:34:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790314467;
-	bh=8zzICicSr3ntC0JiYlfp5Zs65sdMNqRjV4S+blinW1k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=L8Q3vfz1v2JiJ91i08SGpDP8nFjlF8xoURgiV3N4iYgqRdSucVcV6du9XLjwvvL2y
-	 gJjkZf3OsU53jMQT29mSZNIjujTF6pzclokoHOA1Gi7a+5YS5Bxk/shjaWb1aqYUBG
-	 G7kwfcMbWpXEFm2P7JuLebIfupmPib90TJtR1ubU=
-Date: Fri, 25 Sep 2026 07:34:24 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Igor Putko <igorpetindev@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WbWYKcvn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 171DF1F000FF;
+	Fri, 25 Sep 2026 09:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790329449;
+	bh=YS8ouHTwp4S5wzYIznZ88aVy+hsr6GnxP3ITQR6cDs0=;
+	h=From:To:Cc:Subject:Date;
+	b=WbWYKcvnW5TS1O6+/xBGoURtyDC7fWtx4NckSzljYQyCm3b6brfHjQJ/3ZUKY5OQ5
+	 ABWofpVmwlykTgTvozWt6GPltCLrHI/jlnaeiPGET1retxngRdVdPT9cKDYu+tGwRh
+	 hAbJDXnZISX6r8ZxrG5ZfTdBIYJoXB+KhioOh3BqqcpHg/yTUpJSVcmDszzbmedqAS
+	 sakttmckTI36x6joZem/P9vL/tx35Qn8aFeUSL+17xUFupjmJnwtIjVwppnClrynfq
+	 Jri0IEX0rqQUZ3txUBpwUhT0iDe/Pe/R0XddYl6ykhNmzQKbhybKJW1VT3HxpH4ffp
+	 DNCqBtL6oxn5Q==
+Received: from johan by xi.lan with local (Exim 4.99.5)
+	(envelope-from <johan@kernel.org>)
+	id 1xA2TO-00000000DqJ-2X2B;
+	Fri, 25 Sep 2026 11:44:06 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	syzbot+843bf2f48f4d12e6682e@syzkaller.appspotmail.com
-Subject: Re: [PATCH] serial: core: shut down initialized port on removal
-Message-ID: <2026092502-staple-surgery-df48@gregkh>
-References: <20260924192224.3175-1-igorpetindev@gmail.com>
+	Johan Hovold <johan@kernel.org>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] tty: add break_wait kernel-doc
+Date: Fri, 25 Sep 2026 11:42:22 +0200
+Message-ID: <20260925094222.18303-1-johan@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260924192224.3175-1-igorpetindev@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Sep 24, 2026 at 10:22:24PM +0300, Igor Putko wrote:
-> When a serial port configured as a console is opened and subsequently
-> closed, tty_port_shutdown() skips invoking port->ops->shutdown() because
-> port->console is true. As a result, tty_port_initialized() remains true
-> and the port's interrupt handler stays registered in the irq subsystem.
-> 
-> If the underlying device is later unbound or removed (e.g. via sysfs
-> unbind), serial_core_remove_one_port() unregisters the console, frees
-> uport->name with kfree(), and clears state->uart_port without ever
-> shutting down the port or freeing its IRQ. Consequently, the irqaction
-> remains linked in the genirq descriptor with action->name pointing to
-> freed memory.
-> 
-> When another device later requests the same IRQ line, __setup_irq()
-> encounters the stale action, detects a flags mismatch, and attempts to
-> print old->name in pr_err(), triggering a KASAN use-after-free read:
+Add the missing kernel-doc description for the new break_wait field in
+struct tty_struct.
 
-How can a different device request the same irq line on a real device?
+Fixes: c7e9bff9b4b3 ("tty: abort break signalling on hangup")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/20d75a7a-2e7a-484f-a267-c21db82dd922@infradead.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ include/linux/tty.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-How was this all tested, with "fake" devices?
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index ad4e4a835f90..833bb7b97ceb 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -168,6 +168,7 @@ struct tty_operations;
+  * @write_wait: concurrent writers are waiting in this queue until they are
+  *		allowed to write
+  * @read_wait: readers wait for data in this queue
++ * @break_wait: wait queue for timed breaks
+  * @hangup_work: normally a work to perform a hangup (do_tty_hangup()); while
+  *		 freeing the tty, (re)used to release_one_tty()
+  * @disc_data: pointer to @ldisc's private data (e.g. to &struct n_tty_data)
+-- 
+2.55.0
 
-thanks,
-
-greg k-h
