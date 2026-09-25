@@ -1,87 +1,38 @@
-Received: from sonata.ens-lyon.org (sonata.ens-lyon.org [140.77.166.138])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3118341F37F;
-	Thu, 24 Sep 2026 23:53:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.77.166.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4077C43D4FD;
+	Fri, 25 Sep 2026 05:34:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790294032; cv=none; b=WQqScfFotL7D++Z2uZS+JDpllQSfLUtpaPBmOvHyiVf9P1PnL2LpJOZpn8bxkCrPK3MQdk4YWJ7fmH+gQ1bx3n605awRfKsXvfdxIRJrl8ciSpFZjJVdkNJ2vB1nEDuclmjG0dNAQ7ITdBZMOBbF8F88Uctf5Ov3UZgdYmlrgLs=
+	t=1790314468; cv=none; b=k03qhohs211h9xSwBb/j5KIrZQBYwNXH9uJ9KCIw9vwux6UZbaeQadLKqh/xarhAff4/vNLyEi+8g1KTRSrfz67L8xy8oLR16UD5PB3WEgi3Q0A35drMLTRoMsM+rL9+qzkKpXG9lKLh+JcltL2DPu8bkS5mii/tIm0AEhxu4ig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790294032; c=relaxed/simple;
-	bh=Y/moXp8VReBpllKRS1BPunMWKD4QIxlzxHHvCbVzkEA=;
+	s=arc-20240116; t=1790314468; c=relaxed/simple;
+	bh=LbpmQwG4eSE8HnRC/kPz/tuqdnXSZJrx1Pv46QRmb9g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ttJckq3mOD4FV8S19NTACTPK/F3HHv9S1Rrs6h8P/tM45Tfd10nI6dVR985S5os2sTowhK53S7kDW0tIcgvAnJz5GXILpFU3nAINgQ9xFl5WGuWrbQYsRTqVqKkUtiY4Ql9qNWUjPbkH4Tk0I55sMF5oGjNXUpc8KK4l4by1WYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ens-lyon.org; spf=pass smtp.mailfrom=bounce.ens-lyon.org; dkim=pass (2048-bit key) header.d=ens-lyon.org header.i=@ens-lyon.org header.b=H2/gmDFb; dkim=pass (2048-bit key) header.d=ens-lyon.org header.i=@ens-lyon.org header.b=gaCZN1Q2; arc=none smtp.client-ip=140.77.166.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ens-lyon.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce.ens-lyon.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kx7gdyxB+8uSNbZ/HTc6BY2TUgvQiVOLfex0d6xGSeIFmrw/oo5YNcY4OkEuWFhJQ+l2Sk+xvzE5Q6JRgev/brb/Vgyutu5E1Bi0MKufr7GkFGXNJufLllnDjtihPfc03PAz7MQynOt8N8iIK+vUPWMxmKVFSCoPWcRLXLsZf3k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=L8Q3vfz1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ens-lyon.org header.i=@ens-lyon.org header.b="H2/gmDFb";
-	dkim=pass (2048-bit key) header.d=ens-lyon.org header.i=@ens-lyon.org header.b="gaCZN1Q2"
-Received: from localhost (localhost [127.0.0.1])
-	by sonata.ens-lyon.org (Postfix) with ESMTP id 19E75A492E;
-	Fri, 25 Sep 2026 01:53:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ens-lyon.org; s=dkim;
-	t=1790294029; bh=Y/moXp8VReBpllKRS1BPunMWKD4QIxlzxHHvCbVzkEA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H2/gmDFbEoKmDKXPJ57r3MUaiDptf8okbfZAuW5NLjgoqaEnq04xYrZxZPb6THVM0
-	 jHYasiv2E0vOsSYosTpbqXY4g3mBfQQ4AMNqzQQbS5HHJBjx+dBuHOUAiQJIdR7t42
-	 KQo1KkTLtlsb45NuTrMyxm+ad3hVP393+7wo8zLMHvIsTmfXxUTm8NykYrRSdTpn3C
-	 DY3WSVwtGApKf4M6zjw52JIJ+tPqSpxDmydfPPobrl8jnuhWl0nH9+azITmpiX4lnH
-	 tUR7NPfVYBzX0AX0qbYlW0vITNOusYkxSFgKGYgegJD0RsDzBc3OYV6NYtL7dJVTcO
-	 hZXuSdc4KhgFQ==
-Received: from sonata.ens-lyon.org ([127.0.0.1])
-	by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rkLvCz5llTAr; Fri, 25 Sep 2026 01:53:49 +0200 (CEST)
-Received: from end (lfbn-bor-1-980-210.w90-120.abo.wanadoo.fr [90.120.173.210])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by sonata.ens-lyon.org (Postfix) with ESMTPSA id 05E42A4903;
-	Fri, 25 Sep 2026 01:53:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ens-lyon.org; s=dkim;
-	t=1790294028; bh=Y/moXp8VReBpllKRS1BPunMWKD4QIxlzxHHvCbVzkEA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gaCZN1Q2P3z0OkbgW31eeLPLFZHZ90Uupkrz9rdHaaIl/qh21XHEMkE8LQrbx4ypQ
-	 t1vgvngIq/qlAxe7hjWYcXfewoWxKcZHeuDOpdTibMYxAAl+2Kl35ZO4nx9pwtsNlt
-	 HUjWtgkwyNlx2tyHGPLNZaUSMeSFM+39V0ABKgK7mL5SBkpvkqr+LchnJ0isbiSvKq
-	 kgjb1ZYHapYoAqn1J1heMFh1vBBZKaB0jQugWQeeZd9S2qdgtLpWux+TXTJIkC/6KJ
-	 JYN/bfyXuHUdaToWSjbvAZTTPsUN+7pGMVk4oIZPI9cjr6g/gxa1phbv1CgeJIS4ik
-	 H8Ha0wt+Hfi3Q==
-Received: from samy by end with local (Exim 4.100)
-	(envelope-from <samuel.thibault@ens-lyon.org>)
-	id 1x9tG7-000000001wr-0Q46;
-	Fri, 25 Sep 2026 01:53:47 +0200
-Date: Fri, 25 Sep 2026 01:53:47 +0200
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-To: Petr Mladek <pmladek@suse.com>
-Cc: John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
-	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] braille: nbcon: Allow using a serial driver
- converted to nbcon API as a Braille console
-Message-ID: <arW4C9TYane57IGN@end>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Petr Mladek <pmladek@suse.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
-	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
-References: <20260922072558.98854-1-pmladek@suse.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="L8Q3vfz1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5200D1F00898;
+	Fri, 25 Sep 2026 05:34:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1790314467;
+	bh=8zzICicSr3ntC0JiYlfp5Zs65sdMNqRjV4S+blinW1k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=L8Q3vfz1v2JiJ91i08SGpDP8nFjlF8xoURgiV3N4iYgqRdSucVcV6du9XLjwvvL2y
+	 gJjkZf3OsU53jMQT29mSZNIjujTF6pzclokoHOA1Gi7a+5YS5Bxk/shjaWb1aqYUBG
+	 G7kwfcMbWpXEFm2P7JuLebIfupmPib90TJtR1ubU=
+Date: Fri, 25 Sep 2026 07:34:24 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Igor Putko <igorpetindev@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	syzbot+843bf2f48f4d12e6682e@syzkaller.appspotmail.com
+Subject: Re: [PATCH] serial: core: shut down initialized port on removal
+Message-ID: <2026092502-staple-surgery-df48@gregkh>
+References: <20260924192224.3175-1-igorpetindev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,24 +41,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260922072558.98854-1-pmladek@suse.com>
-Organization: I am not organized
+In-Reply-To: <20260924192224.3175-1-igorpetindev@gmail.com>
 
-Hello,
+On Thu, Sep 24, 2026 at 10:22:24PM +0300, Igor Putko wrote:
+> When a serial port configured as a console is opened and subsequently
+> closed, tty_port_shutdown() skips invoking port->ops->shutdown() because
+> port->console is true. As a result, tty_port_initialized() remains true
+> and the port's interrupt handler stays registered in the irq subsystem.
+> 
+> If the underlying device is later unbound or removed (e.g. via sysfs
+> unbind), serial_core_remove_one_port() unregisters the console, frees
+> uport->name with kfree(), and clears state->uart_port without ever
+> shutting down the port or freeing its IRQ. Consequently, the irqaction
+> remains linked in the genirq descriptor with action->name pointing to
+> freed memory.
+> 
+> When another device later requests the same IRQ line, __setup_irq()
+> encounters the stale action, detects a flags mismatch, and attempts to
+> print old->name in pr_err(), triggering a KASAN use-after-free read:
 
-Petr Mladek, le mar. 22 sept. 2026 09:25:56 +0200, a ecrit:
-> Note 3: I do not have any device to read the Braille output so I am not
-> 	sure if the output is correct. I just checked the output on
-> 	the serial console and it is a bit suspicious. It looks like
-> 	it prints every message N-times when N is the length of the string.
-> 	And it adds one character in each iteration, for example:
+How can a different device request the same irq line on a real device?
 
-That is actually expected: braille displays don't show the whole log of
-what was printed, it only shows the last print. Getting it printed on
-each character output is expected if characters are printed one by one,
-the device will show the text as it gets printed.
+How was this all tested, with "fake" devices?
 
-Thanks for fixing this!
+thanks,
 
-With regards,
-Samuel
+greg k-h
