@@ -1,133 +1,59 @@
-Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0755383987
-	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 17:33:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E93535C684
+	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 17:39:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790444016; cv=none; b=lZ6pGWZ2V0eirFNABqI8RIRx/56nMXFGipw/5zpF2d5x0Ml110DeMmnp7BY838FDjKIAgUkNv00bqNn7XG90tTmD88f7fcfIvf3DkYv1OAlbwv7KaAfRDjCOUwmx3EzUkLrPN7QbUZW6obQFL8FR7jUOfCyqRezdrvgQwrKyOVk=
+	t=1790444358; cv=none; b=proI6nimQkhwu1Yn5V15y5IX1Y9IUwVljYGVS/oCu4+ytRmGxRP28ilNgCeqZHrcT5UBkSTMpCmIU5tmatyUiP6BjEC2o4dJBds+mTnSfu23gMijVUTGGthMAp1qcu5ShnAsmrLbsDqUyP0Y9HNrkTFSDxIsS6XgwNq44YkFl0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790444016; c=relaxed/simple;
-	bh=bG4MyftsdfdbaBykmDiiNfkzsWo9nnA1ngVnb4LMZM8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ma94RghfPMHGoFWeK2Z+slD/AkcKRUPtIsDhjPxkIhK8ZFg8jCW69oY7/mUJIzGf+pbyrUEa1ED32DWgrFahdOlb2Y2XXiuSH1vzmxppf4pFIXzRb40YV8V8AyRCL669TC0Lgd4IxEggjtlVqzr8tTfNQyzeiVcYGmjl7h5rNo4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ivEIc817; arc=none smtp.client-ip=74.125.225.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790444358; c=relaxed/simple;
+	bh=qmvBuryyQStNQpKGy8zOF30XuzNpkTZze2nW1e1h0J4=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=YnKIY2MN0p3yd6ceQeP+Pb7tU7gyaVQq0dKyTocHR6N7ImDwJ7KUJibZqk/f+Qw+x4IWhggOQa1osyqELd4m7LyjTcJzYGOWpi1KPBiQn7byAmiwXH861gvWbwhALJ/cSkT6p5X1ph2OFyv6cap9JMuWpqntHPrwAnovSci2fv4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CCmZ2Abm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ivEIc817"
-Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-48879d4fd8aso1004031f8f.2
-        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 10:33:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790444007; x=1791048807; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=iPw5CBxQDFpFXhy4vfMV2uncUCg9SZRmO0QrAN2QOdE=;
-        b=ivEIc817Nrhsx8H6zckRL3AMyp6wCnxfhrQkSLJcJgRgU6q/awHL2kbs/H9giNSkOn
-         aqGAH4w/Kx67BixNnZU4ahXzYlJMZqYoZPxeg+H8oUvBlqR7TUVXI0s1UDp2u5lPSTuO
-         3nAEvmF4uS9+QBd8RikJZylI5a1BnuBDLbeQDIXQb/UECTjKXl0DQGRb4IUbcADjNoA1
-         Rtyz3FSA19TWzoRT23diGMqKBZqsbbHStqhvA1YLvUC5oiAIucjsqh9OAelSVsRYRqhH
-         XaaI2x+fRMZOUGqpbqLZLfqqB7VJzyqN8fRFqtCcLJJcvkgRmEzh9IKo12LA+D1jxk8f
-         ikxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790444007; x=1791048807;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=iPw5CBxQDFpFXhy4vfMV2uncUCg9SZRmO0QrAN2QOdE=;
-        b=WKOkfCKzz8g8utXsYS5u2ljNwr9qXUV6hpTYmFApebHeA097myw+Q2sQH4U9a1q6Av
-         rqvClOB3SjpLi83L+w0I/dJGHtw3kc1I66zyudrwTDAnP0EXJwPNzo8lHsO84Lh7Gb/o
-         1hNhD/c92rUwybRdUa22gDXu6xE+FbP/RUhAjhE1LJVP5BTZQhe7v/AR3gqGRP6Is/wn
-         nlABwCXWuUdbVq4V+tG5x8idfP61NZZFn+NeAezBGrq3UOF+k9wKyCyowZTTEy75tjw5
-         hAgUGBty+b5frk4luWz3Deegt4qqz+YIjEGyecyZ/khnPdfDZTMIWqHXtcgVH9zdt6z0
-         LfRg==
-X-Forwarded-Encrypted: i=1; AKwUvBw1kLPkVzoNljcxdVKt0kEV8QrPd4N54j7t/fk5cSssuNxcYfb6iw1xE5qqgqtgk7m1NT2woIhxBohddi8=@vger.kernel.org
-X-Gm-Message-State: AFuF++lnr+M98QFyn+zsPfoaLFNeo5a992XIddrUVhz6wsn6Tluo4psp
-	ipYzyr2USszLMwTM4HAlnFq20VSUeE0G/NF9M3vShRb1ahvujeUX4ru8
-X-Gm-Gg: AYBFou2tDw6m8rmPTmKkt6XkKrI5sSbCIZu5Yi4bIZA0VyK0JIui0e/KTkA9FR0ps33
-	T0Tqj+gu7se5lL64olHjVot8qp6fZipMChd+jfd+56EDVuZCInBpMCXaHVViw7wo/RdqsBNpYZV
-	Xe8MriMmGzb41OeadYryhnXs6N0Ou4gA/8luU+9Vjkwc05QPVC6iArO3I9ZcrWHpqokPSxyNciH
-	GFzKQgxHRLM9bxxUY3ILY8OycT/1IfXQycy/BY3UjwnnlqjEyqxNeMdWqC4vGRmYFMpSv7oqaxv
-	oMf2t9VQstsSd8krupQCRBvKfXGChVxtEPYicbuyWkM9m0HLCbpllvyclYD6cvnupibp5zDWNm/
-	PyZlw8fgJki8XJOo+DA1lRWfz+qTTdrXYvfbJ8VHVEXXrcbowvmeW/nAGxOFG4M00b+HCn2F89R
-	AsGNJqTBkiFyHrDqWICc2imrghm5H8iFAQn3wJdLIzFbeJBTK3FlTBOx2GVQALED5oakX+Tp2nz
-	qarXutxWWMvuv4dHtBNIPovKZcOAZ+hnNNFCNuC6K5aLSIs/epFkjBJyYIZDt7ZR78=
-X-Received: by 2002:a05:600c:1c1b:b0:49f:bc28:e8b1 with SMTP id 5b1f17b1804b1-49fe66d6c9bmr166175805e9.14.1790444006652;
-        Sat, 26 Sep 2026 10:33:26 -0700 (PDT)
-Received: from moosama76.. ([102.44.245.127])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5de4de4sm246200495e9.8.2026.09.26.10.33.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Sep 2026 10:33:26 -0700 (PDT)
-From: Mohamed Osama <mohamed.osama189110@gmail.com>
-To: ojeda@kernel.org
-Cc: boqun@kernel.org,
-	gary@garyguo.net,
-	bjorn3_gh@protonmail.com,
-	lossin@kernel.org,
-	a.hindborg@kernel.org,
-	aliceryhl@google.com,
-	tmgross@umich.edu,
-	dakr@kernel.org,
-	daniel.almeida@collabora.com,
-	tamird@kernel.org,
-	acourbot@nvidia.com,
-	work@onurozkan.dev,
-	longman@redhat.com,
-	lyude@redhat.com,
-	linux-block@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 5/5] rust: sync: lock: use DropGuard
-Date: Sat, 26 Sep 2026 20:33:15 +0300
-Message-ID: <20260926173315.56772-6-mohamed.osama189110@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260926173315.56772-1-mohamed.osama189110@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CCmZ2Abm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDAD81F000FF;
+	Sat, 26 Sep 2026 17:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790444357;
+	bh=qmvBuryyQStNQpKGy8zOF30XuzNpkTZze2nW1e1h0J4=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=CCmZ2Abm25CSzHHj9iY+400Vqes8ih9pUiATQEU+RnptSMiukafK/vpJvFWMpIg27
+	 XEkJ0v2Ra4oT647FBE642I06vzX1xja/W48/bE1Au5DTFes3BZnKfoKYVDgKuOdMSM
+	 ZcdQdTgQmh8j/ZL88clI2tsGfp2KBGb7DpwjUTNfFkgKLh0HTmW6/nzNM1yGWBVLu0
+	 +Ipqllk2fR7NpFGiyeokxABStPVlq6HK0JkIPLZBEzHD8oRNURZToiRQO5FANSGfFm
+	 sD4Ynbs7aupA7APG/LjB6O0W5oiakFvrcS3Dv1VCOOA2j1YaeCnYNi7SP8KJr/8uIz
+	 bPjw/eGKdWgxQ==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v3 1/5] rust: add DropGuard KUnit test configuration
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Mohamed Osama" <mohamed.osama189110@gmail.com>
+Cc: linux-serial@vger.kernel.org, ojeda@kernel.org, gary@garyguo.net
+In-Reply-To: <20260926173315.56772-2-mohamed.osama189110@gmail.com>
 References: <20260926173315.56772-1-mohamed.osama189110@gmail.com>
+ <20260926173315.56772-2-mohamed.osama189110@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 26 Sep 2026 17:39:16 +0000
+Message-Id: <20260926173916.DDAD81F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Replace the ScopeGuard usage in the Rust locking implementation with
-DropGuard.
+> Add a KUnit configuration option for testing the Rust DropGuard API.
+>=20
+> The option follows the existing Rust KUnit test configuration pattern and
+> defaults to KUNIT_ALL_TESTS.
+>=20
+> Signed-off-by: Mohamed Osama <mohamed.osama189110@gmail.com>
 
-The guard preserves the existing scope-exit cleanup behavior while using
-the DropGuard API from the Rust kernel memory module.
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-Signed-off-by: Mohamed Osama <mohamed.osama189110@gmail.com>
----
- rust/kernel/sync/lock.rs | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/rust/kernel/sync/lock.rs b/rust/kernel/sync/lock.rs
-index 10b6b5e9b024..15f9cbe76c8d 100644
---- a/rust/kernel/sync/lock.rs
-+++ b/rust/kernel/sync/lock.rs
-@@ -7,8 +7,9 @@
- 
- use super::LockClassKey;
- use crate::{
-+    mem::DropGuard,
-     str::{CStr, CStrExt as _},
--    types::{NotThreadSafe, Opaque, ScopeGuard},
-+    types::{NotThreadSafe, Opaque},
- };
- use core::{cell::UnsafeCell, marker::PhantomPinned, pin::Pin};
- use pin_init::{pin_data, pin_init, PinInit, Wrapper};
-@@ -242,7 +243,7 @@ pub(crate) fn do_unlocked<U>(&mut self, cb: impl FnOnce() -> U) -> U {
-         // SAFETY: The caller owns the lock, so it is safe to unlock it.
-         unsafe { B::unlock(self.lock.state.get(), &self.state) };
- 
--        let _relock = ScopeGuard::new(||
-+        let _relock = DropGuard::new((), |_|
-                 // SAFETY: The lock was just unlocked above and is being relocked now.
-                 unsafe { B::relock(self.lock.state.get(), &mut self.state) });
- 
--- 
-2.43.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260926173315.5677=
+2-1-mohamed.osama189110@gmail.com?part=3D1
 
