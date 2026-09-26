@@ -1,74 +1,86 @@
-Received: from mail-oo2-f36.google.com (mail-oo2-f36.google.com [74.125.231.164])
+Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85A4E370D41
-	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 16:35:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.164
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD9F93783C8
+	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 16:35:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790440514; cv=none; b=C/+q+tqakQEO75UPyDzPyZpsotrVBQcEMZZgb/adhza2yx4AOxV5xPE7E6JtK/0e4WbdTUqnnxKEFQXNKMuTeUtRNok2IN1tY1QNR9VPg+C/GFlgQjbKoqrYXD+it+WKBwQzd5OlfWkSVKm3m7zOcxjEHV1+pnd5rHa9CjZeVpA=
+	t=1790440558; cv=none; b=Nt+el04UBUtsR+7zggCUHMUY3eV3RWJoXKrBdiofDY+akGd3pi1HV3SDQgbhYNW4smVku6fun/Z6NUOID5ASr44z4cpN2JyPl3r51Hlu+Il7j4x5DqyTskFbPq23UXt5gsYPx4652zZPkX+FaIkZZkZ4QyKrX/Kljw3X4GOcVgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790440514; c=relaxed/simple;
-	bh=ZVg9bxqPxMdWSnt3gVsmlNcem8zaoQtHe+2Osgh9lqk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=F/3MDoeq3D61QzKxZPa8Sz6GjkBi7ClOuojBkznMmTXGuQM1pwwNm59+lRX2lkx4yLDqTIi2/OB0ybVlRSojpLL+eQMg043YGCj8YdOsbfx3CgMMh7WRRhNr8qRmlEmwMI8/Fgfj77wJ6mcouyAhTJWmffD1WOhO089Kvx3KncY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aaokSbxU; arc=none smtp.client-ip=74.125.231.164
+	s=arc-20240116; t=1790440558; c=relaxed/simple;
+	bh=z8vSwDiyBuH4tzUOiupCYNY/tZi7PjC0kRQc4aVjvic=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=O0pXinIMhWqHoHhq6jlYun/b4G9Pri8LG8owz01fIoB1V49OYzrJBIB+fX9VpNAahUIilk4D/RYawLU88YexObGfY74njVuVXUgpvdKJtduCJ21r29DAL1LEws0OJ9Weo/ySs7PsusVEOpTLTIS1u0EMHq6z9ZOIW/K4doCVG4Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QUqbIWy3; arc=none smtp.client-ip=74.125.225.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aaokSbxU"
-Received: by mail-oo2-f36.google.com with SMTP id 006d021491bc7-6d77b3455bbso220935eaf.0
-        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 09:35:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QUqbIWy3"
+Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-4885a1480a2so984912f8f.3
+        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 09:35:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790440510; x=1791045310; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1790440555; x=1791045355; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=teOH1PedO9uc8B4td73aFmI743ZwvMaIOd8MGTSTScY=;
-        b=aaokSbxUETeqcgg14lRimL4c/M4RngAb2JZihXdrLNUiT4F+AFWFAq+bCmI7/lwFYy
-         XrsAwSb/M5q545gDryj6WU25SNHIfqi5mSXjXCDEDTsI2/Z0UstwREV+l2voSI3Yx465
-         ixIsk6SHjFm5oAGG7bPljrXnb1VMUYrH8kF9awQEXx4smymlDAVa9JjwVPhQUXUoMApx
-         SsLH9SZ5yQ026ypG6hjBHbxR0rCLxchDPUUEYCUDXQsddfuAVr5Z4ksEuIWRkJFOQRcB
-         hpEA+h3UA2z/8edWIIbebs/roz6l8HMgsdhykOWhRLRMZnC9SIO8i0zVRxZ+gGubD9ER
-         +Qkw==
+        bh=5pryPTOD4LdiLlKyD0wq6thMQRx5prfhqZidoKen+48=;
+        b=QUqbIWy3KG+J+BTI5VvbU+iLioymBJ/bwf3G8mPllDPCUQfuqAosok/upZILgjvCCh
+         9pRlTX0XjfNM2hWtl0d+Y5+1VI5WaoEsEZPrbC8MN9TfB0gfvA2NEUt/MpwOvKFu60wG
+         ilDH+Kl71zLQmYN5jbOJw6wiqzg75k/+PAtZ4bInFrnP1NrNe68hL5InYA/MwgZFQ6S9
+         J0aWEYXne82AwYVk9s+6GWyrD8Pbf20syT9W3rmWpcIfE3jnB3WoRbbfXLU3FenDBHWX
+         5j2/ObEQeRBjRIJ2EO1ZSvY2urifxNqaghykzJ6X0jTVXaEoDicQKm+jCx79Up+fYdDY
+         7B3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790440510; x=1791045310;
+        d=1e100.net; s=20260707; t=1790440555; x=1791045355;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=teOH1PedO9uc8B4td73aFmI743ZwvMaIOd8MGTSTScY=;
-        b=b5ThXQjKEkymM08d6nqJcnMws4ZxRUni2p/iSYdylWBQv8roE0MHyBatdKq4rtFOq9
-         z/S0KKjVY7OlEAR3e7MgVPN0SSIY/fOKC2gyRnP+mMhY7A+yFitEXf4ahAwPO9l1av/j
-         zKR0ESvHNPwHo79U7+QNKcQyHQniMHVyKWLOyYJFzFJH85KSlMMlJxnOwUW32U415ES2
-         7uUZTyIJ0ADLQTOEEadDzQJAu7ROXNhc9+cVKyeVzpFAvoudam1PRIkP6u9pqzgn7zT1
-         YXmB1zC1pLNY4by4mk7nsH2HH2kgxxHPlYMYxHHAlL1mXcN4hYtYHPrq7kSvQeaiRAJ6
-         eQFw==
-X-Forwarded-Encrypted: i=1; AKwUvBz7s7LbGYWKg0XTiZc6rQQpO7SppYI18IQvxANm39KJ6o/g2S8oJFyC8rqvJA48T99uQBQrwrL7KPL3BLQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++lXCcp+U63/IoJtVZguJ9EdMJjJqmILnxYX04PNuHmzbV6zMdyb
-	wekpHzhFSalB9quHJBFpqg2iVGlutgtGaqft2C8pe/e1DecSuhaLPo6coAbeCjBv
-X-Gm-Gg: AYBFou2TDjjYU0hLu3suYLxJK/PWpEqsPDMLqICcdLtjlfUGl5/xMZ411xEtNb1jieH
-	j12CE4obU+tIhFavZ5LeI30Eixt8Zz+DwWeAeWl7JotUXYUh+dnwj1AKejr0oBEo81MdT2j5ERX
-	aqmXlDCRpy+kG7P7RWi/sQY/Nmr1N4Yq7WOSI4c+exlKsaurTTdMuMwF8YHf16P9gEELJPk+K38
-	+QnVnGXF/Q64gA7ZMVGGbDgNwuUD0yxtwIN9S4EZbgz+5QWeF+hVBl8uyScDkOCi8hFqlMbWJvf
-	Ba/CsJyeJBfZDP+TQaifA/CZ4z9oNjgiRW3JBHr/oUF80aBMSzGdGslFXeR02qZ7sCj1F/svxHN
-	EkeK3+efxiszLCQl9JV6GtsAwBVlD64RI2sxiSnWXB+EgqWHdCMkWAi35PP02abQqKqP3me/nWb
-	obkrLA9+O76tApdkKQdeOXyTnpm9cKdQtS6oqRDgK5iF+ppaSOL9Ws71W+r+QCERY80a9eM09w/
-	Q/e8IP9/gw+nDIzGbsgP4mmJFuE+0w/dYwcIm52
-X-Received: by 2002:a05:6820:1524:b0:6ba:1356:2038 with SMTP id 006d021491bc7-6d440eea797mr10087219eaf.65.1790440509673;
-        Sat, 26 Sep 2026 09:35:09 -0700 (PDT)
-Received: from archlinux.lan ([136.34.156.120])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4933501183bsm4462176fac.5.2026.09.26.09.35.07
+        bh=5pryPTOD4LdiLlKyD0wq6thMQRx5prfhqZidoKen+48=;
+        b=JVwQNJ+WHJjb4osMxBwAe7jopRN0nZtSiwfspjQgdwQWo4C7m09zSEnCYv7A3FIgsw
+         lSnHinib3NaOYDK2XileX9FvWGcKubifmnQhvWPBEpntZBddyFIE5oIJDXVPqR8b0EoG
+         LG9gFHz9RifJ5PP4naj+iQTtlEcE1Ew0GvY7SkA6ex8Jj5N43X7HTOy0aM9iU5ke8naE
+         OYx3c4CTiNTXa5lheLlOwOp3e9cGRIDmP4DFwZT3zpDzB6BpGx+vlApLAMsEA/zwVTAC
+         eZrs7rqjouzrNH3oehEwOfQMqeUKTe0BxNnzfpyKsqREh2p8ZCwbTsmb1jOT/c6uPq/O
+         RyOQ==
+X-Forwarded-Encrypted: i=1; AKwUvByzwHbLFGzDNdDCQziMtFuiazjiItad0q2yxhjdJFlp2BneqDX2XWFpyAwUqhkj41RLy6E0YkKVA0KazWQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJM2eswNkYJxnKKAoFKoC1eekLb8pLjHYdwXhgagywAffBSnjEX
+	9pTSLPaFrH/DRuCPdwuWXCSVQL6XhF69sEaH8DiHf7Gzmi+XkKeeIQ2/
+X-Gm-Gg: AYBFou15KNiFwHb9j7sVTVZJnEhw/PYaNmtkOK4cNaTBg2sjWqwbVcMeEhKXlGEonu2
+	Kxa9U3XZoOCT7oBR5vkFLsFBH+VlnhCr/mUewwKGiMHiq6Dt3TRp9VugGPxTG5eDlO1d0BvwzfJ
+	hJ7pxy71t2nrT92SzI347P0PWcTDlzg2CR6l9ScEiL3305tI6nf+CaDreNnq4fjkvI7sT+Qyvzt
+	aQU1ZjZ5NlU0vy3ck+J3xpIgMVkrgEdkHUoCFUvnQunAo1x28GILzReV4UPYKEAE2A4VlMlTpme
+	tzcKB62FUPsesUBsZkg1/5C382EosmI3vbbZIs4m4vxOzJDEETT9ywphUvlPG7rVN6kTkTjnf3t
+	prdwdgX1jJiFZRD6XV7wFBi/Qbp8Z5BGEEdbFVCNplpOmezJWJIVajP9B/Kt4IYdFMoxzgjxhdM
+	D8u+UGS44+tDfATfZ/jsJDymEey1BT9ZfQSLM83Q7ZCmyrGCL5uziggmLpjHPXxHqc5QJ4i12xy
+	PIP+6YtCCz9el9ZG/dzBilNCScfi0u7n/dz/6NsM443wQWR5yNqiJBk73tWEoS/hLA=
+X-Received: by 2002:a05:6000:4023:b0:488:5852:6ee3 with SMTP id ffacd0b85a97d-488716f4185mr17421912f8f.34.1790440554835;
+        Sat, 26 Sep 2026 09:35:54 -0700 (PDT)
+Received: from moosama76.. ([102.44.245.127])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4887a355d96sm16176146f8f.17.2026.09.26.09.35.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Sep 2026 09:35:07 -0700 (PDT)
-From: Danish Khateeb <danishkhateeb03@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: u.kleine-koenig@baylibre.com,
-	andriy.shevchenko@linux.intel.com,
+        Sat, 26 Sep 2026 09:35:54 -0700 (PDT)
+From: Mohamed Osama <mohamed.osama189110@gmail.com>
+To: ojeda@kernel.org
+Cc: boqun@kernel.org,
+	gary@garyguo.net,
+	bjorn3_gh@protonmail.com,
+	lossin@kernel.org,
+	a.hindborg@kernel.org,
+	aliceryhl@google.com,
+	tmgross@umich.edu,
+	dakr@kernel.org,
+	daniel.almeida@collabora.com,
+	tamird@kernel.org,
+	acourbot@nvidia.com,
+	work@onurozkan.dev,
+	longman@redhat.com,
+	lyude@redhat.com,
+	linux-block@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Danish Khateeb <danishkhateeb03@gmail.com>
-Subject: [PATCH] serial: 8250: Fix section mismatch with CONFIG_MODULES=n
-Date: Sat, 26 Sep 2026 11:35:06 -0500
-Message-ID: <20260926163506.487201-1-danishkhateeb03@gmail.com>
-X-Mailer: git-send-email 2.55.0
+	rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/5] rust: add DropGuard
+Date: Sat, 26 Sep 2026 19:35:46 +0300
+Message-ID: <20260926163551.52371-1-mohamed.osama189110@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -77,63 +89,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Without CONFIG_MODULES, __init_or_module means __init, so
-serial8250_pnp_exit() and serial8250_hub6_exit() end up in .init.text.
-They are also called from serial8250_exit(), which is __exit, and
-modpost warns:
+Add the Rust kernel DropGuard API and migrate the existing ScopeGuard
+users in the block, serdev, and locking code.
 
-  WARNING: modpost: vmlinux: section mismatch in reference: serial8250_exit+0x2a (section: .exit.text) -> serial8250_pnp_exit (section: .init.text)
+DropGuard runs a FnOnce callback when dropped and provides dismiss() to
+take ownership of the wrapped value without running the cleanup callback.
 
-The exit code never runs in such a kernel, so nothing breaks at runtime.
-But a function that is called from both __init and __exit code can't
-carry either annotation, so drop it.
+Changes since v1:
+- Split the changes into separate patches for each affected module.
+- Added a separate KUnit configuration patch.
 
-Fixes: a300273c458c ("serial: 8250: hub6: Add cleanup code")
-Fixes: 4cf187f9dea9 ("serial: 8250: pnp: Annotate init and exit functions for conditional discarding")
-Assisted-by: LLM
-Signed-off-by: Danish Khateeb <danishkhateeb03@gmail.com>
----
+The series was tested with:
+- make LLVM=1 rustfmtcheck
+- make LLVM=1 rustdoc
+- make LLVM=1 -j$(nproc)
+- git diff --check
+- scripts/checkpatch.pl
 
-Notes:
-    Tested on tty-next bf961847813d:
-    - x86_64 defconfig with MODULES=n warns for serial8250_pnp_exit(), and
-      i386 defconfig with MODULES=n, ISA and SERIAL_8250_HUB6 also warns for
-      serial8250_hub6_exit(). Neither warns before a300273c458c. With this
-      patch both build without warnings, and so does x86_64 defconfig.
-    - Both MODULES=n kernels still register ttyS0 through 8250_pnp in QEMU.
+Mohamed Osama (5):
+  rust: add DropGuard KUnit test configuration
+  rust: mem: add DropGuard
+  rust: block: gen_disk: use DropGuard
+  rust: serdev: use DropGuard
+  rust: sync: lock: use DropGuard
 
- drivers/tty/serial/8250/8250_hub6.c | 2 +-
- drivers/tty/serial/8250/8250_pnp.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ rust/kernel/Kconfig.test         |  10 +++
+ rust/kernel/block/mq/gen_disk.rs |  11 +--
+ rust/kernel/mem.rs               | 123 +++++++++++++++++++++++++++++++
+ rust/kernel/serdev.rs            |  10 +--
+ rust/kernel/sync/lock.rs         |   5 +-
+ 5 files changed, 146 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_hub6.c b/drivers/tty/serial/8250/8250_hub6.c
-index 4d4c54c951cb..848d9723ac56 100644
---- a/drivers/tty/serial/8250/8250_hub6.c
-+++ b/drivers/tty/serial/8250/8250_hub6.c
-@@ -54,7 +54,7 @@ int __init serial8250_hub6_init(void)
- 	return platform_device_register(&hub6_device);
- }
- 
--void __init_or_module serial8250_hub6_exit(void)
-+void serial8250_hub6_exit(void)
- {
- 	platform_device_unregister(&hub6_device);
- }
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 7decf62400ab..a6257cd6e246 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -531,7 +531,7 @@ int __init serial8250_pnp_init(void)
- 	return pnp_register_driver(&serial_pnp_driver);
- }
- 
--void __init_or_module serial8250_pnp_exit(void)
-+void serial8250_pnp_exit(void)
- {
- 	pnp_unregister_driver(&serial_pnp_driver);
- }
-
-base-commit: bf961847813d9edcb5a9c089714069428d141fa9
 -- 
-2.55.0
+2.43.0
 
