@@ -1,70 +1,60 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D4D2F12A1
-	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 16:42:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2DA821ADC7
+	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 16:42:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790440952; cv=none; b=bDMXX2Ybh6PlyM77pistE9V7WuYQYVaeR1NUPlXS36X0V3dpdEXLvxhFouiv/PGkGVshb1j3D9UDUEkd0QiAPM21PFnbMGfQFHU/JBtZgARE/n/XPIMy4Bb25thM7hFJVlrTVvBpljrACvxLOd7IZKio84tB8OmFmh2/nWk/Jp4=
+	t=1790440955; cv=none; b=XMeB56U5H2GXy+CreiLzqwJR1wfc6cT9Wpdppx2FFKfC+UfZEI4eBA+pQCRqUsALa1/rvlwby81W0Twvtd1wKDXk85e8trz8cPRzHNyiYQC6QRqVvehyzWjrmz+5Gaw/GNjR9uHTyGlqo16Yvxvq862XUeM/PiphDR8HXLBn0ec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790440952; c=relaxed/simple;
-	bh=UoZmDgjrNHnp9Q20o1HxBv9t/WMYIoCZT1u6WeavFRM=;
+	s=arc-20240116; t=1790440955; c=relaxed/simple;
+	bh=yrFK7QsybS6CHUGjTSkYJbHsNYsm9ZWDr9AbMWSTL+4=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=Q+9cYXh+QgfCuilz6pLOhD76b4hLJlzwFBVyfucCVvfN0rw8hwobtj9xyIDPNbjiDsdnEyOwMN5/5uoYy1qSjlNwXg5Vm/BDyVkY3nK9G+phDiC/lJQ8NvPb/pvT/zV9lbzTW38o2O+Xyn7mvWFVfFlybX2cbXJilUS6ldMN3uc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l0WHy6LJ; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=ex+ZITHRrqWmICt36eFwREiuH8tVCIsF1WGech5xuPcjHn4uKJj42o+JI8rO6xt8Sls42HUXwhIHiR/mIgtNApl5Km2xK7T5lmU9+mepGHbNAmM8W0nH//v+hfDfeH9IDwT3BpeAqzuRZ0gFBXbH6BxMOo7Gdf7IcTrzt5jhQXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ACqP650V; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l0WHy6LJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E62A01F000FF;
-	Sat, 26 Sep 2026 16:42:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ACqP650V"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 914491F00893;
+	Sat, 26 Sep 2026 16:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1790440951;
-	bh=cubAV5cO7eAMnAKB0DmbDWK4VHr6c7S6Z8/VV+BkDqI=;
+	bh=yrFK7QsybS6CHUGjTSkYJbHsNYsm9ZWDr9AbMWSTL+4=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=l0WHy6LJtzBR171DqwsrR6X41myTYkRuFniX4dTMKRBkrwmc4TBqsIg7y0FCDvn8S
-	 cDUuK/zeYhRpJIyNo+YgbVnjUYoPYN3/FHmKkTHNA3Prj3PAiH2lDFtGC2fdabA7/7
-	 QElrij+g/Aiol6pC5o+VVpX+wvhAb1hrrBqNihNgm/LvAWeSUnK9J5oPoUTPZ86kXe
-	 /JtKFV7c2M5O+/n3zeCXfPgj6KakRObyCO3g64UDYlhkDCAiARkq+Rysg4K5Hf3fju
-	 pqodCVcpai7bA5hngFPnIDuTH6HgK5xF8zNTQD58S8xlLf3YbW28dOxcAqXMur64iO
-	 yZeHasQ+TvBLA==
+	b=ACqP650VRYdCAWroAuKQ/PLE3vsfZQIlxLhWKlYcfFXuj4fMy1iNMMbHD+RvnbOQJ
+	 MFXCgdqplQnwsyZVY8pMy4wqtB0Edw0N14n/eIkdVZqi9UK4JOOScQTF7U6BRFAEKz
+	 AqlEn0DujCCTSOZ/OHWPBlUe2z3ADNAloMGRZwe5bF94Z+JprcLrW4ShvloSIZdMFN
+	 /L9Bck4sKeHvL4zCRGTVKxkYgBQaFNvwhEFk4TBOo1L/2CWOLp8rtvNpGPJ9XfjSd9
+	 4aabn9iQHSwCH1Fk6DlTw5yE7ONrgzV8h6JsrkoDKPEqBvl3OpkutbZbYHAMfxiYXA
+	 oVzBri6TPAJhA==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: 8250: Fix section mismatch with
- CONFIG_MODULES=n
+Subject: Re: [PATCH v2 3/5] rust: block: gen_disk: use DropGuard
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Danish Khateeb" <danishkhateeb03@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260926163506.487201-1-danishkhateeb03@gmail.com>
-References: <20260926163506.487201-1-danishkhateeb03@gmail.com>
+To: "Mohamed Osama" <mohamed.osama189110@gmail.com>
+Cc: ojeda@kernel.org, linux-serial@vger.kernel.org, gary@garyguo.net
+In-Reply-To: <20260926163551.52371-4-mohamed.osama189110@gmail.com>
+References: <20260926163551.52371-1-mohamed.osama189110@gmail.com>
+ <20260926163551.52371-4-mohamed.osama189110@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 26 Sep 2026 16:42:30 +0000
-Message-Id: <20260926164230.E62A01F000FF@smtp.kernel.org>
+Date: Sat, 26 Sep 2026 16:42:31 +0000
+Message-Id: <20260926164231.914491F00893@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> Without CONFIG_MODULES, __init_or_module means __init, so
-> serial8250_pnp_exit() and serial8250_hub6_exit() end up in .init.text.
-> They are also called from serial8250_exit(), which is __exit, and
-> modpost warns:
+> Replace the ScopeGuard instances in the Rust block layer generic disk
+> implementation with DropGuard.
 >=20
->   WARNING: modpost: vmlinux: section mismatch in reference: serial8250_ex=
-it+0x2a (section: .exit.text) -> serial8250_pnp_exit (section: .init.text)
+> DropGuard provides the same scope-exit cleanup behavior while using the
+> new Rust kernel memory API.
 >=20
-> The exit code never runs in such a kernel, so nothing breaks at runtime.
-> But a function that is called from both __init and __exit code can't
-> carry either annotation, so drop it.
->=20
-> Fixes: a300273c458c ("serial: 8250: hub6: Add cleanup code")
-> Fixes: 4cf187f9dea9 ("serial: 8250: pnp: Annotate init and exit functions=
- for conditional discarding")
-> Assisted-by: LLM
-> Signed-off-by: Danish Khateeb <danishkhateeb03@gmail.com>
+> Signed-off-by: Mohamed Osama <mohamed.osama189110@gmail.com>
 
 Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260926163506.4872=
-01-1-danishkhateeb03@gmail.com?part=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260926163551.5237=
+1-1-mohamed.osama189110@gmail.com?part=3D3
 
