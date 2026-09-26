@@ -1,112 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C6746AA8C;
-	Fri, 25 Sep 2026 20:20:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA2D91E492D;
+	Sat, 26 Sep 2026 00:32:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790367604; cv=none; b=oYDx84HFMIuQhAyQ+MXIrfyO4abgdOpJkUxgp8KSUdhgMZXkU9wwD1EouTaqXqsmQwSMB0sentDYTaf+0n8zAApPfwzjBHa0O9Bfy5dUJb/QRnTaSjgMy03Dx98MQ2g8/0EqGpIoFhU0BOq9bQsqLEMPgFHVTVBBZWRIwEZNovg=
+	t=1790382778; cv=none; b=eJaSe/gU9MAmbjMRMYan8C9oDJKvmGxLJEcA7OVTGJq3efB33r5Ghj9Pq8+TZvkkgDcbCVHc2lRbyhqxDnpsu3k51J2qgEHeQDFFZ+/q7te9ypHf1AZoXgopdw/Au4LYn1jH9mUClCw+pXbXftRrSFMoJkFKLinwN2MO3SLfD34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790367604; c=relaxed/simple;
-	bh=HHoxvicqfZA+n2pKkHHOA7vzW00hj15zOu3veVA/Gp0=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=uQ1zuhhcZk2jv0TKdgs5KnLpU+Lu29HtadRj80bwSEBVfIHGDIKD/vrE9wV5BumBTRCvSZRsMeTFbMvffyA1f/a01dGlQAojvQoMYvpPFSE4/caL96dEFwlvhuqN8H4i+U+GSYOVE41FKnSMQNY/Wy61RCrBg5tRtdg59IZpjQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f8YY9oYI; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790382778; c=relaxed/simple;
+	bh=IYAU/79dGofQylupwjb6P+yrKCCES3qfOsqibcugnRY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JJ5HZYkSyKPVFtp+a2UvOL6eqa+ckFYiL8lWPEjWvq0YtnkpKBYsDfRB12+FTzQ0v639rKXBgLPpPQ118dn9Ou+hFc+xSbUfhAeBvtAF10quU1B1Nb+LLi9uj/8HpZEyQpGFuhJcjps3/a+vpQkloOAYMdyZzUTDmiaxWO5cm+U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=4llhjOTl; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f8YY9oYI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC1A1F000FF;
-	Fri, 25 Sep 2026 20:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790367598;
-	bh=b01Hf4th/bG4IK5EwrBUNtUAGx8dHBa8rLXmm7+ryHM=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=f8YY9oYI1fPfHZRqkxr2oGaz7y+r7i+el2YgT5XmhSjE9coECnpt15BeF+Xrxlhxo
-	 ecL1NFGULQYPV924BIhFN2bVxj3mSwOHd3lC+SbHfDGKwRulE0TZln0R1hZGy/rPrQ
-	 zzfYYldVCTGmvTy+XhQkMxcLRg9lJuSkQ60hmTpPF2q3ovx7/X8lJAYtclhdUig23i
-	 Vlo9+DJO59fwfD7+5+UrkzOt33r9ZT8paeN+6vehtSS5EditSHxxKjAw4EzeapnTX4
-	 Mb3PQm+WtaLDFRoHhnLUrDn22ZWgAM5A92zD/qmv4U/GGL8P36b0w8ZmcJ7s1RRG3G
-	 J2vEhqBZo5L5w==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/2] serial: use dmaengine_get_dma_device() instead of
- chan->device->dev
-Reply-To: sashiko-reviews@lists.linux.dev
-To: Frank.Li@oss.nxp.com
-Cc: Frank.Li@kernel.org, imx@lists.linux.dev, linux-serial@vger.kernel.org
-In-Reply-To: <20260925200850.1678179-1-Frank.Li@oss.nxp.com>
-References: <20260925200850.1678179-1-Frank.Li@oss.nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 25 Sep 2026 20:19:57 +0000
-Message-Id: <20260925201958.2FC1A1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="4llhjOTl"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=zLJNeTA1Uv6NYenS6Oz+iqjgR/6nW3LkPlRDEazPsrI=; b=4llhjOTlhoBwPQfjoWbxZIC/sN
+	lO23o2Kt4n5k+dLv2jhIHM2UlwJbHarLKLlvvGIukMlnUgyX9S4iKu37Fqd1mrSrYrY7uJuMAUKP5
+	igifX5qmiaqcQz6WKyrJeRmHHTsjE+5K0Y13N5943OAvUdGUIIXIPwycTOLeDvAY90AuJecShxnfI
+	YQULfELsyxIpdPV4q8OlICa8k1FjQcLDqCH5TDnGYC2BkiuUlwWkhpWZRFHWwPxxG6cXsaRp8WOeq
+	iLOkVptf8SP+YE/E5+/4O1xXsuwzisZbtVG+Aoka+AcQcJNI4wfWApNc5pk7GK1GKtK4IV9Io4cvK
+	O7UhlTAQ==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1xAGLT-0000000EjvH-3r0e;
+	Sat, 26 Sep 2026 00:32:51 +0000
+Message-ID: <01ca174d-f92e-4182-bd4f-f052e444eef9@infradead.org>
+Date: Fri, 25 Sep 2026 17:32:51 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: add break_wait kernel-doc
+To: Johan Hovold <johan@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260925094222.18303-1-johan@kernel.org>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20260925094222.18303-1-johan@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] dma-mapping: asymmetric dma_map_single/unmap pair in pl011
---
 
-commit fb77536d75ed603638aebc851f73960ddf8efe10
-Author: Frank Li <Frank.Li@nxp.com>
 
-serial: use dmaengine_get_dma_device() instead of chan->device->dev
+On 9/25/26 2:42 AM, Johan Hovold wrote:
+> Add the missing kernel-doc description for the new break_wait field in
+> struct tty_struct.
+> 
+> Fixes: c7e9bff9b4b3 ("tty: abort break signalling on hangup")
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Link: https://lore.kernel.org/20d75a7a-2e7a-484f-a267-c21db82dd922@infradead.org
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-This commit replaces direct access to chan->device->dev with the
-dmaengine_get_dma_device() API across multiple serial drivers. This correct=
-ly
-handles per-channel IOMMU mappings and prepares for making DMA engine
-provider structures private.
+FWIW. Too late, I suppose:
 
-Link: https://lore.kernel.org/imx/67966b47-22cb-4b07-80c7-2044f557dbcb@app.=
-fastmail.com/
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
-011.c
-> index c4824c201e1c3..86729ddbdadc8 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
+Thanks.
 
-[ ... ]
+> ---
+>  include/linux/tty.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index ad4e4a835f90..833bb7b97ceb 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -168,6 +168,7 @@ struct tty_operations;
+>   * @write_wait: concurrent writers are waiting in this queue until they are
+>   *		allowed to write
+>   * @read_wait: readers wait for data in this queue
+> + * @break_wait: wait queue for timed breaks
+>   * @hangup_work: normally a work to perform a hangup (do_tty_hangup()); while
+>   *		 freeing the tty, (re)used to release_one_tty()
+>   * @disc_data: pointer to @ldisc's private data (e.g. to &struct n_tty_data)
 
-> @@ -609,7 +609,7 @@ static void pl011_dma_tx_callback(void *data)
-> =20
->  	uart_port_lock_irqsave(&uap->port, &flags);
->  	if (uap->dmatx.queued)
-> -		dma_unmap_single(dmatx->chan->device->dev, dmatx->dma,
-> +		dma_unmap_single(dmaengine_get_dma_device(dmatx->chan), dmatx->dma,
-
-[Severity: High]
-Does this change create an asymmetric map/unmap pair in the PL011 driver?
-
-By updating pl011_dma_tx_callback() to use dmaengine_get_dma_device() for t=
-he
-unmap operation, it appears to no longer match the map operation in
-pl011_dma_tx_refill() which was not updated in this patch:
-
-drivers/tty/serial/amba-pl011.c:pl011_dma_tx_refill() {
-    ...
-	dmatx->dma =3D dma_map_single(dma_dev->dev, dmatx->buf, count,
-				    DMA_TO_DEVICE);
-    ...
-}
-
-The DMA API requires the exact same device pointer to be used for both
-mapping and unmapping. On platforms where the DMA engine provides per-chann=
-el
-devices, dmaengine_get_dma_device() will return a different device pointer
-than the raw device pointer used during mapping.
-
-Could this break DMA tracking or cause IOMMU faults during standard TX
-operations? Should the map operation in pl011_dma_tx_refill() be updated to
-use the new API as well?
-
->  				 dmatx->len, DMA_TO_DEVICE);
-> =20
->  	dmacr =3D uap->dmacr;
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260925200850.1678=
-179-1-Frank.Li@oss.nxp.com?part=3D1
+-- 
+~Randy
