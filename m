@@ -1,87 +1,74 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+Received: from mail-dy2-f43.google.com (mail-dy2-f43.google.com [74.125.229.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56762392C3A
-	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 18:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CCDD3815F8
+	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 18:42:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790447244; cv=none; b=PYVykwi8SdOJuBqLZ0UKpD8KrL+26ihhrgY3IJmLY7SY94JrhJMNXpVSrftZTD7yxLg/7h4QilKNIKVOURu1gEuwMjZJMEi+F84MkEhtwLsZreTsFrM3np1+Kld04hJHE0aJyXpCb+G+FqziBHa2lA5i+Z4hA3M9qC8MP7L3tNc=
+	t=1790448133; cv=none; b=Q6N2PCjNRIK0HPY+Z+UzRA3gvBRLTjkbOQbaIDFb1aRkW0oipIpHIcpxaGaH/GYmA6MIbibZ6qI+epvjQdFWdr5QR6u9f23QU7cy1lPjYc4MPkDD2KnOMTqOvW4GmaGxiMVjsMBc148Z9gSAK6NVzLilSJ6GBt8V5PI/1RB14Eg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790447244; c=relaxed/simple;
-	bh=qzwNqOoq5gIEteD6ff9IatsKKQaGCWKJS6LMm1QwduY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z8O+mPZQNiKZGatUh2vlIUG1SOxhfJ2qee7fwdnqFYxoBEk3cdfabGg1TEeyrLpaCCn4yiaFewdXEaT+aFqMzND3mDeKd0c8QTfTbZjTEiVHQmGxAQUY2Tzf5Cj57qBRsVeqvty+zVYWN1MjWDXOy12HqX8UsmZ87PLs3U8KLm8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pr9e0W8B; arc=none smtp.client-ip=74.125.225.140
+	s=arc-20240116; t=1790448133; c=relaxed/simple;
+	bh=boXPXLGkg2VaTiorsvVz25Gpm8TO4haBSjqWWgMIdOc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=btc1XuKGVdRQ2AXNbxAcz4KfN27TzO3yak4p5LvOCVofE/iwrs6ZcDUPZvu6sp0E+zoAtux7b3xvylf7NgDFCa1LAs6DQEyUw0AwIA2goBh7jZlvNdr2uqlZW2D5ylxLgaVwyb681dysACHklnK1ova9dbgmYaETVDu7NbB3LEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bhrzkcxZ; arc=none smtp.client-ip=74.125.229.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pr9e0W8B"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49e6598dd44so10710165e9.1
-        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 11:27:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bhrzkcxZ"
+Received: by mail-dy2-f43.google.com with SMTP id 5a478bee46e88-340f45daf45so188647eec.3
+        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 11:42:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790447240; x=1791052040; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=6zdetyxBKfTailvjdRzmjKkVNkh5L3fgaPZNlolghpE=;
-        b=pr9e0W8BwBr+4bE4dLBrjXu491trlOXwULzGbiRhh/qygDhLJEC54qeUjBs2W2n6Aw
-         UkLtVWVPfeZkYRjU+C1/s116TY25w8IO5AwD6WJsJMKd/e5WY1DPlWAPkVKpZo48idgL
-         BLdCgX1hDaMJSh9X7nYO5ddVmod0BJc/cXyv10n1ZMaMIgMEnHtkaalociCKn3tP2j9I
-         iEQW6DtA1+xMmAt0SlhXmqSb9wIaWZ7luTGM+LdW1DAcpV/meY2ZSBqsSt28G9PuHvUt
-         1P4NkI7+pomYFdIZ5+O2KUwiUvnYLunvjvyyrE2ipRahtuCAmZ4R7TcU0Mb+7EZiDKrO
-         251w==
+        d=gmail.com; s=20251104; t=1790448131; x=1791052931; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=IwlsSfA7SK5PS+loMIuNUAYcVxuEJS/8KwFetEK6oME=;
+        b=bhrzkcxZbeRYWKDFy8UxCjHRUDn8lZmt/xgb+i5jC3StVlLFxei4XlXB9QXGgVokLL
+         xMi27F7p4U+0MuP07FQQBhR1gIZIHeCs6TUrDv/GVI7fTJqVdWPwtvgpVQhaPpjVDBrq
+         SrVyheqyKGqqIqSsuaIAiBLyUZGjLUBgOZmwxQY/yiWokxddicxvbCJrcSE2nnTDml2s
+         6MJmxPM4jKBIAmy/yOUsOW0bqCrStNNyJwydrecv8XcKM9L+m+0DDfiZjOL/GZoN4xxd
+         FgYFvaZQIR+zZKBvtOhl5vHHx+vi7VTQdlvbWE7LyEgiiU0ruB1XU98Eniw2KTeSW2Eg
+         Hc9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790447240; x=1791052040;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=6zdetyxBKfTailvjdRzmjKkVNkh5L3fgaPZNlolghpE=;
-        b=sB0KPuvbu7mVAWlLRjYpzSbQ77HkvvEVaqBbqzVSL9JM7GuEtw7smqrveRsTTCbJ1t
-         K+XzKNQKRoBybCHhHohqYYtJ66FDBQ9ZvjULUbM8yb34sWu4g2GCOlkvlnlkowmVsDKJ
-         GJ/1gx1Mh2Mh1l5oU8iXIXRAJnoDe5+hN0+WB9gt1jfj4F+UQ+2h1g+OTEc+KvSnksvF
-         aQD36lI1QEnMQXeI1G+iTG4/gW8GF+eu6vt1QT5CUt3DDvF7ax3XinH/SdEF11HuKqJk
-         w+g9RiM2EBDQXN8pQwB1p88EyO9BcPKMicpGQf394bZb7Zk3jKMrF8nkdiMDY5G8oZ1w
-         LoMA==
-X-Forwarded-Encrypted: i=1; AKwUvByu/DN6TwmOg/AkL60ybrQa9OlOrLN2K7bob1VHKthmfvcYa9Zoh34xnV/ci1ITJnluN9YKvPDPI/Hh1r8=@vger.kernel.org
-X-Gm-Message-State: AFuF++l7BAZL1N+/jpjMTqZQ7Kcaza3bMXGJg4pHZQGMrpI/iCMBSxhW
-	Ngo+b0Gyq8bbrzgu5/TzK/mGoBLDaF59pbkWtfcoXlAKdbPg/wGpjnkj
-X-Gm-Gg: AYBFou3ZixyrVI9I4R5YCROIXhOVyHDbCR7wcQDbQP8G7GW4u5nJWgYoYF9XE0suVUJ
-	q4BqLanX2eAAt9k/Jy60AhMbXyvsY+6FFXyPVgDMcrEyGlC9hUlzJv3+BnOFoz0x+MhXAeB/qad
-	ttRH+rkzoHrMkQv681EiuCK7DvF8yGDjAbZ6IUqIanwWwkT0XyAwnJUH+qQn6xydDCxhiNeCFYt
-	z0Z+cNniWsZulN0j48wOXKMFJp7oa4/Auzp2uayXyom3iZxKxJPeVqlO2UWK2sGq9XJ4DWX3jEO
-	hPOFY9pY2iQyX39pnktVCr/ZEaVkKrMY+8pFLWN86LGKdZGgU/t20Q8J0k2YrwvchTa9WMUZw5v
-	jKcxgKQvr2z76tEoPDHUTmBm7Rf0wnHqRuLDmIXBEhvQ5m3HORmghZKNCBQImMW7W8zIVkZpMpO
-	zes1rSP3Jh2JrCYAEk3exs7i+0i07jJCDgSW2ABlgkK8Pz1Pu9bcC1R1ssfgqsbCjNBBtT6keYF
-	28l2CGC
-X-Received: by 2002:a05:600c:138f:b0:49f:cbf3:551c with SMTP id 5b1f17b1804b1-49fe66cc5camr155431025e9.12.1790447240357;
-        Sat, 26 Sep 2026 11:27:20 -0700 (PDT)
-Received: from m2.. ([37.142.154.181])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4a000901b07sm11834725e9.9.2026.09.26.11.27.18
+        d=1e100.net; s=20260707; t=1790448131; x=1791052931;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=IwlsSfA7SK5PS+loMIuNUAYcVxuEJS/8KwFetEK6oME=;
+        b=ytOgY6uqvIeegWgewIoxRL78JRO7vOJJKJfWxmv8LkdmVNmOzJ0PHQ7Aobdr93f4oL
+         ujXfy0fbEY5laxzqbgRi9cX293ueIIxV/aE3/j6NDCfcpkoEwaOb4vSOtNfhtjKkHtYJ
+         +UBnoUXMF2nNpR8JEU6kh3/n+P/Jmqn+zTvD/6vOzI3IQbMY6dwzOIUHbORM1p4lRP8e
+         V5710J6knYbxS9hBxWpiDDy/frV3oubKJwFntDMpPgi/G7F4Ay4kIftklJJm0r5vIs0K
+         mcVJEhcEOAUssIGvanb1vt4Nty5k+pzKaoJ8hTzeB+LtkTTWzL0XnNOngnsru4NE0u/I
+         0zTQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwfC353NoFGOvaAPi5mnvOwsemd4vpkYgWUL/U2Kqdm3clss1SBhqHZDwBJfs48Lix/t0Zb0M6rQMnuJjs=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJXWsHq243UMn8PcIa7H+QS8rvl51lY8SINo/Y+I4lxuK7tve8n
+	M3mf2OvqzmHcipUpqX4aGkGiVRMqA2bABjL92z+zEtAYtuqZp5Ismqtd
+X-Gm-Gg: AYBFou2c/YTPnRUnKpm39AcbmAUt2M7D2dh03spI0LsBMp4e86LiI2/hWGeujAuGmUL
+	X5snGPruGNU4HKYadKPvSHNjoMcCvtGs6i6WtUdS3OJ9FwReUcjyCZnypXaBjA4ihgQFxb+t8dS
+	tts/87ommEUXHM7G0uVFOqX9l8XvRJrVNXorvfRdXIBo82sj2+ll0MtN5dj1TydVjn8mPj7k6T6
+	o7BfmhXE3fgSLCt1OtPvQBhim4mpoBTe1SNRHCCKymJE2YlQ/rP8Mgg4BEdYbnXU9A0VDRi8K7H
+	8j0uzjUfbTbz+qu1SoVN9YJHy4ZGQp0iG0HfhAvQ/jlH/3e916DuR9HHBrWOVCyKJZzTDb8BIc/
+	Zakc2JWqypDJIMGiac8Nkio6JGWgBSlgOCadznXRgV6udZUWoDPIOUWQG5uvKXZQBuq/fIcGXB9
+	KMbsjdUj0M+v+Y9LMuuC3zxlaZKR1diVwiw7UnSWtGMSddKR2Flu0ePuP0GAee1R+UdnWDH6Yct
+	cMA02YrzW6YXKsUhaZ7XepkDCBWPE7WoRAUIPYf4r0bDLB59aOvkKU7GVsFHAJtK60QQA==
+X-Received: by 2002:a05:7301:b0e:b0:33f:3750:4e22 with SMTP id 5a478bee46e88-3426cce6521mr5663350eec.0.1790448129931;
+        Sat, 26 Sep 2026 11:42:09 -0700 (PDT)
+Received: from localhost.localdomain (95.169.12.199.16clouds.com. [95.169.12.199])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-34144f4eb9esm16221158eec.19.2026.09.26.11.42.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Sep 2026 11:27:19 -0700 (PDT)
-From: Michael Zaidman <michael.zaidman@gmail.com>
-To: Linus Walleij <linusw@kernel.org>
-Cc: jikos@kernel.org,
-	bentiss@kernel.org,
-	brgl@kernel.org,
-	germain.hebert@ca.abb.com,
-	rio@r26.me,
-	brunoceg1@gmail.com,
-	contact@christina-quast.de,
-	daniel.beer@igorinstitute.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
+        Sat, 26 Sep 2026 11:42:09 -0700 (PDT)
+From: Chengfeng Ye <nicoyip.dev@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Johan Hovold <johan@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 08/13] HID: ft260: uart: add modem pins control via ioctl
-Date: Sat, 26 Sep 2026 21:27:09 +0300
-Message-ID: <20260926182712.24576-1-michael.zaidman@gmail.com>
+	Chengfeng Ye <nicoyip.dev@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] tty: Serialize saved termios access with device registration
+Date: Sun, 27 Sep 2026 02:41:54 +0800
+Message-ID: <20260926184154.3017929-1-nicoyip.dev@gmail.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <CAD++jLksAPyfZz6d--n7a1KhPackigEucQJqbYiA-e9S835seA@mail.gmail.com>
-References: <CAD++jLnKXqbV0xB3wvTF9Ri7g1MuWV6csO0MGzCtv5LBwmSr4g@mail.gmail.com> <20260827220805.23112-1-michael.zaidman@gmail.com> <CAD++jLksAPyfZz6d--n7a1KhPackigEucQJqbYiA-e9S835seA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,93 +77,107 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Linus,
+tty_register_device_attr() frees saved termios data when reusing a minor
+number without serializing with tty_init_termios() or tty_save_termios().
+The tty_mutex held by the open and close paths does not protect against
+this registration-side free.
 
-On Mon, 14 Sep 2026 at 10:57 +0200, Linus Walleij wrote:
+For example, an n_gsm mux reconfiguration can register a device while its
+previous tty is being released. tty_save_termios() loads the saved pointer,
+registration clears the array entry and frees the object, and
+tty_save_termios() then writes through its stale pointer. The saved-termios
+copy in tty_init_termios() is vulnerable to the same lifetime race.
 
-> Can't you just patch mctrl to use gpiod_set_array_value_cansleep()
-> and gpiod_get_value_cansleep()?
->
-> I don't think any of the users depend on call thing this
-> in atomic context.
+KASAN reported:
 
-That change is in drivers/tty/serial/serial_mctrl_gpio.c, not in
-hid-ft260.c. mctrl_gpio_set() calls gpiod_set_array_value() there, and
-both mctrl_gpio_get() and mctrl_gpio_get_outputs() call
-gpiod_get_value(). The FT260 gpiochip sets can_sleep, so calling those
-three functions from this driver warns until that file uses the
-_cansleep variants.
+  BUG: KASAN: slab-use-after-free in tty_save_termios+0x39a/0x3d0
+  Write of size 44 at addr ffff8881012e8180 by task poc/114
 
-The switch is not only a rename. serial_core.c calls ops->set_mctrl()
-under uart_port_lock_irqsave() in uart_update_mctrl(), and
-ops->get_mctrl() under uart_port_lock_irq() in uart_tiocmget().
-imx_uart_set_mctrl() and atmel_set_mctrl() call mctrl_gpio_set() from
-there, and serial8250_do_get_mctrl() calls mctrl_gpio_get() from
-there. These callers do run in atomic context, so _cansleep alone
-would put a sleeping call under a spinlock with interrupts off. A
-sleeping gpiochip also needs the serial core to call set_mctrl and
-get_mctrl outside the port lock. I will not put that in the FT260 v2
-series.
+  Call Trace:
+   tty_save_termios+0x39a/0x3d0
+   release_tty+0xb3/0x7a0
+   tty_release_struct+0xa0/0xd0
+   tty_release+0xc1b/0x11b0
+   __fput+0x2f8/0x9e0
+   fput_close_sync+0xe2/0x190
+   __x64_sys_close+0x78/0xd0
 
-> > - mctrl_gpio_init() takes a struct uart_port and its IRQ handler
-> >   needs it: uart_port_lock_irqsave(), uart_handle_dcd_change(),
-> >   port->icount, delta_msr_wait. This UART is a plain tty_driver
-> >   with a tty_port, so only mctrl_gpio_init_noauto() is left - and
-> >   the FT260 GPIO lines have no interrupts anyway.
->
-> I don't understand this :D
-> But hopefully the TTY/serial maintainer does.
+  Allocated by task 110:
+   tty_save_termios+0x2c1/0x3d0
+   release_tty+0xb3/0x7a0
+   tty_release_struct+0xa0/0xd0
+   tty_release+0xc1b/0x11b0
 
-mctrl_gpio_init() in drivers/tty/serial/serial_mctrl_gpio.c takes a
-struct uart_port. Its interrupt handler, mctrl_gpio_irq_handle(), uses
-that port for uart_port_lock_irqsave(), uart_handle_dcd_change(),
-port->icount and delta_msr_wait.
+  Freed by task 113:
+   kfree+0x131/0x3c0
+   tty_register_device_attr+0x498/0x8b0
+   gsm_activate_mux+0xfb/0x210
+   gsmld_ioctl+0x92f/0x14d0
+   tty_ioctl+0x915/0x1240
+   __x64_sys_ioctl+0x134/0x1c0
 
-The FT260 UART is a tty_driver with a tty_port. It has no struct
-uart_port, so it cannot call mctrl_gpio_init(). The function it can
-call is mctrl_gpio_init_noauto(), which takes a struct device and does
-not set up that handler.
+Serialize the saved-termios copies and reset with a private mutex. Taking
+tty_mutex during registration would invert existing driver lock ordering:
+UART registration holds port->mutex, while tty_find_polling_driver() holds
+tty_mutex when calling uart_poll_init(), which takes port->mutex. Keep the
+new lock confined to the saved-termios operations, with no driver callbacks
+inside the critical sections.
 
-The GPIO chip in hid-ft260.c registers no interrupt callback, so there
-is no GPIO interrupt for that handler to bind to.
+Fixes: 93857edd9829 ("tty: reset termios state on device registration")
+Cc: stable@vger.kernel.org
+Assisted-by: GPT-6-Astra
+Signed-off-by: Chengfeng Ye <nicoyip.dev@gmail.com>
+---
+ drivers/tty/tty_io.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-> Using software nodes is the way to go I think,
-> <linux/gpio/property.h> contains PROPERTY_ENTRY_GPIO.
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 48569035da56..26bdc4560a4c 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -143,6 +143,7 @@ LIST_HEAD(tty_drivers);			/* linked list of tty drivers */
+ 
+ /* Mutex to protect creating and releasing a tty */
+ DEFINE_MUTEX(tty_mutex);
++static DEFINE_MUTEX(tty_termios_mutex);
+ 
+ static ssize_t tty_read(struct kiocb *, struct iov_iter *);
+ static ssize_t tty_write(struct kiocb *, struct iov_iter *);
+@@ -1219,6 +1220,8 @@ void tty_init_termios(struct tty_struct *tty)
+ 	if (tty->driver->flags & TTY_DRIVER_RESET_TERMIOS)
+ 		tty->termios = tty->driver->init_termios;
+ 	else {
++		guard(mutex)(&tty_termios_mutex);
++
+ 		/* Check for lazy saved data */
+ 		tp = tty->driver->termios[idx];
+ 		if (tp != NULL) {
+@@ -1441,6 +1444,8 @@ void tty_save_termios(struct tty_struct *tty)
+ 	if (tty->driver->flags & TTY_DRIVER_RESET_TERMIOS)
+ 		return;
+ 
++	guard(mutex)(&tty_termios_mutex);
++
+ 	/* Stash the termios data */
+ 	tp = tty->driver->termios[idx];
+ 	if (tp == NULL) {
+@@ -3242,10 +3247,12 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
+ 		 * Free any saved termios data so that the termios state is
+ 		 * reset when reusing a minor number.
+ 		 */
+-		tp = driver->termios[index];
+-		if (tp) {
+-			driver->termios[index] = NULL;
+-			kfree(tp);
++		scoped_guard(mutex, &tty_termios_mutex) {
++			tp = driver->termios[index];
++			if (tp) {
++				driver->termios[index] = NULL;
++				kfree(tp);
++			}
+ 		}
+ 
+ 		retval = tty_cdev_add(driver, devt, index, 1);
+-- 
+2.43.0
 
-You are right. PROPERTY_ENTRY_GPIO has been available in
-include/linux/gpio/property.h since v6.2-rc1, and hid-ft260.c does not
-use it.
-
-mctrl_gpio_init_noauto() skips a line if the device lacks the
-corresponding property, such as cts-gpios. Providing these properties
-requires registering a software node using PROPERTY_ENTRY_GPIO. I will
-register that node in the patch that switches this driver to the
-serial_mctrl_gpio.c helpers, so it is not part of v2 either.
-
-> include "../tty/serial/serial_mctrl_gpio.h"
->
-> Otherwise we just bite the bullet and move
-> drivers/tty/serial/serial_mctrl_gpio.h
-> to
-> include/linux/serial_mctrl_gpio.h
-
-That move belongs to the same serial core patches, not to v2. I will
-ask Greg to say if he wants the relative include instead.
-
-> > That is a serial subsystem
-> > series to agree with Greg and Jiri Slaby, so I propose keeping
-> > the ioctl implementation in this series and doing the conversion
-> > as a follow-up.
->
-> These things have a tendency to never happen and it's
-> not like we have a shortage of technical debt.
-
-Fair point, a follow-up can stall. I will send the serial core
-RFC as its own thread, after this series is merged, and I ask that it
-not gate this series: it changes drivers/tty/serial, and the FT260
-UART works without it. If the serial core does not take it, what
-stays is ft260_uart_tiocmget() and ft260_uart_tiocmset() in
-hid-ft260.c, and nothing in drivers/tty.
-
-Thanks,
-Michael
