@@ -1,62 +1,64 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D810031E823
-	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 17:33:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E27F31E85B
+	for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 17:33:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790444002; cv=none; b=mXFkfk3E/MKsmUQNvKC/ptggProBDyJ6V6tGr0DjvsXnSYlG4q1Vkkuz1e0pDWsJDOK3O0nwcDwttZPt6+6njPsfhRObxKdfpFbWHnsSfPWgoR3cQriO+ZRR3wu+/W6iXx2rbMClml2DoMXNLANAbyNeLIrh0MHkYlp4i9nkQ4E=
+	t=1790444004; cv=none; b=YxFIm3yw5TxeC89dYD8s5yhkEGRLSz6LFH5eFNJL1gK+laafKQx50yhtXjPfQEYvxBwLONwSery+1L/Qf3zL+v+a6g7J7w9yIBexA9aIwWXFMSP/J+8jafdfj0J6cx7OnC5hGtItXRvtF8ArIUn/zzBDYnClmKbKsbKgBGcy7Ww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790444002; c=relaxed/simple;
-	bh=qjlZJ639bP4madGVmc2k1ZgbLWYVq7n6GdvWsoP1Veo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=njOwF1vnZxyxYYzGxxQ3VLj2GtEyieuAEHcLkBVafH/R6ZstRPyPclx5uHNb/uyrgxR2s4yw0xZffze9TBJe1ec826i9PXP5TfB6khcI4I3JpLyMSRJOjxrglurYIC9OuNNunkS5YiT85Nbc/DpioeamyVsnUYXAXVYHIQWh3nY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pyubcm4Y; arc=none smtp.client-ip=74.125.225.140
+	s=arc-20240116; t=1790444004; c=relaxed/simple;
+	bh=5VNrVx4ZKAIvebGxfLNqPgw9xDv0RVGMqeAFRyrl6Dc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=W1j9/v/U/6kl3B8LgcsNpSv7KC6L0Rl672Sz10UPj6b1H7hKg0BNGvTElLs5Mz2DrN8uCJO7ug5FvFyf28SlpWL3Bix/Fz0Y6rF8vkB/8QuXR5SlqvGt6RolowTYariHppODCsza4M7/skQbkKdUtuvzJDAIr5luJ9dQDWRibIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jhsy/Qgw; arc=none smtp.client-ip=74.125.225.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pyubcm4Y"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ffbd83a92so3951075e9.0
-        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 10:33:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jhsy/Qgw"
+Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-48882c1f261so534989f8f.0
+        for <linux-serial@vger.kernel.org>; Sat, 26 Sep 2026 10:33:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790443998; x=1791048798; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=paso3MHh8XUGJdfP/nJDVx+gtPLafb5aKnJ/gNlnGsk=;
-        b=Pyubcm4YIY+aDJXWA6Cqq5iehVgJmKHC4f0kCxJw2HKChLvKHzwigGm8vmmSXSJGAp
-         hYzBtV4Txms39gUuvLgd6r9auiWQGe/WPfyFfhI/+QgVZhufh9Hkn1a8i3+qU/ojI4qS
-         2YD3WdO34hBNgbRWNIhFMWkmr38EYzsScwvEL5aB0bOy1lBTxLrpDNhf3S70SdgZg1mk
-         srmFl92EJHhzVx+WgzJLpZA6QjtLvTSh45J3/2AAcu/Aeb7wESqxJnHb6+lqgTu208DC
-         Gzug7vLcszZldEtT2+viT+RQdx/nH1w3JoKCLn/CWMT2SvSv4JJu2dbbSN4DHveg9VSA
-         URtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790443998; x=1791048798;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1790444000; x=1791048800; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=paso3MHh8XUGJdfP/nJDVx+gtPLafb5aKnJ/gNlnGsk=;
-        b=rXjadXmNyZbTKrqmnt2PKI++2kgOW77jscF57bEWJZHePvnr+Bl7183jKL3DHqH+8D
-         pp3rE1uJMIOxC61G235UXFIwbOWFfVejRWWWwvSRcCX239SMzLg3d42qBItbDrynvwbI
-         SVkYK/k+jdiH4pbmbAKxc7bmYiIwoL13iZEHuRqAk06mhhntT9OQbiIHC2wqUb3HWX+V
-         WHucaqsiDbiHkPq6bSuf0PNEUiKWuBC/Z3G3qX6UHZspl52TZY7o7R2qVrsTCaOakqqx
-         ff3ofoloilQYDg2sXfdlLB5lui/4zrWE+XU+b8KMrrXFEH7+9zHSIV1CwParMA7bK7NB
-         3qZw==
-X-Forwarded-Encrypted: i=1; AKwUvBxDNb7ztSoaevhfdAH27e0Cwz0xBMyhE7WlEvbLuXUUXCXE3m0QPMihVqOwXx27vsRVHGryibE7bJhtm9g=@vger.kernel.org
-X-Gm-Message-State: AFuF++m1ysNzladEzvID64Pjj1ypmlRLY9CXKs8wNITXxoLQJ7ZlIkAI
-	GmgUfePxOMTyN6Knun2IvOE7CEh3S60xowHQeANHUsO+cWMoXEQfcf0A
-X-Gm-Gg: AYBFou1KLoKd4T3FrDIPIDx/x/hgKS2o0JcT1XEfYBqvzfmmmZRqUkTCqgWVvfYEA47
-	JVosu8bCrR3AEm3rsyOqJjyJEXg+NtujLrqz7pWg9eldQphh8pu2Z3/EAxZQL94CaAffnkbrqt+
-	Dx0HmUIoC74fuL1+oLR03HZspdEPAylRrlp5tz3gMATzLBjdtyUqi7aDH0Yj8Ky0qTFMzXsamXx
-	//V+JwMKwjJkYHEWUGhVPpfUFO3/x0XfTolWsEs/FZrlGM9/TcLjBWMGyH7Gjg+9YSYeLMe/BAj
-	H9nFa+0gDGmehdK8enns4ff++F9CZK1vgiCjJ0XPkoGKjVbr45hhParQVjjds7nFeUxfcGjvY6S
-	MJgGMNlZGTCKKZt6A9+qEFoQWZ8YArcLQ2jjjNBuKXQn84pJdb0hPJ85V0KJt4UGR2mO2+N0b9N
-	LMhv6HgkvhbMOzfpGJJc+f7uG7kAyHkLC1BxGWSgyNdSteIR83F25Jh57mpypM5BwCpl0qKwImM
-	UUMsre/m0J6qws8dqSiROhjdwHoEKnQlW9SK9rLjkdTgo1I4nGTHEGR2cC9+05DMAw=
-X-Received: by 2002:a05:600c:1389:b0:49f:dcc8:c735 with SMTP id 5b1f17b1804b1-49fe66f4c7dmr153040265e9.18.1790443998088;
-        Sat, 26 Sep 2026 10:33:18 -0700 (PDT)
+        bh=92J4cdfV5TssQddcjnr52AW40i0MRdcSuU09rnmRkE4=;
+        b=Jhsy/QgwQGQH/87yAKPPf1Dh8FY0VJsXzAvksSD+xuAxf50+UP2OMafPnaZdLnCbLS
+         Jv7F/GA007tL54mAf9D7S3SJVISyQ6JlysA4NSC6BD0Kni9qEQTggiwlRK9gdB9RWu5D
+         0P1FDDQcvwxMkUBOCijg7K1n96E9ZCJ24FM4i85FIt0Yec11SBSt5mE/kcn072m0mmhr
+         JbeNXl4GaT2yEf7Ft0OqqX6f/6VVGhR8rQz8iTFxkBQgUae4WH2tzM+UgTnYt3iYroRS
+         Dspapxuh3UEVDZdakBCyrjlGLK/QTD5YJ8xQR90vOlYvyHh7sUrfjsNFDEmGIAxQrss9
+         3OZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790444000; x=1791048800;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=92J4cdfV5TssQddcjnr52AW40i0MRdcSuU09rnmRkE4=;
+        b=VnM3iqFGQ1cqVikbvKug5xyc2b3flJseVRB/V+0V09ZAPHgV2G3PluXFE98uOM5UpR
+         o9A+jF6msqC0RGcD+LiuOaBPBq/VmXCLvon827555Cq4oSkbgGr3N/pb30R6L1ODCh4s
+         wu4R6PZxAud+S83DMvV+aIew2Znass5ZQuyKfueTv1AZZ1G7UBj1XFZpWc6e2J4PR818
+         2sgxkXEaJnQv9LQkV61mgAznfMXeb0BAZI8p8xrWPxAhVZxLsFqBJjM/W+iYFQtw7WLM
+         yRNAplwvELfYWH/C6mUPjUJYM0mieJzQ8xQuTWrEO7yJjpYg+vTqon3UPDFB+bD0oCr/
+         RJQQ==
+X-Forwarded-Encrypted: i=1; AKwUvByvqQ4O6dNzJ+sJ655OwF6nH8SXGZvE+mTKWm6Lc61O/QAtvhwP8OctCtRekQeQInKV2x9GOodWq9NhDh8=@vger.kernel.org
+X-Gm-Message-State: AFuF++m5kyz+fweMOxDCtcZewAxsYvPndxsiW+h4xARFgN/79nYwwXa1
+	xAxhwZmDSOeMzurwG9MOlHJhgetoJUjHnjlqBDkC4EeoWopgpyk2ibhc
+X-Gm-Gg: AYBFou1PnJCEb7rcf3ZE3v+WOPzwzS4M6wMglbpoJZ3eg5Y09nFYYgQAw2RBGqf4sYL
+	qkn6p0TNXNSAzBAHb7DU4Iv/nem//nRFpnNX1k7F/KCIcJXJz2Sm6IaaAXThwKFi7/73mg0ljH8
+	KUbe5KeKU15aaL4HSlrk8/XZR5cf+BPyvpf+O6d1y1nxEdNmNuVkbusuudrkVDo2+Q/vGosrimc
+	1fcTAQw5BMW9dfJTc3rjhdygSNbezevaTOTIpNMPxeL9TpxdogYUO7JPb/Zs6ChSQ4oYPiNVdIa
+	uJrNkBSiSMffXjUxvKp7OLFcEZGmsiC3aCrW0MkPmu3Y0DkYb+3q6RlsVL7Qucmo51n7uZfVVCp
+	XycQeQY4xwDC5+pP/Kv1IHDzTMOn7vEBQDjXx9/dDFD0nBbTYnS9OvoOaW9SF4JB6x7igNYD5he
+	2Ak9NK+9BS/TBFaiPzeHzq7QQ+C0/H49uR2iYnJiqC+iagEDIvsmaqvHZ4TLftGuTjT9xqNeRE+
+	JmlZaeTXvkvTUwI4q0XeoQ1g6fiarqwmpeB2DHVUK1FfY1gx31J0EeVcFx/2NfKv8s=
+X-Received: by 2002:a05:600c:3148:b0:49f:fc4f:9efb with SMTP id 5b1f17b1804b1-49ffc4fa10bmr34693285e9.7.1790443999742;
+        Sat, 26 Sep 2026 10:33:19 -0700 (PDT)
 Received: from moosama76.. ([102.44.245.127])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5de4de4sm246200495e9.8.2026.09.26.10.33.16
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5de4de4sm246200495e9.8.2026.09.26.10.33.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Sep 2026 10:33:17 -0700 (PDT)
+        Sat, 26 Sep 2026 10:33:19 -0700 (PDT)
 From: Mohamed Osama <mohamed.osama189110@gmail.com>
 To: ojeda@kernel.org
 Cc: boqun@kernel.org,
@@ -77,10 +79,12 @@ Cc: boqun@kernel.org,
 	linux-serial@vger.kernel.org,
 	rust-for-linux@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/5] rust: add DropGuard
-Date: Sat, 26 Sep 2026 20:33:10 +0300
-Message-ID: <20260926173315.56772-1-mohamed.osama189110@gmail.com>
+Subject: [PATCH v3 1/5] rust: add DropGuard KUnit test configuration
+Date: Sat, 26 Sep 2026 20:33:11 +0300
+Message-ID: <20260926173315.56772-2-mohamed.osama189110@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260926173315.56772-1-mohamed.osama189110@gmail.com>
+References: <20260926173315.56772-1-mohamed.osama189110@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,40 +93,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the Rust kernel DropGuard API and migrate the existing ScopeGuard
-users in the block, serdev, and locking code.
+Add a KUnit configuration option for testing the Rust DropGuard API.
 
-DropGuard runs a FnOnce callback when dropped and provides dismiss() to
-take ownership of the wrapped value without running the cleanup callback.
+The option follows the existing Rust KUnit test configuration pattern and
+defaults to KUNIT_ALL_TESTS.
 
-Changes since v2:
-- Clarified why DropGuard is added alongside the existing ScopeGuard.
-- Fixed the core imports in mem.rs to follow the Rust kernel import style.
+Signed-off-by: Mohamed Osama <mohamed.osama189110@gmail.com>
+---
+ rust/kernel/Kconfig.test | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-The series was previously tested with:
-- make LLVM=1 rustfmtcheck
-- make LLVM=1 rustdoc
-- make LLVM=1 -j$(nproc)
-- git diff --check
-- scripts/checkpatch.pl
-
-The changes in v3 are limited to the import style and commit-message
-clarification.
-
-Mohamed Osama (5):
-  rust: add DropGuard KUnit test configuration
-  rust: mem: add DropGuard
-  rust: block: gen_disk: use DropGuard
-  rust: serdev: use DropGuard
-  rust: sync: lock: use DropGuard
-
- rust/kernel/Kconfig.test         |  10 +++
- rust/kernel/block/mq/gen_disk.rs |  11 +--
- rust/kernel/mem.rs               | 121 +++++++++++++++++++++++++++++++
- rust/kernel/serdev.rs            |  10 +--
- rust/kernel/sync/lock.rs         |   5 +-
- 5 files changed, 144 insertions(+), 13 deletions(-)
-
+diff --git a/rust/kernel/Kconfig.test b/rust/kernel/Kconfig.test
+index e6a5c7a795f0..011c72f14e2c 100644
+--- a/rust/kernel/Kconfig.test
++++ b/rust/kernel/Kconfig.test
+@@ -33,6 +33,16 @@ config RUST_KVEC_KUNIT_TEST
+ 
+ 	  If unsure, say N.
+ 
++config RUST_DROP_GUARD_KUNIT_TEST
++	bool "KUnit tests for Rust DropGuard API" if !KUNIT_ALL_TESTS
++	default KUNIT_ALL_TESTS
++	help
++	  This option enables KUnit tests for the Rust DropGuard API.
++	  These are only for development and testing, not for regular
++	  kernel use cases.
++
++	  If unsure, say N.
++
+ config RUST_BITMAP_KUNIT_TEST
+ 	bool "KUnit tests for Rust bitmap API" if !KUNIT_ALL_TESTS
+ 	default KUNIT_ALL_TESTS
 -- 
 2.43.0
 
