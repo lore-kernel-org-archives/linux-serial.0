@@ -1,62 +1,64 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C1C23D7DC
-	for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 10:45:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA743A0EB8
+	for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 10:45:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790505935; cv=none; b=igU2y1BEQnju2p7de/YNHdU0dyljlNyAurH9PMbSlpKt7V8H5swxsSzIMG9HD1lkOy47XjRo5jFHL2ZCSCmnrR9Jw92ZzSTLP0OyhYv9SyuHUPpxkjr6asw1l2pDjzGkO/EwQeC5PZJR9vhk/xBpt8Zq7sv8cnnTaM1TTcjBG/w=
+	t=1790505936; cv=none; b=OWcOBay7TXEWIwDHHaEfStOZCM6BsLm1q+VrBnORDIGXpWy6PK8nF462tfvFfSpm0I91Lr+PbXUevBD83lje5Q6pkpxgO9mfhdEqHkvv3iocl2Egz19MmojNbmG2IjEZnzj4mbHkzg5iJwMO9vrfGaDuGyGRxZZ2GUH1ulP7yN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790505935; c=relaxed/simple;
-	bh=E51DzdcULzRpdMmr1jtr31t0PUWLCjXdu2/DDghqgsI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IL6ds7vWOxZ5yQhszI9Ktfb9iYZBBw+XNtztBtamhk0lvK8uzOQgsQ9EWzTi/hx6HkwxuMwZWRHnMFUFTcMvO6pLeWW++GPbmnq5h/rGf/TSaLPcHNAtVIFGjttqNO9KzhIa4haUF+HfqvfWHKBUYdegmVM6Z6/2X+wSxMMo298=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bF732jaA; arc=none smtp.client-ip=74.125.225.141
+	s=arc-20240116; t=1790505936; c=relaxed/simple;
+	bh=D+PPLTDoy1BMZdBIKZnJBleicfxyVmZ6wM/9g5CxMsY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=pGZkgHj+BRxNIoFeerrUtkpFEOPrzgDkf1v4Th2OdnUcbCOozR7BtfszoqZ4dSYobu24VsjimYiIn7Rh+sw2XiZYI95V2QEINJiD/0WppSgdOCzd/zab8vsMusjc5AQbeeeQJDXbLwUjSqTAxUvMISc9E/MPQs9aPiCQKJG6zd0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G+5R8jWk; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bF732jaA"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e721b5503so20648035e9.0
-        for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 03:45:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G+5R8jWk"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912e4b11so11522015e9.3
+        for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 03:45:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790505931; x=1791110731; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=RfJP6yt1DXJx4cKd4gNx9tniZWIU3EM+Tzk+BM3HamA=;
-        b=bF732jaALJFqlUdyPcCLlGUxstiCcmpPUlPHD4GBFB2i/K0BrjyIOP4DwoJQY/50wH
-         GSZdjbbubmcOMxk/m2T7/JG3ctFKcNh0dh0T0MpBbml18a9Ro07IfZJqqDMb4CSWunCc
-         bcqN4Nm283SNP3PhcQURgTTTU26BgFf75xJGAE49Ndw+nbZ3pBOOmdhyOnfRTXI3/O4H
-         HrhoB/Rz9G0MWdu7hQ8IVQA2xahRVQDr4kVCZI0nXhVdbl8EcmDpCL91knjR8x3wzjcX
-         3zyiI7xgu8sFsOSUA5KUCU2ZqLepJe2o+zBCVNGnSA0v9ghxDb/fcSJUy4f4cYkfThmJ
-         YKCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790505931; x=1791110731;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1790505933; x=1791110733; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=RfJP6yt1DXJx4cKd4gNx9tniZWIU3EM+Tzk+BM3HamA=;
-        b=vMeQQqekqHlyKeqHXqA4b9FqN486hQxVabPQSMpXPwoQge/y/4vH/tu8B6eVxWmgxG
-         H4WG8kgum7uqf6kOk8MNX97nVt2ts6sGRegiDUo0ErkREcr2RDDt5Zx4LC/n0w/5W7WQ
-         1FYuVE8SiQmYceKz5t+HCPu4vi0yxjkYqiTfK3MMZMlWd/xrl6Kin9Q62Td3n7P1/AYR
-         afy+cTGrumA6rgvVzVaRNleDRsIJPqtDgJ7XA9ZJ5dzdeFkR8wpu4l0vXFGhoTmib2Ef
-         Bcu03c2HgvN7rvg6Y/zzwboTkfkdPEQ/QSwbyc65GMjvds30YFzmxhlranhsmExKCG6b
-         2PWw==
-X-Forwarded-Encrypted: i=1; AKwUvBynTdv4ZLPjj65zdMI5Tt07wiIZWCO9g8H+Ei0B7IXCMxrBI8047rTH97wJJLxnSh5DX9ntE03LcWlOjPs=@vger.kernel.org
-X-Gm-Message-State: AFuF++mdM1gxFHNkisxp07O1hTJVa0vRAxG3YA1ok6dOGyY3zwJAAaJJ
-	Ka3wp7mdCOLp9ZLRb5zPRZnfvP6Grwr51h4zr+QqPvdw1SGDvS1rHnLr
-X-Gm-Gg: AYBFou2pcDubZuniGtSbOHEI03UZNT8AP/Ipab9zZdPJG2Uinrs0eYghBdxf6hz5MHH
-	Z/GZqIVc1+Z1xzpBIAjR8GKSKfbRabGSHlBWnRmxl6Jnp1RS0aGJKs+ABPPYVamyPFSgS2Z4zDd
-	fqN1EMhn5KtwWiHDgmAFlhvgwwvPnIKfJh8PVKg3Zwsk9iODruMT0xgHbGXm7nLFVrBSEJNV2z/
-	HkHorju27hBu0yRhnjJ1HbRF3Jg9C3IL1gNYBYaU8dhVejMPEfLuAynapR9J1Hi3JBMjz7IIahp
-	fBB/lBzErcGFOcHHeRfoNWDitNasYDJnRluMju3hjgbEUdmqwDTZIa1ZW45oXEZElv+f0bXZJ6c
-	vKXfWjA7FW4+Ul/p6+LMDnw68xQ1OowOjkAy4XyZLE9QcvpBZZDXGdGa8KRiSZiX6L204b9aZSK
-	V4PmaV9laYKo2v4ETpb3jtLhGZUobRFZBDBQzf7s4rVrIQaQKW7GS7xdWUJUR6IUuVOYYbKO5RV
-	WNS5wE7SyBZaAj3gxhl20QOAvRAc73wCG0TET43AaheGR6Z7mg/WJShOpkv8Vfcqew=
-X-Received: by 2002:a05:600c:3ba5:b0:49f:fe79:62f9 with SMTP id 5b1f17b1804b1-49ffe796457mr53954805e9.25.1790505931369;
-        Sun, 27 Sep 2026 03:45:31 -0700 (PDT)
+        bh=pxv+Z2Smk33JrKxjz4dLy9oowfBjQSsd5GaEq0kknSw=;
+        b=G+5R8jWk5EFRvhYyIzzX1TTnZohX79XxWUan/UqSJnm2i/xH7/noEIcKpz38Bu8Gn2
+         lxEHZGsDvKGyCv+mgAKAE7i8Hv0W2TitaM+XpdrHIgj23fEE1sdOMyb8+8uVMfmhNCtZ
+         k718NXF/wRALtroJVrdp3BH/pxGlxn0OjurHJiKWcmXC0ImpUEYZFD8y5WzFZMwmZgo2
+         XaPxGayVNe69JqCc/P0Cu2VKFWY9FB37kin6gmLyChogkcKjWJnE7NjAFLinoUMeT1b/
+         O1e5dBn8TRSAnCMva39S9Luzj2E6ochriqmel3bT5kttZIdSa2VeRz2GIajLctumLmvl
+         3GSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790505933; x=1791110733;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=pxv+Z2Smk33JrKxjz4dLy9oowfBjQSsd5GaEq0kknSw=;
+        b=rWoeBSF2I6nr/ukH3YvLwB9prDwZih5IxI9He7ZFwu6hGuazqv6CPyCPSGR8M/5Lg9
+         jSj/bFr+uUzcI7uwKfjA3RPSkjfu0MJr8o7bojAUMRYRMgY2DHLXkNwnXfF128Ny7Es5
+         E+jYyS7s8Bu5xrc8BXgDWuUZsaml+IvKMoRrqwyfL75nFwJ7zGHx6YjX9k1NwhwvhULF
+         FiUhLLkT0ikOv58LkIKBlyAdPxrZcIrgxboZuzQDyYDb/zlCy1Pde3r5l83NUihfLUY3
+         X5RY4w4DxzvKGIJ0k5Hhovzn2SzVj02XkaavTapgxMTpjUkiz1aJeJ5W7g79EEOOav+C
+         OgPQ==
+X-Forwarded-Encrypted: i=1; AKwUvByqND3He0OUPRGkWpeaXhxJHBIiCKNOfyaSPChPGYKwUobrXH8jO32sbwWm+0xFlZjJc6aeJ/eOtdxnWiA=@vger.kernel.org
+X-Gm-Message-State: AFuF++nHOuZs44ubrHcJgthowXmxB/WbPbWIpj/0saCrApf9S5GobCWS
+	85DykUgwpG9J4kdqbtcHa/oYxOUdbZRZ+2iYQkRGnGcwdJbkOJHKUPQi
+X-Gm-Gg: AYBFou3izev6UNtptOUIxMKdOL4zBj554HgCsXTyWBUtVd0RNPFokfYywjJD6/PqLpf
+	1ozs+Xisdwkyja2ePP2ElQ1Hqfe0BFQ4dlIzZ0tyqw5HaggWQYFdn4NC2iFjaSc7bRCeIOdc+yX
+	uAT5idJHMZmX1PZfYM7tqq8k18KbD8ecf6AYv6LhSJQ8p1px2Kwn6xZqJyeXPOg6/cll8bEKM7G
+	zPzxxjJZqUQWwhSiBvI3j7qm9at80D+fCv0nWbhzdvvxf6I4+X5VAfiEPCA5BKzx7mwSj6y1mOu
+	5SqU4+8wHbZk2M6d06NcIITzN5ZtRYjOaIPSGLeCsG3cSmtnXwdl9Moc70uIQZrsZVxd1uIRl8l
+	q8+CGw0Sl/a6etux+O/79ls8h/M2mZdwYC0iSoc03zdm5PEf+lmY8A4YkwXPShs/oyjOlb15MsH
+	KAlNnfWUOD1xqUvtT9mvslgU5TByV0CkPTqoQb7RUEcjXQjXQEVIOtryotFe918iyoDYeWU9M5G
+	4ZS5AxcA5UEjkhKlR5lxbWkZmhK3WPwSF3HbNcKCBtTVtckKhp9CNPOAu6sBFnhVt8=
+X-Received: by 2002:a05:600c:c48f:b0:499:bf8c:cfd1 with SMTP id 5b1f17b1804b1-49fe66bdfdbmr191208665e9.2.1790505932955;
+        Sun, 27 Sep 2026 03:45:32 -0700 (PDT)
 Received: from moosama76.. ([102.44.245.127])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a001915fc2sm46005195e9.14.2026.09.27.03.45.29
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a001915fc2sm46005195e9.14.2026.09.27.03.45.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2026 03:45:30 -0700 (PDT)
+        Sun, 27 Sep 2026 03:45:32 -0700 (PDT)
 From: Mohamed Osama <mohamed.osama189110@gmail.com>
 To: ojeda@kernel.org
 Cc: boqun@kernel.org,
@@ -77,10 +79,12 @@ Cc: boqun@kernel.org,
 	linux-serial@vger.kernel.org,
 	rust-for-linux@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/4] rust: introduce DropGuard
-Date: Sun, 27 Sep 2026 13:45:24 +0300
-Message-ID: <20260927104528.103881-1-mohamed.osama189110@gmail.com>
+Subject: [PATCH 1/4] rust: mem: add DropGuard
+Date: Sun, 27 Sep 2026 13:45:25 +0300
+Message-ID: <20260927104528.103881-2-mohamed.osama189110@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260927104528.103881-1-mohamed.osama189110@gmail.com>
+References: <20260927104528.103881-1-mohamed.osama189110@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,39 +93,138 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds the Rust kernel DropGuard API and migrates existing
-cleanup guards in the block, serdev, and locking code to use it.
+Vendor DropGuard from the Rust standard library and re-export it
+from kernel::mem.
 
-DropGuard is vendored from the Rust standard library and re-exported
-through kernel::mem.
+DropGuard runs a FnOnce callback when the guard is dropped and provides
+dismiss() to take ownership of the wrapped value without running the
+cleanup callback.
 
-Changes since v3:
-- Vendor DropGuard in rust/kernel/std_vendor.rs and re-export it from
-  kernel::mem, following Gary Guo's review.
-- Remove the DropGuard KUnit tests and Kconfig option since the
-  implementation is vendored from the standard library.
-- Keep the existing ScopeGuard API unchanged.
-
-Testing:
-- make LLVM=1 rustfmtcheck
-- make LLVM=1 -j$(nproc)
+The kernel version removes unstable const-trait machinery from the
+upstream implementation and adds #[inline] where appropriate.
 
 Suggested-by: Gary Guo <gary@garyguo.net>
 Signed-off-by: Mohamed Osama <mohamed.osama189110@gmail.com>
+---
+ rust/kernel/mem.rs        |  2 +
+ rust/kernel/std_vendor.rs | 87 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 89 insertions(+)
 
-Mohamed Osama (4):
-  rust: mem: add DropGuard
-  rust: block: gen_disk: use DropGuard
-  rust: serdev: use DropGuard
-  rust: sync: lock: use DropGuard
-
- rust/kernel/block/mq/gen_disk.rs | 11 ++--
- rust/kernel/mem.rs               |  2 +
- rust/kernel/serdev.rs            | 10 ++--
- rust/kernel/std_vendor.rs        | 87 ++++++++++++++++++++++++++++++++
- rust/kernel/sync/lock.rs         |  5 +-
- 5 files changed, 102 insertions(+), 13 deletions(-)
-
+diff --git a/rust/kernel/mem.rs b/rust/kernel/mem.rs
+index f2d4cdf87d00..7f8ddd96f907 100644
+--- a/rust/kernel/mem.rs
++++ b/rust/kernel/mem.rs
+@@ -4,6 +4,8 @@
+ 
+ use crate::prelude::*;
+ 
++pub use crate::std_vendor::DropGuard;
++
+ /// Transmute between two types.
+ ///
+ /// Use this instead of [`core::mem::transmute`] when it is known that sizes are identical but this
+diff --git a/rust/kernel/std_vendor.rs b/rust/kernel/std_vendor.rs
+index abbab5050cc5..21a26b4eec71 100644
+--- a/rust/kernel/std_vendor.rs
++++ b/rust/kernel/std_vendor.rs
+@@ -7,6 +7,9 @@
+ //! "Apache-2.0 OR MIT" and adapted for kernel use. For copyright details,
+ //! see <https://github.com/rust-lang/rust/blob/master/COPYRIGHT>.
+ 
++use core::mem::ManuallyDrop;
++use core::ops::{Deref, DerefMut};
++
+ /// [`std::dbg`], but using [`pr_info`] instead of [`eprintln`].
+ ///
+ /// Prints and returns the value of a given expression for quick and dirty
+@@ -162,3 +165,87 @@ macro_rules! dbg {
+         ($($crate::dbg!($val)),+,)
+     };
+ }
++
++/// Wraps a value and runs a closure when dropped.
++///
++/// This is useful for running cleanup code when leaving a scope.
++///
++/// The [`DropGuard::dismiss`] function can be used to take ownership of the wrapped
++/// value without running the cleanup function.
++#[doc(alias = "ScopeGuard")]
++#[doc(alias = "defer")]
++pub struct DropGuard<T, F>
++where
++    F: FnOnce(T),
++{
++    inner: ManuallyDrop<T>,
++    f: ManuallyDrop<F>,
++}
++
++impl<T, F> DropGuard<T, F>
++where
++    F: FnOnce(T),
++{
++    /// Creates a new `DropGuard`.
++    #[inline]
++    #[must_use]
++    pub fn new(inner: T, f: F) -> Self {
++        Self {
++            inner: ManuallyDrop::new(inner),
++            f: ManuallyDrop::new(f),
++        }
++    }
++
++    /// Consumes the `DropGuard`, returning the wrapped value without
++    /// running the cleanup function.
++    #[inline]
++    pub fn dismiss(guard: Self) -> T {
++        let mut guard = ManuallyDrop::new(guard);
++
++        // SAFETY: We have taken ownership of the guard and prevent its destructor from running.
++        let value = unsafe { ManuallyDrop::take(&mut guard.inner) };
++
++        // SAFETY: We have taken ownership of the guard.
++        unsafe { ManuallyDrop::drop(&mut guard.f) };
++
++        value
++    }
++}
++
++impl<T, F> Deref for DropGuard<T, F>
++where
++    F: FnOnce(T),
++{
++    type Target = T;
++
++    #[inline]
++    fn deref(&self) -> &T {
++        &self.inner
++    }
++}
++
++impl<T, F> DerefMut for DropGuard<T, F>
++where
++    F: FnOnce(T),
++{
++    #[inline]
++    fn deref_mut(&mut self) -> &mut T {
++        &mut self.inner
++    }
++}
++
++impl<T, F> Drop for DropGuard<T, F>
++where
++    F: FnOnce(T),
++{
++    #[inline]
++    fn drop(&mut self) {
++        // SAFETY: `DropGuard` is in the process of being dropped.
++        let inner = unsafe { ManuallyDrop::take(&mut self.inner) };
++
++        // SAFETY: `DropGuard` is in the process of being dropped.
++        let f = unsafe { ManuallyDrop::take(&mut self.f) };
++
++        f(inner);
++    }
++}
 -- 
 2.43.0
 
