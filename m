@@ -1,104 +1,96 @@
-Received: from mail-oo2-f38.google.com (mail-oo2-f38.google.com [74.125.231.166])
+Received: from mail-vs2-f39.google.com (mail-vs2-f39.google.com [74.125.227.39])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F012384CEE
-	for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 14:00:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.166
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B5753A3E8B
+	for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 14:17:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.39
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790517611; cv=none; b=KZGGGU4Ax+ZELdmaC0PvULtenJpdti/166ldbBztKsbhrIm/ukxN4YggFew3b9QXgjUsBpEBmCBrN8vF1pJ0866Wg0C5bHERzs9hYXHGBJljM76SuNcaJTKWjH2Zci2fA0lObJmIn9y+UQPv+9YB2j192aDlF5+Ea5JAjxqMejE=
+	t=1790518670; cv=none; b=fW3GYLP/5DuNnYn49z/PfbUthvD3ITcHh0BDtoSSSeylrn9AraPUNH7DBMq3jSBcJjbasbVldUyV+dz8pdpRCOkttO32J2XUtF1M0sHotZ4XfmEfZWypbYs3vt1wqEe0EOpAaw9Rw9cwYjWtt2P9IvAHyMnEaj9LVgrsmeyb4ME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790517611; c=relaxed/simple;
-	bh=zXU+tYHOl/YHGHGbII3AHvP4lVS+bS8CAqVO6nFSJhA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aV34tbgayMbElYpoPY7ctS7h4Fp4NI0rTcBfWGHVaRUe4bM/kSKIfoZ/kDuKPIhJlN5FfzC2QXuZdqSB0rlL2LzfkLCUWeeP+N+RC1XqPiWyIZEYHWTwHJ37gWbneyUZLbXLmeYZCAAFdr499Hi6UuZ8qn1b+zjwu49h7iIC9gM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=apYkh3iN; arc=none smtp.client-ip=74.125.231.166
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1790518670; c=relaxed/simple;
+	bh=8VkAPD9LDqm7d05XF+l4kP18KbZK75aLsQU4vJdd6zE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=EJybm/jdnCdTirMk9n9+m5NMoeDLqbnBgKbDJSYJgHKgSj1REP+x4A9FI+2/LRbcsixSiOenalMjeILz5zbKMCQ/FfTXdAIty5Vfb3/eqc2Ucc6kodPWqAYxeZkER4EWyTSckXHq5cs4fdQuz1DOwqIOqyQuPeHqweS8/Z5JNeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=74.125.227.39
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="apYkh3iN"
-Received: by mail-oo2-f38.google.com with SMTP id 46e09a7af769-805cc8b4231so1649767a34.2
-        for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 07:00:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790517608; x=1791122408; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=zXU+tYHOl/YHGHGbII3AHvP4lVS+bS8CAqVO6nFSJhA=;
-        b=apYkh3iN+/RIGSioMpWjLsBsH+OZ5/iuJ2zz0uOGhjw/6ZYa1VExZTIkJ1WXFGTaWm
-         xT8PdBQt6UuYT/XI6OUKY1fsxaX1E2RyKzCwDRCKRPuaJ4iete97p4UEbROKDjwa976X
-         Pk8bagEd3Md6KYr0gDgIGHehGTzdoPL4vCpkTCup0YcZrXb/yPkz2zoJgKq9TVu53x6T
-         cXdbPRRxCXDsh9F8P0NBSCmN1GtIGhp4JPOr0+Jw6TlsHT+2hgDZj7tLYwHJI88/v25x
-         P2sfCR33IOiqSc5wI7o32TDyoywIqq6juM8EdgeY3jiyv3oUdV5RpinOjWquCUQgHcya
-         Hdug==
+Received: by mail-vs2-f39.google.com with SMTP id 71dfb90a1353d-5ccb36d5a57so1098757e0c.3
+        for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 07:17:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790517608; x=1791122408;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zXU+tYHOl/YHGHGbII3AHvP4lVS+bS8CAqVO6nFSJhA=;
-        b=GvuFtx6y2U9EzIHKlWYVU+Rfs4GtwyohCga+bFhUaSYUEPPP7gK2WZx6O62mzRG+MY
-         qvU7Yk8SVmJu1WSKFAVLXzFMrYmdff0AjWNm3dSsY49LQqv4mpsjL0NYlrIVKK+HZkLi
-         V1i6pt4w/Tu7EITlMdqirU2G6XhSHLkv7GOStWOBvgTZRizb997lDmkJOZV/5p7U6nKr
-         8wfK921bf7QSAtUgA+KLCDB2KSk3JGo+2u4B9c6RCmxWJNiu5j5UHoKxz+f00HONw24U
-         rGlfHrKpgegIp6mmO77u1guDOLDusaWh45F6iPU6THN2FSyq1nHEMT07xzLX4lgO9upl
-         /T8Q==
-X-Forwarded-Encrypted: i=1; AKwUvBxEvIwcb26sBuMIyTc9tBswnkSMGWiTRS5eng+p7yMovU9Ugf792JKXvFNLCN3lCy6/D+uiWx5DojX6nQc=@vger.kernel.org
-X-Gm-Message-State: AFuF++lxXuYNrJOz32BFUJw+Y9NSM55mQ/DkNbJihIT+eRdj+E87Yah4
-	Anld5n+k4Np/c1zYhifY8CW+6soAf5wzumqP2IUYRrGl0pGVkK8n27DQ
-X-Gm-Gg: AYBFou0X9Eb9bN71UJjYJETdwIgVjJqIOSgOo+UKOMJq/uA7GQylTnFcE11vGX5OnjH
-	OOzn6Vcps1m2y0wYe2CZRWve72/TKzPNobk1OXwtbuMj6Pwimj/0cGSTiiuYpJkeIdtE589lgaS
-	oQ4otmdBVUycbtlcjGIjWyi87OPeQa0Kwo4756xO29E99BuSD3iyCPStBsGsSc4Iof1haGXm+Ti
-	/cTAmUzAhIuTlk7WLh40Zi9S14JksbZhp1TXHiwJzsoNrCXswDB+zsqZkqRTAnzOGqhmgb+SBSs
-	Djzr2QSE9c9cPA4sacfjWyL2tW0053+ZTmGrXL7a9vTwbg04u4i24oYWL3WKcegdZrRYr0EeAWG
-	zhq5Gxku2tsoVGlDuN1gYwXUygrs6T8j+KK4PwE+WFM3esWSSCj0EQH6LS/orom2evQBq+SbK0r
-	c9IHvC2bXDAALv0GFW+oM2hT8QwpDImFT74KNLfzxxcUBo1j4d2y8zchAITBp5WbwCk3AL7d/Zk
-	gW3TFauQE8ZQ1wqVydXLS9dlijKzH0OgnHiKkVc
-X-Received: by 2002:a05:6820:1f05:b0:6bd:850:7634 with SMTP id 006d021491bc7-6d43f89b4e9mr11060817eaf.26.1790517608344;
-        Sun, 27 Sep 2026 07:00:08 -0700 (PDT)
-Received: from archlinux.lan ([136.34.156.120])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6d882dc49dbsm2210058eaf.9.2026.09.27.07.00.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2026 07:00:06 -0700 (PDT)
-From: Danish Khateeb <danishkhateeb03@gmail.com>
-To: u.kleine-koenig@baylibre.com
-Cc: Danish Khateeb <danishkhateeb03@gmail.com>,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	andriy.shevchenko@linux.intel.com,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: Fix section mismatch with CONFIG_MODULES=n
-Date: Sun, 27 Sep 2026 09:00:05 -0500
-Message-ID: <20260927140005.28291-1-danishkhateeb03@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <argClwhgQyMkeq29@monoceros>
-References: <20260926163506.487201-1-danishkhateeb03@gmail.com> <argClwhgQyMkeq29@monoceros>
+        d=1e100.net; s=20260707; t=1790518668; x=1791123468;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=hSwyiSqecYc1b+uiw5Lwtr2HGwahE5D4OZtCe4oNRG4=;
+        b=Qbu0dVjNH55dnFdl90bmxJByBQ0ZBBs1n1Sa5qmNN5mNu1ZzUInk7jY8csUSt53Baq
+         bgj+qJheOCt1rAOMIGc6Zp4NeNR2gCx5Y6ZAE9uM/GQLJRwr1HmaLpkHoQFZ0BEkpvhn
+         0UrHBEK3pJh1IRz9Zill8mxXwTslGcHDlD7x8e+/xQI4DmU+jqzP2weAaWzRQ4qsZOae
+         2r+g66xVTsXUzZQ3KOcrwXH++XR0UiQNr0yAfrz0MdL7dftpR6MhJu2xGiulgguut0KY
+         n/+LLBPqa6lHmkmQbrlaO1g+FGYoXeoF+vYIn5ugjizM4M/gYdScp1nn484GtkfslB0Z
+         AOaQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxFoukIWNiFjT2R77Tw8PAVm/tuRU+Avi2p8WbXZFpR9Bc8zj+vUOr6bEZhXEOI2eQqq9Nvb9Q467fJDZE=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIiJ3TO+hmo4doGAVBTDLBI0df/oMMr6EPX6KIR6WBh6Lak99Ow
+	hHP25zv9HgZ0lp0reJ8TnTUVYUQJWFKPP1pjrXbZDQFtZPBInG6ATRA2mfrc1f9S
+X-Gm-Gg: AYBFou25+aIt0eQPdE//OJOHIixjF5/dyoPaqGuh3LzrdofY01TkZe5hWrebc45rGan
+	2P92OpY0K4SfqI9xFdhATIMsfNo6/GiuYnLrQMH3AYjzNV9gPzb4/w5fwJbkQpi/oN0E3wHyucL
+	HbKRzzxXJ+1UZjlTdPsq9rdy8QMMLlRzPr4/PC0uuhHzdt9LwmcmLmR5S6eGB60L0w1rJlPEvi/
+	VyK4dUP2bK6vEqI5SadtnOGcFSF99G7QAwt74K+n/DBK5P2vZfZZcIOsI5+rGGkFO1g5OtGD8FJ
+	rLvchPrMbQwzstPpkO0OCcAlfoT8GYEwRDbpU+r4ZrBKk85Wytuyc949CRADM00pitg/fXUcchu
+	fcUuC+1C8+Obl4JU/przE6TAVG7WEyZml6Ywk2gWVHWL3EyhXTfGjIHwLJPDarWtH5aTwhG8bgv
+	f3OWxUjnM3yjfW+YJ8A6X4Y8mPu1eVWPxu8qSwZ6dlLROAvDfwNm0dP6J60Ix23jpMqDPmjIv3u
+	UJc1T9QFf74XEpFEp+aRbQ27RUB0tFheOdwYRlaNvSQXzAV
+X-Received: by 2002:a05:6102:e10:b0:7a7:195a:1b27 with SMTP id ada2fe7eead31-7af1f611721mr3366281137.33.1790518668205;
+        Sun, 27 Sep 2026 07:17:48 -0700 (PDT)
+Received: from mail-ua2-f12.google.com (mail-ua2-f12.google.com. [74.125.226.204])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9889b1f453bsm2852658241.11.2026.09.27.07.17.46
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Sep 2026 07:17:46 -0700 (PDT)
+Received: by mail-ua2-f12.google.com with SMTP id a1e0cc1a2514c-97e7c62dde2so574772241.2
+        for <linux-serial@vger.kernel.org>; Sun, 27 Sep 2026 07:17:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBzDzMHc7WOS6Kbj/kE8YZuxLk3DWsWVus0BYCXMZ2mgyerXRbul3pytsXUftJvu83Ae2CHp3sFyfTETAfo=@vger.kernel.org
+X-Received: by 2002:a05:6102:1627:b0:7a6:f970:27d6 with SMTP id
+ ada2fe7eead31-7af1e9f2d0cmr3199511137.20.1790518666358; Sun, 27 Sep 2026
+ 07:17:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260731094402.741645-3-thorsten.blum@linux.dev> <CAMuHMdXfst6urDAoSKQgbjB0j0vU7c0v=WM-gOe93iBEb0Li=w@mail.gmail.com>
+In-Reply-To: <CAMuHMdXfst6urDAoSKQgbjB0j0vU7c0v=WM-gOe93iBEb0Li=w@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Sun, 27 Sep 2026 16:17:35 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWtDAzX5OsWHteKk7uyaFvXG1o9xvnsDkeH68HR47m9tQ@mail.gmail.com>
+X-Gm-Features: AclHuK8L3KT4Gm-Oc3iO6o7xAeDJJ21XQiCKW5qIvopKolo9VS5m0M8TAzfubE8
+Message-ID: <CAMuHMdWtDAzX5OsWHteKk7uyaFvXG1o9xvnsDkeH68HR47m9tQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] m68k/serial: Use generic BASE_BAUD in asm/serial.h
+To: Thorsten Blum <thorsten.blum@linux.dev>
+Cc: linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
+	"open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Hello Uwe,
+On Sun, 27 Sept 2026 at 14:26, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Fri, 31 Jul 2026 at 11:44, Thorsten Blum <thorsten.blum@linux.dev> wrote:
+> > Include asm-generic/serial.h and use the generic BASE_BAUD definition
+> > instead of redefining it.
+> >
+> > Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+>
+> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Sat, Sep 26, 2026 at 07:40:03PM +0200, Uwe Kleine-König wrote:
-> Isn't that a false positive because with CONFIG_MODULES=n .exit is
-> discarded and so the section mismatch doesn't matter?
+Sorry, wrong copy-'n-paste:
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+i.e. will queue in the m68k tree for v7.4.
 
-Yes, it's harmless at runtime, but modpost still warns on every
-CONFIG_MODULES=n build with SERIAL_8250_PNP (e.g. kunit.py --alltests),
-and the build fails with CONFIG_SECTION_MISMATCH_WARN_ONLY=n.
+Gr{oetje,eeting}s,
 
-> I thought __init_or_module was the right annotation ...
+                        Geert
 
-It is, modpost just doesn't know that. Without it the two helpers stay in
-memory after boot, 16 bytes each on x86_64. The alternative is teaching
-modpost to skip exit -> init references in vmlinux when CONFIG_MODULES=n.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Thanks
-Danish
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
