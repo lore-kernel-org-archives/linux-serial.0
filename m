@@ -1,298 +1,224 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C20D335C1BC;
-	Mon, 28 Sep 2026 08:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AAB046D085
+	for <linux-serial@vger.kernel.org>; Mon, 28 Sep 2026 08:59:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790585868; cv=none; b=F9CNIaI5zr2h0RG5bMDYhlGQGFLnPX7U49QQNdDmReJPnrVGW8w3fBr7eK++14cDC+FOBHlmbHCf37v2Yuk02biXNBM5nRe9pIB6cTfvB9cq2po+QlAmLD8TBSx/UcozK2zq3AZao4rI3YBfyBkbzYFsU0CLWcgq5bwTHR852hk=
+	t=1790585965; cv=none; b=Q9tpmDJ57dq0khAlGFaR/1TwfmRjE40pE0umMHieRBqA6nqSLi7AHYKcoR9+6zegjMhEKdDp8kPerOiVu8AsTrkB6yf0W0wkDlPNVikRSyl8OVKZXsqIDv5+f9albY+DuBOnB4XdVGm2ynOrAXFSkmwdMP4LE4R7/xdRdbLfyO0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790585868; c=relaxed/simple;
-	bh=JsKAJx8BMfZHoE7fTfSMmLBTHvQ4HXUbc3J/MfRdqnE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oQL/Oy5VVMCiStirf+oNPHNRm1LZd486uTTWzm50BDGjp1q1KzSTUxGr32JZy0T8uYmS0WsJR49sYlpUndNISu+/M8Vr/6gMF4Lk+CnVEqSbtSwW9wdxPaPXRBje5ZEYJOnkfrIJSSmeKsN8y3MobmniSb201hcheg0w6+FnedM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=h8HVsXDJ; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Rwevysdt; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=Qfv7yWhd; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=gvfgsLyC; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1790585965; c=relaxed/simple;
+	bh=u2z1RbxlO+iN4QhyX1e0vutTscqzLPwYGNNKsJVvdl4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=J6vLzIu/rxllLjChNlIO7ukuWXC9aN8HlHkRX1Ep9KR2aiwzuMSTSUGHeVaiCaK2ezpt8GyNG92bxRpFx3RZVPjwJEFKChryR+7LIuJwPmivfnchhsl8H4DT3j3dkVrVc8F1a2XcuE/EbMXZMy/wmXhiXmGtiVl07H/MAJeeyxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=O50Rlp6P; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=UhX6Aqdi; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="h8HVsXDJ";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Rwevysdt";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="Qfv7yWhd";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="gvfgsLyC"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id BBE6C2005F;
-	Mon, 28 Sep 2026 08:57:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1790585860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQInQiSoFgN20FwPZAQkSimSNxx0P+gPkILtWae2sXM=;
-	b=h8HVsXDJ57TrisiNuQXH+7Ry2/1MsQ1mui1Kn3oU0hUZJnAqXjylvtW57BfXbW4wzTyLD2
-	5RgLDN7bcM+cghkc7n6q/NzQFCSX2LB/4PKPxL8ASdJr16cpUgjFVUsoGHGxBvxFUes4SV
-	9M0hfLQHkLN8rOX5nRHxVqvMSvjfi+Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1790585860;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQInQiSoFgN20FwPZAQkSimSNxx0P+gPkILtWae2sXM=;
-	b=RwevysdtqOOA4dK4Ra23UrqUsvpYR/BQ/gMqlS/a0qGYK73Wh5WFvsos5Dif7l0p4AOpDS
-	KPxJwtYofDsRz5DQ==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=Qfv7yWhd;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=gvfgsLyC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1790585856; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQInQiSoFgN20FwPZAQkSimSNxx0P+gPkILtWae2sXM=;
-	b=Qfv7yWhdydEZ6HAj5qrhZvOl8P6pQus72AmkCQfsrmvKpjcw7VmivCU7MmsCWCLpfpWnXF
-	wwmlEayUlLA1kVGn8ifYby0nB5LaQZiUF4AVa5gmqLJ5J8tmgj/YlUZhggvsH1RXI6vBct
-	+p5hyu8RRnbknA+XJrZ3KpK2f9lg8WM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1790585856;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQInQiSoFgN20FwPZAQkSimSNxx0P+gPkILtWae2sXM=;
-	b=gvfgsLyCZtpmD59/Pt9eux8K1yBcpF0Qh45hBdddqJo1KHYK8jWbfTLFXxEMp0l2ryvHDg
-	6RiYCVqSEwhoZhBw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6CB2013432;
-	Mon, 28 Sep 2026 08:57:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Kr86I/crumo3HwAAD6G6ig:T6
-	(envelope-from <tzimmermann@suse.de>); Mon, 28 Sep 2026 08:57:29 +0000
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: deller@gmx.de,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	simona@ffwll.ch
-Cc: linux-fbdev@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linux-serial@vger.kernel.org,
-	sashiko-reviews@lists.linux.dev,
-	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH v3 5/5] fbcon: Replace fbcon_fill_cursor_mask() with fbcon_cursor_glyph()
-Date: Mon, 28 Sep 2026 10:55:28 +0200
-Message-ID: <20260928085724.41660-6-tzimmermann@suse.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260928085724.41660-1-tzimmermann@suse.de>
-References: <20260928085724.41660-1-tzimmermann@suse.de>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="O50Rlp6P";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="UhX6Aqdi"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68S80TQ1772031
+	for <linux-serial@vger.kernel.org>; Mon, 28 Sep 2026 08:59:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	RA/vkNg7yN8i6zn82jKDCXocOVdLs/IMifjYk1p+w80=; b=O50Rlp6PfgjifU8Q
+	iHxTBmTSP5Wh9vUyfvMJNUht+Bm0i3h+l3l/kgzlOdEg5D3EyV84RpqM4flKRyGm
+	MCjcwkSoGEZ+YjPNIk2DnyPPa5GZTDn5ituQiuESayBl3whUyTH6Zta0JPQw+VDv
+	0SFFq/33gE1WJlT1sqAUzBe9uNLzmSQ5zvYqeTU0SDf1zJBwdzo57aOw3k2TADBw
+	nib8hD+T6jt5tgHJnTtma+5GbEe+9jl+EwAjlz3DbfNc5n3IUo8ik9RnPKUJAXfH
+	ZAKKRCbRtcxNIOwM2yR8JwtGxTHskfKY8DQ5SV1am2lM9FGnKf+bN0cWO7GnJPW5
+	fGlG6A==
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gx3dp5p22-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Mon, 28 Sep 2026 08:59:22 +0000 (GMT)
+Received: by mail-pj1-f72.google.com with SMTP id 98e67ed59e1d1-39d865b11b4so3423340a91.3
+        for <linux-serial@vger.kernel.org>; Mon, 28 Sep 2026 01:59:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1790585961; x=1791190761; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RA/vkNg7yN8i6zn82jKDCXocOVdLs/IMifjYk1p+w80=;
+        b=UhX6Aqdim5cbUbujxCAm2U2K9b2SP7kealQIWS8mY8JiSBH6j+JTt+CUfgchzoIi14
+         eP0rgu4sEDUeoTVIwq5kkTMUOD2VLg+MNUTWQ3+EKOkSjKRgSLUnx6d64YYRBhX/3X8x
+         TSFvnxipkRE675RTKK3HHBxqAcii4/QycJUlU0BdZbQcUGUmULIMER3PEuGZeuaNYGm8
+         JyRnBzewB9GlFTYGhgP/nyPCIdQ5bK3ZTLFktHsYc9F2Zj2X3ApBgXEkl6qHHoowKgkn
+         ezuJ9z1NaKovxWtF6C1Sw3Qy5Bb/LSLpqBHgiws2DCN5a5padDHxY9hHjKKXqvSoAaRv
+         tQwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790585961; x=1791190761;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=RA/vkNg7yN8i6zn82jKDCXocOVdLs/IMifjYk1p+w80=;
+        b=rBr1fgqa/WEUEVq+/Bu37yXZFeTCsS8ILKcqUiq7iUMKmSTjDgVu6e30YVmvWretbc
+         d5rD4lQe+DTsozhLofbYFwyh3ckFhAHkbo0iunVEXdhv9R6yNwG7pETSNVkd1EJxK/Uz
+         uyLIqCyoVIKgn1LUm7AsLoz0ktVBdvS7ndF/cW7eKnFlrqmgUihDOsiTEa1Pigmg/rZv
+         kRJ9cmRpykVsjGCkdq8tk9EgfU+5quQIrKYyxYBfvr8ioEcnIWy5ZhH9163zpmLmH8RX
+         nfBtaLknadn56nTYrR1esSdz4CQmha/1Iiw875oxKsSxulYBuXZXVNgDBJKUTQu8aVXl
+         xl0w==
+X-Forwarded-Encrypted: i=1; AKwUvBy32sa5zattWT2/UtXd2KazXJyRO+9dnf2h0mFXiMCw/oMirrD3M/kT35Q5hPvg3ptcF69xzpAdh1kCTV4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJbBYqJfsYwmrMF3r1A3Mpf2iLtPCmbJYVgYVtTJpe3f+SaR6H/
+	F1PfW7HWl+aK3adkpqp/b47FVNQuNGeYw9zDptbo/mIkGntsRmPjnFHVKfixBXBonU5OiOsrf83
+	gT0kcvj5xI6ODpuipt1/kNuAd6goW9YdZHkX4pw1zioZmNg77De+4oGJ0Nuv2hL+A+/NxSRZ3Ie
+	c=
+X-Gm-Gg: AYBFou2q/PjrfiU3eHzxsQNNOVqggIxbS5uOeDKV4DllfHhrWlcRrqtJ79uqX/YcI45
+	LhPDYvGfzbdvSc6NrMxsJqJYLi5g5JrrNLyct1bWaLmp/1C2kTRUuUPE/yUGbmMg8hWIHAZBhOW
+	kNtKgsxMODU++CtyIqItcFFSRCbD/60N1+sy2j3I7Az3mEVHNd90s9pMvqZS9UFv9NgG9U3Gsf0
+	Y+yL88InfwWXLWtOrog6SgDLiZRg4TQweA5yiVETjthzFQTFVgCq0K1cpSPcYKF3t31Vfb/twOS
+	RFe2JicHDWHvUyk0UrIrg9MRk+90ol5RqB6kLZZuQTn1QngPRpswzbFSqNqtW0qMcm9BKC/SBr/
+	UAI9AU6yI+Ho4WrNgfJpuLVMQxK8hvA==
+X-Received: by 2002:a17:90b:4a41:b0:3a0:ea63:13f4 with SMTP id 98e67ed59e1d1-3a0ea631b3bmr4076106a91.38.1790585961395;
+        Mon, 28 Sep 2026 01:59:21 -0700 (PDT)
+X-Received: by 2002:a17:90b:4a41:b0:3a0:ea63:13f4 with SMTP id 98e67ed59e1d1-3a0ea631b3bmr4076080a91.38.1790585960815;
+        Mon, 28 Sep 2026 01:59:20 -0700 (PDT)
+Received: from [10.218.14.97] ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a0e151be04sm13302899a91.9.2026.09.28.01.59.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2026 01:59:20 -0700 (PDT)
+Message-ID: <db2fa5de-6b2b-4555-a268-1c4f9e736f24@oss.qualcomm.com>
+Date: Mon, 28 Sep 2026 14:29:12 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/9] soc: qcom: geni: Derive SE clock configuration
+ from OPP table on SA8255P
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Ulf Hansson <ulf.hansson@oss.qualcomm.com>,
+        Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>
+Cc: Sudeep Holla <sudeep.holla@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Ulf Hansson <ulfh@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        chandana.chiluveru@oss.qualcomm.com, arm-scmi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, Abel Vesa <abel.vesa@oss.qualcomm.com>
+References: <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-0-091697dbeb02@oss.qualcomm.com>
+ <CAPx+jO9fcvBsxe9yx9oK=0EXmpNwub5ba0a-TGk1WRFaRGsqpA@mail.gmail.com>
+ <177884a8-902f-49be-8fcb-b2bec3ec7d6c@oss.qualcomm.com>
+ <CAPx+jO8bXn2F3cWz87Ozjrh00E+a_UWBrHeUViTEkTL87JHW9Q@mail.gmail.com>
+ <0f5494c7-c3c1-4668-a09f-d8c43d1c58b9@oss.qualcomm.com>
+ <6c28e672-349c-49cb-892d-ec521b3004bf@oss.qualcomm.com>
+ <ae4581c0-1339-4398-8d35-1d7611a0f47e@oss.qualcomm.com>
+Content-Language: en-US
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+In-Reply-To: <ae4581c0-1339-4398-8d35-1d7611a0f47e@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Level: 
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Queue-Id: BBE6C2005F
-X-Spamd-Result: default: False [-3.01 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	MID_CONTAINS_FROM(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_MISSING_CHARSET(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	R_RATELIMIT(0.00)[to_ip_from(RLqtkr6cif1ebgurukgmwdm7xc)];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:dkim,suse.de:email,suse.de:mid,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,gmx.de:email];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de]
-X-Spam-Flag: NO
-X-Spam-Score: -3.01
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTI4MDAzNSBTYWx0ZWRfX2KOyQnWPD0aL
+ TMvpG7AGh7W+LghWiJJPQ3wtyn3CDa5aKEd2GeHlluXWcWNlvHongnjcUj/W6nxLPxDNxcMae/O
+ dVdrZiSFbWovvV955oUAMjLRs/PHvMPyeEfYDQOaJoePVy9jFTAvvufDMCH69DozY2rZ23oYt1Z
+ IMtvgAdbN6Nr3D3X0mSvhsTAURP05fWFjTyY7iyVD701zsnbJDIvheaRoihNq49ydO4B2V99+RQ
+ 4egBj71EmtSQ9L84lylsacgsr4khbNl+I9zEEojV+d2aikF1VRZr42mNMRoZERy96XdkDtDBYYQ
+ 03eyx2HuZZ0yepJK442UplLxCazQNCTJibqY5A5IbdJtyR+3TRvmYBBF/95jsVKDbRlYHE+JA8X
+ gTLTTqIUZNbLz+YGxdiH0Th4n5Vb4W4G5OKIgb3SThhVVOWQG0mig2k+DacqA5RbxzNXfi51P1M
+ sqUS9r6utjJGHJUpMZw==
+X-Authority-Analysis: v=2.4 cv=QsXLTlyd c=1 sm=1 tr=0 ts=6aba2c6a cx=c_pps
+ a=RP+M6JBNLl+fLTcSJhASfg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
+ a=EUspDBNiAAAA:8 a=AjVmRg8o_XJH9waDQPAA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=iS9zxrgQBfv6-_F4QbHw:22
+X-Proofpoint-GUID: sNyW7QlHFt3UqxlWZYgnrF9Gad2KrN-X
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTI4MDAzNSBTYWx0ZWRfX6WRhV82xkoce
+ tKjwqtu0b+3strnKYPfW4GNGzFibJrYoeTSyHif605tPXvEJWcikKkK9OPb3UrT1yZ1uwU89qnI
+ oKyX48KhWHaz39OrPLrah16golo/b2c=
+X-Proofpoint-ORIG-GUID: sNyW7QlHFt3UqxlWZYgnrF9Gad2KrN-X
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-28_01,2026-09-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 suspectscore=0 clxscore=1015 malwarescore=0 phishscore=0
+ adultscore=0 bulkscore=0 priorityscore=1501 spamscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609280035
 
-The kernel's font library provides font_glyph_cursor() to create cursor
-glyphs. Replace fbcon's fbcon_fill_cursor_mask() with a new helper that
-uses font_glyph_cursor().
+Hi Konrad,
 
-The cursor shapes remain mostly unchanged. The only exception is in
-underline cursors for fonts with a size larger than 10. The underlining
-dash is now one pixel closer to the font-glyph data, so that the cursor
-looks less detached. This follows the style used by vgacon.
+On 22-09-2026 18:36, Konrad Dybcio wrote:
+> On 9/11/26 7:33 PM, Praveen Talari wrote:
+>> Hi Konrad,
+>>
+>> On 04-09-2026 14:30, Konrad Dybcio wrote:
+>>> On 9/4/26 9:56 AM, Ulf Hansson wrote:
+>>>> On Tue, Sep 1, 2026 at 6:48 PM Praveen Talari
+>>>> <praveen.talari@oss.qualcomm.com> wrote:
+>>> [...]
+>>>
+>>>> So geni_se_clk_freq_match() is used by two consumer drivers today,
+>>>> drivers/spi/spi-geni-qcom.c and drivers/tty/serial/qcom_geni_serial.c.
+>>>>
+>>>> Beyond the $subject series, there will be even more consumer drivers
+>>>> that call these platform specific functions. As I said above, I don't
+>>>> think this is moving things in the right direction.
+>>>>
+>>>> If this can't be solved with generic frameworks (clocks and OPP),
+>>>> please clarify why so we can figure out a better way forward.
+>>> The way I read it, isn't geni_se_clk_freq_match() more or less
+>>> dev_pm_opp_find_freq_exact() called in a loop with an increasing
+>>> divider?
+>> Currently, geni_se_clk_freq_match() relies on clk_perf_tbl to
+>> determine the source clock index and divider corresponding to
+>> a requested frequency.
+> So I think the part that blocks going in the direction I
+> suggested is that the index and divider values you mentioned
+> are then required to be fed into some GENI-internal registers:
+>
+> -- drivers/spi/spi-geni-qcom.c
+> clk_sel = idx & CLK_SEL_MSK;
+> m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
+> writel(clk_sel, se->base + SE_GENI_CLK_SEL);
+> writel(m_clk_cfg, se->base + GENI_SER_M_CLK_CFG);
+>
+> and it seems like every protocol driver does some NIH things
+> to take care of that.. perhaps this bit could be moved up to
+> the common geni-se layer (Mukesh, are there some historical
+> reasons for this being handled in proto drivers?)
 
-v2:
-- adapt to new VT interface
+Just to confirm, would you like the clock programming logic to be moved 
+into
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Helge Deller <deller@gmx.de>
----
- drivers/video/fbdev/core/bitblit.c   |  3 +-
- drivers/video/fbdev/core/fbcon.c     | 45 +++++++---------------------
- drivers/video/fbdev/core/fbcon.h     |  2 +-
- drivers/video/fbdev/core/fbcon_ccw.c |  3 +-
- drivers/video/fbdev/core/fbcon_cw.c  |  3 +-
- drivers/video/fbdev/core/fbcon_ud.c  |  3 +-
- 6 files changed, 16 insertions(+), 43 deletions(-)
+the common GENI driver (geni-se.c)? If yes, I can take that up in a 
+separate series.
 
-diff --git a/drivers/video/fbdev/core/bitblit.c b/drivers/video/fbdev/core/bitblit.c
-index 39f44258d793..03b3b18e1fe9 100644
---- a/drivers/video/fbdev/core/bitblit.c
-+++ b/drivers/video/fbdev/core/bitblit.c
-@@ -334,11 +334,10 @@ static void bit_cursor(struct vc_data *vc, struct fb_info *info, bool enable,
- 	    vc->vc_cursor_type != par->p->cursor_shape ||
- 	    par->cursor_state.mask == NULL ||
- 	    par->cursor_reset) {
--		unsigned char *mask = kmalloc_array(vc->vc_font.height, w, GFP_ATOMIC);
-+		unsigned char *mask = fbcon_cursor_glyph(&vc->vc_font, vc->vc_cursor_type);
- 
- 		if (!mask)
- 			return;
--		fbcon_fill_cursor_mask(par, vc, mask);
- 
- 		kfree(par->cursor_state.mask);
- 		par->cursor_state.mask = (const char *)mask;
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 615fa596b7cc..8581b7a9b3b7 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -444,44 +444,21 @@ static void fbcon_del_cursor_work(struct fb_info *info)
- 	cancel_delayed_work_sync(&par->cursor_work);
- }
- 
--void fbcon_fill_cursor_mask(struct fbcon_par *par, struct vc_data *vc, unsigned char *mask)
-+unsigned char *fbcon_cursor_glyph(const struct vc_font *font, unsigned int cursor_type)
- {
--	static const unsigned int pattern = 0xffffffff;
--	unsigned int pitch = vc_font_pitch(&vc->vc_font);
--	unsigned int cur_height, size;
-+	unsigned int height = font->height;
-+	unsigned int cursor_size = CUR_SIZE(cursor_type);
-+	unsigned char *glyph;
- 
--	switch (CUR_SIZE(vc->vc_cursor_type)) {
--	case CUR_NONE:
--		cur_height = 0;
--		break;
--	case CUR_UNDERLINE:
--		if (vc->vc_font.height < 10)
--			cur_height = 1;
--		else
--			cur_height = 2;
--		break;
--	case CUR_LOWER_THIRD:
--		cur_height = vc->vc_font.height / 3;
--		break;
--	case CUR_LOWER_HALF:
--		cur_height = vc->vc_font.height / 2;
--		break;
--	case CUR_TWO_THIRDS:
--		cur_height = (vc->vc_font.height * 2) / 3;
--		break;
--	case CUR_BLOCK:
--	default:
--		cur_height = vc->vc_font.height;
--		break;
--	}
-+	glyph = kmalloc_array(height, vc_font_pitch(font), GFP_ATOMIC);
-+	if (!glyph)
-+		return NULL;
- 
--	size = (vc->vc_font.height - cur_height) * pitch;
--	while (size--)
--		*mask++ = (unsigned char)~pattern;
-+	font_glyph_cursor(font->width, height,
-+			  vc_cursor_start(height, cursor_size),
-+			  vc_cursor_end(height, cursor_size), glyph);
- 
--	size = cur_height * pitch;
--	while (size--)
--		*mask++ = (unsigned char)pattern;
-+	return glyph;
- }
- 
- #ifndef MODULE
-diff --git a/drivers/video/fbdev/core/fbcon.h b/drivers/video/fbdev/core/fbcon.h
-index 407d207b14f1..054cf66b15fa 100644
---- a/drivers/video/fbdev/core/fbcon.h
-+++ b/drivers/video/fbdev/core/fbcon.h
-@@ -202,7 +202,7 @@ extern void fbcon_set_tileops(struct vc_data *vc, struct fb_info *info);
- extern void fbcon_set_bitops_ur(struct fbcon_par *par);
- extern int  soft_cursor(struct fb_info *info, struct fb_cursor *cursor);
- 
--void fbcon_fill_cursor_mask(struct fbcon_par *par, struct vc_data *vc, unsigned char *mask);
-+unsigned char *fbcon_cursor_glyph(const struct vc_font *font, unsigned int cursor_type);
- 
- #define FBCON_ATTRIBUTE_UNDERLINE 1
- #define FBCON_ATTRIBUTE_REVERSE   2
-diff --git a/drivers/video/fbdev/core/fbcon_ccw.c b/drivers/video/fbdev/core/fbcon_ccw.c
-index 33f02d579e02..9a9839631cc5 100644
---- a/drivers/video/fbdev/core/fbcon_ccw.c
-+++ b/drivers/video/fbdev/core/fbcon_ccw.c
-@@ -298,10 +298,9 @@ static void ccw_cursor(struct vc_data *vc, struct fb_info *info, bool enable,
- 	    par->cursor_reset) {
- 		unsigned char *tmp, *mask;
- 
--		tmp = kmalloc_array(vc->vc_font.height, vc_font_pitch(&vc->vc_font), GFP_ATOMIC);
-+		tmp = fbcon_cursor_glyph(&vc->vc_font, vc->vc_cursor_type);
- 		if (!tmp)
- 			return;
--		fbcon_fill_cursor_mask(par, vc, tmp);
- 
- 		mask = kmalloc_array(vc->vc_font.width, w, GFP_ATOMIC);
- 		if (!mask) {
-diff --git a/drivers/video/fbdev/core/fbcon_cw.c b/drivers/video/fbdev/core/fbcon_cw.c
-index bde820967eb9..4cb20337cf79 100644
---- a/drivers/video/fbdev/core/fbcon_cw.c
-+++ b/drivers/video/fbdev/core/fbcon_cw.c
-@@ -281,10 +281,9 @@ static void cw_cursor(struct vc_data *vc, struct fb_info *info, bool enable,
- 	    par->cursor_reset) {
- 		unsigned char *tmp, *mask;
- 
--		tmp = kmalloc_array(vc->vc_font.height, vc_font_pitch(&vc->vc_font), GFP_ATOMIC);
-+		tmp = fbcon_cursor_glyph(&vc->vc_font, vc->vc_cursor_type);
- 		if (!tmp)
- 			return;
--		fbcon_fill_cursor_mask(par, vc, tmp);
- 
- 		mask = kmalloc_array(vc->vc_font.width, w, GFP_ATOMIC);
- 		if (!mask) {
-diff --git a/drivers/video/fbdev/core/fbcon_ud.c b/drivers/video/fbdev/core/fbcon_ud.c
-index eaf08999e249..ac22b9846b79 100644
---- a/drivers/video/fbdev/core/fbcon_ud.c
-+++ b/drivers/video/fbdev/core/fbcon_ud.c
-@@ -328,10 +328,9 @@ static void ud_cursor(struct vc_data *vc, struct fb_info *info, bool enable,
- 	    par->cursor_reset) {
- 		unsigned char *tmp, *mask;
- 
--		tmp = kmalloc_array(vc->vc_font.height, w, GFP_ATOMIC);
-+		tmp = fbcon_cursor_glyph(&vc->vc_font, vc->vc_cursor_type);
- 		if (!tmp)
- 			return;
--		fbcon_fill_cursor_mask(par, vc, tmp);
- 
- 		mask = kmalloc_array(vc->vc_font.height, w, GFP_ATOMIC);
- 		if (!mask) {
--- 
-2.55.0
 
+Thanks,
+
+Praveen Talari
+
+>
+> I think this may just be an effect of how the hardware is wired
+> up - the ""DFS"" clocks that feed into the serial engines are
+> partly set up in the clock controller driver, but then there's
+> this bit:
+>
+> -- drivers/clk/qcom/clk-rcg2.c
+> clk_rcg2_enable_dfs()
+> 	/*
+>           * Rate changes with consumer writing a register in
+>           * their own I/O region
+>           */
+>          init->flags |= CLK_GET_RATE_NOCACHE;
+>          init->ops = &clk_rcg2_dfs_ops;
+>
+> which is the writes i mentioned above.
+>
+> At a glance, plumbing this into OPP would require making GENI
+> SEs self-consumed clock providers, which sounds no less messy
+>
+> Konrad
