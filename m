@@ -1,185 +1,101 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp71.iad3a.emailsrvr.com (smtp71.iad3a.emailsrvr.com [173.203.187.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FFCE3033E1;
-	Mon, 28 Sep 2026 13:47:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E44194EBAF6;
+	Mon, 28 Sep 2026 16:26:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=173.203.187.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790603264; cv=none; b=RxAB68KZPhd36bLrp+9HdnMPKdWrlCN/fwClO9Pm5cNC2syy4b2Am3raPP6t0vjovpplHc+qnFz0+aa6FcQDUknBOoT5qrIYGTWVqWTEw0p2Q2is3zoa8UyjNLWm/Ok0ljoXao1i7BaANap3cRQml/xtXJQIzQQBVv9DuMagexc=
+	t=1790612806; cv=none; b=jvc9JQ/FNmXBC3ZzkZIlg2FBnS4k2BmR7QKqIUYonafR3WO5yC35JgRs5jShXeBk/8eeqe+/zCEw6Cg0SgVvKoRi/Z/b4ZsXl1TGxnob001jdLO4832eYdrAtYwuecyfKRS/a+m/ER9hRc/uTPjuVrOSSA3ZKz9fYe5HY5tTDlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790603264; c=relaxed/simple;
-	bh=TdVrV+XoStnJHbbdcVolHs0UuEHkirus5Mdxuy/jvY8=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=rjiGUBEoo4b2FtEdCYlSFEI9huaJ8fM0zGFtNAVcKzQs/taQqP6g8JzoXWvRo+HcanKg1mPEh/QXJj7jA8vgNcg4fhbg5O1ZcZ/S9EiN2M8gRpvrxJl8mAVjVaADbblDVyU2oZDWkTOdOvv+ci4nw1uasv1ua7JG4a/W8mi+i94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=tXESBM8Y; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1790612806; c=relaxed/simple;
+	bh=dcfqKy8RuwJf19ZxcNaKgTpq2Zkz6O8a3A4laJuSYfM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=haU7jckcY+8/MfJ3wr81dqoIqS0ryguJAG3rRU+Ermr59D65B7d86805euUx9Rl412L73nBlA8mnM12UEVQ4pdvNDST3IXFeuiNyRw7/M7YIvchvlTgkPnOhHY5ulXz4uKYPY5z1i5QWlWulzI3X2wUMK1vbAelKbOR7heGzrh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mev.co.uk; spf=pass smtp.mailfrom=mev.co.uk; dkim=pass (1024-bit key) header.d=g001.emailsrvr.com header.i=@g001.emailsrvr.com header.b=knMpqU6M; dkim=pass (1024-bit key) header.d=mev.co.uk header.i=@mev.co.uk header.b=dAAx1Q/7; arc=none smtp.client-ip=173.203.187.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mev.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mev.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="tXESBM8Y"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=WaPXt9W8ERF/Z/EHBhvmEv9MDXT+s5lvbmV4Y5KaIMo=; b=tXESBM8YW0rRFBU9XH/usc/ipN
-	9PDFH0HnDTj8lY4vQBrYf45bbJ0w2VVIZmLwN0ao2Wd/CTsAGTKk5aFUTsKvWvSlfpjbs2CRfI/k6
-	74XLbTMKWm7kGlWqF6vfijKMp66rGiZ9uDJFSalld6blD9ihd2ZDkQj3xcWFq0rP5eqs=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1xBBhe-000000006c9-1WVR;
-	Mon, 28 Sep 2026 09:47:34 -0400
-Date: Mon, 28 Sep 2026 09:47:33 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
- <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>,
- <stable@vger.kernel.org>
-Subject: Re: [PATCH v2 RESEND] serial: sc16is7xx: fix TX gap caused by kfifo
- circular buffer wrap-around
-Message-Id: <20260928094733.09482cd6d6565588e2ecd267@hugovil.com>
-In-Reply-To: <20260928085559.3341419-1-paultyson.mbewe@ziehl-abegg.de>
-References: <418f9ae5-8827-475c-b465-1271a784fbf1.bc56e27e-ecd8-43ae-bb87-75bfd472a28d.58f59cf9-4c99-4e79-8e3b-28e6fccd454d@emailsignatures365.codetwo.com>
-	<20260928085559.3341419-1-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=g001.emailsrvr.com header.i=@g001.emailsrvr.com header.b="knMpqU6M";
+	dkim=pass (1024-bit key) header.d=mev.co.uk header.i=@mev.co.uk header.b="dAAx1Q/7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=g001.emailsrvr.com;
+	s=feedback; t=1790612291;
+	bh=dcfqKy8RuwJf19ZxcNaKgTpq2Zkz6O8a3A4laJuSYfM=;
+	h=Date:Subject:To:From:From;
+	b=knMpqU6Mk0kmP+ISs7Cok7X4ebagiVtXT1NiP8qiqgH159TGzqgxajWFaZpSo70uz
+	 X4JvLjhst970T9CuQ/B1UK7DDj94fUZ9D0EuIcMXbSMkMJeSP20XqvG8xys/G508W2
+	 FOaJU8N23FUYtqhMknHHcQaVfBr5pD0xTp3BApkM=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
+	s=20221208-6x11dpa4; t=1790612291;
+	bh=dcfqKy8RuwJf19ZxcNaKgTpq2Zkz6O8a3A4laJuSYfM=;
+	h=Date:Subject:To:From:From;
+	b=dAAx1Q/7P23kXEJJmdf1NGwU5hwBxkB9RRRgCV8DxfO9tKEKn3op87rBbKCtMQxor
+	 A7xRjYnmS2/wTvYLr7pPA1i+MhM1dZVN9lyPAynl4YEL0TQoXXoZQxmf7SdxwFhpQQ
+	 4DXajLwgB0+U+CoG1uD67D8LZvzt6Rhe9+Cdueqc=
+X-Auth-ID: abbotti@mev.co.uk
+Received: by smtp17.relay.iad3a.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id 02B6C23DAD;
+	Mon, 28 Sep 2026 12:18:06 -0400 (EDT)
+Message-ID: <efbb4382-45eb-41a5-afe3-6c359714aa89@mev.co.uk>
+Date: Mon, 28 Sep 2026 17:18:06 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] drivers: Replace __MODULE_STRING() with __stringify()
+To: Petr Pavlu <petr.pavlu@suse.com>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
+ <linux@roeck-us.net>, H Hartley Sweeten <hsweeten@visionengravers.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Rudolf Marek <r.marek@assembler.cz>, Andi Shyti <andi.shyti@kernel.org>,
+ Chris Snook <chris.snook@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Tony Nguyen <anthony.l.nguyen@intel.com>,
+ Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+ =?UTF-8?Q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Andreas Noever <andreas.noever@gmail.com>,
+ Mika Westerberg <westeri@kernel.org>, Yehezkel Bernat
+ <YehezkelShB@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Duncan Sands <duncan.sands@free.fr>,
+ Chas Williams <3chas3@gmail.com>, Luis Chamberlain <mcgrof@kernel.org>,
+ Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen <samitolvanen@google.com>,
+ Aaron Tomlin <atomlin@atomlin.com>
+Cc: linux-watchdog@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
+ linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260922-module-string-v1-0-c18766690185@suse.com>
+ <20260922-module-string-v1-2-c18766690185@suse.com>
+Content-Language: en-US
+From: Ian Abbott <abbotti@mev.co.uk>
+Organization: MEV Ltd.
+In-Reply-To: <20260922-module-string-v1-2-c18766690185@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+X-Classification-ID: 15bec65d-5b3a-44b5-8eff-f2a711d4e1ec-1-1
 
-Hi Paul,
-
-On Mon, 28 Sep 2026 10:55:59 +0200
-Paul Mbewe <paultyson.mbewe@ziehl-abegg.de> wrote:
-
-> kfifo_out_linear_ptr() returns only one contiguous linear segment of the
-> xmit kfifo. When transmit data wraps around the end of the kfifo, only
-> the first segment up to the buffer end is sent. The remaining data at
-> the start of the kfifo is not sent until the next TX interrupt fires,
-> resulting in a visible mid-frame TX gap on the wire.
+On 2026-09-22 14:32, Petr Pavlu wrote:
+> __MODULE_STRING() has been an alias for __stringify() since "[PATCH]
+> MODULE_PARM support for older modules" [1] in 2002-12. That change also
+> moved it to the graveyard section at the end of linux/module.h
 > 
-> The resulting gap is unintended: data remains queued in the xmit kfifo,
-> but the hardware TX FIFO drains empty before the remaining segment is
-> sent. Such gaps can break timing-sensitive serial protocols such as
-> Modbus RTU.
+> Replace the remaining uses of __MODULE_STRING() with __stringify() in
+> preparation for its removal.
 > 
-> Modbus RTU requires a message to be transmitted as a continuous stream.
-> For baud rates above 19200, the Modbus Serial Line guide recommends a
-> fixed 750 us inter-character timeout. On the tested 115200-baud system,
-> oscilloscope measurements showed mid-frame gaps exceeding that value.
-> Receivers using the recommended timeout may therefore discard the
-> incomplete message.
-> 
-> The incomplete transfer also causes unnecessary TX interrupts: instead
-> of using all available hardware TX FIFO space in one go, the driver
-> requires an extra interrupt to send the remaining segment after the
-> wrap.
-> 
-> After the tty xmit buffer was converted to a kfifo, the driver used
-> uart_fifo_out() to copy data into a linear staging buffer, allowing a
-> transfer to span the kfifo wrap-around boundary. Commit 133f4c00b8b2
-> ("serial: sc16is7xx: fix TX fifo corruption") replaced uart_fifo_out()
-> with a single kfifo_out_linear_ptr() call to remove the shared TX/RX
-> buffer. Since kfifo_out_linear_ptr() exposes only one contiguous
-> segment, that change lost the wrap-around handling.
-> 
-> Fix this by calling kfifo_out_linear_ptr() in a loop, advancing through
-> all contiguous segments until the available hardware TX FIFO space is
-> exhausted or the xmit kfifo is empty.
-> 
-> This fixes the kfifo wrap-around gap independently of the stale-TXLVL
-> refill issue.
-> 
-> Tested on SC16IS752 over SPI driving RS-485 at 115200 baud 8N1 on an
-> i.MX6ULL-based board. Oscilloscope measurements confirmed mid-frame
-> breaks at the kfifo wrap-around boundary before the fix; no such breaks
-> were observed afterward.
-> 
-> Fixes: 133f4c00b8b2 ("serial: sc16is7xx: fix TX fifo corruption")
-> Cc: stable@vger.kernel.org
-> Reported-by: Tobias Gannert <tobias.gannert@ziehl-abegg.de>
-> Reviewed-by: Joachim Knorr <joachim.knorr@ziehl-abegg.de>
-> Link: https://lore.kernel.org/linux-serial/20260623112225.82386-2-paultyson.mbewe@ziehl-abegg.de/
-> Signed-off-by: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-> ---
-> Changes in v2:
->   - Corrected the Modbus RTU timing description for baud rates above 19200
->   - Distinguished the xmit kfifo from the hardware TX FIFO
->   - Clarified that this fixes one independent TX gap source
->   - Corrected the introducing-commit history for direct kfifo access
->   - Removed the max310x comparison
->   - Addressed Hugo Villeneuve's review: clarified that multiple segments
->     are sent, scoped tail to the loop, and added the requested blank line
-> 
->  drivers/tty/serial/sc16is7xx.c | 17 +++++++++++++----
->  1 file changed, 13 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 7107a0fb1e7b..fa7805d2cde2 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -652,7 +652,6 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
->          struct tty_port *tport = &port->state->port;
->          unsigned long flags;
->          unsigned int txlen;
-> -       unsigned char *tail;
->  
->          if (unlikely(port->x_char)) {
->                  sc16is7xx_port_write(port, SC16IS7XX_THR_REG, port->x_char);
-> @@ -677,9 +676,19 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
->                  txlen = 0;
->          }
->  
-> -       txlen = kfifo_out_linear_ptr(&tport->xmit_fifo, &tail, txlen);
-> -       sc16is7xx_fifo_write(port, tail, txlen);
-> -       uart_xmit_advance(port, txlen);
-> +       /* Handle circular buffer wrap-around by sending multiple segments */
-> +       while (txlen > 0 && !kfifo_is_empty(&tport->xmit_fifo)) {
-> +               unsigned char *tail;
-> +               unsigned int to_send;
-> +
-> +               to_send = kfifo_out_linear_ptr(&tport->xmit_fifo, &tail, txlen);
-> +               if (!to_send)
-> +                       break;
-> +
-> +               sc16is7xx_fifo_write(port, tail, to_send);
-> +               uart_xmit_advance(port, to_send);
-> +               txlen -= to_send;
-> +       }
->  
->          uart_port_lock_irqsave(port, &flags);
->          if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-> --
-> 2.43.0
-> 
-> _______________________________________ 
-> 
-> ZIEHL-ABEGG 
-> 
-> Executive Board: Joachim Ley (Chairman), Marco Altherr, Wolfgang Mayer
-> Supervisory Board: Dennis Ziehl (Chairman) 
-> 
-> Court of Registry: District Court Stuttgart HRB 746188
-> Company Seat: K&#xFC;nzelsau, Germany 
-> 
-> Der Inhalt dieser E-Mail und/oder jegliche Anh&#xE4;nge k&#xF6;nnen vertrauliche Mitteilungen enthalten und sind ausschlie&#xDF;lich f&#xFC;r den bezeichneten Adressaten bestimmt.
-> Wenn Sie nicht der vorgesehene Adressat dieser E-Mail oder dessen Vertreter sein sollten, so beachten Sie bitte, dass jede Form der Kenntnisnahme, Ver&#xF6;ffentlichung,
-> Vervielf&#xE4;ltigung oder Weitergabe des Inhalts dieser E-Mail einschlie&#xDF;lich Anh&#xE4;ngen unzul&#xE4;ssig ist.
-> Wir bitten Sie, sich in diesem Fall mit dem Absender der E-Mail in Verbindung zu setzen. 
-> 
-> The content of this e-mail and/or attachments may contain confidential information and is intended solely for the named recipient.
-> If you are not the intended recipient of this e-mail or on its distribution list, please note that any type of disclosure, publication,
-> copying or distribution of the content of this e-mail including attachments is strictly forbidden.
-> In this case, we would kindly ask you to notify the sender of the e-mail.
-
-It seems you keep sending your patches with that signature, which you
-can't do on public kernel mailing lists, and that is why Greg deleted
-your previous patch submission.
+> Link: https://git.kernel.org/tglx/history/c/136839a1b4 [1]
+> Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
+Acked-by: Ian Abbott <abbotti@mev.co.uk>
 
 -- 
-Hugo Villeneuve
+-=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
+-=( registered in England & Wales.  Regd. number: 02862268.  )=-
+-=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
+-=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
+
