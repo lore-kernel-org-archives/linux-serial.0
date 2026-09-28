@@ -1,140 +1,269 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E988A485CE7;
-	Mon, 28 Sep 2026 09:05:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82815485949;
+	Mon, 28 Sep 2026 09:07:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790586343; cv=none; b=MVRQGaQ+V+GB6cEpsf/dCf93qcVm6M5/fSOKKD9WiIox9M9cxApuMXNVEfZJdsN7SpMmxuavKz1JflUYYPj82v2fEheOpGDd6Bgi9fpTIlFLv/NxRB3CR/BX5uL4YpPj2TuxLM2bKmedGCtHurVvaQdUzrEfrva40vqxwouIM70=
+	t=1790586431; cv=none; b=S2XBqNtg/UN6vqPVmnKLjNIoVyAT02EVZxmWoILNlOqk0AtOyW2BTHg0OWWjZG54jebEsFWIjkFLmgQUemg84wr2pLyI2al+6JIxw/2fz81vkQNIgZ9CGtr67LAJBLxbcp48jfUXldBwAIEvkJFlolVqkux2vOuzk3RK4JgJPSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790586343; c=relaxed/simple;
-	bh=kR3Wv1Tir4JM5KPxkQhigKEUEM12HkBEU3ytRlA1k3U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gnT150C58XDJpgVK9uos81PQpPAiAry6paZHMCdLFaoavt+z7DRI55mZiMOYM896R/zs7KUvjce6cdSV4qDlwIW2Ce/+nZ+TYk0Btvuxt8IUwsEKEZq6o6OTsIlNNwQIHovfhBVmFbQOho/xuKoAmb7EbfeGmm2GhPZR0x3HYHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Eo+qjrad; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1790586431; c=relaxed/simple;
+	bh=dAtvLrjUvMJgdZTQ8XVAIxOGXDZkRD/ZGR7CSApiYA0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=c4K1H7PkMJZX3NB+JIHO9iH+Wkj/+2r6v3PGdSFhfSDX0v19k3LaUiarPqRAIlgV1m0YW2p5cEwRLFbXm/9M78oTFVvyF5bJbSYHJzNtVclD2ZfaSSXlJ71/7V+jW5uWcnGgnMJC1e8ptR+ILao9pl3UiF+tppAzqYXPb2re8q0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ClUGi41R; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Eo+qjrad"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ClUGi41R"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790586342; x=1822122342;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kR3Wv1Tir4JM5KPxkQhigKEUEM12HkBEU3ytRlA1k3U=;
-  b=Eo+qjradTh2nYLJ6o6f2G7ZokUDRwW9IMXqYXek8NBnJwSXq1nOWhAgG
-   +9JAdr14Tayp3zdpSFzzD9Q9+kEB5eIyytkigssF0aRZ6fnRo7QgHIJL8
-   hl/zfBgVN/aTrURNQoHvk37GMrVpQNyNiWByNp/o2UfATqxpevIDie+8B
-   cE1bvXd46oY3Ls+GOA0vAZsHbYB92b7kMCS6prK6JWWKGgAF04nzof9Kh
-   61UItJyV4O00+rPZ0IOM7pc5OnlR+iBbjUM2FrXvIJh+biEegQz3/OCX+
-   jKKnJ7qxWNq1mknqhulf5lyrY2ndVNyxmCSopi/oH1Q2uiGSoiQnXkaaH
-   w==;
-X-CSE-ConnectionGUID: 4j6LdW/OTHijXUh7qz2yCA==
-X-CSE-MsgGUID: Zbw/PHoCRcaoW2jPT/zX9A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="101804469"
+  t=1790586429; x=1822122429;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=dAtvLrjUvMJgdZTQ8XVAIxOGXDZkRD/ZGR7CSApiYA0=;
+  b=ClUGi41RKRvypTrjEiiJYhhVBaAHovO0CnPKB0rOtRG4i4d0zN78hdKt
+   kWa4S93oHan4u6a6kn9efEhd4mFf6DFQhHuzclyM5GeXxFq50SooFgCcd
+   VcCazxSdEpKz5A4kdx6sQQgOL59dpp/Hz90k3PPnm5lPDAmn1T5sIuAuE
+   JXV91+/wR53XI8SWna+BkEQZcXdyFOqx9/KYfyfEduV9XYB3QPWevhM8S
+   1i2+mr+iQKGOirUpIFuKahXEjiSZXYkbu2lgPfUauGePcroEBQgh8gZyO
+   sbJ3zUtoMhxqiHsxpBOoYok+NjjBQZkTzljBkZeyRsMBAld/wIf9HNZJx
+   A==;
+X-CSE-ConnectionGUID: vnFuWbsiTMiULDdkkEzmlA==
+X-CSE-MsgGUID: gF+a4JEORHeMJ9bNM7P5/g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="113064571"
 X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
-   d="scan'208";a="101804469"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 02:05:42 -0700
-X-CSE-ConnectionGUID: ELvY+UF9RzeWIl6j4fsNYg==
-X-CSE-MsgGUID: Gjrb7YEFRVasfH3K/wKTwA==
+   d="scan'208";a="113064571"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 02:07:08 -0700
+X-CSE-ConnectionGUID: ZUeIqnn/S/qrXMCSWW+wHQ==
+X-CSE-MsgGUID: Dz6IRCGHRNWA+R3MTY6kTg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
-   d="scan'208";a="273604206"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.42])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 02:05:39 -0700
-Date: Mon, 28 Sep 2026 12:05:37 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc: Malathi A <malathi.a2000@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
-Message-ID: <arot4SH3vbDpKC8A@ashevche-desk.local>
-References: <20260917040511.103232-1-malathi.a2000@gmail.com>
- <97e4ab26-b147-4cf4-97f9-307903f14e61@socionext.com>
- <arUvJyvChXXcasSu@ashevche-desk.local>
- <3ea1f574-ddb5-46a6-9bc1-7a8ea84c54bd@socionext.com>
- <arZ5KxIp55qA6UA7@ashevche-desk.local>
- <faa1027c-7279-462a-9c6f-f03354b9cfd3@socionext.com>
+   d="scan'208";a="278351074"
+Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.54])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 02:07:05 -0700
+From: Jani Nikula <jani.nikula@linux.intel.com>
+To: Thomas Zimmermann <tzimmermann@suse.de>, deller@gmx.de,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, simona@ffwll.ch
+Cc: linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-serial@vger.kernel.org, sashiko-reviews@lists.linux.dev, Thomas
+ Zimmermann <tzimmermann@suse.de>
+Subject: Re: [PATCH v3 1/5] vt: Add cursor-size helpers
+In-Reply-To: <20260928085724.41660-2-tzimmermann@suse.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park,
+ 6 krs Bertel Jungin Aukio 5, 02600 Espoo, Finland
+References: <20260928085724.41660-1-tzimmermann@suse.de>
+ <20260928085724.41660-2-tzimmermann@suse.de>
+Date: Mon, 28 Sep 2026 12:07:02 +0300
+Message-ID: <7e3cccd612e87e6e85271a026d9fc737a56eaa6c@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <faa1027c-7279-462a-9c6f-f03354b9cfd3@socionext.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain
 
-On Mon, Sep 28, 2026 at 03:51:09PM +0900, Kunihiko Hayashi wrote:
-> On 2026/09/25 22:37, Andy Shevchenko wrote:
-> > On Fri, Sep 25, 2026 at 08:32:20PM +0900, Kunihiko Hayashi wrote:
-> > > On 2026/09/24 23:09, Andy Shevchenko wrote:
-> > > > On Thu, Sep 24, 2026 at 06:07:37PM +0900, Kunihiko Hayashi wrote:
-> > > > > On 2026/09/17 13:05, Malathi A wrote:
+On Mon, 28 Sep 2026, Thomas Zimmermann <tzimmermann@suse.de> wrote:
+> Cursors in the VT subsystem are blocks within a character cell that are
+> filled with the foreground color. The new helpers vc_cursor_start() and
+> vc_cursor_end() return the scanlines in which the cursor block starts rsp.
+> ends. This is compatible with VGA hardware.
+>
+> In terms of cursor design, the new cursor-size helpers follow established
+> styles in fbcon. The only exception is in underline cursors for fonts with
+> a size larger than 10. The underlining dash is now one pixel closer to
+> the font-glyph data, so that the cursor looks less detached. This follows
+> the style used by vgacon.
+>
+> Users control the cursor size with the vt module's parameter cur_default
+> or with the ESC sequence \e[?Nc, where N is the cursor-size constant. In
+> case of an invalid setting, the new helpers fall back to cur_default and
+> then underline cursors; in this order.
+>
+> Similar code in vgacon and fbcon ignores the cursor's default size stored
+> in vt.cur_default. The consoles default to full-block cursors, while vt
+> defaults to underline cursors. VGA BIOSes also tend to use underline by.
+> default. Upon initialization vt applies its default to the console, but
+> each console might fall back to it own default. For example, running the
+> ESC code from above with the invalid constant of 8 magically flips the
+> cursor from underline to block size on vgacon. Another call with N set
+> to 0 (i.e., default) magically flips it back to underlyine. Making
+> underline the new default everywhere harmonizes vt, fbcon and most VGA
+> BIOSes.
+>
+> v3:
+> - mention user interfaces to control cursor size in commit message (GregKH)
+> - elaborate defaults (GregKH)
+> - move retry logic into helper
+> - handle CUR_DEF
+> v2:
+> - export non-font interface for vgacon
+> - avoid interference from concurrent user space (Sashiko)
+> - fix function docs (Sashiko)
+>
+> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+> Reviewed-by: Helge Deller <deller@gmx.de>
+> ---
+>  drivers/tty/vt/vt.c            | 104 +++++++++++++++++++++++++++++++++
+>  include/linux/console_struct.h |   7 +++
+>  2 files changed, 111 insertions(+)
+>
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 57edf37495a8..8141296ccad0 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -71,6 +71,7 @@
+>   * by Adam Tla/lka <atlka@pg.gda.pl>, Aug 2006
+>   */
+>  
+> +#include <linux/compiler.h>
+>  #include <linux/module.h>
+>  #include <linux/types.h>
+>  #include <linux/sched/signal.h>
+> @@ -264,6 +265,109 @@ unsigned int vc_font_size(const struct vc_font *font)
+>  }
+>  EXPORT_SYMBOL_GPL(vc_font_size);
+>  
+> +/*
+> + * Cursors
+> + */
+> +
+> +static unsigned int vc_cursor_size(unsigned int cursor_size)
+> +{
+> +	const unsigned int cursor_default_size = CUR_SIZE(READ_ONCE(cur_default));
+> +
+> +retry:
+> +	switch (cursor_size) {
+> +	case CUR_NONE:
+> +	case CUR_UNDERLINE:
+> +	case CUR_LOWER_THIRD:
+> +	case CUR_LOWER_HALF:
+> +	case CUR_TWO_THIRDS:
+> +	case CUR_BLOCK:
+> +		return cursor_size;
+> +	default:
+> +		pr_warn_once("Unknown cursor %u\n", cursor_size);
+> +		fallthrough;
+> +	case CUR_DEF:
+> +		/*
+> +		 * Use user-given default size, or underline if
+> +		 * the given default is invalid.
+> +		 */
+> +		if (cursor_size != cursor_default_size)
+> +			cursor_size = cursor_default_size;
+> +		else
+> +			cursor_size = CUR_UNDERLINE;
+> +		goto retry;
 
-...
+Complete bikeshed, but IMO goto for retries is ugly. It's fine for error
+handling, but this could trivially be a loop.
 
-> > > > > I'm a bit concerned about the error path in uniphier_uart_resume().
-> > > > > The clock may have been disabled in uniphier_uart_suspend(), and
-> > > > > clk_prepare_enable() can fail when trying to enable it again.
-> > > > > 
-> > > > > In that case, wouldn't devres try to disable an already disabled
-> > > > > clock on detach?
-> > > > 
-> > > > Isn't there is a guarantee that the .remove() is called with PM
-> > runtime on
-> > 
-> > After reading a code of driver core I see that this is the opposite
-> > actually.
-> > The PM runtime might be off.
-> > 
-> > > > and get, meaning it's called with the enabled clock? But if not the
-> > case,
-> > > > we might use PM runtime force operations (resume and suspend in the
-> > > > respective cases.
-> > > 
-> > > My concern was just the case where clk_prepare_enable() in the system
-> > > resume callback fails, leaving the clock disabled before devres cleanup.
-> > > 
-> > > This driver currently only uses SET_SYSTEM_SLEEP_PM_OPS(), so I wasn't
-> > > considering runtime PM here.
-> > 
-> > So, in such a case how do you see the scenario when system is resumed
-> > (Right?
-> > Otherwise we can't do anything, like detaching driver from the device.)
-> > and
-> > clock is disabled?
-> 
-> Ah, I understand your point. I was assuming that the driver could later
-> be detached after uniphier_uart_resume() failed, leaving the clock disabled.
+BR,
+Jani.
 
-I'm not sure, I don't know if I was right. Can you confirm that this scenario
-is not possible? So, it might look like CPU is resumed, some of the devices
-were resumed, but this particular UART failed to resume, and now we want to
-detach it. If this case is possible, I believe tons of the device drivers as
-of today may be affected by the same issue (it doesn't mean that the issue
-is impossible to happen, one needs to investigate deeper).
-
-> If that sequence cannot happen after a failed system resume, then my concern
-> doesn't apply.
-
-As pointed out I'm not sure. Last time I experimented with failed resume was
-long time ago.
-
-> Thanks for pointing this out.
-
-> In that case, I have no further concerns about the use of
-> devm_clk_get_enabled() here.
+> +	}
+> +}
+> +
+> +/**
+> + * vc_cursor_start - Calculates the cursor's first scanline within a character cell
+> + * @cell_height: The overall height of the character cell
+> + * @cursor_size: The size constant of cursor pattern
+> + *
+> + * The parameter @cell_height is the height of the character cell as
+> + * displayed by the console. The argument given in @cursor_size is one
+> + * of the CUR_ constants, as stored in struct @vc_data.vc_cursor_type.
+> + * For unknown values, the helper draws the default cursor or an underline
+> + * dash.
+> + *
+> + * Returns:
+> + * The index of the cursor's first scanline within the character cell
+> + */
+> +unsigned int vc_cursor_start(unsigned int cell_height, unsigned int cursor_size)
+> +{
+> +	switch (vc_cursor_size(cursor_size)) {
+> +	case CUR_NONE:
+> +		return cell_height;
+> +	case CUR_UNDERLINE:
+> +	default:
+> +		if (cell_height < 10)
+> +			return cell_height - 1;
+> +		else
+> +			return cell_height - 3;
+> +	case CUR_LOWER_THIRD:
+> +		return cell_height - cell_height / 3;
+> +	case CUR_LOWER_HALF:
+> +		return cell_height - cell_height / 2;
+> +	case CUR_TWO_THIRDS:
+> +		return cell_height - (cell_height * 2) / 3;
+> +	case CUR_BLOCK:
+> +		return 0;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(vc_cursor_start);
+> +
+> +/**
+> + * vc_cursor_end - Calculates the first scanline after the cursor within a character cell
+> + * @cell_height: The overall height of the character cell
+> + * @cursor_size: The size constant of cursor pattern
+> + *
+> + * The parameter @cell_height is the height of the character cell as
+> + * displayed by the console. The argument given in @cursor_size is one
+> + * of the CUR_ constants, as stored in struct @vc_data.vc_cursor_type.
+> + * For unknown values, the helper draws the default cursor or an underline
+> + * dash.
+> + *
+> + * Returns:
+> + * The index of the first scanline after the cursor within the character cell
+> + */
+> +unsigned int vc_cursor_end(unsigned int cell_height, unsigned int cursor_size)
+> +{
+> +	switch (vc_cursor_size(cursor_size)) {
+> +	case CUR_UNDERLINE:
+> +	default:
+> +		if (cell_height < 10)
+> +			return cell_height;
+> +		else
+> +			return cell_height - 1;
+> +	case CUR_NONE:
+> +	case CUR_LOWER_THIRD:
+> +	case CUR_LOWER_HALF:
+> +	case CUR_TWO_THIRDS:
+> +	case CUR_BLOCK:
+> +		return cell_height;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(vc_cursor_end);
+> +
+>  /*
+>   * /sys/class/tty/tty0/
+>   *
+> diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+> index fe915afdece5..1d37c7898ea0 100644
+> --- a/include/linux/console_struct.h
+> +++ b/include/linux/console_struct.h
+> @@ -204,6 +204,10 @@ struct vc {
+>  extern struct vc vc_cons [MAX_NR_CONSOLES];
+>  extern void vc_SAK(struct work_struct *work);
+>  
+> +/*
+> + * Cursors
+> + */
+> +
+>  #define CUR_MAKE(size, change, set)	((size) | ((change) << 8) |	\
+>  		((set) << 16))
+>  #define CUR_SIZE(c)		 ((c) & 0x00000f)
+> @@ -222,6 +226,9 @@ extern void vc_SAK(struct work_struct *work);
+>  #define CUR_CHANGE(c)		 ((c) & 0x00ff00)
+>  #define CUR_SET(c)		(((c) & 0xff0000) >> 8)
+>  
+> +unsigned int vc_cursor_start(unsigned int cell_height, unsigned int cursor_size);
+> +unsigned int vc_cursor_end(unsigned int cell_height, unsigned int cursor_size);
+> +
+>  bool con_is_visible(const struct vc_data *vc);
+>  
+>  #endif /* _LINUX_CONSOLE_STRUCT_H */
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jani Nikula, Intel
