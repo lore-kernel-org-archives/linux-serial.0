@@ -1,79 +1,79 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B643327C18;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8AF746C4AD;
 	Mon, 28 Sep 2026 08:57:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790585861; cv=none; b=J64swL5r5fgY8uR6BYMi+ziFANJO53QcN5AZXX1/ytnYTHldhiBwdG0dAsmdBKbquJtxGsVcjLfs0LtfCLNgSSmGdeCOS569HzdSrzT2WCKDqauS9zjkuPo3MKLLWQaJdoIxju2gtcfbyJ3eH4S4wqkTO4/7OLsedFe8nyX+uTw=
+	t=1790585861; cv=none; b=mMJ68HqVyvU4Nt34b8uXJRi82k84m7ZHlq12Mt8MedKJvQWpTAORWixdy14OFQjTJ+7ONz29UWRAWoJP5F4qnEwGIyrINngT7gyhc+rFyizpO9u9xooQfYz5lZVTNDgKsueOZkb5e/TZGHzqGi8IJay8Gzxk3AK2sJMzcqkYHmw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1790585861; c=relaxed/simple;
-	bh=kIWPvN1xdzI0vvk+cqAjZuQ+NiStAVELpv+YNHXuDug=;
+	bh=fW5WQRnGUu5NNryVooiTdlNVXAc8inzeidnxQnNJ2f4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=J6k7NECc5CAuyhegAk/AncONQB3/6W8a7Cizvwnps0ENa/ujFempRHSHfqVQILzSCegZNhoMcQTN/JSPmt1wpRpnKcsS+7CxpRzMoKkyomQXhkOucFLxM/VxkU68Sxof3OqSfhzTWS7PcpnXTVb273PblpUiwXg1LTrFt3+NgUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=qWp65NFR; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=6se3jsvH; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=q9OmmGc0; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=llGOmrpI; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version; b=p2Vq2HsJAd8e4hgtg9RKBQ0SUEbCqdRIWEjyePmqSst2cjg7s68Qwa0+arNaa6TTbgLW0+3ZKrun0Syrde/GH5KbsZMeEuYCOHApVD3DHUSiZfvLXAZY/CP6XjkpvYcB0BGLz33WBlSv3vgp3C8KlHGJAYA+pZ+GtMbrZMXxhCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=tnwlpq2m; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=yIFw6wYs; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=hhfZPS5u; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=oQ1/IqzU; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="qWp65NFR";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="6se3jsvH";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="q9OmmGc0";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="llGOmrpI"
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="tnwlpq2m";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="yIFw6wYs";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="hhfZPS5u";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="oQ1/IqzU"
 Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 3B734220B6;
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 84A23201CD;
 	Mon, 28 Sep 2026 08:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1790585853; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
-	b=qWp65NFR+vY/TlfE3G2E9yzErJ8gN1VZZ4sjd9CAGIcVYFEYdecYxGAEwIUSYf/sNejUyt
-	1NEZ34Ouet4YXs4YPqz4SV7yaApdvFUb/nOwrwLr6P77lovT/Yf42QILsXI7HIZIdCEiKA
-	SrmWScWD7gdgKMla0F6KLzFdabtu2ns=
+	bh=1oIXnK9BJ5o0Bs3piDf5cl5Uw0ez1OiaSndJYSF7vOE=;
+	b=tnwlpq2mNG3vKumCGRhXR/p6NmJc6Bqr69qAlC4ZPKoBeCZCVRNhSsIKEwV04yd8Z8tLxl
+	WNqvT3Ssn4kIbYxya4zmozf1HJBRoUpyZns34qHPF+DLllktPtursTBQwusPLZJl3P3RnI
+	OH+QiOaXrK/ShvZeGNWE7PwBzgF0MBA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1790585853;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
-	b=6se3jsvHqYMFYuFAHH5iKiz1zRcNhy4pf8WnT5X5trLlsESyfNUe6yZTZF5YIWWb6mSQPl
-	tvAQf9LI/kdwWcCw==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=q9OmmGc0;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=llGOmrpI
+	bh=1oIXnK9BJ5o0Bs3piDf5cl5Uw0ez1OiaSndJYSF7vOE=;
+	b=yIFw6wYsi1Km+4hQ0d7cBdYRFOeFOz3MmWc6xxHMDo7otPESpopxrI1tOjPWm1G7VPMtTe
+	memZVEE87t4fRLDg==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=hhfZPS5u;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="oQ1/IqzU"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1790585849; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
-	b=q9OmmGc0bCLKGK4oQTKLiuEstTwijD7275NUcCCIRUKTcF7BYRnmmI1JWefVqXvkS+DT0t
-	P9STS4tXzv6QEGp/ANUiqPG8822X4qN6X+9qV9ZeOU8DWk2gJFAJ3hjIAiyADr4uHM0UfL
-	Bp4wjSie2cYBnlW47g1YXZDguFEBZBM=
+	bh=1oIXnK9BJ5o0Bs3piDf5cl5Uw0ez1OiaSndJYSF7vOE=;
+	b=hhfZPS5uyIcCdv2zfavF1ezcw4bDjASNzQToOe6M12JRy5n30ssp0OKx7gZXa16MFnLwxa
+	dUYUGjRCgt91Lv9fNzIkvmEICIOfxiOLlQORIIN3etpXfiyUSQZNUe5t23u0zeWXubCYyi
+	hun0BcTN72b4HMmI1zoG7ASsqZColcs=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1790585849;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
-	b=llGOmrpISnY8kkEv83RzY3DmplLzFpq32E2+t/P54brogM+HACiayLrT/25gnNg+JHH6jm
-	XvsHrFDUOplaRuCQ==
+	bh=1oIXnK9BJ5o0Bs3piDf5cl5Uw0ez1OiaSndJYSF7vOE=;
+	b=oQ1/IqzUp3b+NdqjlRxPgguAo/C6Sh/BUG69DpupaiNqk5fNbFj+/uHMhBnb2w+kw0LMYO
+	hvmLxziQlfkxeCAg==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id CDD8713419;
-	Mon, 28 Sep 2026 08:57:28 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 23CF31342D;
+	Mon, 28 Sep 2026 08:57:29 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Kr86I/crumo3HwAAD6G6ig:T4
-	(envelope-from <tzimmermann@suse.de>); Mon, 28 Sep 2026 08:57:28 +0000
+	id Kr86I/crumo3HwAAD6G6ig:T5
+	(envelope-from <tzimmermann@suse.de>); Mon, 28 Sep 2026 08:57:29 +0000
 From: Thomas Zimmermann <tzimmermann@suse.de>
 To: deller@gmx.de,
 	gregkh@linuxfoundation.org,
@@ -84,9 +84,9 @@ Cc: linux-fbdev@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	sashiko-reviews@lists.linux.dev,
 	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH v3 3/5] vgacon: Use vt_cursor_{start,end}()
-Date: Mon, 28 Sep 2026 10:55:26 +0200
-Message-ID: <20260928085724.41660-4-tzimmermann@suse.de>
+Subject: [PATCH v3 4/5] lib/fonts: Add font_glyph_cursor() helper
+Date: Mon, 28 Sep 2026 10:55:27 +0200
+Message-ID: <20260928085724.41660-5-tzimmermann@suse.de>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260928085724.41660-1-tzimmermann@suse.de>
 References: <20260928085724.41660-1-tzimmermann@suse.de>
@@ -98,119 +98,142 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Score: -3.01
-X-Rspamd-Queue-Id: 3B734220B6
+X-Rspamd-Queue-Id: 84A23201CD
 X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
 X-Spam-Level: 
 X-Rspamd-Action: no action
 X-Spamd-Result: default: False [-3.01 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
-	MID_CONTAINS_FROM(1.00)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_CONTAINS_FROM(1.00)[];
 	R_MISSING_CHARSET(0.50)[];
 	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	NEURAL_HAM_SHORT(-0.20)[-1.000];
 	MIME_GOOD(-0.10)[text/plain];
 	MX_GOOD(-0.01)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
 	ARC_NA(0.00)[];
-	TO_DN_SOME(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
 	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.de:+];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	TO_DN_SOME(0.00)[];
 	RCVD_COUNT_TWO(0.00)[2];
+	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:email,suse.de:mid,gmx.de:email];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:email,suse.de:mid,gmx.de:email];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
-	R_RATELIMIT(0.00)[to_ip_from(RLqtkr6cif1ebgurukgmwdm7xc)];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de]
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:104:10:150:64:97:from,2a07:de40:b281:106:10:150:64:167:received];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DKIM_TRACE(0.00)[suse.de:+]
 X-Spam-Flag: NO
 
-Replace vgacon's custom cursor metrics with the shared helpers
-vc_cursor_start() and vc_font_cursor_end(). Note that the _end()
-function returns the index of the scanline below the cursor, while
-VGA hardware expects the cursor's final scanline. Hence vgacon
-subtracts 1 from the end value.
-
-The cursor shapes remain mostly unchanged, except that non-underline
-cursors now also use the glyph's top-most and bottom-most scanline.
-This follows the style used by fbcon.
-
-v2:
-- restore use of vc_cell_height (Sashiko)
+The new helper font_glyph_cursor() fills a glyph with a cursor pattern.
+As with the font_glyph_rotate_*() helpers, the caller has to provide the
+output memory.
 
 Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 Reviewed-by: Helge Deller <deller@gmx.de>
 ---
- drivers/video/console/vgacon.c | 33 +++++----------------------------
- 1 file changed, 5 insertions(+), 28 deletions(-)
+ include/linux/font.h    |  4 +++
+ lib/fonts/Makefile      |  3 ++-
+ lib/fonts/font_cursor.c | 56 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 62 insertions(+), 1 deletion(-)
+ create mode 100644 lib/fonts/font_cursor.c
 
-diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index 536e7fe4d142..b1408bb5e265 100644
---- a/drivers/video/console/vgacon.c
-+++ b/drivers/video/console/vgacon.c
-@@ -506,6 +506,7 @@ static void vgacon_set_cursor_size(int from, int to)
- static void vgacon_cursor(struct vc_data *c, bool enable)
- {
- 	unsigned int c_height;
-+	unsigned int c_size;
+diff --git a/include/linux/font.h b/include/linux/font.h
+index 5e1cf9830084..be1a26ff8ae9 100644
+--- a/include/linux/font.h
++++ b/include/linux/font.h
+@@ -109,6 +109,10 @@ const unsigned char *font_data_glyph_buf(font_data_t *fd,
+ bool font_data_is_equal(font_data_t *lhs, font_data_t *rhs);
+ int font_data_export(font_data_t *fd, struct console_font *font, unsigned int vpitch);
  
- 	if (c->vc_mode != KD_TEXT)
- 		return;
-@@ -513,10 +514,11 @@ static void vgacon_cursor(struct vc_data *c, bool enable)
- 	vgacon_restore_screen(c);
++/* font_cursor.c */
++void font_glyph_cursor(unsigned int width, unsigned int height,
++		       unsigned int from, unsigned int to, unsigned char *out);
++
+ /* font_rotate.c */
+ void font_glyph_rotate_90(const unsigned char *glyph, unsigned int width, unsigned int height,
+ 			  unsigned char *out);
+diff --git a/lib/fonts/Makefile b/lib/fonts/Makefile
+index 7202a70a56ef..bc08bf8ea3f8 100644
+--- a/lib/fonts/Makefile
++++ b/lib/fonts/Makefile
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Font handling
  
- 	c_height = c->vc_cell_height;
-+	c_size = CUR_SIZE(c->vc_cursor_type);
+-font-y := fonts.o
++font-y := fonts.o \
++	  font_cursor.o
+ font-$(CONFIG_FRAMEBUFFER_CONSOLE_ROTATION) += font_rotate.o
  
- 	write_vga(14, (c->vc_pos - vga_vram_base) / 2);
- 
--	if (!enable) {
-+	if (!enable || c_size == CUR_NONE) {
- 	        if (vga_video_type >= VIDEO_TYPE_VGAC)
- 			vgacon_set_cursor_size(31, 30);
- 		else
-@@ -524,33 +526,8 @@ static void vgacon_cursor(struct vc_data *c, bool enable)
- 		return;
- 	}
- 
--	switch (CUR_SIZE(c->vc_cursor_type)) {
--	case CUR_UNDERLINE:
--		vgacon_set_cursor_size(c_height - (c_height < 10 ? 2 : 3),
--				       c_height - (c_height < 10 ? 1 : 2));
--		break;
--	case CUR_TWO_THIRDS:
--		vgacon_set_cursor_size(c_height / 3,
--				       c_height - (c_height < 10 ? 1 : 2));
--		break;
--	case CUR_LOWER_THIRD:
--		vgacon_set_cursor_size(c_height * 2 / 3,
--				       c_height - (c_height < 10 ? 1 : 2));
--		break;
--	case CUR_LOWER_HALF:
--		vgacon_set_cursor_size(c_height / 2,
--				       c_height - (c_height < 10 ? 1 : 2));
--		break;
--	case CUR_NONE:
--		if (vga_video_type >= VIDEO_TYPE_VGAC)
--			vgacon_set_cursor_size(31, 30);
--		else
--			vgacon_set_cursor_size(31, 31);
--		break;
--	default:
--		vgacon_set_cursor_size(1, c_height);
--		break;
--	}
-+	vgacon_set_cursor_size(vc_cursor_start(c_height, c_size),
-+			       vc_cursor_end(c_height, c_size) - 1);
- }
- 
- static void vgacon_doresize(struct vc_data *c,
+ # Built-in fonts; sorted by Family-Size in ascending order
+diff --git a/lib/fonts/font_cursor.c b/lib/fonts/font_cursor.c
+new file mode 100644
+index 000000000000..7f4d587669aa
+--- /dev/null
++++ b/lib/fonts/font_cursor.c
+@@ -0,0 +1,56 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/bug.h>
++#include <linux/export.h>
++#include <linux/string.h>
++
++#include "font.h"
++
++/**
++ * font_glyph_cursor - Create a cursor glyph
++ * @width: The glyph width in bits per scanline
++ * @height: The number of scanlines in the glyph
++ * @start: The first scanline of the cursor block
++ * @end: The first scanline after the cursor block
++ * @out: The cursor-glyph bitmap
++ *
++ * The parameters @width and @height refer to the glyph size. The caller
++ * has to provide the output buffer @out of sufficient size to hold the
++ * cursor glyph. The arguments in @start and @end describe the number of
++ * scanlines occupied by the cursor block; counting from the top of the
++ * glyph. The helper fills these scanlines with a pattern and clears the
++ * remaining scanlines.
++ */
++void font_glyph_cursor(unsigned int width, unsigned int height,
++		       unsigned int start, unsigned int end, unsigned char *out)
++{
++	unsigned int pitch = font_glyph_pitch(width);
++	const unsigned char *out_end = out + height * pitch;
++	unsigned int size;
++
++	if (WARN_ON_ONCE(start > height))
++		start = height;
++	if (WARN_ON_ONCE(end > height))
++		end = height;
++
++	if (end < start)
++		end = start;
++
++	/* clear scanlines before cursor block */
++	size = start * pitch;
++	memset(out, 0x00, size);
++	out += size;
++
++	/* set cursor block */
++	size = (end - start) * pitch;
++	memset(out, 0xff, size);
++	out += size;
++
++	/* clear scanlines below cursor block */
++	size = (height - end) * pitch;
++	memset(out, 0x00, size);
++	out += size;
++
++	WARN_ON_ONCE(out != out_end);
++}
++EXPORT_SYMBOL_GPL(font_glyph_cursor);
 -- 
 2.55.0
 
