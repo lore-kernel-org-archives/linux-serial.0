@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFB00349CD8;
-	Tue, 29 Sep 2026 06:45:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEACF350A0F;
+	Tue, 29 Sep 2026 06:45:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790664354; cv=none; b=nObQo4kc9M3OKpGiHq8yQjgOniUtEEnZYM9Tr3Xku3rX8jnWNw8nNTQHmqifd9oRa176CDbfmsxnxIJPBCkP0Chu1jzL7zlXZFRE6oKcuBf/5cwdP7M63gfAgcI0W1uUA7KLwQ7E9+xTqeEf9+onjfK1RJYM41RpkOJsXLZ6DdA=
+	t=1790664361; cv=none; b=DObDrlLudOdfidSznJAZEEhOuSZfI6QPKEasb2x9TWev5Wz95P2G2qTWpd0nXSF44WT4fNeAAJMOwq5AQnTVJR3rPnYKpKlfFrS7DHKjK/xmu+BbO9RlrgTrk+Sws1ZShgS0Z4BYiM+xrEyxgWNOlLNymbq03so0nY307JdP0sQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790664354; c=relaxed/simple;
-	bh=r2hDJdPR3jl1u4EjKYN77Stng4r+7yHbXSwMfQAScUQ=;
+	s=arc-20240116; t=1790664361; c=relaxed/simple;
+	bh=iMht4WMoNW/Ti5tGy9g6W0/b+So1/sGtPAb6F+ikNbk=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=h1B5i3XRopaL/Hx7lTZyHaflW3IalH6tlLLNaeaF99EfpsPLzl+rP4UyMzPpzORBy56Q6Xid6BGdQbgYw2D+coGcRoayPosaCqUzdkp6zul97/PQP57qC+Carm5mpYw5Rnp75wk7w28iBVXJK62w+JQm4yYEKZE2QMzK5GEp1pI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oInz0bZD; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=QY+3KEBT42+Tad3G7RjbH754E9F/cEHkCm+r3SoCwvo9g7A7md7okCf1+8/aXSf/FzhNJxXTVUCPUzW8jQxc+Yx5RxKQZS3PPORUHBm1auB2A8vjWBZcRpEwJtBaEu27G32TEdNE5AVlEWsBAGZyjRzNvNZtrTCPDplQsfZDdIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iCmz6rm2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oInz0bZD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18D401F00893;
-	Tue, 29 Sep 2026 06:45:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iCmz6rm2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30B3B1F000FF;
+	Tue, 29 Sep 2026 06:45:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790664353;
-	bh=5J5RXXCLjh+TffupwBrVSwaI8V+2cqKZtM4RZs43XcQ=;
+	s=k20260515; t=1790664359;
+	bh=IZHhgJLjo25dJ1nkN562Lxo3SiA7EGsmeTRlINNKXyo=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=oInz0bZDPYkUh3oJ6CnsxiotsehDi7RcYQ/g8shcFjqNDkrwOBd/RWNswqsX5wTtT
-	 21X7vagxTtv1EDf87Vx2tYVaXlFgR3haHus8sJxpQOJnEY0L69mWWfYTnJkW0bqCWO
-	 DVIqH3G1u33eciPgNbOyfpoKQdJOq5abNQp1oSX8prUz30DGKGW3CUm9S8W5wzvFy2
-	 QrMMYSKlE93K+8SnTrISePj9Bwx+s5xvXgyi4hmV6qt+jAWwCjaCK2amL71itd0bh1
-	 hQITe+ujQ7y7SXhZpbAB3g6EXCUjFxwiN2SHE+DZTC6y6b13HLpGN4kbhazRYMThKk
-	 /dsj4Ajdd8+fg==
+	b=iCmz6rm2zcty76eQxqx5T5eVNZ+fta7FCDlZh6KMb7/W7sbUZhIrTGwwQ8tolfUOU
+	 FEX3XgF6X3X/s4par6iuSsj2UJ68JsrPNRJIi4soXxh25y9cqJC5bkB30pOuAs3t+e
+	 hKCOhREGphrI1djSf8VNPZUTjO/7GliZYdsPzzRPNK7Q07xKY5wYpadhjhIDh8blYf
+	 7LVdLpRwpt3CJu4gxCLUgS37nkf3vnFzZPodxSXaZ1PBfxHczV6YQcduVtgoV58t4p
+	 eR1GO3imlg9qxQzx9Q/sXyfiM0VEdFEWu6fFeVugHslMT82wU9nd8plxW+u2hby2EV
+	 CgFNIzabdoGVg==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 13/20] dt-bindings: pinctrl: berlin: Support Synaptics
- SL261X SoCs
+Subject: Re: [PATCH 17/20] dt-bindings: mfd: Add Synaptics SL261x global
+ block binding
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Jisheng Zhang" <jszhang@kernel.org>
-Cc: devicetree@vger.kernel.org, robh@kernel.org, mfd@lists.linux.dev, linux-i3c@lists.infradead.org, linux-clk@vger.kernel.org, lee@kernel.org, linux-serial@vger.kernel.org, "Alexandre
- Belloni" <alexandre.belloni@bootlin.com>, conor+dt@kernel.org, Frank.Li@kernel.org
-In-Reply-To: <20260929061417.20733-14-jszhang@kernel.org>
+Cc: mfd@lists.linux.dev, linux-i3c@lists.infradead.org, linux-serial@vger.kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, lee@kernel.org, linux-clk@vger.kernel.org, Frank.Li@kernel.org, "Alexandre
+ Belloni" <alexandre.belloni@bootlin.com>, robh@kernel.org
+In-Reply-To: <20260929061417.20733-18-jszhang@kernel.org>
 References: <20260929061417.20733-1-jszhang@kernel.org>
- <20260929061417.20733-14-jszhang@kernel.org>
+ <20260929061417.20733-18-jszhang@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 29 Sep 2026 06:45:52 +0000
-Message-Id: <20260929064553.18D401F00893@smtp.kernel.org>
+Date: Tue, 29 Sep 2026 06:45:58 +0000
+Message-Id: <20260929064559.30B3B1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,52 +48,65 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-- [Medium] dt-bindings: pinctrl: undocumented schema relaxation for all SoCs
+- [Low] dt-bindings: mfd: hardcoded child node names reject standard generi=
+c names
 --
 
-commit 85b4def57a8a9be19cfbb07ca389098832f3670a
+commit 0676aaa06a44b6b171bf0c3b295a14f6820c22d4
 Author: Jisheng Zhang <jszhang@kernel.org>
-dt-bindings: pinctrl: berlin: Support Synaptics SL261X SoCs
 
-This commit adds device tree binding support for the Synaptics SL261X SoCs
-to the Marvell Berlin2 pinctrl schema. It also modifies the subnode schema
-references to include generic pin configurations.
+dt-bindings: mfd: Add Synaptics SL261x global block binding
 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,berlin2-so=
-c-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/marvell,berlin2-=
-soc-pinctrl.yaml
-> index 6ace3bf5433bd..fb60a310a24e6 100644
-> --- a/Documentation/devicetree/bindings/pinctrl/marvell,berlin2-soc-pinct=
-rl.yaml
-> +++ b/Documentation/devicetree/bindings/pinctrl/marvell,berlin2-soc-pinct=
-rl.yaml
+This commit introduces the device tree binding for Synaptics SL261x global
+and control register blocks. It defines constraints for the AVIO global,
+CPU wrapper, chip control, and MCU global blocks, exposing clocks, pinctrl,
+and reset functions.
+
+> diff --git a/Documentation/devicetree/bindings/mfd/syna,sl261x-gbl.yaml b=
+/Documentation/devicetree/bindings/mfd/syna,sl261x-gbl.yaml
+> new file mode 100644
+> index 0000000000000..3e5842169c4a3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/syna,sl261x-gbl.yaml
 [ ... ]
-> @@ -44,8 +46,10 @@ properties:
->  additionalProperties:
->    description: Pin group configuration subnodes.
->    type: object
-> -  $ref: /schemas/pinctrl/pinmux-node.yaml#
-> -  additionalProperties: false
+> +properties:
+[ ... ]
+> +  reg:
+> +    maxItems: 1
 > +
-> +  allOf:
-> +    - $ref: /schemas/pinctrl/pinmux-node.yaml#
-> +    - $ref: /schemas/pinctrl/pincfg-node.yaml#
+> +  clock:
+> +    type: object
+> +    additionalProperties: true
+> +
+> +  pin-controller:
+> +    type: object
+> +    additionalProperties: true
+> +
+> +  reset:
+> +    type: object
+> +    additionalProperties: true
 
-[Severity: Medium]
-Does this change unintentionally relax the schema for all older SoCs?
+[Severity: Low]
+Does enforcing these exact node names prevent devicetree authors from using
+standard generic node names like clock-controller or reset-controller?
 
-By universally adding the reference to pincfg-node.yaml here, generic pinco=
-nf
-properties (like drive-strength or bias-pull-up) in pin configuration subno=
-des
-will now silently pass validation for all existing SoCs (such as
-marvell,berlin2-soc-pinctrl). These were previously explicitly rejected by
-the removed additionalProperties: false declaration.
+[ ... ]
+> +        reset:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-system-reset
+> +
+> +additionalProperties: false
 
-Since the commit message strictly states it only aims to support Synaptics
-SL261X SoCs, should this schema relaxation be restricted to just the newly
-added variants?
+[Severity: Low]
+Could this strict validation reject devicetrees using standard generic name=
+s,
+since only clock, pin-controller, and reset are explicitly allowed in the
+properties block?
+
+Using patternProperties (e.g., "^clock-controller(@.*)?$": type: object)
+would allow standard devicetree naming conventions.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260929061417.2073=
-3-1-jszhang@kernel.org?part=3D13
+3-1-jszhang@kernel.org?part=3D17
