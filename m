@@ -1,367 +1,136 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F8F751DDEB;
-	Tue, 29 Sep 2026 10:41:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6AA43D0BE4
+	for <linux-serial@vger.kernel.org>; Tue, 29 Sep 2026 12:52:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790678508; cv=none; b=uLYIX2fZC+AheiCLDMSTGVauK88y3NgJ6geRRX2CZZZkLbsk1qhXdEhMio/6qvsX7+10WOraqN249H4XnBUjJR3MXLtrEF+1lWNbmAGKmvAt95qCzt1xl+9ug9nUxb9thxqIQ9lxcLv/kcWKcKitidxuUUZIzwBexS0dUvoNTHM=
+	t=1790686377; cv=none; b=UnHqa5/7m9oy0jx1m8tH8tYsCRO+E69UkFvj3uLRdtWhK9HU19tqkdH69s/N6w+55TAgDnXvAyaImpFgUEgWEHjoaWnFQCDYh8QUk3pN6+C25RCZpW27m23IjmdWeMJixma4gq+rftAMKeWP9N8DlGclq7VxJbuOdimDsP9lZJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790678508; c=relaxed/simple;
-	bh=GQ5XtEJaeNn9D4Jj0IjrScGUo+gbDuCeiBy8kwo/5Pg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=mU9le//ojcKKkVUyjVgeF8/xSJn5JX2FVKQsolfeGGmydZnaELTX+TvPPZMs2v85dzHJrG+Rdx5PmSeB8dB46KldiTyhahNyZsceK0dP3ktz1W19ZHWQdEy0u62UEZqEGI2HYBYR5EKgcMpaLJzow7+89kVFfXKHMjkMxShrap8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=joo1t7FG; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=he3mz/qu; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1790686377; c=relaxed/simple;
+	bh=P/c1snDOFgpdovNskKlCF1xc096CVenS9d1WfWHBJtc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MuzLpD+hLStjYPx7Dy6GPr2MRJvL91P5MsIGykivEN7Ft1MPYz/2yihP0+EXQReL6m0sMplYWYLphfUCXd4/me8RE10njWZYwElecrpFTytTQurNqFWoInVN6bY4rYVRKXPZtbVTh1RA/quvGvepuEQQFfytVOaeH7rDsV5TbDo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ShcHyj78; arc=none smtp.client-ip=74.125.225.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="joo1t7FG";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="he3mz/qu"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1790678486;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fgAnEFy2bPSl3OHZEd8eWmU0JUH6K+IrNP9zUpKqkbo=;
-	b=joo1t7FGeFn8Kq6sISCF6KMAPrTYtzhCUP0odubToKPqpZa1NGu0aCv1s8nKqzWMdYK6Sj
-	C26nMy2uEjD0eYzAJhcbEPbKEa6iDOv7IvNei1kWBeL/5aykxH7lzXf0rUkIjeGbN6v72Y
-	BG/5DeJqOdcoSBuCoHuTAtjfMCql46q1PBBWh6YMrXpS0Fn6xnxcr20iQz+5apNR989SdH
-	mCPDjO85bAiOuVTDR7zsqeAtkZX2DFmspIo9qg4zr3d0iWG3adfq+lDS/5p6Vk16lFiaC5
-	c+ldj5aj4ojglIHTNwB3P1OdqHM2s6OjZc7jrT7xFZBVzV5dzK88jqtqTNO0jA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1790678486;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fgAnEFy2bPSl3OHZEd8eWmU0JUH6K+IrNP9zUpKqkbo=;
-	b=he3mz/quGhlhweuXNM8DncrW8RLZmGqdLPBR/PVNtjk+ygMp9P5Q36A4L7LYKeOI4GmTIZ
-	ZTC0xZC0aM+R1EBQ==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
- <rostedt@goodmis.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, Samuel
- Thibault <samuel.thibault@ens-lyon.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
- =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
- Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
- linux-serial@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
- linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 1/1] braille: nbcon: Allow to use a serial console
- with NBCON API as Braille console
-In-Reply-To: <20260925141729.173943-2-pmladek@suse.com>
-References: <20260925141729.173943-1-pmladek@suse.com>
- <20260925141729.173943-2-pmladek@suse.com>
-Date: Tue, 29 Sep 2026 12:47:26 +0206
-Message-ID: <874if8cpbd.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ShcHyj78"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e71cdb22bso30827185e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 29 Sep 2026 05:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1790686374; x=1791291174; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=mgpBdFFJVnb1Jele4m29rAnxkAAsd/6RdwPNkfN1m4A=;
+        b=ShcHyj78eggNffKiedGoHhzNrwjPeiNjEkOSbD4XNWi+GmZglmeyd+W7Abqh72i38+
+         S+0/J4avgduQGPudQXlCwSX2twdmXFNaQnkJteD08CecCNosgd6BXN6RFR7RWD1BrMuo
+         W7PjTc/ymqL77Rzma494CZcjqy8Jd+XwnhKemXjjqviWIgiKwA4ovtU/wBC5dtexpQ0e
+         CrO0INGrd9vTHD2xTvhvWKPmGLigJ2wBW38t8Pfq+66jvC6M7b4UOXOx7ZJn12xFMGPd
+         mKB0NN9q1c5EdvgcDNWOgha6VJ/211ZJqUSB3Q0QgK8iyo+6k4nFOuFhu/HS7mjcBCFt
+         r4Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790686374; x=1791291174;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=mgpBdFFJVnb1Jele4m29rAnxkAAsd/6RdwPNkfN1m4A=;
+        b=U1tNkKzZNfTLhDqe5WrNPLRd5AllbHqmoOftpHPpVsunaIGp9Ix8pnWx/iQhRs04Fp
+         y3m5UqLfQMNiUnC8eve1Xx1rgq/+Vfs3HMAslQg4kH11P8+TeyPuzlYfCnlprqgYnFtJ
+         pY/f8AwyfJAJhCfE80Z1ViWk5K3+uqG2lpQJwd5/p2ovM5cJKoFsUr6vgI3BZ9833Ggl
+         Cagzfz/8wx0Y7ZrS+z/AJItMO93fgwcsiwf8vXEhiioEJWnkQ+9/vcjsRL56UmS0sXF5
+         N50JvfTNrXq1dMxuIMa71Y+C/538yUw3Nav7lAwY9Ku6QfQBKW/ADtnHng69RgbHf9DH
+         VtLA==
+X-Forwarded-Encrypted: i=1; AKwUvBwWvOQRAxz0mknQia9t+guDdTw+HVsjp4R7epBCL7CNeoVN0XR7C0CDyAzmJ+aw8udZ3cNCvEV1r+Y+5VI=@vger.kernel.org
+X-Gm-Message-State: AFuF++kpktNuo2+lzKTHFvbh2Qrz/8zzfR8sfFG9yqqjtdoga2mhSmiy
+	/yVN2aguao44eZ0V15RqNn7tfiP8lRnb01+9Yrj5imo2RvUW7KJB3xmMK+R71pwPUHw=
+X-Gm-Gg: AYBFou0gLHQSKGQ21soxh/VY28RaP87ZkSgm+fKC8nZzgG1QyfPeJweqAD4VP/4zuql
+	nb+2j6XVbNnzGrCa0UZnpQaEI2zyfg9gZ67YYKCwvs6SKefxLNQqHW201H5rHur1C+mRNB2D3HM
+	g+HpYE6JtDDK+2j804Xl/FYtJ60THwZS3a6RxKPwB1nh7EBttUymOrOrVSM2PolntxQ78TNjUzJ
+	ZFBe8fdGUCHFHlcMDLx70tDvtWtFNi/mHoXuHBL+ToUJSzT2M1hSV5qVYvRpSAXqaNDrhhTEV73
+	pLqALBNvzXqIqpmpv/IoIwwMZGx+93NwiF1+LLQDRxoZ8Q8yn+llkCtjoFasm4Pb0AbFFV69Fco
+	DT2EySdc8Soz5QnUIEJjRzIQxYo0jg5LAKR4/jZWKgFWldKFdKg9RUtvgo9tSycLJ50f0iyxYiw
+	hLtorgdSplo9832uOHp3wuB/Pycr4XheQ7PdAtwfKMrURG1jfylufjEkhFnvZZm8Hf6uyzI617C
+	bSoU6Vg4tINTIU=
+X-Received: by 2002:a05:600c:a09:b0:49f:bcce:13f5 with SMTP id 5b1f17b1804b1-4a0099c361cmr63999585e9.24.1790686373920;
+        Tue, 29 Sep 2026 05:52:53 -0700 (PDT)
+Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a00d0f66cfsm88772945e9.14.2026.09.29.05.52.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2026 05:52:53 -0700 (PDT)
+Date: Tue, 29 Sep 2026 14:52:51 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Samuel Thibault <samuel.thibault@ens-lyon.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
+	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
+	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] braille: nbcon: Allow using a serial driver
+ converted to nbcon API as a Braille console
+Message-ID: <aru0o0G-YpgGa7pp@pathway.suse.cz>
+References: <20260922072558.98854-1-pmladek@suse.com>
+ <87ik3tiim7.fsf@jogness.linutronix.de>
+ <araAvkIB5XatHPNk@pathway.suse.cz>
+ <87a4p5iejg.fsf@jogness.linutronix.de>
+ <araJ-EBntyqOGPkT@pathway.suse.cz>
+ <877bk9id6f.fsf@jogness.linutronix.de>
+ <araWJhKdVZnfCQcg@pathway.suse.cz>
+ <87ld8pp2wq.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ld8pp2wq.fsf@jogness.linutronix.de>
 
-On 2026-09-25, Petr Mladek <pmladek@suse.com> wrote:
-> The Braille console is integrated with the virtual terminal (VT) and
-> writes its data using the legacy con->write() callback of the associated
-> serial console driver.
->
-> When the associated serial console driver gets converted to the NBCON API,
-> the braille write callback should use con->write_atomic() callback
-> with an appropriate locking.
->
-> It must be the atomic variant because it can be called under a spin_lock,
-> for example via:
->
->   + kbd_event()
->     + kbd_keycode()
->       + atomic_notifier_call_chain(&keyboard_notifier_list)
-> 	+ vt_notifier_call()
-> 	  + vc_refresh()
-> 	    + braille_write()
->
-> In addition, it can be called from printk() in any context via
-> the graphical tty driver (vt code) even when the Braille driver is not
-> in console_list directly.
->
-> The locking is inspired with nbcon_legacy_emit_next_record(),
-> nbcon_kdb_try_acquire()/release(), and the original serial driver locking:
->
->   1. IRQs are explicitly disabled to prevent CPU migration and nested
->      calls into the serial driver code.
->
->   2. New nbcon_braille_try_acquire()/release() API allows to initialize
->      the write context and acquire the ownership. It is using
->      NBCON_PRIO_NORMAL because it competes only with the other operations
->      on the serial console driver which are serialized using
->      nbcon_device_try_acquire().
->
->   3. It uses a busy loop until it acquires the ownership. Otherwise,
->      the messages would get lost. [*]
+On Fri 2026-09-25 21:11:41, John Ogness wrote:
+> On 2026-09-25, Petr Mladek <pmladek@suse.com> wrote:
+> > I used on the command line:
+> >
+> > 	console=brl,ttyS0,115200 console=tty0
+> >
+> > The serial console driver is not in console_list. But it shows
+> > all printk() messages because tty0 is in console_list and
+> > the messages are shown there.
+> 
+> Got it. So from the perspective of printk() we have a legacy
+> console. The legacy console is (mis)using the write callback of a
+> console driver to write to the underlying device. And since the driver
+> for the underlying device is NBCON, these contexts do not match. But
+> actually it is more complicated than that, because the console driver
+> callback is being used for all vt updates, not just those from printk().
 
-There could only be ownership issues if userspace is playing with the
-/dev/ttySx device node, which userspace should not be doing.
+Yes. This looks like a good description of the situation.
 
->   4. It does just the best effort when oops_in_progress is set.
->
-> Also, adjust __serial8250_console_write() in the 8250 serial driver to
-> exclude Braille consoles from the newline prepending logic.
+> Since the 8250 driver (and so far all NBCON UART drivers) use the port
+> lock for the ->device_lock() callback, it would be enough to do:
+> 
+> 	con->device_lock();
+> 	con->write_thread();
+> 	con->device_unlock();
 
-Note that all NBCON drivers cause this issue, not just the 8250. Later I
-mention why it does not matter and no changes to the 8250 are required.
+I'll play with this and use it in v3 when the code looks reasonable.
+I'll try to get the nbcon context as well. It will be for !PREEMPT_RT anyway.
 
-> The serial
-> port is not used for standard printk logging which might be interrupted
-> in the middle of the operation. In the Braille mode, the serial driver
-> is supposed to write exactly what it gets. In fact, it does not print
-> any newlines at all in this case.
+> if it is NBCON. That would at least provide proper locking (port lock)
+> for the underlying device during runtime. The only downside is that
+> panic could deadlock if the panic occurred while a CPU is holding the
+> port lock.
 
-Well, it still performs the "\n" -> "\r\n" conversions. But I guess that
-is appropriate.
+Yup, we would need some special handling in panic and rely just on
+the nbcon context.
 
-> [*] The busy loop is not safe on PREEMPT_RT where the current owner
->     might sleep. We will need another solution there.
-
-If we are knowingly breaking PREEMPT_RT then this series should also
-include:
-
-diff --git a/drivers/accessibility/Kconfig b/drivers/accessibility/Kconfig
-index 6b2f79d1f1b81..d4faa6e0e01b1 100644
---- a/drivers/accessibility/Kconfig
-+++ b/drivers/accessibility/Kconfig
-@@ -21,6 +21,7 @@ config A11Y_BRAILLE_CONSOLE
- 	bool "Console on braille device"
- 	depends on VT
- 	depends on SERIAL_CORE_CONSOLE
-+	depends on !PREEMPT_RT
- 	help
- 	  Enables console output on a braille device connected to a 8250
- 	  serial port. For now only the VisioBraille device is supported.
-
-The console_braille "driver" needs to be made into a proper driver and
-make use of the serdev subsystem. I am currently working on this, but
-the changes are not trivial. And, optimally, the vt_console should also
-be switched over to NBCON. So this is not something we are going to get
-fixed in an rc6. For that reason, I support moving forward with this
-series until a proper solution is developed.
-
-> Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->  .../accessibility/braille/braille_console.c   | 43 ++++++++++++-
->  drivers/tty/serial/8250/8250_port.c           |  5 +-
->  include/linux/console.h                       |  8 +++
->  kernel/printk/nbcon.c                         | 64 +++++++++++++++++++
->  4 files changed, 117 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/accessibility/braille/braille_console.c b/drivers/accessibility/braille/braille_console.c
-> index 06b43b678d6e..bae177cb8cf9 100644
-> --- a/drivers/accessibility/braille/braille_console.c
-> +++ b/drivers/accessibility/braille/braille_console.c
-> @@ -62,14 +62,36 @@ static void braille_write(u16 *buf)
->  {
->  	static u16 lastwrite[WIDTH];
->  	unsigned char data[1 + 1 + 2*WIDTH + 2 + 1], csum = 0, *c;
-> +	struct nbcon_write_context wctxt = { };
-> +	unsigned long flags;
-> +	bool locked;
-> +
->  	u16 out;
->  	int i;
->  
->  	if (!braille_co)
->  		return;
->  
-> +	if (braille_co->flags & CON_NBCON) {
-> +		/*
-> +		 * Braille console might be called from unknown context via
-> +		 * vt_console_print() from console_unlock() from printk().
-> +		 * Use the atomic callback and synchronize it just using
-> +		 * the console context. Disable interrupts to prevent a nested
-> +		 * call into the driver code which might cause a deadlock when
-> +		 * trying to acquire the console ownership, see
-> +		 * __nbcon_atomic_flush_pending_con().
-> +		 */
-> +		local_irq_save(flags);
-> +		do {
-> +			locked = nbcon_braille_try_acquire(braille_co, &wctxt);
-> +			if (!locked)
-> +				cpu_relax();
-> +		} while (!locked && !oops_in_progress);
-> +	}
-> +
->  	if (!memcmp(lastwrite, buf, WIDTH * sizeof(*buf)))
-> -		return;
-> +		goto release_nbcon;
->  	memcpy(lastwrite, buf, WIDTH * sizeof(*buf));
->  
->  #define SOH 1
-> @@ -102,7 +124,24 @@ static void braille_write(u16 *buf)
->  	*c++ = csum;
->  	*c++ = ETX;
->  
-> -	braille_co->write(braille_co, data, c - data);
-> +	if (braille_co->flags & CON_NBCON) {
-> +		if (braille_co->write_atomic &&
-> +		    !(braille_co->flags & CON_NBCON_ATOMIC_UNSAFE)) {
-> +			nbcon_write_context_set_buf(&wctxt, (char *)data, c - data);
-> +			braille_co->write_atomic(braille_co, &wctxt);
-> +		} else {
-> +			pr_warn_once("Braille requires a safe braille_co->write_atomic callback\n");
-
-This needs to be caught in braille_register_console(), not here.
-
-> +		}
-> +	} else {
-> +		braille_co->write(braille_co, data, c - data);
-> +	}
-> +
-> +release_nbcon:
-> +	if (braille_co->flags & CON_NBCON) {
-> +		if (locked)
-> +			nbcon_braille_release(&wctxt);
-> +		local_irq_restore(flags);
-> +	}
->  }
->  
->  /* Follow the VC cursor*/
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 38fa45e74a37..6eb0b439e433 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3417,8 +3417,11 @@ static void __serial8250_console_write(struct uart_8250_port *up,
->  	 * If the console printer did not fully output the previous line, it
->  	 * must have been handed or taken over. Insert a newline in order to
->  	 * maintain clean output.
-> +	 *
-> +	 * Braille consoles are an exception. The serial port is not used
-> +	 * for printk(). The driver is supposed to write exactly what it gets.
->  	 */
-> -	if (!up->console_line_ended) {
-> +	if (unlikely(!up->console_line_ended && !nbcon_is_braille(wctxt))) {
-
-This change is not necessary because there will never be
-handovers/takeovers for Braille. It is not registered as a console.
-
->  		if (use_fifo)
->  			__serial8250_console_fifo_write(up, wctxt, "\n", 1);
->  		else
-> diff --git a/include/linux/console.h b/include/linux/console.h
-> index 502d1abe3f50..d780f6de303a 100644
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -615,6 +615,10 @@ extern bool nbcon_allow_unsafe_takeover(void);
->  extern bool nbcon_kdb_try_acquire(struct console *con,
->  				  struct nbcon_write_context *wctxt);
->  extern void nbcon_kdb_release(struct nbcon_write_context *wctxt);
-> +extern bool nbcon_is_braille(struct nbcon_write_context *wctxt);
-
-nbcon_is_braille() is not needed.
-
-> +extern bool nbcon_braille_try_acquire(struct console *con,
-> +				      struct nbcon_write_context *wctxt);
-> +extern void nbcon_braille_release(struct nbcon_write_context *wctxt);
->  
->  /*
->   * Check if the given console is currently capable and allowed to print
-> @@ -678,8 +682,12 @@ static inline void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt) { }
->  static inline bool nbcon_kdb_try_acquire(struct console *con,
->  					 struct nbcon_write_context *wctxt) { return false; }
->  static inline void nbcon_kdb_release(struct nbcon_write_context *wctxt) { }
-> +static inline bool nbcon_is_braille(struct nbcon_write_context *wctxt) { return false; }
-
-nbcon_is_braille() is not needed.
-
->  static inline bool console_is_usable(struct console *con, short flags,
->  				     bool use_atomic) { return false; }
-> +static inline bool nbcon_braille_try_acquire(struct console *con,
-> +					     struct nbcon_write_context *wctxt) { return false; }
-> +static inline void nbcon_braille_release(struct nbcon_write_context *wctxt) { }
->  #endif
->  
->  extern int console_set_on_cmdline;
-> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-> index d17704fe93ae..e5a0506330eb 100644
-> --- a/kernel/printk/nbcon.c
-> +++ b/kernel/printk/nbcon.c
-> @@ -1887,6 +1887,7 @@ bool nbcon_device_try_acquire(struct console *con)
->  
->  	memset(ctxt, 0, sizeof(*ctxt));
->  	ctxt->console	= con;
-> +	/* Keep in sync with nbcon_braille_try_acquire(). */
->  	ctxt->prio	= NBCON_PRIO_NORMAL;
->  
->  	if (!nbcon_context_try_acquire(ctxt, false))
-> @@ -2002,3 +2003,66 @@ void nbcon_kdb_release(struct nbcon_write_context *wctxt)
->  	 */
->  	__nbcon_atomic_flush_pending_con(ctxt->console, prb_next_reserve_seq(prb));
->  }
-> +
-> +/**
-> + * nbcon_is_braille - Checks whether the nbcon write context is using Braille console
-> + *
-> + * @wctxt:	checked nbcon write context
-> + *
-> + * Return: True when the write context is associated with a Braille console.
-> + *	   Othrewise, return false.
-> + *
-> + * Context: Can be called in any context but only when Braille console is
-> + *	registered and the struct console could not disappear.
-> + */
-> +bool nbcon_is_braille(struct nbcon_write_context *wctxt)
-> +{
-> +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
-> +	struct console *con = ctxt->console;
-> +
-> +	return con && con->flags & CON_BRL;
-> +}
-
-nbcon_is_braille() is not needed.
-
-> +
-> +/**
-> + * nbcon_braille_try_acquire - Try to acquire nbcon console for braille_write()
-> + *
-> + * @con:	The nbcon console to acquire
-> + * @wctxt:	The nbcon write context to be used on success
-> + *
-> + * Context:	braille_write() for emitting a single buffer on Braille console.
-> + *
-> + * Return:	True if the console was acquired. False otherwise.
-> + *
-> + * Braille console is not registered as a proper printk consoles. Instead,
-> + * it is integrated with the graphical virtual terminal.
-> + *
-> + * This function is going to synchronize the Braille write against other
-> + * operations on the used serial port. The port can be used also for a user
-> + * input but printk() won't emit the messages there directly. It means
-> + * the other operations will get synchronized using nbcon_device_try_acquire().
-> + */
-> +bool nbcon_braille_try_acquire(struct console *con,
-> +			   struct nbcon_write_context *wctxt)
-> +{
-> +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
-> +
-> +	memset(ctxt, 0, sizeof(*ctxt));
-> +	ctxt->console = con;
-> +	/* Keep in sync with nbcon_device_try_acquire(). */
-> +	ctxt->prio = NBCON_PRIO_NORMAL;
-> +
-> +	return nbcon_context_try_acquire(ctxt, false);
-> +}
-> +
-> +/**
-> + * nbcon_braille_release - Release the nbcon console
-> + *
-> + * @wctxt:	The nbcon write context initialized by a successful
-> + *		nbcon_braille_try_acquire()
-> + */
-> +void nbcon_braille_release(struct nbcon_write_context *wctxt)
-> +{
-> +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
-> +
-> +	nbcon_context_release(ctxt);
-> +}
-
-John Ogness
+Best Regards,
+Petr
