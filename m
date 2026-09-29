@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9265D3D9DB6;
-	Tue, 29 Sep 2026 06:34:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8522B3D9DB6;
+	Tue, 29 Sep 2026 06:35:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790663698; cv=none; b=bFPBUuYUF9vzKwHGKNQhjdTcTFywSgIF1+bnl1CED5EXnVnepFHS/TXWDqH9s9hlrN/XKKAkdMW5BrBvnSGe4QhB2cjRvjSPE0YpIFsIhV41ZE9nZ3Dwm9fWYk493ec9fryjwncnqmelCaemWDGk1GINQIM5XfokLLZm9Z+ndfM=
+	t=1790663704; cv=none; b=a8DgJbM+qSRTXhtmjQccBggWVjqg/EOc3TT/4CDlQSMGUKeSGh4eJZEd/Dj3g1QeywPeeF79fAd7f0ig4pY3wMiF2Y4JKIezOEhDg4RhwnfRBTAeB/vROxV8vq5mfBbk1NIojcGzeWlYMOV81dHgrmjbinVXyRfINPkAtcAiK8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790663698; c=relaxed/simple;
-	bh=NucKFBd9r8hTUFyHEsbAB2CrbqXZ1Wa4xjN09/gmeb4=;
+	s=arc-20240116; t=1790663704; c=relaxed/simple;
+	bh=kiO3A+UCSmajWWKFQ++gIh2o5dyt/i43ij3thbn4I4M=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YCj3NQYpbbtQqEQB4rcnQTP/aaklaArk9aY75rNTRduFUAZ8aQ/nqx3Fb4iY/AgRW+gxwrwNfDXiuQFPo2t6hwS6crJMWex6O8rKvOv+NoAsVVW0l8sFhM7yBhy6udToG7OJL4eqTPEIa1lEa1NOkkaZLoUAm/geZTElS+oJRdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WEf74tzi; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=sRvVYjr2qQECqMyKyU+d7V/QCU7/Qo8AMd5eUvYlHXnJf+nESumNeVtIMclaNTceCBhJdVyQzzcxK7ZvMvdXRhXiO73kX/7uKVbmeOGaqktYcLhLrXFGwLZr7IkuKo4R42b+WbjthqONqE6djDyQfeYteXYDCF2srPTIHhpQ26E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Iw+NfNvN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WEf74tzi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0F391F000FF;
-	Tue, 29 Sep 2026 06:34:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Iw+NfNvN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE191F00893;
+	Tue, 29 Sep 2026 06:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790663697;
-	bh=b5P9DPC5Eh+uVVTafzh7x7snkd1B5+EyEah33pHMIwQ=;
+	s=k20260515; t=1790663703;
+	bh=AqkLOG6vp6Vsh99YJdEMgsfkLHRJ2+yxOnHunFY/tzo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=WEf74tzi760yMiXm/BbqSALK+Gvk/Z6yTHrwf5Dw7KuP6J0npGpLtEKSx3rrYjVSZ
-	 LV13LVz/HA1cwIJI5VjiruARVhMwmUXEcETebHuyi4BafWynRucQiNNyIg9Be1r71x
-	 RP41zHiK92rwsJBal0/5h3VbL3h+CJyCVnpdNiDrmQWxedSn01IGcJfVlYrpCxYIZt
-	 nv2m3WdyO1gK8gH3Fbxtra56t3gtQCJQKcsefHB3bxhbF1SkX2voL6xayQPhYka7xX
-	 uymMmTKD8+QrR8SjIJFY9EalKMg4VcfCzrPhVJh6cjQKhKWQTvrHqKDWIbG4hGO7au
-	 0ze0YxOxMg/Lw==
+	b=Iw+NfNvNfng8RYycBeEcqjiCQkvCeOLe+H5W5jTqtMfVpx/8AC3ZXwaKuEHko+Rbl
+	 +eZGIwiw+YuXBxHjwgCCfRSyUkh0yifA794BkxAj6XF6FEQei+kebchAauNGyqg8N5
+	 65MtUbVO/LLBm/GlnM3rsyFWrOo6M/Mr9w7jIcMah7kcAxea9QFa90dAmWx+UVTG4t
+	 ysqrbFmadMlHUDWm/uhjlzjl8/uFUXyT1bd3t5NdVye9esKVdA8x75WGB/IFyUTETS
+	 gTTC4I8QDdGBOfINagsOgi3Dc1lRZYeKYsKcLcFaczuM97gVDdoyCBW+yazmXQ0s1F
+	 3YkDLa7fmTuvQ==
 From: Jisheng Zhang <jszhang@kernel.org>
 To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -54,9 +54,9 @@ Cc: devicetree@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-spi@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 06/20] dt-bindings: i3c: Add Synaptics sl261x i3c
-Date: Tue, 29 Sep 2026 14:14:03 +0800
-Message-ID: <20260929061417.20733-7-jszhang@kernel.org>
+Subject: [PATCH 07/20] arm64: kconfig: let ARCH_BERLIN cover Synaptics arm64 SoCs
+Date: Tue, 29 Sep 2026 14:14:04 +0800
+Message-ID: <20260929061417.20733-8-jszhang@kernel.org>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260929061417.20733-1-jszhang@kernel.org>
 References: <20260929061417.20733-1-jszhang@kernel.org>
@@ -68,29 +68,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the compatible for the Synaptics SL261X SoC I3C controller, which
-is compatible with the Synopsys DesignWare I3C.
+Extend ARCH_BERLIN to cover Synaptics arm64 SoCs.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/Kconfig.platforms | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-index dcc21a7ab4c4..bd08d048d44b 100644
---- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-+++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-@@ -17,7 +17,9 @@ properties:
-     oneOf:
-       - const: snps,dw-i3c-master-1.00a
-       - items:
--          - const: altr,agilex5-dw-i3c-master
-+          - enum:
-+              - altr,agilex5-dw-i3c-master
-+              - syna,sl261x-i3c
-           - const: snps,dw-i3c-master-1.00a
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index d2acfac73003..1c0747555a57 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -108,13 +108,13 @@ config ARCH_BRCMSTB
+ endif
  
-   reg:
+ config ARCH_BERLIN
+-	bool "Marvell Berlin SoC Family"
++	bool "Synaptics/Marvell Berlin SoC Family"
+ 	select DW_APB_ICTL
+ 	select DW_APB_TIMER_OF
+ 	select GPIOLIB
+ 	select PINCTRL
+ 	help
+-	  This enables support for Marvell Berlin SoC Family
++	  This enables support for Synaptics SoCs or Marvell Berlin SoC Family
+ 
+ config ARCH_BITMAIN
+ 	bool "Bitmain SoC Platforms"
 -- 
 2.53.0
 
