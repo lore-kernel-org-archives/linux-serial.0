@@ -1,93 +1,70 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EAAC3DCDB5;
-	Tue, 29 Sep 2026 09:41:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFA59503918
+	for <linux-serial@vger.kernel.org>; Tue, 29 Sep 2026 09:49:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790674876; cv=none; b=lJDY7MTUFdIrGOp3e2LGECMvxGmcOUUv9UgabS08xnnpvVinLoKQVfSgCu/TigynkCddd47Ulp7Fhr+TjzLciVbU7oFT33GSDH0Z/C3jEAh67mClR3ki1U0b1GW4rGUGG2x3lg5J8zNv6lJztFmNWsOk//nl/mjR6a2cmcGT5cg=
+	t=1790675372; cv=none; b=gr2uBCnTIac9QwZp4A67NzCZ0pliyTCR1t9e+ynCqW6ydBnnCCAearRGkJMjD8xoK6FCnLjhWQQAZaWVuVE+NhVb6fBQjn1JsIdhvWaVArVVk0O9RJDkuI6m9rgm9rY8nOMKM5fEH3NDO+dvHaDL5V/OWE7NHDoAsK6rhmMmRzo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790674876; c=relaxed/simple;
-	bh=HU7an8528N4aiVk6J/ZynRLoCHlTKnSIrJ26K63+oLw=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=SZ+i9SAxl6vp1GIBCtDUYr7GrLTqUVnAgY57/KbraG96RT8G4OErIEOF8PhPYiUNYpgq6P+EcgmeOtEwAOpFoLpUMGFzigo2knx+GyDwqt++VNI06PLHI+MIWP+pZaHnN1TYc942lYDebZQCaJONI++YFSs/ht5AcQ9dWQG2OxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eTycSW45; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790675372; c=relaxed/simple;
+	bh=YImnZZ/rNVbB+6i7gKjSMjVQxXTt/gmbQ35hkGdBO9c=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=TY7y0tYSSfqliEM4PSnAI4LbgAijkaJwkYNNuu5/Z3XcNHVY3QuLzrwHQek+iqn8b5sL65gdzdc04sVvg2MUD0u0GQsCmRewePyRwOMK1UFqRtZXRYgTMwN6FGbtzKqHr94Onn4UVYBPK5jBmzpT/WSGcISFMcCL+9rBGFdth6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SVnlK47x; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eTycSW45"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B868A1F000FF;
-	Tue, 29 Sep 2026 09:41:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SVnlK47x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660671F000FF;
+	Tue, 29 Sep 2026 09:49:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790674875;
-	bh=wh/y+8ww4qgzVtVEmUDXThCVXr+h/XhtDr932zbuajk=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date;
-	b=eTycSW45LWX7/MF/VprD1aZhTjRJiAnwtoSIPTcvI0ixyV2lo462dvvMoGBuXePXn
-	 RcHqZ96S4lKeUa+2akNWJzW7T7MSIELhVevIsTmR0R0/dHxbKkO56mPQPFzWtTBq5g
-	 5HUdFlp5nEQcsDhpTT5gSzE8BG9usfZegJKCptcAxCQPRztTkyySKoFLLzDOjMYcRm
-	 dmHRFlf7VVwKXPh+bPs2E7hHvymkou/rjr8QhyA0UaGCigsoYz5go0TIUmjdqh5MFc
-	 ibIChelswMAfcE2R7kWD7RSPpXJzdOsUz5/jpmC5cPcxTixG9lM8YnQ30llhP/bJpM
-	 TIum7PFha6skQ==
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
- Tudor Ambarus <tudor.ambarus@linaro.org>, 
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
- Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
- Alexandre Belloni <alexandre.belloni@bootlin.com>, 
- Linus Walleij <linusw@kernel.org>, Drew Fustini <fustini@kernel.org>, 
- Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
- "Guilherme G. Piccoli" <gpiccoli@igalia.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Peter Griffin <peter.griffin@linaro.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
- soc@lists.linux.dev, Douglas Anderson <dianders@chromium.org>, 
- Juan Yescas <jyescas@google.com>, RD Babiera <rdbabiera@google.com>, 
- Brian Norris <briannorris@google.com>, 
- William McVicker <willmcvicker@google.com>, kernel-team@android.com, 
- linux-serial@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- Brian Norris <briannorris@chromium.org>
-In-Reply-To: <20260918-contrib-pg-pixel10-initial-dts-v4-0-745eaca28b1a@linaro.org>
-References: <20260918-contrib-pg-pixel10-initial-dts-v4-0-745eaca28b1a@linaro.org>
-Subject: Re: [PATCH v4 0/4] Add Laguna/Tensor G5 SoC and Frankel, Blazer &
- Mustang boards
-Message-Id: <179067486422.102650.10176830320558486814.b4-ty@b4>
-Date: Tue, 29 Sep 2026 11:41:04 +0200
+	s=k20260515; t=1790675370;
+	bh=YImnZZ/rNVbB+6i7gKjSMjVQxXTt/gmbQ35hkGdBO9c=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=SVnlK47xC+4lep9ztY6qcJljojsZWnZOKLTh1cGrSGg30KR/ghSLoz+HFFnDxOkTw
+	 g2w2WmhbAjV5ZrVhOr7mNlkP/Fe/JrWeECyMhR/V+JJ27OxbhjP1oSzZSOPJSby6bg
+	 069pK7IN6+tcQ8rlTnqTNQEAqIsOPli3SNXhtL8pJm2321rNr673ybEAnaenEieqf3
+	 iIp3l6nITxMfOrozle9Sg9Lrdn3TsNk5wTQscAKSrO80526xMODwqr+upSTeUTjlJR
+	 wEjTXXg+zITDKck/BNrtW2+V4kSi0uOkA6Bh/ClVEtJZqws1zvbPpf+gY1xRXaRxF4
+	 xM4eVXxMf7ehQ==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v5 1/8] serial: max310x: don't clobber the TX break bit
+ in set_termios
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260929-max310x-rs485-sw-delay-v5-1-ae46afa583f2@vaisala.com>
+References: <20260929-max310x-rs485-sw-delay-v5-0-ae46afa583f2@vaisala.com>
+ <20260929-max310x-rs485-sw-delay-v5-1-ae46afa583f2@vaisala.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 29 Sep 2026 09:49:29 +0000
+Message-Id: <20260929094930.660671F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.16.0
 
+> max310x_set_termios() writes the LCR register absolutely, but LCR also
+> carries the TX break bit that max310x_break_ctl() drives. A break is a
+> state, not an event: TIOCSBRK sets the bit and it must stay set until
+> TIOCCBRK. Any termios change in between - no concurrency required -
+> rewrites LCR from the termios bits alone and silently ends the break
+> early.
+>=20
+> Update only the LCR bits that are derived from termios and leave the
+> TX break and RTS pin control bits untouched. Since nothing clears a
+> break when a port is closed with the break still asserted - the tty
+> core sends no break-off on release, and the absolute write here was
+> the accidental recovery - clear TXBREAK in startup(), the same way
+> 8250 does.
+>=20
+> Fixes: f65444187a66 ("serial: New serial driver MAX310X")
+> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 
-On Fri, 18 Sep 2026 19:05:01 +0000, Peter Griffin wrote:
-> This series adds initial basic support for Laguna (Tensor G5 SoC)
-> found in Frankel (Pixel 10), Blazer (Pixel 10 Pro) and Mustang (Pixel
-> 10 Pro XL) phones.
-> 
-> Whilst Tensor G1 to G4 SoCs (found in Pixel 6 to Pixel 9 and Pixel
-> 10a) were offshoots from the Samsung Exynos family. Laguna is an
-> entirely in-house Google designed SoC.
-> 
-> [...]
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-Applied, thanks!
-
-[1/4] dt-bindings: arm: google: Add dt bindings for frankel/blazer/mustang
-      https://git.kernel.org/krzk/linux/c/ecf6405fa6c503c34eb4e7e905957d70d4018e93
-[2/4] arm64: dts: google: Add dts directory for Google-designed silicon
-      https://git.kernel.org/krzk/linux/c/cf3df78629f24b40cd0cb2da74e3ea4a944bed82
-[3/4] arm64: dts: google: Add initial dts for frankel/blazer/mustang
-      https://git.kernel.org/krzk/linux/c/54edd8698bb1fb40c339d0cb2f15baad6993dd48
-[4/4] arm64: defconfig: enable Tensor G5 SoC family
-      https://git.kernel.org/krzk/linux/c/63f674fe8a0a8d6e4bee3e72f7ae658f0e9a0686
-
-Best regards,
--- 
-Krzysztof Kozlowski <krzk@kernel.org>
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260929-max310x-rs=
+485-sw-delay-v5-0-ae46afa583f2@vaisala.com?part=3D1
 
