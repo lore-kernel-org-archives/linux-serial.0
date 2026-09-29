@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5957B2D838E;
-	Tue, 29 Sep 2026 06:35:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF29F4248D2;
+	Tue, 29 Sep 2026 06:35:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790663728; cv=none; b=LXIFKeAD/2NFLjvf3m3inljeEFYXzPcY1pNX4Te8dzRethhBMuJ1ow/IVUgcl5GUzHm6KPPKjGTGNDRMrD+FEjjwne2RYBheIlT0w1d8wkoC0Mw7feTwkcX6IQNzOnG94s8N5Pb4rvBaiL4Lmj5HP+RmJIgH8Ir3M+wUe8YSx4I=
+	t=1790663736; cv=none; b=aBb4HwQmeo+Xc+L7S2miyVknS25apJNy/OqZp9y/lzQbvK5GPZeqj05H8WP+KYSACWzlCS44EF0WSg1P0bTH+R6N2QbcYI/AQsDKNhmDshLjfblwQTaK80cqNEjHyc1RUGoTurxKZDmKv53J84HxFCxDfGWty5iyacwTHFFP79A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790663728; c=relaxed/simple;
-	bh=XLmJssCVJkA1/Te6UeXRnSW6CJ8AIhSyKaV3C+UgPbU=;
+	s=arc-20240116; t=1790663736; c=relaxed/simple;
+	bh=WREeCrwc4K4a4yOXunboF0L8s1FZDg+Sn5a9FA5Xq+I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=q1X8HEm59PPesShqIgn0okpXF3MMWZPg3/REXEEHdcqKbIYN6wCN8G+TDv61vDGfODZZt3JZjoK682K3zmoC8fDuGWngU+j+PfYgQruM47O/gmMgC6pWUtMMYGk0xukC1TGGyb1KPf4wNFSP5bn02WllWbvSFaWcMFepgmbaWYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EoKMsw2d; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=SeaxN6TycVHYAz2e02aLxuj6g2abOpBWZqSo/fdRKUkmXT4Jo1sDUySYt6WUBMpvmmpRUUu0vO3BKg8v8HORziUmx0/5fJ2YTPpfPKkn4WPzeMbBHKPDdNQCLL2GyNMKT3D/MRw8xnQK0KpBx2UJTR0IP+DNKllD+qF5PqxTZGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jDSapnQp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EoKMsw2d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 181B31F000FF;
-	Tue, 29 Sep 2026 06:35:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jDSapnQp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6991F00893;
+	Tue, 29 Sep 2026 06:35:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790663727;
-	bh=qs7Pv/6laLnorp25cTK04GRAniiFvRyeZMCFj2Hg7g0=;
+	s=k20260515; t=1790663734;
+	bh=2n7y60aIOX4DTHkldvRNAyFiO/yf8npMQuEZA/cu6dg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=EoKMsw2doFkOWRT2sHbm3G6UhGfoq2bAumyM5KJxUCsLkuYRg1NuxFFoVwVomaWFn
-	 pS6qXmVVUHgY1hR9XkUQ7JNsJkMkALujuBYsnyZXJzTVvyzjbK8kj9uuBqRZZvPai+
-	 2dmoH5oY5GOCkQbUzrcGveWEaMPUKM33mwra1xX0wtXo4ucuzttAVRNE07ASHA99Pf
-	 Pd/pYKFkzfov6kN+XLCVvNTiizA/uwFyFyxOEQJ+I//5BaX6wRL/oqy76OyJa73KAo
-	 rnerS2hl3AFMNcvmQBORlA7qenVDjlmaxYWrUMlotr0LLZdI206sUwrT0wBY7AbZzz
-	 gDPnIMSmhWaqw==
+	b=jDSapnQpQfTtP2gHBXdpx01ZPe3yBzadJMS7XFv3E4O4LmaTG7O7QVqsCdRaZ23Ae
+	 wdjj4FLSAJumpWP0F77Yz43yolqmaDdx0d2rDjAJWDJGgxmzu77Sm3FCqZhfAVCUqa
+	 ITwOQ3i1YX9ueuvjhrp4HmEDV0h+wXu7QzyXv0DaXDN2Wa1G89jO1mv28WLB874mfU
+	 KaOOZPRR9K3ZjBtDVy8xpKUSwdvFVEShRmA5v4cI6dR6+oaqFFiLl0p1o5z4O7oaYA
+	 /AyX/6F4rIOENP5sW0jk/2sS6+CL2PHay8jOWHIY+EWdQifybF1yjLuplQWb5SZ1GG
+	 m8S15llqIU3CA==
 From: Jisheng Zhang <jszhang@kernel.org>
 To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -54,9 +54,9 @@ Cc: devicetree@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-spi@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 11/20] pinctrl: berlin: enable module build support
-Date: Tue, 29 Sep 2026 14:14:08 +0800
-Message-ID: <20260929061417.20733-12-jszhang@kernel.org>
+Subject: [PATCH 12/20] pinctrl: berlin: add optional pinconf support
+Date: Tue, 29 Sep 2026 14:14:09 +0800
+Message-ID: <20260929061417.20733-13-jszhang@kernel.org>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260929061417.20733-1-jszhang@kernel.org>
 References: <20260929061417.20733-1-jszhang@kernel.org>
@@ -68,132 +68,307 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-For Android GKI + vendor_dlkm deployments, where vendor-specific
-drivers must be kept separate from the GKI vmlinux and loaded as
-modules from the vendor partition, we need to enable module build
-support for berlin pinctrl drivers.
-
-To acchive this goal:
-
-1.Use devm_* APIs to alloc memory, so that we don't need to care free when
-unloading.
-
-2.Export two symbols which will be used by SoC pinctrl drivers.
-
-3.Add MODULE_LICENSE and MODULE_DESCRIPTION
+Add pinconf support for newer Synaptics SoCs.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- drivers/pinctrl/berlin/berlin.c | 27 ++++++++++++++-------------
- drivers/pinctrl/berlin/berlin.h | 15 +++++++++++++++
- 2 files changed, 29 insertions(+), 13 deletions(-)
+ drivers/pinctrl/berlin/berlin.c | 232 +++++++++++++++++++++++++++++++-
+ 1 file changed, 228 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/pinctrl/berlin/berlin.c b/drivers/pinctrl/berlin/berlin.c
-index 7971339e269f..0c2179b98629 100644
+index 0c2179b98629..06c67f00c527 100644
 --- a/drivers/pinctrl/berlin/berlin.c
 +++ b/drivers/pinctrl/berlin/berlin.c
-@@ -215,7 +215,8 @@ static int berlin_pinctrl_build_state(struct platform_device *pdev)
+@@ -13,6 +13,8 @@
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
++#include <linux/pinctrl/pinconf-generic.h>
++#include <linux/pinctrl/pinconf.h>
+ #include <linux/pinctrl/pinctrl.h>
+ #include <linux/pinctrl/pinmux.h>
+ #include <linux/platform_device.h>
+@@ -20,9 +22,24 @@
+ #include <linux/slab.h>
+ 
+ #include "../core.h"
++#include "../pinconf.h"
+ #include "../pinctrl-utils.h"
+ #include "berlin.h"
+ 
++#define PINCFG_DS_10BIT		GENMASK(3, 0)
++#define PINCFG_IE_10BIT		BIT(4)
++#define PINCFG_PE_10BIT		BIT(5)
++#define PINCFG_PS_10BIT		BIT(6)
++#define PINCFG_SL_10BIT		BIT(7)
++#define PINCFG_SPU_10BIT	BIT(8)
++#define PINCFG_ST_10BIT		BIT(9)
++#define PINCFG_DS_8BIT		GENMASK(2, 0)
++#define PINCFG_IE_8BIT		BIT(3)
++#define PINCFG_PD_8BIT		BIT(4)
++#define PINCFG_PU_8BIT		BIT(5)
++#define PINCFG_SL_8BIT		BIT(6)
++#define PINCFG_ST_8BIT		BIT(7)
++
+ struct berlin_pinctrl {
+ 	struct regmap *regmap;
+ 	struct device *dev;
+@@ -56,6 +73,8 @@ static int berlin_pinctrl_dt_node_to_map(struct pinctrl_dev *pctrl_dev,
+ 	struct property *prop;
+ 	const char *function_name, *group_name;
+ 	unsigned reserved_maps = 0;
++	unsigned long *configs = NULL;
++	unsigned int num_configs = 0;
+ 	int ret, ngroups;
+ 
+ 	*map = NULL;
+@@ -75,11 +94,19 @@ static int berlin_pinctrl_dt_node_to_map(struct pinctrl_dev *pctrl_dev,
+ 		return -EINVAL;
  	}
  
- 	/* we will reallocate later */
--	pctrl->functions = kzalloc_objs(*pctrl->functions, max_functions);
-+	pctrl->functions = devm_kcalloc(&pdev->dev, max_functions,
-+					sizeof(*pctrl->functions), GFP_KERNEL);
- 	if (!pctrl->functions)
- 		return -ENOMEM;
++	ret = pinconf_generic_parse_dt_config(node, pctrl_dev, &configs,
++					      &num_configs);
++	if (ret < 0) {
++		dev_err(pctrl->dev, "%s: could not parse node property\n",
++			node->name);
++		return ret;
++	}
++
+ 	ret = pinctrl_utils_reserve_map(pctrl_dev, map, &reserved_maps,
+-					num_maps, ngroups);
++					num_maps, ngroups * (num_configs + 1));
+ 	if (ret) {
+ 		dev_err(pctrl->dev, "can't reserve map: %d\n", ret);
+-		return ret;
++		goto exit;
+ 	}
  
-@@ -230,13 +231,11 @@ static int berlin_pinctrl_build_state(struct platform_device *pdev)
+ 	of_property_for_each_string(node, "groups", prop, group_name) {
+@@ -88,11 +115,22 @@ static int berlin_pinctrl_dt_node_to_map(struct pinctrl_dev *pctrl_dev,
+ 						function_name);
+ 		if (ret) {
+ 			dev_err(pctrl->dev, "can't add map: %d\n", ret);
+-			return ret;
++			goto exit;
++		}
++
++		if (num_configs) {
++			ret = pinctrl_utils_add_map_configs(pctrl_dev, map,
++					&reserved_maps, num_maps, group_name,
++					configs, num_configs,
++					PIN_MAP_TYPE_CONFIGS_GROUP);
++			if (ret < 0)
++				goto exit;
  		}
  	}
  
--	new_functions = krealloc(pctrl->functions,
--				    pctrl->nfunctions * sizeof(*pctrl->functions),
--				    GFP_KERNEL);
--	if (!new_functions) {
--		kfree(pctrl->functions);
-+	new_functions = devm_krealloc(&pdev->dev, pctrl->functions,
-+				      pctrl->nfunctions * sizeof(*pctrl->functions),
-+				      GFP_KERNEL);
-+	if (!new_functions)
- 		return -ENOMEM;
--	}
- 
- 	pctrl->functions = new_functions;
- 	/* map functions to theirs groups */
-@@ -257,10 +256,8 @@ static int berlin_pinctrl_build_state(struct platform_device *pdev)
- 				function++;
- 			}
- 
--			if (!found) {
--				kfree(pctrl->functions);
-+			if (!found)
- 				return -EINVAL;
--			}
- 
- 			if (!function->groups) {
- 				function->groups =
-@@ -268,10 +265,9 @@ static int berlin_pinctrl_build_state(struct platform_device *pdev)
- 						     function->ngroups,
- 						     sizeof(*function->groups),
- 						     GFP_KERNEL);
--				if (!function->groups) {
--					kfree(pctrl->functions);
-+
-+				if (!function->groups)
- 					return -ENOMEM;
--				}
- 			}
- 
- 			groups = (const char **)function->groups;
-@@ -327,6 +323,7 @@ int berlin_pinctrl_probe_regmap(struct platform_device *pdev,
- 
- 	return 0;
+-	return 0;
++exit:
++	kfree(configs);
++	return ret;
  }
-+EXPORT_SYMBOL_GPL(berlin_pinctrl_probe_regmap);
  
- int berlin_pinctrl_probe(struct platform_device *pdev,
- 			 const struct berlin_pinctrl_desc *desc)
-@@ -341,3 +338,7 @@ int berlin_pinctrl_probe(struct platform_device *pdev,
- 
- 	return berlin_pinctrl_probe_regmap(pdev, desc, regmap);
- }
-+EXPORT_SYMBOL_GPL(berlin_pinctrl_probe);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("pinctrl library for Synaptics SoCs");
-diff --git a/drivers/pinctrl/berlin/berlin.h b/drivers/pinctrl/berlin/berlin.h
-index 7e7096842eda..8ff70d682593 100644
---- a/drivers/pinctrl/berlin/berlin.h
-+++ b/drivers/pinctrl/berlin/berlin.h
-@@ -20,6 +20,8 @@ struct berlin_desc_group {
- 	u16				offset;
- 	u8				bit_width;
- 	u8				lsb;
-+	u16				conf_offset;
-+	u8				conf_bits;
- 	struct berlin_desc_function	*functions;
+ static const struct pinctrl_ops berlin_pinctrl_ops = {
+@@ -177,6 +215,191 @@ static const struct pinmux_ops berlin_pinmux_ops = {
+ 	.set_mux		= &berlin_pinmux_set,
  };
  
-@@ -28,6 +30,19 @@ struct berlin_pinctrl_desc {
- 	unsigned			ngroups;
- };
- 
-+#define BERLIN_PINCTRLCONF_GROUP(_name, _offset, _width, _lsb,		\
-+		_conf_offset, _conf_bits, ...)				\
-+	{								\
-+		.name = _name,						\
-+		.offset = _offset,					\
-+		.bit_width = _width,					\
-+		.lsb = _lsb,						\
-+		.conf_offset = _conf_offset,				\
-+		.conf_bits = _conf_bits,				\
-+		.functions = (struct berlin_desc_function[]){		\
-+			__VA_ARGS__, { } },				\
++static int berlin_pinconf_group_get(struct pinctrl_dev *pctrl_dev,
++				    unsigned int group, unsigned long *configs)
++{
++	enum pin_config_param param = pinconf_to_config_param(*configs);
++	struct berlin_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctrl_dev);
++	const struct berlin_desc_group *group_desc = pctrl->desc->groups + group;
++	bool enabled;
++	u32 val;
++	int ret;
++	u8 conf_bits = group_desc->conf_bits;
++
++	if (!conf_bits)
++		return -EOPNOTSUPP;
++
++	ret = regmap_read(pctrl->regmap, group_desc->conf_offset, &val);
++	if (ret)
++		return ret;
++
++	switch (param) {
++	case PIN_CONFIG_BIAS_DISABLE:
++		if (conf_bits == 10)
++			enabled = !(val & PINCFG_PE_10BIT);
++		else
++			enabled = !(val & (PINCFG_PD_8BIT | PINCFG_PU_8BIT));
++		val = 0;
++		break;
++	case PIN_CONFIG_BIAS_PULL_DOWN:
++		if (conf_bits == 10)
++			enabled = (val & (PINCFG_PE_10BIT | PINCFG_PS_10BIT)) == PINCFG_PE_10BIT;
++		else
++			enabled = val & PINCFG_PD_8BIT;
++		val = enabled ? 1 : 0;
++		break;
++	case PIN_CONFIG_BIAS_PULL_UP:
++		if (conf_bits == 10) {
++			if ((val & (PINCFG_PE_10BIT | PINCFG_PS_10BIT)) == (PINCFG_PE_10BIT | PINCFG_PS_10BIT)) {
++				enabled = true;
++				if (val & PINCFG_SPU_10BIT)
++					val = 2;
++				else
++					val = 1;
++			} else {
++				enabled = false;
++				val = 0;
++			}
++		} else {
++			enabled = val & PINCFG_PU_8BIT;
++			val = enabled ? 1 : 0;
++		}
++		break;
++	case PIN_CONFIG_DRIVE_STRENGTH:
++		enabled = true;
++		if (conf_bits == 10)
++			val = FIELD_GET(PINCFG_DS_10BIT, val);
++		else
++			val = FIELD_GET(PINCFG_DS_8BIT, val);
++		break;
++	case PIN_CONFIG_INPUT_ENABLE:
++		if (conf_bits == 10)
++			enabled = val & PINCFG_IE_10BIT;
++		else
++			enabled = val & PINCFG_IE_8BIT;
++		val = enabled ? 1 : 0;
++		break;
++	case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
++		if (conf_bits == 10)
++			enabled = val & PINCFG_ST_10BIT;
++		else
++			enabled = val & PINCFG_ST_8BIT;
++		val = enabled ? 1 : 0;
++		break;
++	case PIN_CONFIG_SLEW_RATE:
++		if (conf_bits == 10)
++			enabled = val & PINCFG_SL_10BIT;
++		else
++			enabled = val & PINCFG_SL_8BIT;
++		val = enabled ? 1 : 0;
++		break;
++	default:
++		return -EOPNOTSUPP;
 +	}
 +
- #define BERLIN_PINCTRL_GROUP(_name, _offset, _width, _lsb, ...)		\
- 	{								\
- 		.name = _name,						\
++	*configs = pinconf_to_config_packed(param, val);
++	return enabled ? 0 : -EINVAL;
++}
++
++static int berlin_pinconf_group_set(struct pinctrl_dev *pctrl_dev,
++				    unsigned int group, unsigned long *configs,
++				    unsigned int nconfigs)
++{
++	struct berlin_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctrl_dev);
++	const struct berlin_desc_group *group_desc = pctrl->desc->groups + group;
++	u8 conf_bits = group_desc->conf_bits;
++	u32 mask = 0, val = 0;
++	int i;
++
++	if (!conf_bits)
++		return -EOPNOTSUPP;
++
++	for (i = 0; i < nconfigs; i++) {
++		enum pin_config_param param =
++					pinconf_to_config_param(configs[i]);
++		u32 arg = pinconf_to_config_argument(configs[i]);
++
++		switch (param) {
++		case PIN_CONFIG_BIAS_DISABLE:
++			if (conf_bits == 10)
++				mask |= (PINCFG_PE_10BIT | PINCFG_PS_10BIT | PINCFG_SPU_10BIT);
++			else
++				mask |= (PINCFG_PU_8BIT | PINCFG_PD_8BIT);
++			break;
++		case PIN_CONFIG_BIAS_PULL_DOWN:
++			if (conf_bits == 10) {
++				mask |= (PINCFG_PE_10BIT | PINCFG_PS_10BIT | PINCFG_SPU_10BIT);
++				val |= PINCFG_PE_10BIT;
++			} else {
++				mask |= (PINCFG_PU_8BIT | PINCFG_PD_8BIT);
++				val |= PINCFG_PD_8BIT;
++			}
++			break;
++		case PIN_CONFIG_BIAS_PULL_UP:
++			if (conf_bits == 10) {
++				mask |= (PINCFG_PE_10BIT | PINCFG_PS_10BIT | PINCFG_SPU_10BIT);
++				val |= (PINCFG_PE_10BIT | PINCFG_PS_10BIT);
++				if (arg == 2)
++					val |= PINCFG_SPU_10BIT;
++			} else {
++				mask |= (PINCFG_PU_8BIT | PINCFG_PD_8BIT);
++				val |= PINCFG_PU_8BIT;
++			}
++			break;
++		case PIN_CONFIG_DRIVE_STRENGTH:
++			if (conf_bits == 10)
++				mask |= PINCFG_DS_10BIT;
++			else
++				mask |= PINCFG_DS_8BIT;
++			val |= arg;
++			break;
++		case PIN_CONFIG_INPUT_ENABLE:
++			if (conf_bits == 10) {
++				mask |= PINCFG_IE_10BIT;
++				if (arg)
++					val |= PINCFG_IE_10BIT;
++			} else {
++				mask |= PINCFG_IE_8BIT;
++				if (arg)
++					val |= PINCFG_IE_8BIT;
++			}
++			break;
++		case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
++			if (conf_bits == 10) {
++				mask |= PINCFG_ST_10BIT;
++				if (arg)
++					val |= PINCFG_ST_10BIT;
++			} else {
++				mask |= PINCFG_ST_8BIT;
++				if (arg)
++					val |= PINCFG_ST_8BIT;
++			}
++			break;
++		case PIN_CONFIG_SLEW_RATE:
++			if (conf_bits == 10) {
++				mask |= PINCFG_SL_10BIT;
++				if (arg)
++					val |= PINCFG_SL_10BIT;
++			} else {
++				mask |= PINCFG_SL_8BIT;
++				if (arg)
++					val |= PINCFG_SL_8BIT;
++			}
++			break;
++		default:
++			return -EOPNOTSUPP;
++		}
++	}
++
++	return regmap_update_bits(pctrl->regmap, group_desc->conf_offset, mask, val);
++}
++
++static const struct pinconf_ops berlin_confops = {
++	.is_generic = true,
++	.pin_config_group_get = berlin_pinconf_group_get,
++	.pin_config_group_set = berlin_pinconf_group_set,
++};
++
+ static int berlin_pinctrl_add_function(struct berlin_pinctrl *pctrl,
+ 				       const char *name)
+ {
+@@ -287,6 +510,7 @@ static const struct pinctrl_desc berlin_pctrl_desc = {
+ 	.name		= "berlin-pinctrl",
+ 	.pctlops	= &berlin_pinctrl_ops,
+ 	.pmxops		= &berlin_pinmux_ops,
++	.confops	= &berlin_confops,
+ 	.owner		= THIS_MODULE,
+ };
+ 
 -- 
 2.53.0
 
