@@ -1,140 +1,134 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AC6C350A0F;
-	Tue, 29 Sep 2026 06:47:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3450635C69D;
+	Tue, 29 Sep 2026 06:50:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790664459; cv=none; b=XNFNwi95JJcGR9iOS79BYRtYF5bFZPUHrAKJqww3ItQxgVkry3OadC12v8ObQXMd5rubEnjTQdcXf08BAHETr3BgMSD/229lqrVF/8Xz+dOW2TEHzzX80h78LOYDUMrqA/BZRywPxlvFkSlYC9+VAawa15xMaXQHqHqpaPHw69s=
+	t=1790664623; cv=none; b=Oc5IgVaVrvWt9SY2c6klrvpD269rSh/rc1j++73mxZL9dB+6YjTbpLPsk1HlP5s6TgHD2iJfnHnZxj2GAcBmIwxGYEyculdJWghO1Gn6y1xVzFLeYBAb8S8eQLc2a5/+ns4Pcuv3IEf5Hm9ehoRJlq/keDwfF/BQ1lr9JURK8r4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790664459; c=relaxed/simple;
-	bh=/0LrC2RxTphSEA/1PaEo9HCQLwX3jvloBdvVB8oCfDw=;
+	s=arc-20240116; t=1790664623; c=relaxed/simple;
+	bh=icXQJlJ2gE2aKfbGJbgwrG3Kq+4XdfW1MP3OKZ1JDlg=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=OXlSp1Of+hTkXXl0itGxizeR5n031LBfQMZRFlba9iqWxr8HSuRYSSBKe/iPbXa3D4FRVa1We7yHlE3EhGUDm532Pf+24IPENtervFJR3cfcmf3biKw+xNKGpVXKPEOi8BzDByM5pLjitOFfSbqksnNzmtPHHB4Hr/jnq+vCFKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lkcA4PIp; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=N6yyskgTlVsudXdmbgihnl2mlyNh99ReRKg85jneMBJhetBuIFzu8zYkhfZG1C/JANGy5Z2oEN3ORVEZjFjgGtl+1uY2YzdGyOUlbY45gVJqnXbmkQHbPxDdRjBJcCgEQ4YZjoWng29deRKCxx9yqOEvePzpXs2uQqu+iPy8TxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HVVqwSIW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lkcA4PIp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931681F000FF;
-	Tue, 29 Sep 2026 06:47:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HVVqwSIW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E2B11F000FF;
+	Tue, 29 Sep 2026 06:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790664458;
-	bh=K8KuaxQckNe2MccofgXiA03iijp30ZSc0gaaENsMpaE=;
+	s=k20260515; t=1790664622;
+	bh=3QNnYrmPWFJ3dHPbxUuYCkeu7U1ZSe+QYcoj8h3lGiA=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=lkcA4PIpbWfmRv6WRLJqPZQfSeA06swsOct6a/cK+18FQk1GQTtULwg7ub/0rPAc8
-	 b0P8As/BRCxOlwreaCiFlSLfD7TkMTjEAWZraquQ3xkTh+Z2qep9OeOSyQZ9i7cgkR
-	 lV9VKDQOMawJdY9essOxXsX8bMb6vUnkgMCpWx43MFon0Z0YCI2oFuHl6xXjXdVOW1
-	 Lykzlr9j2g1G+hbiU6M5oeF3B1rYxNCDbVX0juQVBQO5rC5PCTkDAeRcUZMP9Itf3i
-	 r5nG2KC9/TUSE09CWDvhC5Z8TWuVs9nOdSn2PGQqfU+cUNH3q+C0f6nTRWGPxnUOYn
-	 qfG96xpSC5d1g==
+	b=HVVqwSIWMtVOJ0LtFWfhF6p7M6Y+WOAKiT4/cpSAqbIEkBXNP7tck/ohnsseOtgJC
+	 Raul5dacReRH1qcsup5lXIAaVcOgbwdXtqJCTLm0Gze3sFjrBpyfV84TDxnu0/cKtS
+	 o4ZyRp3k7E+MlHRLVZOf2yuV7t4PITN6GhOnzjUYyDfjTiIy0WCmQV9u0dJ3AndNW/
+	 Y5n8SZqCNBQkwFtZmxmKVetOcjWPPBRfoV0SvhwkmZhEuZr7TiE/uC6OUvmUL6QcZn
+	 tBkrUDDutmuDhvod43p02CemQ7X8rSgxmyn0WIxmhh1CgV2Ob5+No2+xvcak1M5AYA
+	 Wf/a/NIzvRZbA==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 14/20] pinctrl: berlin: support Synaptics SL261X SoCs
+Subject: Re: [PATCH 16/20] clk: berlin: add Synaptics SL261X SoC clocks and
+ plls
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Jisheng Zhang" <jszhang@kernel.org>
-Cc: linux-clk@vger.kernel.org, linux-i3c@lists.infradead.org, conor+dt@kernel.org, "Alexandre
- Belloni" <alexandre.belloni@bootlin.com>, devicetree@vger.kernel.org, robh@kernel.org, lee@kernel.org, Frank.Li@kernel.org, linux-serial@vger.kernel.org, mfd@lists.linux.dev
-In-Reply-To: <20260929061417.20733-15-jszhang@kernel.org>
+Cc: conor+dt@kernel.org, linux-serial@vger.kernel.org, "Alexandre Belloni" <alexandre.belloni@bootlin.com>, devicetree@vger.kernel.org, Frank.Li@kernel.org, linux-i3c@lists.infradead.org, mfd@lists.linux.dev, robh@kernel.org, linux-clk@vger.kernel.org, lee@kernel.org
+In-Reply-To: <20260929061417.20733-17-jszhang@kernel.org>
 References: <20260929061417.20733-1-jszhang@kernel.org>
- <20260929061417.20733-15-jszhang@kernel.org>
+ <20260929061417.20733-17-jszhang@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 29 Sep 2026 06:47:37 +0000
-Message-Id: <20260929064737.931681F000FF@smtp.kernel.org>
+Date: Tue, 29 Sep 2026 06:50:20 +0000
+Message-Id: <20260929065021.5E2B11F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [High] pinctrl: sl261x: incorrect multiplexer register base offset for SM=
-_GPIO20
-- [High] pinctrl: sl261x: incorrect configuration register offset for GPIO54
-- [Low] pinctrl: sl261x: mismatched comments for uart1 pin functions
+- [Medium] clk: berlin: missing .disable callbacks in sysmgr clock operatio=
+ns
+- [Low] kbuild: Linker error due to missing Kconfig dependency for SL261X_P=
+LL
 --
 
-commit fd69572f1bec3df913befb121d2d8d563a04f10c
+commit 56d97606c2f6bbb88d4a36a5f8b06b807c05523d
 Author: Jisheng Zhang <jszhang@kernel.org>
 
-pinctrl: berlin: support Synaptics SL261X SoCs
+clk: berlin: add Synaptics SL261X SoC clocks and plls
 
-This commit adds a new pinctrl driver for the Synaptics SL261X SoCs. It
-defines the pin configuration groups, register offsets, and multiplexer
-functions for both the main SoC and the system manager pin controller block=
-s.
+Add support for clocks, plls in Synaptics SL261X SoCs.
 
-> diff --git a/drivers/pinctrl/berlin/pinctrl-sl261x.c b/drivers/pinctrl/be=
-rlin/pinctrl-sl261x.c
+> diff --git a/drivers/clk/berlin/Kconfig b/drivers/clk/berlin/Kconfig
 > new file mode 100644
 > --- /dev/null
-> +++ b/drivers/pinctrl/berlin/pinctrl-sl261x.c
-
+> +++ b/drivers/clk/berlin/Kconfig
 [ ... ]
-
-> +	BERLIN_PINCTRLCONF_GROUP("GPIO53", 0x800c, 0x3, 0x00,
-> +			0x8878, 10,
-> +			BERLIN_PINCTRL_FUNCTION(0x0, "gpio"), /* GPIO53 */
-> +			BERLIN_PINCTRL_FUNCTION(0x1, "rgmii2"), /* RD1 */
-> +			BERLIN_PINCTRL_FUNCTION(0x6, "spi4"), /* SS3n */
-> +			BERLIN_PINCTRL_FUNCTION(0x7, "spi3")), /* SCLK */
-> +	BERLIN_PINCTRLCONF_GROUP("GPIO54", 0x800c, 0x3, 0x03,
-> +			0x87c, 10,
-
-[Severity: High]
-Is the configuration register offset for GPIO54 correct here?=20
-
-The surrounding GPIO configurations in sl261x_soc_pinctrl_groups use a 0x88=
-00
-base (for example, GPIO53 uses 0x8878 and GPIO55 uses 0x8880). Does this co=
-de
-incorrectly hardcode 0x87c instead of 0x887c, potentially causing writes to
-the wrong hardware address when configuring pins?
-
-[ ... ]
-
-> +	BERLIN_PINCTRLCONF_GROUP("SM_GPIO21", 0xb08, 0x3, 0x0c,
-> +			0xc68, 10,
-> +			BERLIN_PINCTRL_FUNCTION(0x0, "gpio"), /* SM GPIO21 */
-> +			BERLIN_PINCTRL_FUNCTION(0x1, "xspi")), /* SM XSPI DATA2 */
-> +	BERLIN_PINCTRLCONF_GROUP("SM_GPIO20", 0x8, 0x3, 0x0f,
-> +			0xc6c, 10,
-
-[Severity: High]
-Does this code use the wrong multiplexer register base offset for SM_GPIO20?
-
-Surrounding SM_GPIO groups in sl261x_sysmgr_pinctrl_groups (like SM_GPIO21 =
-and
-SM_GPIO19) correctly use 0xb08. Using 0x8 here could cause the driver to
-write to the wrong hardware address when applying pinmux states.
-
-[ ... ]
-
-> +	BERLIN_PINCTRLCONF_GROUP("SM_GPIO8", 0xb0c, 0x3, 0x0c,
-> +			0xc90, 10,
-> +			BERLIN_PINCTRL_FUNCTION(0x0, "gpio"), /* SM GPIO8 */
-> +			BERLIN_PINCTRL_FUNCTION(0x1, "uart0"), /* SM UART0 TXD */
-> +			BERLIN_PINCTRL_FUNCTION(0x2, "can0"), /* SM CAN0 TX */
-> +			BERLIN_PINCTRL_FUNCTION(0x3, "sm_clkout"),
-> +			BERLIN_PINCTRL_FUNCTION(0x6, "uart1")), /* SM UART0 TXD */
+> +config SL261X_CLK
+> +	tristate "Synaptics SL261X Clock Driver"
+> +	depends on ARCH_BERLIN || COMPILE_TEST
+> +	select SL_COMMON_CLK
+> +	select SL_SYSMGR_CLK
+> +	default n
 
 [Severity: Low]
-This isn't a bug, but the trailing comment for uart1 incorrectly documents
-the pin functionality as SM UART0 TXD. Should this be SM UART1 TXD?
+Does this missing dependency lead to a linker error? The SL261X_CLK config
+fails to declare a dependency or select on SL261X_PLL, but the clock driver
+unconditionally calls sl261x_pll_register() defined in the PLL driver. If
+CONFIG_SL261X_CLK=3Dy but CONFIG_SL261X_PLL=3Dn or m, the build will fail w=
+ith an
+undefined reference.
 
-> +	BERLIN_PINCTRLCONF_GROUP("SM_GPIO7", 0xb0c, 0x3, 0x0f,
-> +			0xc94, 10,
-> +			BERLIN_PINCTRL_FUNCTION(0x0, "gpio"), /* SM GPIO7 */
-> +			BERLIN_PINCTRL_FUNCTION(0x1, "uart0"), /* SM UART0 RXD */
-> +			BERLIN_PINCTRL_FUNCTION(0x2, "can0"), /* SM CAN0 RX */
-> +			BERLIN_PINCTRL_FUNCTION(0x3, "key_row6"),
-> +			BERLIN_PINCTRL_FUNCTION(0x4, "gpio_trig"), /* TRIG2 */
-> +			BERLIN_PINCTRL_FUNCTION(0x5, "pwm"), /* SM PWM9 */
-> +			BERLIN_PINCTRL_FUNCTION(0x6, "uart1")), /* SM UART0 RXD */
+[ ... ]
+> diff --git a/drivers/clk/berlin/sl-sysmgr-clk.c b/drivers/clk/berlin/sl-s=
+ysmgr-clk.c
+> new file mode 100644
+> --- /dev/null
+> +++ b/drivers/clk/berlin/sl-sysmgr-clk.c
+[ ... ]
+> +static const struct clk_ops sl_sysmgr_gateclk_ops =3D {
+> +	.enable		=3D sl_sysmgr_gateclk_enable,
+> +	.is_enabled	=3D sl_sysmgr_gateclk_is_enabled,
+> +};
+
+[Severity: Medium]
+Will this leave the gate clocks permanently enabled? The ops struct for gate
+clocks implements .enable to ungate the clock but omits the .disable callba=
+ck.
+When a consumer driver calls clk_disable_unprepare(), the common clock
+framework will silently skip the hardware operation, leaking power.
+
+[ ... ]
+> +static const struct clk_ops sl_sysmgr_clk_ops =3D {
+> +	.recalc_rate	=3D sl_sysmgr_clk_recalc_rate,
+> +	.enable		=3D sl_sysmgr_clk_enable,
+> +	.is_enabled	=3D sl_sysmgr_clk_is_enabled,
+> +};
+
+[Severity: Medium]
+Does this have the same issue with missing disable operations? The ops stru=
+ct
+for divider clocks implements .enable but also omits the .disable callback.
+
+[ ... ]
+> diff --git a/drivers/clk/berlin/sl261x-clks.c b/drivers/clk/berlin/sl261x=
+-clks.c
+> new file mode 100644
+> --- /dev/null
+> +++ b/drivers/clk/berlin/sl261x-clks.c
+[ ... ]
+> +static int sl261x_soc_clk_setup(struct platform_device *pdev)
+> +{
+[ ... ]
+> +	/* sysplls */
+> +	ret =3D sl261x_pll_register(dev, base + SYSPLL0_OFFSET,
+> +				  clk_names[SYSPLL0_OUT], clk_names[SYSPLL0_OUTF]);
 
 [Severity: Low]
-This isn't a bug, but there appears to be a similar copy-paste error here.
-Should this trailing comment be labeled as SM UART1 RXD?
+This is the call to sl261x_pll_register() mentioned above that requires
+SL261X_PLL to be selected or depended on in Kconfig to avoid linker errors.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260929061417.2073=
-3-1-jszhang@kernel.org?part=3D14
+3-1-jszhang@kernel.org?part=3D16
