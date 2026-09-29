@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2572563FAE;
-	Tue, 29 Sep 2026 19:46:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DAE7399000;
+	Tue, 29 Sep 2026 19:55:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790711221; cv=none; b=nJh1Gno+9AC7/nC+v7t8vadEUtNw0fM45LLf68tpNxdgtLbmmfrHx5STv9gvqKNEgXIZvRHNSMwr9YJSL6ImHw/lcNvlMmizXcXarlLYmLvuv2USekcsiGYged3hrHpPy9qffQIG0nM49TTu2OEud830MGhbcXq3zKxdV+RE1Js=
+	t=1790711708; cv=none; b=gNOREV4lnEvHsbJrMHs/ZBI5HxvxuRHvtTTY36viJrV6PcTzbawVPi6zFr76WR2WkD5++6RyUfuOpAfzBMRVtRwfX1SHWoCdZmk2UzXcmOaA7CFlHWpeJ/6n5ZLLFR/yuwjhXtRoYIDMfwkHUMJxSaY2dSzB0v14bzjRpQaHEC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790711221; c=relaxed/simple;
-	bh=wH/dwFvDVQbeyUnQoPA8e6l433TlwlBl8onkNJyr0uA=;
+	s=arc-20240116; t=1790711708; c=relaxed/simple;
+	bh=EWZ0MOYa/8t4M3Zhq9bhy/lAt6FtbsEMv4Re89iGVqY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BG9+BYT0kYD4rG9flBrVoAU+wydVQT+lPgEA/YmIJJkOpO7jseN1w4LUHBgp75/hCecSA9DQbF9jF1oM1hWCUUYWJJKfAU3X7yqYvE6iYuAAPDIP8sQL3TXRleDnPZpwGe1lZ4B/eXCVP2c+74xo0YSGeyx3rP6Vf1lqS0Alxlk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UNvqdL2c; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=VNlsa5IStuYC6czSQJfQmb7Mi2ry22sa7ZV9i9pEtsj2a1VZDf/9FzMocIcHosPE8YMXElq7Q3M7tmVb2p2aSUG3l2Z1/IggCE2YqTLbxFGItN7SrzfzucFCwvo9OuSMJBAYAMQJP8fmseht9HyWHO5HrvNLrH06XRwaK6mKxn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnVI9pk/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UNvqdL2c"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7431F000FF;
-	Tue, 29 Sep 2026 19:46:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnVI9pk/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B111F000FF;
+	Tue, 29 Sep 2026 19:55:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790711219;
-	bh=HiNTupmKwpfKkS3g9iNzLPQ0hs/1u+N8ruRyY8+XoYs=;
+	s=k20260515; t=1790711707;
+	bh=4WYtVO5seJAuSUgV9wcL7uDSrkV53Em2i+FDrtDNOs4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=UNvqdL2cKc38mjozqD7PUzdm+2vHKtkorsESKmgrgCEpz25D0NnjnQ6bRCSrxXhm6
-	 LX+QqFM1ozAqGgTyZRQmsKlvvbqD2arvR8UY5GETNP697pWIZBc/foOZv8Wu/7sz/o
-	 WFcw24KeL6Eukj2j04hm3LXLRvfq7aUadK5h69KZVbnnEAl3OrNeZzFopAZn/sPP7n
-	 Gw4JdWx2m3IF/Gik4j7cBl+5xSoTDmGDWf3Pdt9S4b+garshxpxESKaPhn827aWbm2
-	 cE1gDIiGtpIr77KaTgTdV1PAmUGyj3ygB/jvOKKfAQiYyb/rElCCW7/QDShNGOXr5W
-	 b9TgTVzGdUxOQ==
-Date: Tue, 29 Sep 2026 20:46:52 +0100
+	b=dnVI9pk/2GBJTKGok5UQMMwR5/xIZdds+aR6UkDfQ5or6+EcbFL2qWZ33BcjSLgYi
+	 TjWrFvbg1gqy6Qo5T1R9jPxEvvkio+QW58kfR65MFF6grSOGdf1vbx//z35hVnduAN
+	 NJk08yE8pttIvCwCDuHnnfQVzSU8AR0vrF5LFAYW02GVCea6qzR6bXNb27GYSSwCqf
+	 AgnHB+QO3mrN1n+7OGQG0vNf/CHXYYY4rT3OI92DvXlwyjBu+FY0TVMLiwZg5Gaxxz
+	 i9Wt7kGTec7w9unRyOqe/JlCZBLFgWyCCfdJi8/q9XbxWVZeDHF5h26wHCAlNI4jw4
+	 VJ53nSaFC+Kpg==
+Date: Tue, 29 Sep 2026 20:55:00 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Jisheng Zhang <jszhang@kernel.org>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -48,10 +48,11 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	linux-i3c@lists.infradead.org, mfd@lists.linux.dev,
 	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 15/20] dt-bindings: clock: add Synaptics SL261X clock
-Message-ID: <20260929-triage-unpiloted-cf3734477487@spud>
+Subject: Re: [PATCH 17/20] dt-bindings: mfd: Add Synaptics SL261x global
+ block binding
+Message-ID: <20260929-handyman-penalize-0c5cbf13c5fd@spud>
 References: <20260929061417.20733-1-jszhang@kernel.org>
- <20260929061417.20733-16-jszhang@kernel.org>
+ <20260929061417.20733-18-jszhang@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,102 +60,186 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="8PUm9dCOOcXFVem5"
+	protocol="application/pgp-signature"; boundary="GS+jVj3BFMGXFZD8"
 Content-Disposition: inline
-In-Reply-To: <20260929061417.20733-16-jszhang@kernel.org>
+In-Reply-To: <20260929061417.20733-18-jszhang@kernel.org>
 
---8PUm9dCOOcXFVem5
+--GS+jVj3BFMGXFZD8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 29, 2026 at 02:14:12PM +0800, Jisheng Zhang wrote:
-> Add support for clocks, plls in Synaptics SL261X SoCs.
+On Tue, Sep 29, 2026 at 02:14:14PM +0800, Jisheng Zhang wrote:
+> Document the AVIO global, CPU wrapper, chip control, and MCU global
+> register blocks on SL261x SoCs. Each block exposes its clock and, where
+> applicable, pinctrl and reset functions through child nodes.
+>=20
+> Document the chip control syscon phandle used by the CPU clock
+> controller.
 >=20
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > ---
->  .../bindings/clock/syna,sl261x-clk.yaml       |  92 ++++++++++++
->  include/dt-bindings/clock/syna,sl261x.h       | 131 ++++++++++++++++++
->  2 files changed, 223 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/syna,sl261x-c=
-lk.yaml
->  create mode 100644 include/dt-bindings/clock/syna,sl261x.h
+>  .../bindings/mfd/syna,sl261x-gbl.yaml         | 208 ++++++++++++++++++
+>  1 file changed, 208 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/syna,sl261x-gbl=
+=2Eyaml
 >=20
-> diff --git a/Documentation/devicetree/bindings/clock/syna,sl261x-clk.yaml=
- b/Documentation/devicetree/bindings/clock/syna,sl261x-clk.yaml
-> new file mode 100755
-> index 000000000000..3fd380c1dd39
+> diff --git a/Documentation/devicetree/bindings/mfd/syna,sl261x-gbl.yaml b=
+/Documentation/devicetree/bindings/mfd/syna,sl261x-gbl.yaml
+
+Filename should match a compatible.
+
+> new file mode 100644
+> index 000000000000..3e5842169c4a
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/syna,sl261x-clk.yaml
-> @@ -0,0 +1,92 @@
+> +++ b/Documentation/devicetree/bindings/mfd/syna,sl261x-gbl.yaml
+> @@ -0,0 +1,208 @@
 > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/clock/syna,sl261x-clk.yaml#
+> +$id: http://devicetree.org/schemas/mfd/syna,sl261x-gbl.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Synaptics SL261x clock controllers
+> +title: Synaptics SL261x global and control register blocks
 > +
 > +maintainers:
 > +  - Jisheng Zhang <jszhang@kernel.org>
 > +
 > +description: |
-> +  The SL261x clock hardware is divided into SoC, CPU, AIO, and system
-> +  manager register blocks. Each clock controller is a child of the node
-> +  containing its register range. The CPU clock node has a phandle to the
-> +  global chip control syscon.
+> +  The SL261x global and control register blocks contain clock, reset, and
+> +  pin control registers. Each functional child uses its parent's register
+> +  range. The CPU clock controller also refers to the chip control syscon.
 > +
 > +properties:
 > +  compatible:
 > +    oneOf:
-> +      - enum:
-> +          - syna,sl261x-soc-clk
-> +          - syna,sl261x-cpu-clk
-> +          - syna,sl261x-aio-clk
-> +          - syna,sl261x-system-clk
 > +      - items:
-> +          - const: simple-mfd
+> +          - const: syna,sl261x-avio-gbl
 > +          - const: syscon
+> +          - const: simple-mfd
+> +      - items:
+> +          - const: syna,sl261x-cpu-wrp
+> +          - const: syscon
+> +          - const: simple-mfd
+> +      - items:
+> +          - const: syna,sl261x-chip-control
+> +          - const: syscon
+> +          - const: simple-mfd
+> +      - items:
+> +          - const: syna,sl261x-mcu-gbl
+> +          - const: syscon
+> +          - const: simple-mfd
 
-What's going on here? You're entirely missing specific compatibles for
-your syscon nodes (which aren't clock controllers and shouldn't be
-defined here.
-Similarly to the reset stuff, why can't these just be parts of their
-parent nodes?
-
-Thanks,
-Conor.
+This can be simplified significantly by using an enum for the variable
+part.
 
 > +
 > +  reg:
 > +    maxItems: 1
 > +
-> +  syna,gbl-syscon:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: Phandle to the SL261x global chip control syscon.
+> +  clock:
+> +    type: object
+> +    additionalProperties: true
 > +
-> +  '#clock-cells':
-> +    const: 1
+> +  pin-controller:
+> +    type: object
+> +    additionalProperties: true
 > +
-> +  clocks:
-> +    maxItems: 1
-> +    description: Reference clock used as the input to the PLLs.
+> +  reset:
+> +    type: object
+> +    additionalProperties: true
 > +
 > +required:
 > +  - compatible
+> +  - reg
 > +
+
 > +allOf:
 > +  - if:
 > +      properties:
 > +        compatible:
 > +          contains:
-> +            const: syna,sl261x-cpu-clk
+> +            const: syna,sl261x-avio-gbl
 > +    then:
 > +      required:
-> +        - syna,gbl-syscon
-> +    else:
+> +        - clock
 > +      properties:
-> +        syna,gbl-syscon: false
+> +        clock:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-aio-clk
+> +        pin-controller: false
+> +        reset: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: syna,sl261x-cpu-wrp
+> +    then:
+> +      required:
+> +        - clock
+> +      properties:
+> +        clock:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-cpu-clk
+> +        pin-controller: false
+> +        reset: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: syna,sl261x-chip-control
+> +    then:
+> +      required:
+> +        - clock
+> +        - pin-controller
+> +        - reset
+> +      properties:
+> +        clock:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-soc-clk
+> +        pin-controller:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-soc-pinctrl
+> +        reset:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-soc-reset
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: syna,sl261x-mcu-gbl
+> +    then:
+> +      required:
+> +        - clock
+> +        - pin-controller
+> +        - reset
+> +      properties:
+> +        clock:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-system-clk
+> +        pin-controller:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-system-pinctrl
+> +        reset:
+> +          properties:
+> +            compatible:
+> +              const: syna,sl261x-system-reset
+
+Most of this can just disappear because most of these subnodes don't need to
+exist. In fact, maybe all of them can be removed, leaving you just with
+the syscon nodes themselves containing the relevant properties for
+resets/clocks/pinctrl.
+
 > +
 > +additionalProperties: false
 > +
@@ -165,9 +250,25 @@ Conor.
 > +        #clock-cells =3D <0>;
 > +        clock-frequency =3D <25000000>;
 > +    };
+
+Nodes like this will get simulated by the tooling, they're not needed
+here.
+
 > +
-> +    chip: syscon@f7e10000 {
-> +        compatible =3D "syscon", "simple-mfd";
+> +    avio_gbl: avio-gbl@f7490000 {
+> +        compatible =3D "syna,sl261x-avio-gbl", "syscon", "simple-mfd";
+> +        reg =3D <0xf7490000 0x4000>;
+> +
+> +        aioclk: clock {
+> +            compatible =3D "syna,sl261x-aio-clk";
+> +            #clock-cells =3D <1>;
+> +            clocks =3D <&osc>;
+> +        };
+> +    };
+> +
+> +    chip: chip-control@f7e10000 {
+> +        compatible =3D "syna,sl261x-chip-control", "syscon", "simple-mfd=
+";
 > +        reg =3D <0xf7e10000 0x10000>;
 > +
 > +        clk: clock {
@@ -175,10 +276,28 @@ Conor.
 > +            #clock-cells =3D <1>;
 > +            clocks =3D <&osc>;
 > +        };
+> +
+> +        pinctrl: pin-controller {
+> +            compatible =3D "syna,sl261x-soc-pinctrl";
+> +        };
+> +
+> +        rst: reset {
+> +            compatible =3D "syna,sl261x-soc-reset";
+> +            #reset-cells =3D <1>;
+> +        };
 > +    };
 > +
-> +    cpu_wrap: cpu-wrap@f7e30000 {
-> +        compatible =3D "syscon", "simple-mfd";
+> +    cpu_wrp: cpu-wrp@f7e30000 {
+
+Please don't make up new node names for your device, use something
+established like "system-controller" or "syscon" please.
+
+pw-bot: changes-requested
+
+Thanks,
+Conor.
+
+> +        compatible =3D "syna,sl261x-cpu-wrp", "syscon", "simple-mfd";
 > +        reg =3D <0xf7e30000 0x4000>;
 > +
 > +        cpuclk: clock {
@@ -188,158 +307,39 @@ Conor.
 > +            syna,gbl-syscon =3D <&chip>;
 > +        };
 > +    };
+> +
+> +    mcu_gbl: mcu-gbl@e5025000 {
+> +        compatible =3D "syna,sl261x-mcu-gbl", "syscon", "simple-mfd";
+> +        reg =3D <0xe5025000 0x1000>;
+> +
+> +        sm_clk: clock {
+> +            compatible =3D "syna,sl261x-system-clk";
+> +            #clock-cells =3D <1>;
+> +        };
+> +
+> +        sm_pinctrl: pin-controller {
+> +            compatible =3D "syna,sl261x-system-pinctrl";
+> +        };
+> +
+> +        sm_rst: reset {
+> +            compatible =3D "syna,sl261x-system-reset";
+> +            #reset-cells =3D <1>;
+> +        };
+> +    };
 > +...
-> diff --git a/include/dt-bindings/clock/syna,sl261x.h b/include/dt-binding=
-s/clock/syna,sl261x.h
-> new file mode 100644
-> index 000000000000..4649b233f08a
-> --- /dev/null
-> +++ b/include/dt-bindings/clock/syna,sl261x.h
-> @@ -0,0 +1,131 @@
-> +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-> +/*
-> + * Synaptics SL261X clock tree IDs
-> + *
-> + * Copyright (C) 2025 Synaptics Incorporated
-> + *
-> + * Author: Jisheng Zhang <jszhang@kernel.org>
-> + */
-> +
-> +/* SoC domain */
-> +
-> +/* GBL common clks */
-> +#define CLK_CPUFASTREF		0
-> +#define CLK_MEMFASTREF		1
-> +#define CLK_CFG			2
-> +#define CLK_SYS			3
-> +#define CLK_PERIFSYS		4
-> +#define CLK_APBCORE		5
-> +#define CLK_APBSER		6
-> +#define CLK_ATB			7
-> +#define CLK_HPC			8
-> +#define CLK_EMMC		9
-> +#define CLK_SD0			10
-> +#define CLK_SD1			11
-> +#define CLK_GETHRGMII		12
-> +#define CLK_GETHRGMII1		13
-> +#define CLK_GE0_PTP_REF		14
-> +#define CLK_GE1_PTP_REF		15
-> +#define CLK_USB2TEST		16
-> +#define CLK_USB2TEST480MG0	17
-> +#define CLK_USB2TEST480MG1	18
-> +#define CLK_USB2TEST480MG2	19
-> +#define CLK_USB2TEST100MG0	20
-> +#define CLK_USB2TEST100MG1	21
-> +#define CLK_USB2TEST100MG2	22
-> +#define CLK_USB2TEST100MG3	23
-> +#define CLK_PERIFTEST125MG0	24
-> +#define CLK_PERIFTEST200MG0	25
-> +#define CLK_PERIFTEST200MG1	26
-> +#define CLK_GPU			27
-> +#define CLK_NPU			28
-> +#define CLK_AVIOSYS		29
-> +#define CLK_AIOSYS		30
-> +#define CLK_AVIO_LCDC2SCAN	31
-> +#define CLK_AVIO_IPI		32
-> +#define CLK_AVIO_P		33
-> +#define CLK_AVIO_DPHYRXTXESC	34
-> +#define CLK_AVIOFPLL		35
-> +#define CLK_AVIO_RX_SCANBYTE	36
-> +#define CLK_AVIO_RX_SCANTEST	37
-> +
-> +/* GBL gate clks */
-> +#define CLK_USB0CORE		38
-> +#define CLK_SDIOSYS		39
-> +#define CLK_EMMCSYS		40
-> +#define CLK_GPUAXI		41
-> +#define CLK_GETHRGMIISYS	42
-> +#define CLK_SDIO1SYS		43
-> +#define CLK_USB1CORE		44
-> +#define CLK_GETHRGMII1SYS	45
-> +#define CLK_USB0PHYREF		46
-> +#define CLK_USB1PHYREF		47
-> +#define CLK_APBUART0		48
-> +#define CLK_APBUART1		49
-> +#define CLK_APBUART2		50
-> +#define CLK_APBUART3		51
-> +#define CLK_APBI2C0		52
-> +#define CLK_APBI2C1		53
-> +#define CLK_APBSPI0		54
-> +#define CLK_APBSPI1		55
-> +#define CLK_APBSPI2		56
-> +#define CLK_APBSPI3		57
-> +#define CLK_APBGPIO		58
-> +#define CLK_APBTIMERS		59
-> +#define CLK_APBSYSCNT		60
-> +#define CLK_APBWDT		61
-> +#define CLK_APBDMA		62
-> +#define SL261X_CLK_MAX		63
-> +
-> +/* cpuss */
-> +#define CLK_CPU0		0
-> +#define CLK_CPU1		1
-> +#define CLK_DSU			2
-> +#define SL261X_CPU_CLK_MAX	3
-> +
-> +
-> +/* sysmgr domain */
-> +
-> +#define CLK_CFG_UART0		0
-> +#define CLK_SER_UART0		1
-> +#define CLK_CFG_UART1		2
-> +#define CLK_CFG_UART2		3
-> +#define CLK_CFG_UART3		4
-> +#define CLK_CFG_GPIO		5
-> +#define CLK_CFG_I2CM0		6
-> +#define CLK_CFG_I2CM1		7
-> +#define CLK_CFG_SPIM		8
-> +#define CLK_CFG_SPIS		9
-> +#define CLK_CFG_I3C		10
-> +#define CLK_CFG_XSPI		11
-> +#define CLK_AXI_XSPI		12
-> +#define CLK_CFG_PVT		13
-> +#define CLK_CFG_ADC		14
-> +#define CLK_CFG_PWM		15
-> +#define CLK_BUS_CAN0		16
-> +#define CLK_BUS_CAN1		17
-> +#define CLK_CFG_PDM		18
-> +
-> +#define CLK_SER_UART1		19
-> +#define CLK_SER_UART2		20
-> +#define CLK_SER_UART3		21
-> +#define CLK_DEB_GPIO		22
-> +#define CLK_SER_I2CM0		23
-> +#define CLK_SER_I2CM1		24
-> +#define CLK_SER_SPIM		25
-> +#define CLK_SER_SPIS		26
-> +#define CLK_SER_I3C		27
-> +#define CLK_SER_XSPI		28
-> +#define CLK_HS_PVT		29
-> +#define CLK_CORE_ADC		30
-> +#define CLK_SER_PWM		31
-> +#define CLK_SER_CAN0		32
-> +#define CLK_SER_CAN1		33
-> +#define CLK_SER_PDM		34
-> +#define CLK_REF_CALIB		35
-> +
-> +#define CLK_MCU_REF		36
-> +#define CLK_MCU_PLL		37
-> +#define CLK_MCU_IO_PLL		38
-> +#define CLK_MCU_APB		39
-> +#define CLK_MCU_AXI		40
 > --=20
 > 2.53.0
 >=20
 
---8PUm9dCOOcXFVem5
+--GS+jVj3BFMGXFZD8
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarwVrAAKCRB4tDGHoIJi
-0lBNAQDZMOYK+Svkt7bavpqwDnNzw0s9RrPE7ghr2xnd802PkwEAz6WsjFxD+d2k
-18PAB7WNfoQN2zckLdyXXfOvE+NmmQw=
-=A6nB
+iHQEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarwXlAAKCRB4tDGHoIJi
+0oZfAP961KDyuZuHW6X/Y8S1uq/6yK2664KS0xlfZKQ7Zncl0wD2KCI2eV4qMyE7
+oBJLm3S1r/YSGvXdxZKpAP9pZT8LBA==
+=32mr
 -----END PGP SIGNATURE-----
 
---8PUm9dCOOcXFVem5--
+--GS+jVj3BFMGXFZD8--
