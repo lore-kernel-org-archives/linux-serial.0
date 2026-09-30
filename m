@@ -1,55 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 289253FB7E1
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 09:59:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B26A3F8EB3
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:00:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790762371; cv=none; b=mevsgsA5r8zLDdrrVDbkhzEW2H42FYbTZ8jYuqiV1hs6lRiw/fa69yCRc6i0yvY+mj9VLxHqvYAFFCPHxNmDIKkqsxY/M07fTNOx5rNINZ4eQp+Oj2ufZ7BRiHwmYUxzQn5hWhtBy6cVFXEedyscluwPLbAG8Fx0EWI8PBK+2I0=
+	t=1790762407; cv=none; b=Ae6cADAe0LDJt8aR45iCkH48zGRvtoNo+KmHGqwbR6cAY6lFNLb6Hi4SZKTu4Wrl15EULEOEYhvyhMZDsVkQzF8F1+IzpQF57Nh4u8RWO0w/KOD/I2GWSRAW3KW29cCk+Rjt5fo8sVJwz+ld9PfEI0a4hG/nBeTOr4e1458zvrg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790762371; c=relaxed/simple;
-	bh=oCb8pD0GTaCJdPRTDUHDOrP9QLPA+6gtpfNrrUBXRJg=;
+	s=arc-20240116; t=1790762407; c=relaxed/simple;
+	bh=EfaOqUAKpuFYnsIVHOrJ/0TiRDwiEAdiDk5roFX7nBE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=S6Ro6v0F1CNA3yRMpfd4KsT0kRI7giyaHaSYGKciN1gL+TtXYxPoprwgM+TpL3YERdeJmCVTm220sM2bMssqlfngLLugahHTXWW9d6V+wNLduc/asmfqBT/8MuFfms5VWqTHLyVZd1eH3GAKeXfhUYNb1bx4h/hiC2ZggJZWwGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UKlR4Mzl; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=jS65gYuiJYCPZ/gGX2WkLp1DM4736Aag/Rto7LWRTd6CdyAuwcxUMHRuaEYViAjBSEuszUkOtnrFy/uFyT+yJ5ddJAuDktmVcBbEN7GyroWVpWJchiTdMsYO5L/P3rReqEfjB/BCiv9NaJOQH1oup0/T6YuljGIsvjBoziIYek4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=muIFYUAB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UKlR4Mzl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E67C51F00893
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 09:59:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="muIFYUAB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A941F00899
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790762368;
-	bh=oCb8pD0GTaCJdPRTDUHDOrP9QLPA+6gtpfNrrUBXRJg=;
+	s=k20260515; t=1790762404;
+	bh=EfaOqUAKpuFYnsIVHOrJ/0TiRDwiEAdiDk5roFX7nBE=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=UKlR4Mzlio3ueEA/PjgwIA3gAlgGElwwdLk5nx8l3YdQoQHbfHZBfLoYxcBDffpIB
-	 CDgMDXXoqqy1vGb0t9ajW+Lafs882vdcmFrW9t3sxbgzlvBIwGXNld9RMprZZr11k5
-	 l50TxsBM33PAEzWu+hTKjeGoPuxPacFUrVeRrsskD3HRFuWAWSb8svbRFsSi9mfHBJ
-	 J1/FwH7fqHn6Yvv19MZf2wPneLTfDwRrFQIFNDXj/F8NnY2hod+QmjoGGtp9tN3dCI
-	 dUuEyXJUQPoj6w7ljJnv6HAu+cZ6IvcqEOT44O4gwZRpc3hSIPYxdTfJ6GHdp2aWIW
-	 f2DMRYML1OWCQ==
-Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b76668f4ddso1874057e87.1
-        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 02:59:28 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvByb/Ok5irGUONzQGVcoy1IggOUqe6GKiF9aiEs17+quAiuYrVHTtAge5q4WmZDAUSJ/ERIbKqHafXhLbzs=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKusR7iSObBK8tigtkhoRrpHvX0ZgXOnipNkCRHvL55UW+JTThK
-	Wtwj1OFiIJdLRCNH7ixv6VcDQdf2gVGXZpMqn8xNHox1ZeEJKqGHzhE30NrMuuxMOI4taOgcfuS
-	/hhVllHk5uJXi7rKGq5I5fLdrWD7rwsQ=
-X-Received: by 2002:ac2:464d:0:b0:5b8:f573:35ea with SMTP id
- 2adb3069b0e04-5ba4069be69mr221068e87.16.1790762367713; Wed, 30 Sep 2026
- 02:59:27 -0700 (PDT)
+	b=muIFYUABjvVKsuiM3VBK55HhCAl+mC0Uikqx4GPkxeWHxqibglMVZjsEthv2ZS+3e
+	 AUhs7Dsb5LGjbHoWTADLFwi6PS2TUpgK3/78Xe8eMbUdKN539B2sJYH9aPU5Iz4Qy7
+	 dOy8ABR4lDoPUjf2w4lq29/TV+Jabnsvm4baPAWqFCZHtGs1oSdU9ApeiXO6wwIKiq
+	 d/eiE3Q0EFMLgqKhfEzFze6+2VxEFdqGVAVx8bPa+CdzAv+j59rjCpEUcp9T+ExYO2
+	 K3mbINZW+Is+H0dic4Yv0CZbYYeAlCZEAkEOeWBD8H6PaVXghSyTHFPuf/eGSy4H+W
+	 FvGcKLHCaVphA==
+Received: by mail-lr2-f35.google.com with SMTP id 38308e7fff4ca-3a779b23f05so3047211fa.1
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 03:00:04 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByoCNF5ZPWYDy9d2Jj43LzinwN8JG0Cgh89mEMKCNhotgnIa+gRB2O6Mr5N78DW3kNTk+1nHAhf7rvzCW8=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLGMDsmA2+1cZFQbQeqOYWmLivJ6ltmSfXiHD9d2cZr+ntILMda
+	q/QwrS2jU+0IYKiE+YK9+8A/8NRqjEgCVoPXr1shea2HkAOkSHiTRyKxuzPgu3xe90/LQsO3QZ1
+	uWGzGY5QCrCL6jsl0CVUmBFX0xFoo9dk=
+X-Received: by 2002:a2e:bc1c:0:b0:3a6:6831:6e28 with SMTP id
+ 38308e7fff4ca-3a77919076dmr3451661fa.6.1790762403440; Wed, 30 Sep 2026
+ 03:00:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com> <20260930-b4-cs75xx-v1-2-4617c4463529@gmail.com>
-In-Reply-To: <20260930-b4-cs75xx-v1-2-4617c4463529@gmail.com>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com> <20260930-b4-cs75xx-v1-3-4617c4463529@gmail.com>
+In-Reply-To: <20260930-b4-cs75xx-v1-3-4617c4463529@gmail.com>
 From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 30 Sep 2026 11:59:14 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkubGK4wetxXQz8PPDU4aHdSC7e0RgZtwOjrAWzHxX=RA@mail.gmail.com>
-X-Gm-Features: AclHuK-m3HmD7lYV6qupQKjYpsgXbfMsgcuHzWJL7-TIFY8_vvfiqbhmnPD4sQM
-Message-ID: <CAD++jLkubGK4wetxXQz8PPDU4aHdSC7e0RgZtwOjrAWzHxX=RA@mail.gmail.com>
-Subject: Re: [PATCH RFC 02/10] dt-bindings: arm: Add Cortina Systems CS7542
- and Securifi Almond+
+Date: Wed, 30 Sep 2026 11:59:51 +0200
+X-Gmail-Original-Message-ID: <CAD++jLmqvjJUgFBtERvtkO_+=m60ag1UC-ZOAdo8_7X3cERKYA@mail.gmail.com>
+X-Gm-Features: AclHuK_48zLXL0KDLF2JWFOLuk9UnViCs077-v6ZyB7fHZb2R7O5ZT3ShI4k8r8
+Message-ID: <CAD++jLmqvjJUgFBtERvtkO_+=m60ag1UC-ZOAdo8_7X3cERKYA@mail.gmail.com>
+Subject: Re: [PATCH RFC 03/10] dt-bindings: arm: cpus: Add Cortina Systems
+ CS7542 enable method
 To: filipp.dunsky@gmail.com
 Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
@@ -66,9 +66,11 @@ On Wed, Sep 30, 2026 at 9:00=E2=80=AFAM Fil Dunsky via B4 Relay
 
 > From: Fil Dunsky <filipp.dunsky@gmail.com>
 >
-> Add the top-level binding for boards built around the Cortina Systems
-> CS7542 ("Goldengate G2") network processor, a dual Cortex-A9 SoC, and
-> the first such board, the Securifi Almond+ touchscreen router.
+> On the CS7542 the bootloader parks the secondary Cortex-A9 core in a loop
+> that waits for an event and then jumps to the address found in a global
+> software register. Add the "cortina,cs7542-smp" enable method for it and,
+> as with the other release-address based methods, require cpu-release-addr
+> to point at that register.
 >
 > Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
