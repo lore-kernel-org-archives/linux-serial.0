@@ -1,108 +1,91 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B15A8476680
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 09:24:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFF13939C2;
+	Wed, 30 Sep 2026 09:28:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790760248; cv=none; b=JeuMdHZV9dnUQpSm/BQxtEozo1rBiHoh+CRmK/f9sPnjohtDypFTjhV10Xnrh5wwSgikzXqtJbso7kSscJjnDLPzERl3T8/mEJqVfcQJE2RF6jI4V9G8kPjEM8xuHOXEutWi6WuHh39z0LXjnjza18n3hq5Kgj/LJFBskOekOFs=
+	t=1790760530; cv=none; b=ht1hhHloDHkMl0G1HN6WQVkX5r9ZweQFynRSJf3uA8SwsobV2xApeuOXNSHCaS4vve0Gdot/wnfwg6PXc+8/Rb9sAP1RRtzaovcD8n8W317H8p1ImzXgXeXcXRJ4+zAWshWrGsgRDePC74r67tnco8Wo/Dw5DZ74SUzZZiCwU10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790760248; c=relaxed/simple;
-	bh=msUhdfZDj8zG6t08RKYRwg+vy9mBFZJsBLOusQlM77Q=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=tIlAykSMtHwsX7jFU1bTRGGl4TshQCUQUbmPZumXl7dA7dIrD+xUVu11L1rIIB2U6ddaA9Vn7bJu5R3/Mwj9LhyDPqLZ1nVHX7b9eB4/BLGOEetpeWuwtWKlLA8zCdsePvko1/mOXwUMarpTP/gAjHx7zjr/WGbmQLDth7srqJY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ETK0d99W; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790760530; c=relaxed/simple;
+	bh=XrAQsPqi9pVk+zpJjBQqrYjfZ7MnRsHSmYcJOCzLQzw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d9I+FgjM27D6BV/tSYkcBnFLvL/aRkTfxBgtNV2tjtnbNEbfHA5j8wsL1w/RWdoskpIy2i8QBZurgllidWs0pJWUhhTZXK/bF2vzylIFiiw0nekBIFbFWvGEAwCA5oK3to9BbmP10D67A5YTiCmeFXvkY6Q+fVxorc+l8xvQAd0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EzVdckd2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ETK0d99W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 379EB1F00898;
-	Wed, 30 Sep 2026 09:24:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EzVdckd2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D9891F000FF;
+	Wed, 30 Sep 2026 09:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790760247;
-	bh=7mbfJRAyMm40U2dVSHGR87zHda4fIY6MVKlHaNJFZXg=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=ETK0d99Wi/036916qOtVzcz0vv2iNjd4kFXPjz9A7B5G6TgxHYZKkNI/dHtNKdMZb
-	 nwinrj2BVtxdfAPqvJkIw/JV+fKHhRgzKtaIpqwUAuv//crnKzzUPNbFYK6/Hregg0
-	 pgNjhP8OSC3hE9qZ2QeCNoYt3v5YL9Wtd5TWUyX799fkUc95dntg/HRN7efvjG2rBc
-	 zR113N07fjM5IdvJCc6z0HtZ/B8LJEMjgoJmFsppA8AlU+Sz+Pg4LNOItMuym4Py6e
-	 w1Y5qiVQBZOkUFVpnuKgIVzLdPCKJKrkcUE1XNLR/SDfkOesbOTDdStGUrwKy95saC
-	 RCJ+y+DXkB2dQ==
-From: sashiko-bot@kernel.org
+	s=k20260515; t=1790760528;
+	bh=WqEtnUHXagCUT2Ek53+GJZXdG8329czXCPbszLGnvqE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=EzVdckd2PZUA5vOcHYr+UWtP4L7F+Pp91DJB13VJvkh8SjTX7wDOB7AdIOZUCyvyB
+	 LRw7Di31lL6B5CzbFRwZweiK2N2GFeGMDIsDEy3x0wfJ3fUk4MPs/6Sbxb0y4y+SL0
+	 Xn+Hjmh/bazoDPq4DY/B4DLJ9qarIEuV2Di7s16rxSjggwS7FJO53oUDXf6p0zLnZc
+	 XrzqsOGybQ0izIlguJMWdBtJNFTwnPH0/Q7kf+/u7UUKOMKGVl5N9oZFOMFzJ3a8PM
+	 iyq36XwGfitOR7tNdBIXXds7gkWwndemhBhEHyWxd7LnfvtNHaF3YeIK972nDbyG42
+	 JWTE7NA9qElFg==
+Received: from johan by xi.lan with local (Exim 4.99.5)
+	(envelope-from <johan@kernel.org>)
+	id 1xBqcI-00000007Cva-1UvX;
+	Wed, 30 Sep 2026 11:28:46 +0200
+Date: Wed, 30 Sep 2026 11:28:46 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: David Lin <dtwlin@gmail.com>, Alex Elder <elder@kernel.org>,
+	Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Chengfeng Ye <nicoyip.dev@gmail.com>, stable@vger.kernel.org
 Subject: Re: [PATCH] tty: fix saved termios reset race
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Johan Hovold" <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260930091938.1715754-1-johan@kernel.org>
+Message-ID: <arzWTv2cslkhyt6V@hovoldconsulting.com>
 References: <20260930091938.1715754-1-johan@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 30 Sep 2026 09:24:06 +0000
-Message-Id: <20260930092407.379EB1F00898@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260930091938.1715754-1-johan@kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Critical] tty: logical AND bypasses TTY_DRIVER_RESET_SAVED_TERMIOS check
---
-
-commit c7c5b67aff9403896b61f084f64a1630c60063f9
-Author: Johan Hovold <johan@kernel.org>
-
-tty: fix saved termios reset race
-
-This commit adds a new flag, TTY_DRIVER_RESET_SAVED_TERMIOS, to selectively
-reset termios state only for drivers that ensure the minor number is no
-longer in use. This aims to prevent a use-after-free race during device
-re-registration.
-
-Link: https://lore.kernel.org/20260926184154.3017929-1-nicoyip.dev@gmail.com
-
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> index 1c30faae9ec13..c9da7b25e3fb1 100644
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -3256,14 +3256,16 @@ struct device *tty_register_device_attr(struct tt=
-y_driver *driver,
->  		goto err_put;
-> =20
+On Wed, Sep 30, 2026 at 11:19:38AM +0200, Johan Hovold wrote:
+> Resetting saved termios state on device registration is needed where a
+> minor number can be reused for an entirely different device and where
+> the old settings may prevent the port from even being opened (e.g. when
+> CLOCAL is not set).
+> 
+> Not all TTY drivers guarantee that the minor number is no longer in use
+> when registering devices however, something which can lead to a
+> use-after-free when closing a TTY (and saving its termios) races with
+> re-registration.
+> 
+> Add a new TTY_DRIVER_RESET_SAVED_TERMIOS flag to request that any saved
+> termios state is reset on registration and only set it for drivers that
+> make sure that the minor number is no longer in use.
+> 
+> Fixes: 93857edd9829 ("tty: reset termios state on device registration")
+> Reported-by: Chengfeng Ye <nicoyip.dev@gmail.com>
+> Link: https://lore.kernel.org/20260926184154.3017929-1-nicoyip.dev@gmail.com
+> Cc: stable@vger.kernel.org	# 4.12
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+> ---
+ 
 >  	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC)) {
 > -		/*
 > -		 * Free any saved termios data so that the termios state is
 > -		 * reset when reusing a minor number.
 > -		 */
-> -		tp =3D driver->termios[index];
+> -		tp = driver->termios[index];
 > -		if (tp) {
-> -			driver->termios[index] =3D NULL;
+> -			driver->termios[index] = NULL;
 > -			kfree(tp);
 > +		if (driver->flags && TTY_DRIVER_RESET_SAVED_TERMIOS) {
 
-[Severity: Critical]
-Does this code use a logical AND where a bitwise AND is needed?
+This was of course meant to be a bitwise & as Sashiko noted.
 
-Since TTY_DRIVER_RESET_SAVED_TERMIOS is a non-zero constant, using && means
-this condition evaluates to true for any driver with at least one flag set =
-in
-driver->flags. This appears to bypass the intended safety filter in
-tty_register_device_attr() and would still apply the termios reset globally=
- to
-those drivers, leaving the use-after-free vulnerability unfixed.
+I'll wait a bit before sending a v2.
 
-> +			/*
-> +			 * Free any saved termios data so that the termios state is
-> +			 * reset when reusing a minor number.
-> +			 */
-> +			tp =3D driver->termios[index];
-> +			if (tp) {
-> +				driver->termios[index] =3D NULL;
-> +				kfree(tp);
-> +			}
->  		}
-> =20
->  		retval =3D tty_cdev_add(driver, devt, index, 1);
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260930091938.1715=
-754-1-johan@kernel.org?part=3D1
+Johan
