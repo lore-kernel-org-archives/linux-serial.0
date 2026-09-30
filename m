@@ -1,91 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFF13939C2;
-	Wed, 30 Sep 2026 09:28:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB7913F660F
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 09:58:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790760530; cv=none; b=ht1hhHloDHkMl0G1HN6WQVkX5r9ZweQFynRSJf3uA8SwsobV2xApeuOXNSHCaS4vve0Gdot/wnfwg6PXc+8/Rb9sAP1RRtzaovcD8n8W317H8p1ImzXgXeXcXRJ4+zAWshWrGsgRDePC74r67tnco8Wo/Dw5DZ74SUzZZiCwU10=
+	t=1790762299; cv=none; b=lKO9nRwi1gfIgaTFHxDzqEIfcG42eP5aEL14SAcFc4M0j2AWWONNyy6U4WJO6EEH5iWxggBtz6yz2N5UetNDKAjmy8xrx+9YcRT60XGX6ZWo9GVypVxONsAhfYrTRtKKl8bR/LOSzMiLdSLX4D4TpHAH2tihMS9PiNmxrMxDXdA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790760530; c=relaxed/simple;
-	bh=XrAQsPqi9pVk+zpJjBQqrYjfZ7MnRsHSmYcJOCzLQzw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=d9I+FgjM27D6BV/tSYkcBnFLvL/aRkTfxBgtNV2tjtnbNEbfHA5j8wsL1w/RWdoskpIy2i8QBZurgllidWs0pJWUhhTZXK/bF2vzylIFiiw0nekBIFbFWvGEAwCA5oK3to9BbmP10D67A5YTiCmeFXvkY6Q+fVxorc+l8xvQAd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EzVdckd2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790762299; c=relaxed/simple;
+	bh=0Sl3VeOxmIWc0/FHhtBrqHO4LTDod/shA0uGQ9sZEHg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jg+hdMnvKfvgTwalaSY0ScKQ3RA2OCRcsPhfCxe+coJAkevziHw72P2cW2//57PFokMvaEyYa+lwgnGsNoBlwY29BN4fawpPVXJV5UbsIFSgQOrPCvlChq1wnnADQRJbuF0QG+EQNKUnzSq6I/buK+cNuPaaOem7VBsDMA0Jy+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TUbFv6BY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EzVdckd2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D9891F000FF;
-	Wed, 30 Sep 2026 09:28:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TUbFv6BY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6DA91F00899
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 09:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790760528;
-	bh=WqEtnUHXagCUT2Ek53+GJZXdG8329czXCPbszLGnvqE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=EzVdckd2PZUA5vOcHYr+UWtP4L7F+Pp91DJB13VJvkh8SjTX7wDOB7AdIOZUCyvyB
-	 LRw7Di31lL6B5CzbFRwZweiK2N2GFeGMDIsDEy3x0wfJ3fUk4MPs/6Sbxb0y4y+SL0
-	 Xn+Hjmh/bazoDPq4DY/B4DLJ9qarIEuV2Di7s16rxSjggwS7FJO53oUDXf6p0zLnZc
-	 XrzqsOGybQ0izIlguJMWdBtJNFTwnPH0/Q7kf+/u7UUKOMKGVl5N9oZFOMFzJ3a8PM
-	 iyq36XwGfitOR7tNdBIXXds7gkWwndemhBhEHyWxd7LnfvtNHaF3YeIK972nDbyG42
-	 JWTE7NA9qElFg==
-Received: from johan by xi.lan with local (Exim 4.99.5)
-	(envelope-from <johan@kernel.org>)
-	id 1xBqcI-00000007Cva-1UvX;
-	Wed, 30 Sep 2026 11:28:46 +0200
-Date: Wed, 30 Sep 2026 11:28:46 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: David Lin <dtwlin@gmail.com>, Alex Elder <elder@kernel.org>,
-	Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Chengfeng Ye <nicoyip.dev@gmail.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: fix saved termios reset race
-Message-ID: <arzWTv2cslkhyt6V@hovoldconsulting.com>
-References: <20260930091938.1715754-1-johan@kernel.org>
+	s=k20260515; t=1790762297;
+	bh=0Sl3VeOxmIWc0/FHhtBrqHO4LTDod/shA0uGQ9sZEHg=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=TUbFv6BYy0BYMPu/2dRG2IrRhyfl3Nmw8iP7m1nV10kOAaPSktEYYPGygLJw5W1XP
+	 OgGNPbzjXf9WccmE7X/e65tRYtaozqybLJQqi92F2G7aULuMwSaggsqoF6VzknLN3v
+	 j/119SKQJkNVyoYXyVi+ZU8t+oSCh0sgipwkVqLv7gmECa/zwIBUzBnRuwSmZUlhSS
+	 2hOWz51MljSyTsLRkEULmI7TSwJgpOYDyzQVYzd/6AYyqBSjLDzMP8sLNgvwwtPOq/
+	 uhKNcavvziezdqSJlcJVlJzw+wUyZfpQ1fDKNtQd3pgr2+ysvKE1r8rErIkAOsM4bp
+	 SZ+wjeZHW+fcA==
+Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b8f5ae6fa8so3177507e87.2
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 02:58:17 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByGyti22hCexh2rTg0XiLVLnTxyDpUUAjuMfk0gXxOfyCXkP3epBCtP9GW1M5MPgVjw+anyigeibAzFYQM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKs4oZNa0Dz0RFR9mK85/6mT5tIvNIplDk5Z+QcL6xsE+bvVlXC
+	KkWhm9WjUs7NtBVpv0XKypODdaaemvRWmHZgODGLA7dWNBo6agWFRwuN3RARFiUnGHaPulLX55f
+	rG2fNgYsRvCqezRUx9KHar970KuKd5Ec=
+X-Received: by 2002:a05:6512:124c:b0:5b8:f4d4:8004 with SMTP id
+ 2adb3069b0e04-5ba403e9adcmr391243e87.15.1790762296323; Wed, 30 Sep 2026
+ 02:58:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260930091938.1715754-1-johan@kernel.org>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com> <20260930-b4-cs75xx-v1-1-4617c4463529@gmail.com>
+In-Reply-To: <20260930-b4-cs75xx-v1-1-4617c4463529@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 30 Sep 2026 11:58:04 +0200
+X-Gmail-Original-Message-ID: <CAD++jLnAY5xh-jrCboLBNh95sMD4jo3+eD3r4nmGgOt07uSJwQ@mail.gmail.com>
+X-Gm-Features: AclHuK-sK780whOzNFOmVs_mSNYseiLByWBvfxCT8N9Rk8B9pxQ3jl9L_xIBQyE
+Message-ID: <CAD++jLnAY5xh-jrCboLBNh95sMD4jo3+eD3r4nmGgOt07uSJwQ@mail.gmail.com>
+Subject: Re: [PATCH RFC 01/10] dt-bindings: vendor-prefixes: Add Securifi
+To: filipp.dunsky@gmail.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 30, 2026 at 11:19:38AM +0200, Johan Hovold wrote:
-> Resetting saved termios state on device registration is needed where a
-> minor number can be reused for an entirely different device and where
-> the old settings may prevent the port from even being opened (e.g. when
-> CLOCAL is not set).
-> 
-> Not all TTY drivers guarantee that the minor number is no longer in use
-> when registering devices however, something which can lead to a
-> use-after-free when closing a TTY (and saving its termios) races with
-> re-registration.
-> 
-> Add a new TTY_DRIVER_RESET_SAVED_TERMIOS flag to request that any saved
-> termios state is reset on registration and only set it for drivers that
-> make sure that the minor number is no longer in use.
-> 
-> Fixes: 93857edd9829 ("tty: reset termios state on device registration")
-> Reported-by: Chengfeng Ye <nicoyip.dev@gmail.com>
-> Link: https://lore.kernel.org/20260926184154.3017929-1-nicoyip.dev@gmail.com
-> Cc: stable@vger.kernel.org	# 4.12
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> ---
- 
->  	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC)) {
-> -		/*
-> -		 * Free any saved termios data so that the termios state is
-> -		 * reset when reusing a minor number.
-> -		 */
-> -		tp = driver->termios[index];
-> -		if (tp) {
-> -			driver->termios[index] = NULL;
-> -			kfree(tp);
-> +		if (driver->flags && TTY_DRIVER_RESET_SAVED_TERMIOS) {
+On Wed, Sep 30, 2026 at 9:00=E2=80=AFAM Fil Dunsky via B4 Relay
+<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
 
-This was of course meant to be a bitwise & as Sashiko noted.
+> From: Fil Dunsky <filipp.dunsky@gmail.com>
+>
+> Securifi Ltd. makes the Almond series of touchscreen Wi-Fi routers.
+> Add a vendor prefix for it.
+>
+> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
-I'll wait a bit before sending a v2.
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-Johan
+Yours,
+Linus Walleij
