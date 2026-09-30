@@ -1,56 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B653349B1E2
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:58:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 644C7493D28
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 11:02:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790765901; cv=none; b=mlPjx6nVkwgwF11dbaMDD416a1rMHmigIhEAAr3XiqDbJ9IHCDj8fymKvj5llGx/T4PhxsUvlbMSrI+J2PDWBWqgngHU3IFa1RbCfbi5qbzxpzGw38UzHXRtcfSmt4e8gCXe1kGpeVszK5rK9BP1oxYlxtyA6bQpqu4o6yb2gI4=
+	t=1790766129; cv=none; b=nGl//7AoiqG9mLyNUgJi6FEKxjM0uc09Fge9XMr9R3qMcXl1Hx0jNcNBtnP4V4lo8XKaT+BhesxbmzfqnXa3lKV1G9lfkh6xIaW2Q4odQDfAjCdQMLDnl7PW6cgYMYDLQcj5wQ6ai0k5owi+u7J1GmOfX19lEVdHNwovQdWAZos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790765901; c=relaxed/simple;
-	bh=HeKGdzLU69O+ht9kbtWpEwDIRN8ghLkwCH+cdsIjxI4=;
+	s=arc-20240116; t=1790766129; c=relaxed/simple;
+	bh=2xX4TGIby4W1lED2iYrPcbVUgLcR8bA1rRp0/n6MmwU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bi2gmIzDkj2S8PExqAewOI/NMuaU8l8nj9DLKImPCO1ATjuvwKrLnmzvzzTF4mzKLKY6c5toUc0F8A52f6DlJTncNqcKjdUgnx9T6LGgFC+rDTB5gf7TbE9dY3kOpLMs7LPQAAqWM92oZDaXTUllk8wvoDb6yuYT7N5md9FW+Ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aHHWv3/e; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=F82BygcCBfMfALuJw+NVKXvQCfs9uTO20A8PAiFGMYQNbqHi+9fifMnZiBWZN/rmFkFCaL02h/gKuwNU4WZ50+zcfyDZaS4BuZ8oOshOsrsakFd3Q8CSNI0AuKNbYJutFrpM+VhusNvT8x4hkohpjeddvGzlcvSnFexvvid0edY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SxsQmaiE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aHHWv3/e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE85C1F0089D
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:58:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SxsQmaiE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3D21F0089B
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 11:02:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790765891;
-	bh=HeKGdzLU69O+ht9kbtWpEwDIRN8ghLkwCH+cdsIjxI4=;
+	s=k20260515; t=1790766120;
+	bh=wM8W3udRuQDxIq2R1VNl0FNo7Tqwd3aCD0aaYmlp5nI=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=aHHWv3/e178Jqr0rII6QPV0nGBLTsgtyaBUunqajL5gZ701UOmTost9HSZ1zPVgHK
-	 ss9UxAoBdmnNCjo+57n4x2ebsj7fFvxlFrZvLyGd7YeePDT6L8sdfA6SJQu7kMkI6g
-	 5z1UVduBF9bHnoa4qclG2DpQNGikwFtdVNXSzlut0QZBtUofnPk4wtt/vy5TB6JHGJ
-	 guAKSblDm4O1kmdgYDR2p9kN44ivlt4S1fiCykde9jD5ds7Az4UCwfQysxUExzfChV
-	 2uB+E1JBbryZPPnrWuykoEB0KKJZdfPst+nuZ0V1UkM1Du9lLQ8hRM5aGFLD5VKQjR
-	 mFD7H5hFpsjmw==
-Received: by mail-lr2-f22.google.com with SMTP id 38308e7fff4ca-3a65fd1534aso28528641fa.0
-        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 03:58:11 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBxdW3WBEXdetg/1rs4WT9FFG/ZvL5iTNsXJEYTOxPKuoAie04LKBJ6IHOmIBlHwI/yssGTjHtojkDFD6sA=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLOn0PaSDC/roOSkdX+nD3gqg4UF7ztvFW9d3GXaDKiru+B0e4A
-	9gyct+d9Vucz3V/28w+fmWYeovxhGT3RnLoisfE2MZgLwuqlWijpbgfWjPkoTbMiAJeEnz2FW9x
-	XiZltOqd+xKVVwlS9xEVA6YHUf3lNPoA=
-X-Received: by 2002:a05:651c:a383:10b0:3a3:74b7:fc03 with SMTP id
- 38308e7fff4ca-3a77920847emr2626851fa.15.1790765890554; Wed, 30 Sep 2026
- 03:58:10 -0700 (PDT)
+	b=SxsQmaiE8bMHn80+76krI/+rDRJyVNbtXQvfjM8bKzgFUZzlX8uZWyJUc1HGVHcpk
+	 NKXNYqek4ZfoD2ATyhnwJgnqBmBObWZtv0DX7FenDkiKI+zGfYChfikKOgZf4RowE6
+	 PIopWY/km4MUSmATa4fC4Yvmz4EacBI8bFo0fyQPB82w15Ow6VD8uJmD+pv9GQYHvF
+	 JkEMu916tk7toLxZtX1LKi+5/BZI9rClR6aFohbRoSshTQ10gZO1/0SCJ2GQiQgRkE
+	 TrDtuYSmlfo6TSiac620irkQYyOxLCm0erLfuqEdDXz41VhDH3SuuJCpkRjawnRWug
+	 Cs0P5wmKM7Xrg==
+Received: by mail-lr2-f12.google.com with SMTP id 38308e7fff4ca-3a5919af2eeso41929411fa.3
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 04:02:00 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBwY/wIEt/mJBlUeiQA+QQliDE415etv84HQHTj2gAk80VR8g0SM5HdV5KvMfoMTG8mLnnEjw6Xj5OMBRwQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJqilaVcz9DHwLOmjLuHvClwRjY4uwivo34qjAZBwnA63WrOrLR
+	sPqPADPuE34UbegfYMm1Pnx8oZ0+59s0flWHWYVO8x2IcJOKoAYZct5QFpdJDFaBHce0CRxVRuv
+	zLwGsn6V4uCp6QaqacAjLQuuuAnbmy14=
+X-Received: by 2002:a2e:be86:0:b0:3a6:772c:2763 with SMTP id
+ 38308e7fff4ca-3a777d41008mr3400901fa.0.1790766119222; Wed, 30 Sep 2026
+ 04:01:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com> <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
-In-Reply-To: <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
+ <20260930-b4-cs75xx-v1-4-4617c4463529@gmail.com> <65c87e07-1722-44c2-9a08-ed9e18902058@kernel.org>
+ <179076583795.3054628.14443934429806440798@gmail.com>
+In-Reply-To: <179076583795.3054628.14443934429806440798@gmail.com>
 From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 30 Sep 2026 12:57:58 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkzcf7gJB82XT3-xb4jLujtWSNz1kT2r1-4N54rRfRNMA@mail.gmail.com>
-X-Gm-Features: AclHuK-sa81U-5SW9SmnkIIIMk800EhJv2_agNorbcDVKJfOoCfwnayZ96qbERY
-Message-ID: <CAD++jLkzcf7gJB82XT3-xb4jLujtWSNz1kT2r1-4N54rRfRNMA@mail.gmail.com>
-Subject: Re: [PATCH RFC 07/10] tty: serial: Add Cortina Systems CS75xx UART driver
-To: filipp.dunsky@gmail.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
+Date: Wed, 30 Sep 2026 13:01:46 +0200
+X-Gmail-Original-Message-ID: <CAD++jLnZBpoF3H3-sqzmrtwzxLGombFMdSYMVo59jiGFYcyCFA@mail.gmail.com>
+X-Gm-Features: AclHuK_ChPvqXpZcBtgi1ur23GoXeg-9LEYM9g162V4LxDv3fyrrqjh1iIDXE7U
+Message-ID: <CAD++jLnZBpoF3H3-sqzmrtwzxLGombFMdSYMVo59jiGFYcyCFA@mail.gmail.com>
+Subject: Re: [PATCH RFC 04/10] ARM: cortina: Add support for the CS75xx SoC family
+To: Fil Dunsky <filipp.dunsky@gmail.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
 	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
@@ -60,46 +62,31 @@ Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob He
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Filipp,
+On Wed, Sep 30, 2026 at 12:57=E2=80=AFPM Fil Dunsky <filipp.dunsky@gmail.co=
+m> wrote:
+> On 30/09/2026 12:20, Krzysztof Kozlowski wrote:
 
-thanks for your patch!
-
-On Wed, Sep 30, 2026 at 9:00=E2=80=AFAM Fil Dunsky via B4 Relay
-<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
-
-> From: Fil Dunsky <filipp.dunsky@gmail.com>
+> > How is it different from Cortina Gemini?
 >
-> Add a driver for the UARTs of the Cortina Systems CS75xx (Goldengate G2)
-> SoCs. The block has transmit and receive FIFOs with full/empty status,
-> a 24-bit baud rate divider clocked from the peripheral (APB) clock, a
-> receive sampling point register and one interrupt line per port with
-> per-cause enable and write-one-to-clear status registers.
+> Apart from the vendor, they have little in common. Gemini (SL3516/
+> CS3516) is a single ARMv4 FA526 with Faraday peripherals (FTINTC010,
+> FTTMR010, FTGPIO010, a 16550 UART) and builds for ARCH_MULTI_V4. The
+> CS75xx ("Goldengate G2") is an ARMv7 dual Cortex-A9 MPCore with GIC,
+> SCU, TWD/global timer and a PL310, and its UART, GPIO, interrupt
+> controller and NAND controller are different blocks from the Gemini
+> ones. So it cannot share mach-gemini or its drivers.
 >
-> The driver is a rewrite of the vendor driver shipped with the Linux
-> 2.6.36 and 4.9 based vendor kernels, using the current serial core API
-> (uart_port_tx(), port lock helpers, deferred sysrq handling) and devm
-> resource management. It supports the system console and earlycon.
-> Hardware flow control is not supported.
+> >> +machine-$(CONFIG_ARCH_CORTINA_CS75XX)       +=3D cortina
+> >
+> > Arch should be rather per entire family, not one SoC.
 >
-> The ports are named ttyCS so that the driver can coexist with the 8250
-> driver in multiplatform kernels, and PORT_GENERIC is used rather than
-> allocating a new port type.
->
-> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+> CS75xx is meant as the family (the vendor kernel covers the CS7522 and
+> CS7542 with one ARCH_GOLDENGATE), but I see the name reads like a
+> single part. Following Linus' suggestion of mach-goldengate, v2 will
+> use ARCH_GOLDENGATE and arch/arm/mach-goldengate for the whole family.
 
-Look at this in your Linux tree:
-git log -p b61c8bf4694b5115766849378dcb8787ff54e65e
+Put the rationale into the commit message, that's exactly what we want to
+see in there.
 
-This is essentially a resurrection of that driver. It was deleted again
-because it was merged prematurely. Cortina never came back to revise
-the driver. (People run out of steam. Such things happen.)
-
-Anyways, clearly this driver is not just for CS75xx so name it
-cortina-uart.c simply, and update symbols accordingly. Kconfig
-should be SERIAL_CORTINA etc.
-
-Maybe
-even the DT compatible should be something more generic.
-
-Yours,
+Thanks!
 Linus Walleij
