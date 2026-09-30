@@ -1,160 +1,117 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80317457E4A
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 07:53:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF13D395AD3;
+	Wed, 30 Sep 2026 07:56:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790754806; cv=none; b=ltrT4U8tn03bDEi81x5/oZtm0Cj3gr2ZhqCRYflxQ4SpXIj7WfcqlYZE5Y0kJ3+EJdeRvxs6nlcYDpYMB9HfvkygMC5l6Ki9l2bwPjbySRRScNqsCYg3Kg+G36pA1DtQARY6PgkUfUijnwzSnkOD0bDfZzDwXAERG8nIHzioMw8=
+	t=1790754976; cv=none; b=Ce2p1+FtqDrwsV6mE9EWhK0aEf/0if3J6X982f7VJmS9FUw8JOmUzPOtFNbVuAIHBNVYRxVkxrZXEO76rXfZoBtQ/dohNlOlIwmc6VxHDvVsF4hfVzhBcovw8nnk01QjKEdxBJzcE8rz2hgUU1qekdkf2o0w0XzaBfwPpHoRUFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790754806; c=relaxed/simple;
-	bh=6DKatlxffhk1Ma2S0NPaHdERsrMNfgFOEbtCWhR/2HY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ZfFgl+eJ0JhGsuSeKSj29LMcvuE2B83vPBXyyFvfOXEZsDoTd7lulBZDj/kkY8eIyCxXeYkzTf6oJvi4iX/74RFe85O2CeBtlc/Yk7MMxaZGBhlvEHkOMx0Kn8A7BSwE/Rzv8UqSpizxfVC7x78D9J/yM5V+dwfREe36q0r7AoI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sjRZDD/h; arc=none smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790754976; c=relaxed/simple;
+	bh=KpaEsrlUIGwpgZy6iLE59SqczMf8bYPC4Mgghmu/w98=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=lh6RkObJKJEw7v0dkHymZU5oGoKLXQtrxORIHQJMIky0jfSY3owFS3Vjr+C840FPRyqyxEY/BwpoJ9xdpIAsfoP81wDZ+LnEw5zjcAZlCWjBhExEKQrKJPv5pv0GgZdRGYPIaxN0GdhUcI3xfjYyvUycDnfmV6s7yvPmCbUAHj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j/re3Auo; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sjRZDD/h"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49fff72474fso20741215e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 00:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790754803; x=1791359603; darn=vger.kernel.org;
-        h=content-type:mime-version:content-transfer-encoding:message-id:date
-         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=wAVEwX1cbG2Scf8aznTJisEUwviOCJejkET+NM0/PLQ=;
-        b=sjRZDD/hv6awRoJ1I8LMw5ZOcjx7ARAQAOBmSJR2APPmHVUImwbI0HW8EOnY1t+xBv
-         PwpEa3QRlH3m4fjFF0JYQo4CZ1T+qtOyEltAo3S/RWLdA82/5zgrAT8RzL21fvcJ5gI4
-         KL0Axtl2hVou0ltofDYkKVzMZkgOKkRS7KMEmURfvUR5QLvOVQQ6PGDaK/n/xtWz0uf7
-         eSqwDi0Sh8Z8lb3ZU7H7Amv1ckowd9zVQBjvGoEGMDN1Xbic7tteT/8vquTfCBDqbQ/k
-         rrk3VJyMFktreafSDrGg4Icm7r4FVkkt2Ww2h4fuLK8skxkvmQyYFm/MnvE5i7FU4r0c
-         qg4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790754803; x=1791359603;
-        h=content-type:mime-version:content-transfer-encoding:message-id:date
-         :references:in-reply-to:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wAVEwX1cbG2Scf8aznTJisEUwviOCJejkET+NM0/PLQ=;
-        b=2kY2DXGcUIsMMTRGkQ+sD1litqSoga+AfNf1JfIJOWmGcfxIBUXCQ52Ws4ZS8ER5Hc
-         +hmig0er6/V9vB9AZc3XqiP78E2c/yaylVenuqIKf4E1KbU+dOGJERf6Z9KoT+XvaIPz
-         dsEvAztLSXaxWO6yN7Mq5+nVEHUEL9FJ/1pj6pk+Go/r+D08qcLb/2tfdkPd5vcgEhcy
-         zXXirm1vcnEnUUjQFxiu8iq5mStwMON4q1KDJni+/THUR5iBF9Ski5hM0kV0fwbGJB+p
-         Z8/lfF4xf4XYEpEBF/H0KxoFrsuETQe4OGDNRE+/XRzcDpKrDDoMKDXZ2/qpWFs3SjMQ
-         FPhQ==
-X-Forwarded-Encrypted: i=1; AKwUvBx9iFBfYMhtlNBz3cErnaB+GGs7KmNYrNaTeu10y3ChTYDBESgjz/nKEW3az1QpTVmWT74nrPCADZsPpcI=@vger.kernel.org
-X-Gm-Message-State: AFuF++l8E/rVDo5KL7l+IRso5v/g3WPAuYQKkS4Yxz2TKkLMDUslOBrD
-	PeoOcjA8Ue9bPb2PNVNTs4wPHu3P+JE2NKwu1c4aFgV6omnjERL1yTM0
-X-Gm-Gg: AYBFou2nVlDNbu7zN1ROauy7e4bAp/KxWH9u5GUBrx0AuE3/ORDTXqnINmAyu6MfGcP
-	O+wdzZytiF/piRW4ehBkFysbYWXZ+U7EtElGS3V1UpJxIQRKXRS73YKO6IHwBSiFVX2pg6VZupw
-	b7MBAumA6gF00wLmXWPXRAVxILECPxHFW3D1HNKuby+4F0nHzMfb9sRlGzHCsD5Jr6XENQyrRjK
-	/uiCKhuS22zt3UAaEgO2vVy6o94qhMpyGvgcchpvAX6z3xSAa7qJ5uWk3Kl+SLWCvgJpIMLrktq
-	60K9qaIbaDqJv8SzLz0QwF8smpbb92zEgp2Bpt/xEpcqhHzY6tXC3dn+NbzVs89JkGeVpnJWhXY
-	nW0vRW8Td7XmY928395DQmByk0BaqAcspTDL7rmfnvv0k5XFkVlhYKciBMP7HE3Dj0dfBUhoKMa
-	32kARiH33uUYav196d2gTF57272W/lPimlE+cblC6WrfR8JTCYppidurIzB94KEDix4AqyZF6YZ
-	j7Jin+c+0TnLL4AnHB1S0o13m5F/Z9E
-X-Received: by 2002:a05:600c:6206:b0:49f:ce78:3562 with SMTP id 5b1f17b1804b1-4a01b01b8c0mr8229045e9.19.1790754802651;
-        Wed, 30 Sep 2026 00:53:22 -0700 (PDT)
-Received: from [127.0.1.1] ([92.241.26.38])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0175208e0sm32306225e9.7.2026.09.30.00.53.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 00:53:22 -0700 (PDT)
-From: Fil Dunsky <filipp.dunsky@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject:
- Re: [PATCH RFC 07/10] tty: serial: Add Cortina Systems CS75xx UART driver
-In-Reply-To: <2026093046-scheme-fastball-59c4@gregkh>
-References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
- <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
- <2026093046-scheme-fastball-59c4@gregkh>
-Date: Wed, 30 Sep 2026 10:52:24 +0300
-Message-ID: <179075474429.2320278.397112083512309038@gmail.com>
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j/re3Auo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790754976; x=1822290976;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=KpaEsrlUIGwpgZy6iLE59SqczMf8bYPC4Mgghmu/w98=;
+  b=j/re3Auo+vvY4impejJa5YPBSR57DpHIF1To7HtJkJ0zzZ/Ip7BTiLY8
+   oitJKNE8/1StBOGx09VfgRGDGS/Pd+MNG/3NcyUOFy55vwlJnKwr2lxLO
+   5moT1IPryRRVqJ7axO0LhKY87Z/l8O8Ab+dna4mm9zmeO+cLjyYgMOW8B
+   XCha9KIodAOUyLK5AmJ61VRZTEhJpwzpPONkPAvVcAYJ7JRBv66NlR0rm
+   NvimGC0IE0pXIMQGFEGHtqhmHuy4Ol9+WmHMYIoUJ4Iv0lJtSBzoM0DNh
+   QtlR/X1oJVyBnYehwbWqO9nqYH+Ibr4WGT/98gDEoheHkzUCwrb4F9rCk
+   Q==;
+X-CSE-ConnectionGUID: vQ/AViCsSwKais0Q0vkfow==
+X-CSE-MsgGUID: u/MKe6UiSQmQzlyItjbMbw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11920"; a="101650262"
+X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
+   d="scan'208";a="101650262"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 00:56:15 -0700
+X-CSE-ConnectionGUID: IqIvYnFoQk29k1eBr03rKg==
+X-CSE-MsgGUID: 1vh1+5m+TKiiUkzLatiVUw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
+   d="scan'208";a="274225643"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 00:56:11 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 30 Sep 2026 10:56:08 +0300 (EEST)
+To: Hui Peng <benquike@gmail.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v6 1/3] serial: 8250: fix deadlock in
+ serial8250_register_ports()
+In-Reply-To: <20260930074850.465003-2-benquike@gmail.com>
+Message-ID: <5cd2e684-d213-b841-3435-5f69411b75c9@linux.intel.com>
+References: <20260930074850.465003-1-benquike@gmail.com> <20260930074850.465003-2-benquike@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="fixed"
+Content-Type: multipart/mixed; boundary="8323328-776957803-1790754968=:1755"
 
-On Wed, Sep 30, 2026 at 09:14:34AM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Sep 30, 2026 at 10:00:06AM +0300, Fil Dunsky via B4 Relay wrote:
-> > The ports are named ttyCS so that the driver can coexist with the 8250
-> > driver in multiplatform kernels, and PORT_GENERIC is used rather than
-> > allocating a new port type.
->
-> But even if you build a multi-platform kernel, only one of the uarts is
-> going to be on the system, so why have a new name for it?  Can't you
-> just use the "default" name instead?  If you do that, what happens?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I tried it on the board: multi_v7_defconfig with the driver renamed to
-ttyS. The 8250 driver registers its runtime ports (ttyS0..ttyS4) even
-though there is no 8250 on this SoC, so the probe fails:
+--8323328-776957803-1790754968=:1755
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-  sysfs: cannot create duplicate filename '/class/tty/ttyS0'
-  ...
-  cs75xx-uart f0070110.serial: Cannot register tty device on line 0
-  Warning: unable to open an initial console.
+On Wed, 30 Sep 2026, Hui Peng wrote:
 
-That is why I went with a separate name, like ttyAMA or ttymxc. If
-there is a better way to share ttyS with 8250 I am happy to change it.
+> In serial8250_register_ports(), mutex_lock(&hash_mutex) is acquired while
+> holding spinlock_t serial_port_lock during IRQ chain registration:
+>=20
+>   spin_lock_irqsave(&serial_port_lock, flags);
+>   mutex_lock(&hash_mutex);
+>=20
+> Acquiring a sleeping mutex while holding a spinlock causes a
+> sleeping-while-atomic bug and potential deadlock.
+>=20
+> Replace mutex_lock(&hash_mutex) with spin_lock_irqsave() in
+> serial8250_register_ports().
+>=20
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> Assisted-by: LLM
+> Signed-off-by: Hui Peng <benquike@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/825=
+0/8250_core.c
+> index 9e4f5a2a2eaa..f64a1b0a2eaa 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -102,9 +102,9 @@ static void serial8250_register_ports(struct uart_dri=
+ver *drv,
+>  =09struct uart_8250_port *up;
+>=20
+>  =09for (i =3D 0; i < nr; i++) {
+> -=09=09up =3D &serial8250_ports[i];
+> +=09=09up =3D &serial8250_ports[i];
+>  =09=09up->port.dev =3D dev;
 
-> > +/*
-> > + * UART driver for the Cortina Systems CS75xx (Goldengate G2) SoCs
-> > + *
-> > + * Based on the Cortina Systems vendor driver.
-> > + */
->
-> No copyright info?
+You failed to check what garbage AI outputted for you? Please, please=20
+don't waste our time sending unfiltered AI output.
 
-The vendor file (serial_cortina.c) carries no copyright notice, only the
-GPL-2.0 statement and MODULE_AUTHOR("Cortina-Systems"). I will add mine
-and name the vendor file as the origin in v2.
+--=20
+ i.
 
-> > +static void cs75xx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> > +{
-> > +}
->
-> Why an empty function?  Can't you just leave it out?
-
-The block has no modem control lines. serial_core calls ->set_mctrl()
-without a NULL check (uart_update_mctrl() and others), so it has to
-exist. I will add a comment saying so.
-
-> > +static void cs75xx_uart_break_ctl(struct uart_port *port, int break_state)
-> > +{
-> > +}
->
-> Same here.
-
-That one is optional, I will drop it.
-
-> > +static void cs75xx_uart_release_port(struct uart_port *port)
-> > +{
-> > +}
->
-> This feels wrong.
->
-> > +static int cs75xx_uart_request_port(struct uart_port *port)
-> > +{
-> > +     return 0;
-> > +}
->
-> As does this.
-
-Both are optional and the resources are managed in probe, so I will
-drop them in v2.
-
-Thanks for the review,
-Fil
-
+--8323328-776957803-1790754968=:1755--
