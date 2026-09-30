@@ -1,80 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B26A3F8EB3
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:00:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA13E343897;
+	Wed, 30 Sep 2026 10:00:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790762407; cv=none; b=Ae6cADAe0LDJt8aR45iCkH48zGRvtoNo+KmHGqwbR6cAY6lFNLb6Hi4SZKTu4Wrl15EULEOEYhvyhMZDsVkQzF8F1+IzpQF57Nh4u8RWO0w/KOD/I2GWSRAW3KW29cCk+Rjt5fo8sVJwz+ld9PfEI0a4hG/nBeTOr4e1458zvrg=
+	t=1790762425; cv=none; b=rGHfzwi2rvkBhqOmLaWypiotIdcmcNRkCdyTmMMeIAktjq7IXWyErBWgaKGFCltSdkDz3TwOGwIRdgDL0DV5iNu+gflcadPZdOjWEm/31vLD4anY1S2r29TqbX856AW5QiJqfkisVDtVoGvqVW+tRv7jUyhqZTYZVqBhxdaLfT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790762407; c=relaxed/simple;
-	bh=EfaOqUAKpuFYnsIVHOrJ/0TiRDwiEAdiDk5roFX7nBE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jS65gYuiJYCPZ/gGX2WkLp1DM4736Aag/Rto7LWRTd6CdyAuwcxUMHRuaEYViAjBSEuszUkOtnrFy/uFyT+yJ5ddJAuDktmVcBbEN7GyroWVpWJchiTdMsYO5L/P3rReqEfjB/BCiv9NaJOQH1oup0/T6YuljGIsvjBoziIYek4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=muIFYUAB; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790762425; c=relaxed/simple;
+	bh=ZNr4104Op5u3tfAtfvUYeYZDBwd7YpZ8HbNLGh3xu6A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s0a1tGq9Y15eAZ/hI3tWP89fZtuf01RA7m7Rgn9UkGaezqBz+W4+ihZVmAJvevSZbGZyx2FTGnQTwwRtSb3mcaHHifWrGL4uPCrkdp9jhQoBLmsclYnaSvJJibz3kT02xZlmaU4vpX/UpufKMIByOTkImZ0oChyx2JlAjA4ndQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W35hUxdO; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="muIFYUAB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A941F00899
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:00:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790762404;
-	bh=EfaOqUAKpuFYnsIVHOrJ/0TiRDwiEAdiDk5roFX7nBE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=muIFYUABjvVKsuiM3VBK55HhCAl+mC0Uikqx4GPkxeWHxqibglMVZjsEthv2ZS+3e
-	 AUhs7Dsb5LGjbHoWTADLFwi6PS2TUpgK3/78Xe8eMbUdKN539B2sJYH9aPU5Iz4Qy7
-	 dOy8ABR4lDoPUjf2w4lq29/TV+Jabnsvm4baPAWqFCZHtGs1oSdU9ApeiXO6wwIKiq
-	 d/eiE3Q0EFMLgqKhfEzFze6+2VxEFdqGVAVx8bPa+CdzAv+j59rjCpEUcp9T+ExYO2
-	 K3mbINZW+Is+H0dic4Yv0CZbYYeAlCZEAkEOeWBD8H6PaVXghSyTHFPuf/eGSy4H+W
-	 FvGcKLHCaVphA==
-Received: by mail-lr2-f35.google.com with SMTP id 38308e7fff4ca-3a779b23f05so3047211fa.1
-        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 03:00:04 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvByoCNF5ZPWYDy9d2Jj43LzinwN8JG0Cgh89mEMKCNhotgnIa+gRB2O6Mr5N78DW3kNTk+1nHAhf7rvzCW8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLGMDsmA2+1cZFQbQeqOYWmLivJ6ltmSfXiHD9d2cZr+ntILMda
-	q/QwrS2jU+0IYKiE+YK9+8A/8NRqjEgCVoPXr1shea2HkAOkSHiTRyKxuzPgu3xe90/LQsO3QZ1
-	uWGzGY5QCrCL6jsl0CVUmBFX0xFoo9dk=
-X-Received: by 2002:a2e:bc1c:0:b0:3a6:6831:6e28 with SMTP id
- 38308e7fff4ca-3a77919076dmr3451661fa.6.1790762403440; Wed, 30 Sep 2026
- 03:00:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W35hUxdO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790762424; x=1822298424;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ZNr4104Op5u3tfAtfvUYeYZDBwd7YpZ8HbNLGh3xu6A=;
+  b=W35hUxdO/35KoaA6k/KhbZ79jaSEsvliwsBsjw8ebkvo1JCk48HO9DYx
+   pe6DRzYfaUgYlbbzZnZVyR/31Q9P44tkhjqnhckFWQep7WUX7DHzz2D40
+   ZRH5WACGOtOxpIH0xSSyEXEgn9AYluyRH5JPvwDvJsFELlGvTerobBiGg
+   vAIMcQSDUZQo6TS7/MQR8wFrgfKyNQZ1LSFKoKB1m/YDlhZvGeY50QqwJ
+   qYX6O96Q8rHp/RhdId8boSKO9Po+ekQsfgOl15TstItktec2Vi30J5kh+
+   OvRKHeJmvg6mLbgmQ4kdBavynewYFCdFKJt1Quo95rmV4H65P66sl6Bwl
+   g==;
+X-CSE-ConnectionGUID: cqQXP7sJStqHPCSY6WZ2sA==
+X-CSE-MsgGUID: vVJyuAIHT6mzTOud8xBOCw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11920"; a="102869162"
+X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
+   d="scan'208";a="102869162"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 03:00:23 -0700
+X-CSE-ConnectionGUID: XK2gG7/sTeagrMKr1Nab6g==
+X-CSE-MsgGUID: dxY15kCcSqKRgH9n22ES5Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
+   d="scan'208";a="278988996"
+Received: from spandruv-desk1.amr.corp.intel.com (HELO localhost) ([10.245.245.137])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 03:00:21 -0700
+Date: Wed, 30 Sep 2026 13:00:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Hui Peng <benquike@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v6 1/3] serial: 8250: fix deadlock in
+ serial8250_register_ports()
+Message-ID: <arzdsky5fd5TbSap@ashevche-desk.local>
+References: <20260930074850.465003-1-benquike@gmail.com>
+ <20260930074850.465003-2-benquike@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com> <20260930-b4-cs75xx-v1-3-4617c4463529@gmail.com>
-In-Reply-To: <20260930-b4-cs75xx-v1-3-4617c4463529@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 30 Sep 2026 11:59:51 +0200
-X-Gmail-Original-Message-ID: <CAD++jLmqvjJUgFBtERvtkO_+=m60ag1UC-ZOAdo8_7X3cERKYA@mail.gmail.com>
-X-Gm-Features: AclHuK_48zLXL0KDLF2JWFOLuk9UnViCs077-v6ZyB7fHZb2R7O5ZT3ShI4k8r8
-Message-ID: <CAD++jLmqvjJUgFBtERvtkO_+=m60ag1UC-ZOAdo8_7X3cERKYA@mail.gmail.com>
-Subject: Re: [PATCH RFC 03/10] dt-bindings: arm: cpus: Add Cortina Systems
- CS7542 enable method
-To: filipp.dunsky@gmail.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260930074850.465003-2-benquike@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Sep 30, 2026 at 9:00=E2=80=AFAM Fil Dunsky via B4 Relay
-<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
+On Wed, Sep 30, 2026 at 07:48:48AM +0000, Hui Peng wrote:
+> In serial8250_register_ports(), mutex_lock(&hash_mutex) is acquired while
+> holding spinlock_t serial_port_lock during IRQ chain registration:
+> 
+>   spin_lock_irqsave(&serial_port_lock, flags);
+>   mutex_lock(&hash_mutex);
+> 
+> Acquiring a sleeping mutex while holding a spinlock causes a
+> sleeping-while-atomic bug and potential deadlock.
+> 
+> Replace mutex_lock(&hash_mutex) with spin_lock_irqsave() in
+> serial8250_register_ports().
 
-> From: Fil Dunsky <filipp.dunsky@gmail.com>
->
-> On the CS7542 the bootloader parks the secondary Cortex-A9 core in a loop
-> that waits for an event and then jumps to the address found in a global
-> software register. Add the "cortina,cs7542-smp" enable method for it and,
-> as with the other release-address based methods, require cpu-release-addr
-> to point at that register.
->
-> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Assisted-by: LLM
+> Signed-off-by: Hui Peng <benquike@gmail.com>
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+...
 
-Yours,
-Linus Walleij
+>  	for (i = 0; i < nr; i++) {
+> -		up = &serial8250_ports[i];
+> +		up = &serial8250_ports[i];
+>  		up->port.dev = dev;
+>  	}
+
+What the heck is this?! Please, stop use AI blindly, turn on your brains.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
