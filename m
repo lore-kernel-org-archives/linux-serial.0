@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4745B44F56D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C8FA41A55B;
 	Wed, 30 Sep 2026 07:00:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790751604; cv=none; b=uFaBgFB7pPRJGvqZqsCEHqA5UjTmfCDbf4pqIcsduvviDHW/LGYkg+f0OdzPgV3XialTYHBWVTjL1w57e8YG5d3jTOl+729SbwsChYX3s9mqgL/KZVsqSd5pG0M0riKSe4v91VpHzZGxqGwMDx0KBGp8cUh8AC/h9rODAWB1XTU=
+	t=1790751604; cv=none; b=FcBNFEu307Ue1yL25pINjM2dxmwaGR/GFvWnj4qwLbgEtfC3ngzBQHjVbgxfjwZhq/rOIT28Gko6rOGsdDZutLMMIKIrJ+XE66/wY6/S/8BELDlg4RkbhulH6Hvwb167B6TJt32Uuric32bBK8fY9BRL9H7xeomhecB1V9Q724A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1790751604; c=relaxed/simple;
-	bh=me0/GaYRhRGsLTRt0o/xOAdYgAPd8saMs5gs1pazfMw=;
+	bh=LiAjQBHjVirdn0YRmRwgIbGnfAG7HvFyBQXHGccJw1o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GbQX0Y9DN6UT0/dddcjqoW1UbeKTDtRUFuEtct5rSKFP8Hw+YdI92+Uf2KpfyxU9T3zP+JzdH/8zEZhZyCk6TYSwhwLmG316Y70H0fL/yV0fP/0MHthph2dy001MxtWfr6QRCCBAtAazp2XhsXkwxMn0JuWSr9ED0Y0/ewLLYG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eBiiYx1i; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=pXi4UhtKR0IsnR3WB70DU5ddKFEz/knrbzevpKGYCsAyld2pAObLFHuMkE3TmZ+xxyvv17cOW+24552zc4L6clCaWbkceaPRup26H1OGbtV8XmeCeD1RWG3nAr7/fLkwfu5RKWk3aO4PfIo2nNoi+P88T7iL9/Prl0f3zkB7j5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H4uku7+n; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eBiiYx1i"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D0F0CC4AF14;
-	Wed, 30 Sep 2026 07:00:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H4uku7+n"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 79E32C4AF17;
+	Wed, 30 Sep 2026 07:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1790751603;
-	bh=me0/GaYRhRGsLTRt0o/xOAdYgAPd8saMs5gs1pazfMw=;
+	bh=LiAjQBHjVirdn0YRmRwgIbGnfAG7HvFyBQXHGccJw1o=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=eBiiYx1iUpFLgCs3jPyyLsZR9BoZkOENFXPvq3ecvlkQNGSeSI9XWjINwi7BrTAdp
-	 55IgCDowjZJjY3pPgWvzwrMoPILR41AIfffMjNYCVZVQ0YGTx8CgoQY5K1V0vg9iPp
-	 g6Hop6zLVODjowEapVFM/1RPcp8KB6P7hmWdVSRLC/ZjZa3EPF++b0Gf0k9cyXZ/Od
-	 WdmT7LsPkYoKNkWvx4PWQ4Ak/qtwR9oXmOXRx4gn+kyc0eszAwRvc6t7wyMtqaHbD3
-	 naZqyen/S57ZYy/PFrRus7h/YKQEPSquC72/73x9JAztVR+ayXQeY8HFAfHLhkryGa
-	 Qfh2XOeslNuwQ==
+	b=H4uku7+n6zNDE1CnDNdPeIEtzhoGnXnLGOKBObPMgCoBiYXwwsXqD4NVq9C34OQ+2
+	 6UikhcJ+8pDXaaQlxYo2FuzJOvepwurvtTJNMJV7WKlJfTS/tuiV2Bal9vledDHPg6
+	 8aTG/wTUCy25aUTaYx0GF+8DEzxo2mq043NF/Sy3qFxChqlBKwUZxPseIjOr4gCDg1
+	 r8zhuRbYCXoyA2p3mvMeqDUiY85Ubhz1Xb5SS4rpzinkB68fZ5uI3ASU404FBOi7db
+	 6caiZSHqp9TCSRm1bfTrM9YJthyhtZtrF1On4lU6lMv+UbL4Lg4EKjb+iQNm+afdgu
+	 4HdbEx0pUJD/g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC888CA5FC2;
-	Wed, 30 Sep 2026 07:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58537CA5FC6;
+	Wed, 30 Sep 2026 07:00:03 +0000 (UTC)
 From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Date: Wed, 30 Sep 2026 10:00:02 +0300
-Subject: [PATCH RFC 03/10] dt-bindings: arm: cpus: Add Cortina Systems
- CS7542 enable method
+Date: Wed, 30 Sep 2026 10:00:09 +0300
+Subject: [PATCH RFC 10/10] MAINTAINERS: Add entry for Cortina Systems
+ CS75xx
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260930-b4-cs75xx-v1-3-4617c4463529@gmail.com>
+Message-Id: <20260930-b4-cs75xx-v1-10-4617c4463529@gmail.com>
 References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
 In-Reply-To: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
 To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
@@ -57,11 +57,11 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  Fil Dunsky <filipp.dunsky@gmail.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1790751600; l=1236;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790751600; l=1076;
  i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=zHs4d0oCr/fkCjW2IncoLpYzn3PsYpvSJVPGzM+249Y=;
- b=5NGp1Z9mv2h2Aiqk1msw4SDQyLOh8bIopneUpk9z2/71v/F+jOsc6UszjLI5N6VAxuYLJ8g2j
- aJRpOJj1wZlB3JO04HulAycLiCjFcGXIKZCahBcJ84HQ+Wlbe5HNL3d
+ bh=CR3H/exDhjF8FhcH6KCg+Z/+8Hyd2wHn7pcoqKD3Yt8=;
+ b=TUl/S3W6Zlftmd5R5m5DaF5PeO3BAhZ4p3AtL9/1hsbMBw7Po9yNNebrJwW/aoPcYrhmJVzip
+ ditmvJn9RzVCPqM7Gk5Pft4smiETHz2dXi9GFNEi5Hbf71xhXFVzXS+
 X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
  pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
 X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
@@ -71,37 +71,36 @@ Reply-To: filipp.dunsky@gmail.com
 
 From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-On the CS7542 the bootloader parks the secondary Cortex-A9 core in a loop
-that waits for an event and then jumps to the address found in a global
-software register. Add the "cortina,cs7542-smp" enable method for it and,
-as with the other release-address based methods, require cpu-release-addr
-to point at that register.
+Add an entry covering the Cortina Systems CS75xx platform code, device
+trees, bindings and UART driver.
 
 Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 ---
- Documentation/devicetree/bindings/arm/cpus.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/cpus.yaml b/Documentation/devicetree/bindings/arm/cpus.yaml
-index 96136b70dac..7a394c500d6 100644
---- a/Documentation/devicetree/bindings/arm/cpus.yaml
-+++ b/Documentation/devicetree/bindings/arm/cpus.yaml
-@@ -269,6 +269,7 @@ properties:
-           - brcm,bcm63138
-           - brcm,bcm-nsp-smp
-           - brcm,brahma-b15
-+          - cortina,cs7542-smp
-           - marvell,armada-375-smp
-           - marvell,armada-380-smp
-           - marvell,armada-390-smp
-@@ -484,6 +485,7 @@ allOf:
-         enable-method:
-           enum:
-             - spin-table
-+            - cortina,cs7542-smp
-             - renesas,r9a06g032-smp
-       required:
-         - enable-method
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2d137a33994..7ef9de36ffc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2914,6 +2914,17 @@ F:	tools/perf/tests/shell/coresight/*
+ F:	tools/perf/util/cs-etm-decoder/*
+ F:	tools/perf/util/cs-etm.*
+ 
++ARM/CORTINA SYSTEMS CS75XX ARM ARCHITECTURE
++M:	Fil Dunsky <filipp.dunsky@gmail.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
++S:	Maintained
++F:	Documentation/devicetree/bindings/arm/cortina.yaml
++F:	Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
++F:	arch/arm/boot/dts/cortina/
++F:	arch/arm/include/debug/cs75xx.S
++F:	arch/arm/mach-cortina/
++F:	drivers/tty/serial/cs75xx-uart.c
++
+ ARM/CORTINA SYSTEMS GEMINI ARM ARCHITECTURE
+ M:	Hans Ulli Kroll <ulli.kroll@googlemail.com>
+ M:	Linus Walleij <linusw@kernel.org>
 
 -- 
 2.53.0
