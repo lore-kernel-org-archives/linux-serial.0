@@ -1,177 +1,83 @@
-Received: from fhigh-b4-smtp.messagingengine.com (fhigh-b4-smtp.messagingengine.com [202.12.124.155])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A191D33D6FD;
-	Wed, 30 Sep 2026 04:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.155
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E3223E334
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 04:19:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790741638; cv=none; b=PxuBTKHcHHJaOdrF4yNp1rqt/ksMaz9ZZOaMGHto/VJHxkj1T7ZPZvV5qY2vAm3+mdBX5CkwK3X3ccvrYWA+r5PNv61wwz2SVtpsXrDhc3yvPd81GTDBOn6D23ij6RXvmMUxEZkvz4JjnkFY4GQ1UC0u1e1GsKpUcu3QOK43u/8=
+	t=1790741957; cv=none; b=Jc6jOu61yHGa3enJEskmH7Ab4sYkAcFBQ5X3KdJYOIGgG7ChLxLb+xxhj0ijd/cAAmQIzEXjO0DiWXYGudG5QFtG8uQi/CqjxmUoUDBQfttJOSq5cUQLl3nlhOyh5mk08Qo7qC5OET1hXO6zn/OLTXvVTb3FDG2cLMOcag67o4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790741638; c=relaxed/simple;
-	bh=ezTzgfhnFILc7w4d2qRXTxst+WJHEKR5XnGxGPC6+28=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I//azd3FC2CuSTDQL3ysR9ZATG3mzjVUYY2dpck5JChV4L1wdYb5g+4tbO9FhmaWJcyA6yPnPxiF4GccsRaGM5kOBV4+BCR8GuGzpBzF2U1jwkjFi1uol2/RlmZX4K4vMJDLYHG05khPsoRg2XyyTlM7q56JP4UXMKBNvNXNn0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org; spf=pass smtp.mailfrom=flapping.org; dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b=emGqt13R; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XB2nyDSw; arc=none smtp.client-ip=202.12.124.155
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flapping.org
+	s=arc-20240116; t=1790741957; c=relaxed/simple;
+	bh=ZDwv7dffISWhC92KVfd+WseWkgnewn5R8Z2tNEFDBBw=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=nOr/iotCLM3Rs5EASHjxVK01BZLJL0J0690cL3shUD43jkr14s6VpAbomwW7IzpB8FpNc8Nj91q+JoNs6ahjr5sRlGzTeCJQtAW/hUA8KYhV5zYksSQBB5VaUqquubHg3Zx0ifuy0q4JBxE4m98szj0DDa1ck2ol9EO/rckRFEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aBLkFr/Z; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b="emGqt13R";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XB2nyDSw"
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id 5C1537A072D;
-	Wed, 30 Sep 2026 00:13:55 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-02.internal (MEProxy); Wed, 30 Sep 2026 00:13:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flapping.org; h=
-	cc:cc:content-transfer-encoding:content-type:date:date:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to; s=fm3; t=1790741635; x=1790828035; bh=3cIH4jjHstv4/8azYvhn2
-	+xscnKHGQ3jR0PevXwSrq0=; b=emGqt13RNzwjqb9KPbtx7UsydDz+oR8uwhDrh
-	ddbZ1B5Yo8hGX4l+jLAC03ldAMl3NK26cxFkxG8h8L6LRiPU76cclmRUO7nvXEwW
-	R/S7qm1EzYzxJbHxOFk5/jPnOaYL0x1Hj7EQ4hLuhNnFN6PJQXliiNQLtPFx7vdj
-	x3MHLF+5yzFmnnv4aNOwxBwxZlTvTn5YT94QvBvLk9lymTy2zGv5Gc6LsjKWgLhD
-	GdFgO+mYtqgimCruYIz/RItezVTz2DDdHLTycXGMsFDwS9pj5abkcPnBeofrD7Xu
-	NNyglre6fL1f6s3g62BoDQPXstHNTQejXwFlm1ewFupDpQtDQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1790741635; x=1790828035; bh=3cIH4jjHstv4/8azYvhn2+xscnKHGQ3jR0P
-	evXwSrq0=; b=XB2nyDSwlq7dkpdMNd4oVuqLYhNL0C0CL66MzFvGhunBsIq4SNk
-	f8/jqOicWbrgZk8ZB1k4MBpHk7Sr0fNJFUl/bcXlLbxkBNujk2ObH+4ncEcKExGk
-	rsNJY6DudyIoJt9hjzf2EysXQ8Gwv3ivQGbBJ9HurBOC4Bd3OZ4VwvSUOvood6bJ
-	hdfK2vTzQGECE4XIbOZ0WsPJuC8TVYpImuNetyC2dHq9K/5LAXPtRPnRga0j9QjU
-	6LDbfxNNshCP5/pHPu6LkbrXEjRa+PdMmTMabofhtXeHtZmCj/aBkkP5+cKJ5pT4
-	6HZYg2t05eggL13V811Hh5UrEK92Bl73iMw==
-X-ME-Sender: <xms:goy8anWH5JJ4hCjnlUZ9l6uZTQyRkljta0-001gYabcl0oaiaYi0uA>
-    <xme:goy8ao8WQwSNTim7qhx3EWc8k2BmGtdE84bRpr7Akxke7MQkmdlVmv_GuySTAEYO9
-    WICZAFuN98vrZD_-G3F-w_5UuqIBsGj2aBH-KzN6RWIt-t02l07FvzF>
-X-ME-Received: <xmr:goy8ar5SqLRrHC4akM7CgIwphisu4NGs4OudA6kJax86Coyn038Q3aGGmVm0PG4dELRwZ-pau9GlqtWfJvs>
-X-ME-Proxy-Cause: dmFkZTGkWpff4LOKbAfkA39sXqhaHCbKLWbwce++Zbl+TVA5uWwxZp5Ex0L7hNhx0eiBQX
-    XRXG3TJZec9s8yFx/e9aIz4fWlMi6YfNjspKSxsjhVApnpJIRew9ZugiIMGK+bd15ZqqK7
-    dASKoGFe/LlUomPGIbmeacHgPzhfw3I5a3vfj0PxfxDfB+NJZqEzlFSxn21MEv8BfJFn35
-    3dtzzEoO3qK9dFyMFqW7iJDLLkpTw81p1ahW3DIcQPqq7QGO6kMCJjgpnjiKlRrdILmVhX
-    QLStzNigPE7xdHsW2lI7vNSykhyt18NH71bqL5yITuRoc1UWlodGiOKsxba9FluiIdQ8fO
-    vcBHABGvuT9VN3XK2clCaTSKk9qzTEwvAUw5jdPpkM83ud7tReCCkHw7KxK+xMBlB9WHKt
-    SOGdSVnT/InQSeKMH4PgR/Vl4TLpa5uO+qU1cIBy2+B9fMHFoaautd3exjaWhDssHesTs1
-    ktnS3atEMeSgbfj//p+bnQp+FFpJQV0YJOaEw9o3/a30Z8+3RiWXjIgQLE9cQLDRfuZAdY
-    +lcfyPSEerzIo2ETpr8gn6S0ILsWVRC5h+7B8vZXkoDjRTOvoCUcCee1+dk+Z1YHkY1mfO
-    HYtcxyE+MAymoqWvqGOrA+82iRo3VTrEDkDbfgkqT9gdp44oPFGuFUDywzBA
-X-ME-Proxy: <xmx:goy8ah1tYm1coBnE_ye4tTeoa4MXH447yWj6BOBz1FTfrNhjMF0Aog>
-    <xmx:goy8aiyJWZwSEoNUNBneyu_KJksVopRrdJzO2VluMhhDbocpETtVZg>
-    <xmx:goy8aqm5bk1aqjXXGF3Sb0qmBUhP-v6XmV15F1XYqE5j1oK6Nn8LdA>
-    <xmx:goy8al-FtOKDGyHa1sJt8kHL8WM-OrjLP-7M3_uC6DIHAX4MB1pTDg>
-    <xmx:g4y8ajyK6Y_UTXUpaf_f7zVZb4_3noO4U_NXB7o_PwKifO38Bz41kWt6>
-Feedback-ID: i51fe4b43:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 30 Sep 2026 00:13:51 -0400 (EDT)
-From: FUJITA Tomonori <tomo@flapping.org>
-To: dakr@kernel.org,
-	markus.probst@posteo.de,
-	ojeda@kernel.org
-Cc: a.hindborg@kernel.org,
-	acourbot@nvidia.com,
-	aliceryhl@google.com,
-	bjorn3_gh@protonmail.com,
-	boqun@kernel.org,
-	daniel.almeida@collabora.com,
-	gary@garyguo.net,
-	lossin@kernel.org,
-	tamird@kernel.org,
-	tmgross@umich.edu,
-	work@onurozkan.dev,
-	linux-serial@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	FUJITA Tomonori <fujita.tomonori@gmail.com>
-Subject: [PATCH v1] rust: serdev: use Delta<Jiffy> for timeouts
-Date: Wed, 30 Sep 2026 13:13:39 +0900
-Message-ID: <20260930041339.1551129-1-tomo@flapping.org>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aBLkFr/Z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23BDC1F000FF;
+	Wed, 30 Sep 2026 04:19:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790741956;
+	bh=g5PFDC+ZUn30P6PiFE97/khO2s3xzCBnnN1jU6/U8TA=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=aBLkFr/ZnkaAuEavh8WYpJCiy00F5Ip2gizxRzEr7Z5vrLF08Mm0t9nq2h0pwYtW7
+	 Xw5B7Q6BuweiUDgMnL1Vj+9xey9QRHEx940Dk0rasjsG4ContfNpAyfhqhp69UKe2v
+	 umPMnXQ0KR0JxLv3Z6crIDvQjaLogRjcOcSxsPPUw7yEzeslYEdEcR8DK4LPw+tRRT
+	 /epKp6acd8haqu6LPvqh79MPuzczO2stqoMyQz+ECPU0gO0P1fwza2VMui76UEQHwH
+	 22UhJZdogpKNvJDNRrvQ6s+TCU8XgPRtNU8eGM7ZMyT6W7ob739lG0ySeDKG1fRT+L
+	 COmpnOHjXMl/Q==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v5 3/3] serial: core: reject baud_base values that
+ overflow port->uartclk in uart_set_info()
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Hui Peng" <benquike@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260930041216.155911-4-benquike@gmail.com>
+References: <20260930041216.155911-1-benquike@gmail.com>
+ <20260930041216.155911-4-benquike@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 30 Sep 2026 04:19:15 +0000
+Message-Id: <20260930041916.23BDC1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
 
-From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+> In uart_set_info(), new_info->baud_base is multiplied by 16 and stored in
+> uport->uartclk (an unsigned int):
+>=20
+>   uport->uartclk =3D new_info->baud_base * 16;
+>=20
+> While uart_set_info() checks if (uartclk =3D=3D 0) and
+> if (new_info->baud_base < 9600), when new_info->baud_base exceeds
+> UINT_MAX / 16 with low bits set (for example, 0x10000001), multiplying
+> by 16 wraps around in 32-bit unsigned arithmetic to a small non-zero value
+> (16), bypassing both uartclk =3D=3D 0 and new_info->baud_base < 9600 and
+> setting uport->uartclk =3D 16 (baud_base =3D 1, well below the required
+> minimum of 9600 * 16).
+>=20
+> Reject new_info->baud_base > UINT_MAX / 16 before multiplying by 16 in
+> uart_set_info().
+>=20
+> Tested in QEMU against Linux 7.3.0-rc3 by calling ioctl(fd, TIOCSSERIAL,
+> &ss) with ss.baud_base =3D 0x10000001 on /dev/ttyS1: on the unfixed kernel
+> TIOCSSERIAL succeeds (ret =3D 0) and wraps uport->uartclk to 16
+> (TIOCGSERIAL reports baud_base =3D 1), whereas with the fix applied
+> TIOCSSERIAL returns -EINVAL and preserves the existing uport->uartclk.
+>=20
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Fixes: 6eabce6608d6 ("serial: core: check uartclk for zero to avoid divid=
+e by zero")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> Assisted-by: LLM
+> Signed-off-by: Hui Peng <benquike@gmail.com>
 
-write_all() and wait_until_sent() take the timeout as a raw Jiffies,
-which is a c_ulong alias. The type does not show the unit.
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-Take the timeout as Delta<Jiffy> instead. Clamp a negative timeout to
-0, as the current code does for a value larger than isize::MAX.
-
-Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
----
- rust/kernel/serdev.rs | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
-
-diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-index 17ca504b7f8d..094503f059ff 100644
---- a/rust/kernel/serdev.rs
-+++ b/rust/kernel/serdev.rs
-@@ -20,7 +20,10 @@
-         aref::AlwaysRefCounted,
-         Mutex, //
-     },
--    time::Jiffies,
-+    time::{
-+        Delta,
-+        Jiffy, //
-+    },
-     types::{
-         Opaque,
-         ScopeGuard, //
-@@ -481,22 +484,19 @@ pub fn set_parity(&self, parity: Parity) -> Result {
-     /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERESTARTSYS`] if interrupted
-     /// before any bytes were written. [`kernel::error::code::EINVAL`] if `data.len() > i32::MAX`.
-     #[inline]
--    pub fn write_all(&self, data: &[u8], timeout: Jiffies) -> Result<usize> {
-+    pub fn write_all(&self, data: &[u8], timeout: Delta<Jiffy>) -> Result<usize> {
-         if data.len() > i32::MAX as usize {
-             return Err(EINVAL);
-         }
- 
-+        let timeout = isize::max(timeout.as_jiffies(), 0);
-+
-         // SAFETY:
-         // - `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
-         // - `data.as_ptr()` is guaranteed to be a valid array pointer with the size of
-         //   `data.len()`.
-         let ret = unsafe {
--            bindings::serdev_device_write(
--                self.as_raw(),
--                data.as_ptr(),
--                data.len(),
--                isize::try_from(timeout).unwrap_or_default(),
--            )
-+            bindings::serdev_device_write(self.as_raw(), data.as_ptr(), data.len(), timeout)
-         };
-         // CAST: negative return values are guaranteed to be between `-MAX_ERRNO` and `-1`,
-         // which always fit into a `i32`.
-@@ -547,14 +547,11 @@ pub fn write_flush(&self) {
-     ///
-     /// Use a timeout of 0 to wait indefinitely.
-     #[inline]
--    pub fn wait_until_sent(&self, timeout: Jiffies) {
-+    pub fn wait_until_sent(&self, timeout: Delta<Jiffy>) {
-+        let timeout = isize::max(timeout.as_jiffies(), 0);
-+
-         // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
--        unsafe {
--            bindings::serdev_device_wait_until_sent(
--                self.as_raw(),
--                isize::try_from(timeout).unwrap_or_default(),
--            )
--        };
-+        unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), timeout) };
-     }
- }
- 
-
-base-commit: f1850e443b0e4f2429ddf42a8d5033ea54ae8a90
--- 
-2.43.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260930041216.1559=
+11-1-benquike@gmail.com?part=3D3
 
