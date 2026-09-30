@@ -1,166 +1,317 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023129.outbound.protection.outlook.com [40.107.159.129])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A4F3C0A17;
-	Wed, 30 Sep 2026 06:50:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.129
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790751012; cv=fail; b=XWqdvPke7M1Ae1uJ1PjPK+BEvWKPv/R8uMUiogXN06DQ9o6frzn1zm61fI4vJVtl+s0dN0wZ3OgI84zd88b3E0zQ23/qSb+1iod2QPWJ43AsbnUwIhSLsBiy77FywNiiRUstQst+niGihCRA9tD6DMpPZOVy3bupwokAMn32/1U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790751012; c=relaxed/simple;
-	bh=v/92JdiyQ5prlckpVPYqsHJOjG8appvbq5BGHkLPbWE=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WIUd56xHtewhNxYxmH2Lgr20jon1PHTkjNFPCGUjLm/xTlYDt9a2bRemQwE/wVTAvIyeRt0Bbc3JXe0K5ZYbG9zj7q4VD6yxyG8sCmDzmdk39gGNzHim0ebcyxOj9jhBqi4GWP+BrEFMclenBbTvhpR2IjJtt560ICZtp/desBs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de; spf=pass smtp.mailfrom=ziehl-abegg.de; dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b=S9ufgTDf; arc=fail smtp.client-ip=40.107.159.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziehl-abegg.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3901F456288;
+	Wed, 30 Sep 2026 07:00:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790751604; cv=none; b=pX3ouQPSHTF4vpaIi76H+lrFGyz6+Fn2PnW87fcySdXGCsp6lBHFarXNGJOi7TBU1Gp8fJYq4R15T/qeOjnNwS5hvx1QmPCwUKmeJdto7PIDPQNqLv+xyhIFz46ZdSgY/ehM3Hx3BL1L2zZEgX4jflmoGfZPUrD9R4HvvhBvvyk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790751604; c=relaxed/simple;
+	bh=TY4Qb4K7Mbgb9HeEWYUHVIahYBNVnReMmlvWUguzK/E=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=lDcAaDLc119xL9eoKhNWLbVzlwrALp2lz1jQ9SjzSAkmmtYGK2SBMytdGTHbJaGQw05wHy+2d9HV9H2lYyQNcPNlW04gGj5XJQ/IhJz5vqxzaMVUYLQ+2FV2+cdV7ekabG6unAvVFzQVzv567ssyj7NKyvVjN0jfxJTiDSY/Nws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZxFD0YhT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b="S9ufgTDf"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XQPqv6PRL80NRvt5Hh4P4joylOzlhkw5mF6/R4sQzCwPnrrBN/sdHhKkZne7inDmLEkrfr0njTgYF3aDRNQTedBiwDi7gRfCGKR6TR1aX4S50JJQeVPgEgtSa6yhM6rE0tVZI7gfRiAl5HxTR06yWDU2rcbXC3ZJnf0bhXhIajYZiLKQ3A5W9u42X+6ShypdGrBgXhfg1amKxQROYckI+1L/PUKrg2Nmt64VQqg1XIamk+eJbK7BnUTBr0We8bMxNtfS3DcVH82pA4TFZV57Sx/Q48WNdOhEvVxWyHbip817lXv2M2sYpmNiJX67wL6kz6ZrxkC3Me3tmQ1z6HRCnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v/92JdiyQ5prlckpVPYqsHJOjG8appvbq5BGHkLPbWE=;
- b=yLXHQZKjgpDv/oHMIy25DujPSsjxh5JfSfD/yJEMaJaBzMPdpXwhio/AOpySK6A5AlSGRamC8G4TOoFjPsACz+as2JPf2pUrOOabdCxO6w8xvsHDXassZf2IAXHljpOWjkBVHOBUY0lhVAQ/4gANcf+9vqu53aOweRiur2zL9OJH7Og04HEYm3wXP/+kvnn5JvI7yxBOJBxaX5aeYpXXN8q/4KhfYyKUoYQ0/zUXrew1jzeSCX2iId7U8tP5QjSlj+XlgK/ogDFnEw0uuADSsyyh0GXmLKA8RX5Pq9yH5GR2nGCkPPCj05AKnoZz52qRcDkU5jAfms4Gu3Dpd9ejzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 13.74.137.176) smtp.rcpttodomain=hugovil.com smtp.mailfrom=ziehl-abegg.de;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=ziehl-abegg.de; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziehl-abegg.de;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v/92JdiyQ5prlckpVPYqsHJOjG8appvbq5BGHkLPbWE=;
- b=S9ufgTDfNNw5sOnWZpye6DO8Yyi1tpskuTYo4s3iE//iOj41UoGPPIztI/34ufh/rcEpKW7K5DIWuIOUbw8UZuRzHZXfZbaj91Tjw8gfVg0XYehnA66NWURKLsKW4PUEAx7aoeR1WLDyO633Jadae458rkU4BdRHE16v9LOaygI=
-Received: from AM8P251CA0009.EURP251.PROD.OUTLOOK.COM (2603:10a6:20b:21b::14)
- by PR3PR02MB6491.eurprd02.prod.outlook.com (2603:10a6:102:78::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.15; Wed, 30 Sep
- 2026 06:49:54 +0000
-Received: from AM7PEPF00000056.EURPRD83.prod.outlook.com
- (2603:10a6:20b:21b:cafe::8e) by AM8P251CA0009.outlook.office365.com
- (2603:10a6:20b:21b::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.15 via Frontend Transport; Wed,
- 30 Sep 2026 06:49:54 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 13.74.137.176) smtp.mailfrom=ziehl-abegg.de; dkim=none (message not
- signed) header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
-Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
- designates 13.74.137.176 as permitted sender)
- receiver=protection.outlook.com; client-ip=13.74.137.176;
- helo=eu21-emailsignatures-cloud.codetwo.com; pr=C
-Received: from eu21-emailsignatures-cloud.codetwo.com (13.74.137.176) by
- AM7PEPF00000056.mail.protection.outlook.com (10.167.242.42) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.496.3 via Frontend Transport; Wed, 30 Sep 2026 06:49:53 +0000
-Received: from DB6PR07CU003.outbound.protection.outlook.com (40.93.64.95) by eu21-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Wed, 30 Sep 2026 06:49:52 +0000
-Received: from DB8PR04CA0020.eurprd04.prod.outlook.com (2603:10a6:10:110::30)
- by DU4PR02MB11649.eurprd02.prod.outlook.com (2603:10a6:10:643::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Wed, 30 Sep
- 2026 06:49:49 +0000
-Received: from DU2PEPF00028CFD.eurprd03.prod.outlook.com
- (2603:10a6:10:110:cafe::ae) by DB8PR04CA0020.outlook.office365.com
- (2603:10a6:10:110::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.14 via Frontend Transport; Wed,
- 30 Sep 2026 06:49:49 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
- is 91.26.242.194) smtp.mailfrom=ziehl-abegg.de; dkim=none (message not
- signed) header.d=none;dmarc=fail action=quarantine
- header.from=ziehl-abegg.de;
-Received-SPF: Fail (protection.outlook.com: domain of ziehl-abegg.de does not
- designate 91.26.242.194 as permitted sender) receiver=protection.outlook.com;
- client-ip=91.26.242.194; helo=mail.za.ziehl-abegg.de;
-Received: from mail.za.ziehl-abegg.de (91.26.242.194) by
- DU2PEPF00028CFD.mail.protection.outlook.com (10.167.242.181) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.21.472.14 via Frontend Transport; Wed, 30 Sep 2026 06:49:49 +0000
-Received: from localhost (10.1.201.87) by vEX02.za.ziehl-abegg.de
- (10.1.201.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Wed, 30 Sep
- 2026 08:49:48 +0200
-From: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-To: <hugo@hugovil.com>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>,
-	<david.laight.linux@gmail.com>, <Maarten.Brock@sttls.nl>,
-	<crescentcy.hsieh@moxa.com>
-Subject: Re: [PATCH v2 RESEND] serial: sc16is7xx: fix TX gap caused by kfifo circular buffer wrap-around
-Date: Wed, 30 Sep 2026 08:49:38 +0200
-Message-ID: <20260930064938.116227-1-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260928094733.09482cd6d6565588e2ecd267@hugovil.com>
-References: <20260928094733.09482cd6d6565588e2ecd267@hugovil.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZxFD0YhT"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C69BC4AF5F;
+	Wed, 30 Sep 2026 07:00:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790751603;
+	bh=TY4Qb4K7Mbgb9HeEWYUHVIahYBNVnReMmlvWUguzK/E=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=ZxFD0YhTnRFlrVuTkRDjVLRYXGUtvWZYpblRHUbg4kyuWnJrvtv33VRl8hKluHJUv
+	 4CKCawGTLZuJ3wO4Re+uc9vXzb5sglxO2WswXaQ9YNBWoqKWMrnl7xoOPzQh453FZs
+	 SlgSnWwrzG1fpuxxWbjxkA0z/ZMlg7RO9anoYCnzHh7woSFilirhTnrPomi5CqnEXq
+	 HHYfgflhGwGnuNWjHIYR+dyG84F33t7dtat82Lqp+EmOTh0lOaq1jWJulq/vo5ZDzR
+	 FMMQnu0F55YWzFeHgTygq7/DU0S9am8w7Z+Mu0GjRqqMJM6U+nyu1XM6OcccOVMwIo
+	 ki1X0i2whmw0Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E74BCA5FC5;
+	Wed, 30 Sep 2026 07:00:03 +0000 (UTC)
+From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
+Date: Wed, 30 Sep 2026 10:00:07 +0300
+Subject: [PATCH RFC 08/10] ARM: dts: cortina: Add CS7542 SoC and Securifi
+ Almond+ board
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: vEX03.za.ziehl-abegg.de (10.1.201.107) To
- vEX02.za.ziehl-abegg.de (10.1.201.106)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3239-9.1.2019-30228.004
-X-TM-AS-Result: No-10--6.797400-8.000000
-X-TMASE-MatchedRID: pBwXUM+nCwvrj1ICXYEoPPMcSueAbPVJjdkfepRWNj7IEVw/tNyThP5I
-	KVIIaDOfvp04AHmPPpDDhNyfqjdIBEmAKa+it75/eWsf9OQoKxGjg0lrtKMWygtbihVN8itTen7
-	9HuuKXBSPmA6rOmUXiznxJqun3snzF+p38MndnJrusRtB/Z90ThflOKKp20mp31qrgoURCz3OYY
-	Jz5uO7hDsgfHO7P/GnBZEWfpJYBiE=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.797400-8.000000
-X-TMASE-Version: SMEX-14.0.0.3239-9.1.2019-30228.004
-X-TM-SNTS-SMTP: 432DA2DD621A62F31D9AC0CB22D442775294AA2826933C66133AE65BD23F12542000:8
-X-EOPAttributedMessage: 1
-X-MS-TrafficTypeDiagnostic:
-	DU2PEPF00028CFD:EE_|DU4PR02MB11649:EE_|AM7PEPF00000056:EE_|PR3PR02MB6491:EE_
-X-MS-Office365-Filtering-Correlation-Id: e64094cb-b639-4664-3dfa-08df1ebf082c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|376014|23010399003|36860700016|1800799024|82310400026|10067099003|11063799006|56012099006|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info-Original:
- H3hISL/sgtZ7nJOExlt8xNkPBkVpOjg2cCmw2TB19BiLs07VDMVdrKbzjy0PSEIjTLiV9d2euJZ4W3QJMaZ0oAgWf4Y8GVnwWLkiBOhGZM7Ie+vS1OoDz5yLEJzM4GvyRI9wMpzlQoGHjsZMIpSZcaKW++n5Z0DRqsUK2Rj28Lv5QuadxxaCTbfsju1kwa188d0qUUBlX6ZgIPDOlaLVeWQx5CE1dr+IaFfxRpVbtIaodqDrFIqXvnRhIHz6wUwWclAFc8gOAem63ImALkG4mm6dQdfIWfe+zj2btZCqv22pfDV34CbinujEfza0a5r96gwvbUFxdZOt1uDiiEJfJVejis32yJ4EP58mtIAp0xeuGpSU4IsnI+WooCLw4qDsI6zTLFXbYuza0aaz2EE2HyTHoLtG4Z5RZG03U8Wp6RHGO+tyrAV9uLY5WaPH4N4FppciMt4Rihl2SiPVbDBSBVyKYL6bbDgCM03Ok7t4IaDm0UN4DCmYH1MGRroBfo8qarEH7ey3NIZJquz/Z2WDc4hdgfBFA7vMx7erCeh9TFwhtu+4oDfik9xUXShVHRtcIJ4uTFQ31EQlIchjleZOHUDRbswKBLs7STY4xRbgQ2O5dwqMN8PFkgpaPMB3iddmPD2BY2OPTOZqwHKymjqPkohWndXicRWjQCpTXoVr56IeXldjvJudD6PuSc7q7b9fIzJbz27eS0HQhAF4ukNgIw==
-X-Forefront-Antispam-Report-Untrusted:
- CIP:91.26.242.194;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.za.ziehl-abegg.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(23010399003)(36860700016)(1800799024)(82310400026)(10067099003)(11063799006)(56012099006)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-Exchange-RoutingPolicyChecked: Wy6zhPhjL0fzyo8OGK1Yg9BqlYpaQfoeHSXZFfRUKPkh1lgnYvdUOyq4uWGvATZ4QrrHQ2rlWnPa0kLtuWbZL3mj8wtT1h+QyfTz8EWTCZQgjhSgnX/NAru1TbbNI4A7KFnzQvZfG/OIU0fFyzXgaBK+8coxQ0/9MDhuhBq7qBrPS0mQvQ2bvT0sO4AXWiqObW886YLm3mFGjOqQyQjhsDSg4yZkKJG+0xTnBt0bu54CXktIXe8M1zgVSatameLyLP0dGS2CVDAj5OEe1qPWrw1ob+2ugLcu6V7bhtYIx5j2XZuB1El8GIYYKuyRgYDrthUD2gozfhVnytbAbEYr9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR02MB11649
-X-CodeTwo-MessageID: 9971c87d-28ec-48e1-9c5e-797a95663814.20260930064952@eu21-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- AM7PEPF00000056.EURPRD83.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	dfea15f0-61df-41fc-0074-08df1ebf05af
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|14060799003|1800799024|36860700016|376014|82310400026|35042699022|23010399003|11063799006|10067099003|56012099006|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	wrwBoAPvuGdA2Sj5PO1otMaVD9qFFpS0QKbfuGjQDKMukOU1XQVtsdk6jAA4DMpZubDWVZiWLNblFHNza58ofSFuRx5/9+wrfZ299geC6nZ+m1H+V7FxXhIHk2XUfP0JoFaaLBDsxeaGQdv5Vw52vB/ssJl0nlYi7tvnPg9ps0o1hysL1w28670tvEzxbDRF7LDG0KAyv0ok1J2dhJqhfvDeIayYNzUXbXqEDNfmbxPBAntSqo4gIRk/vSg/0rsmn/DLH8SPUDmhMXvsq++ax9IfpkGYiiporPuB+yZy81GWBKDmfgakZ7I3eW4IgSGlK+7/pQ77+Lc+AXNoVUA4baph6i2697O8zmLhoM8obL5Io+5ejQzuKLyYQkFW9n41t677K4roJOUe2MRkk1BWpepu0kflbQVrj39K515a/AzkXuCI2kez0LJcCQKUJGrPZY6+IhR2+IPxJekPX6tg6T6aPjqWdfR6wBYoJQ3kYkTPkmd+jin03IewQHAt2LkBrw755cpHdql4kp0JhLJNN7eawgqUc/CgAkq/MGjw7YzRYUpIpcLmGkLa3Wxq7SHXqaWxox66vXtt9BD2hs9o3bAoQivSoTL+IJSD9pUIZ39ZQ6O1Jh6stWjPJ6TU0H4gR4l/mNxvMsInX/pUZLyl+rGeSVydR1KXZfqYjnPEBUwoStEetzZma724YZCmDfTLHl2PFbl8QtHlrtSymEcuMg==
-X-Forefront-Antispam-Report:
-	CIP:13.74.137.176;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:eu21-emailsignatures-cloud.codetwo.com;PTR:eu21-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(14060799003)(1800799024)(36860700016)(376014)(82310400026)(35042699022)(23010399003)(11063799006)(10067099003)(56012099006)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	lPvtdbYPihvgLiXq0O2RxIpHIK/87CyL8VBQ8zY+XQGEa0yN4KGcFcC4QNkSB6a/BnUhAQxiTICM7zY47G5HuE2jzVewBiECljzUCRwIzJSxmQtQsdAeI5FPRO4moPQ6Lun+ckzEzMZFGjxqsz+gnuRdYObTsIgYhrMQoK6iegd7miNVEa3XBG6wCk2hrpUX1RCaLr1G03hjYzI3LlQ9xFN1bhIUaO4ur7yFL3f4b4MRa2dqLxQjq+nMvZWdxdZsV7AdCb7K2wEdH1C5D13kozYqc8KuikWjCEnVA0wqxnAHUlGK1AFbITgTE2vPQ3eDzyhma73sCu74JD38y8T2YOBAWzMGKDH+6rdvvPWORc4XZEXb/RZG2oGA8U+/iJBe4V5mBVsxGNBu4/NevMB86Gttw99+FsxTVaq4deZt7VT+31ouxPx9Pa5e5AzWBHNN
-X-OriginatorOrg: ziehl-abegg.de
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2026 06:49:53.2506
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e64094cb-b639-4664-3dfa-08df1ebf082c
-X-MS-Exchange-CrossTenant-Id: 11a5c065-3ef5-41f0-92f9-a77cbf208c03
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=11a5c065-3ef5-41f0-92f9-a77cbf208c03;Ip=[13.74.137.176];Helo=[eu21-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AM7PEPF00000056.EURPRD83.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR02MB6491
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260930-b4-cs75xx-v1-8-4617c4463529@gmail.com>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
+In-Reply-To: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Drew Fustini <fustini@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Fil Dunsky <filipp.dunsky@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790751600; l=6414;
+ i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
+ bh=lzR7/Tt3kuDzP9wOxc2oRpZJ6/5jcv1dJ5QqhyOQCE4=;
+ b=v3X0jqRqguC80RGDxeZTW9i1yk5x1zJK36tQMoujEDgM1MQ/ilIYTLRqSowYazAZ4jMP46cB+
+ pP5oVZY5msHBcc2Nb7AHx55LQm4X/vjbo+B45k9bpdp9qgl+HgDPiuf
+X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
+ pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
+X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
+ auth_id=1085
+X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
+Reply-To: filipp.dunsky@gmail.com
 
-Hi Hugo,
+From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Sorry about the signature. The mail configuration has been
-updated for your address and the reviewers CC'd on the patch.
+Add a minimal description of the Cortina Systems CS7542 SoC: the two
+Cortex-A9 cores, SCU, GIC, global timer, private timer and watchdog,
+PL310 L2 cache controller and the four on-chip UARTs.
 
-Could you confirm whether this reply reached you without it?
+The peripheral clock (APB) runs at 100, 150 or 170 MHz depending on the
+boot strap pins. Until there is a driver for the global control block
+that reads the straps, model it as a fixed clock whose rate is provided
+by the board.
 
-Thanks
-Paul
+The Securifi Almond+ is a touchscreen Wi-Fi router with 512 MiB of DDR3,
+512 MiB of NAND flash, a QCA8337 switch, QCA9880 and AR9580 Wi-Fi and an
+ASM1042 USB 3.0 controller behind the SoC PCIe root ports. For now,
+describe the memory, the console UART and a ramoops region, and reserve
+the top 64 MiB of RAM which the vendor firmware hands to the packet
+engine queue manager.
+
+Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+---
+ arch/arm/boot/dts/Makefile                         |   1 +
+ arch/arm/boot/dts/cortina/Makefile                 |   3 +
+ .../dts/cortina/cs7542-securifi-almondplus.dts     |  55 +++++++++
+ arch/arm/boot/dts/cortina/cs7542.dtsi              | 127 +++++++++++++++++++++
+ 4 files changed, 186 insertions(+)
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 28fba538d55..cf4433001dd 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -12,6 +12,7 @@ subdir-y += broadcom
+ subdir-y += calxeda
+ subdir-y += cirrus
+ subdir-y += cnxt
++subdir-y += cortina
+ subdir-y += gemini
+ subdir-y += hisilicon
+ subdir-y += hpe
+diff --git a/arch/arm/boot/dts/cortina/Makefile b/arch/arm/boot/dts/cortina/Makefile
+new file mode 100644
+index 00000000000..42ca2f511cc
+--- /dev/null
++++ b/arch/arm/boot/dts/cortina/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_ARCH_CORTINA_CS75XX) += \
++	cs7542-securifi-almondplus.dtb
+diff --git a/arch/arm/boot/dts/cortina/cs7542-securifi-almondplus.dts b/arch/arm/boot/dts/cortina/cs7542-securifi-almondplus.dts
+new file mode 100644
+index 00000000000..e2988c68765
+--- /dev/null
++++ b/arch/arm/boot/dts/cortina/cs7542-securifi-almondplus.dts
+@@ -0,0 +1,55 @@
++// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
++/*
++ * Device Tree Source for the Securifi Almond+ router
++ */
++
++/dts-v1/;
++
++#include "cs7542.dtsi"
++
++/ {
++	model = "Securifi Almond+";
++	compatible = "securifi,almondplus", "cortina,cs7542";
++
++	aliases {
++		serial0 = &uart0;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x00000000 0x20000000>;
++	};
++
++	reserved-memory {
++		ranges;
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		ramoops@1bf00000 {
++			compatible = "ramoops";
++			reg = <0x1bf00000 0x100000>;
++			record-size = <0x20000>;
++			console-size = <0x80000>;
++			ecc-size = <16>;
++			no-map;
++		};
++
++		/* Reserved for the packet engine queue manager */
++		qm-buffer@1c000000 {
++			reg = <0x1c000000 0x4000000>;
++			no-map;
++		};
++	};
++};
++
++&apb_clk {
++	clock-frequency = <150000000>;
++};
++
++&uart0 {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/cortina/cs7542.dtsi b/arch/arm/boot/dts/cortina/cs7542.dtsi
+new file mode 100644
+index 00000000000..29b0b7da866
+--- /dev/null
++++ b/arch/arm/boot/dts/cortina/cs7542.dtsi
+@@ -0,0 +1,127 @@
++// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
++/*
++ * Device Tree Source for the Cortina Systems CS7542 SoC
++ */
++
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++	interrupt-parent = <&gic>;
++
++	/* Rate is selected by the boot strap pins, set by the board */
++	apb_clk: clock-apb {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-output-names = "apb";
++	};
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a9";
++			reg = <0>;
++			next-level-cache = <&l2>;
++		};
++
++		cpu@1 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a9";
++			reg = <1>;
++			enable-method = "cortina,cs7542-smp";
++			cpu-release-addr = <0 0xf00000b8>;
++			next-level-cache = <&l2>;
++		};
++	};
++
++	soc {
++		compatible = "simple-bus";
++		ranges;
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		uart0: serial@f0070110 {
++			compatible = "cortina,cs7542-uart";
++			reg = <0xf0070110 0x30>;
++			interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&apb_clk>;
++
++			status = "disabled";
++		};
++
++		uart1: serial@f0070140 {
++			compatible = "cortina,cs7542-uart";
++			reg = <0xf0070140 0x30>;
++			interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&apb_clk>;
++
++			status = "disabled";
++		};
++
++		uart2: serial@f0070170 {
++			compatible = "cortina,cs7542-uart";
++			reg = <0xf0070170 0x30>;
++			interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&apb_clk>;
++
++			status = "disabled";
++		};
++
++		uart3: serial@f00701a0 {
++			compatible = "cortina,cs7542-uart";
++			reg = <0xf00701a0 0x30>;
++			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&apb_clk>;
++
++			status = "disabled";
++		};
++
++		l2: cache-controller@f5010000 {
++			compatible = "arm,pl310-cache";
++			reg = <0xf5010000 0x1000>;
++			cache-unified;
++			cache-level = <2>;
++			arm,shared-override;
++			arm,tag-latency = <1 1 1>;
++			arm,data-latency = <1 1 2>;
++		};
++
++		scu@f8000000 {
++			compatible = "arm,cortex-a9-scu";
++			reg = <0xf8000000 0x100>;
++		};
++
++		timer@f8000200 {
++			compatible = "arm,cortex-a9-global-timer";
++			reg = <0xf8000200 0x20>;
++			interrupts = <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
++			clocks = <&apb_clk>;
++		};
++
++		timer@f8000600 {
++			compatible = "arm,cortex-a9-twd-timer";
++			reg = <0xf8000600 0x20>;
++			interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
++			clocks = <&apb_clk>;
++		};
++
++		watchdog@f8000620 {
++			compatible = "arm,cortex-a9-twd-wdt";
++			reg = <0xf8000620 0x20>;
++			interrupts = <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
++			clocks = <&apb_clk>;
++		};
++
++		gic: interrupt-controller@f8001000 {
++			compatible = "arm,cortex-a9-gic";
++			reg = <0xf8001000 0x1000>,
++			      <0xf8000100 0x100>;
++			#interrupt-cells = <3>;
++			interrupt-controller;
++		};
++	};
++};
+
+-- 
+2.53.0
+
+
