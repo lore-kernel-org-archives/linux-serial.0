@@ -1,179 +1,121 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E8F8351C11;
-	Wed, 30 Sep 2026 09:19:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B18942F7EFE;
+	Wed, 30 Sep 2026 09:20:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790759992; cv=none; b=VbK/ZxdqgsmsCvxfl85K/03sddpLopppAIbPVDEe+b7/7EJO7phON5bUQuAV2WZf+hrRcl8I4JUgTYx/xaeReqyrn55GKWxiB4+NMCXqUkbH3CeOw5Ebow18aXoeT7gsYEK8jW6Jfz2cfdfNWmNyHHwqNLJpN2le36cQGw+Wb3A=
+	t=1790760044; cv=none; b=WGzFDersizqmz1Ap0PCdvKFOB+pp9ibng9asg2yrNoke+15SlFkwgs2dTh1dXjoKIwBd0vLdCjvWfS0Yckkm8NVLa+hcoVl9+RvNno9rnhwAzeRG9yQAsgnwEn0JnnCBuBrtLknz/KG+sCzIYdt3tnIgFGFArqwIdnMZQTYLgAs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790759992; c=relaxed/simple;
-	bh=ycAeeO2+O1u2/hRBiqcbFNxDPPw+N8Wmja8P3VugHxU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TxA1iG+S996SIX4S2p/8AA+YGdocc0RcS3Q7vYSr5i2qTv8myC3mgUB77hV69/hT0en5ZQ535cUfLwyvDVI68CwMQZJglzrHQp3GaBR6oOemMEx4kdAloPCDSSUxv+2uwjmr9k4jnxQ9qEQ4lPm+lPWWqxY0CZLoGTrV6uwv7Qo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EXs7FicP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790760044; c=relaxed/simple;
+	bh=nMq/8/xUGwQmipCSKRoQE/783HgZexu879zNJvfmrGU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uyLzt0m6oumCrutnuHXNGPABLETBjNC+SNN1fK2087pFJD/4+H053D7f5ZOw1pbcL/09WD9wJB+HR6PDOOg2Pb7Xhl+1nD95BuAq6EAQO9L5nhevnwC8sFLmexNQ2tw/tkVOiKlsaBrnOOuA9kz0TlzDl9bK9AHXx0rplms1/uc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lkiJYWKX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EXs7FicP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 867601F000FF;
-	Wed, 30 Sep 2026 09:19:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lkiJYWKX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E23C1F000FF;
+	Wed, 30 Sep 2026 09:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790759990;
-	bh=EpZN4TiwJzawni07VrYz4UienjYO7F9KCDL/tcZI+Oc=;
-	h=From:To:Cc:Subject:Date;
-	b=EXs7FicPBhxtPr3DAvKdVi8FH/4A5/bvuGhH40S8d3QI2vbwmsyiGxj83PYK5DU3Q
-	 GGYo6JF22IoeuADdHrCVP8VBMWkpdTIzHKrhHX1U9hvIHdavIjsUtE9t68xs+NwAVy
-	 lq0mlu/9E4D1lYU4tVxt9PlkAv6oVm+79pDxZ2gbi7wTR9rx45BntwvfuYUpQLVX3c
-	 p6RRQzFtAXgE10oV8dguFrZum/L4EfYEqfgbNk7yIhT5/7A6OhdYOMfxFxmfOQBD0y
-	 eIa0YOqODKKWYTmddhgmB/0hFqcRFvuAxgNXcelRk1Uq2xjfalXgZXnVm2x9fjCOgI
-	 5XLa0ddhbbYHQ==
+	s=k20260515; t=1790760043;
+	bh=MnV8IZQVj1FFMg9BAGwsZdL2OW//NUa9sSpDcZKLue0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lkiJYWKX/TkVanp7NKtC0wKL2v0/mCDIHUA19O8Gz/Csl0Yk+WYxB6dFYElkj3ZAh
+	 uNEFeI4FNe+Q9D2+U+9W05ud8yYG8fsaxT70BEpxtOtFr1EARI82j5t19c8o+bvpnU
+	 Zi3QoiKGZQ1wg1pSBehN6a9yE36l/7OKkZAWKCor70489X1p7kqXc1upgsUNqLni9p
+	 YI5f72Bi3ru40UWBsqhe8POw2Abq0NBkNrmIdjqjUnjl55Yadt/H4sCDC8A/246Be8
+	 DUqeZZSE+nOYhsx1y+c6bOdTAxdlU+wIHZb3V7DiayCcNgbBHYPnUXAwVIV/WPLLrl
+	 KVNT/SeFZeZfw==
 Received: from johan by xi.lan with local (Exim 4.99.5)
 	(envelope-from <johan@kernel.org>)
-	id 1xBqTc-00000007CLj-0RxD;
-	Wed, 30 Sep 2026 11:19:48 +0200
+	id 1xBqUT-00000007COo-1WwW;
+	Wed, 30 Sep 2026 11:20:41 +0200
+Date: Wed, 30 Sep 2026 11:20:41 +0200
 From: Johan Hovold <johan@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: David Lin <dtwlin@gmail.com>,
-	Alex Elder <elder@kernel.org>,
-	Oliver Neukum <oneukum@suse.com>,
-	linux-usb@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>,
-	Chengfeng Ye <nicoyip.dev@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] tty: fix saved termios reset race
-Date: Wed, 30 Sep 2026 11:19:38 +0200
-Message-ID: <20260930091938.1715754-1-johan@kernel.org>
-X-Mailer: git-send-email 2.55.0
+To: Chengfeng Ye <nicoyip.dev@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] tty: Serialize saved termios access with device
+ registration
+Message-ID: <arzUadtDI86btAMj@hovoldconsulting.com>
+References: <20260926184154.3017929-1-nicoyip.dev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260926184154.3017929-1-nicoyip.dev@gmail.com>
 
-Resetting saved termios state on device registration is needed where a
-minor number can be reused for an entirely different device and where
-the old settings may prevent the port from even being opened (e.g. when
-CLOCAL is not set).
+On Sun, Sep 27, 2026 at 02:41:54AM +0800, Chengfeng Ye wrote:
+> tty_register_device_attr() frees saved termios data when reusing a minor
+> number without serializing with tty_init_termios() or tty_save_termios().
+> The tty_mutex held by the open and close paths does not protect against
+> this registration-side free.
+> 
+> For example, an n_gsm mux reconfiguration can register a device while its
+> previous tty is being released. tty_save_termios() loads the saved pointer,
+> registration clears the array entry and frees the object, and
+> tty_save_termios() then writes through its stale pointer.
 
-Not all TTY drivers guarantee that the minor number is no longer in use
-when registering devices however, something which can lead to a
-use-after-free when closing a TTY (and saving its termios) races with
-re-registration.
+Thanks for reporting this. The intention here was that the TTY drivers
+would not be reusing a minor number while it is still in use, but that
+is clearly not adhered to everywhere.
 
-Add a new TTY_DRIVER_RESET_SAVED_TERMIOS flag to request that any saved
-termios state is reset on registration and only set it for drivers that
-make sure that the minor number is no longer in use.
+> The saved-termios
+> copy in tty_init_termios() is vulnerable to the same lifetime race.
 
-Fixes: 93857edd9829 ("tty: reset termios state on device registration")
-Reported-by: Chengfeng Ye <nicoyip.dev@gmail.com>
-Link: https://lore.kernel.org/20260926184154.3017929-1-nicoyip.dev@gmail.com
-Cc: stable@vger.kernel.org	# 4.12
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/staging/greybus/uart.c  |  3 ++-
- drivers/tty/tty_io.c            | 18 ++++++++++--------
- drivers/usb/class/cdc-acm.c     |  2 +-
- drivers/usb/serial/usb-serial.c |  3 ++-
- include/linux/tty_driver.h      |  6 ++++++
- 5 files changed, 21 insertions(+), 11 deletions(-)
+How could this happen? TTY drivers should hang up their ports during
+deregistration so this shouldn't be an issue unless we have a driver bug
+(which we do in n_gsm apparently).
 
-diff --git a/drivers/staging/greybus/uart.c b/drivers/staging/greybus/uart.c
-index f2810b5ec824..d7df65088ef7 100644
---- a/drivers/staging/greybus/uart.c
-+++ b/drivers/staging/greybus/uart.c
-@@ -962,7 +962,8 @@ static int gb_tty_init(void)
- 	int retval = 0;
- 
- 	gb_tty_driver = tty_alloc_driver(GB_NUM_MINORS, TTY_DRIVER_REAL_RAW |
--					 TTY_DRIVER_DYNAMIC_DEV);
-+					 TTY_DRIVER_DYNAMIC_DEV |
-+					 TTY_DRIVER_RESET_SAVED_TERMIOS);
- 	if (IS_ERR(gb_tty_driver)) {
- 		pr_err("Can not allocate tty driver\n");
- 		retval = PTR_ERR(gb_tty_driver);
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 1c30faae9ec1..c9da7b25e3fb 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3256,14 +3256,16 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
- 		goto err_put;
- 
- 	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC)) {
--		/*
--		 * Free any saved termios data so that the termios state is
--		 * reset when reusing a minor number.
--		 */
--		tp = driver->termios[index];
--		if (tp) {
--			driver->termios[index] = NULL;
--			kfree(tp);
-+		if (driver->flags && TTY_DRIVER_RESET_SAVED_TERMIOS) {
-+			/*
-+			 * Free any saved termios data so that the termios state is
-+			 * reset when reusing a minor number.
-+			 */
-+			tp = driver->termios[index];
-+			if (tp) {
-+				driver->termios[index] = NULL;
-+				kfree(tp);
-+			}
- 		}
- 
- 		retval = tty_cdev_add(driver, devt, index, 1);
-diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 7edda9019d54..bf6ef1ecf2c5 100644
---- a/drivers/usb/class/cdc-acm.c
-+++ b/drivers/usb/class/cdc-acm.c
-@@ -2150,7 +2150,7 @@ static int __init acm_init(void)
- {
- 	int retval;
- 	acm_tty_driver = tty_alloc_driver(ACM_TTY_MINORS, TTY_DRIVER_REAL_RAW |
--			TTY_DRIVER_DYNAMIC_DEV);
-+			TTY_DRIVER_DYNAMIC_DEV | TTY_DRIVER_RESET_SAVED_TERMIOS);
- 	if (IS_ERR(acm_tty_driver))
- 		return PTR_ERR(acm_tty_driver);
- 	acm_tty_driver->driver_name = "acm",
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index f3c594f1a806..4a19621f08ba 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -1372,7 +1372,8 @@ static int __init usb_serial_init(void)
- 	int result;
- 
- 	usb_serial_tty_driver = tty_alloc_driver(USB_SERIAL_TTY_MINORS,
--			TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
-+			TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV |
-+			TTY_DRIVER_RESET_SAVED_TERMIOS);
- 	if (IS_ERR(usb_serial_tty_driver))
- 		return PTR_ERR(usb_serial_tty_driver);
- 
-diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index 1f2896e56e77..62e459c5d3ae 100644
---- a/include/linux/tty_driver.h
-+++ b/include/linux/tty_driver.h
-@@ -73,6 +73,11 @@ struct serial_struct;
-  * @TTY_DRIVER_NO_WORKQUEUE:
-  *	Do not create workqueue when tty_register_driver(). Whenever set, flip
-  *	buffer workqueue can be set by tty_port_link_wq() for every port.
-+ *
-+ * @TTY_DRIVER_RESET_SAVED_TERMIOS
-+ *	Reset any saved termios settings on device registration when reusing a
-+ *	minor number. Must only be set by drivers that guarantee that the minor
-+ *	number is no longer in use.
-  */
- enum tty_driver_flag {
- 	TTY_DRIVER_INSTALLED		= BIT(0),
-@@ -84,6 +89,7 @@ enum tty_driver_flag {
- 	TTY_DRIVER_DYNAMIC_ALLOC	= BIT(6),
- 	TTY_DRIVER_UNNUMBERED_NODE	= BIT(7),
- 	TTY_DRIVER_NO_WORKQUEUE		= BIT(8),
-+	TTY_DRIVER_RESET_SAVED_TERMIOS	= BIT(9),
- };
- 
- enum tty_driver_type {
--- 
-2.55.0
+> KASAN reported:
+> 
+>   BUG: KASAN: slab-use-after-free in tty_save_termios+0x39a/0x3d0
+>   Write of size 44 at addr ffff8881012e8180 by task poc/114
+> 
+>   Call Trace:
+>    tty_save_termios+0x39a/0x3d0
+>    release_tty+0xb3/0x7a0
+>    tty_release_struct+0xa0/0xd0
+>    tty_release+0xc1b/0x11b0
+>    __fput+0x2f8/0x9e0
+>    fput_close_sync+0xe2/0x190
+>    __x64_sys_close+0x78/0xd0
+> 
+>   Allocated by task 110:
+>    tty_save_termios+0x2c1/0x3d0
+>    release_tty+0xb3/0x7a0
+>    tty_release_struct+0xa0/0xd0
+>    tty_release+0xc1b/0x11b0
+> 
+>   Freed by task 113:
+>    kfree+0x131/0x3c0
+>    tty_register_device_attr+0x498/0x8b0
+>    gsm_activate_mux+0xfb/0x210
+>    gsmld_ioctl+0x92f/0x14d0
+>    tty_ioctl+0x915/0x1240
+>    __x64_sys_ioctl+0x134/0x1c0
+> 
+> Serialize the saved-termios copies and reset with a private mutex. Taking
+> tty_mutex during registration would invert existing driver lock ordering:
+> UART registration holds port->mutex, while tty_find_polling_driver() holds
+> tty_mutex when calling uart_poll_init(), which takes port->mutex. Keep the
+> new lock confined to the saved-termios operations, with no driver callbacks
+> inside the critical sections.
 
+I'm a bit torn about this, but I think we should avoid adding another
+mutex in favouring of making the saved termios reset opt-in.
+
+Clearing the saved termios state on device registration doesn't make
+much sense if a minor number may still be in use as an open TTY would
+prevent the termios from being reset.
+
+I've just posted a patch for this here:
+
+	https://lore.kernel.org/r/20260930091938.1715754-1-johan@kernel.org
+
+Johan
