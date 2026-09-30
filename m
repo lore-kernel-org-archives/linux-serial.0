@@ -1,85 +1,165 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53CF3353A72
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 04:19:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45EDD225A38
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 04:21:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790741973; cv=none; b=H5xSzZ62f8KCotD9UvWhGcVjlYliAK6ST7a7D8xlVEkvHHk5me61+Lj9z6hX+KZHh1E3eaBgkoT7WoBFJ39aiXX1WRDyIp6aAEyLLHPTGTQZA/tkhXP/GdmyT5M1GPPvDmfKhqOp6c+GOG7kkjnYPaSKj6WK7EZX+0jH+fw3mTs=
+	t=1790742119; cv=none; b=bvo5gDzCT1RDLTGMq5VGX/JMQGzOCJYEQWhTf0RSBu1CHvOrhFH294xqAoQdT5rr1weYEr1+DxMU8ZjS3zjs9DARTfuVW99QMr1xi0Jl2x9tgZjMd7umqEF9Sf/9u0wNt0eKbncZmxC1WKDkuMTFqi5kOoWbAw8n6Zf/V9kf7Kc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790741973; c=relaxed/simple;
-	bh=6vq5cfdJubL+u6w/ssDGEJJolCDBUJb/KVBRAOC1WLc=;
+	s=arc-20240116; t=1790742119; c=relaxed/simple;
+	bh=8RzTOwucw2ZSQglIrOkYHE+Swl4AHPhdl9uYDldQ50M=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=XUJF+1owiCga7mn3CZqseJms9rK4EM542UXvcSSH/TWTr8LuKKmFaySkrGNUBR89m4v3JOjj9gvxaOK9ia9yzmosaTdtpL8iNwWKxPlik6MP9kY0WB1wCPZe/7xFiYGIi6V7pNZuckCP6bnGpA9k6VAMmYQfYezcIkAwTZGDFrI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KnvSIP2Z; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=r/c8aLszI19ut3OjdZNUciPnP81aHIWLnhyY/S9GCFQZP8kE/XyaJEqQECMFz2I6r67D3UbeqLIDw2UJ+VsooRbZzQeBdORYRPs3dQi65KDaNTPURN5Dqt72HaQj1T/xqCQnaSNuKnT60JfzO6kqBMDhu2Q4SLIszJB561zPpfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HdjJ25EU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KnvSIP2Z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4AC61F000FF;
-	Wed, 30 Sep 2026 04:19:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HdjJ25EU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913CE1F000FF;
+	Wed, 30 Sep 2026 04:21:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790741971;
-	bh=6vq5cfdJubL+u6w/ssDGEJJolCDBUJb/KVBRAOC1WLc=;
+	s=k20260515; t=1790742117;
+	bh=JdIIGmAin8rAdeGUzNtIzk1+G2YCiaKfCEPe/i+1a/A=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=KnvSIP2ZUELYd4bnC/89R3ztbJfA6Di0cq8uxxGtWL1oekzR9T4JVVoe0vzFR6bU5
-	 1pbLkJ0XVFLJesXwbI6sUPJJJVnaNx/ywq8QMGettqJT7103UMa9ZiZgzHvwTPOFJx
-	 MawUF6f5LkAUyuU/B/FbR4oFIpKKxAIJZjPn3efxLSFM2crYiDeHPTVc/1k7ovr3LO
-	 YBjHR96fPfuT13Ou67RNFdjXnKp/wz7mw8vHjFIPoxlZSatIXOu+ld8w+q7yGONDna
-	 esGySHuN8baXiyCTsZHOB9bOBPIRYK0oSrlDfVrGq5VLmLD5xNC4Ijf6A6x9PrKtKT
-	 aip4w4Qt387XA==
+	b=HdjJ25EUGRbOAUSAZhCogjt4Acv0fMx9ieXXViYiPxxrVHjxnoY4EtqOgqoj336zJ
+	 Ns6XmUisTYv+dPHJZu+2SdXbrAAHoxaQfNm9yd4AV6ONMK5d8TBWMrrADUDrX2k99R
+	 HoLMy197YwfqSE+07/IOKF7BC73E6HAVKfr3wx/Axx5U/U3/ON1VJ++G9fKMisQaea
+	 1zFh18hBaswrHozmFcZMGwTFaEOWeFo3WrSCDM8ytXsqz68z+B9bS6HdMJtCE2//bD
+	 DtxKOjhftQPTNm0dmnlz4GLEIoF4No0tnkLt1w7i3okycB+WbKj5s45rn0JDTnEOAk
+	 f9IDqrNftjSOA==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 1/3] serial: 8250: hold hash_mutex across IRQ chain
- linking in serial_link_irq_chain()
+Subject: Re: [PATCH v1] rust: serdev: use Delta<Jiffy> for timeouts
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Hui Peng" <benquike@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260930041216.155911-2-benquike@gmail.com>
-References: <20260930041216.155911-1-benquike@gmail.com>
- <20260930041216.155911-2-benquike@gmail.com>
+To: "FUJITA Tomonori" <tomo@flapping.org>
+Cc: gary@garyguo.net, linux-serial@vger.kernel.org, ojeda@kernel.org
+In-Reply-To: <20260930041339.1551129-1-tomo@flapping.org>
+References: <20260930041339.1551129-1-tomo@flapping.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 30 Sep 2026 04:19:31 +0000
-Message-Id: <20260930041931.C4AC61F000FF@smtp.kernel.org>
+Date: Wed, 30 Sep 2026 04:21:57 +0000
+Message-Id: <20260930042157.913CE1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> In serial_link_irq_chain(), serial_get_or_create_irq_info() acquires
-> hash_mutex to search or allocate a chain instance and drops hash_mutex
-> before returning.
->=20
-> If a concurrent call to serial_unlink_irq_chain() runs immediately after
-> serial_get_or_create_irq_info() returns while i->head is still NULL,
-> serial_unlink_irq_chain() acquires hash_mutex, finds i with
-> i->head =3D=3D NULL, frees the chain structure via free_irq() / kfree(),
-> and removes it from the hashtable. serial_link_irq_chain() then
-> proceeds to scoped_guard(spinlock_irq, &i->lock), dereferencing the freed
-> chain pointer i and causing a slab use-after-free.
->=20
-> Move guard(mutex)(&hash_mutex) to the beginning of
-> serial_link_irq_chain() and rename serial_get_or_create_irq_info() to
-> serial_get_or_create_irq_info_locked() so hash_mutex is held across the
-> entire lookup, linking, and error-path unlinking sequence.
->=20
-> Tested in QEMU against tip of mainline (62f4c998b297, "Merge tag
-> 'parisc-for-7.3-rc5' of git://git.kernel.org/.../parisc-linux")
-> with KASAN enabled by concurrently opening/closing 8250 serial ports
-> sharing IRQ 4 (ttyS0 and ttyS2): on the unfixed kernel KASAN detects
-> slab-use-after-free in serial_link_irq_chain(); whereas with this fix
-> applied, port registration and unregistration run cleanly with 0 KASAN
-> warnings.
->=20
-> Fixes: e91f1ed6c24f ("serial: 8250: fix use-after-free in serial_link_irq=
-_chain")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> Assisted-by: LLM
-> Signed-off-by: Hui Peng <benquike@gmail.com>
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [High] rust: serdev: negative timeout clamped to 0 causes infinite wait
+--
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+commit 68348e8f0bd03a5788e4d72cf264605070a06317
+Author: FUJITA Tomonori <fujita.tomonori@gmail.com>
+
+rust: serdev: use Delta<Jiffy> for timeouts
+
+write_all() and wait_until_sent() take the timeout as a raw Jiffies,
+which is a c_ulong alias. The type does not show the unit.
+
+> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
+> index 17ca504b7f8d6..094503f059ff5 100644
+> --- a/rust/kernel/serdev.rs
+> +++ b/rust/kernel/serdev.rs
+
+[ ... ]
+
+> @@ -481,22 +484,19 @@ pub fn set_parity(&self, parity: Parity) -> Result {
+>      /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERE=
+STARTSYS`] if interrupted
+>      /// before any bytes were written. [`kernel::error::code::EINVAL`] i=
+f `data.len() > i32::MAX`.
+>      #[inline]
+> -    pub fn write_all(&self, data: &[u8], timeout: Jiffies) -> Result<usi=
+ze> {
+> +    pub fn write_all(&self, data: &[u8], timeout: Delta<Jiffy>) -> Resul=
+t<usize> {
+>          if data.len() > i32::MAX as usize {
+>              return Err(EINVAL);
+>          }
+> =20
+> +        let timeout =3D isize::max(timeout.as_jiffies(), 0);
+
+[Severity: High]
+Does this cause an unintended infinite wait when a negative timeout is pass=
+ed?
+
+When a driver calculates a deadline that is already in the past, it will
+produce a negative Delta<Jiffy>, which this clamps to 0.
+
+However, the underlying C function serdev_device_write() treats a timeout of
+0 as an infinite wait:
+
+drivers/tty/serdev/core.c:serdev_device_write() {
+    ...
+	if (timeout =3D=3D 0)
+		timeout =3D MAX_SCHEDULE_TIMEOUT;
+    ...
+}
+
+Should negative timeouts instead return immediately or fail with -ETIMEDOUT
+rather than causing the thread to hang indefinitely?
+
+> +
+>          // SAFETY:
+>          // - `self.as_raw()` is guaranteed to be a pointer to a valid `s=
+erdev_device`.
+>          // - `data.as_ptr()` is guaranteed to be a valid array pointer w=
+ith the size of
+>          //   `data.len()`.
+>          let ret =3D unsafe {
+> -            bindings::serdev_device_write(
+> -                self.as_raw(),
+> -                data.as_ptr(),
+> -                data.len(),
+> -                isize::try_from(timeout).unwrap_or_default(),
+> -            )
+> +            bindings::serdev_device_write(self.as_raw(), data.as_ptr(), =
+data.len(), timeout)
+>          };
+
+[ ... ]
+
+> @@ -547,14 +547,11 @@ pub fn write_flush(&self) {
+>      ///
+>      /// Use a timeout of 0 to wait indefinitely.
+>      #[inline]
+> -    pub fn wait_until_sent(&self, timeout: Jiffies) {
+> +    pub fn wait_until_sent(&self, timeout: Delta<Jiffy>) {
+> +        let timeout =3D isize::max(timeout.as_jiffies(), 0);
+
+[Severity: High]
+Can this also cause an unintended infinite wait?
+
+Similar to write_all(), if wait_until_sent() is called with a negative time=
+out,
+it is clamped to 0.
+
+The underlying C implementation tty_wait_until_sent() treats a timeout of 0
+as an infinite wait:
+
+drivers/tty/tty_ioctl.c:tty_wait_until_sent() {
+    ...
+	if (!timeout)
+		timeout =3D MAX_SCHEDULE_TIMEOUT;
+    ...
+}
+
+Would it be safer to handle expired deadlines without waiting indefinitely?
+
+> +
+>          // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a va=
+lid `serdev_device`.
+> -        unsafe {
+> -            bindings::serdev_device_wait_until_sent(
+> -                self.as_raw(),
+> -                isize::try_from(timeout).unwrap_or_default(),
+> -            )
+> -        };
+> +        unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), =
+timeout) };
+>      }
+>  }
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260930041216.1559=
-11-1-benquike@gmail.com?part=3D1
-
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260930041339.1551=
+129-1-tomo@flapping.org?part=3D1
