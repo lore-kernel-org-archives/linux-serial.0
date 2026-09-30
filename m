@@ -1,238 +1,113 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB0484FD286
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 12:59:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F7DB4F68A0
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 13:05:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790773165; cv=none; b=ro4h/y4dbh8gTQOs3ItXgJDMGIYBUO5yXmTfjR2ErXdnQQ5PUXYrOI7i7GQ2HLMJN8FEBX2bQUXdoOssOVa9+6OYEGlfdUsH0NQzJgS3g3ksFWZh8+e0nC/yHmx5LsKvXK6+mmS00R3zFjPwn/BIq2hv4+aV7HKONzY+5nL0Btk=
+	t=1790773533; cv=none; b=o6ehrQWQhIFtKLbbCoGimYG1uhWsZOVDz8GRttQwimuRIMT+KHR37wd6Oo/eiTq2OYOyNTXxvxasDKuDdd/pNNmYR4CN03B1JHIuSKRjWIWedZkGDtj0ua9BCEOZePE1nCtUt+jTFTqekrPUgDP9ywYxDhUK6pZSYf7ng80S4Uk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790773165; c=relaxed/simple;
-	bh=i64pUxi3zpBLXWgDIKclkUs6JYXYTZeIxw+txTfxd8k=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=MCvaH7EudG3PagDK4S/n+2ViyRUZJZqQG2hWKT5HX+PSOLLbPyCH/Ha5NOlURu4hO+PnKVl2HdgiyY+jWQ0AKJzLOE4l3StkX6zAw5iTeQ3UFi3tXcgtoDhvvrLa/1eu7WxaPXTxGeN7mPgeU65GomAEYszYei5U+GznlP1q0AE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=DcCD8oY/; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	s=arc-20240116; t=1790773533; c=relaxed/simple;
+	bh=mBgLWAqG8Nsq2TBy481BWH1d2sHsXvnlxtN5vEIpQJ8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=XxCoKfEL7kSS4pT42W+6dronnYd2bJQpg1Owygy/7nMXSOw0BOmAZHChn2oZP9uhmv3/ksj1e5oVA4Xqge9NukNNgikSfNd1zqyxnuTluaoo4XjX8Zft6d03vH0zi2usGQ18JE/ekfVWz5n+j6cAQy+PyKAQqCPkujUtPm/t9Sg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T25AcrLJ; arc=none smtp.client-ip=74.125.225.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="DcCD8oY/"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id C42AB240108
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 14:59:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1790773155;
-	bh=H9IdDr7cQKYmTEbOZjvHS66nCR53cZdlHM63EBaiPA4=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=DcCD8oY/JB+8yA+glPD9b48NMoxk+k8pEfgbS9NfCju2Ix5sW/Vh3pw3TDjox1Cu8
-	 YK/3aGLIz89wMVB9PMzMR4Fxb8V0gI47GAeGyfQcs2ui1TwRsBYrVGked7RQdwgn1a
-	 SfmRzdQbp0TRL0WMmAOo1vDe4lrSSeUswYDHyZG8soEONneT7PRtHw7M2pci6VMvF9
-	 svdnyYesemk//ufqzrhuiYDe38i0KgWCJy6Q85wntwrmwRe3XPOSvt/5wdJ559Mqsn
-	 Wa/LfEGqICBJ0gEnXHJK8WmVXqMdI2EcoUS2WUNmxpA97MmE/BoTQYeZSk5P089ph/
-	 w0ChdEVHHEsJg==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4hvw9F0YMzz9rxP;
-	Wed, 30 Sep 2026 14:59:12 +0200 (CEST)
-Message-ID: <a8693eaa1f8eeb167ee334e7c35371832e43bb4f.camel@posteo.de>
-Subject: Re: [PATCH v1] rust: serdev: use Delta<Jiffy> for timeouts
-From: Markus Probst <markus.probst@posteo.de>
-To: FUJITA Tomonori <tomo@flapping.org>, dakr@kernel.org, ojeda@kernel.org
-Cc: a.hindborg@kernel.org, acourbot@nvidia.com, aliceryhl@google.com, 
-	bjorn3_gh@protonmail.com, boqun@kernel.org, daniel.almeida@collabora.com, 
-	gary@garyguo.net, lossin@kernel.org, tamird@kernel.org, tmgross@umich.edu, 
-	work@onurozkan.dev, linux-serial@vger.kernel.org,
- rust-for-linux@vger.kernel.org,  FUJITA Tomonori <fujita.tomonori@gmail.com>
-Date: Wed, 30 Sep 2026 12:59:15 +0000
-In-Reply-To: <20260930041339.1551129-1-tomo@flapping.org>
-References: <20260930041339.1551129-1-tomo@flapping.org>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-VB3d5wXyxomhPlKLLb4P"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T25AcrLJ"
+Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-482f635552aso4153719f8f.2
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 06:05:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790773521; x=1791378321; darn=vger.kernel.org;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=mBgLWAqG8Nsq2TBy481BWH1d2sHsXvnlxtN5vEIpQJ8=;
+        b=T25AcrLJaYl5z+dWaPATAmi3IpaHAZk/ucAvn8V2ZGyGP5Aeq8AnmCK2YnegLy0zQ/
+         WKPZPwYGqTvtgWSTwcgrtC2PO+h3R/AMxTpRRwkHqlzmp0yn3pxy/BKkqjY+crf14E8Q
+         YvI5e2OwSfkopLy6S2+83Lmhi2tKO8CfW5VMs5c9CpmFC6D/LPoPM08lDVd7KQ9tZDgy
+         FwcxVxZ1DxhLtMIkDmd58zl08enD37qlIz5G0UACy3ZdzxM201rNyofL5LTH9F2bn/Ai
+         2OmBUyD8EV9MMca2WXAtX7cJlZKJGYDwUDkwTAoEy2Il+LQd5037A1gcjRm9CERnWXD5
+         yVDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790773521; x=1791378321;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=mBgLWAqG8Nsq2TBy481BWH1d2sHsXvnlxtN5vEIpQJ8=;
+        b=Np3ONVgd2o/71r0pH3uaV2wqz9wyXJ/S/aKg9QsLFcRB5jST0Q1FJt6vB6GNhMa4N6
+         y3EsG4Q3jo9suTJOSrwQNBNG9YmgADyEeD3A/Qk9gA1ofUG6RtQSLx6jpPxc0PJV5NDv
+         /EiMBQU94Vc2a0VQII98pmGvkiHXppVQkLV/V1iTNVOSJ4JS89EuCf/7q2E6qe/BLXWY
+         ARVP1MGgArp6+vV7i2+nKImMDQxaNJsAGRWPHARMaXjG/WYKAO+UQaAqpJzOinCJ8le9
+         CdIDHNSuISPlJMBG5g2rxE2Fmwsny/CzEX6774COp1Zn76AHCLG+QSoJtWBEI3u5Q44P
+         pCkg==
+X-Forwarded-Encrypted: i=1; AKwUvBx4Peg6JPKYdsuB+3bF1sWAAmiE/62QS9mRTV1mdK7/SXIsmpc1Y78xZkUcnxa54w0y81PK3w5OVASkuTU=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIOuGb4vLtPUwFjnfpRStY8LBtwN1emoVLUW1AaLqZvYsnbuGRw
+	L/RNJDLEjalsDl3ypLISBiruuO0W6TKjO3J2VzW7V70R+eosyzF10gcY
+X-Gm-Gg: AYBFou0LSm+8Jv9t9JdfUQiyCWwYECPU9un4ijkJY1va5CDAVkuBEaG8U0JocB1p1z1
+	ZOT+rjettNJ1IWazECB4gmYFzuCQjnJ+Guy+cFjR0PqLnIdKIjL0KP0fOUcfhEXby3OoKonJsIn
+	UT91e2oJ26eSMyqSK29WjoW8FlT9X1Qybz+WCcKFr66w6AuFnLK/8qnfrnaUlADdIAquCcJoehm
+	u1sgW+62u1n2hya/S0WnHx6bjImsStx3zDDZPQgL5FDXKm4j0BbkqLG8J7ZKyOJCDY7BJvWsre+
+	lPTE1USSBxEhuVeZZFW/daWQd4Sj3ywxM/B6QkODx3unrT84mpyK3HZkCytQpaj3b+lFhrG0TDF
+	+V5qh0ZLbrUDQeyjY3EiGfLsB/A5CObhXLjBxmdcoWOEAoQ4OuTlKXFiw4/7BZKt8NYWN+Xc8qf
+	4CBeL+oPbSytDnOqM9eoykPhY3O2z+3gmIj15QWvSSWf8i0JdQyl1qApoHht74okyepums4PSTo
+	zaeWf0taRw60Y4m5Y+E9Txd4wxQkkUI
+X-Received: by 2002:adf:e18f:0:b0:487:799:c04a with SMTP id ffacd0b85a97d-48b02430c2dmr2681615f8f.3.1790773520942;
+        Wed, 30 Sep 2026 06:05:20 -0700 (PDT)
+Received: from [127.0.1.1] ([92.241.26.38])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48b029bef64sm4914950f8f.10.2026.09.30.06.05.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2026 06:05:20 -0700 (PDT)
+From: Fil Dunsky <filipp.dunsky@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Linus Walleij <linusw@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Jason Li <jason.li@cortina-access.com>
+Subject:
+ Re: [PATCH RFC 04/10] ARM: cortina: Add support for the CS75xx SoC family
+In-Reply-To: <432b697a-d931-4523-91e5-9b45a08617ec@app.fastmail.com>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
+ <20260930-b4-cs75xx-v1-4-4617c4463529@gmail.com>
+ <65c87e07-1722-44c2-9a08-ed9e18902058@kernel.org>
+ <179076583795.3054628.14443934429806440798@gmail.com>
+ <CAD++jLnZBpoF3H3-sqzmrtwzxLGombFMdSYMVo59jiGFYcyCFA@mail.gmail.com>
+ <d97a806f-a5a3-476e-8910-30027a6f568d@app.fastmail.com>
+ <179076863241.3327419.16233537387530771884@gmail.com>
+ <f6d0478a-3438-4903-a9e2-5d314f5948c4@app.fastmail.com>
+ <179077030602.3399593.12266354979192327093@gmail.com>
+ <432b697a-d931-4523-91e5-9b45a08617ec@app.fastmail.com>
+Date: Wed, 30 Sep 2026 16:05:18 +0300
+Message-ID: <179077351803.3424620.11498774337540482054@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Type: text/plain; charset="utf-8"; format="fixed"
 
+On Wed, Sep 30, 2026 at 02:55:43PM +0200, Arnd Bergmann wrote:
+> It sounds to me like this is different enough from the generic
+> spin-table that we should keep your current version then.
 
---=-VB3d5wXyxomhPlKLLb4P
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+OK, I will keep platsmp.c then.
 
-On Wed, 2026-09-30 at 13:13 +0900, FUJITA Tomonori wrote:
-> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
->=20
-> write_all() and wait_until_sent() take the timeout as a raw Jiffies,
-> which is a c_ulong alias. The type does not show the unit.
->=20
-> Take the timeout as Delta<Jiffy> instead. Clamp a negative timeout to
-> 0, as the current code does for a value larger than isize::MAX.
->=20
-> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
-> ---
->  rust/kernel/serdev.rs | 27 ++++++++++++---------------
->  1 file changed, 12 insertions(+), 15 deletions(-)
->=20
-> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-> index 17ca504b7f8d..094503f059ff 100644
-> --- a/rust/kernel/serdev.rs
-> +++ b/rust/kernel/serdev.rs
-> @@ -20,7 +20,10 @@
->          aref::AlwaysRefCounted,
->          Mutex, //
->      },
-> -    time::Jiffies,
-> +    time::{
-> +        Delta,
-> +        Jiffy, //
-> +    },
->      types::{
->          Opaque,
->          ScopeGuard, //
-> @@ -481,22 +484,19 @@ pub fn set_parity(&self, parity: Parity) -> Result =
-{
->      /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERE=
-STARTSYS`] if interrupted
->      /// before any bytes were written. [`kernel::error::code::EINVAL`] i=
-f `data.len() > i32::MAX`.
->      #[inline]
-> -    pub fn write_all(&self, data: &[u8], timeout: Jiffies) -> Result<usi=
-ze> {
-> +    pub fn write_all(&self, data: &[u8], timeout: Delta<Jiffy>) -> Resul=
-t<usize> {
->          if data.len() > i32::MAX as usize {
->              return Err(EINVAL);
->          }
-> =20
-> +        let timeout =3D isize::max(timeout.as_jiffies(), 0);
-> +
->          // SAFETY:
->          // - `self.as_raw()` is guaranteed to be a pointer to a valid `s=
-erdev_device`.
->          // - `data.as_ptr()` is guaranteed to be a valid array pointer w=
-ith the size of
->          //   `data.len()`.
->          let ret =3D unsafe {
-> -            bindings::serdev_device_write(
-> -                self.as_raw(),
-> -                data.as_ptr(),
-> -                data.len(),
-> -                isize::try_from(timeout).unwrap_or_default(),
-> -            )
-> +            bindings::serdev_device_write(self.as_raw(), data.as_ptr(), =
-data.len(), timeout)
->          };
->          // CAST: negative return values are guaranteed to be between `-M=
-AX_ERRNO` and `-1`,
->          // which always fit into a `i32`.
-> @@ -547,14 +547,11 @@ pub fn write_flush(&self) {
->      ///
->      /// Use a timeout of 0 to wait indefinitely.
->      #[inline]
-> -    pub fn wait_until_sent(&self, timeout: Jiffies) {
-> +    pub fn wait_until_sent(&self, timeout: Delta<Jiffy>) {
-> +        let timeout =3D isize::max(timeout.as_jiffies(), 0);
-> +
->          // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a va=
-lid `serdev_device`.
-> -        unsafe {
-> -            bindings::serdev_device_wait_until_sent(
-> -                self.as_raw(),
-> -                isize::try_from(timeout).unwrap_or_default(),
-> -            )
-> -        };
-> +        unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), =
-timeout) };
->      }
->  }
-> =20
->=20
-> base-commit: f1850e443b0e4f2429ddf42a8d5033ea54ae8a90
+That leaves the directory name: Linus suggested mach-goldengate since
+mach-gemini is a Cortina SoC too, you would go with mach-cortina.
+Linus, with the symbol now being ARCH_CORTINA_ACCESS, is mach-cortina
+fine with you, or should it stay mach-goldengate? I will use whatever
+you two settle on.
 
-Both functions have "Use a timeout of 0 to wait indefinitely." inside
-the rustdoc.
+Thanks,
+Fil
 
-Make sure `Delta::ZERO` is also usable for `Delta<Jiffy>` and replace
-the 0 in the rustdoc with "[`Delta::<Jiffy>::ZERO`]". You might also
-remove the "timeout of" part, but I don't mind if it stays.
-
-With that fixed,
-
-Reviewed-By: Markus Probst <markus.probst@posteo.de>
-
-Thanks
-- Markus Probst
-
-
-
-
-
-
---=-VB3d5wXyxomhPlKLLb4P
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmq9B5sbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSWMMQAKqx7J6ZWj66x+WSYBmi
-gapUSP9vsuZUsNtZI0B/pLneT//LOWqJ43O5G7VywevICOiTKSEYFTZB46w0NIUu
-cExjaxJy28pwmYOvwI+m7cL8bSkcGHtL33YBUhuLG8Pdijq1eLLQi8V8L5Oc0OPj
-gDN5A6boR4LVPTJm5tsmGLnEVa2zFT7qPLQVQ9aum+MS64ykJRNef01I//1rY3jb
-e4Ad1jjKQ4URK5mSAk787kfdss/E4ArjsSD7UlJgap6NGN/j4vdcVuQpv+gtkY8Z
-/yIPJA/gB/BVm1gDNAs+mPEae+PELEOQ7PYop2oMHgQ3LQ5DXuCEc+GcvCGXB4cz
-GrszGNSlnHO16f5Z6LvociUuRP2Q+p/cy2SEv0d/Q5NPfM2gOUQgYjhfEVNLJIUS
-KbQUIcksb1BoRogf5DTyWHyH1xbOm3CJr3AScNpkpjyi33Z3VFhRD21N3o45njeH
-OlGo7P39UNjWxZ/hZ7jx8/P3Ojr5Fi2lmNoZdMB+ANx57FKDngqS2bU71d2BI7mp
-D3BObLJ7L83/pJeCmCpJUItCdKRp55btllycR3LQyE7dWImnauNP8UVjzJUQRs6U
-iTzOslEmCXJQM+Ryz2QiNJFdVlkZniv8Z+NJaIuSiA0Tk78U+TVUZxDIKruyQ1LV
-vUI03IKnTmcju4pIan+bN/6m
-=ru7s
------END PGP SIGNATURE-----
-
---=-VB3d5wXyxomhPlKLLb4P--
