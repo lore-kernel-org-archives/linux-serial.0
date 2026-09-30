@@ -1,170 +1,175 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13F983CF69E;
-	Wed, 30 Sep 2026 10:06:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675413E763E
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:11:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790762801; cv=none; b=Vld76rfucZ7qZzyo1SGe0j9ogmBPcelkHpj+qpit9f9uE55fMRK4X2u3pITKNh3SytIAOkCzGPk+A/O8QXOXYNKv6/krN9iUhOZQsut9Ml3PLTnP3xj0hFP8lvKrCjGty8hRV6x+fP86bV7cCNsWlMtDaTTpHZMnLypIxmcv/9A=
+	t=1790763108; cv=none; b=nVyn4z+vpHt0cUxud8dzSTSZ7PYsXaFtyy3mt5mRU8SDTZ0i8CUPTStEn/mVxZWB3KnvRrXCo/chvLogFt09xyPkiCVUKhl2eMCyYTs4zU9LpHSE5OYkiUDcJHZBk3vy3TUQstXN+2S/rzrIqjYL9gX/1ycdY4ZoAzd2Q5jXhKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790762801; c=relaxed/simple;
-	bh=6DKCuVzw+OC0gi/9qKgWQLqBPffB5qIdfI6pJ0FZkCI=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=S3ApcH0Ls1sV/5IHjqXKeJgleij/axy/G5bKyCwuznFGzCszqOr/uCG4knZ2hgyyIbsHVYsF9gQ1+fF8fS5bEH+gFjdbXtz09Pxu2oJYInZLMIf3/ViLMpthBMyO+t52rrDuKnoNof3jER9kXqJsvIyuoow/h9slwlwzwljhGNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e0SuuwFO; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790763108; c=relaxed/simple;
+	bh=GNoabt0I2kZBL2emhokLb3YHz3HazhDNBNrySbeHM6w=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=apcIR/zDGJcAjNdnqYFq/RxOA1paran1CXQazb4qkQrbbDHbpZSZM21MqOtaTwKSwA7QWBtm6n+wBE5g/sClgFIoYBCaRfKB5sY2b0ezWxZS3WI7ETfRxfzYSjaLKplbiCZu2q8bJvHS/CsKM+brQgjEFfuL/XoyLpl2hSaI3gk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QDiGOHqI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e0SuuwFO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790762800; x=1822298800;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=6DKCuVzw+OC0gi/9qKgWQLqBPffB5qIdfI6pJ0FZkCI=;
-  b=e0SuuwFO5hL6Wd8zvpB556lC70NK+vgOzMYikuo0Tsv60tfkAMIDng+P
-   o8gAHufWoWsFm4EXESsF7m2egL1allVua8+f3hnUbavpdCtm+ju1lK2M1
-   Uv9ZLCLQYANy2Fjp1UlAv52kWP8ndeJWQJ5XUCqfas8KW0rKd0dEz1zxZ
-   2XWJUjqagnZ8GcGv2yPHMFHeO8ExjoQRLoOpxqGEWzUzbJkDdk2xPz/rX
-   EQPp0t96j9/lSJpa1nZ0I34OHStcoOBQqVhmgYnw3XFIhkioHjVi1nE/V
-   E+j96XRyIdvmu4vf9eHHmfdDyQ0LGc4vo9nY1UvhyALpHnxnsn3nqGOVK
-   w==;
-X-CSE-ConnectionGUID: GBA3EjZbSbCJiTpnuSne7g==
-X-CSE-MsgGUID: liwDvNAQThSRPz9zvlIZGA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11920"; a="94377840"
-X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
-   d="scan'208";a="94377840"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 03:06:40 -0700
-X-CSE-ConnectionGUID: 3c5miMiZQKqRJM82ONPiOw==
-X-CSE-MsgGUID: HQh3aW2VSY2F9sfdNdsxgA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
-   d="scan'208";a="278854746"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.106])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 03:06:36 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 30 Sep 2026 13:06:33 +0300 (EEST)
-To: Hui Peng <benquike@gmail.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v5 1/3] serial: 8250: hold hash_mutex across IRQ chain
- linking in serial_link_irq_chain()
-In-Reply-To: <20260930041216.155911-2-benquike@gmail.com>
-Message-ID: <494e613e-f841-9942-222c-1488c9802bb3@linux.intel.com>
-References: <20260930041216.155911-1-benquike@gmail.com> <20260930041216.155911-2-benquike@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QDiGOHqI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C7C91F0089D
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 10:11:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790763103;
+	bh=0EWo6p8KlBWCQx6YVQZFYv1sMvH+inX9WO+NPCJKxgw=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=QDiGOHqIeaUrLYTVZDjKmEMNIIf+qilOJOuYM92pXLHSlUdEH7PJ4lSPMvtpI4sV6
+	 m70WxyfzwDFMPKqj0+cpHTW0VkkD6GxOs8cG+mTXytaFjFq2LYVu7a9I+4Ai8+S32d
+	 g+LHsPP5FzZwMNK0tyRCcNWuKYf72Dv+tkInP5LgBos+Yi3M56J4uFbjXNLFwT0iSB
+	 GzxXC+x6k0SEvSzBtQlzAXMu6utdA/kbTpUVpL8f5tJ1rzEcF5O8K2IwsHP79f0iPb
+	 HbmM3nYW5KH1t9eZM1fB9xuVQWnZUOWLjVGdu/G1TiJHnOD+exyH1nbR3uJI1EgI1A
+	 +RIdtypVFGDjA==
+Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5ba3d84150dso409275e87.2
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 03:11:42 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBwy3RBiHbOkKhUzqjTbiAFHbZd+uN/rw/2uwb09fbmkaLrcbc7TNDdGgWvqPtW8ZIPl97qx98X1kQFIgBM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYI5tks7SEX1JmcPj7nCvdsqOee7jYpJRiJWroxQPp8CXWGpkJqV
+	UIQvGqv/x+cgrHGVaKxiAOn6INGvytnazIKfcuHK26PbhWTsGhpyh66du4HH20IvpoXa1UfeYoc
+	MOl+YyCdeZ0VO8PmFvnI4bEsGy3MQlaQ=
+X-Received: by 2002:a05:6512:1284:b0:5b8:eb27:a009 with SMTP id
+ 2adb3069b0e04-5ba403e8c88mr391858e87.17.1790763101738; Wed, 30 Sep 2026
+ 03:11:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1871305287-1790762793=:1755"
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com> <20260930-b4-cs75xx-v1-4-4617c4463529@gmail.com>
+In-Reply-To: <20260930-b4-cs75xx-v1-4-4617c4463529@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 30 Sep 2026 12:11:29 +0200
+X-Gmail-Original-Message-ID: <CAD++jLkXyh9ujjFEE5UwpMnj7Ykgb5_W+Mp-YXBakn5Q=_vj1g@mail.gmail.com>
+X-Gm-Features: AclHuK9D1YrrFJkuaJFhntBMU6VT-QvYR-f9D3TnSmauiV2lOTXiqfdERNyux_Y
+Message-ID: <CAD++jLkXyh9ujjFEE5UwpMnj7Ykgb5_W+Mp-YXBakn5Q=_vj1g@mail.gmail.com>
+Subject: Re: [PATCH RFC 04/10] ARM: cortina: Add support for the CS75xx SoC family
+To: filipp.dunsky@gmail.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Wed, Sep 30, 2026 at 9:00=E2=80=AFAM Fil Dunsky via B4 Relay
+<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
 
---8323328-1871305287-1790762793=:1755
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+> From: Fil Dunsky <filipp.dunsky@gmail.com>
+>
+> The Cortina Systems CS75xx ("Goldengate G2") are network processors
+> with two Cortex-A9 cores, an SCU, GIC, the Cortex-A9 global and private
+> timers and a PL310 L2 cache controller. The CS7542 is used, among others,
+> in the Securifi Almond+ router.
+>
+> The generic DT machine is sufficient for the platform, so only the SMP
+> bring-up needs code: the bootloader parks the secondary core in a WFE
+> loop that polls a global software register, so boot it by writing the
+> physical address of secondary_startup to the register named by the
+> cpu-release-addr property and issuing SEV.
+>
+> The CPU is a Cortex-A9 r2p1, so select the errata workarounds that apply
+> to that revision and can be enabled on a multiplatform kernel. The PL310
+> is r3p2 and needs none of the PL310 workarounds.
+>
+> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
-On Wed, 30 Sep 2026, Hui Peng wrote:
+It's a bit weird to have a mach-cortina when mach-gemini is actually
+also a Cortina SoC.
 
-> In serial_link_irq_chain(), serial_get_or_create_irq_info() acquires
-> hash_mutex to search or allocate a chain instance and drops hash_mutex
-> before returning.
->=20
-> If a concurrent call to serial_unlink_irq_chain() runs immediately after
-> serial_get_or_create_irq_info() returns while i->head is still NULL,
-> serial_unlink_irq_chain() acquires hash_mutex, finds i with
-> i->head =3D=3D NULL, frees the chain structure via free_irq() / kfree(),
-> and removes it from the hashtable. serial_link_irq_chain() then
-> proceeds to scoped_guard(spinlock_irq, &i->lock), dereferencing the freed
-> chain pointer i and causing a slab use-after-free.
->=20
-> Move guard(mutex)(&hash_mutex) to the beginning of
-> serial_link_irq_chain() and rename serial_get_or_create_irq_info() to
-> serial_get_or_create_irq_info_locked() so hash_mutex is held across the
-> entire lookup, linking, and error-path unlinking sequence.
->=20
-> Tested in QEMU against tip of mainline (62f4c998b297, "Merge tag
-> 'parisc-for-7.3-rc5' of git://git.kernel.org/.../parisc-linux")
-> with KASAN enabled by concurrently opening/closing 8250 serial ports
-> sharing IRQ 4 (ttyS0 and ttyS2): on the unfixed kernel KASAN detects
-> slab-use-after-free in serial_link_irq_chain(); whereas with this fix
-> applied, port registration and unregistration run cleanly with 0 KASAN
-> warnings.
->=20
-> Fixes: e91f1ed6c24f ("serial: 8250: fix use-after-free in serial_link_irq=
-_chain")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+Could we call it mach-goldengate?
 
-I'm also pretty sure I've not given my tag for this so why did you add it?
-Never invent Reviewed-by tags on your own.
-
---
- i.
-
-> Assisted-by: LLM
-> Signed-off-by: Hui Peng <benquike@gmail.com>
-> ---
-> Changes in v5:
-> - Rebased cleanly onto tip of mainline commit 62f4c998b297.
-> - Updated patch diff and commit description to align with upstream
->   guard(mutex) refactoring in 8250_core.c.
->=20
-> Changes in v4:
-> - No changes.
->=20
-> Changes in v3:
-> - No changes.
->=20
-> Changes in v2:
-> - Split out from monolithic patch into patch 1/3, add Cc: stable@vger.ker=
-nel.org,
->   and document QEMU test procedure in commit message body, as requested b=
-y
->   Greg Kroah-Hartman and John Ogness.
->=20
->  drivers/tty/serial/8250/8250_core.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/825=
-0/8250_core.c
-> index b875d394796f..e831a8fe9a95 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -130,12 +130,10 @@ static void serial_do_unlink(struct irq_info *i, st=
-ruct uart_8250_port *up)
->   * - find the corresponding info in the hashtable and return it, or
->   * - allocate a new one, add it to the hashtable and return it.
->   */
-> -static struct irq_info *serial_get_or_create_irq_info(const struct uart_=
-8250_port *up)
-> +static struct irq_info *serial_get_or_create_irq_info_locked(const struc=
-t uart_8250_port *up)
->  {
->  =09struct irq_info *i;
->=20
-> -=09guard(mutex)(&hash_mutex);
-> -
->  =09hash_for_each_possible(irq_lists, i, node, up->port.irq)
->  =09=09if (i->irq =3D=3D up->port.irq)
->  =09=09=09return i;
-> @@ -156,7 +154,9 @@ static int serial_link_irq_chain(struct uart_8250_por=
-t *up)
->  =09struct irq_info *i;
->  =09int ret;
->=20
-> -=09i =3D serial_get_or_create_irq_info(up);
-> +=09guard(mutex)(&hash_mutex);
+> +++ b/arch/arm/mach-cortina/platsmp.c
+> @@ -0,0 +1,71 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * SMP support for the Cortina Systems CS75xx SoCs
+> + *
+> + * The bootloader parks the secondary core in a WFE loop that polls a
+> + * global software register and jumps to the address found there once it
+> + * becomes non-zero. The register is described by the cpu-release-addr
+> + * property of the secondary CPU node.
+> + */
 > +
-> +=09i =3D serial_get_or_create_irq_info_locked(up);
->  =09if (IS_ERR(i))
->  =09=09return PTR_ERR(i);
->=20
---8323328-1871305287-1790762793=:1755--
+> +#include <linux/io.h>
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/smp.h>
+> +#include <asm/smp_plat.h>
+> +#include <asm/smp_scu.h>
+> +
+> +static int cs75xx_boot_secondary(unsigned int cpu, struct task_struct *i=
+dle)
+> +{
+> +       struct device_node *np;
+> +       void __iomem *release;
+> +       u64 addr;
+> +       int ret;
+> +
+> +       np =3D of_get_cpu_node(cpu, NULL);
+> +       if (!np)
+> +               return -ENODEV;
+> +
+> +       ret =3D of_property_read_u64(np, "cpu-release-addr", &addr);
+> +       of_node_put(np);
+> +       if (ret) {
+> +               pr_err("CPU%u: missing cpu-release-addr\n", cpu);
+> +               return ret;
+> +       }
+> +
+> +       release =3D ioremap(addr, sizeof(u32));
+> +       if (!release)
+> +               return -ENOMEM;
+> +
+> +       writel(__pa_symbol(secondary_startup), release);
+> +       iounmap(release);
+> +
+> +       /* The secondary core waits in WFE, wake it up */
+> +       dsb_sev();
+> +
+> +       return 0;
+> +}
+> +
+> +static void __init cs75xx_smp_prepare_cpus(unsigned int max_cpus)
+> +{
+> +       struct device_node *np;
+> +       void __iomem *scu_base;
+> +
+> +       np =3D of_find_compatible_node(NULL, NULL, "arm,cortex-a9-scu");
+> +       scu_base =3D of_iomap(np, 0);
+> +       of_node_put(np);
+> +       if (!scu_base) {
+> +               pr_err("failed to map SCU\n");
+> +               return;
+> +       }
+> +
+> +       scu_enable(scu_base);
+> +       iounmap(scu_base);
+> +}
+> +
+> +static const struct smp_operations cs75xx_smp_ops __initconst =3D {
+> +       .smp_prepare_cpus       =3D cs75xx_smp_prepare_cpus,
+> +       .smp_boot_secondary     =3D cs75xx_boot_secondary,
+> +};
+> +
+> +CPU_METHOD_OF_DECLARE(cs7542_smp, "cortina,cs7542-smp", &cs75xx_smp_ops)=
+;
+
+I am OK with this because it's not like we will add hundreds of these,
+I just note that ARM64 has abstracted the spin table handling into a single
+driver used by all such systems:
+arch/arm64/kernel/smp_spin_table.c
+
+But implementing it for ARM is probably overzealous and just a waste
+of everyone's time.
+
+Yours,
+Linus Walleij
