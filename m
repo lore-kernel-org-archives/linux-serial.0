@@ -1,72 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0BB44B8276
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 13:26:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7050483BC3;
+	Wed, 30 Sep 2026 13:42:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790774801; cv=none; b=OnMgGrJIH0ypPIoPBt4/eVXE3ra6j+wJpykyU7mjdg981rLnMOz3wc7fR9sNliptEDMuxIuXyx3HfQfcadYPowq3MEfDeFZZaAlNtKiqVRiGP7x6P1zir2qDgkFVrTgd8CV4BGhFRX/urhUUE+SZklVs+GOFq75Ttj+lVRYPXlQ=
+	t=1790775755; cv=none; b=TUTbUnNR3L+ciqa9iTaOw6CvaLsWFn8uXXixIoZWHtOo3zB/BkdG4/JhFo1gxa2qMAV/gR0qt0MCUhm3wF2D6gPzOsWGwipAwphXPg+kP4LKATUUwYKYKBYEXiA4siVhRZFNZAHCE4Q++o8sux7wmlTP5l8hlyzD3yKCWtRqmKs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790774801; c=relaxed/simple;
-	bh=Vz3sKPQdwVfP958/+GK8R97kTilxpjxUKhWE79sbX1U=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=ViKKBW8imJZ07r9pjJ8LpwgqBWS6kiXY5Be91/uPwiyzuCpP6372tr4Pi1EWQfGUogjBEtlRGEHRukLkvQ3a1uGfgPziLAE/1PsWbcxsZBVBgGDSWG7rnQ3bSgQIknX7sMZ4yZiXJqILUOg9wm3Q2/2xpbniiWd5b1k+goRyqnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f8T55y13; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790775755; c=relaxed/simple;
+	bh=XV0mpdFC3QxRzZCrNzmHDmrAw7sZdhF1tE94FA0c8+8=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=Qdugu34+gkQKx3DDOs0s/D/m1ydpp8ku5R5lvss3/wXstQfdBNL8qFDrghKpAimMaTo9/krK9PM046RxojJMsqWgOWHyw018wpgU8ML4RR4pAxhbIW7/qTmPMc1ubbfeuzeR5ZO5N9J2LUKkATTCsZ6qVFBwW5ogiFop9ZouagI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ThaZCC7D; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f8T55y13"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90BBB1F00893;
-	Wed, 30 Sep 2026 13:26:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790774785;
-	bh=exOpKSVqZSEzkZJ8Efp+gCrucIWIxqPsb5ovHurJvBw=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=f8T55y13LOhdLylT+ii8+iUWuissIXvuKHMoqz5jgSuWQT9vFMJwQIbxd/vMqjs+E
-	 I4uLyYbeONsy3WuSj4VfiY21EVQhQGI0aTEPcmgKxGpEsaGIG+q7BznvxmBHN0lCkv
-	 NcyE/1pjo6wIPMjeq19SaM9KNJHiHfUunpEqI8qXKJOZKVuOB4XKiJb2NzESlyvRAs
-	 79q8mDAtOT3HbUWnzFsOjw0E2q0Wr/Jr+TyjclYTDxeB5q2k7HGrBP5RmblTn0B70q
-	 3kVFvnCqzrZMvdfI5qKvbxOr6Ec3NVRkJAFqZaHKyGUjpXqmNomi/N+UgVe3k4Riuh
-	 GS9Uk1zkgUsrw==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] tty: fix saved termios reset race
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Johan Hovold" <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260930131845.1809256-1-johan@kernel.org>
-References: <20260930131845.1809256-1-johan@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 30 Sep 2026 13:26:25 +0000
-Message-Id: <20260930132625.90BBB1F00893@smtp.kernel.org>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ThaZCC7D"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=hKDQhczJ4TEj8L933bYIEt22bKs3l9H0WA0I42sGdY4=; b=ThaZCC7Dl2INf+1DuuKdWeaBjf
+	kqapaqREhp71gE/kNIrJWD7Ee4qzfObk6Ue6Yht5A1cHfaCqOsLBJ2T+O/T/TCNw8V7R5JFV4PfrS
+	XIfnj7m0I+BUu1hO2Vxua7RJUtucCC9e41Zv02f9sndSTTkWnVl4m7LxGzWSb7MyodBE=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1xBuZf-0000000038A-0cAn;
+	Wed, 30 Sep 2026 09:42:19 -0400
+Date: Wed, 30 Sep 2026 09:42:18 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
+Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+ <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>,
+ <david.laight.linux@gmail.com>, <Maarten.Brock@sttls.nl>,
+ <crescentcy.hsieh@moxa.com>
+Subject: Re: [PATCH v2 RESEND] serial: sc16is7xx: fix TX gap caused by kfifo
+ circular buffer wrap-around
+Message-Id: <20260930094218.07c9c41c368ba8bb69651d67@hugovil.com>
+In-Reply-To: <20260930064938.116227-1-paultyson.mbewe@ziehl-abegg.de>
+References: <20260928094733.09482cd6d6565588e2ecd267@hugovil.com>
+	<20260930064938.116227-1-paultyson.mbewe@ziehl-abegg.de>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-> Resetting saved termios state on device registration is needed where a
-> minor number can be reused for an entirely different device and where
-> the old settings may prevent the port from even being opened (e.g. when
-> CLOCAL is not set).
->=20
-> Not all TTY drivers guarantee that the minor number is no longer in use
-> when registering devices however, something which can lead to a
-> use-after-free when closing a TTY (and saving its termios) races with
-> re-registration.
->=20
-> Add a new TTY_DRIVER_RESET_SAVED_TERMIOS flag to request that any saved
-> termios state is reset on registration and only set it for drivers that
-> make sure that the minor number is no longer in use.
->=20
-> Fixes: 93857edd9829 ("tty: reset termios state on device registration")
-> Reported-by: Chengfeng Ye <nicoyip.dev@gmail.com>
-> Link: https://lore.kernel.org/20260926184154.3017929-1-nicoyip.dev@gmail.=
-com
-> Cc: stable@vger.kernel.org	# 4.12
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+On Wed, 30 Sep 2026 08:49:38 +0200
+Paul Mbewe <paultyson.mbewe@ziehl-abegg.de> wrote:
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+> Hi Hugo,
+> 
+> Sorry about the signature. The mail configuration has been
+> updated for your address and the reviewers CC'd on the patch.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260930131845.1809=
-256-1-johan@kernel.org?part=3D1
+> Could you confirm whether this reply reached you without it?
 
+Hi Paul,
+no problem, signature seems absent, good!
+
+
+-- 
+Hugo Villeneuve
