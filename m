@@ -1,324 +1,177 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE5F13BED69;
-	Wed, 30 Sep 2026 07:14:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49EE844E675;
+	Wed, 30 Sep 2026 07:14:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790752470; cv=none; b=ZZHfvkSNMkqgqU09116uATSc5JoqsbOun/Gw7qFKn2XTTMN2OEq6umGtjsfirzM5GIdJARniby61LGTWntTjlBpQUnTK6HuHIGguTn3keNVLA+A7eOwQRDprSgrVzgp+TXqMQVjJ/DJ6s4f6wGbYnqLN2H4RLFMQf4G5Zv3shUU=
+	t=1790752479; cv=none; b=GfoSfiRyJ/uQd/aaPUrjwm1ewBcJsNtIC8GFwKy7W+ojWwAFByGaBn5MKfWYeQ+nywIXyJ7gqUmCGt5SOczIndZnaH0Kf4UJiGdjsPZDYI3CkG2hvHUFTvDaO1+zCijWlfKiX0FD0HuXg67V3afrPm/dQochF2MFcbtIzVcx5LM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790752470; c=relaxed/simple;
-	bh=ldcs5kckl0jCruCEhlnqzryZeGJdxn8dDtwSpQz59Xg=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=q8VgTN66U1LYF9ank5mVJ2JpLy8rd9/ktzvsGiqs8qnzuFMWjPGXKwVa52V+YVLpMQ7osGCdr9oeCDi3Nc0XKez+tljPWBlDC4bGdm/d+iRihMhlMGRjhIG9moaJpKOZM44c3aEll0PRf6kt3EiMRts7zXsqJqzHWWN/ko6v5CU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YUgqNrbu; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790752479; c=relaxed/simple;
+	bh=XUCScUhJbZDdKQIGVSq2XaSysqBB9gNnQApbYxgPSm8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kEvrjE7xi3t2rZlYgVnPlqCaqb6kN+5pTC+FnHqt7KUOb+EXAK7NCn9VSWJ74HS6uAGoCH4IDEIJHTis85KeU8h7/uESrBpKVWbZTEgoKqEW4rLvjrdD7vuMwVy+nFjwS07Opjms7pyVX1w1N5jDdo0GX9afCd+XG671Obx0Nd0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=mh9GniNN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YUgqNrbu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0354F1F000FF;
-	Wed, 30 Sep 2026 07:14:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790752468;
-	bh=tiFOng4APKsK3PJsMclfvS98wcEbTvqIU6lITxu2ck8=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=YUgqNrbulSRCFRBuMInjMZdUU2Zvt0xEFEhA6mBUJhWd57YJeuIGezIsIus+BBf3g
-	 lYLqiaRu52ipvULAA/yo6D+Y6cipi/Y7e00B/DCfeycZkFN+6P9YdM+nyRZkO/iiCx
-	 sTfyk1YD3LyRwKLZ27oYYi+Mls81Xk5xLdd4jICQhs5SmXibEmtaxheV3h6LltSqGb
-	 Fc4JoeXZplYfRls98u+w/1o3WnQ2eMmCkgEZJ8EizV0/obpZMdO9J8dXGonVG1CgvI
-	 jBvtaFJTeHIkq5kehpVqUcTetnZof37RJfTfQB60k2El7nZcH4Dabwb+46lzmhRSn/
-	 j99p1dnmRPZuQ==
-From: sashiko-bot@kernel.org
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="mh9GniNN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BCD1F000FF;
+	Wed, 30 Sep 2026 07:14:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1790752478;
+	bh=EJOsZWaC6IUUaRjuGy9rJJn3SnTd88gtdaj+lansgUA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=mh9GniNNzA4AYmkAFA/0hRVpMGXcCAexTkHrmE7Ga4vzzd9NMyM5vUKSHmY7ww16j
+	 GpPAfHIU4ixt35UegPzfO1oQ0ThXVsYxuoAJuUDy1W7CVOaUzNrCSvY/Tq4HLPd6qf
+	 sl4fSuxUYyTHKvBXNzT6Yi7Ul7wtWiroo9HJBXOI=
+Date: Wed, 30 Sep 2026 09:14:34 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: filipp.dunsky@gmail.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Drew Fustini <fustini@kernel.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH RFC 07/10] tty: serial: Add Cortina Systems CS75xx UART
  driver
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Fil Dunsky" <filipp.dunsky@gmail.com>
-Cc: robh@kernel.org, conor+dt@kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
+Message-ID: <2026093046-scheme-fastball-59c4@gregkh>
 References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
  <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 30 Sep 2026 07:14:27 +0000
-Message-Id: <20260930071428.0354F1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
 
-Thank you for your contribution! Sashiko AI review found 7 potential issue(=
-s) to consider:
-- [High] tty: serial: TOCTOU race in port ID allocation and error path NULL=
- pointer deref
-- [High] tty: serial: unprotected IE register modification races with conso=
-le
-- [High] tty: serial: missing clock boundary check causes divide by zero
-- [Medium] tty: serial: cs75xx_uart_poll_get_char ignores RXDAT_VALID bit
-- [Medium] tty: serial: TX completion polling timeout is insufficient for 9=
-600 baud
-- [Medium] tty: serial: unbounded RX loop in interrupt handler causes DoS
-- [Medium] tty: serial: stale RX data delivery upon reopen due to missing f=
-lush
---
+On Wed, Sep 30, 2026 at 10:00:06AM +0300, Fil Dunsky via B4 Relay wrote:
+> From: Fil Dunsky <filipp.dunsky@gmail.com>
+> 
+> Add a driver for the UARTs of the Cortina Systems CS75xx (Goldengate G2)
+> SoCs. The block has transmit and receive FIFOs with full/empty status,
+> a 24-bit baud rate divider clocked from the peripheral (APB) clock, a
+> receive sampling point register and one interrupt line per port with
+> per-cause enable and write-one-to-clear status registers.
+> 
+> The driver is a rewrite of the vendor driver shipped with the Linux
+> 2.6.36 and 4.9 based vendor kernels, using the current serial core API
+> (uart_port_tx(), port lock helpers, deferred sysrq handling) and devm
+> resource management. It supports the system console and earlycon.
+> Hardware flow control is not supported.
+> 
+> The ports are named ttyCS so that the driver can coexist with the 8250
+> driver in multiplatform kernels, and PORT_GENERIC is used rather than
+> allocating a new port type.
 
-commit 4691ca0bebc0549ec6e71e453bc7c5a203026946
-Author: Fil Dunsky <filipp.dunsky@gmail.com>
-Date:   Wed Sep 30 07:00:06 2026 +0000
+But even if you build a multi-platform kernel, only one of the uarts is
+going to be on the system, so why have a new name for it?  Can't you
+just use the "default" name instead?  If you do that, what happens?
 
-tty: serial: Add Cortina Systems CS75xx UART driver
 
-This commit introduces a UART driver for the Cortina Systems CS75xx
-(Goldengate G2) SoCs. It utilizes the current serial core API, devm resource
-management, and supports the system console and earlycon.
-
+> 
+> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+> ---
+>  drivers/tty/serial/Kconfig       |  24 ++
+>  drivers/tty/serial/Makefile      |   1 +
+>  drivers/tty/serial/cs75xx-uart.c | 546 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 571 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index bf680d22199..c4239c42190 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1359,6 +1359,30 @@ config SERIAL_CONEXANT_DIGICOLOR_CONSOLE
+>  	  If you have enabled the USART serial port on Conexant Digicolor
+>  	  SoCs, you can make it the console by answering Y to this option.
+>  
+> +config SERIAL_CS75XX
+> +	tristate "Cortina Systems CS75xx UART support"
+> +	depends on ARCH_CORTINA_CS75XX || COMPILE_TEST
+> +	depends on OF
+> +	select SERIAL_CORE
+> +	help
+> +	  Support for the on-chip UARTs of the Cortina Systems CS75xx
+> +	  (Goldengate G2) SoCs, such as the CS7542. The ports are named
+> +	  ttyCS0 to ttyCS3.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called cs75xx-uart.
+> +
+> +config SERIAL_CS75XX_CONSOLE
+> +	bool "Console on Cortina Systems CS75xx UART"
+> +	depends on SERIAL_CS75XX=y
+> +	select SERIAL_CORE_CONSOLE
+> +	select SERIAL_EARLYCON
+> +	help
+> +	  Say Y here to use a Cortina Systems CS75xx UART as the system
+> +	  console. This also enables the early console, which can be
+> +	  selected with "earlycon" on the kernel command line when the
+> +	  device tree chosen node has a stdout-path pointing at the UART.
+> +
+>  config SERIAL_ST_ASC
+>  	tristate "ST ASC serial port support"
+>  	select SERIAL_CORE
+> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> index bba7b21a4a1..81bb5e39aa2 100644
+> --- a/drivers/tty/serial/Makefile
+> +++ b/drivers/tty/serial/Makefile
+> @@ -36,6 +36,7 @@ obj-$(CONFIG_SERIAL_BCM63XX)		+= bcm63xx_uart.o
+>  obj-$(CONFIG_SERIAL_CLPS711X)		+= clps711x.o
+>  obj-$(CONFIG_SERIAL_CPM)		+= cpm_uart.o
+>  obj-$(CONFIG_SERIAL_CONEXANT_DIGICOLOR)	+= digicolor-usart.o
+> +obj-$(CONFIG_SERIAL_CS75XX)		+= cs75xx-uart.o
+>  obj-$(CONFIG_SERIAL_DZ)			+= dz.o
+>  obj-$(CONFIG_SERIAL_FSL_LINFLEXUART)	+= fsl_linflexuart.o
+>  obj-$(CONFIG_SERIAL_FSL_LPUART)		+= fsl_lpuart.o
+> diff --git a/drivers/tty/serial/cs75xx-uart.c b/drivers/tty/serial/cs75xx-uart.c
+> new file mode 100644
+> index 00000000000..c15e2227b97
 > --- /dev/null
 > +++ b/drivers/tty/serial/cs75xx-uart.c
-[ ... ]
-> +static void cs75xx_uart_rx_chars(struct uart_port *port, u32 status)
+> @@ -0,0 +1,546 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * UART driver for the Cortina Systems CS75xx (Goldengate G2) SoCs
+> + *
+> + * Based on the Cortina Systems vendor driver.
+> + */
+
+No copyright info?
+
+> +static void cs75xx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 > +{
-> +	struct tty_port *tport =3D &port->state->port;
-> +	u32 data;
-[ ... ]
-> +	while (!(readl(port->membase + CS75XX_UART_INFO) &
-> +		 CS75XX_UART_INFO_RX_EMPTY)) {
-> +		u8 ch;
-> +
-> +		data =3D readl(port->membase + CS75XX_UART_RXDAT);
-
-[Severity: Medium]
-Could this loop run indefinitely? If a faulty peripheral or malicious
-environment (like a compromised hypervisor) continuously asserts that the
-RX FIFO is not empty, this could trap the CPU in interrupt context,
-leading to a hard lockup. Should we add a maximum quota limit here
-(e.g., 256 iterations)?
-
-> +		if (!(data & CS75XX_UART_RXDAT_VALID))
-> +			continue;
-> +
-> +		port->icount.rx++;
-> +		ch =3D FIELD_GET(CS75XX_UART_RXDAT_DATA, data);
-[ ... ]
-> +static int cs75xx_uart_startup(struct uart_port *port)
-> +{
-> +	unsigned long flags;
-> +	u32 cfg;
-> +	int ret;
-> +
-> +	writel(0, port->membase + CS75XX_UART_IE);
-> +	writel(CS75XX_UART_IRQ_ALL, port->membase + CS75XX_UART_INT);
-
-[Severity: High]
-Does modifying the IE register without acquiring the port lock create a
-race condition? If the console subsystem (like cs75xx_uart_console_write)
-concurrently reads the IE register before this zeroing occurs, and then
-writes the old value back afterward, we could end up with a stale interrupt
-mask being restored.
-
-> +	ret =3D request_irq(port->irq, cs75xx_uart_isr, 0, dev_name(port->dev),
-> +			  port);
-> +	if (ret)
-> +		return ret;
-> +
-> +	uart_port_lock_irqsave(port, &flags);
-> +
-> +	cfg =3D readl(port->membase + CS75XX_UART_CFG);
-> +	cfg |=3D CS75XX_UART_CFG_EN | CS75XX_UART_CFG_RX_EN | CS75XX_UART_CFG_T=
-X_EN;
-> +	writel(cfg, port->membase + CS75XX_UART_CFG);
-> +
-> +	writel(CS75XX_UART_IRQ_RX_NONEMPTY, port->membase + CS75XX_UART_IE);
-
-[Severity: Medium]
-Is it possible that we are unmasking the RX interrupts without draining the
-pre-existing characters in the RX FIFO? Since cs75xx_uart_shutdown leaves t=
-he
-hardware receiver enabled, data might accumulate while closed. Enabling the
-interrupt without flushing the FIFO could cause applications to receive sta=
-le
-garbage data upon reopening the serial port.
-
-> +	uart_port_unlock_irqrestore(port, flags);
-> +
-> +	return 0;
-> +}
-> +
-> +static void cs75xx_uart_shutdown(struct uart_port *port)
-> +{
-> +	unsigned long flags;
-> +
-> +	uart_port_lock_irqsave(port, &flags);
-> +	writel(0, port->membase + CS75XX_UART_IE);
-> +	uart_port_unlock_irqrestore(port, flags);
-> +
-> +	free_irq(port->irq, port);
 > +}
 
-[Severity: Medium]
-It looks like we are not disabling the receiver (CFG_RX_EN) here.
-Does this allow the FIFO to fill with data while the port is supposedly
-shut down?
+Why an empty function?  Can't you just leave it out?
 
-> +static void cs75xx_uart_set_termios(struct uart_port *port,
-> +				    struct ktermios *termios,
-> +				    const struct ktermios *old)
+> +static void cs75xx_uart_break_ctl(struct uart_port *port, int break_state)
 > +{
-> +	unsigned int baud, div;
-> +	unsigned long flags;
-> +	u32 cfg;
-> +
-> +	/* No hardware flow control or mark/space parity support */
-> +	termios->c_cflag &=3D ~(CRTSCTS | CMSPAR);
-> +
-> +	baud =3D uart_get_baud_rate(port, termios, old,
-> +				  DIV_ROUND_UP(port->uartclk, CS75XX_UART_DIV_MAX),
-> +				  port->uartclk / CS75XX_UART_DIV_MIN);
-> +	div =3D DIV_ROUND_CLOSEST(port->uartclk, baud);
-
-[Severity: High]
-Can this code divide by zero? In cs75xx_uart_probe(), port->uartclk is chec=
-ked
-against zero, but not against the minimum required value. If port->uartclk =
-is
-very low (e.g., < CS75XX_UART_DIV_MIN), the maximum rate passed to
-uart_get_baud_rate() will be 0 and the minimum will be > 0.
-
-When min > max, uart_get_baud_rate() can return 0, leading to a
-division by zero in DIV_ROUND_CLOSEST().
-
-> +	cfg =3D FIELD_PREP(CS75XX_UART_CFG_BAUD, div) | CS75XX_UART_CFG_EN |
-[ ... ]
-> +#ifdef CONFIG_CONSOLE_POLL
-> +static int cs75xx_uart_poll_get_char(struct uart_port *port)
-> +{
-> +	if (readl(port->membase + CS75XX_UART_INFO) & CS75XX_UART_INFO_RX_EMPTY)
-> +		return NO_POLL_CHAR;
-> +
-> +	return FIELD_GET(CS75XX_UART_RXDAT_DATA,
-> +			 readl(port->membase + CS75XX_UART_RXDAT));
 > +}
 
-[Severity: Medium]
-Are we missing a check against the CS75XX_UART_RXDAT_VALID bit here?
-If the polling console subsystem invokes this and the VALID bit is not set
-on the data, we might return corrupted or invalid characters to callers
-like kgdb.
+Same here.
 
-> +static void cs75xx_uart_poll_put_char(struct uart_port *port, unsigned c=
-har c)
-[ ... ]
-> +static void cs75xx_uart_console_write(struct console *co, const char *s,
-> +				      unsigned int count)
+> +static void cs75xx_uart_release_port(struct uart_port *port)
 > +{
-> +	struct uart_port *port =3D &cs75xx_uart_ports[co->index]->port;
-
-[Severity: High]
-Is it safe to dereference the cs75xx_uart_ports array element here?
-If uart_add_one_port() fails in cs75xx_uart_probe(), it locklessly clears
-this global array pointer. A concurrent console write could observe the NULL
-pointer, causing a kernel panic.
-
-> +	unsigned long flags;
-> +	bool locked =3D true;
-> +	u32 ie, info;
-> +
-> +	if (oops_in_progress)
-> +		locked =3D uart_port_trylock_irqsave(port, &flags);
-> +	else
-> +		uart_port_lock_irqsave(port, &flags);
-> +
-> +	ie =3D readl(port->membase + CS75XX_UART_IE);
-> +	writel(ie & ~CS75XX_UART_IRQ_TX_EMPTY, port->membase + CS75XX_UART_IE);
-> +
-> +	uart_console_write(port, s, count, cs75xx_uart_putchar);
-> +
-> +	readl_poll_timeout_atomic(port->membase + CS75XX_UART_INFO, info,
-> +				  info & CS75XX_UART_INFO_TX_EMPTY, 1,
-> +				  CS75XX_UART_POLL_TIMEOUT_US);
-
-[Severity: Medium]
-Is the 10000us (10ms) CS75XX_UART_POLL_TIMEOUT_US timeout sufficient?
-If the console is configured to 9600 baud, transmitting a full 16-byte FIFO
-takes ~16.6ms. This would cause the polling to time out before the
-transmission completes, potentially dropping characters or prematurely
-re-enabling interrupts.
-
-> +	writel(ie, port->membase + CS75XX_UART_IE);
-
-[Severity: High]
-Could this unconditionally restore a stale interrupt mask?
-If cs75xx_uart_startup() zeroes the IE register locklessly while this
-function holds the lock, writing the ie variable back here will overwrite
-that zeroed state with the previous (now stale) enabled mask.
-
-> +
-> +	if (locked)
-> +		uart_port_unlock_irqrestore(port, flags);
 > +}
-[ ... ]
-> +static int cs75xx_uart_probe(struct platform_device *pdev)
+
+This feels wrong.
+
+> +static int cs75xx_uart_request_port(struct uart_port *port)
 > +{
-> +	struct device *dev =3D &pdev->dev;
-> +	struct cs75xx_uart_port *up;
-> +	struct uart_port *port;
-> +	struct resource *res;
-> +	int id, ret;
-> +
-> +	id =3D of_alias_get_id(dev->of_node, "serial");
-> +	if (id < 0) {
-> +		for (id =3D 0; id < CS75XX_UART_NR_PORTS; id++)
-> +			if (!cs75xx_uart_ports[id])
-> +				break;
-> +	}
-
-[Severity: High]
-Does accessing the global cs75xx_uart_ports array without locks during probe
-create a race condition? If multiple platform device probes run concurrently
-(e.g., via sysfs bind operations), they could claim the same ID.
-
-> +	if (id >=3D CS75XX_UART_NR_PORTS)
-> +		return dev_err_probe(dev, -EINVAL, "invalid port index %d\n", id);
-> +	if (cs75xx_uart_ports[id])
-> +		return dev_err_probe(dev, -EBUSY, "port %d already in use\n", id);
-[ ... ]
-> +	port->uartclk =3D clk_get_rate(up->clk);
-> +	if (!port->uartclk)
-> +		return dev_err_probe(dev, -EINVAL, "clock rate is zero\n");
-
-[Severity: High]
-As mentioned above in cs75xx_uart_set_termios(), we only check if the clock
-rate is exactly zero here. Should we also ensure the clock rate is at least
-as large as the minimum required divisor to prevent a division by zero late=
-r?
-
-> +
-> +	port->dev =3D dev;
-> +	port->mapbase =3D res->start;
-> +	port->mapsize =3D resource_size(res);
-> +	port->iotype =3D UPIO_MEM32;
-> +	port->ops =3D &cs75xx_uart_ops;
-> +	port->line =3D id;
-> +	port->fifosize =3D CS75XX_UART_FIFO_SIZE;
-> +	port->flags =3D UPF_BOOT_AUTOCONF;
-> +	port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_CS75XX_CONSOLE);
-> +
-> +	cs75xx_uart_ports[id] =3D up;
-> +	platform_set_drvdata(pdev, up);
-> +
-> +	ret =3D uart_add_one_port(&cs75xx_uart_driver, port);
-> +	if (ret) {
-> +		cs75xx_uart_ports[id] =3D NULL;
-> +		return ret;
-> +	}
-
-[Severity: High]
-Is it safe to clear cs75xx_uart_ports[id] locklessly on the error path?
-If the console subsystem is actively attempting to write something, it may
-dereference the global array during or after this assignment, leading to a
-NULL pointer dereference as pointed out in cs75xx_uart_console_write().
-
-> +
 > +	return 0;
 > +}
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260930-b4-cs75xx-=
-v1-0-4617c4463529@gmail.com?part=3D7
+As does this.
+
+thanks,
+
+greg k-h
