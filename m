@@ -1,63 +1,66 @@
 Received: from mail-pz2-f42.google.com (mail-pz2-f42.google.com [74.125.228.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E2BA3E8C64
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 07:48:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D97448B9B
+	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 07:48:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790754536; cv=none; b=oz86IEDAsPBj3RMwD+cT8AYh1G1qXDkyVsLvoqJJ/62Bb1Q232ZZ1FjfYIeGyZnNzzWSGHsm/d95/KM1wzaYXWJ6ccQZhWJeOcalfzMbYMNpjrzLesJSIyRVCZOHIWpXsnK4UQckc2/Ef3Byxba9j7l2s37xPkmDf10w1a24z4E=
+	t=1790754540; cv=none; b=K2F6B03dhZBMfuclUdQplCEVcOGJUPvIS2YiH48uYbor9O4cg+x1E8UxjFOc6j0li28YTSiZswNVENEdBWoz75IiKKriFEq4MhdBoslyKiw0Ah4t/4/PzJs7naGE1GSMrKww6Odm+IS1IHPDk1z/pFbeI/CEyZI/WbRzgwKpAKs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790754536; c=relaxed/simple;
-	bh=eXAaGtfQqZtfHlLvEQ5eAyQ46SAkAH073bIT8yM0wlY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TbH+2rzj0u9ldCtXS6oRY2nkQAv/AKxiq8nKYWnendGATgJc/MGeE37bFeFulp7FTAObWqboGi5Jre/bZG4HmOoKUb+A+DrKPElPtUK+C/mwWZ/AOnjeMqLQHnOw1DpOvcLT6aqkw/e7PS8mgDG/YID6e/mxChx52C9xqXu9Ar0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I89WJoAd; arc=none smtp.client-ip=74.125.228.42
+	s=arc-20240116; t=1790754540; c=relaxed/simple;
+	bh=3w5BbDKPepU8mBMOX3dhCfOjjm8w0wlAQiggXHD5Vmo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FyTQdHMK2gS3+E4SwV8AWyuIeZRDOi63moghJ/0bVm805kG+S8l3WWVRq1LrW4+Cp5n6ejG+AcFJr0SnPAjh3+D9IDKzZHyZHPz+4Z9QL6s3kOI2ySSysTVhfz6hHZuMOaRjh6URGlu+/ZHzFgYlJ+XdrErhXskNGeCYY/IXdjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=omxj08JE; arc=none smtp.client-ip=74.125.228.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I89WJoAd"
-Received: by mail-pz2-f42.google.com with SMTP id 41be03b00d2f7-cc797656e5eso2430490a12.3
-        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 00:48:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="omxj08JE"
+Received: by mail-pz2-f42.google.com with SMTP id 41be03b00d2f7-cc4aa0f1766so2727108a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 00:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790754533; x=1791359333; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=9U104falSUzknxY8qwLcjJ2uwnfV+Zs6GVzKWFFHPQ8=;
-        b=I89WJoAd59z6mSk3ACk7YCNOtw+T1zdDt7nmpwI216pz4E0hbWajrtBs3TmV937WJU
-         0BxAEKh+HT2LhxLgM1QwbgudxKE0wrtYaEJNzSPgt21Q+CdCLgx/QqceQy3bRI5Gpdn1
-         ws3XkKDC7uw0+toxmqq/XcYy5lve96KzIZsMnuA0zDHkIqKlgxasN9gzSd+rmWmkdEBF
-         DyRAJW6a4uWmra81XqqxRRN4Vz4TpqoNULpv8Am4PEVx4CUL6Wm4oXV+rjFYOZWxCr+w
-         13lBKt66vzzF1wsRkUydOWe7Cy1ur+1cYfWCwZiON8J4lBp3NPtS5iGCENc8km55eEpt
-         b2Sw==
+        d=gmail.com; s=20251104; t=1790754534; x=1791359334; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pV8LsaTP1EHfiM4Wd101Evv/UuZGOjLB8O3Pkph9NAU=;
+        b=omxj08JEnqExWRadrfKRD3QoJ6F4Dpq0DD8hmeZYqC44KVa8pndlpPRzn8331Lq1JJ
+         rukBevIlOA7GCch7qNd5kErB/UEw3EPLyJhoAekxeP/2+dusPVW0yBwaQK/RWSQgqkTc
+         77MU9OKaMPQcgCyB73OFCG2xfxSExkGqMhZoIJdbLhdcd9jyUY/TS4dvSvTR70OYrkuM
+         Wh1LGgwFvYhOM1invYUhiJCMoxU/PBCiORZ4c+Qga/yzJP07pcKjNJYl4qiKHOHubWX5
+         TunmJEIkKtPWAwCVJHDko0YXvLbEHNmB2bQQq1SgpkzQIoEcVgXC1z3U9IfauaLER4eb
+         o5UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790754533; x=1791359333;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=9U104falSUzknxY8qwLcjJ2uwnfV+Zs6GVzKWFFHPQ8=;
-        b=rAku4JOD/GcZy2n5WyW8yhTPzo37hnq0MCrzX6cUXph4fL1AnPWKGxXOIBs0VB1Ko8
-         D3M64QTf/xaOW1Dl8FWYLjc2xhJzy4yejgzec8nuMHKoX+ONXtmsVJ1T+kpNOJJZmfhR
-         JzkdlW3vPqSVwlJCXAJdh3S2TXU8E5wj5zqNDMvac5uwNBU8KyIPw+6+RDodiwKJFchT
-         5FC31k1kU3KLbWScHxgwQ+1ps5AewWoGMqIzEBRZkDDNihu3e5oxqIhD8X4DHyQ1tmiO
-         WAmwDCwbNN2AJLik4ayLthsScYbDya+ehN1rdrAn7mwCEdLXlpeEVELYgNRDh24NBxND
-         LH+Q==
-X-Forwarded-Encrypted: i=1; AKwUvBwknIyRW3/5ZkaP1nJJI5fDFehzgA1mo+EaSgniV68AGWkRWhxOBLPY2/bSaGZVhj8MAPfY056bui//dPM=@vger.kernel.org
-X-Gm-Message-State: AFuF++mH0smkgKsHcQ5bLaJ9WAt+/EhxM/zL3vENKhgOkl8GM2ocu6N+
-	rphnztgDZ8le514n8QYN1lqoVNqm213H8YOoVEphDzz4az+QCqr1c9iH
-X-Gm-Gg: AYBFou3EkM04eS6p7obXzr4EyWxGM+D3rRT0R+vH/BjD3YpWbyif3CfHMPpw7vtOuX/
-	o8WxPqNlQ5LK+Du1nQfNX6QMX73fH5JxRhhpuzMf9GX7BHtE8lAzM1RTq97dg0tSeH7tCk6iSiM
-	96hX6IeFcigP6xOU1RFB0sVaShdF5mp7eIvfJQ3Xnw4/lfHfSMAsrN+88O1TlTjLOwc0TcyQPQ6
-	7AOlGqHtDFJL8coWGZJJc6NFps1UMfn3bQdBhGTPYn3yZsT5IPGAMngDbV47TciVhcFkJV92+SG
-	/8jtSRroNIdAsWdzrmhMGum5xS39qIn09qS1+/2WdH51YX4aTpNoajYxhfIhO2zN5bD4eqUCO0V
-	y7bG3DtwzpcAcIipW9omfknzspFankHTpa82lbkFRVVGPQKY8+yCQuvj/gbnUS5PmFAUNkcpTws
-	afPsLm+PJIo9dMdA8YIZMWkwCEkL+qMT4dItUEbwqSwdupMeujJgIFnUXPYBTEmLBDEllpfwU0r
-	yqMBof3o1xGxkS5GX6igwquQAYC8Z94o7L9aJExqGTUHUoia7HvKEJxPiwKzhBGUYy8LszWdxDi
-	17SdCGv0Q/qTNbvDLp4W
-X-Received: by 2002:a05:6a20:734f:b0:3dd:a196:53a8 with SMTP id adf61e73a8af0-3de9e8cf9c8mr532280637.74.1790754533381;
+        d=1e100.net; s=20260707; t=1790754534; x=1791359334;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pV8LsaTP1EHfiM4Wd101Evv/UuZGOjLB8O3Pkph9NAU=;
+        b=PHLY5Bt7UUwUDx+9MYl3xt8h9Ggc4z6UJTR8Zyx7JjiH2Vm/g04aPhCe5+3WqaTPF/
+         XFO3Ado2uSW0AWDdKt9wYhnn61QwVyOB22So1jdUGqH8qJKxkZ0+jRMktRpziFzQvr1Y
+         NO+uW/BwVBdEkwUQNWZymCb5ECflXchcs5AbB+sjQ+R+tX6KefzhlLloz8nlFDXF3TjA
+         hfWN3MIfrvQZFbRt1Riu47sCjaJTGQU/hF5Y56WwByO5jwiRZhVqWqIKXOg3G7atQigS
+         kEATyuRJPeroo9nAtKqNUtTZQdQYuyjHPsj/XpsEka4RSnTS3MNpDUZEgfRlyMYKSkFm
+         P++w==
+X-Forwarded-Encrypted: i=1; AKwUvBwkAPI6AREf0EltjqyM0yv/8xsgm1j7zvMKoXHKTcCS+akA5ET8NKeCWGF82Rho9HsayKrnTZPYGekFthc=@vger.kernel.org
+X-Gm-Message-State: AFuF++lc1ZoWHELjJH5eLMIazoupHuAL+frjRFQ3XAD0BYUOwTvasI9l
+	1zpyJIOswTBVbId2myw4NI4iH3yQA7woYOzIM24j1eTcmBnGUDk4eG6K
+X-Gm-Gg: AYBFou3G+5/YOiSMhyOERzsSWz0d1UzKymntMIlTUr9QRbOwaJ3gVizRdbQnCQkc/9j
+	qZqU7ZlEYUEkkpri9fTtpFu+3XjJWX6crT7ePTH2mOTQx3fytd3Z/hFw9mdTO5elqgg+ipAyQPI
+	y28aYaKBOblumPxDI3qZgv5c50Bype9AVeiDxuyOYZMyp2OV2sQ1/Wz9IrFJVhty9QdJsf0uXZJ
+	msiLEenI/AjELRZv6s50hn1wqqhfUZl4+XXqyTJ3kkYpuyWbxKHVbaZN6Vag+aBJCGheeRkLpTr
+	WkbAOa3ZDOqVwhmzX98WTvDdIU0Jq6DP1iMgNcL8QdP98ksPs/mkX2FjCSvP7Qxo4Zuu9Ih6eEP
+	lluplHuF7X2dP3gKl/IRgXVavzSrLF0qinKoSQTnOZoWO/71xrCls1/uWxL3LAmxLUbKVvfHU8X
+	HckLEzEo9Jy1wXvEJDp+LkL4zAID1rxlVjFDzCELsfNXR8zPLoW+LghQ0Hrj+pukG0fNI2Viow/
+	mRiJ5AAtA7MtCJZVSb467CE+O4d8Xdwrs/o103Jx+gmzCSsSyL2nQVMMe5mg1sZ5AqHltm0bkoJ
+	xfCKLVYeRw==
+X-Received: by 2002:a05:6a21:7001:b0:3de:557e:5ea6 with SMTP id adf61e73a8af0-3de9e8093acmr677760637.27.1790754533970;
         Wed, 30 Sep 2026 00:48:53 -0700 (PDT)
 Received: from phui-2.c.googlers.com.com (25.187.82.34.bc.googleusercontent.com. [34.82.187.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-88725881fa6sm376732b3a.27.2026.09.30.00.48.52
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-88725881fa6sm376732b3a.27.2026.09.30.00.48.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 00:48:52 -0700 (PDT)
+        Wed, 30 Sep 2026 00:48:53 -0700 (PDT)
 From: Hui Peng <benquike@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -68,44 +71,52 @@ Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org,
 	Hui Peng <benquike@gmail.com>
-Subject: [PATCH v6 0/3] serial: fix IRQ chain race, baud fallback, and uartclk overflow
-Date: Wed, 30 Sep 2026 07:48:47 +0000
-Message-ID: <20260930074850.465003-1-benquike@gmail.com>
+Subject: [PATCH v6 1/3] serial: 8250: fix deadlock in serial8250_register_ports()
+Date: Wed, 30 Sep 2026 07:48:48 +0000
+Message-ID: <20260930074850.465003-2-benquike@gmail.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
+In-Reply-To: <20260930074850.465003-1-benquike@gmail.com>
+References: <20260930074850.465003-1-benquike@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-This series addresses three concurrency and integer overflow issues in the
-serial driver core and 8250 driver:
+In serial8250_register_ports(), mutex_lock(&hash_mutex) is acquired while
+holding spinlock_t serial_port_lock during IRQ chain registration:
 
-1. Fix a mutex vs spinlock deadlock in serial8250_register_ports() during
-   IRQ chain setup.
-2. Fix baud rate fallback in uart_get_baud_rate() when custom divisor is
-   in use.
-3. Replace manual baud_base overflow check in uart_set_info() with
-   check_mul_overflow(new_info->baud_base, 16, &uartclk), preventing
-   32-bit unsigned arithmetic wraparound.
+  spin_lock_irqsave(&serial_port_lock, flags);
+  mutex_lock(&hash_mutex);
 
-All 3 patches have been ported to the latest tip of mainline (551c722f4080)
-and dynamically verified in QEMU KVM with CONFIG_KASAN=y.
+Acquiring a sleeping mutex while holding a spinlock causes a
+sleeping-while-atomic bug and potential deadlock.
 
-Changes in v6:
-- Use check_mul_overflow() in patch 3/3 as suggested by Jiri Slaby.
+Replace mutex_lock(&hash_mutex) with spin_lock_irqsave() in
+serial8250_register_ports().
 
-Hui Peng (3):
-  serial: 8250: fix deadlock in serial8250_register_ports()
-  serial: core: fix baud rate fallback in uart_get_baud_rate()
-  serial: core: reject baud_base values that overflow port->uartclk in
-    uart_set_info()
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Assisted-by: LLM
+Signed-off-by: Hui Peng <benquike@gmail.com>
+---
+ drivers/tty/serial/8250/8250_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/tty/serial/8250/8250_core.c |  4 ++--
- drivers/tty/serial/serial_core.c    | 12 +++++++++---
- 2 files changed, 11 insertions(+), 5 deletions(-)
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 9e4f5a2a2eaa..f64a1b0a2eaa 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -102,9 +102,9 @@ static void serial8250_register_ports(struct uart_driver *drv,
+ 	struct uart_8250_port *up;
 
--- 
-2.47.3
+ 	for (i = 0; i < nr; i++) {
+-		up = &serial8250_ports[i];
++		up = &serial8250_ports[i];
+ 		up->port.dev = dev;
+ 	}
+ }
