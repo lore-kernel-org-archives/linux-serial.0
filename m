@@ -1,183 +1,170 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FDBC493648;
-	Thu,  1 Oct 2026 12:55:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8023AEF56;
+	Thu,  1 Oct 2026 12:56:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790859336; cv=none; b=WgIc9cJhHpzIMoEgg3V8AmKqBlvkvuQhInG/hB8y2x+mS23SwS2h9K2TQfLFpd5DFX9H7AU1BrQF1GgHfBplnH8NcdE19zBRkC6GuxJipMfgAEtMl30M7MRXFOvz0LvgeM2vJzfOZR8kD0MpCVemkbOq7tsKYPms2wWObI9j7LY=
+	t=1790859369; cv=none; b=VOP2NkMKIoHvOPEGXuWfsZU4p6M0QchS5lF+OcTBzPuIJi/Z3kUQ4Tv6nG5FL39j728ecDitsxwS/8+m4v9gCEUTII3J6A1mz+Xeb2hG54a07NnzGUnVC5LqiDbafJe/+7ZFkfcJF/KW0y9zpMG82P0H8Q+TYXX4Da6TlVkB4R4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790859336; c=relaxed/simple;
-	bh=o5JKjLjTsTVT6IJH0VVCken8M/g9qZ+pbetUHT/F8PA=;
+	s=arc-20240116; t=1790859369; c=relaxed/simple;
+	bh=lr8mhxzproW+Qgv7R7SpyFbt6jvUf0jjDsRWDMaQp7E=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=oIaorZPiZ3ZIdJm49OqiHQfc2qxkSehxf7OPbZmYxExMKJQShpN8NSQZUE4Ozc4armenq2LgvJ8i5Mv4HVmlYJaHOXDwyvDYHSNOs9a44SFm8rSJb+9imq4av7zunKzx4ReergopkHVEO10qdGQZfIp+T0+eLhExbww5omKJuko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i9+waxcE; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=JsZUPNyhiGHZOpwtGvpm7nQacH+osTWhA0q6xQ3DRJR9hOZ9SKv4rwMPkGq277q7tV7n+BoFG22sO58lUKN40F/fIeFRy0f4p8yJqnVOXzvgHb4hdwTChyB0sdH2ZblMR4Gxp2jAQ5jKVTn+OjsfksaIQd/G6yqzdpT9NeR3VFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OSh6vWIo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i9+waxcE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D01BA1F000FF;
-	Thu,  1 Oct 2026 12:55:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OSh6vWIo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D99071F000FF;
+	Thu,  1 Oct 2026 12:56:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790859335;
-	bh=btn/N0JDwap4s2cW5sFQ1L4RQBJ7RKG8OfKE0MGyaRc=;
+	s=k20260515; t=1790859367;
+	bh=R8qJWUn2+S7UJPBG1ZhM/jt62L4jpx3jXiyLqBVTUMI=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=i9+waxcEfFzOby5W4m9g61S//vITdOkZVYP7EdVPUpugfz0mSYQiSFsYe0QLIUnP1
-	 Piu21vnsQaK8Ugev+3/NSvinFUfziYYT+SjozwL8GnIZzgvQJSyasUlCzC0z4UlRCF
-	 rIaoVun22kVo0oTzmFkDWZ8S/dHjhKFMyrLK0pzyXf/E/vVf6DCLhCPtVSAbyulefZ
-	 Mi/P74e5+tWiPrBL0WjrEAeiI8X3NYvLw80FdpnFAXJTKgzkn9u+C1g0k/d6hjNHuv
-	 2x6raarKtNAM6LkSNGMNUwAtzlv8sM2SZMdfkq0WmiBuYfV0QiWBY3nedmGB4BnjAy
-	 6JvVi+AvlioIg==
+	b=OSh6vWIouumpWK+f+14lEyjM7ZPbL/MGuSU4k3GDwd/Iim+4pfx86lodna9KP2L6U
+	 YoKnYtTUAQ6vUMkmyxp7HWFEbU5CRbXwsM+9xEIES6F6C8jsPuQHQ8Y3HM5zXDBXVK
+	 j/NEtS1IG66MJAo0sHzMZdh3Pr6qrS97IiminKGuFb16Gjw5pCdqwGzNXg2kqDkItV
+	 lJQumbCHNwMSivTHV+huSnOh3gOB5JtauNFkzCQsQe5NOWZrO6hey7c5m0idNTDyjv
+	 D6UuAZLSqOZbz1Ab0oD9sFixb0jOoXdGV2q19/jsWI/G10YkuDSBMxTI6aGp3u0jM+
+	 lXm2IrABQ/xVQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v9 12/15] gpio: pl061: add Ambarella register-layout
- variant
+Subject: Re: [PATCH v9 11/15] gpio: pl061: switch data path to gpio-regmap
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Long Zhao" <longzhao@ambarella.com>
-Cc: conor+dt@kernel.org, linux-clk@vger.kernel.org, mfd@lists.linux.dev, linux-serial@vger.kernel.org, robh@kernel.org, devicetree@vger.kernel.org, lee@kernel.org
-In-Reply-To: <20261001-cv75-v5-v9-12-486cc289a4b8@ambarella.com>
+Cc: linux-serial@vger.kernel.org, robh@kernel.org, linux-clk@vger.kernel.org, lee@kernel.org, conor+dt@kernel.org, mfd@lists.linux.dev, devicetree@vger.kernel.org
+In-Reply-To: <20261001-cv75-v5-v9-11-486cc289a4b8@ambarella.com>
 References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
- <20261001-cv75-v5-v9-12-486cc289a4b8@ambarella.com>
+ <20261001-cv75-v5-v9-11-486cc289a4b8@ambarella.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 01 Oct 2026 12:55:34 +0000
-Message-Id: <20261001125534.D01BA1F000FF@smtp.kernel.org>
+Date: Thu, 01 Oct 2026 12:56:06 +0000
+Message-Id: <20261001125606.D99071F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+Thank you for your contribution! Sashiko AI review found 3 potential issue(=
 s) to consider:
-- [High] gpio: pl061: output state corruption via RMW on Ambarella data reg=
-ister
+- [High] gpio: pl061: UAF due to LIFO devres cleanup ordering
+- [High] gpio: pl061: Missing GPIOCHIP_IRQ_RESOURCE_HELPERS allows HW confl=
+ict
+- [Medium] gpio: pl061: Missing synchronize_irq() causes UAF on module unlo=
+ad
 --
 
-commit b4f961be1d109a1753acf06716b7c68488ad35bd
+commit 0dd970f78f76a57be040a10722f95f7c065440ed
 Author: Long Zhao <longzhao@ambarella.com>
 
-    gpio: pl061: add Ambarella register-layout variant
-   =20
-    Add a 32-bit, 32-line layout with DAT/DIR/IS/IBE/IEV/IE/MIS/IC plus
-    MASK and ENABLE. Probe unmasks the bank and enables the controller.
-    IRQ type changes also clear the pending bit. This derivative does not
-    need write-after-direction or system suspend save/restore.
+gpio: pl061: switch data path to gpio-regmap
+
+This commit migrates the PL061 driver to use gpio-regmap for its data path,
+handling the PL061 quirk where output values must be written after a direct=
+ion
+change. It sets up a custom irqchip and domain attached via gpio-regmap, and
+modifies the interrupt handler to appropriately check regmap reads.
 
 > diff --git a/drivers/gpio/gpio-pl061.c b/drivers/gpio/gpio-pl061.c
-> index 08d45f8923c2a..bbb9eeeb074aa 100644
+> index c821a5117eede..08d45f8923c2a 100644
 > --- a/drivers/gpio/gpio-pl061.c
 > +++ b/drivers/gpio/gpio-pl061.c
-
 [ ... ]
-
-> @@ -318,6 +330,18 @@ static bool pl061_arm_volatile_reg(struct device *de=
-v, unsigned int reg)
->  	}
->  }
-> =20
-> +static bool pl061_ambarella_volatile_reg(struct device *dev, unsigned in=
-t reg)
-> +{
-> +	switch (reg) {
-> +	case AMBARELLA_DAT:
-> +	case AMBARELLA_MIS:
-> +	case AMBARELLA_IC:
-> +		return true;
+> -static const struct irq_chip pl061_irq_chip =3D {
+> +static const struct irq_chip pl061_irqchip =3D {
+> +	.name			=3D "pl061",
+>  	.irq_ack		=3D pl061_irq_ack,
+>  	.irq_mask		=3D pl061_irq_mask,
+>  	.irq_unmask		=3D pl061_irq_unmask,
+> @@ -322,67 +256,187 @@ static const struct irq_chip pl061_irq_chip =3D {
+>  	.irq_set_wake		=3D pl061_irq_set_wake,
+>  	.irq_print_chip		=3D pl061_irq_print_chip,
+>  	.flags			=3D IRQCHIP_IMMUTABLE,
+> -	GPIOCHIP_IRQ_RESOURCE_HELPERS,
+> -};
+> +};
 
 [Severity: High]
-Does marking AMBARELLA_DAT as volatile expose the driver to data corruption
-during read-modify-write operations?
+Does the omission of GPIOCHIP_IRQ_RESOURCE_HELPERS from this irq_chip
+definition detach it from gpiolib's resource locking?
 
-Because AMBARELLA_DAT is marked volatile and .cache_type is omitted below
-in pl061_ambarella_regmap_config (defaulting to REGCACHE_NONE), RMW
-operations on AMBARELLA_DAT (like via gpio_set_value) will bypass the cache.
+Without these helpers, gpiochip_lock_as_irq() is never called when a pin
+is requested as an IRQ, so GPIOD_FLAG_USED_AS_IRQ is not set. Could this
+allow userspace to accidentally reconfigure an active IRQ pin as an output,
+causing hardware conflicts?
 
-Since this is a full 32-bit width register, a RMW operation reads the
-physical state of all 32 pins and writes it back. This could overwrite the
-output flip-flops of all other pins with their current physical state
-instead of their driven values.
-
-Unlike the ARM variant which leverages address-based masking to safely set
-individual bits, it looks like Ambarella relies on a single 32-bit register
-and would strictly require regmap caching (e.g., REGCACHE_FLAT) to perform
-safe RMW operations.
-
-> +	default:
-> +		return false;
-> +	}
-> +}
 > +
->  static const struct regmap_config pl061_arm_regmap_config =3D {
->  	.reg_bits =3D 16,
->  	.val_bits =3D 8,
-
+> +static int pl061_irq_domain_map(struct irq_domain *d, unsigned int virq,
 [ ... ]
-
-This is a pre-existing issue, but I noticed a potential interrupt storm due
-to the incorrect hardware initialization order in pl061_probe():
-
-drivers/gpio/gpio-pl061.c:pl061_probe() {
-    ...
-	if (regs->enable) {
-		ret =3D regmap_write(pl061->regmap, regs->enable, ~0U);
-		if (ret)
-			return ret;
-	}
-	if (regs->mask) {
-		ret =3D regmap_write(pl061->regmap, regs->mask, ~0U);
-		if (ret)
-			return ret;
-	}
-
-	/*
-	 * irq_chip support
-	 */
-	regmap_write(pl061->regmap, regs->ie, 0); /* disable irqs */
-    ...
-}
+> +static void pl061_remove_irq(void *data)
+> +{
+> +	struct pl061 *pl061 =3D data;
+> +
+> +	irq_set_chained_handler_and_data(pl061->parent_irq, NULL, NULL);
 
 [Severity: Medium]
-Can this sequence trigger an interrupt storm that permanently disables the
-parent IRQ line?
+Is a call to synchronize_irq() needed here before proceeding?
 
-The hardware controller is unmasked and enabled globally (via regs->enable
-and regs->mask) before its local interrupts are masked (regs->ie =3D 0). If
-the bootloader or kexec leaves the device with pending interrupts and IE
-set, enabling the controller immediately asserts the IRQ line before the
-driver has registered the chained handler.
+While the chained handler is cleared, there appears to be no synchronization
+with in-flight handlers. If pl061_irq_handler() is running concurrently
+on another CPU, it might still be executing when we proceed.
 
+> +
+> +	for (unsigned int i =3D 0; i < pl061->data->ngpio; i++) {
+> +		unsigned int virq;
+> +
+> +		virq =3D irq_find_mapping(pl061->irq_domain, i);
+> +		if (virq)
+> +			irq_dispose_mapping(virq);
+> +	}
+> +
+> +	irq_domain_remove(pl061->irq_domain);
 
-This is also a pre-existing issue, but I noticed a potential use-after-free
-of the irq_domain on driver teardown in pl061_probe():
+[Severity: Medium]
+If pl061_irq_handler() is still running, could it access this freed domain
+when it calls generic_handle_domain_irq(pl061->irq_domain, offset)?
 
-drivers/gpio/gpio-pl061.c:pl061_probe() {
-    ...
-	gpio_regmap =3D devm_gpio_regmap_register(dev, &config);
-	if (IS_ERR(gpio_regmap)) {
-    ...
-
-	if (irq) {
-		ret =3D devm_add_action_or_reset(dev, pl061_remove_irq, pl061);
-		if (ret)
-			return ret;
-
-		irq_set_chained_handler_and_data(irq, pl061_irq_handler, pl061);
-	}
-    ...
-}
+> +}
+[ ... ]
+> +static int pl061_probe(struct amba_device *adev, const struct amba_id *i=
+d)
+> +{
+[ ... ]
+> +	config.parent =3D dev;
+> +	config.regmap =3D pl061->regmap;
+> +	config.ngpio =3D data->ngpio;
+> +	config.reg_dat_base =3D GPIO_REGMAP_ADDR(regs->dat);
+> +	config.reg_set_base =3D GPIO_REGMAP_ADDR(regs->dat);
+> +	config.reg_dir_out_base =3D GPIO_REGMAP_ADDR(regs->dir);
+> +	config.reg_mask_xlate =3D data->reg_mask_xlate;
+> +	config.quirks =3D data->quirks;
+> +	config.irq_domain =3D pl061->irq_domain;
+> +	config.drvdata =3D pl061;
+> +
+> +	gpio_regmap =3D devm_gpio_regmap_register(dev, &config);
+> +	if (IS_ERR(gpio_regmap)) {
+> +		if (pl061->irq_domain)
+> +			irq_domain_remove(pl061->irq_domain);
+> +		return PTR_ERR(gpio_regmap);
+> +	}
+> +
+> +	if (irq) {
+> +		ret =3D devm_add_action_or_reset(dev, pl061_remove_irq, pl061);
 
 [Severity: High]
-Does registering the IRQ teardown action after registering the gpio_regmap
-cause a use-after-free?
+Can this devres action registration order cause a use-after-free during
+driver unbind?
 
-During driver unbind or probe failure, devm actions execute in LIFO order.
-Because devm_add_action_or_reset(dev, pl061_remove_irq) is called after
-devm_gpio_regmap_register(), the pl061_remove_irq action executes first and
-frees pl061->irq_domain.
+Since devm_add_action_or_reset() is called after devm_gpio_regmap_register(=
+),
+devres will execute pl061_remove_irq() first during teardown because it uses
+LIFO ordering.
 
-Subsequently, devm_gpio_regmap_unregister calls gpiochip_remove(), which
-iterates over active IRQs and calls gpiod_to_irq(), dereferencing the
-already-freed domain. This could be reached by holding a GPIO line event FD
-open from userspace while unbinding the driver via sysfs.
+This means pl061_remove_irq() will run and free pl061->irq_domain, but
+the gpiochip is still registered. When gpio_regmap subsequently unregisters
+the gpiochip, gpiochip_remove() will eventually call
+gpiochip_free_remaining_irqs(), which will attempt to use the already-freed
+irq.domain pointer.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261001-cv75-v5-v9=
--0-486cc289a4b8@ambarella.com?part=3D12
+-0-486cc289a4b8@ambarella.com?part=3D11
