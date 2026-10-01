@@ -1,171 +1,118 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2093149502A;
-	Thu,  1 Oct 2026 20:00:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7FF361DA8
+	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 20:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790884831; cv=none; b=ucfCkWr+nWoB7Nbsj5rfoZq00c2Otja5MVw2cqpCtFauf76ceAYcf083r1mw9hF65gMpxerF0dZSQN49d1PGzX9Se6UVqFVZttHpUa5pnK6JkvZVqVeuohfhj+Z5T3ffGRILXDRaNvJaI6GZ3RAR4KUZvAYkz68WdKApI+LkLQY=
+	t=1790886404; cv=none; b=TVGUZYPo4yn4LeF7DHYKME8MSlxgnNmK55wSf4UerTUsQSptZkZ7kfEHTuTgVwOSU2qbpjmCspD3jQ5cCOFUdBwCxn7UF2OeHGCCosWTyh1VrxCV+IE3w9D549ygsjhz/b38YLzbeqvCysoXZojBWPhsP56aBUj1v9eCxx4vTog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790884831; c=relaxed/simple;
-	bh=lwkq99MWT5s48kWH9YMiB+4nleL/rEG/UUV3yABKlZM=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=CeApc7wbtSyoYuXTtRp2F5FauOxOt5oPt+z6U7zOv4CRxX9m/0/Po+HG5S6PpIXi+wf6+dloTdw1CCm2HHO/jCa7sd4PU1kDnlF/uF4FfEA/TD2y6dkIwb3EV3Z27awmxHN+m613ElznspZz/M809DTWiVxDYUYTfB/gJ89Jd10=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=mxapvqNe; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1790886404; c=relaxed/simple;
+	bh=TDzyHBnvN6Az74PoI0viABsOFItZGrFL39Cl60uyHr8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XVRT37HgVxBQbG46BPgXW/XfEFMfX+HfbU+imbm48Zd12bmD+HA0ANWzhbS+BY0nlSay7hpFUeX8HRQJpfUYJfGFpX4M84vp1Al+aJE8eXpgHbM7ax5F/BZUry5Hw778E+jg2EIWU3a5jrGpyXZXAO7nCKfJqwRJ2TDhQkVYVlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lSQa0Q1T; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="mxapvqNe"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=s+MgTE3OXBsTBgCf7SNKHJD9CWPoxhvXy8xPXrCZJbY=; b=mxapvqNeWcuukz7fIn0FX2TDlj
-	TNSH8gt791Ypxz+8WwcdUx4PHMKuD83qGzClQUK2rDxy1PZbTCD007lrgnGLvCy3bS/hShDf78yiF
-	tNBATzGzbGtUPgNLOrfxNlso+yeY2nyGdDnztFs7nH9JkPRTk57uzYgx5qG2pTJ/7go8=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1xCMx2-000000007Zf-1pO5;
-	Thu, 01 Oct 2026 16:00:20 -0400
-Date: Thu, 1 Oct 2026 16:00:20 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Tapio Reijonen <tapio.reijonen@kolumbus.fi>
-Subject: Re: [PATCH v5 4/8] serial: max310x: wait for TX to drain before
- powering down in shutdown
-Message-Id: <20261001160020.5ba190a2b747f0c66f8b30d7@hugovil.com>
-In-Reply-To: <20260929-max310x-rs485-sw-delay-v5-4-ae46afa583f2@vaisala.com>
-References: <20260929-max310x-rs485-sw-delay-v5-0-ae46afa583f2@vaisala.com>
-	<20260929-max310x-rs485-sw-delay-v5-4-ae46afa583f2@vaisala.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lSQa0Q1T"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBEF91F00893
+	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 20:26:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790886402;
+	bh=cuZLwo8L/Pz3tHEl/pgaDbc4NC6C8bTc4OVbV4XoCzU=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=lSQa0Q1Tmp6AnEKgZnzPKAv/nZxq4L0eN0mmIfFPzFE5VKiKhEGw64PZ7Kest0yXV
+	 RzLDkDkLeYWVXbGEQfwzqJqjYVVNGGYhRgrR4HUFdg4s+OAustLvpWFzE92VIwrb0/
+	 9ZvmBbLQfjnX+M7swxzFDVVEoTPUkJDTYRC8dlpLkW7wTbrvs35hfgqRrt1jOTyFJd
+	 oyENsUwCm/haQNacO7s9VBgPOEqYf5dFgNjh3hFEAW74RIKj7XbxuV330RPHQVL+El
+	 +Ngt2IDbG2nLQoLI4gAr4xzgufiAHYXlwgqjBnar7jYmCiPqHE3X/YbOX++L6davvF
+	 fiRa2L2zsx+rQ==
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3a20f06cce6so34848601fa.1
+        for <linux-serial@vger.kernel.org>; Thu, 01 Oct 2026 13:26:42 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByUTtrdppOl5AUjfHxSutag9UU0sgeJfWNA4rZSUxGZa/JX1V2dhUUhJjqGlrDkD7oU8lCt6Vs0Q483AHA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJx3rp/QInFKrKMl3SKRvlmZUd4WxrB5nLPFdk6Mj0FFgMbvcwi
+	Z5SZNrbdCYj6Gg7wZ60/OiNkcGN8PRoOFjvkAaJJC2YVni8X2oxdmYR7+b4IfCCF9s4rhpT3D/C
+	oI/YYf+E+JJQZh39T55lSJqk/0TouSLI=
+X-Received: by 2002:a05:651c:982:b0:3a7:83fb:a2f4 with SMTP id
+ 38308e7fff4ca-3a783fba4b6mr9981301fa.15.1790886401618; Thu, 01 Oct 2026
+ 13:26:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+References: <20260918-contrib-pg-pixel10-initial-dts-v4-0-745eaca28b1a@linaro.org>
+ <20260918-contrib-pg-pixel10-initial-dts-v4-3-745eaca28b1a@linaro.org>
+In-Reply-To: <20260918-contrib-pg-pixel10-initial-dts-v4-3-745eaca28b1a@linaro.org>
+From: Linus Walleij <linusw@kernel.org>
+Date: Thu, 1 Oct 2026 22:26:27 +0200
+X-Gmail-Original-Message-ID: <CAD++jLkCXt2jPps1+X3gmT-+o_ST59GOT1Huhqx70NK1RDCExQ@mail.gmail.com>
+X-Gm-Features: AclHuK-u9udZl77wTM7_r_7heAhhugb-sGNthmiZZXg0N5M_CZnxPf-YeiEWQxc
+Message-ID: <CAD++jLkCXt2jPps1+X3gmT-+o_ST59GOT1Huhqx70NK1RDCExQ@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] arm64: dts: google: Add initial dts for frankel/blazer/mustang
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
+	Tudor Ambarus <tudor.ambarus@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Drew Fustini <fustini@kernel.org>, Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, soc@lists.linux.dev, 
+	Douglas Anderson <dianders@chromium.org>, Juan Yescas <jyescas@google.com>, 
+	RD Babiera <rdbabiera@google.com>, Brian Norris <briannorris@google.com>, 
+	William McVicker <willmcvicker@google.com>, kernel-team@android.com, 
+	linux-serial@vger.kernel.org, Brian Norris <briannorris@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Tapio,
+On Fri, Sep 18, 2026 at 9:05=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
+.org> wrote:
 
-On Tue, 29 Sep 2026 09:37:58 +0000
-Tapio Reijonen <tapio.reijonen@vaisala.com> wrote:
+> From: Douglas Anderson <dianders@chromium.org>
+>
+> Add initial device trees for frankel (Pixel 10), blazer (Pixel 10
+> Pro) and mustang (Pixel 10 Pro XL). These device trees are enough to
+> boot to a serial prompt using an initramfs.
+>
+> Currently only Laguna B0 silicon found in mass production phones is
+> officially supported. Further revisions such as A0 silicon and EVT
+> devices maybe added in the future if they are useful. As of today,
+> these device trees boot fine on EVT devices with A0 silicon.
+>
+> A few things can be noted about these device trees:
+>
+> 1. They purposely choose to use the full 64-bit address and size cells
+>    for the root node and the `soc@0` node. Although I haven't tested
+>    the need for this, I presume the arguments made in
+>    commit bede7d2dc8f3 ("arm64: dts: qcom: sdm845: Increase address
+>    and size cells for soc") would apply here.
+> 2. Though it looks as if the UART is never enabled, the bootloader
+>    knows to enable the UART when the console is turned on. Baud rate
+>    is configurable in the bootloader so is never hardcoded in the
+>    device tree.
+>
+> Changes by Peter Griffin:
+>  - Remove dtbo overlay approach and add individual board dts
+>  - Update to lga-pixel-common naming like gs101-pixel-common
+>  - Reorder nodes alpha-numerically by the node name
+>  - Add ramoops reserved-memory (tested with console=3Dpstore)
+>  - Add reserved-memory for bootloader & gsa logs
+>  - Add reserved-memory for Android BootLoader ABL (used on Watchdog
+>    reset to extract boolotader logs / parse breadcrumbs / ramdump etc).
+>  - Add osc 38.4Mhz fixed-clock
+>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Co-developed-by: Peter Griffin <peter.griffin@linaro.org>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> Tested-by: Brian Norris <briannorris@chromium.org>
+> Reviewed-by: Brian Norris <briannorris@chromium.org>
 
-> max310x_tx_empty() reports the chip TX FIFO level and nothing else, so
-> both tcdrain() and the tty layer's wait-until-sent on close() return
-> while the final character is still clocking out of the transmit shift
-> register. max310x_shutdown() then powers the port down mid-character
-> and the last byte is truncated on the wire. At 9600 baud the ~1 ms
-> window is easy to miss; at 1200 baud a write()-then-close() reliably
-> corrupts the final byte (observed on the wire: 0x24 transmitted as a
-> 0x04 frame with a framing error).
-> 
-> Wait in shutdown() for the FIFO to drain, bounded by one character
-> duration per FIFO word, plus one more character for the byte in the
-> shift register, before powering the port down. The per-character
-> duration is computed in set_termios() from the frame size and baud
-> rate.
-> 
-> Fixes: f65444187a66 ("serial: New serial driver MAX310X")
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
-> ---
->  drivers/tty/serial/max310x.c | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index f8dad37d017afe5c0b1d36d6239ba05fc5e7aff0..cd3b1913aaadba94805f4728b5eba18e970e34c8 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -302,6 +302,7 @@ struct max310x_one {
->  	struct work_struct	md_work;
->  	struct work_struct	rs_work;
->  	struct regmap		*regmap;
-> +	unsigned int		one_char_duration_us;
+I think I reviewed an older version of this yesterday or
+this morning.
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-char_time_us?
-
-
->  	unsigned int		baud;
->  	bool			tx_break;	/* break_ctl() owns the transceiver */
->  
-> @@ -1020,6 +1021,7 @@ static void max310x_set_termios(struct uart_port *port,
->  				struct ktermios *termios,
->  				const struct ktermios *old)
->  {
-> +	unsigned int frame_bits = tty_get_frame_size(termios->c_cflag);
->  	unsigned int lcr = 0, flow = 0;
->  	int baud;
->  
-> @@ -1132,10 +1134,13 @@ static void max310x_set_termios(struct uart_port *port,
->  	uart_update_timeout(port, termios->c_cflag, baud);
->  
->  	/*
-> -	 * Cache the new baud rate and reprogram the RS485 RTS delays, whose
-> -	 * millisecond-to-bit-time conversion depends on it.
-> +	 * Cache the new baud rate and the time it takes to clock out one
-> +	 * character, then reprogram the RS485 RTS delays, whose
-> +	 * millisecond-to-bit-time conversion depends on the baud rate.
->  	 */
->  	to_max310x_port(port)->baud = baud;
-> +	to_max310x_port(port)->one_char_duration_us =
-> +		DIV_ROUND_UP(USEC_PER_SEC * frame_bits, baud);
-
-Would it be a good idea to if you moved these two lines after
-max310x_set_rts_ctl_params(), then you could probably leave the
-original comments and simply add a new comment to indicate "Compute
-time it takes to clock out one character", simplifying the diff
-(review) and readability?
-
->  	max310x_set_rts_ctl_params(to_max310x_port(port));
->  }
->  
-> @@ -1231,6 +1236,20 @@ static int max310x_startup(struct uart_port *port)
->  
->  static void max310x_shutdown(struct uart_port *port)
->  {
-> +	struct max310x_one *one = to_max310x_port(port);
-> +	unsigned int loops = port->fifosize + 1;
-
-tries?
-
-> +
-> +	/*
-> +	 * The tty layer waits for tx_empty() before close(), but tx_empty()
-> +	 * only reflects the chip TX FIFO - the last character may still be in
-> +	 * the transmit shift register. Let the FIFO drain and the final
-> +	 * character clock out before the port is powered down, otherwise
-> +	 * close() truncates the last byte on the wire.
-> +	 */
-
-Based on these comments, does it mean that the FIFO has already been
-validated empty at this point by the tty layer, so you don't need the
-loop at all, just the unconditional last fsleep()?
-
-> +	while (!max310x_tx_empty(port) && loops-- > 0)
-> +		fsleep(one->one_char_duration_us);
-
-For certain combinations of large fifo_sizes and high-baud rates, that
-could mean a lot of I2C/SPI transactions?
-
-
-> +	fsleep(one->one_char_duration_us);
-> +
->  	/* Disable all interrupts */
->  	max310x_port_write(port, MAX310X_IRQEN_REG, 0);
->  
-> 
-> -- 
-> 2.47.3
-> 
-> 
-> 
-
-
--- 
-Hugo Villeneuve
+Yours,
+Linus Walleij
