@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5239C3EBF18;
-	Thu,  1 Oct 2026 08:59:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 453A14ABBC6;
+	Thu,  1 Oct 2026 09:04:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790845190; cv=none; b=V5x2Hc9xkIgy2Kn/1KeR6qC7DRNoP32OF+8zO92Cwndg9Q5ywErgOeCsdr1/zREn5jyHnmlXw2j8t17EUZZ/qEq8P6rv2kGuVkrhOle1030etjakB3uBHa8VUbfEoVhfng+mNsW+9gOfWvQesktfdpw9ljlL2wxLFdMUVJevWAc=
+	t=1790845471; cv=none; b=f19/CW/+QknPHwNvD6iudOyl3shf9k+ovRKtdcxC4ByeY0db2u72VqDpHCF8PFbDCZ+9GdWNDKK6jr7AcdCEXT/kDJRWrtxbR3yS0mlQ0sR6CBzSdczD8H8/Z3OdeabZW67q/0mG+b02AnMOrQnukCvllLKQlla8kQF+ZRMsnb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790845190; c=relaxed/simple;
-	bh=/n+HpAFyL5opcXfvNs5inPIWYnLZEZ2JOWwSwyIxluo=;
+	s=arc-20240116; t=1790845471; c=relaxed/simple;
+	bh=6MCFSC1KUj53TuQmhb0CWstMdtyRxMhe6lgOArPRSg0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=q9BSAAD8HpTZpY52VdpL9so8/xiMnUUDnL60lPb9GHDMpbMj2Ddz5IhDq/oYBKPvDiVvbKA3yyJbLqxYjw/QROh4XjVuMgc14JQWquIl94MLcdPbohmbPtTLwo/Pxfy0X/wZ7dTDL9ooQZuVWzz8tN2RetUHWmnVWEEcuQ3qGxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=gl5pnPY+; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZdeCPCfmhjH27EJwirfBv+/j0PWXKUCqegpVWLUUcM+6L2GiPwnZjjXMioTOcgviEE0cmUXltRvki1UcpQjalqe2odzoUYAzA0qa1fJi+bDDPs36dyW8wjHO2awJYBlGqm6rCa00j9d3GLBs75utUIh919Ny9udXkmzRM9/kI38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=axTw4JcN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="gl5pnPY+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BAB41F000FF;
-	Thu,  1 Oct 2026 08:59:48 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="axTw4JcN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E651F000FF;
+	Thu,  1 Oct 2026 09:04:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790845189;
-	bh=Qg3Weja5Q3oGkvaEMHZcYe3F1qNOpQXxAR+re6VwDN8=;
+	s=korg; t=1790845469;
+	bh=4YpYHezwgxoGTHIlsA6DaEdtkLqqNTjbmua5P/Qzizs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=gl5pnPY+TWiY33etkY/VLoSqJeVD9QLK0rsqIaNNfIAimk3hMzn9h76h8D1uWGR7o
-	 BY04wSAeIwXRDh2vbBdvHd8XgWI9TbS8KiGhjF86utpbCQU6Au3x8vva3DV7M8iE2c
-	 to1hZK/Ch63Zr+LGAfxBRkCQ0ahopfB7pjd+856g=
-Date: Thu, 1 Oct 2026 10:59:42 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: deller@gmx.de, jirislaby@kernel.org, simona@ffwll.ch,
-	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-serial@vger.kernel.org, sashiko-reviews@lists.linux.dev
-Subject: Re: [PATCH v3 1/5] vt: Add cursor-size helpers
-Message-ID: <2026100134-handwork-detoxify-6888@gregkh>
-References: <20260928085724.41660-1-tzimmermann@suse.de>
- <20260928085724.41660-2-tzimmermann@suse.de>
+	b=axTw4JcNr7YbJcImoqAFXHrte8nS6wZcYZe3lSRpBpNRjUemdYeEECsFrSOQ6GwHj
+	 1zrCwczsjZOvQw5rj317IOJXzV/DgRx/MafewZLV8/Tf323xIJdx0qnlXWskWvNd8B
+	 1sJb1maucR54Kjk1yKLePDJt3xSAyQBbfBVgQTU8=
+Date: Thu, 1 Oct 2026 11:04:23 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Martin Fuzzey <martin.fuzzey@flowbird.group>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: sc16is7xx: fix data corruption due to unexpected
+ xon/xoff
+Message-ID: <2026100117-plywood-earthlike-cb03@gregkh>
+References: <20260923140116.340406-1-martin.fuzzey@flowbird.group>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,51 +40,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260928085724.41660-2-tzimmermann@suse.de>
+In-Reply-To: <20260923140116.340406-1-martin.fuzzey@flowbird.group>
 
-On Mon, Sep 28, 2026 at 10:55:24AM +0200, Thomas Zimmermann wrote:
-> Cursors in the VT subsystem are blocks within a character cell that are
-> filled with the foreground color. The new helpers vc_cursor_start() and
-> vc_cursor_end() return the scanlines in which the cursor block starts rsp.
-> ends. This is compatible with VGA hardware.
+On Wed, Sep 23, 2026 at 02:01:17PM +0000, Martin Fuzzey wrote:
+> The hardware supports automatically sending XON/OFF based on the
+> FIFO status and that is already implemented by the driver.
+> However that capability was not announced with the UPF_SOFT_FLOW bit.
 > 
-> In terms of cursor design, the new cursor-size helpers follow established
-> styles in fbcon. The only exception is in underline cursors for fonts with
-> a size larger than 10. The underlining dash is now one pixel closer to
-> the font-glyph data, so that the cursor looks less detached. This follows
-> the style used by vgacon.
+> When the port is opened with the default of XON enabled the driver
+> configures that in the hardware.
+> If userspace does not want XON/OFF (which is normally the case) it will
+> use TCSETS to disactivate it. However the serial core optimises this
+> to only notify the driver if someting imporant has changed, and for
+> XON/XOFF thit is only if the  driver declares UPF_SOFT_FLOW.
 > 
-> Users control the cursor size with the vt module's parameter cur_default
-> or with the ESC sequence \e[?Nc, where N is the cursor-size constant. In
-> case of an invalid setting, the new helpers fall back to cur_default and
-> then underline cursors; in this order.
+> So we end up with unwanted XON/XOFF in the data stream.
 > 
-> Similar code in vgacon and fbcon ignores the cursor's default size stored
-> in vt.cur_default. The consoles default to full-block cursors, while vt
-> defaults to underline cursors. VGA BIOSes also tend to use underline by.
-> default. Upon initialization vt applies its default to the console, but
-> each console might fall back to it own default. For example, running the
-> ESC code from above with the invalid constant of 8 magically flips the
-> cursor from underline to block size on vgacon. Another call with N set
-> to 0 (i.e., default) magically flips it back to underlyine. Making
-> underline the new default everywhere harmonizes vt, fbcon and most VGA
-> BIOSes.
+> The problem only occurs if nothing else needed to be set by termios,
+> ie if the user space requested values are the same as the default values,
+> except for XON/XOFF.
+> Since the default speed is 9600 this means that the problem only occurs
+> when requesting 9600, otherwise the call to the driver will be made to
+> change the speed, and that will also clear the XON/XOFF.
+> As 9600 is quite rare these days that probably explains why this hasn't
+> already been seen.
 > 
-> v3:
-> - mention user interfaces to control cursor size in commit message (GregKH)
-> - elaborate defaults (GregKH)
-> - move retry logic into helper
-> - handle CUR_DEF
-> v2:
-> - export non-font interface for vgacon
-> - avoid interference from concurrent user space (Sashiko)
-> - fix function docs (Sashiko)
+> It also only occurs on the first port open after boot since the subsequent
+> opens will use the "logical state" set by TCSETS but not communicated to
+> the driver the first time.
 > 
-> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-> Reviewed-by: Helge Deller <deller@gmx.de>
+> Signed-off-by: Martin Fuzzey <martin.fuzzey@arrive.com>
+> Cc: stable@vger.kernel.org
 > ---
->  drivers/tty/vt/vt.c            | 104 +++++++++++++++++++++++++++++++++
->  include/linux/console_struct.h |   7 +++
->  2 files changed, 111 insertions(+)
+>  drivers/tty/serial/sc16is7xx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 9b152ead050f..f0a9a3dcd0e4 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1485,7 +1485,7 @@ static int sc16is7xx_setup_channel(struct sc16is7xx_one *one, int i,
+>  	/* Initialize port data */
+>  	port->type	= PORT_SC16IS7XX;
+>  	port->fifosize	= SC16IS7XX_FIFO_SIZE;
+> -	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+> +	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY | UPF_SOFT_FLOW;
+>  	port->iobase	= i;
+>  	/*
+>  	 * Use all ones as membase to make sure uart_configure_port() in
+> -- 
+> 2.25.1
+> 
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Does not apply to the tty-linus branch :(
