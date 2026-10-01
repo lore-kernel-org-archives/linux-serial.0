@@ -1,197 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from vsvhrvbk.outbound-mail.sendgrid.net (vsvhrvbk.outbound-mail.sendgrid.net [134.128.88.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597EB4078D5
-	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 09:59:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2956F4D6C4A
+	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 10:05:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.128.88.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790848752; cv=none; b=pRTxL1xXSKNilmTxRgpB/iYwJpRHb9T4btlYaimp7rO6Jenom1wdvNpndB4LpfR9lRly1VU0k8uQulZ/ndwTu6KEv+vm+nKTLVBjwva7Tb8CXoa7dZdMNb4quCyN7rTQyfDnYYQkDQ9XKxoa6Mn8ci3ZHJguYPY3lG7LL+dvTp8=
+	t=1790849144; cv=none; b=G5yQYWlfIfwCHEXSk+kt3k0I6iFl6lyGsACr5maA7d/+zP41GMB6+UAU4+s+P+J3ao1BSD1WV7x5pP1bCRumi40VJDoAcaiNlwEJgRm5UEQU3+zqGkbnIhK8WVw5web/jvtqz8ZMcMC38dPFUfkpAvcf83J9tk3DVQxRwB6rKzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790848752; c=relaxed/simple;
-	bh=gmDg5X138LaqCbpBrQyuawt0nVtYZEJaS9q3BjanmoM=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=IfPgh2q87EkyiHWXjtRtzFtWMVqE6vfMD2+qnJTVq+iv33GGzDNwLv2IBBZSqrAebG2rX0Gxp0XyVqMUSHMznJzzQIY4j/ECyP6Xn4iuTDjDerrkBh3T/oZIHmWGf33PfGpb1uLpY0OXyHm9NZQ61maHkRQiki8tiHiJoEJ/IfQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SIMObqbc; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790849144; c=relaxed/simple;
+	bh=JayDvb+NMe0QFgGgdXJR+wsVQ6GU/3Ar1ygT39VoP7c=;
+	h=From:Subject:Date:Message-Id:MIME-Version:To:Cc:Content-Type; b=D8snk9V8uxkFzgrBTIuPcBuazXFIaI0oa4TeUClRvREfEGpVTtxw5Izer8wLyYqVwe9JamkBuN3NR0BL7tclpU0hTTnLfjJyqjwlPSE/xv6zN/8apvqHKY4ACOUnMgCOinpmF5oOIjSg1E9r5s8U47JFGfe75SkPHm3EkFNdvug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=flowbird.group; spf=pass smtp.mailfrom=em8284.flowbird.group; dkim=pass (2048-bit key) header.d=flowbird.group header.i=@flowbird.group header.b=EMPyaBfe; arc=none smtp.client-ip=134.128.88.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=flowbird.group
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=em8284.flowbird.group
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SIMObqbc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC4B1F000FF;
-	Thu,  1 Oct 2026 09:59:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790848750;
-	bh=7AGC/v63G2sKe4j4nWex6odS3rIyY+va2HnUbR9nrmM=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=SIMObqbcSpmfx6yPcwqObShD1Gc6Mfsknxk8ZSgBC6VvFObXqFHiAam4fngt2aeQp
-	 Eo+apnPFIMYChvt7eqUaFOi6Wt1WW4RgAodMLgqyGadCujEV+wO9YFTrLAq2YWr/sU
-	 xSMJZ5HUN3TSvHLFvmuxSYvC5Ym0M/55jGPZtQNUyW9dSwRod8WQ+0WjXVRDO2Ga3U
-	 fN8MUcN/gSti/aIlEQTIx/s8cqneDif4mLBlEyPTXYm5tMNas9MqezZnpuhUQyOXIy
-	 xjJWqCwwtF81VyIXsroxundKGYkNOqdkh4TXCxhWH0diAag6cpqkIxBcnhE1sNSKyF
-	 jCOeRMIjBi8Bg==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 1/1] braille: nbcon: Allow to use a serial console
- with NBCON API as Braille console
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Petr Mladek" <pmladek@suse.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261001093946.112999-2-pmladek@suse.com>
-References: <20261001093946.112999-1-pmladek@suse.com>
- <20261001093946.112999-2-pmladek@suse.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 01 Oct 2026 09:59:10 +0000
-Message-Id: <20261001095910.9AC4B1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=flowbird.group header.i=@flowbird.group header.b="EMPyaBfe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flowbird.group;
+	h=from:subject:date:mime-version:to:cc:content-transfer-encoding:
+	content-type:cc:content-type:date:from:subject:to;
+	s=s1; t=1790849135;
+	bh=dkh+iQGMnw9T+8ze7wszRjMKumqhhWgFa9I9djiFz1Y=;
+	b=EMPyaBfervbdr3JATG+AyELV9hfoKl/IlypTz8Qx6AVI9gd5l9YESR0Z/R63wPdoq8iS
+	sjhlFOdfQb9sbJ8KHJKixHpv5rgmqdgZ1yMFPNlfPRBOwtFiO3bA9rOotkf3P16idwx+yD
+	mZvBphVZFuFkGpE1SrVG0PQc1KK9LXX1ss4OJv0ym9fuQtariiWq/Iwu1/DdZOaN8/ZTrE
+	n4PFDRo17e8rINsYVXftxqjT0QyzK5b6k/TB3s97uHnMFIWWDQS5lSqpdnv+ho9jS4/2LJ
+	c8UQCiqdKyOcQ0Hq1kEGKtmo30fkgolxw4VHpOWEV5KWiIbP/OX0TbXJeqGw+q6w==
+Received: by recvd-5bb5b9cb76-dn8gx with SMTP id recvd-5bb5b9cb76-dn8gx-1-6ABE306F-75
+	2026-10-01 10:05:35.701443327 +0000 UTC m=+147873.877541912
+Received: from FR-BES-DKT15120.home (unknown)
+	by geopod-ismtpd-5 (SG)
+	with ESMTP
+	id BCf2UazxRLSlh73RSXbOIg
+	Thu, 01 Oct 2026 10:05:35.455 +0000 (UTC)
+From: Martin Fuzzey <martin.fuzzey@flowbird.group>
+Subject: [PATCH v2] serial: sc16is7xx: fix data corruption due to unexpected
+ xon/xoff
+Date: Thu, 01 Oct 2026 10:05:35 +0000 (UTC)
+Message-Id: <20261001100534.1225894-1-martin.fuzzey@flowbird.group>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-SG-EID: 
+ =?us-ascii?Q?u001=2EmxcfyuLMH4=2Fbg2doT3ED5Nkn+NRIhYpRg=2FjjzcGJxXskVm5GzbVM6ryOL?=
+ =?us-ascii?Q?ZDTHCknSk3Bx4wVetjJrUM6AGHj5hDGo6NZ5Elh?=
+ =?us-ascii?Q?umy6VTycgROQXZu1cPemWML4O1jP1wVI8AfgxFJ?=
+ =?us-ascii?Q?ClY0Rnb4GCFdsA5jGZ65krRICS9MGZDP3BwO4hH?=
+ =?us-ascii?Q?hmXIGhmscaG5MXqmdePL9VWQdORoq9YsZc5eAIZ?=
+ =?us-ascii?Q?wcOFb1+i16royDmkZ2vyVHDu5rXkuNkf8q48GY0?=
+ =?us-ascii?Q?AEPbePtmh2p61AIKHzURsfZ7HA=3D=3D?=
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve
+	<hvilleneuve@dimonoff.com>, Jon Ringle <jringle@gridpoint.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+X-Entity-ID: u001.LMXSJIKpad5A1O6egCWHyQ==
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 
-Thank you for your contribution! Sashiko AI review found 5 potential issue(=
-s) to consider:
-- [High] vt/braille: sleep in atomic context via nbcon task callbacks
-- [High] vt/braille: infinite busy-loop deadlock during concurrent panic
-- [Low] tty/sifive: build failure due to unlinely() typo
-- [Low] printk/8250: linker error due to missing EXPORT_SYMBOL_GPL
-- [Low] vt/braille: uninitialized variable locked compiler warning
---
+The hardware supports automatically sending XON/OFF based on the
+FIFO status and that is already implemented by the driver.
+However that capability was not announced with the UPF_SOFT_FLOW bit.
 
-commit cad32ed5b6a2a2082f9354528d2e20acb9b2661a
-Author: Petr Mladek <pmladek@suse.com>
+When the port is opened with the default of XON enabled the driver
+configures that in the hardware.
+If userspace does not want XON/OFF (which is normally the case) it will
+use TCSETS to disactivate it. However the serial core optimises this
+to only notify the driver if someting imporant has changed, and for
+XON/XOFF thit is only if the  driver declares UPF_SOFT_FLOW.
 
-braille: nbcon: Allow to use a serial console with NBCON API as Braille con=
-sole
+So we end up with unwanted XON/XOFF in the data stream.
 
-This commit allows serial consoles using the NBCON API to act as Braille
-consoles. It simulates the original locking by taking the device lock and
-acquiring the nbcon context, and it updates existing serial drivers to avoid
-newline prepending when used as a Braille console.
+The problem only occurs if nothing else needed to be set by termios,
+ie if the user space requested values are the same as the default values,
+except for XON/XOFF.
+Since the default speed is 9600 this means that the problem only occurs
+when requesting 9600, otherwise the call to the driver will be made to
+change the speed, and that will also clear the XON/XOFF.
+As 9600 is quite rare these days that probably explains why this hasn't
+already been seen.
 
-> diff --git a/drivers/accessibility/braille/braille_console.c b/drivers/ac=
-cessibility/braille/braille_console.c
-> index 06b43b678d6ea..78611019b671e 100644
-> --- a/drivers/accessibility/braille/braille_console.c
-> +++ b/drivers/accessibility/braille/braille_console.c
-> @@ -62,14 +62,45 @@ static void braille_write(u16 *buf)
->  {
->  	static u16 lastwrite[WIDTH];
->  	unsigned char data[1 + 1 + 2*WIDTH + 2 + 1], csum =3D 0, *c;
-> +	struct nbcon_write_context wctxt =3D { };
-> +	unsigned long flags;
-> +	bool locked;
+It also only occurs on the first port open after boot since the subsequent
+opens will use the "logical state" set by TCSETS but not communicated to
+the driver the first time.
 
-[Severity: Low]
-Could this trigger a -Wmaybe-uninitialized compiler warning?
+Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc: stable@vger.kernel.org
+---
 
-The compiler evaluates two independent calls to panic_on_this_cpu() in this
-function. Because panic_on_this_cpu() reads an atomic variable, the compiler
-may consider execution paths where the first check is false (skipping
-initialization of the locked variable) and the second is true (reading the
-locked variable).
+ V2: rebase to correct tree, add Fixes tag
 
-Should the result of panic_on_this_cpu() be cached in a local variable?
+ drivers/tty/serial/sc16is7xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[ ... ]
-> +	if (braille_co->flags & CON_NBCON) {
-> +		if (panic_on_this_cpu()) {
-> +			local_irq_save(flags);
-> +			locked =3D nbcon_braille_try_acquire(braille_co, &wctxt);
-> +			/* NBCON API strictly requires the ownership. */
-> +			if (!locked) {
-> +				local_irq_restore(flags);
-> +				return;
-> +			}
-> +		} else {
-> +			braille_co->device_lock(braille_co, &flags);
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 296079c16fdb..7ddc8a38adab 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1516,7 +1516,7 @@ static int sc16is7xx_setup_channel(struct sc16is7xx_one *one, int i,
+ 	/* Initialize port data */
+ 	port->type	= PORT_SC16IS7XX;
+ 	port->fifosize	= SC16IS7XX_FIFO_SIZE;
+-	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
++	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY | UPF_SOFT_FLOW;
+ 	port->iotype	= UPIO_BUS;
+ 	port->rs485_config = sc16is7xx_config_rs485;
+ 	port->rs485_supported = sc16is7xx_rs485_supported;
+-- 
+2.25.1
 
-[Severity: High]
-Does this sleep in an atomic context?
-
-braille_write() is invoked from keyboard_notifier_call() via the
-keyboard_notifier_list atomic notifier chain with local interrupts disabled.
-The device_lock() callback is documented as a task-context API that may
-block (e.g., using a mutex). Is it safe to call it here?
-
-> +			while (!nbcon_braille_try_acquire(braille_co, &wctxt))
-> +				cpu_relax();
-
-[Severity: High]
-Can this loop cause a deadlock during a concurrent panic?
-
-If CPU A runs braille_write() in the non-panic path and enters this loop,
-and concurrently CPU B triggers a panic and acquires the console context
-with NBCON_PRIO_PANIC, CPU A will attempt to acquire with NBCON_PRIO_NORMAL
-which unconditionally fails against panic priority.
-
-Because braille_write() runs with local IRQs disabled, CPU A would spin
-infinitely and could never be interrupted by the panic IPI from CPU B.
-
-[ ... ]
-> @@ -102,7 +133,27 @@ static void braille_write(u16 *buf)
->  	*c++ =3D csum;
->  	*c++ =3D ETX;
-> =20
-> -	braille_co->write(braille_co, data, c - data);
-> +	if (braille_co->flags & CON_NBCON) {
-> +		nbcon_write_context_set_buf(&wctxt, (char *)data, c - data);
-> +		if (panic_on_this_cpu())
-> +			braille_co->write_atomic(braille_co, &wctxt);
-> +		else
-> +			braille_co->write_thread(braille_co, &wctxt);
-
-[Severity: High]
-Does this also sleep in an atomic context?
-
-Similar to device_lock(), the write_thread() callback is strictly a
-task-context API. Calling it from the atomic notifier context could lead
-to deadlocks or might_sleep() splats.
-
-[ ... ]
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index 45dc9ab5bfd87..9019b2fe221f0 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3432,8 +3432,11 @@ static void __serial8250_console_write(struct uart=
-_8250_port *up,
->  	 * If the console printer did not fully output the previous line, it
->  	 * must have been handed or taken over. Insert a newline in order to
->  	 * maintain clean output.
-> +	 *
-> +	 * Braille consoles are an exception. The serial port is not used
-> +	 * for printk(). The driver is supposed to write exactly what it gets.
->  	 */
-> -	if (!up->console_line_ended) {
-> +	if (unlikely(!up->console_line_ended && !nbcon_write_context_is_braille=
-(wctxt))) {
-
-[Severity: Low]
-Could this result in a linker error for modular builds?
-
-__serial8250_console_write() calls nbcon_write_context_is_braille(), but
-the latter is not exported via EXPORT_SYMBOL_GPL() in kernel/printk/nbcon.c.
-Because the 8250 driver can be built as a loadable module=20
-(CONFIG_SERIAL_8250=3Dm), will this break the build due to unresolved
-external symbols?
-
-[ ... ]
-> diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-> index 5d76f04736260..9d67ee3561d60 100644
-> --- a/drivers/tty/serial/sifive.c
-> +++ b/drivers/tty/serial/sifive.c
-> @@ -821,7 +821,7 @@ static void sifive_serial_console_write_atomic(struct=
- console *co,
->  	ier =3D __ssp_readl(ssp, SIFIVE_SERIAL_IE_OFFS);
->  	__ssp_writel(0, SIFIVE_SERIAL_IE_OFFS, ssp);
-> =20
-> -	if (!ssp->console_line_ended)
-> +	if (unlinely(!ssp->console_line_ended && !nbcon_is_braille(co)))
-
-[Severity: Low]
-Does this code cause a build failure?
-
-This looks like a typo ("unlinely" instead of "unlikely"). Because the macro
-is undeclared, does this halt compilation when CONFIG_SERIAL_SIFIVE is
-enabled?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261001093946.1129=
-99-1-pmladek@suse.com?part=3D1
