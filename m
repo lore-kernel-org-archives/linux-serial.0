@@ -1,282 +1,279 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45825495040
-	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 12:01:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AEDE3451A9;
+	Thu,  1 Oct 2026 12:41:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790856100; cv=none; b=RPSSrz8rhQovaYKkYp3EjY7jjEby6Z4OMvI0kEP3daZE+L96nd5yz8zS2BKh1srFhJI2vrhMaAtLUhFJr/rH037IJ8LWNsZg0bkpNIkuljNeW3xxtq1eFWe+cTl/Uqox+OxXve8m9svuvnMVUx2wgoAjrmjJiMZKSblz7XJNrOc=
+	t=1790858460; cv=none; b=SbIPFKSzr12pHVQGoGbtXc2gJNs02JQlhrc43/zAEFz/GlyMmoNtMyMMC9pbTewAKNG2UEKBL7pmxa+SCQ0F/9lV7z0aOdLIX6pzRdW/DLZIvaeLl4+WL+MCK3iDf+AZTRBQiaLl10KPywcYdM8lBHuu+pZEXAjt1UDTeScegFE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790856100; c=relaxed/simple;
-	bh=oadv2PoCoCr6Yw+lNdg8hGXm6C2bTN2gb1khZEANmEY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E//lu35NADI83e+g8i644ZlcVov84nzvaII7WfyCAlbVf5T1tNOkYjNlweNDpuhiW9jVONJfFrlqGD/+LLK8/0CeYj9/yXi2IeWK+rwRxYtRzgE410bIF1YqW4RuhTyRwHobNFxgHxrq9bMs8pg2m+w9kRbWm5DoLnLw+GhoCtQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=R5RTL6B+; arc=none smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1790858460; c=relaxed/simple;
+	bh=coHglYm9+1GQYQb+OpOOg0LrOVVxDuyh/0xYFK/oIn0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=gUsKucSTwVZuavCfm1X7OYkKVIw1/Q/cOZSVqHC3eMElRKpNKdNUf4KZTQ73QvRI6gPDS1iRAAlpdxpb1YlT5E2Vx7ZBlcFSWKo67MkaNEMRZz0/VCC6nqZ6IadP/OxQZHDJmL+hVSs+/7Q1xLIb/GgIi4a7BTDY0yfIaw4fVfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GiTnOT6H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="R5RTL6B+"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49e6598dd44so40329645e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 01 Oct 2026 05:01:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790856095; x=1791460895; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=5Qyf4I107j47S4IbTlOua/eHiQIvNfJl9DXP+9jIXXs=;
-        b=R5RTL6B+bb4TUpnVPSbUAGbTA6FzcGsHMkhKhA10q07j1k2gyAXNzzrlvWnetCzhT5
-         Pv7DK+8gsKeRoa6oTxBDP4hV6Sx6fkP7xRubuKpmz46peyM1N+AnG19vH45a2HE03SVJ
-         oIPamhU04QAiq2/v8DBgEZsPtKTWGMI/mCjps2fzlW7tKTnax5DgkeMQVdyQoVh1eUmW
-         ekhHVTxSJ6LI7IyhhBck7l7De7xk/2vgJG3BgI3UUPSjkVn7dP7M0H/cON3FJUepny+v
-         1bRZayZdGKyBUTUz/jDW/D0FIjtLuckufqUVVKjnuVjHF11u4SjlBzfDU6EibSr5mo8H
-         unkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790856095; x=1791460895;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=5Qyf4I107j47S4IbTlOua/eHiQIvNfJl9DXP+9jIXXs=;
-        b=FWV4CVtuMnZR6mWvR5XYgtTFJKeI40U9Z6+oWYDATUd7VrHMvLJUs8RxNwZSwxiVtY
-         zwFN5c9vhYTI8CSGjjXuHYQQ4OecA+u5MGarMXnTOT3gXDKbZbX2yr2hYNW8gLR4i26N
-         F6EMyxlin+7xSla5nRN/zg0PGxGvubcW9+fAgK0BJ/tOtofIeQIrjK+6J3TuQjsAM+Zk
-         3IbWi4Lm4bHxR+hEC3yt1PCloIlbSjbp1OgVIjwbCoebvkUt8u+zSW1mh/UqNzKyWhDM
-         OAeFgDmmhW2laVpgB9CqXs2BNxlgYsh4gVsIXKjchgh1m4+JdIcZetfI+7s82JJsQjsW
-         c2lg==
-X-Forwarded-Encrypted: i=1; AKwUvBzXV6SvbzZSUUgMQthVqDcHqJabj5yKMjGy2V+i22FcJ2u0/yQVijsauJWaZIV76Ma+c1L6N/MwWjNRbiY=@vger.kernel.org
-X-Gm-Message-State: AFuF++kBmvPBPONOF7sletyf5rQQKYyiT4bigow//O1QHxXLKFZGi4V/
-	y74RR73uy9+0xhmeavCeDIou/0/PqRHS697QO6vTnDKQ23IzGtzsXhmcWcXnZ1KbK+s=
-X-Gm-Gg: AYBFou3bYeh96bu/DHOihwo6IpPQpgvVhwdC98z445deppNIfHAEdB+KsLqKu7MF5J9
-	OZ/GkEe+PuZQ5nbfnMrnVlrqOsOpDVBS4Pp496ZkgmiHHfejVCKk6eIij3/ktSQMZzdxmL2gmpA
-	Ma0W6n42osN5grHdJBJ0LeR6ADMbJcet7/ODLqWXJKAwiiG7+2LAxgIHg3O+zFM3T1tsnnAitq/
-	oXQ2VclHS8J4vEVIA/OHeLDfR6M4njwRogtWEd/HpaVaNWVplugH4uKbfANtGXlnklBo1Iofqnt
-	Jvq3l51xuOQ3WCrSFKLaq+t4BQo/dpURp62z+X8gMOITmcCkfZNw13vLZ13sZfynxsdFQfFgSVI
-	NxEi4wYXB6ZHO2aZ2IjN2kaCTD14FHBk7U4QeJzkEW7PpaMp7eivN/WjC6gKiC6UQO2HDF12sIX
-	uRlmsEBoV4r5BwHfV0t+gaUht8imn8zJv9cRalPN7QZbqu1/MeOfOYsTe3zxNlM3iV3VGu+CeHD
-	JHD9Pc1gw4=
-X-Received: by 2002:a05:600c:4fcb:b0:49e:645e:2616 with SMTP id 5b1f17b1804b1-4a01aff2554mr79526715e9.5.1790856094523;
-        Thu, 01 Oct 2026 05:01:34 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a01f97a0aesm58427345e9.3.2026.10.01.05.01.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2026 05:01:33 -0700 (PDT)
-Date: Thu, 1 Oct 2026 14:01:31 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
-	Manuel Lauss <manuel.lauss@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] braille: nbcon: Allow to use a serial console
- with NBCON API as Braille console
-Message-ID: <ar5Lm3ZimvIghvFB@pathway.suse.cz>
-References: <20261001093946.112999-1-pmladek@suse.com>
- <20261001093946.112999-2-pmladek@suse.com>
- <87jyo18zne.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GiTnOT6H"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1FDE7C2BCC7;
+	Thu,  1 Oct 2026 12:41:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790858460;
+	bh=coHglYm9+1GQYQb+OpOOg0LrOVVxDuyh/0xYFK/oIn0=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=GiTnOT6HPkgqgO2CvmiXTq7zIm8Me6G/qV0NMV58TGqq01ianiEgWef2F9kufLfiI
+	 of1ZHnjHBXwbb1Xoy5T8Dd140sn+eS7cskPndUtlm5GN9howCARjJfncmYeNoWpFol
+	 diJ/DJBOySUbwOnGY9ZNuvbGtTeOKbH4LF52CbXl0RxsrdQHB+0QDyqvJyGSy6M4U+
+	 8B46UfpBLROSGBvsutHfSRLEVi7YZTt6UkqAbPO2RaFyo5ErjV9YVwD98jWKWSrPtD
+	 wlr/T/eyqe1O61QTmD8rT+Nmcb9I3PM4sRYzZQMDDGjYFkTVYK6h6Nxmp9Bge0MpGZ
+	 UYpsCCN2wS0uQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B406CA5FA5;
+	Thu,  1 Oct 2026 12:41:00 +0000 (UTC)
+From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
+Subject: [PATCH v9 00/15] Ambarella CV75 SoC minimal bring-up
+Date: Thu, 01 Oct 2026 20:40:49 +0800
+Message-Id: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87jyo18zne.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIANFUvmoC/12Oy27CMBREfwV5XVd+xMSXVf8DsfDjmrgipLKDR
+ YXy77UpIojlSGfmzI1kTBEz2W1uJGGJOU7nGuBjQ9xgzkek0ddMBBNbprmmrvSKFkUBBZNgZQf
+ WkUqHNI10HhKalQfWPfmypYwicK1456y0/MuM1iQ8ncynm8Y28ZMwxOv9zP7wn/PFfqOb22Ijh
+ pjnKf3e35a+cQ8RV6uoryIpoPcyWAeOvYnactEvXcHXrq5doUUIyoP23rx3l2X5A2yNVuUzAQA
+ A
+X-Change-ID: 20260818-cv75-v5-9e2039b349bc
+To: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org
+Cc: Long Zhao <longzhao@ambarella.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>, 
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+ Michael Walle <mwalle@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Long Zhao <zl020895@163.com>, Lee Jones <lee@kernel.org>, 
+ mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790858457; l=9410;
+ i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
+ bh=coHglYm9+1GQYQb+OpOOg0LrOVVxDuyh/0xYFK/oIn0=;
+ b=WmWVByOx143QOAObt0mds1XXHtI0Ehlw/BSyI/PfNtcvSDueF5z4wfBcX9zDbnzRpXbaXgciY
+ I2fPXRJWC+MD2reQ/3DzzjspPJQgJPsjhdprrIxpCKzLYUM2UmaLnB1
+X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
+ pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
+X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
+ auth_id=903
+X-Original-From: Long Zhao <longzhao@ambarella.com>
+Reply-To: longzhao@ambarella.com
 
-On Thu 2026-10-01 12:54:37, John Ogness wrote:
-> On 2026-10-01, Petr Mladek <pmladek@suse.com> wrote:
-> > The Braille console is not registered in console_list. Instead, it is
-> > integrated with the virtual terminal (VT) and shows what is displayed
-> > on the terminal. It writes the data using con->write*() callback
-> > of the associated serial console driver.
-> >
-> > --- a/drivers/accessibility/braille/braille_console.c
-> > +++ b/drivers/accessibility/braille/braille_console.c
-> > @@ -62,14 +62,45 @@ static void braille_write(u16 *buf)
-> >  {
-> >  	static u16 lastwrite[WIDTH];
-> >  	unsigned char data[1 + 1 + 2*WIDTH + 2 + 1], csum = 0, *c;
-> > +	struct nbcon_write_context wctxt = { };
-> > +	unsigned long flags;
-> > +	bool locked;
-> 
-> There is no need for @locked because on failure, the function returns.
+This series adds minimal Ambarella CV75 support for early bring-up with
+a serial console: DT bindings, RCT clocks, PL061 GPIO via gpio-regmap,
+8250_dw UART quirks, ARCH_AMBARELLA, CV75 EVK DT, and MAINTAINERS.
+The pinctrl binding and driver are already in the pinctrl tree. The
+CV75 DT still describes that pin controller.
 
-Great catch! I rewrote the the code many times and decided to send
-it at some point...
+This series is sent together for review. Please take the GPIO
+patches through the GPIO tree and provide an immutable branch
+for the SoC tree. The remaining patches should be applied via
+the SoC tree; subsystem maintainers are Cc'd for their pieces.
 
-> >  	u16 out;
-> >  	int i;
-> >  
-> >  	if (!braille_co)
-> >  		return;
-> >  
-> > +	/*
-> > +	 * Braille console is not registered in console_list. Instead, it
-> > +	 * is integrated with VT and shows what appears on the graphical
-> > +	 * console under console_lock(). From this POV it is a legacy
-> > +	 * console. But is calls serial console driver which might be
-> 
->                      it ^^
-> 
-> > +	 * converted to the NBCON API. It is similar to
-> > +	 * nbcon_legacy_emit_next_record() except that we should try
-> > +	 * harder to get the lock. Othewise, the Braille device won't show
-> 
->                          Otherwise ^^^^^^^^
+GPIO data path uses gpio-regmap with two layouts (ARM PrimeCell and
+Ambarella). IRQ stays a custom PL061 irqchip. The linear domain is
+created with the PL061 private data and attached by gpio-regmap.
+regmap-irq is not used.
 
-My muscle memory is clearly wrong for this word.
+Verified with:
+- scripts/checkpatch.pl --strict (0 errors)
+- make dt_binding_check DT_SCHEMA_FILES=ambarella:pl061-gpio.yaml:syscon.yaml:snps-dw-apb-uart.yaml
+- make CHECK_DTBS=y ambarella/cv75-evk.dtb
+- arm64 build of new drivers/DTS
+- CV75 EVK: console via 8250_dw (dw-apb-uart); GPIO edge IRQ
+  (gpio-hammer / gpio-event-mon) with CONFIG_PROVE_LOCKING after
+  use_raw_spinlock
 
-> > +	 * everything what is displayed on the terminal.
-> > +	 *
-> > +	 * In short, simulate the original locking using NBCON API.
-> > +	 */
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		if (panic_on_this_cpu()) {
-> 
-> How about adding here:
-> 
-> 			if (!braille_co->write_atomic)
-> 				return;
->
-> I see no reason to forbid Braille device usage just because it cannot
-> show panics.
+Assisted-by: LLM
+Signed-off-by: Long Zhao <longzhao@ambarella.com>
+---
+Changes in v9:
+- gpio-regmap: GPIO_REGMAP_QUIRK_SET_AFTER_DIR instead of
+  write_data_after_dir (Michael); put the flag in its own
+  group (Linus)
+- gpio-regmap: drop gpio_regmap_get_chip() (Michael)
+- gpio: pl061: create the irq domain with PL061 private data
+  before gpio_regmap_register() and let gpio-regmap attach it;
+  drop the gpio_chip irq helpers (Michael)
+- gpio: pl061: GPIO_REGMAP_ADDR() for the direction register
+  (Michael)
+- pinctrl: binding and driver applied by Linus Walleij; drop
+  them from this series (Linus)
+- Cc Michael Walle <mwalle@kernel.org>
+- collect Reviewed-by on the unchanged PL061 split patches
+  (Linus)
 
-Fair enough. I am going to add the following in v4:
+Link to v8: https://patch.msgid.link/20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com
 
-			/*
-			 * This should be good enough in practice. Most/all
-			 * serial console drivers have the atomic callback.
-			 */
-			if (!braille_co->write_atomic)
-				return;
+Changes in v8:
+- gpio: split v7 10/15 into 10/18 MMIO to regmap, 11/18 IRQ_TYPE_*
+  helpers, 12/18 cleanup.h guard(), 13/18 gpio-regmap + custom
+  irqchip, 14/18 Ambarella layout (Andy)
+- gpio: keep gpio_regmap_get_chip(); drop the irq_domain attach
+  change in gpio-regmap (Andy)
+- gpio-regmap: skip the pre-direction data write when write_data_after_dir
+  is set (Linus); still ignore gpio_regmap_set() returns (Andy)
+- gpio: use_raw_spinlock so irq_ack() can run under the irq
+  descriptor lock (PROVE_LOCKING on CV75); irq_set_parent() for wake
+- gpio: drop errno.h; -ENODATA; for_each_set_bit in PM; split virq
+  assignment; chained handler checks regmap_read (Andy)
+- pinctrl: 15/18 PINCTRL_PINGROUP + per-pin alts; header uses
+  forward declarations; regmap_assign_bits / __assign_bit;
+  -ENOTSUPP; -ENODATA; devm_kasprintf_strarray (Andy)
+- dt-bindings: gpio: 05/18 move allOf after required; explain why
+  CV75 is PrimeCell GPIO but not an arm,pl061 fallback, and why a
+  fixed arm,primecell-periphid is required (Krzysztof)
+- serial: 16/18 keep snps,dw-apb-uart first; Andy and Ilpo R-b
+- clk: drop mod_devicetable.h; use u16_fract (Andy, Uwe)
+- collect lore tags on unchanged bindings (Linus, Krzysztof)
 
-> > +			local_irq_save(flags);
-> > +			locked = nbcon_braille_try_acquire(braille_co, &wctxt);
-> > +			/* NBCON API strictly requires the ownership. */
-> > +			if (!locked) {
-> > +				local_irq_restore(flags);
-> > +				return;
-> > +			}
-> > +		} else {
-> > +			braille_co->device_lock(braille_co, &flags);
-> > +			while (!nbcon_braille_try_acquire(braille_co, &wctxt))
-> > +				cpu_relax();
-> > +		}
-> > +	}
-> > +
-> >  	if (!memcmp(lastwrite, buf, WIDTH * sizeof(*buf)))
-> > -		return;
-> > +		goto unlock_nbcon;
-> >  	memcpy(lastwrite, buf, WIDTH * sizeof(*buf));
-> >  
-> >  #define SOH 1
-> > @@ -102,7 +133,27 @@ static void braille_write(u16 *buf)
-> >  	*c++ = csum;
-> >  	*c++ = ETX;
-> >  
-> > -	braille_co->write(braille_co, data, c - data);
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		nbcon_write_context_set_buf(&wctxt, (char *)data, c - data);
-> > +		if (panic_on_this_cpu())
-> > +			braille_co->write_atomic(braille_co, &wctxt);
-> > +		else
-> > +			braille_co->write_thread(braille_co, &wctxt);
-> > +	} else {
-> > +		braille_co->write(braille_co, data, c - data);
-> > +	}
-> > +
-> > +unlock_nbcon:
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		if (panic_on_this_cpu()) {
-> > +			if (locked)
-> > +				nbcon_braille_release(&wctxt);
-> 
-> There will never be a locked=false scenario here. We already returned.
+Link to v7: https://patch.msgid.link/20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com
 
-Right!
+Changes in v7:
+- gpio: 10/15 convert ARM PL061 to gpio-regmap; 11/15 add Ambarella
+  layout with a second gpio_regmap config (Andy)
+- gpio: 10/15 drop gpio-regmap girq; custom irqchip with a linear
+  domain, gpio_chip chip data, and a chained handler (Andy)
+- gpio-regmap: 08/15 write_data_after_dir; 09/15 gpio_regmap_get_chip()
+  and quirk kerneldoc (Andy)
+- dt-bindings: gpio: 05/15 $ref arm/primecell.yaml and
+  unevaluatedProperties (Rob)
+- clk: fold the RCT driver into a single clk-cv75.c (Jerome)
+- serial: 8250_dw startup only updates the up->ier shadow (Ilpo)
+- collect lore tags on unchanged patches (Linus Reviewed-by; Krzysztof
+  Acked-by on the UART binding)
 
-> > +			local_irq_restore(flags);
-> > +		} else {
-> > +			nbcon_braille_release(&wctxt);
-> > +			braille_co->device_unlock(braille_co, flags);
-> > +		}
-> > +	}
-> >  }
-> >  
-> >  /* Follow the VC cursor*/
-> > @@ -353,13 +404,22 @@ int braille_register_console(struct console *console, int index,
-> >  	if (!console_options)
-> >  		/* Only support VisioBraille for now */
-> >  		console_options = "57600o8";
-> > +
-> >  	if (braille_co)
-> >  		return -ENODEV;
-> > +
-> > +	if (console->flags & CON_NBCON &&
-> > +	    (!console->write_atomic || console->flags & CON_NBCON_ATOMIC_UNSAFE)) {
-> > +		pr_err("Braille console requires a safe braille_co->write_atomic callback\n");
-> 
-> IMO it is not necessary to restrict to !CON_NBCON_ATOMIC_UNSAFE consoles
-> because if the acquire fails, an unsafe acquire is tried anyway. But as
-> I suggested earlier, I think even NBCON consoles without
-> ->write_atomic() should be allowed. Just no panic message for them.
+Link to v6:
+https://lore.kernel.org/r/20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com
 
-I agree. I did not revisit this after I enabled the unsafe takeover
-in panic(). I'll remove it in v4.
+Changes in v6:
+- gpio: convert gpio-pl061 data path to gpio-regmap; keep PL061 irqchip
+  (Andy, Linus). Add write_data_after_dir + girq helpers to gpio-regmap.
+  Ambarella layout uses JEP106 periphid 0x000e8061; no AFSEL clearing in
+  the GPIO driver; Ambarella skips unverified GPIO PM save/restore
+- serial: restore 8250_dw Ambarella quirks from v3; drop standalone
+  8250_ambarella (Andy). Commit message clarifies Ambarella IP with a
+  DW-like register map needing only a thin quirk. Binding under
+  snps-dw-apb-uart; DT uses ambarella,cv75-uart + snps,dw-apb-uart with
+  reg-shift/reg-io-width
+- clock/RCT: document #reset-cells (Krzysztof); soft-reset ID header and
+  reset provider deferred (no resets= consumers in this series)
+- arm64/Kconfig: do not select ARM_PSCI / HAVE_ARM_ARCH_TIMER (Sashiko)
+- pinctrl: no Ambarella suspend/resume claim without validated PM
 
-> > +		return -EINVAL;
-> > +	}
-> > +
-> >  	if (console->setup) {
-> >  		ret = console->setup(console, console_options);
-> >  		if (ret != 0)
-> >  			return ret;
-> >  	}
-> > +
-> >  	console->flags |= CON_ENABLED;
-> >  	console->index = index;
-> >  	braille_co = console;
-> > --- a/kernel/printk/nbcon.c
-> > +++ b/kernel/printk/nbcon.c
-> > @@ -2002,3 +2003,80 @@ void nbcon_kdb_release(struct nbcon_write_context *wctxt)
-> >  	 */
-> >  	__nbcon_atomic_flush_pending_con(ctxt->console, prb_next_reserve_seq(prb));
-> >  }
-> > +
-> > +/**
-> > + * nbcon_is_braille - Checks whether the nbcon write context is using Braille console
-> > + *
-> > + * @wctxt:	checked nbcon write context
-> > + *
-> > + * Return: True when the write context is associated with a Braille console.
-> > + *	   Othrewise, return false.
-> > + *
-> > + * Context: Can be called in any context but only when Braille console is
-> > + *	registered and the struct console could not disappear.
-> > + */
-> > +bool nbcon_write_context_is_braille(struct nbcon_write_context *wctxt)
-> > +{
-> > +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
-> > +	struct console *con = ctxt->console;
-> > +
-> > +	return con && con->flags & CON_BRL;
-> 
-> I suggest parenthesis around "con->flags & CON_BRL".
+Link to v5:
+https://lore.kernel.org/r/20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com
+Link to v2:
+https://lore.kernel.org/r/20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com
+Link to v3-A:
+https://lore.kernel.org/r/20260813-cv75-v3-a-v3-0-cfdd20b1b4dd@ambarella.com
+Link to v3-B:
+https://lore.kernel.org/r/20260813-cv75-v3-b-v3-0-1d82e18da09b@ambarella.com
+Link to v3-C:
+https://lore.kernel.org/r/20260813-cv75-v3-c-v3-0-9352b3fd6026@ambarella.com
+Link to v4-B:
+https://lore.kernel.org/r/20260814-cv75-v4-b-v4-0-622e63153d97@ambarella.com
 
-Will do in v4.
+To: Arnd Bergmann <arnd@arndb.de>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+To: soc@lists.linux.dev
+To: linux-arm-kernel@lists.infradead.org
+To: Long Zhao <longzhao@ambarella.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc: Conor Dooley <conor+dt@kernel.org>
+Cc: Michael Turquette <mturquette@baylibre.com>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: Jerome Brunet <jbrunet@baylibre.com>
+Cc: Linus Walleij <linusw@kernel.org>
+Cc: Bartosz Golaszewski <brgl@kernel.org>
+Cc: Michael Walle <mwalle@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Long Zhao <zl020895@163.com>
+Cc: Lee Jones <lee@kernel.org>
+Cc: mfd@lists.linux.dev
+Cc: devicetree@vger.kernel.org
+Cc: linux-clk@vger.kernel.org
+Cc: linux-gpio@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-> > +}
-> > +
+---
+Long Zhao (15):
+      dt-bindings: arm: add Ambarella CV75 platforms
+      dt-bindings: mfd: syscon: add Ambarella CV75 secure scratchpad
+      dt-bindings: clock: add Ambarella CV75 RCT
+      dt-bindings: gpio: pl061: add Ambarella CV75 variant
+      dt-bindings: serial: snps-dw-apb-uart: add ambarella,cv75-uart
+      clk: ambarella: add CV75 RCT clock controller
+      gpiolib: regmap: add GPIO_REGMAP_QUIRK_SET_AFTER_DIR
+      gpio: pl061: convert register access to regmap
+      gpio: pl061: use IRQ_TYPE_LEVEL_MASK and IRQ_TYPE_EDGE_BOTH
+      gpio: pl061: use cleanup helpers for locks
+      gpio: pl061: switch data path to gpio-regmap
+      gpio: pl061: add Ambarella register-layout variant
+      serial: 8250_dw: add Ambarella CV75 quirks
+      arm64: ambarella: add ARCH_AMBARELLA and CV75 EVK DT
+      MAINTAINERS: add ARM/AMBARELLA SoC support
 
-Thanks a lot for the quick review and catching so many details.
+ .../devicetree/bindings/arm/ambarella.yaml         |  24 +
+ .../bindings/clock/ambarella,cv75-rct.yaml         |  64 +++
+ .../devicetree/bindings/gpio/pl061-gpio.yaml       |  25 +-
+ Documentation/devicetree/bindings/mfd/syscon.yaml  |   1 +
+ .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ MAINTAINERS                                        |  14 +
+ arch/arm64/Kconfig.platforms                       |   6 +
+ arch/arm64/boot/dts/Makefile                       |   1 +
+ arch/arm64/boot/dts/ambarella/Makefile             |   3 +
+ arch/arm64/boot/dts/ambarella/cv75-evk.dts         |  30 ++
+ arch/arm64/boot/dts/ambarella/cv75.dtsi            | 177 +++++++
+ arch/arm64/configs/defconfig                       |   1 +
+ drivers/clk/Kconfig                                |   1 +
+ drivers/clk/Makefile                               |   1 +
+ drivers/clk/ambarella/Kconfig                      |   9 +
+ drivers/clk/ambarella/Makefile                     |   3 +
+ drivers/clk/ambarella/clk-cv75.c                   | 365 +++++++++++++
+ drivers/gpio/Kconfig                               |   2 +
+ drivers/gpio/gpio-pl061.c                          | 571 +++++++++++++--------
+ drivers/gpio/gpio-regmap.c                         |  15 +-
+ drivers/tty/serial/8250/8250_dw.c                  |  32 ++
+ include/dt-bindings/clock/ambarella,cv75-rct.h     |  14 +
+ include/linux/amba/bus.h                           |   1 +
+ include/linux/gpio/regmap.h                        |  14 +
+ 25 files changed, 1167 insertions(+), 210 deletions(-)
+---
+base-commit: 34cf6dafc47441dfb6b356a095b89c3585a93714
+change-id: 20260818-cv75-v5-9e2039b349bc
 
-Best Regards,
-Petr
+Best regards,
+--  
+Long Zhao <longzhao@ambarella.com>
+
+
