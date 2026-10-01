@@ -1,69 +1,127 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A262486620;
-	Thu,  1 Oct 2026 20:44:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F474C33C4;
+	Thu,  1 Oct 2026 21:16:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790887470; cv=none; b=kdByNg5NE5eiuLRWlKBLyvRNB2abOWU0IjXsniab/6+cXEFeqaePS5AQSXlJuJi5Ko3kYqou+s63jmo+TDrGkaO9FXUl9mlyNCXG4OrKB804MdamXSFcJIwPr3uCAe5He/eO6nE6Unu6y9lT7dfbVUKOTaGU1yfq07HZXu+i+cY=
+	t=1790889379; cv=none; b=gPMBUfFUfk5hCp34JN4pkwiW97YF60HQTV36/W64FD5psxnqNF87rsT185+N8JIQrvBSAUQ6RDN66ueS+tQCOZOSC+cpp4tEHVaARUa06D/3QzpPrm2ZoayaXZhFTXd4doDhotzYKU+So+VjQzR+D2Wy32QlqzfL5uzFNymsLAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790887470; c=relaxed/simple;
-	bh=Msm8G96Z8LsGSSGgnwfeBQBqJqjIt1nC0qnxocKxX1k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HRJ8tWdPtCGFIDVZXTminkVaoHjPp1TSwUowwSRASdkD+SAjPVHFLcdi1OylLiVwzKDG6pTSfvCkZ6r4Z8jpAOMuFZ6AspLPavUH+IgP2qjGV5BnfqGlTjSCROyW83XyhC7tqWeafcUpmTdRT+Hz2Gayh2EvCbZJra0+OG8o2jQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=AYE0AjWH; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1790889379; c=relaxed/simple;
+	bh=j3tZSe6EjWvLL4etfciKqeLMj4yhwYHePqQZXrAv+es=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OpeviNuzI4POAtAoUfcNAT2AYtXsB52ylsS+LjfZ772RnRtMpYmWe7Gf8juluIbYgTxS9mwzZwJAvr5VISACgPUOdIvAcXMyG08RmLn1PL3lpDymLZKpCg3Y16CcFXYEXs9OS9JUb7CD3hjGnckKSS6edAcjG2Wp7v+3y6HhqnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P+jof2y/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AYE0AjWH"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=BrokjqjJjFZqUTDSv2++iKVr7YyyXPU/fy3hPc1Hrqg=; b=AYE0AjWHoTnpDBXumGyRcPWygA
-	eVsEPKqQQmRWYk7YMNSFlvyTQcWKjfUPXfF8KWAgoFvD0nL6KEZ0yKh3ZYkG6JGgoBdcORRXZCVFE
-	yBbzVOKf8CMCjOoiTV/HU92dEe9qTa9B/1TMVRD+JvL2DKORIdN5wcaDWOOXFRPcHnP3bQp/zXXZL
-	/lwYArC/eEcNqlR8NMMLzGfTCyWcfg6Snq1QbemFr/zuMKYxdIEj76Fd+57kd6jQOPQyMIqZXtoGo
-	BF+zqEwI/xD5pkXE62Z8zLrTfRIlDP7EPs5d9p+IR8NDUT8Jap3023HJ2CX55AgWsFej5Hvxm6FGL
-	S0WHcozg==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1xCNdh-0000000AB8J-2YGB;
-	Thu, 01 Oct 2026 20:44:25 +0000
-Message-ID: <ec3a09d6-4ba4-41b8-abb1-b59e265f4532@infradead.org>
-Date: Thu, 1 Oct 2026 13:44:24 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P+jof2y/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 924FB1F000FF;
+	Thu,  1 Oct 2026 21:16:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790889368;
+	bh=j3tZSe6EjWvLL4etfciKqeLMj4yhwYHePqQZXrAv+es=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=P+jof2y/i9vG8bCW/VDqxjV0fYlsPcFcvV28SPkTi5EJkbAwebXlyhwbk/MQ368pc
+	 rdm8EYPgjhCtlAZJs+7OoyURvkpvTWYf0ZfXp/jnS9jZ3s4Y2Fewt00mMzHcQ5VguI
+	 7RvKWaUmQzXZBW/5JrzHPjcFhjVnANeuN260qA5Go4yg3zxY7w7j0IDgr3mgnUOO6Y
+	 GnY7M1Z7c17LDioDVv3RS0hpTYkR1+Neb4KRV4RwLnQqDDjnU29kwFjoJjx76cK42i
+	 7CDncrEAwGN+7bD0jTKHlNIdDigTs+QFArBhFGJjTbFUmE3GpONC/CHQarPyJYhOO8
+	 mcUX60w2LtQKg==
+Date: Thu, 1 Oct 2026 22:16:01 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Linus Walleij <linusw@kernel.org>
+Cc: longzhao@ambarella.com, Arnd Bergmann <arnd@arndb.de>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Michael Walle <mwalle@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>,
+	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 04/15] dt-bindings: gpio: pl061: add Ambarella CV75
+ variant
+Message-ID: <20261001-snuggle-flying-e7180d4ac1e8@spud>
+References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
+ <20261001-cv75-v5-v9-4-486cc289a4b8@ambarella.com>
+ <20261001-attempt-savior-5d4a0eed4320@spud>
+ <CAD++jL=tsETOFvC-AdethTdrGtet5neVanj3KyyB4EtEOpJ_Gg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: linux-next: Tree for Sep 30 (htmldocs:
- include/linux/tty_driver.h)
-To: Mark Brown <broonie@kernel.org>,
- Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Johan Hovold <johan@kernel.org>, Linux Serial <linux-serial@vger.kernel.org>
-References: <ar5CMQqWGUCVevPL@sirena.org.uk>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <ar5CMQqWGUCVevPL@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="1WD25rPQ8gIjRFJm"
+Content-Disposition: inline
+In-Reply-To: <CAD++jL=tsETOFvC-AdethTdrGtet5neVanj3KyyB4EtEOpJ_Gg@mail.gmail.com>
 
+--1WD25rPQ8gIjRFJm
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Oct 01, 2026 at 09:36:50PM +0200, Linus Walleij wrote:
+> On Thu, Oct 1, 2026 at 9:23=E2=80=AFPM Conor Dooley <conor@kernel.org> wr=
+ote:
+> > On Thu, Oct 01, 2026 at 08:40:53PM +0800, Long Zhao via B4 Relay wrote:
+> > > From: Long Zhao <longzhao@ambarella.com>
+> > >
+> > > The CV75 GPIO banks sit on the AMBA PrimeCell bus but are not
+> > > register-compatible with the ARM PL061. Each bank is 32-bit and 32
+> > > lines, with extra mask/enable registers, so arm,pl061 must not be used
+> > > as a fallback compatible.
+> >
+> > What has this got in common with the pl061 beyond using the PrimeCell
+> > bus? Current reason for putting them together is a bit tenuous to me.
+>=20
+> It was determined in early review that this is very clearly a modified
+> PL061 block. The basic registers are even named the same.
+> https://lore.kernel.org/linux-arm-kernel/CAD++jLk0LoOJk=3DTXin42AL3_z_7eV=
+VkvMnYr1S8090C6A_B+dQ@mail.gmail.com/
 
-On 10/1/26 4:21 AM, Mark Brown wrote:
-> Hi all,
-> 
+Right. I think that'd be good to have in the commit message, because as
+an outsider reading this it sounds like it could well be an entirely
+different device.
 
-Hi John,
+With that explanation,
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+but as things stand,
+pw-bot: changes-requested
 
-Please add kernel-doc for:
+Thanks,
+Conor.
 
-WARNING: ../include/linux/tty_driver.h:92 Enum value 'TTY_DRIVER_RESET_SAVED_TERMIOS' not described in enum 'tty_driver_flag'
+>=20
+> PL061 is different and quirky and could not use gpio-mmio, while
+> with these changes to gpio-regmap it can handle its pecularities
+> and use a library which is a good thing on its own.
+>=20
+> Yours,
+> Linus Walleij
 
--- 
-~Randy
+--1WD25rPQ8gIjRFJm
+Content-Type: application/pgp-signature; name=signature.asc
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCar7NkQAKCRB4tDGHoIJi
+0iH7AQC+o17BgBwJe3k2EAZcRXfzE2tgNWgAPkP28V9wBeNGDwD/UAU1TinKSygv
+MtUtKTvPb1iV01w1PpMHV1VZJCr5NA8=
+=TwJs
+-----END PGP SIGNATURE-----
+
+--1WD25rPQ8gIjRFJm--
