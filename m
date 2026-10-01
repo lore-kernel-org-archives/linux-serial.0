@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980AF2EEE63;
-	Thu,  1 Oct 2026 08:42:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 303C94BE438;
+	Thu,  1 Oct 2026 08:42:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790844124; cv=none; b=CZwCztOazrizaKiBTOcnLAEQkNXgEJ5IYQxRT/I9tCzY7taeF5G2/H/Fjs89TPXoqSbo3DMOjLZ+VTYMZ2bfMADM6nJ2C+pegmhv5WSP5pf284bcm51O6zcgIIgkL/LmwuB+/YXFsVwB+U9HwjgfDl7MtOPWah0blpGzrDpiJ5c=
+	t=1790844170; cv=none; b=ALf50GWnbJKlPIesSPHlQ9DZG27JanNV2YF+OA/Q4Y7bOAvx1xLAcmmj0DC1laCOP63lQozBBP3a4v1cuyPADAO3rbwivUQ+UALNlSDGneDufRNQx/C5BO8OcAZJZDLMKSao/jzY7YnqYxdKJyOlOQFrycpe3Z/fZcEypzqA/g0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790844124; c=relaxed/simple;
-	bh=hUFRT69a6OTBWB3/YM4aqQSHzThOzG39MKESDBK1x/8=;
+	s=arc-20240116; t=1790844170; c=relaxed/simple;
+	bh=SNofVKPACh2ylupG0wyHOfbQ7LzJLyBJ87tcTUZoT2Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ne1HfyacBG+gYBDZAR/qKY/I9/Ov89IMxEylJcaAxMp6QPx6opmrbZZ+y94mhIVP2Ujw6V4Ma5HpYBefwo6Kl/IVWrBG72pFQGSKos+X9FHr3FoDnTUyXrO9lkQA7eJkCnrlzF0N0ghSCn/VGJCnAD2zjB+d5GaQFSM8viME//I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=G+0lvHbL; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=eRPDyezSdKrIzj1r7hCIPx1buJ+Sa6xYzHfscki+rcC82Bx2dt3VPHkcXJ30fRjfgMRqLN60aUpDQl+BLg7VGcYzQ+r8f6DjI+IdFlwcd/bzYn6RUDgyhwTWFSnoWteO39veKCOUCagGrMcF3w6NILoXTWBcXCJgHgN5hslLKms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=kP3IdNbQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="G+0lvHbL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71A3F1F00898;
-	Thu,  1 Oct 2026 08:42:01 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="kP3IdNbQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD371F0089A;
+	Thu,  1 Oct 2026 08:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790844122;
-	bh=sLIWiigL5qWkQhHyN5vS0UWUMaLMgvl0mWkBnAFMRsw=;
+	s=korg; t=1790844164;
+	bh=9hOkpGS5ErwxdHwTx0cN+BXyaNkX9IR+KQs4cH+2KAU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=G+0lvHbLcFxKT0ugHqD6AlK9Gls4ZhylEh9mf7J/TlAmiElBtW+AFkgOt39e8KCWe
-	 a4AcA4Iw2D/dF/uGlkq51D41Rc291FEYxM7nAzSNgtccCnzc9YGeyeDSsKzvNODz31
-	 DPmOqeetYahY1mfms1B5rkDyGZTa7fPL+qRsIkrI=
-Date: Thu, 1 Oct 2026 10:41:55 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Guangshuo Li <lgs201920130244@gmail.com>
-Cc: ychuang3@nuvoton.com, schung@nuvoton.com, jirislaby@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com
-Subject: Re: [PATCH] serial: ma35d1: unmap MMIO on remove
-Message-ID: <2026100146-salvaging-scouts-1f4d@gregkh>
-References: <20260924110400.1556396-1-lgs201920130244@gmail.com>
+	b=kP3IdNbQJsXfM9PScfd7ItsfkKVyq8TnrevWk2zpdYB7wCai88LVMKjSeH/nMir5h
+	 iWl79fgcHR4prmsz5KOCgBYWluFO1vFHU7DpIuxZIcx8/vEg60msmRN+W3C0X9KIgn
+	 vCbLOsu7D4fy8185lGwJykbpezvx2JJgDSyGsqqE=
+Date: Thu, 1 Oct 2026 10:42:38 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Rosen Penev <rosenp@gmail.com>
+Cc: linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc@lists.infradead.org>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: arc_uart: Use platform IRQ helper
+Message-ID: <2026100129-unrest-cleaver-6528@gregkh>
+References: <20260925183050.56839-1-rosenp@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,42 +41,61 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260924110400.1556396-1-lgs201920130244@gmail.com>
+In-Reply-To: <20260925183050.56839-1-rosenp@gmail.com>
 
-On Thu, Sep 24, 2026 at 07:04:00PM +0800, Guangshuo Li wrote:
-> ma35d1serial_probe() maps up->port.membase with ioremap(), but
-> ma35d1serial_remove() does not perform the matching iounmap(). The probe
-> error path already releases this mapping after disabling the clock.
+On Fri, Sep 25, 2026 at 11:30:50AM -0700, Rosen Penev wrote:
+> Avoid calling irq_dispose_mapping() by letting the platform_device
+> machinery handle it. Also enable possibility of handling -EPROBE_DEFER
+> and other errors. Handle as early as possible to avoid doing unnecessary
+> work.
 > 
-> Add iounmap() to the remove path after clk_disable_unprepare() to match
-> the resource cleanup order used by ma35d1serial_probe().
-> 
-> Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+> Signed-off-by: Rosen Penev <rosenp@gmail.com>
 > ---
->  drivers/tty/serial/ma35d1_serial.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/tty/serial/arc_uart.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-> index 920fe7ff5083..e5eaaf154911 100644
-> --- a/drivers/tty/serial/ma35d1_serial.c
-> +++ b/drivers/tty/serial/ma35d1_serial.c
-> @@ -770,6 +770,7 @@ static void ma35d1serial_remove(struct platform_device *dev)
+> diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+> index 3988e5958896..b46b057a181b 100644
+> --- a/drivers/tty/serial/arc_uart.c
+> +++ b/drivers/tty/serial/arc_uart.c
+> @@ -30,7 +30,6 @@
+>  #include <linux/tty_flip.h>
+>  #include <linux/serial_core.h>
+>  #include <linux/io.h>
+> -#include <linux/of_irq.h>
+>  #include <linux/of_address.h>
 >  
->  	uart_remove_one_port(&ma35d1serial_reg, port);
->  	clk_disable_unprepare(up->clk);
-> +	iounmap(up->port.membase);
->  }
+>  /*************************************
+> @@ -571,12 +570,17 @@ static int arc_serial_probe(struct platform_device *pdev)
+>  	struct arc_uart_port *uart;
+>  	struct uart_port *port;
+>  	int dev_id;
+> +	int irq;
+>  	u32 val;
 >  
->  static int ma35d1serial_suspend(struct platform_device *dev, pm_message_t state)
-> 
-> base-commit: f03c39de3a1307371a4032757cd1732e91087c7d
+>  	/* no device tree device */
+>  	if (!np)
+>  		return -ENODEV;
+>  
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0)
+> +		return irq;
+> +
+>  	dev_id = of_alias_get_id(np, "serial");
+>  	if (dev_id < 0)
+>  		dev_id = 0;
+> @@ -607,7 +611,7 @@ static int arc_serial_probe(struct platform_device *pdev)
+>  		return PTR_ERR(port->membase);
+>  	}
+>  
+> -	port->irq = irq_of_parse_and_map(np, 0);
+> +	port->irq = irq;
+>  
+>  	port->dev = &pdev->dev;
+>  	port->iotype = UPIO_MEM;
 > -- 
-> 2.43.0
+> 2.55.0
+> 
 > 
 
-Did you forget an Assisted-by: tag?
-
-thanks,
-
-greg k-h
+You forgot an Assisted-by: tag here :(
