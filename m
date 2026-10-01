@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152D43F4DCA;
-	Thu,  1 Oct 2026 12:45:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE9914B7A3F;
+	Thu,  1 Oct 2026 12:45:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790858707; cv=none; b=d/WGjI6YNbmUqZ4Sr/EgWt49B+cw3ZC1XSzr/TpQkyaHrmILEEGgbstnYvr0H4hj8x6L0EE9K7VjHspSyyqXmK/yJk26yu877xvmP3qzL8oiy4yD1bswTKsDm0FdLv4SKW421Gv2kGDzUIYVVLk+5qPewL7X5FjipUhf4Hera7Q=
+	t=1790858718; cv=none; b=eyYhtciF749lZy9xrocMeHWgMMt8J/+aWa1KFqg89Ek6AvCE4bo56lMBX5P9PB+o/HagU2M/q2RJ4G42OtPcmcH8Nbk1tzVnKTDFkN4YBRkc62z8+ktN0lKtVK9qOX/pntvgq+morwOaXDAdzm7kGvfcgPkTvlqz8f9hhMiOPU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790858707; c=relaxed/simple;
-	bh=+clXDYPOMFwTy9tyXYrby56bDF8/YL1bEG1/W4xiC+c=;
+	s=arc-20240116; t=1790858718; c=relaxed/simple;
+	bh=Ly1wS7IM8H6Q+iD4SOYR0ycm4Sq2XDaEsFWGe8WF5bg=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=u0bmMAOkmwIpxgtWiWImvWF43hdXxUcppEOU1ng6eXGxAZuA/KOvE8JcJphDhNwng3/pacZF15kUxEpXMBTAQmVAE5bJ4AUsvH8dItvsoWzpFdrtQQMNtbH0tnolodXhv4gbOY4IiwLh6Jo9yojmJaWWF1wodGJFlFnzT3ckFKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=myuSYjRE; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=ZjaAAMZYaoGahFO19FPNH6XAXr3ySibplMXdgdW6l2q+u5FvdIblJW2K12cBdyepHSlFZsCkdz75y5GqEdgbsboBEg6ImIvMxQUpcbSBnPXfO3nhRSHoljJCOFypqUKsPc+m5Bit7lvqCnnRxz3fUF4YsS6Vw8g2VQTSymj9fcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iND3lfMV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="myuSYjRE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 249241F0089B;
-	Thu,  1 Oct 2026 12:45:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iND3lfMV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13BC41F000FF;
+	Thu,  1 Oct 2026 12:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790858705;
-	bh=+clXDYPOMFwTy9tyXYrby56bDF8/YL1bEG1/W4xiC+c=;
+	s=k20260515; t=1790858716;
+	bh=Ly1wS7IM8H6Q+iD4SOYR0ycm4Sq2XDaEsFWGe8WF5bg=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=myuSYjREPcxwTHbMNUnWkJGm2lXNRSLzqu39NtFmnIYKWjmMfs2mh8seL5nqc5J0g
-	 0UjFQ2BUbUlESeRo25BAMcp0zxrkyZLzbsH5VlCM5i4F+EKL6k+zHJ3O6J1CN37NJ/
-	 qVB1eUE36zvw17ah8+QbOByUpGSUnQpdxHVumP4f6Si99zR+uQuBuH1c13gvQQ0x9w
-	 ICCLYT4FPzYy/L+MFxF280AlVhSbZFoyuymwUZGbuHdM2ao5LO33N1LSi6svHMzvJv
-	 UGmFm3mnR824r0xaFRhukOmjgXb7/N+Mj06ceykNm9M4tpCWWh+hi8lJiepr8Fp18N
-	 RlBRM7L1W6yfg==
+	b=iND3lfMVt0N/r0W1PhbUQqL1StwgD8FFCddC29HC0SVtp0kKeQgbbyGd+iViRhlM+
+	 qOTOAjE6J9hk7hO0RfXkk8QI0l/XEpySYTs4wpWCe2ewFpmCkPGvm6irnDsVqP6SYy
+	 1aq2XgCCekjpFD9a0D801q+u9EI/e2YmiPDxAqCkIeDU77ZcB2HZ0NxZPNJ3TeSp/6
+	 FQlTJZKQSvtlD7VIyKGv1pj3CZsLmuhtx289qdHwbz7qz5wXGZxUeVl8LXNeO8xpnw
+	 NOrTM0PYehVLGbaRWWU5HfiLbOTDBFa87uIDq9xD39DJI7VHRlSODI0dmr6LXyUqI9
+	 BVqngSPoVL9wQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v9 09/15] gpio: pl061: use IRQ_TYPE_LEVEL_MASK and
- IRQ_TYPE_EDGE_BOTH
+Subject: Re: [PATCH v9 03/15] dt-bindings: clock: add Ambarella CV75 RCT
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Long Zhao" <longzhao@ambarella.com>
-Cc: mfd@lists.linux.dev, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, lee@kernel.org
-In-Reply-To: <20261001-cv75-v5-v9-9-486cc289a4b8@ambarella.com>
+Cc: mfd@lists.linux.dev, linux-serial@vger.kernel.org, robh@kernel.org, lee@kernel.org, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, conor+dt@kernel.org
+In-Reply-To: <20261001-cv75-v5-v9-3-486cc289a4b8@ambarella.com>
 References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
- <20261001-cv75-v5-v9-9-486cc289a4b8@ambarella.com>
+ <20261001-cv75-v5-v9-3-486cc289a4b8@ambarella.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 01 Oct 2026 12:45:04 +0000
-Message-Id: <20261001124505.249241F0089B@smtp.kernel.org>
+Date: Thu, 01 Oct 2026 12:45:15 +0000
+Message-Id: <20261001124516.13BC41F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,15 +46,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 > From: Long Zhao <longzhao@ambarella.com>
 >=20
-> Use the standard IRQ_TYPE_LEVEL_MASK and IRQ_TYPE_EDGE_BOTH helpers
-> instead of open-coded edge and level comparisons.
+> Document the CV75 RCT clock controller and the clock ID header used by
+> DT consumers.
 >=20
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Document #reset-cells for the RCT reset-provider role. Soft-reset line
+> IDs and the reset provider driver are deferred; this series has no
+> resets=3D consumers.
+>=20
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 > Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
 Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261001-cv75-v5-v9=
--0-486cc289a4b8@ambarella.com?part=3D9
+-0-486cc289a4b8@ambarella.com?part=3D3
 
