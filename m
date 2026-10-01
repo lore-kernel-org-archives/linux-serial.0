@@ -1,159 +1,169 @@
-Received: from fout-a1-smtp.messagingengine.com (fout-a1-smtp.messagingengine.com [103.168.172.144])
+Received: from CWXP265CU009.outbound.protection.outlook.com (mail-ukwestazon11021086.outbound.protection.outlook.com [52.101.100.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D44346E6D;
-	Thu,  1 Oct 2026 00:29:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.144
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790814581; cv=none; b=EZieYo0By6pRaUpLYfrvM80vMH+tEIVkc4aYTYs3djV0DgbD4I7qCIkyut1OxSA/ry4/6+qN9yqqx0q049zQsJvvou+NcRraBMTeTYIORW3fEUU7wjaTE1Ui4IWdWp5xwMaBVjCj0uFuA5cARIQUlsJ6gdFQtikQWwBi3LJsjUU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790814581; c=relaxed/simple;
-	bh=vqLxQa4dg45L8d4TVe/lKsQia34uBf2jmQAkP9+qWpc=;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=r/75TLYKHgCoeUfovMA2G2eLW2ToXnNr3i/xpl1O5KIjfO2Vxv7Fo9xySsOEG1s9mzgkuhUTINTnw824N0AFie9seFN9/KzyDtqrIh5mVBqmEhMXsYyDAApINcFCUTNxivLcEzkI3OEM0I7H17Wek3TGV8ZNwBK3nH/I4Qhvgwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org; spf=pass smtp.mailfrom=flapping.org; dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b=TpHGefEq; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=PUATFkLS; arc=none smtp.client-ip=103.168.172.144
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flapping.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1872377A9F;
+	Thu,  1 Oct 2026 00:39:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.100.86
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790815206; cv=fail; b=OWxNJBSbSeWV7djWBYtMi3Q7ThCNHsXkJUt6yk0vCiWzjawqteAqHdr3aylr2xqYyRs9OKy9jGBE2u9TAUgxVU575KD5DNcAmfKeBnyENj774G6/JuiijURnNzf6SKma4BNhmwtpZhX8k/blPKngzl6tBVp044NPTr1rxx1mv48=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790815206; c=relaxed/simple;
+	bh=DHw+0QnhmJuPlzlgyKci+LWliCZ6FZ780D7bOHK3YXk=;
+	h=Content-Type:Date:Message-Id:Cc:Subject:From:To:References:
+	 In-Reply-To:MIME-Version; b=fomDUojLEQnw6RsmnfUc2Rv3ALMdDxohLLbvo+BDJj/ZI9BRjd69VhcAxH7ciLC5vHywsR8XLr+EobgYjBSxR0vn1X+xOj/+is4O5r3tPe5EBrUppMotEAbnq6anxbiQUT1d5V3Eg1OdaIdAintKyJ2AsopotKHA4FsLSenFbgM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=zzoVbhlK; arc=fail smtp.client-ip=52.101.100.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b="TpHGefEq";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="PUATFkLS"
-Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
-	by mailfout.phl.internal (Postfix) with ESMTP id D281FEC02BF;
-	Wed, 30 Sep 2026 20:29:38 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-09.internal (MEProxy); Wed, 30 Sep 2026 20:29:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flapping.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1790814578;
-	 x=1790900978; bh=QG5mOC8Ea7dAzNNESKpze+8IotvuIQeyFETGJ/d49vw=; b=
-	TpHGefEqcnY2pEU3e4BwyO/47uSMAE8SGOtDcaVxIu6PH2GqIQv28XshW1kRCq+a
-	lLMm8iFs8oOutnzCvMSfG7Zpl7KEfx+nnyf7bslb8MFgxPrk8RpVkECqytKb3JE1
-	RggQFk87bYZAnVd1YSfRu+IIKJ+zmQTy/vvCYoj+TyzCW24F1W5zLTzzMM9/GMzM
-	Nv+Z0mtkwZshJhwPbIIxY7G8sEBWQT6i6ibcecFHMnhqo4R7dgvQaIC31U7SoGct
-	TH3J8aBZ8uRFoJzFaoa/MKos4iuBDbQtwbeLeveK3gKpmBp6IySMebv6b1DtblBU
-	Eg9gHLHI6CSMaLLGGDvrbQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1790814578; x=
-	1790900978; bh=QG5mOC8Ea7dAzNNESKpze+8IotvuIQeyFETGJ/d49vw=; b=P
-	UATFkLSEdmfCoBwyGBJaztHUGczTKcmeAc0Q6EHCwrxQkN0pZbz5vWpNc/g6zbGt
-	6FlQKMszpazyOxPmce1FGFDdt7H+UNFCJTESl6q0ish/4TRsLuKFf+dysqHXFMuC
-	wWpVUEhQNQzXETHz5KbjFlwR45zdjb20jWowJEHCY4D06myh+zZNyZnnWmyT9Pah
-	gZFOlv5Qss5/fGTIKfhn2h8413FKOxOMnHYE17IDPXVxA8v5CfqjDyPvWvirJc6X
-	YGOjKe6w3RV8hcHdO1ahydkMIwpj6z5aPpIf03bXXedXV15i4HuR0I716iVgeIOj
-	JCqz8BT6gNV4puw1cKz4A==
-X-ME-Sender: <xms:cqm9ail5YfO5dD_Gdk1Hl1ViP9eCiOOSo3RMPU97BRuUwj04FVzaxg>
-    <xme:cqm9alwrbLxX7zTHFTrm_nOtK0OM2D1iNe2g6U05x-DzaXruNj3iYnBVOdj4hJoEA
-    fUuEny0gQhhJqmnRdtA7r61wZipOMAU3p1qe1fzff48ytn3Si4BH8mh>
-X-ME-Received: <xmr:cqm9amy6tOyhKXWha4NXSrjzbYS7bGqN2FpPYQtj0JUHToKWbRXYyM5LAUk9I7CL4Ps33y4lQBN55O27DhwxT2tH>
-X-ME-Proxy-Cause: dmFkZTEtlGkHTQ6heY177mW/CKl+TKGnUH9b3/xKCLDLSpXaGogJCVC/ZuOJH235kIRGQk
-    LmqWU8Jc8s4mxrUNeKo06jTYIysiu7814oy7/sajYtQa5J6IU2x0+0SAY7M0MGR4okQaib
-    xAfSpvy/qWQr/Yzidp6donqPjSB/DO25ZqWBr0LzrMmZ+xAnAWX8aPhl4YFCA25+pJiH7m
-    CqyKDZ0lDmkJBaTkhYClHOJdk/LmYl5UMWNw7LGTJ6MMZ14F9xeAI7Moi2tAxNGZvXY7jY
-    wJJEYpcWPpxA+pGOZvH1sIXIJ/e0YM+4TDuPRLq2OWB5wwA90zHCZPFtfLV0g5/pnFCoQ8
-    SY9jBAHMVi8SsY++v4QYZLO5yreB+XY9ILjnY1aVMlu6bfdIC1OTO6dxHu1UcZSyV6u35k
-    KROFj/s4zvvfaB19ZCW3CUkqtEycljK+bCJn/tzYK8hO7oLaxqb03X/5Cw1aj4VMkY43l9
-    TjO5vODcCTFXY9Pktl8ZYzaojbYaxO7HCMLXI3hL0/rDDIAlp1rVH5r4UEjsDwOWgXdEbt
-    cSL3KV0aed2r7vDov86Cqjy9aTYaWsDefwurKGYx1s49mai9yzrU24M4iNptt833QAcs7u
-    CDaXxNdvDox6rsgCVKYl27uSnyARlD0a8AX5eBvR/nmPWe40wMQBGGZTUkkA
-X-ME-Proxy: <xmx:cqm9as9Aps4wKpwgxEoY4DFrlmatb_gVB3gniup1WFE9sZEo673V2A>
-    <xmx:cqm9au9El6gZ5rO0S1VT6Q_umYhMVyl-adb53UEUzZxTWs-TSnE1_A>
-    <xmx:cqm9anev0xuUAb76aO7lR9TQub0HKxJGaLoJqYoXjM7v0luQuGxztQ>
-    <xmx:cqm9aiu_GUe0_I9cQPjtMuUSZ2k4CknQqgDD1BJL9AQx24jO4z9OGQ>
-    <xmx:cqm9arJUXXmNiJw7M2feUsTNdR2IoXau-M1X0zdKHl9nWX53WkhUHrhK>
-Feedback-ID: i51fe4b43:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 30 Sep 2026 20:29:34 -0400 (EDT)
-Date: Thu, 01 Oct 2026 09:29:31 +0900 (JST)
-Message-Id: <20261001.092931.734162860031900892.tomo@flapping.org>
-To: gary@garyguo.net, markus.probst@posteo.de, aliceryhl@google.com
-Cc: tomo@flapping.org, dakr@kernel.org, ojeda@kernel.org,
- a.hindborg@kernel.org, acourbot@nvidia.com, bjorn3_gh@protonmail.com,
- boqun@kernel.org, daniel.almeida@collabora.com, lossin@kernel.org,
- tamird@kernel.org, tmgross@umich.edu, work@onurozkan.dev,
- linux-serial@vger.kernel.org, rust-for-linux@vger.kernel.org,
- fujita.tomonori@gmail.com
+	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="zzoVbhlK"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=L3b7dYfgoCdXeDYnJNk7G9YVEgCJOMBItnqHPnFgpyWLk7LuWyDlcA3MHhlS2AO6Yp0Zv3ADB68C95+Hpsxyv8nAC4RbhSf6ZpfZgT3aFYj77I7GaN3KEExs7MQpfy8bLhXTMcjd+Pc3juE55hxxqC33bJ86gwInbxIMZ7/sHm7E5Jj3WcFoiVcUJxcqc8D04cYjqGU/VZ4vXumJjU54+SZbRVL+6Vqixk6q3FARnTQKZp+qD3OtWaaxDKSxzPvN65y52ynXOV/QZB5u1s/7fRrWFz5nzkL7g/QSkQhx+k5FFLZDxsDh+AprBAKj6+XL+KTDTtbBtvvae/J58o1sYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DHw+0QnhmJuPlzlgyKci+LWliCZ6FZ780D7bOHK3YXk=;
+ b=ZJNIAheKldmdGT3zbqyj0e2vEyBzW1DkixGKBAdF1Xk+BqeC9uxXOWKNJ9WIOsoQeo5xQdj9+iSpBJZ1GGdIrJ8tPs6wa2clNx6C/NFKakvLlRvNCaYtUQWHoft+AUmZrAp8zTieoRm1V+EN/XsMDm+UZvjL4ug56YLh6r6TPFoyVNNi1cc8FD8oWPumSB2tZTG5tS9I8vNwiXD60fhTNSBxl/ybdjMcU+6CNH9lEoS5FZPu0j8t9jNa0mCdcDFeEzsMRInVjl9yXKy/2IVMArBkSauWcMqcQP3A2hwyR8B03H0OvOI+TQkJYwYwQMeotrEMFdsB2F1AM+HYq5iTQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
+ dkim=pass header.d=garyguo.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DHw+0QnhmJuPlzlgyKci+LWliCZ6FZ780D7bOHK3YXk=;
+ b=zzoVbhlK0BV7lnQDrO4T01UZVQUxAP6xsOmwLnVH27/DWONEBxMJUAg123ZKOi/AbNdC1HdWEht781qD/qVOVpLbJFa+s00tX/Ue5OdvMJCSz7IJxZUKS4jnivQyi0NqNE7bkvcGpJON/Qw4VsYICtiwb5oNVXp99LTmUIoX+uI=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=garyguo.net;
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4ab::19)
+ by LO3P265MB2155.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:105::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.15; Thu, 1 Oct
+ 2026 00:39:52 +0000
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1]) by LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1%6]) with mapi id 15.21.0451.024; Thu, 1 Oct 2026
+ 00:39:52 +0000
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Thu, 01 Oct 2026 01:39:51 +0100
+Message-Id: <DLT305M0I5L5.19LZT0V02L1NR@garyguo.net>
+Cc: <dakr@kernel.org>, <ojeda@kernel.org>, <a.hindborg@kernel.org>,
+ <acourbot@nvidia.com>, <bjorn3_gh@protonmail.com>, <boqun@kernel.org>,
+ <daniel.almeida@collabora.com>, <lossin@kernel.org>, <tamird@kernel.org>,
+ <tmgross@umich.edu>, <work@onurozkan.dev>, <linux-serial@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, <fujita.tomonori@gmail.com>
 Subject: Re: [PATCH v1] rust: serdev: use Delta<Jiffy> for timeouts
-From: FUJITA Tomonori <tomo@flapping.org>
-In-Reply-To: <DLSP8RHJMYFZ.3II53ESHY15IL@garyguo.net>
+From: "Gary Guo" <gary@garyguo.net>
+To: "FUJITA Tomonori" <tomo@flapping.org>, <gary@garyguo.net>,
+ <markus.probst@posteo.de>, <aliceryhl@google.com>
+X-Mailer: aerc 0.22.0
 References: <20260930041339.1551129-1-tomo@flapping.org>
-	<a8693eaa1f8eeb167ee334e7c35371832e43bb4f.camel@posteo.de>
-	<DLSP8RHJMYFZ.3II53ESHY15IL@garyguo.net>
+ <a8693eaa1f8eeb167ee334e7c35371832e43bb4f.camel@posteo.de>
+ <DLSP8RHJMYFZ.3II53ESHY15IL@garyguo.net>
+ <20261001.092931.734162860031900892.tomo@flapping.org>
+In-Reply-To: <20261001.092931.734162860031900892.tomo@flapping.org>
+X-ClientProxiedBy: LO4P265CA0285.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:38f::19) To LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:4ab::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LOAP265MB8560:EE_|LO3P265MB2155:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7af1e3b4-a1c5-438c-c3d2-08df1f548170
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|1800799024|10070799003|7416014|23010399003|10067099003|56012099006|4143699003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	cbTGSzGcTPq7yE8krOL2py9QPlnMTDzCu7Xk9tv69xxLN9UGkMhnPfEJd7alRc0Zo58v0vnhK0hFE891NcqVkf43psFuTxAoeM+Qq5X9b3oHB2VAIGFFrrE+sXGWGpAU44sAfnmjKgJ1iPqbvFj7OMsol6QxpSsQ9mtloIaXsdUOsYhV/pptgLymJzT+dLBHfPFB857ijZsskurEuxMmdnrESxiB/WtfqrXFm16MvKG2SVaSsgiQhTKF1W6FCKQkw7NXnQrgdlb2PBQOAESBlU+DYuUiSbnvJAkhClp+CqJy92L4DmpY5spdvYC5ehifjsf4h0GWOyDmBu6VIcnOwZnyyIIwe4JbAKiN+N+Ms1pMOldAP6fzMZc73rKH+h+DL8os4zirUceysGdw4pfhq7+5/ui6+y/M/vJo5ZKOzhJyH1mqEZqZpvT/yzHRhWU56s+EIASDG4GrSkaLnJLqXuPq5MlludsghBs4Wtr7WkHoq4XYHguiSXwSiVAdYL2IFmzUdCRsQHRNoUmPG04dNLgut1q9lBcrs+lfjXBWQbs5i6bLLfVVvEdKvfuG71YXc0ixRwYk/gKGjpntrZRF6tPyl+ywQM6HxwqMSlVNSXPm82g8wm+xZJCMpMCshP5bsBsFNpCUCtaknnNYNJB8Z5pBBQZR77BPg8KYkD22z5o=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(10070799003)(7416014)(23010399003)(10067099003)(56012099006)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SDI4c1ZtNGh4aTdHL01VdkNlVXZML2EwM1g2MW9seW5jVTJsUFBuS3loUXlu?=
+ =?utf-8?B?S3F2WlBjUnJmd1F0bUFGQnlsWHR4eWRmb2F3dkVXaE1qeStsbStIajQwOFpG?=
+ =?utf-8?B?Z0lWNVVEc0d2dm1DbFFYR0ZySzhzRmkzbEMzemZ3QksrOEVPWmJvVzVzVzU3?=
+ =?utf-8?B?NFV5WkNCTG1HTTE4dzgzekRWV0Z3L0ZaWmtOT2U5NmpobWFrV3NFdHFCRmJo?=
+ =?utf-8?B?NkhnY1YwMTgwTTZhdUpPVnhVYzV3VjhTYkJld2cxUnoveUNvaHFMajVyVmhq?=
+ =?utf-8?B?cVRvckVMSWhkUmt5ZEdUNURtU1E4WndwSW4wN2NTNElSUFBYVnZ2VDh3UG56?=
+ =?utf-8?B?VXcxMGQ4RWpSRWY4dC9MeWVIUDBiRVZNcy9qK091OWtjVFU0YnFJT1crZFpK?=
+ =?utf-8?B?c0Q5Z2ZhbWlSa0lTaktwZitwN0dNM214VVdrWjQ4OGxnMklqQnNWMENKektm?=
+ =?utf-8?B?TUw2Y1ArcEI2SGdpK0pPQjdySnRUNWdaOGdoRkJmeThFbCtRRHpBYTNMVzRs?=
+ =?utf-8?B?T1FRenlmTnU5dWtiUHlVV3pGeHZPQTI0OHNLVDE3SHVtZThPdzZiTHNrU1ZZ?=
+ =?utf-8?B?TG9uM1pWb2dxOG5mNFlIUVFXWWR3VzZkcmFicjN1U2cyMjRWOEJ4b3pWa01H?=
+ =?utf-8?B?ZGdEaXZqZFZ5Z1o4WHR6d2NseGdnOWkrMFVYaGhBTW5lWmdGRjlMQmhOeHF6?=
+ =?utf-8?B?cUJ2aXZFU1JPQnE4YlFpRDNtQ1Q2aEtCbEFBRDhQWkVVa0FaRUtIbVJmcFNp?=
+ =?utf-8?B?ellUb2V0c0dpTWVKR3hxMWlQc3Y4cVVCbzBUTi9Cd3RzMlFzT2tHVmlGaDI0?=
+ =?utf-8?B?cWhwSFF1d0VYN0NWUEgyQzhqMVNuMlEwbmZsdk5rREpueGNLUXlMbG1kMzQz?=
+ =?utf-8?B?b1RtM3pTMEhjc2FwQjFiOFhBclZPREh5TmpUUkNmTnUyQ0VWQUtOUVZFTzlz?=
+ =?utf-8?B?Y3p4TTg0RDFaZ2xVRy9ucUtVMS9EekN4c01sMWdCWFZpVy9qQnJTVlllTlp3?=
+ =?utf-8?B?anhIcUNELytkWk1ZVy9Dd3l4dzFLWVVxdjhpNEY2Y1ArWmFsSEFCNlR6bHRo?=
+ =?utf-8?B?YzJEbE5BaGxIZGljdTRUVDRQcXJGMGVCQmI4cG82eFRleGtKSFo4YjZFVGhY?=
+ =?utf-8?B?S0QzdEhxUkdIV2dyTkRkNTJyTkpiSTQxamNuejBwdmFrcmo1bWsyZFl1R2lE?=
+ =?utf-8?B?N05sd2J3Qy8vcGpKVndDbnJMdm1FVzJDQmgrVW16aVNxeFVwRlQ4VGpIejZy?=
+ =?utf-8?B?Sy9BQVZ0dzNaTHFPbk9HSUl1RHZKOWMzSVZQUEFCck9JYmVBeXo4TzVEUVJL?=
+ =?utf-8?B?NHMzaTk1dUpTdHY5NjZvV0tZVTlZeGZlRGhSdklPL1hVN214MnFpbzREVEZv?=
+ =?utf-8?B?Wi9Oa1gzdncxVFdxWVZLeHNrcVprL3hESVJIWG9VRWJHdFJSZEhPQVdKdEZE?=
+ =?utf-8?B?cWJKdE14cGZVcE1RajRVblpFeENNODErT1FmV1BFMFdWc0IzMm8rSWpuc240?=
+ =?utf-8?B?ejBsd20ya2F1UVJnRkZaMnFvRkpnQVRrSE93bVVsZW0vOGpMRnBSMzR5TGRq?=
+ =?utf-8?B?Nm9yQjFlMHV3U3VwbmpsdnFYS3hjdFRuUjlaRE41MTF1eXc2Ukw2QWEwYUVy?=
+ =?utf-8?B?VnI0M2hzd0p0cmFZd1ZzblV3cjdaRTIrU3h4ZUUzbUJmbXRxZU1WaGJ1d3d4?=
+ =?utf-8?B?S3o1VFJLeFd5Ny9WV1dnQ0xDcm1kYm1LeGp1TEFkRmorNmtoMVJpZWxHYmE2?=
+ =?utf-8?B?NE1PRTlpRTBxNXlhakxaZ1d3emhzQ3pGUWx1MGhkdXVDRjhtZGR0a3N5QmxV?=
+ =?utf-8?B?eERXQ25oL3pyNkVqUjR1OHFtdGlDMTBuOW15VG5XaitDWGVDRDRwUWtBWlJV?=
+ =?utf-8?B?OHRaTnZSbm1uYk0raityZEpSa0M5dnBEcldabWE4akxubG5VWlJRaytnVGpY?=
+ =?utf-8?B?QUgxYVV2Wi9tNDYvekFzVWlxSk5lWFpTcTFxQXhOeWc2SEtFRzZ1N0EzeHhH?=
+ =?utf-8?B?aEdpZytaSzl3L05rYmlPdUQzd3JtNGY0V3IxUk1Tb3YxeWJRVENSN1YxYlNo?=
+ =?utf-8?B?MDVEZEJTMVlMbmNvYjIyK3U3d29zVU9rSlpoSGtoQzAzZmh1VU1xdGN0QUEx?=
+ =?utf-8?B?SnVxd2wwbVpqMWQvWXMrOEt2STZ4YVNiTzczYmsrdjdWemdCbE9oTDE4aGZK?=
+ =?utf-8?B?Tkl2REJabXc2WjJURDR1TVFQMXErMG9oanJCcFlZbVlYblhCWmZjeHdDNmNi?=
+ =?utf-8?B?VnROd0ZtK0lDVExTYkFlZ2ovKzk4cTU1V1ZoUk1uR3lQSDNpOHdRcEFYbVMz?=
+ =?utf-8?B?TUt4ek9XMmpLMWsrZ3o5c0swWWFzU2NabDZ3TExGT05qMVltME5BUT09?=
+X-OriginatorOrg: garyguo.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7af1e3b4-a1c5-438c-c3d2-08df1f548170
+X-MS-Exchange-CrossTenant-AuthSource: LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2026 00:39:52.0215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZgicdMqo8Ec9YrCSPzQDpI3TXv2PfMaKexF4PIdyu3thH3WHV8GpKUuGe9j3t8bkxK05dFfPKR7qeTSPbjMjRQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO3P265MB2155
 
-On Wed, 30 Sep 2026 14:52:50 +0100
-"Gary Guo" <gary@garyguo.net> wrote:
+On Thu Oct 1, 2026 at 1:29 AM BST, FUJITA Tomonori wrote:
+> On Wed, 30 Sep 2026 14:52:50 +0100
+> "Gary Guo" <gary@garyguo.net> wrote:
+>
+>> I think the API should ideally use `Option<Delta<Jiffies>>` for this cas=
+e, and
+>> use `None` to represent indefinite wait.
+>
+> For read_poll_timeout(), where a timeout of 0 means "never time out"
+> in C, we did not take Option for the timeout. Alice's comment [1]:
+>
+> | Another thing is the `timeout_delta` option. I would just have
+> | written it as two methods, one that takes a timeout and one that
+> | doesn't. That way, callers that don't need a timeout do not need to
+> | handle timeout errors. (Do we have any users without a timeout? If
+> | not, maybe just remove the Option.)
+>
+> serdev is in the same situation. Do we want an API that uses None for
+> "never" here?
 
->>> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
->>> index 17ca504b7f8d..094503f059ff 100644
->>> --- a/rust/kernel/serdev.rs
->>> +++ b/rust/kernel/serdev.rs
+I don't like the "using 0" to mean forever, because 0 has a more sensible
+meaning -- which is just do a poll and don't wait.
 
-(snip)
+This one doesn't even return a result at all, so `Option` sounds reasonable=
+.
+Alternatively, just use `MAX_SCHEDULE_TIMEOUT` (i.e.
+`Delta::from_jiffies(isize::MAX)`). We can perhaps add a `Delta::MAX` for t=
+his.
 
->>>      #[inline]
->>> -    pub fn write_all(&self, data: &[u8], timeout: Jiffies) -> Result<usize> {
->>> +    pub fn write_all(&self, data: &[u8], timeout: Delta<Jiffy>) -> Result<usize> {
->>>          if data.len() > i32::MAX as usize {
->>>              return Err(EINVAL);
->>>          }
->>>  
->>> +        let timeout = isize::max(timeout.as_jiffies(), 0);
->>> +
+Best,
+Gary
 
-(snip)
 
->>>      /// Use a timeout of 0 to wait indefinitely.
->>>      #[inline]
->>> -    pub fn wait_until_sent(&self, timeout: Jiffies) {
->>> +    pub fn wait_until_sent(&self, timeout: Delta<Jiffy>) {
->>> +        let timeout = isize::max(timeout.as_jiffies(), 0);
->>> +
->>>          // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
->>> -        unsafe {
->>> -            bindings::serdev_device_wait_until_sent(
->>> -                self.as_raw(),
->>> -                isize::try_from(timeout).unwrap_or_default(),
->>> -            )
->>> -        };
->>> +        unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), timeout) };
->>>      }
->>>  }
->>>  
->>> 
->>> base-commit: f1850e443b0e4f2429ddf42a8d5033ea54ae8a90
->>
->> Both functions have "Use a timeout of 0 to wait indefinitely." inside
->> the rustdoc.
->>
->> Make sure `Delta::ZERO` is also usable for `Delta<Jiffy>` and replace
->> the 0 in the rustdoc with "[`Delta::<Jiffy>::ZERO`]". You might also
->> remove the "timeout of" part, but I don't mind if it stays.
-> 
-> I think the API should ideally use `Option<Delta<Jiffies>>` for this case, and
-> use `None` to represent indefinite wait.
-
-For read_poll_timeout(), where a timeout of 0 means "never time out"
-in C, we did not take Option for the timeout. Alice's comment [1]:
-
-| Another thing is the `timeout_delta` option. I would just have
-| written it as two methods, one that takes a timeout and one that
-| doesn't. That way, callers that don't need a timeout do not need to
-| handle timeout errors. (Do we have any users without a timeout? If
-| not, maybe just remove the Option.)
-
-serdev is in the same situation. Do we want an API that uses None for
-"never" here?
-
-[1] https://lore.kernel.org/rust-for-linux/aJm9A_D-zlJtbV6X@google.com/
