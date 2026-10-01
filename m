@@ -1,164 +1,108 @@
-Received: from mail-ed2-f32.google.com (mail-ed2-f32.google.com [74.125.228.96])
+Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5164F3DDDC0
-	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 18:58:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.96
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790881100; cv=pass; b=N/32QGToMRPU88ZezL20T0sbjZLuJ30xCaAt3xz1lpgADkjn0FTLyrI76k+T2e2aWYxREj09Si9P824+BbtDnaXetrYf/VtzKUFmks2nuEYA3a/KgSzcFjp2KDMOtvFcwlk+qL40n3AeNl0CIFyYiWzdlzram5/ll3TbIWci5lc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790881100; c=relaxed/simple;
-	bh=ZBhMOmtdPtm2ewznb0I6h4e/lc4ZNSuv3xrzaOINis4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HnAQgAHu+VPqlZ6v74nyQ0kvcjXU0iIIY9Rr6HLvSCKF1TqgVTD52dDGG6d1EhDuxPVgLPFVyEgr7bovf+EPZD9fcQy8uRzDP+1Pgi1lQUCD7I31KwBS4Gvd62+i+hlSqlEqzMNd/wjy5UPIYSE5M5czgf6grMDBAwBG4MhGUFU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XehcVlCD; arc=pass smtp.client-ip=74.125.228.96
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216D9306B3D
+	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 19:03:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790881435; cv=none; b=DvaHg7/xJSepormJu8eBoxA+dBmlJFDOSQfUX4gSWmqYeD2UlK7VFMlEw9S0CkJ/2fzLGZwxn9Q7PlBdpdQdtGpJdSbrbfVWWg93E32eJlB9tHybTbUHdHpt2Ne122guWa+hZR56myWVAnkRAZ025kSn5/WRnBOfniRMu5F+BTA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790881435; c=relaxed/simple;
+	bh=GTQrB6fHqvL+6UsnsGE2F005nwTcDsoCe/TNBa4j+gM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=SrRLYVMM7ICWOuqFUbpsq5CV7iqP7GxoTUv5mnBlmZxectboZ7OjT1aqzwgRUHNezb6gutaN1+Y9jN505l/NdA3EYJjPNHu+JuRNPwoC9waumy8976ATyIrBdPFwcAp1zI+ENbIifLOsXRB6kDVEN66UovZV9YbGef4lfxzWsns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=djH2I1YX; arc=none smtp.client-ip=74.125.225.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XehcVlCD"
-Received: by mail-ed2-f32.google.com with SMTP id 4fb4d7f45d1cf-6ad186afdf4so4733630a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 01 Oct 2026 11:58:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790881097; cv=none;
-        d=google.com; s=arc-20260327;
-        b=KWvWmzo4Vfqa0UarCkO0pzPSFqGM3uLTf/T0PlyCsOcx7tr0ipsI6eGaPWzxMvp9C5
-         jLXpGryITqkbEKzGV1/nz0kPNQ4C+SdJKC3LJrJkkWrDQnzQoTbbXjj3Fb7ttISUpVYN
-         ZkBIm0AbpojmacMYdESs+ol5nAKSWEx0OzAfWGJqIh9sD1qxh8YHM8ioP3GpYvFdTh1o
-         Vg1KqmKctPcIpU36TbalCYh9rkibQ3DXyqmGYT7qDRK2cjIuzVVmz5GXCLOLRDORzchF
-         4qfrCYd5A30qk52FBcjdNSfqyMUK9TAl0v1+wTNgKoPkxniS4CiqrDHG7B4ZKhok8WGI
-         cZ9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=+gdBCcya7Jd9eS7uFOMyWkhA5NDxvi9ClIG0tBCXyRE=;
-        fh=yBXTMFpvpq/6iufX8D9yKl+GmlU/n1SsxkVONCqx1ds=;
-        b=nqKZJGYU59SFMsE2LPYpyA+cY1zyHLHUL8l9QbzjkIWQbYGLuKt18Ng5mZb+RqZ4qw
-         En0aQcgf1W7hpeQ9iLvPB8ljUXeeNgRp/iUOQ61b9xxrpYqxB205ybtiKAN0jVjnvVUg
-         OYGbaESTsvUzxbdaYBEGrWZVxziJRVoJ1BjrcIvI5+cvfAktaUE44txpS3OErhlmBYUp
-         hQdggqV2XwbXOkx2wFn/b/U6tFb8iqcCKXAGDemYpkzcmVzUw1gEFn7MiEyVNsYPzzSO
-         MLUzUh3Oqf73OyWLKhDzMxD5mmii3DOx+0vguKVPFISRQaUdJ2hfGQTp8o0Yem0UHmME
-         Ehsg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="djH2I1YX"
+Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-48b09f6bbe8so682284f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 01 Oct 2026 12:03:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790881097; x=1791485897; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+gdBCcya7Jd9eS7uFOMyWkhA5NDxvi9ClIG0tBCXyRE=;
-        b=XehcVlCDrWzmlinD4tVaUcORuE1PKauvKECaWQ1Xtr2Fo/3ypZ/ajABHfjEmKrndhO
-         1JpWtIscNLvjAeASkCgzUQIjpnrS0IJw8YOZHn55qXxae3qI1MQQCJ6Pg4yQKDJl88+i
-         m5PRW2L7Cfef3z3QWSqqL9xDFZLCKcyoZs+ZvQWAaROSNgT7j+CFthyMttlT0pYdlmVU
-         ApUQaX2gJwoCsC1iqf5rCAUJ7A0V3ysbc79HqdEe0oStr08zWcbTxmLAoTajnRvbdx+U
-         hNhrkGZ25XPs5cdTxRmW2RQ1H8cBbjsgpSmzxTc8qZGmJrrb0Rzx43O0EajuBYlvam8b
-         MwQg==
+        d=gmail.com; s=20251104; t=1790881432; x=1791486232; darn=vger.kernel.org;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=JH8rWq/AytgPhFoS61LuGcNOLtYiANYYgdfeoHCVlD4=;
+        b=djH2I1YXE0D9+SOJ1sNcUzmwLybWDm6PRB/Y+vVxkHMYiomhSWVMqwLTWrgxb9y+An
+         ryLVm67r8jpGpQhvntTzhiAFwrcp9wKaOPgclWvDaaD+fQPD72AcghCjavUtlOoCbCST
+         cw6thV5gEZfdsl08/95/vDnsamvmcCER8TKqnePbqJY11fE4V7fR02nZaYuOMDI3gOuV
+         UD8+9aKh1mxufH8BwzmMZzeJ+k1+CDKh1rhfBGaBSWpeebmsqE9m8CE+6pM6adFYFFWd
+         biyS2ajqNIg7mQgBBmcbkw8bk7ojZJbEE1TYmLENcs5AKvVV7PKahk2fAirkImoOo6PA
+         2RGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790881097; x=1791485897;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1790881432; x=1791486232;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=+gdBCcya7Jd9eS7uFOMyWkhA5NDxvi9ClIG0tBCXyRE=;
-        b=QSDEiyABQC3P9AtvrsnBIaauvf3vb8lroJfALuY4yg8h3nULap6UEI9mAo2AY+Fe64
-         1HHldiudoFX8bedkN0ApTYbP9/JIKR/yRr5iKVKLyzWYWFw2DzHCE776BGoBVKdJdBjR
-         5uyE6cqDekZxOn6PuDCyfDPE+Ue/vy/dr5lTyS0WTAYvEIXVxP5gum2PLl8qWxOUoV2F
-         Jw2G9FGIXBQdDsFdwM3xftzEAUE9B8j0h+rRN11nDHShrP6aM4+h7pnFA5R0Tlu4kIHv
-         +/nh78W8/rVzEmnYc0i0JqpqjqYVBe7QZfOMCvMvn12sJLpz/79hwOn3p+N13QQt16Ju
-         +dZA==
-X-Gm-Message-State: AFq9FYLN4jl86GXy/I5HzK1vV7ZBcoZZCtBodz0VJodo11jH2pzaXAYs
-	EPrsmTvahimSdcYv0CQhLV+/Lr6p2ImQw0zv1+p3SVmJ4GGgMKFkIVHcsVj/DBhpEs2tOwJ5b6d
-	rtsR9cscQOyL++GuJHSZsRrIFGBacY+U=
-X-Gm-Gg: AYBFou10uvFs7I7fVcDYoZe8tsHEUwHER012QM1ZorqYO5GJMQOeDcrvQLkDCsok5sx
-	utJMWpkMOlI1d1Sr0jAKIqhIaXKmAwCrVN4yolh3U8LB+6vieA1a3LiH+t+jNmuGy7bZtRSKCsY
-	lhOxsBXVN/lUjRY//ELUWtsk81C6SPj9jrZg+P5giMFiGADcgH7HKjTsjoSXjmaNbkU0OLCcfDB
-	kgqxmrcTkBzjdUV4n84YBgOmAVKtJwEpknggunFsZnbKChwEsF6vJzzX1EjoWxWl1geYy8/cxy3
-	S9Zsgy2i96LLXP3kx8xsZc3NSCswGjNAajMDxsjV+8ldQaJTu1MNsCO+/LIFdQtwG/YOag7Zaut
-	RfAZWJAX2BS2H64wrV7S/rmM8yZofHj1bujXcNNFjgxxvuUIe2m9nQhHvJdvUpPhxjWCinM8L+k
-	FkcyKpDAXLL6aYUKNfMjnc+pYbz8Gd2+vyM6xzzl1r7rpdJV4A9iYEDlrJUjLRmrkZTw==
-X-Received: by 2002:a05:6402:320a:b0:6a9:ae86:bb1b with SMTP id
- 4fb4d7f45d1cf-6af9e03ded3mr104018a12.5.1790881097207; Thu, 01 Oct 2026
- 11:58:17 -0700 (PDT)
+        bh=JH8rWq/AytgPhFoS61LuGcNOLtYiANYYgdfeoHCVlD4=;
+        b=Pf1Hwcub45r22OBfIenFetvU2oGXEJnbVldpXvFgmGZ4+91v/RRKWb8xFgqxeCDYqO
+         rQrvU8t3zEn3/KIP//5O+F2+TuMsi2j9Qil/MTMcG9mXItyJnje5Zk5EagPsyibWoECo
+         OwZWJFqoftN+J37/8hoxejDa/OlwCricKlSuyfm4gavX3PTrCXRMbYlgyOdcfAxBNeq8
+         lou46eHOF47gUdllvq3NvuGQnBPt7G+P8At1Zakbf6tIznQaGCo1MtuE4Fmd18j22wb9
+         niccniArZS2yqD1FpT1bsaeQU25q0rc/AM07z3qbvK/TJuHd8eva1bh57cVAx94CEqWJ
+         LzDA==
+X-Forwarded-Encrypted: i=1; AKwUvByJwyGjVISKNirSbUr8auwxYbqX4ouy0Av+zy2bw85rKMuh296KqyrSyrJpdcVe6OtqQwdCPMQU1amf+j8=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL8CgdhDqKBeSIbxIc3vFAbcwq7erFd1URHGe0yZGI3qJjoVI2J
+	7P6qlp+NaJh/J1rMXcCpb0uHD9Va2EELVYEi0blkap7fOtxGnCzwnKEK
+X-Gm-Gg: AYBFou2hu9xMmc9b5O6e3yvHoJp7ZLkP/RRtb3hNxuJxYTih/9XxcP4Py/DMSs1cLMC
+	pRIUvITwqi+b9NXi9u8twdEO40xVS8CdF4GiRcwqToKmAtewBWJ0FsZ1PeGvIbpaN84Uz6TYH6s
+	9nRVvfz2ZNvyKFuH5kOV/5gS0TSZXDHoAVlRLagC2exEey54LfNuR/lERD7jum0PZkYb8Ow06Ly
+	j62CF/ljLVrkJnm4nhGHLYGHsSJIFw8JnjCW65oFA6C5K5qdhB/v8JknixpNTb710I9bIwHsct/
+	ehPWBShpHt3LgbOQGIBeIEPA/owlZ6uV+mfN97lPr4/yhn6Ws94NPCzEaqxUY5jg+ixPnDhDQNn
+	QHJrc9zL+nrOV7YpfwqUe951Op8KIoM/aGvuCHCRvz+bgg6khecea2T1dhP7HOjiMjlA10Abcpx
+	wcLnKR9vNmzenA/G5yovMXfuiLS0udZgpG5L8dNOAoygoP7TqqNjHevC6HFKy8rfnToVOv0wE6R
+	jX31AHLRFd4qi7vL44FsmY9Tty1gt6PBA==
+X-Received: by 2002:a05:6000:491b:b0:487:da0:df5a with SMTP id ffacd0b85a97d-48b12729938mr853133f8f.42.1790881432191;
+        Thu, 01 Oct 2026 12:03:52 -0700 (PDT)
+Received: from [127.0.1.1] ([92.241.23.201])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48b380fada5sm222539f8f.24.2026.10.01.12.03.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Oct 2026 12:03:51 -0700 (PDT)
+From: Fil Dunsky <filipp.dunsky@gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject:
+ Re: [PATCH RFC 06/10] dt-bindings: serial: Add Cortina Systems CS7542 UART
+In-Reply-To: <20261001-depose-jawed-f58674109fe7@spud>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
+ <20260930-b4-cs75xx-v1-6-4617c4463529@gmail.com>
+ <20261001-depose-jawed-f58674109fe7@spud>
+Date: Thu, 01 Oct 2026 22:03:49 +0300
+Message-ID: <179088142900.827715.5924606072568297915@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260925183050.56839-1-rosenp@gmail.com> <2026100129-unrest-cleaver-6528@gregkh>
-In-Reply-To: <2026100129-unrest-cleaver-6528@gregkh>
-From: Rosen Penev <rosenp@gmail.com>
-Date: Thu, 1 Oct 2026 11:58:05 -0700
-X-Gm-Features: AclHuK96Et8-MkZL9LMhD_ijnC8Z5TWGJ6g5yJxUOPLdgKxS1Jb9-JO48yVLGLI
-Message-ID: <CAKxU2N8Z-CSxki5mWQvJCEiQDmy00WLJqPEMgujOA0LQzbHHjw@mail.gmail.com>
-Subject: Re: [PATCH] serial: arc_uart: Use platform IRQ helper
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, 
-	"open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc@lists.infradead.org>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"; format="fixed"
 
-On Thu, Oct 1, 2026 at 1:42=E2=80=AFAM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Thu, Oct 01, 2026 at 07:48:03PM +0100, Conor Dooley wrote:
+> > +description:
+> > +  The UART found in the Cortina Systems CS75xx (Goldengate G2) SoCs. It has
 >
-> On Fri, Sep 25, 2026 at 11:30:50AM -0700, Rosen Penev wrote:
-> > Avoid calling irq_dispose_mapping() by letting the platform_device
-> > machinery handle it. Also enable possibility of handling -EPROBE_DEFER
-> > and other errors. Handle as early as possible to avoid doing unnecessar=
-y
-> > work.
-> >
-> > Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> > ---
-> >  drivers/tty/serial/arc_uart.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uar=
-t.c
-> > index 3988e5958896..b46b057a181b 100644
-> > --- a/drivers/tty/serial/arc_uart.c
-> > +++ b/drivers/tty/serial/arc_uart.c
-> > @@ -30,7 +30,6 @@
-> >  #include <linux/tty_flip.h>
-> >  #include <linux/serial_core.h>
-> >  #include <linux/io.h>
-> > -#include <linux/of_irq.h>
-> >  #include <linux/of_address.h>
-> >
-> >  /*************************************
-> > @@ -571,12 +570,17 @@ static int arc_serial_probe(struct platform_devic=
-e *pdev)
-> >       struct arc_uart_port *uart;
-> >       struct uart_port *port;
-> >       int dev_id;
-> > +     int irq;
-> >       u32 val;
-> >
-> >       /* no device tree device */
-> >       if (!np)
-> >               return -ENODEV;
-> >
-> > +     irq =3D platform_get_irq(pdev, 0);
-> > +     if (irq < 0)
-> > +             return irq;
-> > +
-> >       dev_id =3D of_alias_get_id(np, "serial");
-> >       if (dev_id < 0)
-> >               dev_id =3D 0;
-> > @@ -607,7 +611,7 @@ static int arc_serial_probe(struct platform_device =
-*pdev)
-> >               return PTR_ERR(port->membase);
-> >       }
-> >
-> > -     port->irq =3D irq_of_parse_and_map(np, 0);
-> > +     port->irq =3D irq;
-> >
-> >       port->dev =3D &pdev->dev;
-> >       port->iotype =3D UPIO_MEM;
-> > --
-> > 2.55.0
-> >
-> >
->
-> You forgot an Assisted-by: tag here :(
-No LLM used here.
+> Different SoCs need specific compatibles.
+> They can fall back to the cs7542.
+
+Right, the text reads as if the one compatible covered the whole
+family. The binding only describes the CS7542, which is the only part
+I can test, so in v2 the description says just that, and that the
+other CS75xx parts and the Cortina Access ones (the same block, see
+the discussion on patch 7) are to be added with their own compatible
+and "cortina,cs7542-uart" as the fallback. The compatible stays a
+single const until one of them is added.
+
+Thanks,
+Fil
+
