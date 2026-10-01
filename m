@@ -1,170 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8023AEF56;
-	Thu,  1 Oct 2026 12:56:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E42CE519912
+	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 14:07:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790859369; cv=none; b=VOP2NkMKIoHvOPEGXuWfsZU4p6M0QchS5lF+OcTBzPuIJi/Z3kUQ4Tv6nG5FL39j728ecDitsxwS/8+m4v9gCEUTII3J6A1mz+Xeb2hG54a07NnzGUnVC5LqiDbafJe/+7ZFkfcJF/KW0y9zpMG82P0H8Q+TYXX4Da6TlVkB4R4=
+	t=1790863655; cv=none; b=JjL05qHM6kUNENh0I74VrNVzUTmxSqlXp+pecn4uE+f5vxpxi5MSGH4Fn5uVNHChgMtmaV0J5u0inFQtIQ7jGAJGZvXkXjLzkWIXTCCaGF4AlZTTRCWPYcL1t+hdEMIRVNGwesWyzEvxr+pjQlCGT4SRWKmt3Z8Sp+eU6Gfwxw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790859369; c=relaxed/simple;
-	bh=lr8mhxzproW+Qgv7R7SpyFbt6jvUf0jjDsRWDMaQp7E=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=JsZUPNyhiGHZOpwtGvpm7nQacH+osTWhA0q6xQ3DRJR9hOZ9SKv4rwMPkGq277q7tV7n+BoFG22sO58lUKN40F/fIeFRy0f4p8yJqnVOXzvgHb4hdwTChyB0sdH2ZblMR4Gxp2jAQ5jKVTn+OjsfksaIQd/G6yqzdpT9NeR3VFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OSh6vWIo; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790863655; c=relaxed/simple;
+	bh=TuVpEwAlwlnPZRUBPH2tPbpeRZXgxrKHau0lKsr8EPM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lAlVg2SfFuW41fYGbQQCQRphtFWLoQjKNqIao64dGuTrCQztguj9SHGGQvZ+ZPO92Day/k0+lYiH9QBcZVxHix3u+yvLgNUKGSKu7ctLaC/iYDNgtbEpEACUkXcxjGJ5uVwmJDK00XX//EEEqckCIJAfjw7GO7AMLu22JChqook=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=GY1LDGZq; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OSh6vWIo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D99071F000FF;
-	Thu,  1 Oct 2026 12:56:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790859367;
-	bh=R8qJWUn2+S7UJPBG1ZhM/jt62L4jpx3jXiyLqBVTUMI=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=OSh6vWIouumpWK+f+14lEyjM7ZPbL/MGuSU4k3GDwd/Iim+4pfx86lodna9KP2L6U
-	 YoKnYtTUAQ6vUMkmyxp7HWFEbU5CRbXwsM+9xEIES6F6C8jsPuQHQ8Y3HM5zXDBXVK
-	 j/NEtS1IG66MJAo0sHzMZdh3Pr6qrS97IiminKGuFb16Gjw5pCdqwGzNXg2kqDkItV
-	 lJQumbCHNwMSivTHV+huSnOh3gOB5JtauNFkzCQsQe5NOWZrO6hey7c5m0idNTDyjv
-	 D6UuAZLSqOZbz1Ab0oD9sFixb0jOoXdGV2q19/jsWI/G10YkuDSBMxTI6aGp3u0jM+
-	 lXm2IrABQ/xVQ==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v9 11/15] gpio: pl061: switch data path to gpio-regmap
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Long Zhao" <longzhao@ambarella.com>
-Cc: linux-serial@vger.kernel.org, robh@kernel.org, linux-clk@vger.kernel.org, lee@kernel.org, conor+dt@kernel.org, mfd@lists.linux.dev, devicetree@vger.kernel.org
-In-Reply-To: <20261001-cv75-v5-v9-11-486cc289a4b8@ambarella.com>
-References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
- <20261001-cv75-v5-v9-11-486cc289a4b8@ambarella.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 01 Oct 2026 12:56:06 +0000
-Message-Id: <20261001125606.D99071F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="GY1LDGZq"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ffe281cb1so34434985e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 01 Oct 2026 07:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1790863652; x=1791468452; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=KaLK6xVc80DoR2HBVg5Dlww4zduxs5a3g6ln9kbuC6Y=;
+        b=GY1LDGZqBnxW32dvTykCI63qeWUEH6MpBK9vtGWGOSMNnS40JSGCXCiEnHYo2ABPsB
+         6jwaE19Bxu6TkOXmW7pobM6/8pn8U6PzQZjmdEw4jUMsT4VvWsMEARun5D78s4+ya70/
+         viba+pt2LCO34+gw9NjjI4aj1BO3O6321BcUWfOQpCD0JM/6g3IL1D1YXL7I+u0GDldq
+         q7+ffwaU/k/kbt2d+5NAfUOY6IvUG+Qep8O+BknqeNaDSrfHGlVgUsyOs7yHi6PFthxP
+         pwUlyN6pLvF+xiuMz9C2358cqZAl+Kn6Pzg/cpQZjFA9qI52CxhR3MDIGghKjoh0rN+R
+         XwLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790863652; x=1791468452;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KaLK6xVc80DoR2HBVg5Dlww4zduxs5a3g6ln9kbuC6Y=;
+        b=Sbt6VIRdqxwcJTX/WDQ8ChF5cGR6mxPB9Uka1ha5qRkR0JrLu6P7ne6gcKsSF34HDI
+         KC69j/hsXrQIh21QrdGnIm6k9pNdWqMRQ9Wf8+OTBWUREZ46zhB/M4TqnTWg8Csp2inv
+         ikgbYTURex2EVq/wT7mpuWCtfowVyoxZyC6WCvw2pLlCEyOTD1PFUc5Rz8y44wrKQ5eK
+         2ST6T0liiLcvyBhG+lmJjOQioW2ZhykbnLP7+pLVL6sUkEjwOcHVokHpHXYKmdA9eZlJ
+         CEbklUUNpytMQw2uIaIAavyCrajN2VXQOMoLOhzbUUcmYV0FMQGPHCfB3pUTk+eVMWxo
+         Ij0Q==
+X-Forwarded-Encrypted: i=1; AKwUvByPWI1SqNK7EGHA8iO8n6+fbnNOUI3yPpf3NgmqCjOlmaWO06X58oHiuWfHL6en/t5z03pAvC+KdYpmmjU=@vger.kernel.org
+X-Gm-Message-State: AFuF++lNPxo1Fs4g6Hxh8C2P3eCX4ID4Ay/dOL0S6IKL3Rdf1Bkd5ZaG
+	N6xPWa6bgq44ALvKwhF09AonHADvakmBfovQB0twtSsxoy2mUuErIdXiTNrkkjvANrc=
+X-Gm-Gg: AYBFou1kcC0gtfh5Auq2hSK4Rulb32WDN3Wb1a/qOs0YFTcd+Km+O1KvYAGy4WFKTrd
+	sDa8ppy08gLsOeN1k3HVAWpff8MggZ38jA7Efs1Yl2R6mz+5yVakuaJzVh9vwM78QRImlX9ZH/h
+	eWNbgz92+rhNBXDQM+S9C43ccAwMqbXqhTpYirCbbXhlCKmf/PbA08FHrKoPx/btItI2NW0+s0X
+	em+9OHNRT6JYSKQn9ha5ND7D432hGbL57zcKTrebCGkR6hUFYQzhGw+GGl4RB406ZfwgeuzXc17
+	3CjNG97ATQcltynvCXMWwdoj9AsSMD6x6AWKw3nRKt92tp4wOsR57MYrlu1GSLWyETX8g542DAo
+	Db7bdUrHyNhN9poVbgHvQVAVnlHr6QUfIA1TKCOQjD3X6HL3hZFkfMah8lJjTpYugjtb+Gcuxow
+	5Q2T29gfSb7Cs3suimBG7rskIpfXcNOqc6D8smxxtwXRA4CDs7PhSrmGraek40DM4wevnP2Hwc
+X-Received: by 2002:a05:600c:4fcb:b0:4a0:3b9:f16b with SMTP id 5b1f17b1804b1-4a01ab4f2d9mr90543535e9.0.1790863651874;
+        Thu, 01 Oct 2026 07:07:31 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a023798b54sm39456895e9.13.2026.10.01.07.07.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Oct 2026 07:07:31 -0700 (PDT)
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Samuel Thibault <samuel.thibault@ens-lyon.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Fushuai Wang <wangfushuai@baidu.com>,
+	Kees Cook <kees@kernel.org>,
+	Stepan Ionichev <sozdayvek@gmail.com>,
+	linux-serial@vger.kernel.org,
+	Manuel Lauss <manuel.lauss@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Petr Mladek <pmladek@suse.com>
+Subject: [PATCH v4 0/1] braille: nbcon: Fix Braille console for NBCON API
+Date: Thu,  1 Oct 2026 16:07:26 +0200
+Message-ID: <20261001140727.124398-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
-s) to consider:
-- [High] gpio: pl061: UAF due to LIFO devres cleanup ordering
-- [High] gpio: pl061: Missing GPIOCHIP_IRQ_RESOURCE_HELPERS allows HW confl=
-ict
-- [Medium] gpio: pl061: Missing synchronize_irq() causes UAF on module unlo=
-ad
---
+Hi,
 
-commit 0dd970f78f76a57be040a10722f95f7c065440ed
-Author: Long Zhao <longzhao@ambarella.com>
+this is v4 patch which tries to fix Braille console driver to work
+with serial console drivers ported to NBCON API.
 
-gpio: pl061: switch data path to gpio-regmap
+I did a quick turnaround because it would be nice to get it into 7.3.
+Many people attend Plumbers conference the following week...
 
-This commit migrates the PL061 driver to use gpio-regmap for its data path,
-handling the PL061 quirk where output values must be written after a direct=
-ion
-change. It sets up a custom irqchip and domain attached via gpio-regmap, and
-modifies the interrupt handler to appropriately check regmap reads.
+Changes against v3:
 
-> diff --git a/drivers/gpio/gpio-pl061.c b/drivers/gpio/gpio-pl061.c
-> index c821a5117eede..08d45f8923c2a 100644
-> --- a/drivers/gpio/gpio-pl061.c
-> +++ b/drivers/gpio/gpio-pl061.c
-[ ... ]
-> -static const struct irq_chip pl061_irq_chip =3D {
-> +static const struct irq_chip pl061_irqchip =3D {
-> +	.name			=3D "pl061",
->  	.irq_ack		=3D pl061_irq_ack,
->  	.irq_mask		=3D pl061_irq_mask,
->  	.irq_unmask		=3D pl061_irq_unmask,
-> @@ -322,67 +256,187 @@ static const struct irq_chip pl061_irq_chip =3D {
->  	.irq_set_wake		=3D pl061_irq_set_wake,
->  	.irq_print_chip		=3D pl061_irq_print_chip,
->  	.flags			=3D IRQCHIP_IMMUTABLE,
-> -	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-> -};
-> +};
+  + Removed unnecessary "locked" variable. [John]
 
-[Severity: High]
-Does the omission of GPIOCHIP_IRQ_RESOURCE_HELPERS from this irq_chip
-definition detach it from gpiolib's resource locking?
+  + Allow to use console driver even without write_atomic,
+    except for panic mode [John]
 
-Without these helpers, gpiochip_lock_as_irq() is never called when a pin
-is requested as an IRQ, so GPIOD_FLAG_USED_AS_IRQ is not set. Could this
-allow userspace to accidentally reconfigure an active IRQ pin as an output,
-causing hardware conflicts?
+  + Added parenthesis around (con->flags & CON_BRL) [John]
 
-> +
-> +static int pl061_irq_domain_map(struct irq_domain *d, unsigned int virq,
-[ ... ]
-> +static void pl061_remove_irq(void *data)
-> +{
-> +	struct pl061 *pl061 =3D data;
-> +
-> +	irq_set_chained_handler_and_data(pl061->parent_irq, NULL, NULL);
+  + Exported nbcon_write_context_is_braille() [Sashiko]
 
-[Severity: Medium]
-Is a call to synchronize_irq() needed here before proceeding?
+  + Fixed many typos and wording [John]
 
-While the chained handler is cleared, there appears to be no synchronization
-with in-flight handlers. If pl061_irq_handler() is running concurrently
-on another CPU, it might still be executing when we proceed.
 
-> +
-> +	for (unsigned int i =3D 0; i < pl061->data->ngpio; i++) {
-> +		unsigned int virq;
-> +
-> +		virq =3D irq_find_mapping(pl061->irq_domain, i);
-> +		if (virq)
-> +			irq_dispose_mapping(virq);
-> +	}
-> +
-> +	irq_domain_remove(pl061->irq_domain);
+Changes against v2:
 
-[Severity: Medium]
-If pl061_irq_handler() is still running, could it access this freed domain
-when it calls generic_handle_domain_irq(pl061->irq_domain, offset)?
+  + Use con->device_lock() for non-panic case. Try even an unsafe
+    acquire in panic(). This simulates the legacy locking using
+    NBCON API.
 
-> +}
-[ ... ]
-> +static int pl061_probe(struct amba_device *adev, const struct amba_id *i=
-d)
-> +{
-[ ... ]
-> +	config.parent =3D dev;
-> +	config.regmap =3D pl061->regmap;
-> +	config.ngpio =3D data->ngpio;
-> +	config.reg_dat_base =3D GPIO_REGMAP_ADDR(regs->dat);
-> +	config.reg_set_base =3D GPIO_REGMAP_ADDR(regs->dat);
-> +	config.reg_dir_out_base =3D GPIO_REGMAP_ADDR(regs->dir);
-> +	config.reg_mask_xlate =3D data->reg_mask_xlate;
-> +	config.quirks =3D data->quirks;
-> +	config.irq_domain =3D pl061->irq_domain;
-> +	config.drvdata =3D pl061;
-> +
-> +	gpio_regmap =3D devm_gpio_regmap_register(dev, &config);
-> +	if (IS_ERR(gpio_regmap)) {
-> +		if (pl061->irq_domain)
-> +			irq_domain_remove(pl061->irq_domain);
-> +		return PTR_ERR(gpio_regmap);
-> +	}
-> +
-> +	if (irq) {
-> +		ret =3D devm_add_action_or_reset(dev, pl061_remove_irq, pl061);
+  + Return when the nbcon context can't be acquired in panic().
+    The NBCON API is not ready to ignore the lock. Well, it
+    should never happen in practice because the unsafe acquire...
 
-[Severity: High]
-Can this devres action registration order cause a use-after-free during
-driver unbind?
+  + Avoid the newline prepend logic in all serial consoles
+    ported to NBCON API which have it. Add two APIs for
+    checking whether either "con" or "wctxt" is in Braille
+    mode.
 
-Since devm_add_action_or_reset() is called after devm_gpio_regmap_register(=
-),
-devres will execute pl061_remove_irq() first during teardown because it uses
-LIFO ordering.
+  + Update commit message and comments in the code.
 
-This means pl061_remove_irq() will run and free pl061->irq_domain, but
-the gpiochip is still registered. When gpio_regmap subsequently unregisters
-the gpiochip, gpiochip_remove() will eventually call
-gpiochip_free_remaining_irqs(), which will attempt to use the already-freed
-irq.domain pointer.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261001-cv75-v5-v9=
--0-486cc289a4b8@ambarella.com?part=3D11
+Changes against v1:
+
+  + Merged into one patch. It is hard to explain nbcon_braille*()
+    API without the user.
+
+  + Reworked the locking, see the commit message for more details.
+
+  + Fixed the check of CON_NBCON_ATOMIC_UNSAFE [Sashiko]
+
+IMPORTANT: The solution is not safe in PREEMPT_RT. But it is better
+	then nothing. We could either solve it in v3. Or we could
+	fix it later.
+
+[v1] https://lore.kernel.org/r/20260922072558.98854-1-pmladek@suse.com
+[v2] https://lore.kernel.org/r/20260925141729.173943-2-pmladek@suse.com
+[v3] https://lore.kernel.org/r/20261001093946.112999-1-pmladek@suse.com
+
+Petr Mladek (1):
+  braille: nbcon: Allow to use a serial console with NBCON API as
+    Braille console
+
+ .../accessibility/braille/braille_console.c   | 60 +++++++++++++-
+ drivers/tty/serial/8250/8250_port.c           |  5 +-
+ drivers/tty/serial/amba-pl011.c               |  2 +-
+ drivers/tty/serial/imx.c                      |  2 +-
+ drivers/tty/serial/sifive.c                   |  2 +-
+ include/linux/console.h                       | 15 ++++
+ kernel/printk/nbcon.c                         | 79 +++++++++++++++++++
+ 7 files changed, 159 insertions(+), 6 deletions(-)
+
+-- 
+2.55.0
+
