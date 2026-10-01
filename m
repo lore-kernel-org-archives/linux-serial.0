@@ -1,104 +1,106 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1904306B3D;
-	Thu,  1 Oct 2026 16:39:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646504921B3;
+	Thu,  1 Oct 2026 16:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790872787; cv=none; b=UZtvJN5QZEto5TltoKEYxr0ppVAYtXtuOhjZPfh5Hd0Qe+uL6dZdygLvjevcsihmzQ9KxrSwp31ztzl5sFeazjyLoTYeaFH8Py7qOl758uJhZShvdn1i+R14pBHoFucmJCRvIywoFTaPcicOyUw0RYWQ562oDFvu0AcjUjDwaTc=
+	t=1790873623; cv=none; b=jskIMdlTCpkTHVT9wsJXC0HokhGZgWSCjNcOcUsUPZ66Bx7zYKDoGO91X6/x2cfjtK1IGtNiA9Bqqu1QLr9Nc8MiYhW6sAkc56ZTS5o84BANKfNP1xIoZOXAMAZCMyuntazmfcbfteCsoN/F7Ic1Vv7l+DaRbba44df5GU2F6Og=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790872787; c=relaxed/simple;
-	bh=CoFIg5zVxdnbRNF+xA6y6DD9CF5IBpGo8K9jZgyNx3w=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=kaqBlTxaUPITMooQa4fKaJ1pTI21KHooF5ud9IGMJBVhc/nJ9+KBnfKwjvDNDWk/OZlocf0GdzzuwgOO51+x0NtRU40xoIyWTvQDFNESavtP8dRNJJYQsTbnDMRyh364YI770fL2KrpYUk0PxE/xaxC1gutIphgnPUWR+H2BDww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=CplMPwRu; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=VHCx7DuI; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1790873623; c=relaxed/simple;
+	bh=oe3Xy6jZWdxWuutdSaQfH2C+11mQ4msdZfgO5uK4TCU=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Q1C/gD5eyNfTdMkc7quHAqvnZuTp+dBSn94Nxy5XUR7gZ321vlZOgS/zddMQYtV6lKasRUFYNOsHLf/eWNFGCQ/Oi9Wg91UwKLSKtUuBjYoTJRx6zgnwYK4CWPu/4in0EXlAkQhZI8dwf4oOh1YNgxD5Cm2lhBB/q4o/X9aJVdQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PDtGzUTZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="CplMPwRu";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="VHCx7DuI"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1790872783;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dW+cKpw6NdVRG/EtiOgDyZsg/gwP7QSsUMI8sG6iNmE=;
-	b=CplMPwRudXp//hBgERoFxRn7Fjmt5Pds98oTs2ahHQAsV5AnmZct5dhPqw2fIAzNCpt+jb
-	BYkcvIWsAUP/0DER5dvEeMzYdS4IzM1SOpSd+oQy48E7uQf3z6mjZrTgEuens/cx0DUrH7
-	J4ZjlRHb689GsYpHapad9NaZTZbX4UZ9Yddp5Gb8gDuS+duTw0tdn4JDCGljnlXQYz49fA
-	r95YsBMKWlPTFhRi6uBe6T0rvmi/85N09xZh/om6UO1ZYt758cj6OMwKSMS4qvbGMty1PL
-	yVi0PaKEC+qZ6OpkNrhQr5ix0/QD83w4K9wCyAZVPB7jJGIRYS1DDXHMNGsPEw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1790872783;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dW+cKpw6NdVRG/EtiOgDyZsg/gwP7QSsUMI8sG6iNmE=;
-	b=VHCx7DuIamZChKkQRioT97bAfm8uBI3g7ZQ9nSUagzTCKeo6XhP1bL1UWVP3ZkehW2aMYb
-	cHSUPIHM8i/t6/Cg==
-To: Imre Kaloz <kaloz@kernel.org>, Thomas Bogendoerfer
- <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, linux-serial@vger.kernel.org, Petr Mladek
- <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Sergey
- Senozhatsky <senozhatsky@chromium.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PDtGzUTZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72C811F000FF;
+	Thu,  1 Oct 2026 16:53:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790873621;
+	bh=Q1BrRVRpxb+o78Gze7clFuiW7Y5XKDb66T5or0o279w=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References;
+	b=PDtGzUTZQTeHKJd7oxqARknbqqKKXhWq662e0txGET5Fyj9RJNo9FG7ZPGClZM9Mq
+	 74zk/YWGgB/hMHYIf03E3Gc7E3N3lz2YNCTBQEGfQhu0fELla832WI9xg4HtzDUJp9
+	 6O8DooODbFYTOEDcOpdw+W27wLVccv/bWRWbG3w3BgP7qtLekbNfYDbXMOoemoaFT1
+	 K7xPOFOTDpQx++eNIrAz/4oeO/AwcGTNvw6oNPxkBrltNil5eMtbvhdvBJSQjBvzp5
+	 ORMfp5JronFGOifzZBTxUZBBgGvtmIQ5QgYrKa1e/oRFnKR8A8y5fiSDT+5QSeMxD0
+	 f+18X382Cp5/w==
+Date: Thu, 1 Oct 2026 18:52:38 +0200 (CEST)
+From: Imre Kaloz <kaloz@kernel.org>
+To: John Ogness <john.ogness@linutronix.de>
+cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+    linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org, 
+    Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+    Sergey Senozhatsky <senozhatsky@chromium.org>
 Subject: Re: [PATCH] MIPS: SGI-IP27: print the NMI dump on an nbcon console
-In-Reply-To: <20261001155013.1694-1-kaloz@kernel.org>
-References: <20261001155013.1694-1-kaloz@kernel.org>
-Date: Thu, 01 Oct 2026 18:45:43 +0206
-Message-ID: <87ece98je8.fsf@jogness.linutronix.de>
+In-Reply-To: <87ece98je8.fsf@jogness.linutronix.de>
+Message-ID: <55083820-478c-e6a6-b129-467140f161db@kernel.org>
+References: <20261001155013.1694-1-kaloz@kernel.org> <87ece98je8.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 
-On 2026-10-01, Imre Kaloz <kaloz@kernel.org> wrote:
-> Since the 8250 console became nbcon, printk() in nmi_dump() only queues
-> records for the printer thread, which never runs because no CPU leaves
-> the NMI handler before the hub reset. Print the dump from an emergency
-> section.
+Hi John,
 
-Please excuse my ignorance, but could you inform me about the context?
-When is nmi_dump() called? Does the hardware always reset/reboot/hang
-from this call?
+On Thu, 1 Oct 2026, John Ogness wrote:
 
-> Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
-> Signed-off-by: Imre Kaloz <kaloz@kernel.org>
-> ---
->  arch/mips/sgi-ip27/ip27-nmi.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+> On 2026-10-01, Imre Kaloz <kaloz@kernel.org> wrote:
+>> Since the 8250 console became nbcon, printk() in nmi_dump() only queues
+>> records for the printer thread, which never runs because no CPU leaves
+>> the NMI handler before the hub reset. Print the dump from an emergency
+>> section.
 >
-> diff --git a/arch/mips/sgi-ip27/ip27-nmi.c b/arch/mips/sgi-ip27/ip27-nmi.c
-> index fc2816398d0c..4447c0bec8b4 100644
-> --- a/arch/mips/sgi-ip27/ip27-nmi.c
-> +++ b/arch/mips/sgi-ip27/ip27-nmi.c
-> @@ -1,4 +1,5 @@
->  // SPDX-License-Identifier: GPL-2.0
-> +#include <linux/console.h>
->  #include <linux/kernel.h>
->  #include <linux/mmzone.h>
->  #include <linux/nodemask.h>
-> @@ -183,6 +184,12 @@ static void nmi_dump(void)
->  	 */
->  	arch_spin_lock(&nmi_lock);
->  
-> +	/*
-> +	 * No CPU leaves the NMI handler before the hub reset below, so an
-> +	 * nbcon console's printer thread would never print the dump.
-> +	 */
-> +	nbcon_cpu_emergency_enter();
-> +
->  #ifdef REAL_NMI_SIGNAL
->  	/*
->  	 * Wait up to 15 seconds for the other cpus to respond to the NMI.
+> Please excuse my ignorance, but could you inform me about the context?
+> When is nmi_dump() called? Does the hardware always reset/reboot/hang
+> from this call?
 
-The CPU enters an emergency state, but shouldn't it exit the emergency
-state at some point? Or does the machine always unstoppably
-reset/reboot/hang after this point?
+nmi_dump() has no caller in Linux. install_cpu_nmi_handler() stores
+its address in the per-CPU NMI vector the PROM keeps in low memory,
+and the PROM jumps to it when the system controller asserts NMI on
+the CPUs: the "nmi" command at the L1 (or the MMSC on an Origin
+2000), typically used to get a dump out of a hung machine.
 
-John Ogness
+Every CPU that takes the NMI enters nmi_dump(). The first one to get
+nmi_lock waits until all online CPUs have arrived, prints the saved
+state of every CPU and ends with the NI_PORT_RESET write. The others
+spin on nmi_lock, which is never released. No CPU goes back to the
+interrupted context, so the printer kthread never runs, which is why
+the dump never reaches the 8250 console today.
+
+On the IP35 machines I tested the reset write takes effect and the PROM 
+restarts right after the dump.
+
+<snip>
+
+>> @@ -183,6 +184,12 @@ static void nmi_dump(void)
+>>  	 */
+>>  	arch_spin_lock(&nmi_lock);
+>>
+>> +	/*
+>> +	 * No CPU leaves the NMI handler before the hub reset below, so an
+>> +	 * nbcon console's printer thread would never print the dump.
+>> +	 */
+>> +	nbcon_cpu_emergency_enter();
+>> +
+>>  #ifdef REAL_NMI_SIGNAL
+>>  	/*
+>>  	 * Wait up to 15 seconds for the other cpus to respond to the NMI.
+>
+> The CPU enters an emergency state, but shouldn't it exit the emergency
+> state at some point? Or does the machine always unstoppably
+> reset/reboot/hang after this point?
+
+If the reset write did not take effect, nmi_dump() would return to
+the PROM.
+
+
+Best,
+Imre
+
