@@ -1,83 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BDD844F546
-	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 06:27:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4673457E51
+	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 06:29:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790836032; cv=none; b=Eewi8N38J1sztpa7BT4Fsa1u3wLZngPHBeOPSTzvNSVZ8+WWZzpK30os9hVOf2nnB54KUOGTBHFphPrJb/k9NMwAMWReG0iPwnXgIlwYhrFzD++py/vtMudWbwlPTEbPPjljHVHcx6M9miCFmE1ygLEb/M/Ck+4bcv/hIoL1t3o=
+	t=1790836165; cv=none; b=PUyW+PZuOG5K28ItPD0gExZ15tq2mN+mj/yEx0Cyh3zt9GyX4qLy9atiUk3AypcxPV6IwV8GdwwZd/vNr5p9SCUF+UH294Q+hXs9xSdu9gvd6msM10eYFbsP5dGk5a7i6l9ipZaQTJ6qBTLF/uRFwxDwEzq3SqMKgX1ppoYS2XY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790836032; c=relaxed/simple;
-	bh=YOfOLaEKGlGQcuzn9ksy53v+A5bZ6lcgbEtiK8BbdLU=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=Vr0eL06lLfcLikl3N3fF+ISf23qsb8gZKlDeK3ZoyVNr4RVNJopmz0GoIoTwwMjkFoQP3kCofXbxZYBWyvyA2YISlIYA2yWOm256YR1BejfSBBL8JyVl1m/kOc6fOVgP0He9WavB6OocTubr/97Lvm2wAtY57Bfv3XJ7+UND0pE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EHqxH2Mm; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790836165; c=relaxed/simple;
+	bh=YmUdotlXBym7+M7DTZqezt6CY+s7rUVFUXVNY2HpXtE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=DAIr1Z+wp2r4iu0SyGi/D/Sf/ByesVst3SWDjf5iFQOwdodp5NbPAEK8Pk0FJpGCMNy1zRXPb7e3dF01JrM0URunJLBUaHWKZ0PKtDf7MXlqdMAZnGGdtb9S1EyHqo7Lvv4eW3vObMiaMYRngwCXYacESWPAWhUJpZAZ42uLvCY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=imDGyIpb; arc=none smtp.client-ip=74.125.225.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EHqxH2Mm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7DF1F000FF;
-	Thu,  1 Oct 2026 06:27:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790836031;
-	bh=RT5QTywxEI8osqMjUKfqdlh+WFPPs8FQjOUndTk8YII=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=EHqxH2MmHTJbfhIJjp7wLhV+DqbUdx/9oN8/o45r7cunRjTwOzP/oh/KKr+fhwgoB
-	 XVMqBbrZEwEoJ+gZRflKQeMlfJ8fmtCGaRoofDHtAUhCpGBKSOm8+o2LnWSHHPQ/Gr
-	 CB8k5E/VfKQAu2LvtclQdtSttYSZV5WH6n9x9xvWCWeoY0yYWIGIWa2IRBxkgzkjLk
-	 jesf9xgT1xytQIZT45v9PdLgBkPxEzurGT0I967lKdJ6FD2D7LEZ1Y9VGCqQ4lL2Ll
-	 impE/c4xvFWWFTco1r5jV3frEr9/6xl/6QI0FqdeoNE1161dnIqX0sVcnzICvur6SC
-	 88wtcUiSgUr0w==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: tegra: don't clear the Tx FIFO on an Rx-only
- reset
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Simon Gassner" <simon.gassner@noxsystems.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261001060539.32659-1-simon.gassner@noxsystems.com>
-References: <20261001060539.32659-1-simon.gassner@noxsystems.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 01 Oct 2026 06:27:10 +0000
-Message-Id: <20261001062710.CB7DF1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="imDGyIpb"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-482f6351831so3566239f8f.1
+        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 23:29:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790836162; x=1791440962; darn=vger.kernel.org;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=YmUdotlXBym7+M7DTZqezt6CY+s7rUVFUXVNY2HpXtE=;
+        b=imDGyIpbLhdUCU6ZwJGdYV3V+BvxbPFAcSw6ihdWmf2fEq9XdbWImKLW9aDqi3oWaK
+         R/qsRtLntGVTEeBu0JLxT/dAh2E7s8RGeS5rCZHang7j4ZpakzNow1IT7k1y2P5Lkr0/
+         mxIhjMCRx23xjUDHcpyrVPH2InyW05zwgojKkfo5bEf/+MDxE/EndNmHCnOG4iZuEgVY
+         mlko2i/6pTi4nOU+JxYxGZHztZcWjGOincDmcCgyByLKbiNChjJKXxvKLOh13bF9TcXz
+         nrwOjYD086YVcWyA+pj2rf0+4rVOht/Jve8FIhCH0O48ddKNgUb0z5P0VDOokudP12Ll
+         s/1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790836162; x=1791440962;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YmUdotlXBym7+M7DTZqezt6CY+s7rUVFUXVNY2HpXtE=;
+        b=p7krt69X/n2j1kNEDx8ACFLNjaSAFdfvOpbd+D9uvP3/ZATrBCSdPxS6fTZM17riwn
+         TIPm14YVO+ugiB7LTPRfchad36783QkGp68p+/8KYvVYMf3gAQQTBzmxLBXk0cnR2bSs
+         JnfShKZjQBfFAkTiTn6JUcHPSWifkvGmozttKOaEc2VfUJbDho5iYNoLUfGBBYKG1IT7
+         +3jdZft/DEOpbqWFSG7SHPwW/ThAdYCnWTPr9jA0amxQEjCNj9bKTB7wIGDRH2cAD8mT
+         qx7coydwIarNCa+B9p0isJCPqDjrOS3YvUQeX63u8CY+TbpoezWFrW6EYWo2QacvCcMw
+         cWuw==
+X-Forwarded-Encrypted: i=1; AKwUvBxVb7v720c1VisKoULnQ1J74+6eB/5DcoXzIdc23EeMbPgzclzqNt5k812zrXADxXJqN/MlFZ9VsMKJdtY=@vger.kernel.org
+X-Gm-Message-State: AFuF++lUlRqybBdgF1kdGpDJk1tlV5XxkBYuTOPeCpwkiJB438XJvQoW
+	io+G9WC3d1IFyq4+iFlck/KN248shX1cnjt5o9n36/3QEfPFZ2rJYKNx
+X-Gm-Gg: AYBFou1cLzcWDPwAsIx1M1kCbcTqK/81OuZbsk7Og6Jb4s6Vc3cAd59wU4MHLWEljzc
+	OYrqlebO81vMz9gnhhNBmogfInWAKIUSO83Bo7SYXFUFIiP8zwV4CVoOR9YcX94lxpCRT4sZtwv
+	ZX6dIT4CJG5tbyQLSfdjWUIm53O80i2OqqUeK5ZbXcxaTUcc3lxGKnaWOFs1hBfGSODbCc/PjH6
+	kh6y3sROrkANeiLxaLcgOg1/HBuBJwssiwQSVr+TBwogkGUHPRS0d3krfM4IbyC++j2jWFWFsru
+	tvRZKveFT+c6K0dz7PrG1GGjUffiNKqg5A4W3gv2Tt9pusUqGmeuQ97Ar0sGFG22/0CbVKjhNTK
+	ed23kNwmZfGZDLV1KTlBYUwtYdqpcZOUD9TNtTryqpebY9+8lOuBuNvZpkTehOmWhUvEi88nySY
+	JOHxgH+GGVypW4ogbjXraYbI0wUpngD3an6/7cLmXQS6EbWLakWp5MOCFCQzfXnWtvkq924cM0k
+	LkMXZohCwT9n7E8SLNEUlN7o3PKGGcm
+X-Received: by 2002:a05:600c:6088:b0:49f:fd66:5fec with SMTP id 5b1f17b1804b1-4a01ab4d57dmr54370375e9.0.1790836162047;
+        Wed, 30 Sep 2026 23:29:22 -0700 (PDT)
+Received: from [127.0.1.1] ([92.241.26.38])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48b068ff891sm4026217f8f.9.2026.09.30.23.29.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2026 23:29:21 -0700 (PDT)
+From: Fil Dunsky <filipp.dunsky@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Jason Li <jason.li@cortina-access.com>, Linus Walleij <linusw@kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject:
+ Re: [PATCH RFC 07/10] tty: serial: Add Cortina Systems CS75xx UART driver
+In-Reply-To: <3ddf4b8e-14b7-442b-9d4f-5167875e3d64@app.fastmail.com>
+References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
+ <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
+ <CAD++jLkzcf7gJB82XT3-xb4jLujtWSNz1kT2r1-4N54rRfRNMA@mail.gmail.com>
+ <1d81c2ef-7a5b-4306-83d2-ff96b0eb6a06@app.fastmail.com>
+ <179076749140.3134070.3869742286743401078@gmail.com> <SEZPR01MB42087271C56AD1C7E926AF35A28A2@SEZPR01MB4208.apcprd01.prod.exchangelabs.com>
+ <179082517588.138645.14615134489246049313@gmail.com> <SEZPR01MB4208B8B4A5A7F48F7FFE0C9FA28A2@SEZPR01MB4208.apcprd01.prod.exchangelabs.com>
+ <179083239972.193541.4791387611943615705@gmail.com>
+ <3ddf4b8e-14b7-442b-9d4f-5167875e3d64@app.fastmail.com>
+Date: Thu, 01 Oct 2026 09:29:19 +0300
+Message-ID: <179083615914.311026.2458351803214458859@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format="fixed"
 
-> tegra_uart_fifo_reset() applies the Tegra30 workaround for
-> "cannot clear the Tx FIFO while FIFO mode is enabled"
-> unconditionally: it leaves FIFO mode, writes the requested FCR
-> clear bits, and re-enters FIFO mode. Leaving FIFO mode empties
-> both FIFOs, so an Rx-only reset discards queued Tx data as well.
->=20
-> The break handler in tegra_uart_decode_rx_error() calls it with
-> UART_FCR_CLEAR_RCVR only. On a half-duplex RS485 board whose Rx
-> line is pulled low while the transceiver drives the bus, every
-> transmission raises a spurious break, and all but the first
-> character of the frame is lost.
->=20
-> Only take the FIFO-mode path when the caller actually asked for
-> CLEAR_XMIT. Likewise only wait for TEMT in that case: with the Tx
-> FIFO deliberately left intact, that loop would otherwise spin for
-> a full frame time in hard IRQ context with the port lock held.
->=20
-> Tested on a Colibri T30 (Tegra30) with Rx DMA:
->=20
->  - Break during transmission: the reset still fires from
->    tegra_uart_decode_rx_error(), and the complete frame now
->    reaches the peer. Before this change only the character in
->    the shift register was sent.
->  - Internal loopback with a generated break: the Rx FIFO is
->    correctly cleared by the plain FCR write, and subsequent
->    receive works with no frame, parity or overrun errors.
->=20
-> Fixes: e9ea096dd225 ("serial: tegra: add serial driver")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Simon Gassner <simon.gassner@noxsystems.com>
+On Thu, Oct 01, 2026 at 08:18:56AM +0200, Arnd Bergmann wrote:
+> No objections from me either way, but I don't quite understand what
+> that will mean for the older parts that that are still sold by
+> Cortina Access: cs8032, cs8022 and cs8124. If someone later adds
+> DT support for those, would we use 'cortina,cs8032' or
+> 'cortina-access,cs8032'?
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+I would go by the part number, the way fsl/nxp is handled: the parts
+that came out of Cortina Systems with a CSxxxx number keep "cortina",
+so "cortina,cs8032", and the CAxxxx parts that Cortina Access designed
+use "cortina-access". That gives a rule a later submitter can apply
+without knowing who sells the chip today.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261001060539.3265=
-9-1-simon.gassner@noxsystems.com?part=3D1
+Jason, if Cortina Access would rather see its current CS80xx/CS81xx
+parts under "cortina-access", now would be the time to say so; I have
+no stake in those and only need a rule for the CS75xx.
+
+Thanks,
+Fil
 
