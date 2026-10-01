@@ -1,112 +1,144 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9741144A3EC
-	for <linux-serial@vger.kernel.org>; Thu,  1 Oct 2026 07:14:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8FCE3B71CF;
+	Thu,  1 Oct 2026 08:35:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790838861; cv=none; b=QGHmMTpp2uvMBtxOuvL6hjrVgXC8kFaO3tuYYBNk70Y2HByVBPy8xiECzFmj2dUN1NMznt/TyeZLnsX3fJJ+AsOdi+K4gFgjyxUd/Pfznqw+DoV539lj7wzkPWLUdOfa7hYEstySz56GXcvHrKKbzdQjBIt3RRQk9aBqXXxP/1M=
+	t=1790843753; cv=none; b=IqmuVM9kBmXRWuFxunoyxO02SVHD/n5oMS9XlLD5F6Mo1L882iLIi6DpeN2I2RUdkAUgDREXLRZRMFG8zecrBk/MiflPFB4yxuwSOHk9g7nFHmzh/ScYbkzXTI5xl/z5dAwfuCG+8T4razfcBqHOJPWprXZ3Se+9tQZmyKYk6bA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790838861; c=relaxed/simple;
-	bh=0LImfjQfnfpJNGHfHRMcENmUv0z1qFRlVshw9HPZVsc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=XsEKz45oBdeA9AvV0Npy4yyhZeIDKcfIubAZLkS5vs8bpzLhWfemxGFF2HfDYMjwywyE4HhYLmdFzcQLQqfBpMQzXUPoDiJXe7xxXjDeerl/QIGsKChJlBXlVUhSENn65tYDM9remDVtOURsRmsgctEo5i40UD4QfJffqvRQwHI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qNMYmy0W; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790843753; c=relaxed/simple;
+	bh=8ACtc2pB+mUmbIDPgo3RIw4BTckUvRlW8MvnUxLIGvY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bxHamELFDyfeLIS8wBHIy2UbuRkf/9ASSGwjCsdllcEfPvhrmnk6tGtXxiU/1xhFRb9kOZ1CJjVnI9J9BbKv5vi5/Icsy/KG5rAuX1HbxZtw+kRgoPnI8PtGVoyta/X7bypjiKP5ED1v7/tJ6Yc/1sXAKD3X+x1rnpRQishLypM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=GXxOdGbc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qNMYmy0W"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-4a022e9cbebso1357005e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 01 Oct 2026 00:14:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790838849; x=1791443649; darn=vger.kernel.org;
-        h=content-type:mime-version:content-transfer-encoding:message-id:date
-         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=0LImfjQfnfpJNGHfHRMcENmUv0z1qFRlVshw9HPZVsc=;
-        b=qNMYmy0WCpqKm9Dn4ZSUs7sIcW5n6dJFr8toCinlGkzWVcaaqU3yoE669LCPkaCRzw
-         VhtZrg/2YDTpBTxqv5jWN0J/ueJpxUmzapRG7aNLiEH0/17i02qvviOGOjaXb6Nx12X1
-         qeSeE42zQ6eUsTOgKBTsi296YB1+RhSGgRYqP8cgGthWTJczb9UcMKRsOhDbBjEjTk1/
-         Qj/zleV1WdLZCiNfECMEcff6RzhdFckvLL+xi9UB4Si/LWDfYU5Xeq+XdR7mK0flDmWE
-         xA+Xle9RBBl68y5q+XQEr2h1AKOQWJf2iE140eP+uL75krlLIYKXuVdBlSMVkqrwZNa0
-         6J4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790838849; x=1791443649;
-        h=content-type:mime-version:content-transfer-encoding:message-id:date
-         :references:in-reply-to:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0LImfjQfnfpJNGHfHRMcENmUv0z1qFRlVshw9HPZVsc=;
-        b=dJo+xSi9ULTG1ZsEhdopvIS8ORKEERpNHbA50BbZQrIHHECibiu0lpnUOkkzAj9Qal
-         Q9xCIFgB/i+iwDA65sqXMnV0AzRZJSvoBcwy6Iid/8WJ/KNci3w9dw/OYtWUs6uAVMWY
-         OjDnBKXMCe8898jD16b9VJaxlwLCZcXbpUrsnLcWguC1MA5kpRuxGpnIDPMp4u8zV7Oo
-         0HLdgcp5aA+EMFGPSORwJWzdz25T1XtgiKNndow+IZVAUGvNuw0eqMAQrQTfM3WwPzIA
-         AsKD2baIrdXi5k71jBip3QlOvDZGqncJViGKb1otXj9h/mYkghFaVzsM2zPylSOvaieh
-         0EPA==
-X-Forwarded-Encrypted: i=1; AKwUvBwd7ME5YrHesLN2s2DFjlV7ksVjhIL29sqxqzFKvJxZPnRkxeV1bfZO2pWsX2/eQBBfuVfhl/U9IV82cpI=@vger.kernel.org
-X-Gm-Message-State: AFuF++kQ7DC6vIC0j2NQNfnD9MjK+/9rR3iThPsX1mUyyoJxdgZLRquj
-	1kmYjz+LiCT/XlY3DcznWI2vpo0d7B/S3QbffFWimmpQxRXAIi/TWPBg
-X-Gm-Gg: AYBFou1aLkQ+5t4uU0O0Ke4auvEPzwGx5ucdf5UzwFU+6jFd1f5jGVPq4lKON+WXAUY
-	PEoIz4/NU6sDyGpMTWQsNqCb+sB8wsS0hLQB42BtL53ekzupNVj+oXHoTUEFbGbeAsm64qBuajJ
-	bHlQoDPJNnwlxQK3M9zYLRwetJmVkyWbR584jk/CMfqw1zFrfvzpLQN8QUQaBMK7UA3cuW81Ome
-	dOU8d8p+k54BZvWqUxTpRjMVS0wABY7IC5um2NiMBwv7SJCNRWT83WWxyc0FZcdvp43Px7ho49d
-	l4CWCpAIzy6WMUcv8N+cXUUDkoTkNWbLUW40CAstrz0Sck+1b8rO9bd+6hQKF/rAK98wORMHSgL
-	9ZwB1odlKe3PL8MNOdYwpFHuRGLWu0xzZdUgvl67NlFUyS41Ql3qAh85EERTHgn8UFonjd85bPO
-	ACWoqOGOCcmWVPvhKeK0+N66J2ZkLxcSb/VfF41mzVI9WYNkqdJ68a8WOR85LE25MoiStzozKDp
-	5p0Iwa0RcN84xi8aVJH3L0m7K0rJTzK
-X-Received: by 2002:a05:600c:4454:b0:4a0:8b1:f5c with SMTP id 5b1f17b1804b1-4a01b00f607mr62337135e9.22.1790838848782;
-        Thu, 01 Oct 2026 00:14:08 -0700 (PDT)
-Received: from [127.0.1.1] ([92.241.26.38])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a020f7f220sm45635745e9.5.2026.10.01.00.14.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2026 00:14:08 -0700 (PDT)
-From: Fil Dunsky <filipp.dunsky@gmail.com>
-To: Jason Li <jason.li@cortina-access.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject:
- RE: [PATCH RFC 07/10] tty: serial: Add Cortina Systems CS75xx UART driver
-In-Reply-To: <SEZPR01MB4208C11DB288933965D7BF83A28A2@SEZPR01MB4208.apcprd01.prod.exchangelabs.com>
-References: <20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com>
- <20260930-b4-cs75xx-v1-7-4617c4463529@gmail.com>
- <CAD++jLkzcf7gJB82XT3-xb4jLujtWSNz1kT2r1-4N54rRfRNMA@mail.gmail.com>
- <1d81c2ef-7a5b-4306-83d2-ff96b0eb6a06@app.fastmail.com>
- <179076749140.3134070.3869742286743401078@gmail.com> <SEZPR01MB42087271C56AD1C7E926AF35A28A2@SEZPR01MB4208.apcprd01.prod.exchangelabs.com>
- <179082517588.138645.14615134489246049313@gmail.com> <SEZPR01MB4208B8B4A5A7F48F7FFE0C9FA28A2@SEZPR01MB4208.apcprd01.prod.exchangelabs.com>
- <179083239972.193541.4791387611943615705@gmail.com>
- <3ddf4b8e-14b7-442b-9d4f-5167875e3d64@app.fastmail.com>
- <179083615914.311026.2458351803214458859@gmail.com> <SEZPR01MB4208C11DB288933965D7BF83A28A2@SEZPR01MB4208.apcprd01.prod.exchangelabs.com>
-Date: Thu, 01 Oct 2026 10:14:05 +0300
-Message-ID: <179083884593.341205.12618374409894485981@gmail.com>
-Content-Transfer-Encoding: 8bit
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="GXxOdGbc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB56B1F000FF;
+	Thu,  1 Oct 2026 08:35:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1790843751;
+	bh=CFeio76G9Ht0Aq+YXGrXeREzMT2PmC8TvIRnVyPMF+M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=GXxOdGbcd4gxaSV7gn8z+tIP7PKhz88xzArKYPAADo2T4d0jlROTNSWvdHI4b33hs
+	 O26Fr6k2jM/Q07qh7PZeb4yba4/yFQ4DxJwPPGscvaO/iDTOcYmgx9UfZE8Md/9cr/
+	 f43QU4eI0c7qj3Wo9Xe9/2LM1CkOqHMEaPIs8WcI=
+Date: Thu, 1 Oct 2026 10:35:45 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Tapio Reijonen <tapio.reijonen@kolumbus.fi>
+Subject: Re: [PATCH v5 0/8] serial: max310x: RS485 delay and RTS fixes,
+ software-timed delays
+Message-ID: <2026100116-saint-idealize-32cf@gregkh>
+References: <20260929-max310x-rs485-sw-delay-v5-0-ae46afa583f2@vaisala.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="fixed"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260929-max310x-rs485-sw-delay-v5-0-ae46afa583f2@vaisala.com>
 
-On Thu, Oct 01, 2026 at 07:03:53AM +0000, Jason Li wrote:
-> And we are no longer involved in the support of any CSxxxx-related
-> products.
-> I'll recommend "cortina-access,caxxxx" for all Cortina-access's
-> product.
+On Tue, Sep 29, 2026 at 09:37:54AM +0000, Tapio Reijonen wrote:
+> The MAX310X hardware can express at most 15 bit-times of RS485 RTS
+> setup/hold delay, while struct serial_rs485 expresses the delays in
+> milliseconds. The driver rejected anything above 0x0f with -ERANGE,
+> upon which uart_rs485_config() wipes port->rs485 and silently disables
+> RS485 - a device tree asking for a 20 ms setup delay boots with RS485
+> off and an unusable bus. The values that were accepted got written
+> into HDPIXDELAY unconverted, milliseconds as bit-times.
+> 
+> Patches 1-4 fix pre-existing bugs found on the way: a termios write
+> clobbering an active break; breaks never reaching the wire on RS485
+> ports because auto-RTS only drives the transceiver for FIFO data; the
+> milliseconds-as-bit-times unit bug; and close() truncating the final
+> character because tx_empty() does not cover the transmit shift
+> register. Patch 5 adds active-low RTS on the hardware path via
+> IRDA.RTSINVERT. Patch 6 is preparation, and patch 7 adds the
+> software-timed RTS path that takes over whenever the hardware cannot
+> represent the requested timing, clamping the delays to the UART core's
+> maximum instead of rejecting them. Patch 8 fixes a reconfigure-versus-
+> write race the asynchronous rs485 config application has had since
+> 2016, which the software path would have made worse.
+> 
+> v4 was all of this in a single patch; Greg asked for it to be broken
+> up into one change at a time [1]. Splitting it meant re-verifying each
+> patch in isolation on hardware, and that re-verification found two
+> bugs v4 contained: a set_termios() or TIOCSRS485 during an active
+> break released the transceiver mid-break while the break bookkeeping
+> still looked correct (prevented by the tx_break ownership guard in
+> patches 2 and 3), and the patch-8 race, where a TIOCSRS485 followed
+> immediately by a write could put an entire transfer on the wire with
+> the transceiver released.
+> 
+> Tested on a MAX14830 (SPI, i.MX6SX) driving RS485 transceivers: for
+> each patch the bug it fixes was first reproduced on the wire with a
+> logic analyzer against the kernel one patch earlier, then shown fixed.
+> The complete series additionally passed an automated 25-scenario
+> regression matrix covering both RTS paths, both polarities,
+> RS485/RS232 mode round-trips, close-during-transmission, and termios/
+> TIOCSRS485 disturbances landing in every envelope phase (setup, data,
+> hold, break), each scenario checked both on the wire and against the
+> driver's reported state.
+> 
+> Changes in v5, beyond the split:
+> - teardown interlock (tx_teardown): shutdown() and the rs485-disable
+>   path set it under port->lock, and start_tx() checks it on entry and
+>   again after retaking the dropped lock, so a racing write can no
+>   longer re-arm the delay timer or queue RTS work against a port being
+>   torn down (addresses the remaining review-bot findings on v4)
+> - shutdown() also cancels tx_work, previously only cancelled in
+>   remove()
+> - the per-character duration is stored as unsigned int microseconds
+>   instead of ktime_t: single-copy atomic on 32-bit, so a torn read of
+>   the 64-bit value is gone by construction
+> - the TXEMPTY handling documents that the interrupt latches on the
+>   FIFO becoming empty, so a stale interrupt cannot pump data during an
+>   RTS setup delay
+> - new in v5: the tx_break ownership guard (patches 2/3) and the
+>   reconfigure-pending gate (patch 8), both found during the per-patch
+>   hardware re-testing described above
+> - also new in v5, from a review pass over the split series: startup()
+>   clears a latched break (nothing clears TXBREAK when a port is closed
+>   with a break still asserted - 8250 does the same); a reconfigure
+>   arriving during a break is now deferred and applied at break-end
+>   instead of partially dropped; the rs485-config worker runs under
+>   port->mutex so its break-guarded register writes cannot straddle a
+>   break edge; the termios-path idle settle re-checks tx_state after
+>   writing and requeues rts_work if an envelope started meanwhile; and
+>   the hardware-delay ceiling is computed in u64
+> 
+> [1] https://lore.kernel.org/all/2026092326-truth-unweave-c773@gregkh/
+> 
+> ---
+> Tapio Reijonen (8):
+>       serial: max310x: don't clobber the TX break bit in set_termios
+>       serial: max310x: assert the transceiver during a break
+>       serial: max310x: convert RS485 delays from milliseconds to bit-times
+>       serial: max310x: wait for TX to drain before powering down in shutdown
+>       serial: max310x: support active-low RTS on the hardware path
+>       serial: max310x: schedule tx_work directly from the IRQ handler
+>       serial: max310x: drive RTS in software when hardware delays are too short
+>       serial: max310x: don't transmit while an RS485 reconfigure is pending
+> 
+>  drivers/tty/serial/max310x.c | 511 ++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 477 insertions(+), 34 deletions(-)
+> ---
+> base-commit: 9505146e885b1a842118aa6410f737290c4a5a32
+> change-id: 20260513-max310x-rs485-sw-delay-a306d783d529
+> 
+> Best regards,
+> -- 
+> Tapio Reijonen <tapio.reijonen@vaisala.com>
+> 
 
-Thanks Jason, that settles it for me: CSxxxx parts use "cortina", the
-CAxxxx parts of Cortina Access use "cortina-access". v2 keeps
-"cortina,cs7542" and "cortina,cs7542-uart" and the dts in
-arch/arm/boot/dts/cortina/, unless the DT maintainers want something
-else.
+Did you forget the Assisted-by: tag for this series?
 
-Fil
+thanks,
 
+greg k-h
