@@ -1,117 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from fout-a1-smtp.messagingengine.com (fout-a1-smtp.messagingengine.com [103.168.172.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95DB25221F2
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 21:51:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D44346E6D;
+	Thu,  1 Oct 2026 00:29:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790805071; cv=none; b=hHrZthOYFipKXLEz1g5npQJ9eyIzW2hLmc+EZ4HAIzBmXAkWXjBGr9KVxc5INOSAOjW4fXRUizE+AyNXobEeTTg/6zUtKKUCMyWOz5MO6JouN3nyAkPSa/SOglf4TKMJfwtghwanCbIZ/c/qC9yuK1OPnRwgRGPWCMBTTgbiXKY=
+	t=1790814581; cv=none; b=EZieYo0By6pRaUpLYfrvM80vMH+tEIVkc4aYTYs3djV0DgbD4I7qCIkyut1OxSA/ry4/6+qN9yqqx0q049zQsJvvou+NcRraBMTeTYIORW3fEUU7wjaTE1Ui4IWdWp5xwMaBVjCj0uFuA5cARIQUlsJ6gdFQtikQWwBi3LJsjUU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790805071; c=relaxed/simple;
-	bh=57Vc/Rxq6ECImFy414KMdUxkvFyJc97Kymq3bNI5cJE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EI5fJg+LNzTfTnuicqIUUQXVw9GNLwM91VhU9wKy+iqVSbNsV8EI7J4bf+X4yjByzDE6UiU5hcvP9fjr+DefJ8/9InVZPdGepPMgKeCGSZlo08ZCYEDZbk88MzWvCnA8CW08W3E9TYj6Bc56W2RCX7L6wjJpAvwS4DPxhkOrpyo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IiqAcY6X; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790814581; c=relaxed/simple;
+	bh=vqLxQa4dg45L8d4TVe/lKsQia34uBf2jmQAkP9+qWpc=;
+	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=r/75TLYKHgCoeUfovMA2G2eLW2ToXnNr3i/xpl1O5KIjfO2Vxv7Fo9xySsOEG1s9mzgkuhUTINTnw824N0AFie9seFN9/KzyDtqrIh5mVBqmEhMXsYyDAApINcFCUTNxivLcEzkI3OEM0I7H17Wek3TGV8ZNwBK3nH/I4Qhvgwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org; spf=pass smtp.mailfrom=flapping.org; dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b=TpHGefEq; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=PUATFkLS; arc=none smtp.client-ip=103.168.172.144
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flapping.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IiqAcY6X"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261E01F008AB
-	for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 21:51:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790805069;
-	bh=RAnpqMOGAC30OtTrLiH7M9o+wNye+/msCQcYjxQmy0E=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=IiqAcY6XN7b7mnGoxI4st6GCzLG1dzDIQHAAxIp10Ug3k0Rzkc/ZHNWkLnxHyuz27
-	 KeS/MKg6YaOy9b+T42Eae8O7DRK9Dsl+xQ5CAY88KM680Q9sAwBHEgrcynoqEzMPjz
-	 p/qN5IEpCQoio4C14Hon/nua9+YCSDJnY3qmRTr+mkmjRMnwWmS9T4hMXHGKOQZHE2
-	 CPeB3n7g/voQ7CK/N8KmTBF5Ifvht6kB/EZHrrQRf36G76wBOIOIQVHBTHMX2ja105
-	 itTWkCKf3hHoUplwZWTwYuYdIVs7hECztStoOJn1vRI0S2Mug3T/Gkctbsj0xIiRbQ
-	 NgoEgFVgze10g==
-Received: by mail-lr2-f35.google.com with SMTP id 38308e7fff4ca-3a5e548cd7dso52106821fa.3
-        for <linux-serial@vger.kernel.org>; Wed, 30 Sep 2026 14:51:09 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBwC1deEWHp6fSwCQfYjzKREv3PWTKz66lkq25PqbZJFNnDa+5vzFwlZ4wXsmy0sGXshcrfchru8QL5kHnQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKk8Gf7EDq5g9Gp2vdCRhgjRKrk5mK8Gox49nZiNwleyJvS16Pf
-	z8y3e4IX2igs9sV/xH0wiNLuw0DZiCHXsQU2nYQ9Z+9aFZ1s1W/JCcSr/9j3sC2mu9I1ldky0/n
-	Jcl35a+k84hE5OZs2FbglBngdm5dquWg=
-X-Received: by 2002:a2e:be8c:0:b0:3a6:566a:5ca1 with SMTP id
- 38308e7fff4ca-3a7791dc08fmr9115391fa.21.1790805067836; Wed, 30 Sep 2026
- 14:51:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b="TpHGefEq";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="PUATFkLS"
+Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
+	by mailfout.phl.internal (Postfix) with ESMTP id D281FEC02BF;
+	Wed, 30 Sep 2026 20:29:38 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-09.internal (MEProxy); Wed, 30 Sep 2026 20:29:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flapping.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1790814578;
+	 x=1790900978; bh=QG5mOC8Ea7dAzNNESKpze+8IotvuIQeyFETGJ/d49vw=; b=
+	TpHGefEqcnY2pEU3e4BwyO/47uSMAE8SGOtDcaVxIu6PH2GqIQv28XshW1kRCq+a
+	lLMm8iFs8oOutnzCvMSfG7Zpl7KEfx+nnyf7bslb8MFgxPrk8RpVkECqytKb3JE1
+	RggQFk87bYZAnVd1YSfRu+IIKJ+zmQTy/vvCYoj+TyzCW24F1W5zLTzzMM9/GMzM
+	Nv+Z0mtkwZshJhwPbIIxY7G8sEBWQT6i6ibcecFHMnhqo4R7dgvQaIC31U7SoGct
+	TH3J8aBZ8uRFoJzFaoa/MKos4iuBDbQtwbeLeveK3gKpmBp6IySMebv6b1DtblBU
+	Eg9gHLHI6CSMaLLGGDvrbQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1790814578; x=
+	1790900978; bh=QG5mOC8Ea7dAzNNESKpze+8IotvuIQeyFETGJ/d49vw=; b=P
+	UATFkLSEdmfCoBwyGBJaztHUGczTKcmeAc0Q6EHCwrxQkN0pZbz5vWpNc/g6zbGt
+	6FlQKMszpazyOxPmce1FGFDdt7H+UNFCJTESl6q0ish/4TRsLuKFf+dysqHXFMuC
+	wWpVUEhQNQzXETHz5KbjFlwR45zdjb20jWowJEHCY4D06myh+zZNyZnnWmyT9Pah
+	gZFOlv5Qss5/fGTIKfhn2h8413FKOxOMnHYE17IDPXVxA8v5CfqjDyPvWvirJc6X
+	YGOjKe6w3RV8hcHdO1ahydkMIwpj6z5aPpIf03bXXedXV15i4HuR0I716iVgeIOj
+	JCqz8BT6gNV4puw1cKz4A==
+X-ME-Sender: <xms:cqm9ail5YfO5dD_Gdk1Hl1ViP9eCiOOSo3RMPU97BRuUwj04FVzaxg>
+    <xme:cqm9alwrbLxX7zTHFTrm_nOtK0OM2D1iNe2g6U05x-DzaXruNj3iYnBVOdj4hJoEA
+    fUuEny0gQhhJqmnRdtA7r61wZipOMAU3p1qe1fzff48ytn3Si4BH8mh>
+X-ME-Received: <xmr:cqm9amy6tOyhKXWha4NXSrjzbYS7bGqN2FpPYQtj0JUHToKWbRXYyM5LAUk9I7CL4Ps33y4lQBN55O27DhwxT2tH>
+X-ME-Proxy-Cause: dmFkZTEtlGkHTQ6heY177mW/CKl+TKGnUH9b3/xKCLDLSpXaGogJCVC/ZuOJH235kIRGQk
+    LmqWU8Jc8s4mxrUNeKo06jTYIysiu7814oy7/sajYtQa5J6IU2x0+0SAY7M0MGR4okQaib
+    xAfSpvy/qWQr/Yzidp6donqPjSB/DO25ZqWBr0LzrMmZ+xAnAWX8aPhl4YFCA25+pJiH7m
+    CqyKDZ0lDmkJBaTkhYClHOJdk/LmYl5UMWNw7LGTJ6MMZ14F9xeAI7Moi2tAxNGZvXY7jY
+    wJJEYpcWPpxA+pGOZvH1sIXIJ/e0YM+4TDuPRLq2OWB5wwA90zHCZPFtfLV0g5/pnFCoQ8
+    SY9jBAHMVi8SsY++v4QYZLO5yreB+XY9ILjnY1aVMlu6bfdIC1OTO6dxHu1UcZSyV6u35k
+    KROFj/s4zvvfaB19ZCW3CUkqtEycljK+bCJn/tzYK8hO7oLaxqb03X/5Cw1aj4VMkY43l9
+    TjO5vODcCTFXY9Pktl8ZYzaojbYaxO7HCMLXI3hL0/rDDIAlp1rVH5r4UEjsDwOWgXdEbt
+    cSL3KV0aed2r7vDov86Cqjy9aTYaWsDefwurKGYx1s49mai9yzrU24M4iNptt833QAcs7u
+    CDaXxNdvDox6rsgCVKYl27uSnyARlD0a8AX5eBvR/nmPWe40wMQBGGZTUkkA
+X-ME-Proxy: <xmx:cqm9as9Aps4wKpwgxEoY4DFrlmatb_gVB3gniup1WFE9sZEo673V2A>
+    <xmx:cqm9au9El6gZ5rO0S1VT6Q_umYhMVyl-adb53UEUzZxTWs-TSnE1_A>
+    <xmx:cqm9anev0xuUAb76aO7lR9TQub0HKxJGaLoJqYoXjM7v0luQuGxztQ>
+    <xmx:cqm9aiu_GUe0_I9cQPjtMuUSZ2k4CknQqgDD1BJL9AQx24jO4z9OGQ>
+    <xmx:cqm9arJUXXmNiJw7M2feUsTNdR2IoXau-M1X0zdKHl9nWX53WkhUHrhK>
+Feedback-ID: i51fe4b43:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 30 Sep 2026 20:29:34 -0400 (EDT)
+Date: Thu, 01 Oct 2026 09:29:31 +0900 (JST)
+Message-Id: <20261001.092931.734162860031900892.tomo@flapping.org>
+To: gary@garyguo.net, markus.probst@posteo.de, aliceryhl@google.com
+Cc: tomo@flapping.org, dakr@kernel.org, ojeda@kernel.org,
+ a.hindborg@kernel.org, acourbot@nvidia.com, bjorn3_gh@protonmail.com,
+ boqun@kernel.org, daniel.almeida@collabora.com, lossin@kernel.org,
+ tamird@kernel.org, tmgross@umich.edu, work@onurozkan.dev,
+ linux-serial@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ fujita.tomonori@gmail.com
+Subject: Re: [PATCH v1] rust: serdev: use Delta<Jiffy> for timeouts
+From: FUJITA Tomonori <tomo@flapping.org>
+In-Reply-To: <DLSP8RHJMYFZ.3II53ESHY15IL@garyguo.net>
+References: <20260930041339.1551129-1-tomo@flapping.org>
+	<a8693eaa1f8eeb167ee334e7c35371832e43bb4f.camel@posteo.de>
+	<DLSP8RHJMYFZ.3II53ESHY15IL@garyguo.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260918-contrib-pg-pixel10-initial-dts-v3-0-c94e51140509@linaro.org>
- <20260918-contrib-pg-pixel10-initial-dts-v3-3-c94e51140509@linaro.org>
-In-Reply-To: <20260918-contrib-pg-pixel10-initial-dts-v3-3-c94e51140509@linaro.org>
-From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 30 Sep 2026 23:50:55 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkVO=NwD=Yt43v4FUK4orBuNuxGrYwcWS7vn9E27Eodaw@mail.gmail.com>
-X-Gm-Features: AclHuK-YzUcFeKui-FBA-jpZiYYt9fNiuvjJIJfDEyhn_rhgVcM2vz6d1jIiXNI
-Message-ID: <CAD++jLkVO=NwD=Yt43v4FUK4orBuNuxGrYwcWS7vn9E27Eodaw@mail.gmail.com>
-Subject: Re: [PATCH v3 3/4] arm64: dts: google: Add initial dts for frankel/blazer/mustang
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
-	Tudor Ambarus <tudor.ambarus@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Drew Fustini <fustini@kernel.org>, Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, soc@lists.linux.dev, 
-	Douglas Anderson <dianders@chromium.org>, Juan Yescas <jyescas@google.com>, 
-	RD Babiera <rdbabiera@google.com>, Brian Norris <briannorris@google.com>, 
-	William McVicker <willmcvicker@google.com>, kernel-team@android.com, 
-	linux-serial@vger.kernel.org, Brian Norris <briannorris@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 18, 2026 at 7:26=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
-.org> wrote:
+On Wed, 30 Sep 2026 14:52:50 +0100
+"Gary Guo" <gary@garyguo.net> wrote:
 
-> From: Douglas Anderson <dianders@chromium.org>
->
-> Add initial device trees for frankel (Pixel 10), blazer (Pixel 10
-> Pro) and mustang (Pixel 10 Pro XL). These device trees are enough to
-> boot to a serial prompt using an initramfs.
->
-> Currently only Laguna B0 silicon found in mass production phones is
-> officially supported. Further revisions such as A0 silicon and EVT
-> devices maybe added in the future if they are useful. As of today,
-> these device trees boot fine on EVT devices with A0 silicon.
->
-> A few things can be noted about these device trees:
->
-> 1. They purposely choose to use the full 64-bit address and size cells
->    for the root node and the `soc@0` node. Although I haven't tested
->    the need for this, I presume the arguments made in
->    commit bede7d2dc8f3 ("arm64: dts: qcom: sdm845: Increase address
->    and size cells for soc") would apply here.
-> 2. Though it looks as if the UART is never enabled, the bootloader
->    knows to enable the UART when the console is turned on. Baud rate
->    is configurable in the bootloader so is never hardcoded in the
->    device tree.
->
-> Changes by Peter Griffin:
->  - Remove dtbo overlay approach and add individual board dts
->  - Update to lga-pixel-common naming like gs101-pixel-common
->  - Reorder nodes alpha-numerically by the node name
->  - Add ramoops reserved-memory (tested with console=3Dpstore)
->  - Add reserved-memory for bootloader & gsa logs
->  - Add reserved-memory for Android BootLoader ABL (used on Watchdog
->    reset to extract boolotader logs / parse breadcrumbs / ramdump etc).
->  - Add osc 38.4Mhz fixed-clock
->
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Co-developed-by: Peter Griffin <peter.griffin@linaro.org>
-> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> Tested-by: Brian Norris <briannorris@chromium.org>
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
+>>> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
+>>> index 17ca504b7f8d..094503f059ff 100644
+>>> --- a/rust/kernel/serdev.rs
+>>> +++ b/rust/kernel/serdev.rs
 
-This looks good to me!
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+(snip)
 
-Yours,
-Linus Walleij
+>>>      #[inline]
+>>> -    pub fn write_all(&self, data: &[u8], timeout: Jiffies) -> Result<usize> {
+>>> +    pub fn write_all(&self, data: &[u8], timeout: Delta<Jiffy>) -> Result<usize> {
+>>>          if data.len() > i32::MAX as usize {
+>>>              return Err(EINVAL);
+>>>          }
+>>>  
+>>> +        let timeout = isize::max(timeout.as_jiffies(), 0);
+>>> +
+
+(snip)
+
+>>>      /// Use a timeout of 0 to wait indefinitely.
+>>>      #[inline]
+>>> -    pub fn wait_until_sent(&self, timeout: Jiffies) {
+>>> +    pub fn wait_until_sent(&self, timeout: Delta<Jiffy>) {
+>>> +        let timeout = isize::max(timeout.as_jiffies(), 0);
+>>> +
+>>>          // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
+>>> -        unsafe {
+>>> -            bindings::serdev_device_wait_until_sent(
+>>> -                self.as_raw(),
+>>> -                isize::try_from(timeout).unwrap_or_default(),
+>>> -            )
+>>> -        };
+>>> +        unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), timeout) };
+>>>      }
+>>>  }
+>>>  
+>>> 
+>>> base-commit: f1850e443b0e4f2429ddf42a8d5033ea54ae8a90
+>>
+>> Both functions have "Use a timeout of 0 to wait indefinitely." inside
+>> the rustdoc.
+>>
+>> Make sure `Delta::ZERO` is also usable for `Delta<Jiffy>` and replace
+>> the 0 in the rustdoc with "[`Delta::<Jiffy>::ZERO`]". You might also
+>> remove the "timeout of" part, but I don't mind if it stays.
+> 
+> I think the API should ideally use `Option<Delta<Jiffies>>` for this case, and
+> use `None` to represent indefinite wait.
+
+For read_poll_timeout(), where a timeout of 0 means "never time out"
+in C, we did not take Option for the timeout. Alice's comment [1]:
+
+| Another thing is the `timeout_delta` option. I would just have
+| written it as two methods, one that takes a timeout and one that
+| doesn't. That way, callers that don't need a timeout do not need to
+| handle timeout errors. (Do we have any users without a timeout? If
+| not, maybe just remove the Option.)
+
+serdev is in the same situation. Do we want an API that uses None for
+"never" here?
+
+[1] https://lore.kernel.org/rust-for-linux/aJm9A_D-zlJtbV6X@google.com/
