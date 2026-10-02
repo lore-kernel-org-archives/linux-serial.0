@@ -1,73 +1,76 @@
-Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EBF935C1BD
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 08:14:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBE7344E02A;
+	Fri,  2 Oct 2026 08:26:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790928866; cv=none; b=C0on0WW4wlNZmoKEYwOTB/Jow8vmAShKAjt4rqQwrVwUGaD2AAUBLQ5eqCru+UOSQztQcs/oiz/z/njXvAGAIvAHo6StdWjjR7fZE9sgFiAQfZO00DoOXgl38vr5dD+m4rIC7UhP+Xoai4eBVordV/t+aLDp8QgB3ecgw7v2OIg=
+	t=1790929594; cv=none; b=CS+rAXLxizIm8AnpAJwWG/4ImGLuiY2SQtzeNWlrURA+umipCDbj26b4XFymdZnDniAF8a/C63TgW6rlnPDkM3gmKZVpNbSqT5ePIq8+7DU9Aw+j5fpqdbpkog8Gc4rucXYS5YphYj35d9DUcolv3Gl4LBHmT6BFx7E7HTgYBtk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790928866; c=relaxed/simple;
-	bh=lUjsj/zkzOnzY9LSr0WPam4i8+l8opVo1V9Pswn+IGI=;
+	s=arc-20240116; t=1790929594; c=relaxed/simple;
+	bh=siUcSXucLvCnlrb1Xgp4F7mBAS3yKi85NsJq4r2dfs0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ia8LS6femYGek5FSPooJT7fxQo7qE6w1T6i6D34hRqwucxVGUEeRkh8ogqvWMOzT1Nj0JBmlymRz9Ucx11msGu/6JiaT5z+lq0Ar5Nmyn8EqPHAJEBni1pu84+KuvPTofsIIveR0doFXd20M0hblEonPIbA7i79OjBVTgO6Xb3I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=EmMScdV2; arc=none smtp.client-ip=74.125.225.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=L33gLh7NYVuiR+huNij2HIcoHBnFsffkGyMDK6pLc0lbscRyqnRTMt7fm9y215SIekpW5Bjh/p4tKcCkO4wzmIByWj2V/TSRr2IUqGZs685xoLvqEVbpchSqoG9L0XlAdhVYdlcmmspgTVA8Hd+K+ii8oFH0dDS4HU/Lf4aeD3w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R2DfacJd; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="EmMScdV2"
-Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-48b059eae96so1642024f8f.0
-        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 01:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790928862; x=1791533662; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=B2gYiRdzNQHv1M+pzNmzpe4igCpVm4DThoeMguavKds=;
-        b=EmMScdV247d75hz0AkZ9YFJZDM6oNPY3NKIi8+4k8uHP8QcQq4fRJ1ht1aODupjDTE
-         UxIvEVQ4OvZANgszYyNWMJiQ11u+kK9XhKGdysKIJlEoVM2jVw5z9HYXNrkQKKoQ0KFv
-         u0lSYRNXN7HHn65xXwzMR5p4LZW1mTa62nFwi38j5yoJVYuZhtfFrK0uAW6lNPZaDANY
-         2oL8WNX78bkjLmPqpP3tyJgHAtXcXVj9HJpcoOSU868SXczXc89pqgKrgQWNEHwG7i0U
-         kMI/o0KNIgTS7M4VdYjBjvcmWukbVAwq4D5008TiR1yc2S+c/KOxS64nV3amUgSurx1X
-         pEag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790928862; x=1791533662;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=B2gYiRdzNQHv1M+pzNmzpe4igCpVm4DThoeMguavKds=;
-        b=eeuXepj2GX8Fu/P1PBCToUeyMqo4ZcXdnzH12GoR7LpzOWSFOnu8CprMJoAJfdnBAd
-         hM522pRqMzpGurHXEBHfWFg/EPoRWRmr++QGQYc3FHPaZnO/J835kgqdndkqm4CKFT7T
-         8Kp3x1EO1JFsJM9UDoNggHaenT/4OtvtIBo6YDy6sDLn+1HdkZrYh0YCf+sZyBBuhWLX
-         lM3ZS3gNfKBmFB7sKrhAg5nJFvso/yIXGm0pcCYnJKNVu1eIDIa5WwX1HPzA1nPRMGEY
-         /6cd/7doYFzUzPRK57oqSad04HrjydS9/pfSC9rzjC3Np23pPcds8Ri5kHnnz4wbyX8u
-         Ggsw==
-X-Gm-Message-State: AFuF++mANMNRUh52I7nHhXsTL1fTvlicIn9fh5NjDrN+a978YMjoYz4k
-	dyOIOeFIju8SV9PllFkDM6MEGikeJZSMPgYDBFYcW1b/QK0cdWcD0f2KIAknuazoHyA=
-X-Gm-Gg: AYBFou3JUklfpBcWT239ud+3qiRVRDr61oTNbwUfc3ghjg3GoDmBWkudRrH9Nd+DR3w
-	58TztKaA5UOG7yleeOHcjf1q3q1qgJBAU5e8K0eS39Id9IbJ/wT3kb/M5u/08BBhFIpZQlIHvFp
-	hbvQ6HEAsswJVt14Mvb6rjk8OTD/WvQAlFngljPQsz8HD3Vz8BqWopuYAuJ+Nmhsl/PAb88r0rr
-	MjIvt3aWqEo3GGfhuf1MbYPWCpNshHhDUsy3B7f/OeiEBUEWFVulHg6rEoCsC7rs0vVz/F2BPck
-	rZhPEfy7mM97o/RjXrEUf2ZbQFOPbB8dHjzxsysOHhglcTXa99oWqbzQoB8cAKmZgyOJaYi0nO6
-	lTZFutHN38BlEuD3spxNROG8lkzQXJNlSZL9k5Z+vyC1QGw1YAQflzJis8R536lowj7KJegYKbe
-	ndQXEgpuEF+g0hW/ndUp615rVHxQx+Nd4k1uZgajEybsdh327FpOy4rIiBFdtw135tKvt3Zhkn
-X-Received: by 2002:a05:600c:4454:b0:49f:f922:1dc1 with SMTP id 5b1f17b1804b1-4a0276a0e46mr32937455e9.28.1790928862090;
-        Fri, 02 Oct 2026 01:14:22 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a027734b49sm64339675e9.10.2026.10.02.01.14.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 01:14:21 -0700 (PDT)
-Date: Fri, 2 Oct 2026 10:14:19 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: sashiko-reviews@lists.linux.dev
-Cc: linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 1/1] braille: nbcon: Allow to use a serial console
- with NBCON API as Braille console
-Message-ID: <ar9n2__RhOeiXRgC@pathway.suse.cz>
-References: <20261001140727.124398-1-pmladek@suse.com>
- <20261001140727.124398-2-pmladek@suse.com>
- <20261001142407.84C721F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R2DfacJd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790929591; x=1822465591;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=siUcSXucLvCnlrb1Xgp4F7mBAS3yKi85NsJq4r2dfs0=;
+  b=R2DfacJdUc2QFaJKlpqs65hUfHLqaW+qz4flJ/SjCEpiLWPCvxrf1fa+
+   Kvw1aI3aw2nKRiGBZ6Da4MRd3rWZktYCKzuAzfU9oNzZKLGspRMVfLkt2
+   L7NfgHXi6/9wUGxm9uw5mkQ+mml25Pfe0MkXUQ7Kajwih90nMed0PxqeD
+   olWHnChkeJ/yAWeLjHYSkUitPdeGGyyPwpkL04p6TTx6y1uopdVxlyxKk
+   5apW6Ik9nwHdjgZnMnGM94TLYl8k/9NOEVylRyGH5OMkaw81HXXzXi5+M
+   vBnvCYzunBslEMUJus6JnbUt41VxKe5tG3OEAhUWeyTeVS8tbaviD7vBE
+   g==;
+X-CSE-ConnectionGUID: dX22DuZ3Sv6ml/TXZrL1aw==
+X-CSE-MsgGUID: NipYh+BhRyqnFyr9R93bFw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="90554348"
+X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
+   d="scan'208";a="90554348"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 01:26:22 -0700
+X-CSE-ConnectionGUID: v07VLHlTTZW/gpl9yVKxbA==
+X-CSE-MsgGUID: AQTsk4EpQmuB2buWgQXH1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
+   d="scan'208";a="284264249"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 01:26:15 -0700
+Date: Fri, 2 Oct 2026 11:26:13 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: longzhao@ambarella.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Michael Walle <mwalle@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>,
+	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 08/15] gpio: pl061: convert register access to regmap
+Message-ID: <ar9qpeOCU0fpmhse@ashevche-desk.local>
+References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
+ <20261001-cv75-v5-v9-8-486cc289a4b8@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,152 +79,113 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261001142407.84C721F000FF@smtp.kernel.org>
+In-Reply-To: <20261001-cv75-v5-v9-8-486cc289a4b8@ambarella.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu 2026-10-01 14:24:07, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
-> - [High] console: deadlock in braille_write() from atomic/IRQ context
-> - [High] console: infinite loop in braille_write() when CONFIG_PRINTK is disabled
-> --
-> 
-> commit 0bb1344e643dce4e38416fdf04095c16fe6023c8
-> Author: Petr Mladek <pmladek@suse.com>
-> 
-> braille: nbcon: Allow to use a serial console with NBCON API as Braille console
-> 
-> This patch integrates the Braille console with the NBCON API by allowing
-> braille_write() to attempt acquiring NBCON ownership before writing. It
-> simulates the original locking using nbcon_braille_try_acquire() and routes
-> output through write_atomic() or write_thread() callbacks.
-> 
-> > diff --git a/drivers/accessibility/braille/braille_console.c b/drivers/accessibility/braille/braille_console.c
-> > --- a/drivers/accessibility/braille/braille_console.c
-> > +++ b/drivers/accessibility/braille/braille_console.c
-> [ ... ]
-> > @@ -62,14 +62,50 @@ static void braille_write(u16 *buf)
-> [ ... ]
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		if (panic_on_this_cpu()) {
-> > +			/*
-> > +			 * This should be good enough in practice. Most/all
-> > +			 * serial console drivers have the atomic callback.
-> > +			 */
-> > +			if (!braille_co->write_atomic)
-> > +				return;
-> > +
-> > +			local_irq_save(flags);
-> > +			/* NBCON API strictly requires the ownership. */
-> > +			if (!nbcon_braille_try_acquire(braille_co, &wctxt)) {
-> > +				local_irq_restore(flags);
-> > +				return;
-> > +			}
-> > +		} else {
-> > +			braille_co->device_lock(braille_co, &flags);
-> > +			while (!nbcon_braille_try_acquire(braille_co, &wctxt))
-> > +				cpu_relax();
-> > +		}
-> > +	}
-> 
-> [Severity: High]
-> Could this lead to a deadlock? braille_write() can be invoked by VT
-> notifiers from atomic or IRQ contexts (e.g., from keyboard interrupts or
-> console_flush_all()). By calling device_lock() and spinning on NBCON
-> ownership with a cpu_relax() loop, if the interrupted context already holds
-> the lock (like an active nbcon flush), nbcon_braille_try_acquire() will
-> permanently return false, causing an infinite busy-loop.
+On Thu, Oct 01, 2026 at 08:40:57PM +0800, Long Zhao via B4 Relay wrote:
 
-The short answer is that we should be on the safe side because it
-used to work with the legacy uart 8250 console driver which took
-port->lock as well.
+> Replace readb()/writeb() with a MMIO regmap while keeping the existing
+> gpio_chip and girq irqchip. Use a raw spinlock so irq_ack() can run
+> under the irq descriptor lock.
 
-It should work when the code under port->lock:
+...
 
-   + is called with disabled interrupts.
-   + do not call VT code (the is no reason to do so).
-   + use only printk_deferred() (or better no printk() at all.
+>  static int pl061_get_direction(struct gpio_chip *gc, unsigned offset)
+>  {
+>  	struct pl061 *pl061 = gpiochip_get_data(gc);
+> +	unsigned int gpiodir = 0;
+>  
+> -	if (readb(pl061->base + GPIODIR) & BIT(offset))
+> +	regmap_read(pl061->regmap, GPIODIR, &gpiodir);
 
-All the conditions should be fulfilled. Otherwise, it would cause
-deadlocks even when the serial console driver is used for printk()
-in the non-Braille mode.
+Why not returning an error?
 
-> [ ... ]
-> > @@ -102,7 +138,24 @@ static void braille_write(u16 *buf)
-> [ ... ]
-> > -	braille_co->write(braille_co, data, c - data);
-> > +	if (braille_co->flags & CON_NBCON) {
-> > +		nbcon_write_context_set_buf(&wctxt, (char *)data, c - data);
-> > +		if (panic_on_this_cpu())
-> > +			braille_co->write_atomic(braille_co, &wctxt);
-> > +		else
-> > +			braille_co->write_thread(braille_co, &wctxt);
-> 
-> [Severity: High]
-> Does this violate the write_thread API constraints? The
-> include/linux/console.h documentation specifies that write_thread must
-> strictly execute in a task context. Since braille_write() can be called
-> from an atomic or IRQ context, invoking the kthread-specific callback here
-> could be unsafe.
+> +	if (gpiodir & BIT(offset))
+>  		return GPIO_LINE_DIRECTION_OUT;
+>  
+>  	return GPIO_LINE_DIRECTION_IN;
 
-It should be OK for all the currently converted serial console drivers
-which are candidates for the Braille console. We might need to revisit
-this in the future.
+I believe this can use regmap_test_bits().
 
-> > +	} else {
-> > +		braille_co->write(braille_co, data, c - data);
-> > +	}
-> [ ... ]
-> > diff --git a/include/linux/console.h b/include/linux/console.h
-> > --- a/include/linux/console.h
-> > +++ b/include/linux/console.h
-> [ ... ]
-> > @@ -678,8 +687,14 @@ static inline void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt) { }
-> >  static inline bool nbcon_kdb_try_acquire(struct console *con,
-> >  					 struct nbcon_write_context *wctxt) { return false; }
-> >  static inline void nbcon_kdb_release(struct nbcon_write_context *wctxt) { }
-> > +static inline
-> > +bool nbcon_write_context_is_braille(struct nbcon_write_context *wctxt) { return false; }
-> >  static inline bool console_is_usable(struct console *con, short flags,
-> >  				     bool use_atomic) { return false; }
-> > +static inline bool nbcon_braille_try_acquire(struct console *con,
-> > +					     struct nbcon_write_context *wctxt) { return false; }
-> 
-> [Severity: High]
-> Could this cause a hard lockup if CONFIG_A11Y_BRAILLE_CONSOLE is enabled
-> but CONFIG_PRINTK is disabled?
-> 
-> Since this fallback stub unconditionally returns false, the
-> while (!nbcon_braille_try_acquire(...)) cpu_relax(); loop in braille_write()
-> will never terminate when triggered by terminal output.
+...
 
-Good point!
+> static int pl061_direction_input(struct gpio_chip *gc, unsigned offset)
+>  {
+>  	struct pl061 *pl061 = gpiochip_get_data(gc);
+>  	unsigned long flags;
+> -	unsigned char gpiodir;
+>  
+>  	raw_spin_lock_irqsave(&pl061->lock, flags);
+> -	gpiodir = readb(pl061->base + GPIODIR);
+> -	gpiodir &= ~(BIT(offset));
+> -	writeb(gpiodir, pl061->base + GPIODIR);
+> +	regmap_update_bits(pl061->regmap, GPIODIR, BIT(offset), 0);
 
-But there is a bigger problem. kernel/printk/nbcon.c is compiled only
-when CONFIG_PRINTK is enabled. We expected that con->write*()
-callbacks will be called only when there are printk() messages.
+_clear_bits()
 
-The Braille console is a new use-case. It uses con->write() callbacks
-even for non-printk messages.
+>  	raw_spin_unlock_irqrestore(&pl061->lock, flags);
+>  
+>  	return 0;
 
-A proper solution would be to allow building nbcon.c even when
-CONFIG_PRINTK is disbled. But we would need to review the entire
-design.
+...
 
-A short term workaround is to make Braille console dependent on
-CONFIG_PRINTK. It might be good enough in practice. I mean this:
+> static int pl061_direction_output(struct gpio_chip *gc, unsigned offset,
+>  {
+>  	struct pl061 *pl061 = gpiochip_get_data(gc);
+>  	unsigned long flags;
+> -	unsigned char gpiodir;
+> +	unsigned int mask = BIT(offset);
+>  
+>  	raw_spin_lock_irqsave(&pl061->lock, flags);
+> -	writeb(!!value << offset, pl061->base + (BIT(offset + 2)));
+> -	gpiodir = readb(pl061->base + GPIODIR);
+> -	gpiodir |= BIT(offset);
+> -	writeb(gpiodir, pl061->base + GPIODIR);
+> +	regmap_write(pl061->regmap, BIT(offset + PL061_DATA_OFFSET),
+> +		     !!value << offset);
 
-diff --git a/drivers/accessibility/Kconfig b/drivers/accessibility/Kconfig
-index 6b2f79d1f1b8..bd5db30e9aab 100644
---- a/drivers/accessibility/Kconfig
-+++ b/drivers/accessibility/Kconfig
-@@ -20,6 +20,7 @@ if ACCESSIBILITY
- config A11Y_BRAILLE_CONSOLE
- 	bool "Console on braille device"
- 	depends on VT
-+	depends on PRINTK
- 	depends on SERIAL_CORE_CONSOLE
- 	help
- 	  Enables console output on a braille device connected to a 8250
+_set_bits()
+
+> +	regmap_update_bits(pl061->regmap, GPIODIR, mask, mask);
+>  
+>  	/*
+>  	 * gpio value is set again, because pl061 doesn't allow to set value of
+>  	 * a gpio pin before configuring it in OUT mode.
+>  	 */
+> -	writeb(!!value << offset, pl061->base + (BIT(offset + 2)));
+> +	regmap_write(pl061->regmap, BIT(offset + PL061_DATA_OFFSET),
+> +		     !!value << offset);
+
+Ditto.
+
+>  	raw_spin_unlock_irqrestore(&pl061->lock, flags);
+>  
+>  	return 0;
+
+...
+
+> static int pl061_direction_output(struct gpio_chip *gc, unsigned offset,
+>  static int pl061_get_value(struct gpio_chip *gc, unsigned offset)
+>  {
+>  	struct pl061 *pl061 = gpiochip_get_data(gc);
+> +	unsigned int val = 0;
+> +
+> +	regmap_read(pl061->regmap, BIT(offset + PL061_DATA_OFFSET), &val);
+>  
+> -	return !!readb(pl061->base + (BIT(offset + 2)));
+> +	return !!val;
+
+_test_bits()
+
+>  }
+
+...
+
+...and so on...
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Best Regards,
-Petr
