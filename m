@@ -1,429 +1,341 @@
-Received: from mail-qv2-f41.google.com (mail-qv2-f41.google.com [74.125.230.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE82E518121
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 20:24:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7457E409271
+	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 20:45:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790972701; cv=none; b=leSdttVDD1haNiuLDl9sdvleTD+iwqaH8fOmCNIJZd3ndr4YnE4awxHx+MnDB8Zxbsq6WUpq/HVXQokAUsE53RZ+KyXpwZEQ9lcxUrHoZ4sKsPOofS8ATJNTgm17cg9jcZaIn670uIWrcp+4GthSLbq7AOHQ60Y4r/OtSv8sS6I=
+	t=1790973940; cv=none; b=SwSVJed19EqY3Tqj9VFRNDU7UqfKrAY1FsuPUSzcf4aSipxiL6W+Eb+4xjGPEMPLk7QyktxzOH95IJpfKXGnaZiUvA+0EFVhg2jd2BNiBT8616kZm50YldCE1EdJh9isn9+9cdl/0wm41vlvGxo5ZgW1koju+ILH2NfhbBtSD6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790972701; c=relaxed/simple;
-	bh=gOIDQvoTPC54kqM693/RjiH3DniyfGvoRnPoN723y18=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AXXt6hAvqfzodV8nDVrCO+hGqP2EN+YIqfc2ulQ404DqMhLTFjG/wcDNaJZyu15+kU5F6fAZlsAprMTZWDmqRhZU0Pti21Z21oW4OfFHrydkxKwkSbK70aMq57Z+ibmQ+brljcXjNcP2Gib4wkt8ccYlX8O+XZmVQCObW1lGlt8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oYGfOsnH; arc=none smtp.client-ip=74.125.230.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790973940; c=relaxed/simple;
+	bh=FRa8OZAXMXhzGFVa2g1QLrbGVKlW33g6Wapuc+BKQ50=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=bxBJNh/HRqD275MHChkCVo9gBIiLyJ8ezYIREQn9sKDPgE8/FGcvFlMbm/bz7GQ4h4tLkD3wvLEXIK5QiTdxe/bjDPS4HeYKPj6dxD44B9EB4khs/+N6XnQD2zKLTvpog6qIe17wJERrynvFZSmKIvhIEUp2JVaE0Mui+Gy/fyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mK2oxQ5q; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oYGfOsnH"
-Received: by mail-qv2-f41.google.com with SMTP id 6a1803df08f44-91795fb225aso2977576d6.3
-        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 13:24:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790972697; x=1791577497; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=S35goerxP799yBtkbGvn8cEv+WRt3OcPuehglbCBDPM=;
-        b=oYGfOsnHfMqF/z0u7x40j9iM9H9rkjtlCIWTe98cWdFMZ3azizldJBS2MmUneIw/Md
-         8KjrNHhkfCVpFaFnPG1cb5+GnwcrCzKLb4XE6R55a+cWuUDTay1KyhHHpaEppMLH2GEY
-         7WR28EHswmkIgaHWNl7oyBRhIzi7Yh+OfywVpcx9eJcB21d7OZ2Yy/+9vxEV+W5y5a6P
-         6TfHqjTuVIE7G+tiacZFg9FXN3KjSmYm0GrmZozKzsadBpzhZNIDZBIuRisorTJs2kf+
-         FF2V9k8GTmOoi8S3LcXhbc5eU2UusZ08fku5poy4OAE8m7oGFKKuOUTZgEi+PNW8Z8Rv
-         GCaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790972697; x=1791577497;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=S35goerxP799yBtkbGvn8cEv+WRt3OcPuehglbCBDPM=;
-        b=aoo+m6P6r5cHhfBcEQYEPWOwHsIaSzF1FIEL+wUHN4vLhm6CNl8Ok7jmdq7leqqVJC
-         1i5ztXYfCQdsxHpbV10JH6ohVaJde0lCao/DABY5z1arUbdnGvaxFHNnh1fJ5M2RVlUG
-         YK380QG5lFxCG+jP3Vqe50aHZgt1Xqt61UXygQeyupuOT8uyOHn2lRK9iY5Rv3JXAPUy
-         SfaFFiLrbcwfupe6FrcXR4ciQwhuZOrEkoOEZTRudG1yDtIVzXZxQGCsvVXiZY959Yc4
-         cFu7al8P9pSOewihMsfk/XSMbiEqWEQ0nXfBogChgLQw7tR7NWYx1jo1zY8hVea3xybB
-         zHoA==
-X-Gm-Message-State: AFuF++ll9CxyQbGg1XZOPD7PVPk2WXRz7BYIb4d8z9Rtyc3mHpAKBG0c
-	xcBDu8HEI9g4H8v1kgepxLckmrSwhBveUyJplQuD/4vxhe1dZLA/oPoDjoH95qKw
-X-Gm-Gg: AYBFou2jvOib9VchVPTSu7gSQ5N7Fk7+a3fMFe5KP7CECVYcSx27YyR6vGxIOGzuBZ9
-	XPSKqdI+5c/TfCVO2wDHLtKAXIGCAy4xaicd/Syz4qsQPEUelfrCkMWlUGu/S7S4dARX5gtN7m0
-	VbIXklOhmH0+1iwi+LF0+DzAtQDG4q9Re216ARyg/tK1N4GYAnJ8fnQzbV1/WuQ6ocqjCtpSZLo
-	D80rZVpVOgd9w18mHhOLdpMTGJ0qGYPMc/8q6MhyAErlv+Yp8ALIsUrKzi6HhZBVQCi65ydgRGQ
-	ZG5Ywf+uZdmDlACtttuorbu1B/nCFjnVq3P4H374NyQe2QeQCN/jgd3M8+76y+V6SQusBjQrnsF
-	e8uigCZRfojHAHMwVcfC/wpnVDUW4wi8KysdnPSmmxlfrEr9/OkBME/PTe22LFz1bCcFPMbo58Z
-	HBmg7qs3/4r18uOWBbLZzslUofN5EU1dSnVaxeGrwCRbLL+qBbxvPyiNwakLr1Ffiiedh2VRv6V
-	/iQM+he3geIgc6YYWU1lpZ59RNz+LdQ9NRtsgNLAsWU7ZYVXMgcHJUshk5ir9fvd8UuuvuI6Hwx
-	fQm1WjY=
-X-Received: by 2002:a05:6214:598b:b0:917:bfaa:3c4f with SMTP id 6a1803df08f44-917c01f8e7fmr74650926d6.41.1790972697062;
-        Fri, 02 Oct 2026 13:24:57 -0700 (PDT)
-Received: from localhost.localdomain (pool-173-71-97-169.cmdnnj.fios.verizon.net. [173.71.97.169])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-917e0bc98fbsm28215126d6.29.2026.10.02.13.24.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 13:24:56 -0700 (PDT)
-From: Akira Patafio <kokokoala4211@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	shuah@kernel.org,
-	linux-kselftest@vger.kernel.org,
-	Akira Patafio <kokokoala4211@gmail.com>
-Subject: [PATCH v2] tty: pty: preserve open slaves after rejected locked open
-Date: Fri,  2 Oct 2026 16:24:55 -0400
-Message-ID: <20261002202455.25324-1-kokokoala4211@gmail.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20261001165552.2439-1-kokokoala4211@gmail.com>
-References: <20261001165552.2439-1-kokokoala4211@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mK2oxQ5q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790973937; x=1822509937;
+  h=date:from:to:cc:subject:message-id;
+  bh=FRa8OZAXMXhzGFVa2g1QLrbGVKlW33g6Wapuc+BKQ50=;
+  b=mK2oxQ5qZ/rAES97egYHrzwrWFyqc0GOF1rnnbWptJ07ByZmFOr2muqJ
+   +FUk78AbN2U76j1OLf7nLsu0olpCmHbrqOTYwMWVDZ1v9cxVYxrR3qRac
+   +X+JmDxkspK/tJLdTixpbL03XAeX7qZs1188DGQiYMRHRBuOHpI2NifC9
+   KVagBeS9Wd/oNd0dLGs9CiSUfK2SPVI0XPH7ycbPbcpZFXnwtQMEbEm7Y
+   3N0nh/bxxwD0LyWBROXE9yjFU+v+OM+E1J/usxZcQdLjZoJVb2E5uWS2l
+   kJlKsWmuYhrD0XJaguM5inbHkKG2GNvbfsNymU8ftJiLFKto3y8CmwNnN
+   w==;
+X-CSE-ConnectionGUID: 5ZouP5dkTRGOlq7f5hkHqA==
+X-CSE-MsgGUID: mTPK3SkdSZ6+9km69LsSPg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11923"; a="90642967"
+X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
+   d="scan'208";a="90642967"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 13:45:35 -0700
+X-CSE-ConnectionGUID: 4WxDQPdcQzSnBdl3a16AeA==
+X-CSE-MsgGUID: CRbPsvXQTzOP/3aqk45bGw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
+   d="scan'208";a="275511833"
+Received: from lkp-server01.sh.intel.com (HELO 462990a40a85) ([10.239.97.150])
+  by fmviesa010.fm.intel.com with ESMTP; 02 Oct 2026 13:45:33 -0700
+Received: from kbuild by 462990a40a85 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xCk8I-00000000TT9-49RQ;
+	Fri, 02 Oct 2026 20:45:30 +0000
+Date: Sat, 03 Oct 2026 04:44:53 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ c44a4925cdac02af781ebfae96df68a7bf3580b0
+Message-ID: <202610030450.741DKnk4-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Opening a locked PTY slave fails with EIO, but the failure path sets
-TTY_IO_ERROR on the shared slave tty. Previously opened slave files then
-fail I/O even though their master is still open.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: c44a4925cdac02af781ebfae96df68a7bf3580b0  serial: 8250: Fix section mismatch with CONFIG_MODULES=n
 
-tty_open() releases a file after the slave open callback fails. Merely
-skipping TTY_IO_ERROR on the rejected open is insufficient: pty_close()
-can mistake the failed file for the last slave and close the master.
-Counting tty references is also insufficient because a real last close
-can race the failed open and its release.
+elapsed time: 1776m
 
-Track which slave files opened successfully. Ignore failed files during
-close, and mark the master peer closed only when the last successful
-slave file closes. In-kernel callers may pass NULL instead of a file;
-retain the count-based close behavior for those callers. A selftest
-checks locked opens with zero, one, and two existing slave files, plus
-ordinary last-slave close behavior.
+configs tested: 264
+configs skipped: 4
 
-Fixes: 699390354da6 ("pty: Ignore slave pty close() if never successfully opened")
-Assisted-by: LLM
-Signed-off-by: Akira Patafio <kokokoala4211@gmail.com>
----
-Changes in v2:
-- Preserve the existing NULL-file callback behavior for in-kernel TTY users.
-- Add the Assisted-by tag requested in review.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Tests:
-- The selftest failed on an unpatched Linux 6.12.69 kernel at the
-  pre-existing slave write with errno EIO (TAP fail:1).
-- Built the patched 7.3.0-rc5 x86_64 kernel with legacy PTYs and Speakup
-  enabled, without compiler warnings. Booted it in QEMU/HVF and ran the
-  selftest in the guest: TAP pass:1 fail:0, exit status 0.
+tested configs:
+alpha                              allnoconfig    gcc-16.1.0
+alpha                             allyesconfig    gcc-16.1.0
+alpha                                defconfig    gcc-16.1.0
+alpha                randconfig-r2105-20261001    gcc-15.2.0 cocci
+arc                               allmodconfig    clang-24
+arc                                allnoconfig    gcc-16.1.0
+arc                               allyesconfig    clang-24
+arc                       axs103_smp_defconfig    gcc-16.1.0
+arc                                  defconfig    gcc-16.1.0
+arc                   randconfig-1000-20261002    clang-17
+arc                   randconfig-1001-20261002    clang-17
+arc                  randconfig-r2101-20261001    gcc-13.4.0 cocci
+arc                  randconfig-r2102-20261001    gcc-13.4.0 cocci
+arm                                allnoconfig    gcc-16.1.0
+arm                               allyesconfig    clang-24
+arm                          assabet_defconfig    gcc-16.1.0
+arm                                  defconfig    gcc-16.1.0
+arm                   randconfig-1000-20261002    clang-17
+arm                   randconfig-1001-20261002    clang-17
+arm                   randconfig-1002-20261002    clang-17
+arm                   randconfig-1003-20261002    clang-17
+arm64                             allmodconfig    clang-24
+arm64                              allnoconfig    gcc-16.1.0
+arm64                                defconfig    gcc-16.1.0
+arm64                 randconfig-1000-20261002    gcc-12.5.0
+arm64                 randconfig-1001-20261002    gcc-12.5.0
+arm64                 randconfig-1002-20261002    gcc-12.5.0
+arm64                 randconfig-1003-20261002    gcc-12.5.0
+arm64                randconfig-r2104-20261002    clang-17   cocci
+arm64                randconfig-r2201-20261001    gcc-16.1.0 smatch
+arm64                randconfig-r2300-20261001    gcc-9.5.0  sparse
+arm64                randconfig-r2303-20261001    gcc-9.5.0  sparse
+csky                              allmodconfig    gcc-16.1.0
+csky                               allnoconfig    gcc-16.1.0
+csky                                 defconfig    gcc-16.1.0
+csky                  randconfig-1000-20261002    gcc-12.5.0
+csky                  randconfig-1001-20261002    gcc-12.5.0
+csky                 randconfig-r2305-20261001    gcc-15.2.0 sparse
+csky                 randconfig-r2305-20261001    gcc-9.5.0  sparse
+csky                 randconfig-r2309-20261001    clang-24   sparse
+hexagon                           allmodconfig    gcc-16.1.0
+hexagon                            allnoconfig    gcc-16.1.0
+hexagon                              defconfig    gcc-16.1.0
+hexagon               randconfig-1000-20261002    gcc-13.4.0
+hexagon               randconfig-1001-20261002    gcc-13.4.0
+hexagon              randconfig-r2103-20261001    clang-24   cocci
+hexagon              randconfig-r2202-20261002    clang-18   smatch
+hexagon              randconfig-r2304-20261001    gcc-15.2.0 sparse
+i386                              allmodconfig    clang-22
+i386                               allnoconfig    gcc-16.1.0
+i386                              allyesconfig    clang-22
+i386        buildonly-randconfig-1000-20261002    clang-22
+i386        buildonly-randconfig-1001-20261002    clang-22
+i386        buildonly-randconfig-1002-20261002    clang-22
+i386        buildonly-randconfig-1003-20261002    clang-22
+i386        buildonly-randconfig-1004-20261002    clang-22
+i386        buildonly-randconfig-1005-20261002    clang-22
+i386                                 defconfig    gcc-16.1.0
+i386                  randconfig-1000-20261002    gcc-14
+i386                  randconfig-1001-20261002    gcc-14
+i386                  randconfig-1002-20261002    gcc-14
+i386                  randconfig-1003-20261002    gcc-14
+i386                  randconfig-1004-20261002    gcc-14
+i386                  randconfig-1005-20261002    gcc-14
+i386                  randconfig-1006-20261002    gcc-14
+i386                  randconfig-1007-20261002    clang-22
+i386                  randconfig-1008-20261002    clang-22
+i386                  randconfig-1009-20261002    clang-22
+i386                  randconfig-1010-20261002    clang-22
+i386                  randconfig-1011-20261002    clang-22
+i386                  randconfig-1012-20261002    clang-22
+i386                  randconfig-1013-20261002    clang-22
+i386                  randconfig-2100-20261001    gcc-14     cocci
+i386                  randconfig-2100-20261002    gcc-14     cocci
+i386                  randconfig-2101-20261001    gcc-14     cocci
+i386                  randconfig-2101-20261002    gcc-14     cocci
+i386                  randconfig-2102-20261001    gcc-14     cocci
+i386                  randconfig-2102-20261002    gcc-14     cocci
+i386                  randconfig-2103-20261001    gcc-14     cocci
+i386                  randconfig-2103-20261002    gcc-14     cocci
+i386                  randconfig-2200-20261001    clang-22   smatch
+i386                  randconfig-2200-20261002    gcc-14     smatch
+i386                  randconfig-2300-20261001    gcc-14     sparse
+i386                  randconfig-2300-20261002    gcc-12     sparse
+i386                  randconfig-2301-20261001    gcc-14     sparse
+i386                  randconfig-2301-20261002    gcc-12     sparse
+i386                  randconfig-2302-20261001    gcc-14     sparse
+i386                  randconfig-2302-20261002    gcc-12     sparse
+i386                 randconfig-r2308-20261001    clang-24   sparse
+loongarch                         allmodconfig    clang-24
+loongarch                          allnoconfig    gcc-16.1.0
+loongarch                            defconfig    clang-24
+loongarch             randconfig-1000-20261002    gcc-13.4.0
+loongarch             randconfig-1001-20261002    gcc-13.4.0
+loongarch            randconfig-r2107-20261001    gcc-15.2.0 cocci
+loongarch            randconfig-r2302-20261001    gcc-15.2.0 sparse
+m68k                              allmodconfig    gcc-16.1.0
+m68k                               allnoconfig    gcc-16.1.0
+m68k                              allyesconfig    clang-24
+m68k                                 defconfig    clang-24
+m68k                 randconfig-r2105-20261002    clang-17   cocci
+m68k                 randconfig-r2302-20261001    gcc-9.5.0  sparse
+microblaze                         allnoconfig    gcc-16.1.0
+microblaze                        allyesconfig    gcc-16.1.0
+microblaze                           defconfig    clang-24
+microblaze           randconfig-r2201-20261002    gcc-8.5.0  smatch
+microblaze           randconfig-r2202-20261001    gcc-8.5.0  smatch
+mips                              allmodconfig    gcc-16.1.0
+mips                               allnoconfig    gcc-16.1.0
+mips                              allyesconfig    gcc-16.1.0
+mips                      decstation_defconfig    gcc-16.1.0
+nios2                             allmodconfig    clang-20
+nios2                              allnoconfig    clang-24
+nios2                                defconfig    clang-24
+nios2                 randconfig-1000-20261002    gcc-13.4.0
+nios2                 randconfig-1001-20261002    gcc-13.4.0
+openrisc                          allmodconfig    clang-20
+openrisc                           allnoconfig    clang-24
+openrisc             randconfig-r2307-20261001    gcc-16.1.0 sparse
+parisc                            allmodconfig    gcc-16.1.0
+parisc                             allnoconfig    clang-24
+parisc                            allyesconfig    clang-17
+parisc                randconfig-1000-20261002    gcc-14.3.0
+parisc                randconfig-1001-20261002    gcc-14.3.0
+parisc               randconfig-r2102-20261001    clang-24   cocci
+parisc               randconfig-r2104-20261001    gcc-15.2.0 cocci
+parisc               randconfig-r2200-20261001    gcc-8.5.0  smatch
+parisc64                             defconfig    clang-24
+powerpc                            allnoconfig    clang-24
+powerpc                   iss476-smp_defconfig    gcc-16.1.0
+powerpc                      mpc83xx_defconfig    gcc-16.1.0
+powerpc               randconfig-1000-20261002    gcc-14.3.0
+powerpc               randconfig-1001-20261002    gcc-14.3.0
+powerpc              randconfig-r2303-20261001    gcc-15.2.0 sparse
+powerpc                      tqm8555_defconfig    gcc-16.1.0
+powerpc64             randconfig-1000-20261002    gcc-14.3.0
+powerpc64             randconfig-1001-20261002    gcc-14.3.0
+powerpc64            randconfig-r2307-20261001    clang-24   sparse
+riscv                             allmodconfig    clang-24
+riscv                              allnoconfig    clang-24
+riscv                             allyesconfig    clang-24
+riscv                 randconfig-1000-20261002    clang-24
+riscv                 randconfig-1001-20261002    clang-24
+riscv                 randconfig-2000-20261001    gcc-10.5.0
+riscv                 randconfig-2001-20261001    gcc-10.5.0
+riscv                randconfig-r2300-20261001    gcc-15.2.0 sparse
+s390                              allmodconfig    clang-17
+s390                               allnoconfig    clang-24
+s390                              allyesconfig    gcc-16.1.0
+s390                           debug_defconfig    gcc-16.1.0
+s390                  randconfig-1000-20261002    clang-24
+s390                  randconfig-1001-20261002    clang-24
+s390                  randconfig-2000-20261001    gcc-10.5.0
+s390                  randconfig-2001-20261001    gcc-10.5.0
+s390                 randconfig-r2100-20261001    gcc-13.4.0 cocci
+s390                 randconfig-r2106-20261002    clang-17   cocci
+s390                 randconfig-r2308-20261001    gcc-16.1.0 sparse
+sh                                allmodconfig    gcc-16.1.0
+sh                                 allnoconfig    clang-24
+sh                                allyesconfig    clang-17
+sh                          ap325rxa_defconfig    gcc-16.1.0
+sh                                   defconfig    gcc-14
+sh                    randconfig-1000-20261002    clang-24
+sh                    randconfig-1001-20261002    clang-24
+sh                    randconfig-2000-20261001    gcc-10.5.0
+sh                    randconfig-2001-20261001    gcc-10.5.0
+sh                   randconfig-r2301-20261001    gcc-15.2.0 sparse
+sh                   randconfig-r2306-20261001    gcc-16.1.0 sparse
+sparc                              allnoconfig    clang-24
+sparc                 randconfig-1000-20261002    clang-24
+sparc                 randconfig-1001-20261002    clang-24
+sparc                 randconfig-2000-20261001    clang-24
+sparc                 randconfig-2000-20261002    clang-24
+sparc                 randconfig-2001-20261001    clang-24
+sparc                 randconfig-2001-20261002    clang-24
+sparc                randconfig-r2101-20261001    clang-24   cocci
+sparc                randconfig-r2106-20261001    gcc-15.2.0 cocci
+sparc                randconfig-r2200-20261001    gcc-8.5.0  smatch
+sparc64                           allmodconfig    clang-20
+sparc64                              defconfig    gcc-14
+sparc64               randconfig-1000-20261002    clang-24
+sparc64               randconfig-1001-20261002    clang-24
+sparc64               randconfig-2000-20261001    clang-24
+sparc64               randconfig-2000-20261002    clang-24
+sparc64               randconfig-2001-20261001    clang-24
+sparc64               randconfig-2001-20261002    clang-24
+sparc64              randconfig-r2103-20261001    gcc-13.4.0 cocci
+sparc64              randconfig-r2107-20261002    clang-17   cocci
+sparc64              randconfig-r2301-20261001    gcc-9.5.0  sparse
+um                                allmodconfig    clang-17
+um                                 allnoconfig    clang-24
+um                                allyesconfig    gcc-16.1.0
+um                                   defconfig    gcc-14
+um                              i386_defconfig    gcc-14
+um                    randconfig-1000-20261002    clang-24
+um                    randconfig-1001-20261002    clang-24
+um                    randconfig-2000-20261001    clang-24
+um                    randconfig-2000-20261002    clang-24
+um                    randconfig-2001-20261001    clang-24
+um                    randconfig-2001-20261002    clang-24
+um                   randconfig-r2100-20261001    clang-24   cocci
+um                   randconfig-r2306-20261001    clang-24   sparse
+um                            x86_64_defconfig    gcc-14
+x86_64                             allnoconfig    clang-22   checkkconfigsymbols
+x86_64                             allnoconfig    clang-24
+x86_64      buildonly-randconfig-1000-20261002    gcc-14
+x86_64      buildonly-randconfig-1001-20261002    gcc-14
+x86_64      buildonly-randconfig-1002-20261002    gcc-14
+x86_64      buildonly-randconfig-1003-20261002    gcc-14
+x86_64      buildonly-randconfig-1004-20261002    gcc-14
+x86_64      buildonly-randconfig-1005-20261002    gcc-14
+x86_64                               defconfig    gcc-14
+x86_64                                   kexec    clang-22
+x86_64                randconfig-1000-20261002    gcc-14
+x86_64                randconfig-1001-20261002    gcc-14
+x86_64                randconfig-1002-20261002    gcc-14
+x86_64                randconfig-1003-20261002    gcc-14
+x86_64                randconfig-1004-20261002    gcc-14
+x86_64                randconfig-1005-20261002    gcc-14
+x86_64                randconfig-1006-20261002    clang-22
+x86_64                randconfig-1007-20261002    clang-22
+x86_64                randconfig-1008-20261002    clang-22
+x86_64                randconfig-1009-20261002    clang-22
+x86_64                randconfig-1010-20261002    clang-22
+x86_64                randconfig-1011-20261002    clang-22
+x86_64                randconfig-1012-20261002    clang-22
+x86_64                randconfig-1013-20261002    clang-22
+x86_64                randconfig-1014-20261002    clang-22
+x86_64                randconfig-1015-20261002    clang-22
+x86_64                randconfig-1016-20261002    clang-22
+x86_64                randconfig-1017-20261002    clang-22
+x86_64                randconfig-2100-20261001    gcc-14     cocci
+x86_64                randconfig-2101-20261001    gcc-14     cocci
+x86_64                randconfig-2102-20261001    gcc-14     cocci
+x86_64                randconfig-2103-20261001    gcc-14     cocci
+x86_64                randconfig-2200-20261001    clang-22   smatch
+x86_64                randconfig-2200-20261002    clang-22   smatch
+x86_64                randconfig-2300-20261001    gcc-14     sparse
+x86_64                randconfig-2300-20261002    gcc-12     sparse
+x86_64                randconfig-2301-20261001    gcc-14     sparse
+x86_64                randconfig-2301-20261002    gcc-12     sparse
+x86_64                randconfig-2302-20261001    gcc-14     sparse
+x86_64                randconfig-2302-20261002    gcc-12     sparse
+x86_64               randconfig-r2304-20261001    gcc-9.5.0  sparse
+x86_64                                rhel-9.4    clang-22
+x86_64                            rhel-9.4-bpf    clang-22
+x86_64                            rhel-9.4-bpf    gcc-14
+x86_64                           rhel-9.4-func    clang-22
+x86_64                     rhel-9.4-kselftests    clang-22
+x86_64                          rhel-9.4-kunit    clang-22
+x86_64                          rhel-9.4-kunit    gcc-14
+x86_64                            rhel-9.4-ltp    clang-22
+x86_64                            rhel-9.4-ltp    gcc-14
+x86_64                           rhel-9.4-rust    clang-22
+x86_64                           rhel-9.4-rust    clang-22
+xtensa                             allnoconfig    clang-24
+xtensa                            allyesconfig    clang-20
+xtensa                randconfig-1000-20261002    clang-24
+xtensa                randconfig-1001-20261002    clang-24
+xtensa                randconfig-2000-20261001    clang-24
+xtensa                randconfig-2000-20261002    clang-24
+xtensa                randconfig-2001-20261001    clang-24
+xtensa                randconfig-2001-20261002    clang-24
+xtensa               randconfig-r2309-20261001    gcc-16.1.0 sparse
 
- drivers/tty/pty.c                             |  34 +++-
- drivers/tty/tty_io.c                          |   1 +
- include/linux/tty.h                           |   1 +
- .../testing/selftests/filesystems/.gitignore  |   1 +
- tools/testing/selftests/filesystems/Makefile  |   2 +-
- .../selftests/filesystems/pty_locked_open.c   | 187 ++++++++++++++++++
- 6 files changed, 222 insertions(+), 4 deletions(-)
- create mode 100644 tools/testing/selftests/filesystems/pty_locked_open.c
-
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index cc7f709..4024c5d 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -46,12 +46,31 @@ static DEFINE_MUTEX(devpts_mutex);
- 
- static void pty_close(struct tty_struct *tty, struct file *filp)
- {
-+	struct tty_file_private *priv = filp ? filp->private_data : NULL;
-+	struct tty_file_private *other;
-+	bool another_open = false;
-+
- 	if (tty->driver->subtype == PTY_TYPE_MASTER)
- 		WARN_ON(tty->count > 1);
- 	else {
--		if (tty_io_error(tty))
-+		/* tty_release() also calls close after an unsuccessful open. */
-+		if (priv && !priv->pty_opened)
-+			return;
-+		/* In-kernel users have no per-file open state. */
-+		if (!priv && tty->count > 2)
- 			return;
--		if (tty->count > 2)
-+		/* tty->count includes opens that have not succeeded yet. */
-+		spin_lock(&tty->files_lock);
-+		if (priv)
-+			priv->pty_opened = false;
-+		list_for_each_entry(other, &tty->tty_files, list) {
-+			if (other->pty_opened) {
-+				another_open = true;
-+				break;
-+			}
-+		}
-+		spin_unlock(&tty->files_lock);
-+		if (another_open || tty_io_error(tty))
- 			return;
- 	}
- 	set_bit(TTY_IO_ERROR, &tty->flags);
-@@ -223,14 +242,23 @@ static int pty_open(struct tty_struct *tty, struct file *filp)
- 
- 	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
- 		goto out;
-+	/* A rejected open must not disrupt already-open slave descriptors. */
- 	if (test_bit(TTY_PTY_LOCK, &tty->link->flags))
--		goto out;
-+		return -EIO;
- 	if (tty->driver->subtype == PTY_TYPE_SLAVE && tty->link->count != 1)
- 		goto out;
- 
- 	clear_bit(TTY_IO_ERROR, &tty->flags);
- 	clear_bit(TTY_OTHER_CLOSED, &tty->link->flags);
- 	set_bit(TTY_THROTTLED, &tty->flags);
-+	/* Record a successful open before another slave can close. */
-+	if (filp && tty->driver->subtype == PTY_TYPE_SLAVE) {
-+		struct tty_file_private *priv = filp->private_data;
-+
-+		spin_lock(&tty->files_lock);
-+		priv->pty_opened = true;
-+		spin_unlock(&tty->files_lock);
-+	}
- 	return 0;
- 
- out:
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 4856903..e0b5f97 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -186,6 +186,7 @@ int tty_alloc_file(struct file *file)
- 	priv = kmalloc_obj(*priv);
- 	if (!priv)
- 		return -ENOMEM;
-+	priv->pty_opened = false;
- 
- 	file->private_data = priv;
- 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 0a46e40..c44d11f 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -247,6 +247,7 @@ struct tty_file_private {
- 	struct tty_struct *tty;
- 	struct file *file;
- 	struct list_head list;
-+	bool pty_opened;
- };
- 
- /**
-diff --git a/tools/testing/selftests/filesystems/.gitignore b/tools/testing/selftests/filesystems/.gitignore
-index 9eb185f..5cbbfca 100644
---- a/tools/testing/selftests/filesystems/.gitignore
-+++ b/tools/testing/selftests/filesystems/.gitignore
-@@ -6,4 +6,5 @@ file_stressor
- anon_inode_test
- kernfs_test
- idmapped_tmpfile
-+pty_locked_open
- ustat_test
-diff --git a/tools/testing/selftests/filesystems/Makefile b/tools/testing/selftests/filesystems/Makefile
-index 03be337..b92a4f1 100644
---- a/tools/testing/selftests/filesystems/Makefile
-+++ b/tools/testing/selftests/filesystems/Makefile
-@@ -2,7 +2,7 @@
- 
- CFLAGS += $(KHDR_INCLUDES)
- TEST_GEN_PROGS := devpts_pts file_stressor anon_inode_test kernfs_test fclog ustat_test
--TEST_GEN_PROGS += idmapped_tmpfile
-+TEST_GEN_PROGS += idmapped_tmpfile pty_locked_open
- TEST_GEN_PROGS_EXTENDED := dnotify_test
- 
- include ../lib.mk
-diff --git a/tools/testing/selftests/filesystems/pty_locked_open.c b/tools/testing/selftests/filesystems/pty_locked_open.c
-new file mode 100644
-index 0000000..eba661c
---- /dev/null
-+++ b/tools/testing/selftests/filesystems/pty_locked_open.c
-@@ -0,0 +1,187 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <poll.h>
-+#include <stdio.h>
-+#include <sys/ioctl.h>
-+#include <unistd.h>
-+#include <asm/ioctls.h>
-+
-+#include "kselftest.h"
-+
-+#ifndef TIOCGPTPEER
-+int main(void)
-+{
-+	ksft_exit_skip("TIOCGPTPEER is unavailable\n");
-+}
-+#else
-+static int expect_no_master_hup(int master)
-+{
-+	struct pollfd pfd = { .fd = master, .events = POLLIN | POLLOUT };
-+	int ret;
-+
-+	ret = poll(&pfd, 1, 0);
-+	if (ret < 0 || (pfd.revents & POLLHUP)) {
-+		ksft_print_msg("master poll returned %d (revents %#x)\n",
-+			       ret, pfd.revents);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+static int expect_master_hup(int master)
-+{
-+	struct pollfd pfd = { .fd = master, .events = POLLIN | POLLOUT };
-+	int ret;
-+
-+	ret = poll(&pfd, 1, 0);
-+	if (ret != 1 || !(pfd.revents & POLLHUP)) {
-+		ksft_print_msg("master poll returned %d (revents %#x), expected HUP\n",
-+			       ret, pfd.revents);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+static int expect_locked_peer_rejected(int master)
-+{
-+	int fd;
-+
-+	errno = 0;
-+	fd = ioctl(master, TIOCGPTPEER, O_RDWR | O_NOCTTY | O_CLOEXEC);
-+	if (fd >= 0) {
-+		ksft_print_msg("locked slave unexpectedly opened\n");
-+		close(fd);
-+		return -1;
-+	}
-+	if (errno != EIO) {
-+		ksft_print_msg("locked slave open returned errno %d, expected EIO\n",
-+			       errno);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+static int transfer_byte(int master, int slave, char value)
-+{
-+	struct pollfd pfd = { .fd = master, .events = POLLIN };
-+	char received;
-+	ssize_t ret;
-+
-+	ret = write(slave, &value, 1);
-+	if (ret != 1) {
-+		ksft_print_msg("slave write returned %zd (errno %d)\n", ret, errno);
-+		return -1;
-+	}
-+
-+	ret = poll(&pfd, 1, 1000);
-+	if (ret != 1 || !(pfd.revents & POLLIN)) {
-+		ksft_print_msg("master poll returned %zd (revents %#x)\n",
-+			       ret, pfd.revents);
-+		return -1;
-+	}
-+
-+	ret = read(master, &received, 1);
-+	if (ret != 1 || received != value) {
-+		ksft_print_msg("master read returned %zd (value %#x)\n",
-+			       ret, ret == 1 ? (unsigned char)received : 0);
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+int main(void)
-+{
-+	int master = -1, slave_a = -1, slave_b = -1;
-+	int locked = 1, unlocked = 0;
-+	int ret = KSFT_FAIL;
-+
-+	ksft_print_header();
-+	ksft_set_plan(1);
-+
-+	master = open("/dev/ptmx", O_RDWR | O_NOCTTY | O_CLOEXEC);
-+	if (master < 0) {
-+		ksft_print_msg("cannot open /dev/ptmx: %d\n", errno);
-+		goto out;
-+	}
-+	if (expect_no_master_hup(master) ||
-+	    expect_locked_peer_rejected(master) ||
-+	    expect_no_master_hup(master))
-+		goto out;
-+
-+	if (ioctl(master, TIOCSPTLCK, &unlocked) < 0) {
-+		ksft_print_msg("cannot unlock slave: %d\n", errno);
-+		goto out;
-+	}
-+	slave_a = ioctl(master, TIOCGPTPEER, O_RDWR | O_NOCTTY | O_CLOEXEC);
-+	if (slave_a < 0) {
-+		ksft_print_msg("cannot open slave A: %d\n", errno);
-+		goto out;
-+	}
-+	if (transfer_byte(master, slave_a, 'A'))
-+		goto out;
-+	if (ioctl(master, TIOCSPTLCK, &locked) < 0) {
-+		ksft_print_msg("cannot relock slave: %d\n", errno);
-+		goto out;
-+	}
-+	if (expect_locked_peer_rejected(master) ||
-+	    transfer_byte(master, slave_a, 'B'))
-+		goto out;
-+	if (ioctl(master, TIOCSPTLCK, &unlocked) < 0) {
-+		ksft_print_msg("cannot unlock slave: %d\n", errno);
-+		goto out;
-+	}
-+	slave_b = ioctl(master, TIOCGPTPEER, O_RDWR | O_NOCTTY | O_CLOEXEC);
-+	if (slave_b < 0) {
-+		ksft_print_msg("cannot open slave B: %d\n", errno);
-+		goto out;
-+	}
-+	if (transfer_byte(master, slave_a, 'C') ||
-+	    transfer_byte(master, slave_b, 'D'))
-+		goto out;
-+
-+	if (ioctl(master, TIOCSPTLCK, &locked) < 0) {
-+		ksft_print_msg("cannot relock slave: %d\n", errno);
-+		goto out;
-+	}
-+	if (transfer_byte(master, slave_a, 'E') ||
-+	    transfer_byte(master, slave_b, 'F'))
-+		goto out;
-+
-+	if (expect_locked_peer_rejected(master) ||
-+	    transfer_byte(master, slave_a, 'G') ||
-+	    transfer_byte(master, slave_b, 'H'))
-+		goto out;
-+	if (close(slave_b)) {
-+		ksft_print_msg("cannot close slave B: %d\n", errno);
-+		slave_b = -1;
-+		goto out;
-+	}
-+	slave_b = -1;
-+	if (expect_no_master_hup(master) ||
-+	    transfer_byte(master, slave_a, 'I'))
-+		goto out;
-+	if (close(slave_a)) {
-+		ksft_print_msg("cannot close slave A: %d\n", errno);
-+		slave_a = -1;
-+		goto out;
-+	}
-+	slave_a = -1;
-+	if (expect_master_hup(master))
-+		goto out;
-+	ret = KSFT_PASS;
-+
-+out:
-+	if (slave_b >= 0)
-+		close(slave_b);
-+	if (slave_a >= 0)
-+		close(slave_a);
-+	if (master >= 0)
-+		close(master);
-+	ksft_test_result(ret == KSFT_PASS,
-+			 "locked slave open preserves master and existing slave I/O\n");
-+	ksft_exit(ret == KSFT_PASS);
-+}
-+#endif
--- 
-2.50.1
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
