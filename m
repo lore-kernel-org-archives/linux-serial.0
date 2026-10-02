@@ -1,92 +1,60 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F650476680;
-	Fri,  2 Oct 2026 09:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E1AF481A98
+	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 09:14:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790932437; cv=none; b=UlxxToUbzuyh9+tF7fpFbGe0LmmjM5mJ0tO971OkgqHBeqz+QAhT28tYvQw2BQ7Dj8fTpon5YMwGEMs8UckFe0KznLFEpXGQ7iL8JNQ2BgzSsXtu84TFErOQxSyGZm1n8bQAe2vJxnZ7lQtaRVhN50mTyNOpLmd+kdN0/HXzvDc=
+	t=1790932478; cv=none; b=M5od48tPmbwYS7ZSM9PG8dRROEbxKchaRHdM0UZQQIa6BC+LL6hmcPms2576+KxOdpcVQN1GRoxKUrbjYCQUQSvGjfi373iwZqfiPJsFIIQHg+SyVCWSLQZiRQATIRS2oS+fOvmLKYiJctgMqliISAcB8bOhiHpAdBKLqFoU85Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790932437; c=relaxed/simple;
-	bh=XjECC/76Kx4GLg4WNuJ4XZyAdX68d0SjCkq85tltP1c=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=qdztiMZrFoDkDfsvb0tnwnEpnK6KD2Jey7W28/BJ2ZmoktNs2Ousxl8KeAuT6tr+wnzzXzg3v6RoddGo46RivvleHIQBrZ1LPYI1wo0NogHymytnOX2ghG1fqthwjPgm+uujQkVzsNChVPhq70Y123flulz9ogkHkxGn0mmR/p4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=jaluJOCE; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=JMHbJyBx; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1790932478; c=relaxed/simple;
+	bh=w9+xgdEzVZR0ZzfQswhTvBdKYsB9Ne2VOAZRR704aNo=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=forcyd9MKruOHdT5cJO7PHeMHzxOhnuhkTSlUOsI/oxAdfXSmT5AqF+BQ80h0A0vHIRyqhHa+F7hIRGxkY/6wLTsh3tiHtofxABooGKonNgxFUbUafQTPIbpa1hDLjSsEcMapkA/SCMX056uPaALy1b0knTu4yuXQYghk/GJYsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EOXujiar; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jaluJOCE";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="JMHbJyBx"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1790932434;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ttetKvleXMEquiPnuWfDClRaQG7XGFkYd7ppUiWWo9E=;
-	b=jaluJOCEffagfAKw28ReqP9Nyn11YnwVvg7Bs3mJoiQnj3hWwRkurg/WfGNjQBTwl8e2zM
-	xXjykMndYfTy0ZgRXHYRTRNwzDlSR75dIkw/5z5qXjviHxRoxt2GJwHx3PSn0SuV2XtP9V
-	/4+Q/PRXras/MUy6nr1WZbEyACtpPUjxFtZClzO9HWV/67BXQFzbQI7+KSVSG0UgVs6FzX
-	KfuBfGnB4nYyDbVO6FdSQ+j/klP3cYAw6scG5HJbpajN6KwWD5AhWgROExCgVRDT26zq+G
-	Wn+meN+3JLN6tlmJHNBwg+gg3v+sWy+nJrkukDsRQUtQrS8oEv3HukBa74JhAg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1790932434;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ttetKvleXMEquiPnuWfDClRaQG7XGFkYd7ppUiWWo9E=;
-	b=JMHbJyBxzxesxJQMV9q6U5w55HlR4gKD0nRMcsAhMS7L/XnvjZuSqwlCa8aqqbV36D/LWQ
-	/LdE2/8z8CZDqaDg==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
- <rostedt@goodmis.org>, Marcos Paulo de Souza <mpdesouza@suse.com>, Samuel
- Thibault <samuel.thibault@ens-lyon.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
- =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
- Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
- linux-serial@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/1] braille: nbcon: Allow to use a serial console
- with NBCON API as Braille console
-In-Reply-To: <ar9wacP7FGkiKFXp@pathway.suse.cz>
-References: <20261001140727.124398-1-pmladek@suse.com>
- <20261001140727.124398-2-pmladek@suse.com>
- <87h5j58mj2.fsf@jogness.linutronix.de> <ar9wacP7FGkiKFXp@pathway.suse.cz>
-Date: Fri, 02 Oct 2026 11:19:53 +0206
-Message-ID: <87mrswwjla.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EOXujiar"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01B71F00893;
+	Fri,  2 Oct 2026 09:14:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790932477;
+	bh=w9+xgdEzVZR0ZzfQswhTvBdKYsB9Ne2VOAZRR704aNo=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=EOXujiarO5wcF/S/Kb+OATscQeM1YmfNCSvhwwuL8m8HjXOMNuNHYOAl76RAKhQaI
+	 EreYr7ROvmmU1KiLciFoXyqJkIj5Dk03M7JOLTiwaQoBgQoRsRfcP8RpJXEL7Dg9oa
+	 rADB8pY3ha4z1to1rIVWkqEJgy4rOvY+V8jjzdQdqTPWZOSTWov/y72Q1hApT5wv6E
+	 KDqC8Afl62BjzlS9fx/z1s2dMmeyFb91xigrxQjjHVp+cn4jjuI32SRjtMjt9T7WOO
+	 vpSiGm4L+vxQ0h3pv7CKmYWag9OAmSaBob9q8PZzxW/8MCEAQ8igspTzhAmbyyhPtQ
+	 t7KdLOawb9AAA==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] tty: add missing driver flag kernel-doc colon
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Johan Hovold" <johan@kernel.org>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261002072736.2063004-1-johan@kernel.org>
+References: <20261002072736.2063004-1-johan@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 02 Oct 2026 09:14:36 +0000
+Message-Id: <20261002091436.E01B71F00893@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain
 
-On 2026-10-02, Petr Mladek <pmladek@suse.com> wrote:
-> It should be good enough for 7.3. And I wanted to get it into
-> linux-next ASAP.
->
-> There is still an open problem with the dependency on CONFIG_PRINTK
-> to fix the Sashiko complains. We might add it as a separate patch.
-> But we might also try to fix it properly by enabling nbcon.c code
-> even when CONFIG_PRINTK is disabled, ...
+> A recent change adding a new TTY driver flag left out a colon required
+> for well-formed kernel-doc.
+>=20
+> Fixes: 8df07fe93573 ("tty: fix saved termios reset race")
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Link: https://lore.kernel.org/ec3a09d6-4ba4-41b8-abb1-b59e265f4532@infrad=
+ead.org
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-It would probably be enough just to set the !CONFIG_PRINTK case to:
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-	static inline bool nbcon_braille_try_acquire(struct console *con,
-		     struct nbcon_write_context *wctxt) { return true; }
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261002072736.2063=
+004-1-johan@kernel.org?part=3D1
 
-Since there is no PRINTK, there will be no consoles to synchronize
-against.
-
-Or in drivers/accessibility/braille/braille_console.c you could change
-all the
-
-	panic_on_this_cpu()
-
-checks to
-
-       IS_ENABLED(CONFIG_PRINTK) && panic_on_this_cpu()
-
-John
