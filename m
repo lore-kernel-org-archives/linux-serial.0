@@ -1,60 +1,64 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E1AF481A98
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 09:14:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8152446C840;
+	Fri,  2 Oct 2026 09:14:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790932478; cv=none; b=M5od48tPmbwYS7ZSM9PG8dRROEbxKchaRHdM0UZQQIa6BC+LL6hmcPms2576+KxOdpcVQN1GRoxKUrbjYCQUQSvGjfi373iwZqfiPJsFIIQHg+SyVCWSLQZiRQATIRS2oS+fOvmLKYiJctgMqliISAcB8bOhiHpAdBKLqFoU85Q=
+	t=1790932489; cv=none; b=XnC5lFqNvjWMFA1wEmLPNz7PS0RqdFWwfa99fAXtDN41dH4aLgUNg3YqVev2fO0F8uuahBjsQXRS4OZ4I+jyCoNu/t2jxHN+1TuO4MwKG3iVKgoid2wSi56gy4ASe6Jlv+zrA8/oDDATpBHgEnVfMLiO0s/gB1zhDrBa+R4EdBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790932478; c=relaxed/simple;
-	bh=w9+xgdEzVZR0ZzfQswhTvBdKYsB9Ne2VOAZRR704aNo=;
+	s=arc-20240116; t=1790932489; c=relaxed/simple;
+	bh=//8fxdMsJh6/kGtDdgLOpr6PPslJ7sGIiQGx+p6a4P4=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=forcyd9MKruOHdT5cJO7PHeMHzxOhnuhkTSlUOsI/oxAdfXSmT5AqF+BQ80h0A0vHIRyqhHa+F7hIRGxkY/6wLTsh3tiHtofxABooGKonNgxFUbUafQTPIbpa1hDLjSsEcMapkA/SCMX056uPaALy1b0knTu4yuXQYghk/GJYsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EOXujiar; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=CBKD4B9MWLgDU2WHxBFdUqWLQke3Ho6IbvHCVEgGArpQe3oQyk7hRUH479zE77AdKFqCJ8C6+FFO+J3fKZ9cZjq0c9/Vr9AlO6r/HZo1Cn4/XQxvqKFKLmDvJ4ht7Q2xrbNrAsfwBbYXvtXlbqgTjsX/nMbvKJp0lafTJMGfZAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XpsmJPb0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EOXujiar"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01B71F00893;
-	Fri,  2 Oct 2026 09:14:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XpsmJPb0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB5ED1F000FF;
+	Fri,  2 Oct 2026 09:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790932477;
-	bh=w9+xgdEzVZR0ZzfQswhTvBdKYsB9Ne2VOAZRR704aNo=;
+	s=k20260515; t=1790932488;
+	bh=//8fxdMsJh6/kGtDdgLOpr6PPslJ7sGIiQGx+p6a4P4=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=EOXujiarO5wcF/S/Kb+OATscQeM1YmfNCSvhwwuL8m8HjXOMNuNHYOAl76RAKhQaI
-	 EreYr7ROvmmU1KiLciFoXyqJkIj5Dk03M7JOLTiwaQoBgQoRsRfcP8RpJXEL7Dg9oa
-	 rADB8pY3ha4z1to1rIVWkqEJgy4rOvY+V8jjzdQdqTPWZOSTWov/y72Q1hApT5wv6E
-	 KDqC8Afl62BjzlS9fx/z1s2dMmeyFb91xigrxQjjHVp+cn4jjuI32SRjtMjt9T7WOO
-	 vpSiGm4L+vxQ0h3pv7CKmYWag9OAmSaBob9q8PZzxW/8MCEAQ8igspTzhAmbyyhPtQ
-	 t7KdLOawb9AAA==
+	b=XpsmJPb0sdEKeIq/UesdQfhLDQk6S9g+A2bIgzdI/7FdfJJvc81oavlWgIC+Qa6dm
+	 2o9HtMRYIQQ/lLZ+hmkUI9dYaMPIFiHwkovmCzfugbzp+0ltHoDsg6H9DTk3DeuEKE
+	 nSaaj5gx5Dai2z9yIUsrzcntO7Dxep0Jr1ol4AUknDlRvPQ797z0Adld5SjYA0WvDI
+	 6KMEeiWciWSZQzrHE15B+5qz+JX0WChssvTgiCd4lKrtE+TY1ToAl9I0PXc0ybKi+I
+	 ZuByXYnVxLI6+aqVGWbrhmtHPn/lhqLRFAg+Gsgd/SjbhG8RO3ODIxvfeNSxquYXDG
+	 ZAUTnGj9psfnw==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: add missing driver flag kernel-doc colon
+Subject: Re: [PATCH v2 1/3] hwmon: Replace __MODULE_STRING() with
+ __stringify()
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Johan Hovold" <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261002072736.2063004-1-johan@kernel.org>
-References: <20261002072736.2063004-1-johan@kernel.org>
+To: "Petr Pavlu" <petr.pavlu@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-rtc@vger.kernel.org, dri-devel@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org, "Petr
+ Pavlu" <petr.pavlu@suse.com>, "Alexandre Belloni" <alexandre.belloni@bootlin.com>, linux-modules@vger.kernel.org
+In-Reply-To: <20261002-module-string-v2-1-fc7438acaf4d@suse.com>
+References: <20261002-module-string-v2-0-fc7438acaf4d@suse.com>
+ <20261002-module-string-v2-1-fc7438acaf4d@suse.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 02 Oct 2026 09:14:36 +0000
-Message-Id: <20261002091436.E01B71F00893@smtp.kernel.org>
+Date: Fri, 02 Oct 2026 09:14:47 +0000
+Message-Id: <20261002091447.DB5ED1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> A recent change adding a new TTY driver flag left out a colon required
-> for well-formed kernel-doc.
+> __MODULE_STRING() has been an alias for __stringify() since "[PATCH]
+> MODULE_PARM support for older modules" [1] in 2002-12. That change also
+> moved it to the graveyard section at the end of linux/module.h
 >=20
-> Fixes: 8df07fe93573 ("tty: fix saved termios reset race")
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Link: https://lore.kernel.org/ec3a09d6-4ba4-41b8-abb1-b59e265f4532@infrad=
-ead.org
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+> Replace the remaining uses of __MODULE_STRING() with __stringify() in
+> preparation for its removal.
+>=20
+> Link: https://git.kernel.org/tglx/history/c/136839a1b4 [1]
+> Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
 
 Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261002072736.2063=
-004-1-johan@kernel.org?part=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261002-module-str=
+ing-v2-0-fc7438acaf4d@suse.com?part=3D1
 
