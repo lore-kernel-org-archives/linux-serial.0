@@ -1,191 +1,170 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBE7344E02A;
-	Fri,  2 Oct 2026 08:26:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18B445FFA2
+	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 08:32:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790929594; cv=none; b=CS+rAXLxizIm8AnpAJwWG/4ImGLuiY2SQtzeNWlrURA+umipCDbj26b4XFymdZnDniAF8a/C63TgW6rlnPDkM3gmKZVpNbSqT5ePIq8+7DU9Aw+j5fpqdbpkog8Gc4rucXYS5YphYj35d9DUcolv3Gl4LBHmT6BFx7E7HTgYBtk=
+	t=1790929946; cv=none; b=hNUL5LZR9DMwgdE8bcYG1wkXj9xE2+czOkujo0mkEGuTFGaQVTaHCtPw7cW2Avz8oOi3tqGXyLfz0y79UDCzoC3rc0M+V6njcDdHmwRzQRQnom76bVC4RIftnlXh3fRPwFEKHXVtHmBUh/R6J3cyX1mdBgNUrnwu3VW6/5rBfFQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790929594; c=relaxed/simple;
-	bh=siUcSXucLvCnlrb1Xgp4F7mBAS3yKi85NsJq4r2dfs0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L33gLh7NYVuiR+huNij2HIcoHBnFsffkGyMDK6pLc0lbscRyqnRTMt7fm9y215SIekpW5Bjh/p4tKcCkO4wzmIByWj2V/TSRr2IUqGZs685xoLvqEVbpchSqoG9L0XlAdhVYdlcmmspgTVA8Hd+K+ii8oFH0dDS4HU/Lf4aeD3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R2DfacJd; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790929946; c=relaxed/simple;
+	bh=rm25fPbnkxJO7HK0YmIVPZ5xoj6VizjjzCiLuZ4wrBI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=m56DHqRvtkIJ1fkq9xZ685lKE5Dg3aQuZufTkm3pWYR/EOeNoXx2WXVOy9rnlXYyDLpZeETbQ0hjxyBGS+Z3ERYK1s+JKb92EdF1qOhCYFlpxQBEZGbVnu2Ty4gdWqTjZXw9KFHhAlEzfH3iF5fdY/7pCjOKJCmEaL7+B0NjQgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=gOM8/Y/X; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R2DfacJd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790929591; x=1822465591;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=siUcSXucLvCnlrb1Xgp4F7mBAS3yKi85NsJq4r2dfs0=;
-  b=R2DfacJdUc2QFaJKlpqs65hUfHLqaW+qz4flJ/SjCEpiLWPCvxrf1fa+
-   Kvw1aI3aw2nKRiGBZ6Da4MRd3rWZktYCKzuAzfU9oNzZKLGspRMVfLkt2
-   L7NfgHXi6/9wUGxm9uw5mkQ+mml25Pfe0MkXUQ7Kajwih90nMed0PxqeD
-   olWHnChkeJ/yAWeLjHYSkUitPdeGGyyPwpkL04p6TTx6y1uopdVxlyxKk
-   5apW6Ik9nwHdjgZnMnGM94TLYl8k/9NOEVylRyGH5OMkaw81HXXzXi5+M
-   vBnvCYzunBslEMUJus6JnbUt41VxKe5tG3OEAhUWeyTeVS8tbaviD7vBE
-   g==;
-X-CSE-ConnectionGUID: dX22DuZ3Sv6ml/TXZrL1aw==
-X-CSE-MsgGUID: NipYh+BhRyqnFyr9R93bFw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="90554348"
-X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
-   d="scan'208";a="90554348"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 01:26:22 -0700
-X-CSE-ConnectionGUID: v07VLHlTTZW/gpl9yVKxbA==
-X-CSE-MsgGUID: AQTsk4EpQmuB2buWgQXH1A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
-   d="scan'208";a="284264249"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 01:26:15 -0700
-Date: Fri, 2 Oct 2026 11:26:13 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: longzhao@ambarella.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="gOM8/Y/X"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912df756so55586505e9.3
+        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 01:32:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1790929941; x=1791534741; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=/bn76FEyPAPXjCUYSZydeUnbTPozt7o+Jc45Ge3nFyQ=;
+        b=gOM8/Y/X8QSRBJid0XZciWOdROVf+RMhL25AJV8yolknw87gSL5S/vwYMGFwT7H5hA
+         qXGE9lSVooIes0Vc4UgAG3LG/BZ9xd4DNEI8yalLTbWdnK7zo9E3qC4sQh/WZsg4g+ew
+         TG7vz7RjF0PXObU4LdFW+flyGSQAjElyrsiKimXf/Q7jeIyF6NdrWu8uAkgciAuvZWUo
+         OBv+8tLd9uDIxz+IKaeOrk3a4nX0buiJNmpeFmfK40wb3okDczzjrmsX/z5dAlEIMczF
+         Kckecudd1heVZnr6LXfMIgW2ybIFHdyDhajsaW9wnpYlPuRYwPKB9CVqflmDPXEMfUBh
+         lKMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790929941; x=1791534741;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=/bn76FEyPAPXjCUYSZydeUnbTPozt7o+Jc45Ge3nFyQ=;
+        b=w4BnNhxBRX1ueKwDqsF7oysfEYnmXEfV+qp0A3gRH8plN49UnZIQzRezAD3He3RxeK
+         CJB2OrekfmA8m+iZY18bAeko2xo+k+QemnBDRFjYB2vVde4Tam/prJzZ7NHE3BiB7utA
+         o4MlaGd/NFRRTzmjOoKG9PtE5xtdPCNiKPYLuA2iXhBjUwJ+L6oxSASqvZlPw9362XAl
+         a4P4YN60pvW+SPapq3lg4zHJOQAImdjlxSUmbRCf0+KaG3OoynnDd0z7Tqh9YzE4TXQv
+         NuHKR9FxT7NVLjEtQNuxd9PMkYzqJ/kUrR9Vpv0GnWqrACvpgYdRveG6+Zln+1mGIAQu
+         qVXg==
+X-Forwarded-Encrypted: i=1; AKwUvBwzSRGp7WdphKlDvhXeaE3cOlgilsbOnGKeEetCQHRB9BW5YZF5pznkmQ3JFhqlC1XSpI02Qe5RBO0TchM=@vger.kernel.org
+X-Gm-Message-State: AFuF++nIefFFWATuqLf/O0O/7PPYMO8eaqFaihJFjjDlNBzxLPkqaOb1
+	XhNXlInaOWO993r2GaYp9egOgQ8mIoZ98bjbwwslAWRM//JpKgARn50LJUwr0fKDKis=
+X-Gm-Gg: AYBFou0rcWFmK0Q7xfV6doEpWMeksqkGTfg0E0XKzMbxvKH5mUu8ULfUHZXl+ItJJsC
+	A/qVf68IPG1t8UoE4tOe1k+oxVJnjJGI/zpLp33gNdqOMB1kyQv5uwYIBadVABv5Tg6iWL6EuKX
+	YCuHWd+nJA98yDAfvIIAwGIBdpg1oS1rhYq9yEEqB78e1rAeA33G+8MMgXsgqZS68eq4eRBt4wo
+	RWO8hnYEergqRm/VTFrJWd9bljkns0wwjFB0ZEo9hrijnmTDTovm2rE9lp2HWZaJRpF41f/j/zM
+	QI201VHYDx4PEer2eeOHZNcnIDnTNkx+9gabmWGZg9uH9/7/EJrpCuG4a++Rq6xChsqTHPTTuyN
+	tcpfz768VO5s6gZfxIP/urL4xO6svT/DcpcvQvuT2kguEsczOiaokDvCTrbCXciFuhgqNBKzLGZ
+	OdMA4wNjwztP2lv1EQ51Sig7Qe0tkTrp1CWN4I5v12Q/yAbolFIoEXUKp0KlMwaybdAA==
+X-Received: by 2002:a05:600c:4e41:b0:49c:e27c:6b10 with SMTP id 5b1f17b1804b1-4a0274f9bfbmr42577955e9.3.1790929940907;
+        Fri, 02 Oct 2026 01:32:20 -0700 (PDT)
+Received: from zovi.suse.cz ([2001:af0:8000:1409:193:86:92:181])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a03feed16bsm42507905e9.4.2026.10.02.01.32.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Oct 2026 01:32:20 -0700 (PDT)
+From: Petr Pavlu <petr.pavlu@suse.com>
+To: Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Rudolf Marek <r.marek@assembler.cz>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Chris Snook <chris.snook@gmail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
 	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Jerome Brunet <jbrunet@baylibre.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Michael Walle <mwalle@kernel.org>,
+	Andreas Noever <andreas.noever@gmail.com>,
+	Mika Westerberg <westeri@kernel.org>,
+	Yehezkel Bernat <YehezkelShB@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>,
-	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+	Duncan Sands <duncan.sands@free.fr>,
+	Chas Williams <3chas3@gmail.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Petr Pavlu <petr.pavlu@suse.com>,
+	Daniel Gomez <da.gomez@kernel.org>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Aaron Tomlin <atomlin@atomlin.com>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	linux-watchdog@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-hwmon@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	netdev@vger.kernel.org,
+	intel-wired-lan@lists.osuosl.org,
+	linux-rtc@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-atm-general@lists.sourceforge.net,
+	linux-modules@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 08/15] gpio: pl061: convert register access to regmap
-Message-ID: <ar9qpeOCU0fpmhse@ashevche-desk.local>
-References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
- <20261001-cv75-v5-v9-8-486cc289a4b8@ambarella.com>
+Subject: [PATCH v2 0/3] Remove obsolete __MODULE_STRING()
+Date: Fri,  2 Oct 2026 10:31:00 +0200
+Message-ID: <20261002-module-string-v2-0-fc7438acaf4d@suse.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261001-cv75-v5-v9-8-486cc289a4b8@ambarella.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20260919-module-string-d64816f203d9
+Content-Transfer-Encoding: 8bit
 
-On Thu, Oct 01, 2026 at 08:40:57PM +0800, Long Zhao via B4 Relay wrote:
+__MODULE_STRING() has been an alias for __stringify() since "[PATCH]
+MODULE_PARM support for older modules" [1] in 2002-12. That change also
+moved it to the graveyard section at the end of linux/module.h
 
-> Replace readb()/writeb() with a MMIO regmap while keeping the existing
-> gpio_chip and girq irqchip. Use a raw spinlock so irq_ack() can run
-> under the irq descriptor lock.
+Replace the remaining uses of __MODULE_STRING() with __stringify() and
+remove the macro.
 
-...
+Apologies for the wide distribution. Acked-bys are appreciated.
 
->  static int pl061_get_direction(struct gpio_chip *gc, unsigned offset)
->  {
->  	struct pl061 *pl061 = gpiochip_get_data(gc);
-> +	unsigned int gpiodir = 0;
->  
-> -	if (readb(pl061->base + GPIODIR) & BIT(offset))
-> +	regmap_read(pl061->regmap, GPIODIR, &gpiodir);
+[1] https://git.kernel.org/tglx/history/c/136839a1b4
 
-Why not returning an error?
+---
+Changes in v2:
+- Rebase on top of next-20260930.
+- Drop 'watchdog: Replace __MODULE_STRING() with __stringify()' since it
+  has already been queued on watchdog-next.
+- Split the hwmon changes into a separate patch.
+- Link to v1: https://patch.msgid.link/20260922-module-string-v1-0-c18766690185@suse.com
 
-> +	if (gpiodir & BIT(offset))
->  		return GPIO_LINE_DIRECTION_OUT;
->  
->  	return GPIO_LINE_DIRECTION_IN;
+---
+Petr Pavlu (3):
+      hwmon: Replace __MODULE_STRING() with __stringify()
+      drivers: Replace __MODULE_STRING() with __stringify()
+      module: Remove obsolete __MODULE_STRING()
 
-I believe this can use regmap_test_bits().
-
-...
-
-> static int pl061_direction_input(struct gpio_chip *gc, unsigned offset)
->  {
->  	struct pl061 *pl061 = gpiochip_get_data(gc);
->  	unsigned long flags;
-> -	unsigned char gpiodir;
->  
->  	raw_spin_lock_irqsave(&pl061->lock, flags);
-> -	gpiodir = readb(pl061->base + GPIODIR);
-> -	gpiodir &= ~(BIT(offset));
-> -	writeb(gpiodir, pl061->base + GPIODIR);
-> +	regmap_update_bits(pl061->regmap, GPIODIR, BIT(offset), 0);
-
-_clear_bits()
-
->  	raw_spin_unlock_irqrestore(&pl061->lock, flags);
->  
->  	return 0;
-
-...
-
-> static int pl061_direction_output(struct gpio_chip *gc, unsigned offset,
->  {
->  	struct pl061 *pl061 = gpiochip_get_data(gc);
->  	unsigned long flags;
-> -	unsigned char gpiodir;
-> +	unsigned int mask = BIT(offset);
->  
->  	raw_spin_lock_irqsave(&pl061->lock, flags);
-> -	writeb(!!value << offset, pl061->base + (BIT(offset + 2)));
-> -	gpiodir = readb(pl061->base + GPIODIR);
-> -	gpiodir |= BIT(offset);
-> -	writeb(gpiodir, pl061->base + GPIODIR);
-> +	regmap_write(pl061->regmap, BIT(offset + PL061_DATA_OFFSET),
-> +		     !!value << offset);
-
-_set_bits()
-
-> +	regmap_update_bits(pl061->regmap, GPIODIR, mask, mask);
->  
->  	/*
->  	 * gpio value is set again, because pl061 doesn't allow to set value of
->  	 * a gpio pin before configuring it in OUT mode.
->  	 */
-> -	writeb(!!value << offset, pl061->base + (BIT(offset + 2)));
-> +	regmap_write(pl061->regmap, BIT(offset + PL061_DATA_OFFSET),
-> +		     !!value << offset);
-
-Ditto.
-
->  	raw_spin_unlock_irqrestore(&pl061->lock, flags);
->  
->  	return 0;
-
-...
-
-> static int pl061_direction_output(struct gpio_chip *gc, unsigned offset,
->  static int pl061_get_value(struct gpio_chip *gc, unsigned offset)
->  {
->  	struct pl061 *pl061 = gpiochip_get_data(gc);
-> +	unsigned int val = 0;
-> +
-> +	regmap_read(pl061->regmap, BIT(offset + PL061_DATA_OFFSET), &val);
->  
-> -	return !!readb(pl061->base + (BIT(offset + 2)));
-> +	return !!val;
-
-_test_bits()
-
->  }
-
-...
-
-...and so on...
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+ drivers/comedi/comedi_fops.c                          |  5 +++--
+ drivers/gpu/drm/drm_fb_helper.c                       |  3 ++-
+ drivers/hwmon/fschmd.c                                |  3 ++-
+ drivers/hwmon/nct7904.c                               |  5 +++--
+ drivers/hwmon/sch56xx-common.c                        |  3 ++-
+ drivers/hwmon/w83793.c                                |  5 +++--
+ drivers/i2c/busses/i2c-kempld.c                       |  3 ++-
+ drivers/net/ethernet/atheros/atl1e/atl1e_param.c      |  9 +++++----
+ drivers/net/ethernet/atheros/atlx/atl1.c              |  3 ++-
+ drivers/net/ethernet/atheros/atlx/atl2.c              | 11 ++++++-----
+ drivers/net/ethernet/intel/e1000/e1000_param.c        | 15 ++++++++-------
+ drivers/net/ethernet/intel/e1000e/param.c             | 16 ++++++----------
+ drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_param.c |  7 ++++---
+ drivers/platform/cznic/turris-omnia-mcu-watchdog.c    |  3 ++-
+ drivers/rtc/rtc-ds1374.c                              |  3 ++-
+ drivers/thunderbolt/tb.c                              |  3 ++-
+ drivers/thunderbolt/tunnel.c                          |  5 +++--
+ drivers/tty/serial/8250/8250_platform.c               |  3 ++-
+ drivers/usb/atm/speedtch.c                            | 15 ++++++++-------
+ drivers/usb/atm/usbatm.c                              | 17 +++++++++--------
+ include/linux/module.h                                |  4 ----
+ 21 files changed, 76 insertions(+), 65 deletions(-)
+---
+base-commit: 6c2cb8b8b843d216ab549b678a0d8831c43153e0
+change-id: 20260919-module-string-d64816f203d9
