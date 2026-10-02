@@ -1,179 +1,229 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 540D141F5D4
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 08:09:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A74CA3D954F;
+	Fri,  2 Oct 2026 08:10:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790928592; cv=none; b=gP9Cxi2921dya58X8biQnva0yxvrK0Vkier64KYJzgpOXl2WtJwpk+Sq1ZLvs0yP7/UylsprRaLhFL/Zlm3bP8rBxpNKVy8/AXuOMKO2iOPWuhUZuHHhR0c8ZNEMFXjGPhFXbrHt54FKIs3/6ZJwaDtfogVNPg4cBiC20gEKakI=
+	t=1790928666; cv=none; b=SypEvn+EUZ507xw28REhCuJfXNxCtboNyVLEofe7TMyHnv1RdUFwLCzqmbwnSojgnRxlVzG9rLNuZp38ngYBUng6LB7oyimwj50+pOHYDzDa1UFkkAo6Gq/RgbWc0G6BL06ZDTStx94WS4sL0qnPuk/KJuQU4DO1ftZtYUTh98k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790928592; c=relaxed/simple;
-	bh=DGpTwbDIeBlS7xGbevsnPXJ7r9V5/qe6fW0JwCkuRoQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=gDGdV/KcklDoznnpK3PqOQXqdW6vZdldkq43g9JfTDu7Ot1gbWCyQHMHA0+6inqviFdoz7Xwu8/4RLUKqW8fQn7LfMQ6g5y7apFaXAL2FtE1oeZRI8J6CL1hP3oh1UYp2E41IYSiKryAA3uMDvnJi1tI1OSWu6Heh5w2I7A2h8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=nlQrpZci; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1790928666; c=relaxed/simple;
+	bh=jbrobNgLFvEYW+K5702m//jZXUekQEX6EeXtEarN3MI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GG7CFw/buHXF4E+KIcf4X/ZOrHk+Fs6LXxbz9KDgk/iJQqKch+vhYK+xW1c5cRgxo6IFy/35ZQvsjjY6hJM9gDmsARFF7X8MiI3ApA6eBuseE0qrgrqD76oJ9nPahLDxSS/HfdwcrhFMRgE2uwojZxxDJLRQ8H3O2fuEp9ofR0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ia0kYKAi; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="nlQrpZci"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49ff9642c57so17045875e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 01:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1790928586; x=1791533386; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=cyfq5Z39i3Aa9ox1entG/vitb9px1bSDrzF3bMpTbqM=;
-        b=nlQrpZciIERMGLnEYKazKcxNj+AfzUsfyuG9eFIsindPMqlnlficfjm5HNNxocxGOY
-         wAGucdObo5WGQCzAlz97WJbAHs2P+OPfYsF4y/aXpkdo9xW/H9fD5dNwC7m9mSMWTkce
-         1B6BIhgCn628FpWP9dQFAlAjLDChlYAy/w6psUFv/DPquDGVbqZcS+4WaxlFIkLjfK03
-         p18rV+K24eteG2OnZvEFFNL0mTGLg2BsffcfcL5HJd0MuD+ySCIRgbJvceZVBpfzW5gQ
-         9xygZb/wmhajCIBDLvOn6JEQBSjgok/dHLWQAX7EAyC8HqXidy4o4FGTiKx6d58CoBZi
-         +ZPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790928586; x=1791533386;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :references:in-reply-to:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=cyfq5Z39i3Aa9ox1entG/vitb9px1bSDrzF3bMpTbqM=;
-        b=JaEBzdu3RTigOePRAJVNfBzPBUgDZKThw2xRJ0HmYbdl/NX91giXTkQIqgvkXXPJtQ
-         mJVexYhMFCK3PHVf+wU+d3N1J2WavBdlu5kcfx1D37/DUH58oJlTkF9LaZmmVaLhVH1f
-         LW2SwZ2yG5U1GIPJFMbDe1O+BfRWFY6vBZ3ZuYcLimXXkvjaJYCVoVxuYAIhagkActp6
-         fb3FUpJpt21GvGPkt3MPlt5zjSSnCXInjrdn+Sy50fxiNvZhtfPkJYpgHAhZdSwY19oT
-         s6FB/fb5dzDJBKZicODQqGNrquTBvU32F6EnNUMcRnHmkTP0kaashu4oy4Ph9+jwb8XD
-         DAuQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzU4Xjs9l1KF/fVQ0waayCaifH6aOAYfwdjX9mc4pqGwUEz88YyA25bMha5cSLME6sFyuXWGDjEN8foUho=@vger.kernel.org
-X-Gm-Message-State: AFuF++ktDw7vOHpeizy1h6ZjsSbF/3xl824f4bC+1WynmD17QXgqRNtr
-	Cf+IXnBXXufVfo7eBS1/0ySn1kI9Ty3K0raGSUdh11BgP4atTzaz2bz7psfYf4xAfRQ=
-X-Gm-Gg: AYBFou1M0a1p219/mr9E51DpbFaZRxQj6n7Hcd9YaJkiLtjN6BZ2JdzoILj4v11a3Hq
-	BHOMlEHnsNuiGxxLWLefR0HX0W+nNWrQ97dDdXaIMvupbwnZrY9W0r+VYXCbpnKLll6GRffMwXt
-	iey3a5dnS2G3+MYMOSjxQysUr9kSazWLCY3aH+ZvegN4GF5YD5jusHE/vot7gbk2KCA6/We7CWo
-	17Y07GFAmsmadC00lS/wl6fAVMTxMmuHXbwaQwYkEJ786ZJUPYhE/na0OVgPUSXoHJMVcD3MVYZ
-	X+l/FTQaem9OG1FFfwZUGn4AyqTDL0Kk6bX/vX5PDtR6cHIsm9coDX/a0DVDnh0XtoLWCquw0Te
-	ZazsH02pfRrJHVQzm5lcntcjShnyHAlZXcsSacyG+OB3i/5A+qO6tlCOt+T2pgdX01KVfOkp1r/
-	sdzKshka+DGMLXsreq9nQ52yZfA2tY7T/lEIzzSPlDZ5uXItiYN+FSWyZ0Vl2YGIqmc4zEDAZ/R
-	JdXdakT5cazwppE8wI=
-X-Received: by 2002:a05:600c:1e24:b0:49f:ffa2:1c72 with SMTP id 5b1f17b1804b1-4a0275507d7mr31998105e9.11.1790928586168;
-        Fri, 02 Oct 2026 01:09:46 -0700 (PDT)
-Received: from localhost (82-67-6-57.subs.proxad.net. [82.67.6.57])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0e1afbc44sm38823805e9.4.2026.10.02.01.09.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 01:09:45 -0700 (PDT)
-From: Jerome Brunet <jbrunet@baylibre.com>
-To: zl020895 <zl020895@163.com>, Linus Walleij <linusw@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, longzhao@ambarella.com,
- Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>,
- Stephen Boyd <sboyd@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- Michael Walle <mwalle@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>, Ilpo =?utf-8?Q?J=C3=A4rvi?=
- =?utf-8?Q?nen?=
- <ilpo.jarvinen@linux.intel.com>, Catalin Marinas
- <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Lee Jones
- <lee@kernel.org>, mfd@lists.linux.dev, devicetree@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH v9 13/15] serial: 8250_dw: add Ambarella CV75 quirks
-In-Reply-To: <4405a61f.505.1a0fa675e43.Coremail.zl020895@163.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ia0kYKAi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790928663; x=1822464663;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jbrobNgLFvEYW+K5702m//jZXUekQEX6EeXtEarN3MI=;
+  b=ia0kYKAiSWnVp3MxPr/qS1CY66rm1SkwHNDl+yUybqKvbzb5kyHAJMoG
+   BP2vJ178VD2gnOvJhMntaT9LrZiIjNDYCJIXh5w3S0HbJbeKnO1XUYYFs
+   oTDUytjCS8HvqEkI8tgNPJNM6IhFlFl0KhimHFSo8XhlsUbtJ1QCkACRf
+   mtie2nW22/ipJiznn3OBcWB/cejmPhUVuZDBzdJTdF7LragquZTY5JHfL
+   4l7mnS8V9DwzkriZX+57rkeOikdswybiZWDDT+8qpQ5U9pB9Z+YoOQfel
+   D5tP8npLinhSC20xp+hviwgEVbPsKUoFXEUy2giQuAaF8Smu1XHwiqRqx
+   Q==;
+X-CSE-ConnectionGUID: l+io++RYQbqUdxWzNxF9Nw==
+X-CSE-MsgGUID: wZeGrd1hS+6ji4HgbDBkzQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="94406446"
+X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
+   d="scan'208";a="94406446"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 01:10:53 -0700
+X-CSE-ConnectionGUID: OWKdrr/1QZ+1XoZZBrzcjw==
+X-CSE-MsgGUID: wfmyyLdUR1uQ8ZwS3auB0g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,136,1787036400"; 
+   d="scan'208";a="275740714"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2026 01:10:47 -0700
+Date: Fri, 2 Oct 2026 11:10:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: longzhao@ambarella.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Michael Walle <mwalle@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>,
+	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 06/15] clk: ambarella: add CV75 RCT clock controller
+Message-ID: <ar9nBBGJ361IFXn8@ashevche-desk.local>
 References: <20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com>
- <20261001-cv75-v5-v9-13-486cc289a4b8@ambarella.com>
- <2026100140-overbite-mundane-fc79@gregkh>
- <CAD++jLnv1Q7ChHuLo=ad9edqhZL8MNaMab8huMAepK_LwqVzGQ@mail.gmail.com>
- <4405a61f.505.1a0fa675e43.Coremail.zl020895@163.com>
-Date: Fri, 02 Oct 2026 10:09:44 +0200
-Message-ID: <1j1pa834mv.fsf@starbuckisacylon.baylibre.com>
+ <20261001-cv75-v5-v9-6-486cc289a4b8@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261001-cv75-v5-v9-6-486cc289a4b8@ambarella.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On ven. 02 oct. 2026 at 10:17, zl020895  <zl020895@163.com> wrote:
+On Thu, Oct 01, 2026 at 08:40:55PM +0800, Long Zhao via B4 Relay wrote:
 
-> Hi Greg, Linus,
->
-> Thanks.
->
-> This series follows the new-vendor, new-SoC process and is sent
-> as one set, so the new Kconfig symbol and the drivers that use it
-> land together.
+> Add a table-driven CCF driver for the CV75 root clock tree. Register
+> the core PLL, AHB/APB fixed factors and UART0 composite clock, with
+> osc supplied via clk_parent_data.
 
-What Greg and Linus say here is basically what I already suggested on
-v6 [1]
+...
 
-Giving the whole context of a bring ups, mixing many trees, might be
-nice at the RFC stage but then it makes a lot more difficult.
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/container_of.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
 
-[1]: https://lore.kernel.org/all/1jld986j7m.fsf@starbuckisacylon.baylibre.c=
-om/
+> +#include <linux/math.h>
+> +#include <linux/math64.h>
 
->
-> If it has to be split, the GPIO patches and the UART patches can
-> go out as their own series. The SoC patches and the CV75 clock
-> driver should stay in one series: the clock Kconfig depends on
-> ARCH_AMBARELLA, which is added by the arm64 patch.
->
-> Would that split be acceptable for you?
->
+The latter one covers the former one.
 
-I don't get why clock is any different here. Just state your
-dependencies in the cover letter. `b4` can help you there as well.
+> +#include <linux/module.h>
+> +#include <linux/overflow.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/types.h>
 
-> Best regards,
-> Long Zhao
->
-> At 2026-10-02 03:20:51, "Linus Walleij" <linusw@kernel.org> wrote:
->>On Thu, Oct 1, 2026 at 2:52=E2=80=AFPM Greg Kroah-Hartman
->><gregkh@linuxfoundation.org> wrote:
->>> On Thu, Oct 01, 2026 at 08:41:02PM +0800, Long Zhao via B4 Relay wrote:
->>
->>> > From: Long Zhao <longzhao@ambarella.com>
->>> >
->>> > The Ambarella CV75 UART is Ambarella IP, not a Synopsys DesignWare
->>> > licensed block. At the register level it is close enough to DW APB UA=
-RT
->>> > that a full custom UART driver is unnecessary: reuse 8250_dw with a
->>> > small platform quirk.
->>> >
->>> > Quirks:
->>> > - keep IER ETOI (bit 5) set for RX timeout behaviour
->>> > - skip set_rate; baud clock is managed outside the UART block
->>> >
->>> > Reviewed-by: Linus Walleij <linusw@kernel.org>
->>> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>> > Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->>> > Signed-off-by: Long Zhao <longzhao@ambarella.com>
->>> > ---
->>> >  drivers/tty/serial/8250/8250_dw.c | 32 +++++++++++++++++++++++++++++=
-+++
->>> >  1 file changed, 32 insertions(+)
->>>
->>> When you submit lots of different subsystem patches all in one series,
->>> it's hard, if not impossible, for subsystem maintainers to take them :(
->>
->>In my experience people do this in cases like this it is because they
->>essentially dump out their "bring-up" tree, the thing they have
->>booting on the hardware so they know the pieces work together.
->>
->>Long: can you split it up in topic branches and work on e.g. the
->>serial driver on a separate branch?
->>
->>A better way to test the whole set of patces is to just create a
->>mixdown branch where you merge all the topic branched into
->>one "test" branch, then you boot and test this before sending
->>out each branch separately.
->>
->>Each topic branch can be versioned separately with b4.
->>
->>Yours,
->>Linus Walleij
+...
 
---=20
-Jerome
+> +struct cv75_pll_hw {
+> +	struct clk_hw hw;
+
+> +	u32 ctrl;
+> +	u32 frac;
+> +	u32 ctrl2;
+
+This repeats twice in different data structures. Is the semantic the same in
+both cases? If so, it might make sense to have a separate data structure for
+these three and embed it as required.
+
+> +};
+
+...
+
+> +struct cv75_pll {
+> +	const char *name;
+> +	struct cv75_pll_hw *hw;
+> +	unsigned long flags;
+
+> +	u32 ctrl;
+> +	u32 frac;
+> +	u32 ctrl2;
+
+^^^ See above.
+
+> +	int id;
+> +};
+
+...
+
+> +{
+> +	struct clk_parent_data parent_data = { .fw_name = "osc" };
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(cv75_plls); i++) {
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(cv75_plls); i++) {
+
+Same approach in the below code where similar cases appear.
+
+> +		const struct cv75_pll *desc = &cv75_plls[i];
+> +		struct cv75_pll_hw *pll = desc->hw;
+> +		struct clk_init_data init = {};
+> +		int ret;
+> +
+> +		pll->ctrl = desc->ctrl;
+> +		pll->frac = desc->frac;
+> +		pll->ctrl2 = desc->ctrl2;
+> +
+> +		init.name = desc->name;
+> +		init.ops = &cv75_pll_ops;
+> +		init.parent_data = &parent_data;
+> +		init.num_parents = 1;
+> +		init.flags = desc->flags;
+> +		pll->hw.init = &init;
+> +
+> +		ret = devm_clk_hw_register(dev, &pll->hw);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (desc->id >= 0)
+> +			data->hws[desc->id] = &pll->hw;
+> +	}
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int cv75_rct_probe(struct platform_device *pdev)
+> +{
+> +	struct clk_hw_onecell_data *data;
+> +	struct device *dev = &pdev->dev;
+> +	int ret;
+
+> +	spin_lock_init(&cv75_ccu.lock);
+
+Can it be done later, after memory allocation?
+
+> +	cv75_ccu.base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(cv75_ccu.base))
+> +		return PTR_ERR(cv75_ccu.base);
+> +
+> +	data = devm_kzalloc(dev, struct_size(data, hws, CV75_NUM_CLKS), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +	data->num = CV75_NUM_CLKS;
+> +
+> +	ret = cv75_register_plls(dev, data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to register plls\n");
+> +
+> +	ret = cv75_register_fixed_factors(dev, data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to register fixed factors\n");
+> +
+> +	ret = cv75_register_composites(dev, data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to register composites\n");
+> +
+> +	ret = devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get, data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to add clock provider\n");
+> +
+> +	return 0;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
