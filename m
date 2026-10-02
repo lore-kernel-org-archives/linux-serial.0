@@ -1,173 +1,161 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021095.outbound.protection.outlook.com [40.107.130.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C60B1430CF9
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 07:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C14140DFC8;
+	Fri,  2 Oct 2026 07:27:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.95
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790925945; cv=pass; b=tGdaJ83nVV/JOqbMyB8FtnqPlKToWzPcP8SGi9HcZrtnYkcB3CLmXwhm9OQQmp55HmUGQ78kiiUn0wwOtwj6xTy+STzm11D8Lh/Lw1+S5p6NthEjUtDMztIMW9j/TJbNLDmrkRzrm48XcDzczs8PnqyTH4f9sMtQslnLJU26qZE=
+	t=1790926044; cv=fail; b=ksv2ELfXaX4SnXjv8KsNOjI8mem3BtLwZUJQQcKoFK+O6cN6e2RqRDl7MpxF8A+73cb/mjaBrX7I8LERfR1kcjCMyMz781vF0+2foZMFQz94jnM+lSGo2D0fT7iQfzHKg6YqZB40oI9cB5QtRTtt5hDkiGcawCnbL0EdsI0RJsA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790925945; c=relaxed/simple;
-	bh=vkuQVJtffJ8fMkOsTmgLQ2DxIsx+cCdeSaJrYf8laNA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oSzHsMb49w5NZYY0qVW3soKL5RIepvo81MSdc8OuVzSg46GBX84MtRHmpu6haiz59ulSXZu2KqaMYwNcHMrHT/sxVLweb7cNp2CBwsmGMnM6S4DwwI9b3ukVCQwoncK9lAVFH7eTaIfUlxexkAJ3GgOc1KkOOkJ62Rze1jyBiqE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=omgi8R3y; arc=pass smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790926044; c=relaxed/simple;
+	bh=mdaamrUea+jNGZKviijtg8UvFRdy69eSHupYyVNJykQ=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=LkjiE9n38GwNas5uGNgonat14dPX5fe1WO5A0j0Fi8MV/+FEjNvt9jcAZdZDxfpVjY7BaFz5HJF9PId6oTgZ59+Am/gJRK+/yju9Jwv+rBe0FpAvEWoSJ7nq3QJ46wQW6ArEAueXNuEb/mICN6Q3m+NMY+wNqT75pJ/1MPtviH4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=Ow1Ctthi; arc=fail smtp.client-ip=40.107.130.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="omgi8R3y"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6acb9c018ffso1896398a12.1
-        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 00:25:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790925935; cv=none;
-        d=google.com; s=arc-20260327;
-        b=DGIMBVitO19VETsEeW4zkqAI1g+WBiJi46iEfB/nUlcQc8gsAwVFcjkTWVXsKrB3Nr
-         fTtmW5+cg/Xhe/rMSVvAzyp4IV5OoH6/7zKLGgWeHDcPU90Kx1UF7mw0Jr8VKu0fGhlM
-         tDrH7ZToQWc3LgIfISEUWOozALIve2PXPzTzSUsc9qNoZWfCNfxoTYWxqcusoNbW2a1a
-         Kn4S/879B3TKulwefMRMneXwxzOOu8kV4/3N1ozAr7sD/0/nImoz3Pas4bVaYstJJ6an
-         VBVP4q3sV+lonHB4GIg/DAFeoQHzwgysfsQbY4lsEb+s6gf5zWH/LB4bZiPg0UpD9Qp6
-         0IBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=x59KLtPfuG4aN7iW1gUsYPP/JvC2giQpEEdn897TLao=;
-        fh=yBXTMFpvpq/6iufX8D9yKl+GmlU/n1SsxkVONCqx1ds=;
-        b=HozNB4ICLOOjqFiEhbI5kQF7peiIjZZI6EP+61UFUFwSvvG3xcTXsF/Rk3gaf8VCCn
-         QeFxi6b4IC22Um5bur0nadN4Ean66r/qXHgT+RxCfc2H9SAdGJioGGG/hnS4pjgvlkVJ
-         3paXncAulwVeM82l7EwcO3mSoFuVMSy1XtvZ/5oOkZU6YUD6hAhxXW4zAeli+fNISwjq
-         6I2Y/2Na5zyiC3hequ21fpRtB5i/FanUM3yeYal4jVCuVyL+ZbdXQEVtxZ4YoWulasia
-         ohR3hALKS6DQKaaHSkyl5Xi2SluM5GfWI9gPVXDgTzGk3vv7FMjLGZinjN1rWrsRNV9d
-         aBeQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790925935; x=1791530735; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=x59KLtPfuG4aN7iW1gUsYPP/JvC2giQpEEdn897TLao=;
-        b=omgi8R3yfw60wW9HSxa7U3Nd3Nx3Shy49ga07pOfBmsqrEbG8IaZtNCYWsrPt7y+9e
-         UGEYEdx3cGP9Jw4mwh9AN3wWWIcjmISU5j7fK5qFBs+9Nz2yNHYMHCZIJUZXFvDT2AjS
-         xo6+xqllnqVKumR2zF53/G1LlubFimymku7zlBH/DVPf/CfZGZKYDaRPC3IR1fQAHj4U
-         b9jCXzMQ9y9t5aJ4wSKHF+fps1mzeMcF6VchH3hoT2DGy7NXT/Rmb/Jj1zhY3+N17WM2
-         drXc2cLfEMIFvEl8vEOyfTthw3S+OKuzfmPzPAvNOYj/E0DUlgzpj0KA4VL+w2hskYus
-         VaCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790925935; x=1791530735;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=x59KLtPfuG4aN7iW1gUsYPP/JvC2giQpEEdn897TLao=;
-        b=M9e35JlvLYzdnlOE0bVxjh06prt6zNdE5uwXri3sh0lvLeP0IWP64OZGGC8CWLzHX0
-         7m/Cium0Vs0nIbgESyh6U/MiKT1QU4WRH8kYiopnZ+9x+IiHkFKubHQ726LS8kL2kK92
-         D/IaWaLBjnMWzU8iTyHGyJ0WDSh6Hv1bw1fIvv84FShmGzgmoH8dn2A2sCgkxe/xu8tl
-         1O5YboPoptCS2udEi/+IlGeO+sdjLrQNIoU2I+TxX5CMOKI8L0jhlrYmpJr3ylIZf7Co
-         /Xc8T+YTSzMsTH0z5EyiyBx08kn8Gpv9MrrQ/AqQ/iuMepHAjM/8kdCK3MPBSdcEjUpM
-         6p+g==
-X-Gm-Message-State: AFq9FYImJw4hNHQHK6otARbd2Muw0vWdxTruRZRAeqeHP5PqZ2PV5+T0
-	vKyVUHT4Bntt2n1zSkgW37tqambHuhZf0hpHcQduG1h21W06R1hSNupj4HUP/4IfWvPaEv+iKZM
-	2+m9ydVFiYc4AeCjHxDWeSdActkZtdr0=
-X-Gm-Gg: AYBFou3h0btbQHV5vRsnbJ/KibOw1SAIAmY7AUJI3H/WwkM7o51KcspGv/+DWtUynSK
-	6UAtWkG1yGfRylZTjdAGRzdDZrWPo3jDiCs6HHrjrDa5aHG1Bs6PHUwNFTHL1yuYXPQiCjXdn0o
-	2XWxKxojAovlfXTCnHb6XNPqq7dAJNaf+xOMqzwvnclg6tXgeJqRpIK0B/4hFv3bgtfurvezPjh
-	+eFRt1r1OV0PNmyfHYydyXqIQI8TqQDh84TDGPsyBjMnkyp/RwzwiE/wHgZ8flJGSWwNQjsSXm3
-	rvddXi1d0aoh3lUdz3p79T7/7Km0CsqyNs8TrJR003nLO77Dov40BwtbfwQ8J/yobVnP3nPckdq
-	45mRBezTX+Fnk1ALSPJ5N5KfUkmN/5IcfZkrNPmFj7wb5Dhzjo2kXwI9eob7IFgirvWeY/P2E2r
-	MfI51Q9mt/lYfdYFwnzERUikEObIS1i51k+srG5/vlaE3mku2sxmvQ5jl1HlhFJfZhZw==
-X-Received: by 2002:a05:6402:5165:b0:6a9:8863:ada4 with SMTP id
- 4fb4d7f45d1cf-6ae307e5667mr2995775a12.3.1790925935285; Fri, 02 Oct 2026
- 00:25:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="Ow1Ctthi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=C6bw4qq9fK1DeEjIRMw5fgigQW6FkiaOMJIiNTi5YjTpDCqMhh0A+dpf9iYqTu5QSGNl3EAJ/kqDLsLf9W6pWdbvwlN4aR63K/myRXxoF0nHGHhiRburED7C33JyF9ey7oAaY6Fc5b7ZQzeT/xSU91Ljky6GL+1LaSpzOsNxbdn+HdQLM5jd7H2P7/i7aHaP3cyx/XdE38rWFbI3+D+OEQu3Ef0UYZ1g4wfl6dY2cEATFG++nQ/QkbNPT1nRoIQtd+4IkgRQmUZsWkTHC4Id1jUjFmU2kPLE/VzhUyZ2qAl7S7SvuavbOKKl9+7wNry3+REFJTNLOkPS2+gOxGR8YA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mdaamrUea+jNGZKviijtg8UvFRdy69eSHupYyVNJykQ=;
+ b=rVak+41BP8TAyxRmyPKYnKL1llu5EB0Ljp4WiOT+7O7I1tAu7RwQPkJRleDMsvBGDtlcQFW2haCsRz4mRmOVmpNZ3qrLV262zoFxXEKmD42VpOZzQa4tnoZigOpEZVI0YhFJfrLrZsy1AUjItMRqZouEyAc1BWFIgVx5B8ae+Bo9mzExkQuZz6reD9n36DaLclkeS7EYDj48tq+qQMiw1tNgrbG6uTBBpOvgi5qKrv1mejpRkQ3rKnAU1zOqi3B1BTnvZnBNx4Ahr+rqs2MmnI8M9JBWOqDt5WuoZQYg6eLfZL+qK0peoKtFaTmh13vQjWdwvzi8atGFF+mW5qmFSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mdaamrUea+jNGZKviijtg8UvFRdy69eSHupYyVNJykQ=;
+ b=Ow1Ctthi6XWYv+F0/h3Iutbk1H2dBceCKXFVim1T3IaTZ1nD2+7tKBcU7w3WOOXY0RZ1z3Or+wLCO7dBkazT4Hi0h3Gt/eyzsq23Zl7qoqJRqU9t9HjTTSkZY/UPsnKqt+qyL8j/zbjKk4PGNlhsYFXhIMZ+mezcqo5lmL+nib9euuyvzj1vo5Jzz3sfanS1aACQ7ap7PJ9S4YfVJVIWfQc3SyKiT5tSh4vevZyKl2pPlowy4/6lFdKlfVqWj0kb+MflgpwW9J16qM/ZHPdq1Aa0QFI6uBDTwCrtp+478tV/7Mbl5xgNpZ/x47HbP+hMd+ZHXW3qRqAHpseZ9CsQBA==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
+ by MI9PR06MB910975.eurprd06.prod.outlook.com (2603:10a6:290:ae::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Fri, 2 Oct
+ 2026 07:27:13 +0000
+Received: from AM9PR06MB7907.eurprd06.prod.outlook.com
+ ([fe80::a597:33a7:d4e2:1b17]) by AM9PR06MB7907.eurprd06.prod.outlook.com
+ ([fe80::a597:33a7:d4e2:1b17%4]) with mapi id 15.21.0472.016; Fri, 2 Oct 2026
+ 07:27:13 +0000
+Message-ID: <77d6748d-19bc-48a8-b956-c4bd2f77fa57@vaisala.com>
+Date: Fri, 2 Oct 2026 10:27:11 +0300
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/8] serial: max310x: convert RS485 delays from
+ milliseconds to bit-times
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Tapio Reijonen <tapio.reijonen@kolumbus.fi>
+References: <20260929-max310x-rs485-sw-delay-v5-0-ae46afa583f2@vaisala.com>
+ <20260929-max310x-rs485-sw-delay-v5-3-ae46afa583f2@vaisala.com>
+ <20261001151125.1cf9daecf48174999aa676f0@hugovil.com>
+Content-Language: en-US
+From: Tapio Reijonen <tapio.reijonen@vaisala.com>
+In-Reply-To: <20261001151125.1cf9daecf48174999aa676f0@hugovil.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GV3PEPF0001DBC1.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:401::6a4) To AM9PR06MB7907.eurprd06.prod.outlook.com
+ (2603:10a6:20b:3a6::23)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260925183050.56839-1-rosenp@gmail.com> <2026100129-unrest-cleaver-6528@gregkh>
- <CAKxU2N8Z-CSxki5mWQvJCEiQDmy00WLJqPEMgujOA0LQzbHHjw@mail.gmail.com> <2026100211-unturned-scam-fd80@gregkh>
-In-Reply-To: <2026100211-unturned-scam-fd80@gregkh>
-From: Rosen Penev <rosenp@gmail.com>
-Date: Fri, 2 Oct 2026 00:25:23 -0700
-X-Gm-Features: AclHuK-DIP7WjK3JYUzQGXnqA3_qOSSMeSBRglKWf3j7RwahMAS-EdxikdQir5E
-Message-ID: <CAKxU2N_Nm3rRnXEg9+-iwRSHXrvV-0rgdDQdmhn2MojTneFU7g@mail.gmail.com>
-Subject: Re: [PATCH] serial: arc_uart: Use platform IRQ helper
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, 
-	"open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc@lists.infradead.org>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR06MB7907:EE_|MI9PR06MB910975:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a5b0a6c-afed-482e-2198-08df205693d4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|1800799024|23010399003|10067099003|11063799006|56012099006|4143699003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	uNQtG7u4QSWS+g8hcDRvE0ffa8/1Nve1pa0zbo2bwlx2cchMq/8l/RtTShVsR84ZehLN4e9HBCiPHoLGR7FVv1DzQ0WZG2U7RtR0A5pKfFTh6Kb2/Cl2NvFWklBCxyCbU84Cfq4FWMXpfJ86yUain7p6BisL0GRIl6AG6tZGaWXlFzgENnc+ZJs0m7xuHG2rGmzoFlCW3W2sbjKJIf/mFOa/ru6Eg2CwhNQqHx30bUJHsF/BgJXjCoxGdVHxmlvuBfe71FwpIAUmXg0Csh8SotXc0nAVgagjJBaQy1DSSlWVHlOxQ3x6DQlM8z2yDbex6kQz6WMu+A68fQt08VPl7oLO3zWbyKu0YLrE4OmEkSSx1rUFsyWoIdcPbvCEV3VcjkVK8F3L14WEP12iAQI99C+wUVfURTI/vIaLoBgqD7wFpNCTmsGNsDAqKRlQWc/ygv9ari2Ymi/20+yIrobrEzrY5R4lbJpw46MAjH8/yqFSwPWJ5AKFRrXcT2lOlc5TcM/pONNdl/Vi2v+6RY+uODUxzABafykqDXykqNCdKHpS+g2mbdYPiPU8xduEgaNF9s9H9Nsm9phd2emC9XEgO9iCnxHW4dcSdh9SDT2k+pJgHIXX7FUJ2y/X6hyZZb8bdVuuANTDkoqw6MWNnMvRyA1mOoKKt1ig/RH+MZlz3OA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(23010399003)(10067099003)(11063799006)(56012099006)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZmhnbkJPVk5KNjNMaTdlZWlJV20reXg5NXBCUlJUaFJEclJCT1FoaERMRUNB?=
+ =?utf-8?B?TkhzVFVoZE9DdUVkL3IycmJ5cTNmZHUzNTNMeDNPcDJGSEJBLy8wM3FhQ2xR?=
+ =?utf-8?B?MHh0UUVwYlVVcVBBY3RCYWJsdnF4S05JRmwrbzl3WmN0UXYwRXFmcEpVOTdz?=
+ =?utf-8?B?TTVSZDRmQnI1ejhRMmRERmRtbGh3NGxsTUUxT2tqSTdONzlNeUVCdThEWmly?=
+ =?utf-8?B?Mk9YaERRMnJra0lKaDhJMk9iMW9maGVZOE1LTjZ2QkhZalhQbHlKNDJJWDdN?=
+ =?utf-8?B?Q28wNGIrM0FIcWhraHJia0c3SmNoZEUzSHQwdmlMOHhaM3h5RTdMUjQrZDQx?=
+ =?utf-8?B?ZkMvTUtmUDNIMi8rTGd6K2dOV2NUUkRVVlU2Y1JqQnFwb2Zla25abDdVa1Av?=
+ =?utf-8?B?bkxBaEpvL0NnSmRTaVFGaFpvS3pwdUp3L1VXZ28wWDVzZHY4S2tOWXZsYW55?=
+ =?utf-8?B?ZFFMSU5LUXptaTBTQ3lVQ0FVRzREcVhzdzY2UGY1ZHNETHNQeHdnTGwxdlA0?=
+ =?utf-8?B?UjA0cEs3MnNtVUwxeldoN1lOK3dMN1NOcU8yV1VZc1UyclMrMFhrUjJtakpj?=
+ =?utf-8?B?d2l1ODJyUFpoS3pNbDk0UG0vbWdpenlKUWV3YW1vUDdSckRyTEQ5ZnIzLzQ3?=
+ =?utf-8?B?ZmNCUzMzZjFIUmgzTWowN1dTM3J5SjM0LzhZdHJ2N2wzRDg1WkxMamQvcjFZ?=
+ =?utf-8?B?NC9pZlBQQ2lJbmxqelFoYWNoOUJiWEtuemtiR04zYnNiV2Y5K2oyKzdyUjha?=
+ =?utf-8?B?Ny9GTVhDTUovTWpkdng2UUdseG5HL05BRFVVb3FLSjRmVXF6T0dtaEMyOUVu?=
+ =?utf-8?B?ZkI3UVdVVGxHamF2cGZJWk42dGRITXBFK1lORjd4eGhwOFExV0tYRkM0Y0th?=
+ =?utf-8?B?TEtQL0xlbFRjWFpreEZyY3g5enZySGRQdEgyZkhkWmFsVkxDVHA4WDNWS1VD?=
+ =?utf-8?B?UGNEcnFWWi9xeGFrS1dPNjBMeWlaQ2pDNHpIak5rVENjQlB6SGszaHh4ZUxL?=
+ =?utf-8?B?QkNhSFE3NFJsUlBUSFAzMG9WOWRBNkYra2xWV3czL1c5Yy9FNlY1R1B6U3Vp?=
+ =?utf-8?B?TnROV3o2R2hncEkyalFQZ0dlNkRWSXBjdGtVQ1dqS1Q4Z3BCWXM0T2FaeVk1?=
+ =?utf-8?B?LzB1cGdEN1JZR0o3d285N01TWnlCM2J4QkxUUllkOExSeTZRbUUvNFJTcDVm?=
+ =?utf-8?B?VFpTcTIxRUQ1RllLREk4eXBZK1R2VHlOK05DZkIyam5TVHhTSDlvMWtoaWxu?=
+ =?utf-8?B?aGlVVzFoSTA2a3VsNzQ3M1Jyd3MxVVMzUWRHYVhFU3ZWSVNvS3ZJRitZZ3dB?=
+ =?utf-8?B?NWlHVVYzcTg2VkYyY0RrVGdOVkFsUXo5ZG5UdUtibFMwa0tnSTBvTThTLzZE?=
+ =?utf-8?B?UzFKL0NBYjVUZktDNnF4dHlrTTU5SmNQeFduNWJ0SVUyUHg2NURkb3kxd05G?=
+ =?utf-8?B?VHRTSm1iRVkyN3E1Q09VN000Q0FOb1UwOS9NR01RZEl1TG1nRkcwMFgrWE5F?=
+ =?utf-8?B?cHdwS3dqM1dZb3czR3Y0WHFFV2EranV4UTVIenJCQU1uNmViUzlYOExzaTZI?=
+ =?utf-8?B?YmxpbWY3ZmFyVFpzT0FhSWRtclQ4OEN2NGVKNVl5OXNOV21vY3R4OFZzUWdM?=
+ =?utf-8?B?QXBYSXMrSjJiaGMwZDVRL0pMVmJxZ2JIQUZJRVR0SXkyQjdrZ1FMTkxqS25N?=
+ =?utf-8?B?T2N5U0xrK0plTGxqa3hzVFByRXRYSi9UWmhUMEZvRE0wVVZlYSt5dHRydW5P?=
+ =?utf-8?B?Z3k4cEdHOTh5aU5RSlNuQStjWnExTjhENmFqUGhmd2RRdld5cnpzYVFKL0NG?=
+ =?utf-8?B?Nml4M3VaOFUzOUxTUWc3dW9TQ2dvN09jNVVydXF1eTBpSGQwMEFIMUs2TFMr?=
+ =?utf-8?B?UCs3dG9TNVltZmZIdUpvWWxWWFNZbW5JbWNtaW83ZGVoSCtxb2xDVHRhTURN?=
+ =?utf-8?B?cXBJSXI1cWpTdjFaT3VzME5QcEl3V0hKVjdVaGt3YVNZb2ZSN2pNSWVKRGxy?=
+ =?utf-8?B?QlNhYkJ1UFR4enFKR1lBeGNGeVNNM0xzM1RUNjlpT1JINWptS29kKzRUS3ds?=
+ =?utf-8?B?MGt6aVVnb041UENaeVE3Zm9uTU1hTXBRNzNNUUVBTGtNbjRuQlVBTmVnVWt3?=
+ =?utf-8?B?b0xIdmVxVUczTExoSW9qS0Qzdm9WWlBWR3ZXK1Q4ZHFHWXZrYkw2WVJ5N1Iv?=
+ =?utf-8?B?LzAzSkltY0l5bWNEeGRQeEkxYW40SHNCc3VJNkpPNG1mOGlLWjI5MG9GbkVJ?=
+ =?utf-8?B?bUpDYmtGYVJQeVcrU2ZqQTFTRjlCd0tnT3ZpKzE2Qk5TTk9ZVVhrSTBHdmZw?=
+ =?utf-8?B?cjlyTHdRMFpzVVdFRkJ4TENOUzBjQ0tOTWFpMFZGdlN5STQ2Z3FEZFFKWTZ4?=
+ =?utf-8?Q?DjnJOr11MgUMkw2Q=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a5b0a6c-afed-482e-2198-08df205693d4
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR06MB7907.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2026 07:27:13.0126
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: btTJ4aPBvUYUxHRQY6eiO11uQdUitYR0s6PYgPdZekViW4xckNicBN6sI6zuEFl6CuEhePQZiT8BSZE9F36xlAk4M6OikiOYeL0Wh1GncqE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MI9PR06MB910975
 
-On Thu, Oct 1, 2026 at 10:55=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Hi Hugo,
+
+On Thu, 1 Oct 2026 15:11:25 -0400, Hugo Villeneuve wrote:
+> > never shorter than requested, and capping at the 15 bit-times the
+> > 4-bit field can hold. Centralize the HDPIXDELAY and MODE1.TRNSCVCTRL
+> > programming in max310x_set_rts_ctl_params(), called from
+> > set_termios() (the conversion depends on the baud rate), the
+> > rs485-config worker and startup(), which each had their own copy.
 >
-> On Thu, Oct 01, 2026 at 11:58:05AM -0700, Rosen Penev wrote:
-> > On Thu, Oct 1, 2026 at 1:42=E2=80=AFAM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Fri, Sep 25, 2026 at 11:30:50AM -0700, Rosen Penev wrote:
-> > > > Avoid calling irq_dispose_mapping() by letting the platform_device
-> > > > machinery handle it. Also enable possibility of handling -EPROBE_DE=
-FER
-> > > > and other errors. Handle as early as possible to avoid doing unnece=
-ssary
-> > > > work.
-> > > >
-> > > > Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> > > > ---
-> > > >  drivers/tty/serial/arc_uart.c | 8 ++++++--
-> > > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc=
-_uart.c
-> > > > index 3988e5958896..b46b057a181b 100644
-> > > > --- a/drivers/tty/serial/arc_uart.c
-> > > > +++ b/drivers/tty/serial/arc_uart.c
-> > > > @@ -30,7 +30,6 @@
-> > > >  #include <linux/tty_flip.h>
-> > > >  #include <linux/serial_core.h>
-> > > >  #include <linux/io.h>
-> > > > -#include <linux/of_irq.h>
-> > > >  #include <linux/of_address.h>
-> > > >
-> > > >  /*************************************
-> > > > @@ -571,12 +570,17 @@ static int arc_serial_probe(struct platform_d=
-evice *pdev)
-> > > >       struct arc_uart_port *uart;
-> > > >       struct uart_port *port;
-> > > >       int dev_id;
-> > > > +     int irq;
-> > > >       u32 val;
-> > > >
-> > > >       /* no device tree device */
-> > > >       if (!np)
-> > > >               return -ENODEV;
-> > > >
-> > > > +     irq =3D platform_get_irq(pdev, 0);
-> > > > +     if (irq < 0)
-> > > > +             return irq;
-> > > > +
-> > > >       dev_id =3D of_alias_get_id(np, "serial");
-> > > >       if (dev_id < 0)
-> > > >               dev_id =3D 0;
-> > > > @@ -607,7 +611,7 @@ static int arc_serial_probe(struct platform_dev=
-ice *pdev)
-> > > >               return PTR_ERR(port->membase);
-> > > >       }
-> > > >
-> > > > -     port->irq =3D irq_of_parse_and_map(np, 0);
-> > > > +     port->irq =3D irq;
-> > > >
-> > > >       port->dev =3D &pdev->dev;
-> > > >       port->iotype =3D UPIO_MEM;
-> > > > --
-> > > > 2.55.0
-> > > >
-> > > >
-> > >
-> > > You forgot an Assisted-by: tag here :(
-> > No LLM used here.
->
-> Then what tool was used to find this issue?
-git grep irq_of_parse_and_map
+> Could this centralization be done in a separate patch, without
+> any functional changes intented, in order to facilitate the
+> review of this patch?
+
+Yes, good idea. In v6 this becomes two patches: one that only
+introduces max310x_set_rts_ctl_params() and folds the three existing
+copies into it, still writing the raw millisecond values (no
+functional change), and this one, which then only adds the baud
+caching and the millisecond-to-bit-time conversion inside the helper.
+
+Your earlier comment on this patch is also folded in: break_ctl()
+keeps the single max310x_rts_ctl(port, break_state) call at the end
+instead of duplicating it in both branches.
+
+Tapio
+
