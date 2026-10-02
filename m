@@ -1,74 +1,80 @@
-Received: from mail-ej2-f43.google.com (mail-ej2-f43.google.com [74.125.228.171])
+Received: from mail-ej2-f42.google.com (mail-ej2-f42.google.com [74.125.228.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85D291A681C
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 16:15:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BBC94F55AC
+	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 16:17:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790957746; cv=none; b=EeFKyONgonYDHH8+pkZOuNT8EF8c5ul5DfAHhmtU35Yz2kPKByv8kqQCt2BQPQN7j87PLN21JbyL6rL8LV9YbTuBW129zCxmK9rEm0hJXy+g0hsJZHwN7Gw4Hi99cH41iKmVT1EucQ9yf4dynXJgKG/BzDEGmiMEY4lpB7afqAw=
+	t=1790957853; cv=none; b=lf7BIqbMWolGouIZXzdLLfWCZqpGO7s7r4g7f6jNAVCC3KOu683/aFhh+E8WM5M2G+IiHg3QXoKdoTFeFzpMLIqKWB94tC+L43PNLJGnvwMG91jyPH/CGZ6xjNrB9Fd0bZHICQkQ3sQK4AI4FJEgZBkFvnl4JMTzDBCiOBAPV4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790957746; c=relaxed/simple;
-	bh=FmrZsCQCkfPKkxLhyxsxGqqblu2KJkJgk/mbNbXoYKE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cy51X+263TD5vGTZlV4WviLLuinJ6NmTaM3Lv73872gExxsw8CxJXE9SCmLvPqjF4MAM7cJ0R2EEQWvldpd1ex/cZv0Ja3QNzH0no5vVSUZyJOFMuzhunqvUh2MU/KO+MsrAPJDHxgDuEodWUTrT+pC/qf/Acu6uxeZQyfqGZWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BK6zvlOO; arc=none smtp.client-ip=74.125.228.171
+	s=arc-20240116; t=1790957853; c=relaxed/simple;
+	bh=Yrov+4xcxfQBnrSGVO2pHdXWIvXxICJUG0X7+N5k0E4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Dr0Lwahr5mTP4qmy2ut3ppU8ExNdLDWiZ9Ms7GP15ZH3GCk7EssybodSQs5YA1OoKAvsvYiWJN+gX7WzcRHRNGyO/h1Af7sF0Ja/o6sv7miPnZUiUgyRACSeMNmio19xDrb0zpYiCDSKlMRgrr1N56rtg5+Oft5pM5E5utez+Og=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GRPm1zme; arc=none smtp.client-ip=74.125.228.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BK6zvlOO"
-Received: by mail-ej2-f43.google.com with SMTP id a640c23a62f3a-c2e227422e3so8462466b.3
-        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 09:15:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GRPm1zme"
+Received: by mail-ej2-f42.google.com with SMTP id a640c23a62f3a-c2e59b02972so8371766b.2
+        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 09:17:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790957743; x=1791562543; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=o4niJFCL1Tg94S7QXfdYdCSyAdIrBTgV96rmAV/L4ak=;
-        b=BK6zvlOOIHHPYSUmG5dtBBpjWV29MW+dCV3vMstfvQVWPSyeA5JTJ7/yQU6JDepizy
-         x7JHPDvuXoxqVr+wgiv4RYjWQ+9bU6838sUHQ56ZffC3leslBVXbzLiwbiiuYzGOxR2K
-         2taTy0wxdZOqf/MYgDhIa5S4dnAoPHb2w7Jy6rwEl8SSMUzhTRmiVonVFrDmvIOu7pWa
-         CRUhsLEAlQ2F/r360zfafWqcHXi/VSJI13+LINd7ahRoOufT7poXKASTk1oz1YY0uu4N
-         ePobZBr6XEhX0nDqO++YcV5yFS+NoR8rMcBEJzrVnKgged5TPl52d+ycQ4x0a3B2DEoo
-         uyww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790957743; x=1791562543;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1790957841; x=1791562641; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=o4niJFCL1Tg94S7QXfdYdCSyAdIrBTgV96rmAV/L4ak=;
-        b=X8TMQW4hSW57FjytgGsqB902EvTLw7EMxBMpHNuvVljKMS0q4NC+1QuEL0WpC840H/
-         uUoiL+EP1pij+qrd0SiEF/lC8dh/3gzstqvWEYNL9ioTUlOFrFKrQnGYVtQnPPFHjpfX
-         zLDuaaXQSJkGI3/yHqIdbxUEt11eGQnFHTvo8rZzpP8KX3vjInhkvjqIOE0VenUpp4/F
-         RjMoKTUziQkPZvyMB8+4Z0zKMgjPHFEG7BBWU/oU2crpNdD/0upZEfT++paVNVtTunw6
-         hS5U83OFpC2k1b2C7AMFR3jBr+6bNwf27XZZvlBLsmgztq4ijnLMDn6+dutO+X5hXTET
-         ONSQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwqqVB1q6V7YCEL5yGyp4UQsr0TvEkYLrbhq+OlPvdwBlz1pNHe2vPxoV7DN1fXKS/5lVTnsnPBr5Tfl8c=@vger.kernel.org
-X-Gm-Message-State: AFuF++nfYn27NL0ijpZthmV3QFyFBVgqwKXCrmVcycUwIHUKoeY8J6Au
-	m3wc8v7+NEyQyRxh7WiElxlZwr+2LTKtF6yqxSSJSSU8JgXjyuz4chcb
-X-Gm-Gg: AYBFou3PpN2MG+fWS2SdjP+INDPwNUgpCK6cYvQxvVG+Vo/IGZ6YptWTl/3IiH8Bp2r
-	qQmjo4Mxm/oU0T4blha+jJdHPw7sJwJ7LG6rnc9ODcggTKZTa67+vZNdiwkzt0KPtNKId6rNVt8
-	BucGHSny7D2c+VWlSOpkgtBhHfJZgEJ0g9DqwtHWajP+ogkby7gA7JJCG5pRLX5+yGHaZfezVY3
-	pP7GvMvKFTN3Eo3Cu85BpFRHHsmxd8nFxJyVAwEAGkaVRXIkFhQJj4ubUBUn8SWqgZE07ABBCAJ
-	SUEIc9T3wL7KtftHm7zogML2zZzsq/arrVg6bGwrhxoVE+0V8JLCBqc822t078onY4geV0EDsXy
-	bv4NVuU63rWzsxg6RCHP6D4PKIoDg0CbamSZoq/lONfr5BxewEmA2hNVEcH/5Zog/KkbXBy1jOG
-	wmoYoF8iP/8hfju+/BX08i4BVOX9KUSumT6uy2D5GMWRuQ4N42lRwTV54eF9U0buXGhgsRx/JKs
-	BYG08Y8ket0nG54rjPSGB5nP0njPP8oGWkvkYgJ2wdJNMcZrGg=
-X-Received: by 2002:a17:906:6a02:b0:c2a:fcf5:c6bb with SMTP id a640c23a62f3a-c2e4af6ee00mr264468966b.23.1790957742743;
-        Fri, 02 Oct 2026 09:15:42 -0700 (PDT)
+        bh=inUXALtHTvzEHgf8GUFS30DP/3xlzvolY7NUu3QFipU=;
+        b=GRPm1zmedtZDbofip+l8xt7GSuyU0kCwiuoZyuo6TX5IPzc6DEwBV0l+6Q/RflsdSw
+         fHoXDnucy2mthbuwAxRlKCDB6o6bj5KsxvmKsbx9GJOP7UtuMrnfeX3Qr8xh9FXBqB73
+         vg0RIj61EgfE4a1CjbrJxsIWmRdBLetWWwcp0yI7GfF4mHgm+1zpNAm3uYDqeiBeYNaS
+         1iH1DB2AvAVmsByB0Z7HyFpJjLYlBrgnvP4dzLxkZaQdwcPg+mK5uq31Ij/YRu+b4rSq
+         lsrRXdfl07hvJs6oXjy6S59yUYv1UHjItpwer/F7IfjHCdNkcocjsaxYs/3dVQxk8qEf
+         6D3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790957841; x=1791562641;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=inUXALtHTvzEHgf8GUFS30DP/3xlzvolY7NUu3QFipU=;
+        b=GqF7TTXB3/9b7z1JfqIN87tYS7uoitHhyQpLUk+JX07nGPcJkJ45el2HR3FR0GEfrn
+         37g55tLEeZy19A/nUSPBaT6wRg2a/8UiV4MCg+a86SbDpk1VXQU24Vv0ZAE0GExemZoW
+         li/+pChqSSmF/INWxbhV4OhSJUg3+t2T7/BLRDT4AGkRrZqBzAxeLiUwN3CUa1TarMiT
+         gubhr2gDP+W09G5mX1zP/VOLk1IoDnku4lMK4N39zPXAOunSOa7UGPn8Eec0PkJSkiaG
+         yLKr888LhhTo1ZQJVsMIuQ2bamonAgBcTnxs5pjCl3Q0jB7MqRpvy0/PS+bmbq0hOB/h
+         0now==
+X-Forwarded-Encrypted: i=1; AKwUvBz7qLuXHDihG+RhmSAc7AQ99pJDKd+1gBiy2NKW8J+ulicVz68KHmwR/EIvH03mCJCm7ckRlvATkw9zAAg=@vger.kernel.org
+X-Gm-Message-State: AFuF++mRuSuOjRkjPBhrl/wjuVJWoEUh6nBqbbAykf5uOS2F6BiJ8ZMn
+	BQfETunw8OAA/vBhXxkk/qr/28U9zwMdRPyJJmR6yTi5TwCcIxryh0vB
+X-Gm-Gg: AYBFou3L8zurUIRFVG1oOORv4RQnEGcS37Y0u5hDw4Nc4iSZSgkDhDBk6fNXuMoNle1
+	3cJ1hOWfuynXP7r+KAajFAuQ3nJGIruNghDxXKSpUvKUtaVMGPF8nTQqkHn2R9fuUIJEtVK2emG
+	bMocEfsSj0+CCelIcMP8PqO5Ye/vAi+pYlzhYG/P5vpp7lyz/8P9Cz4kIsZb3cpyVdQwHBJN9VM
+	ghMREhfmk91GP8lAbbU3reWseN8NCtm83TiztmMn8kr4qqDZnLVJBL+rFyr8LDIrrEQyfZ52oEz
+	jjrVp0hZm8UuRoyPMEEQoO1+WV8nK5xcXhoCadqldg67SvehgPn1BYNnrwlDL8v79M7vmk+ZzGh
+	uPd6zlgRGxBy/T19nIFGGywFTeMX/j3vUxPPCFeLo2kM8MIgahYbSFpvx1DDPduU91rwW1Y9RHs
+	VA0+XsFn2uIq8h+kbSarf1LX+q5scPcSOCK1yKd+OpWIoa2umTv+CqRhzi3TVeGNlRcoNCdZw1Q
+	prCVcEPz2Hp2ysDkJtBRBc8XfcV5UyIKO6m6OT5bA==
+X-Received: by 2002:a17:906:4fc5:b0:c26:1649:47b4 with SMTP id a640c23a62f3a-c2e4afee0demr267257866b.42.1790957841298;
+        Fri, 02 Oct 2026 09:17:21 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2e4cf5f4e4sm106437166b.42.2026.10.02.09.15.40
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2e4cf5f4e4sm106437166b.42.2026.10.02.09.17.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 09:15:40 -0700 (PDT)
+        Fri, 02 Oct 2026 09:17:19 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: sparclinux@vger.kernel.org,
 	"David S . Miller" <davem@davemloft.net>,
 	Andreas Larsson <andreas@gaisler.com>
 Cc: linux-kernel@vger.kernel.org,
 	Magnus Lindholm <linmag7@gmail.com>,
-	netdev@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linuxppc-dev@lists.ozlabs.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH 0/7] sparc64: add Fujitsu M3000 support
-Date: Fri,  2 Oct 2026 18:14:22 +0200
-Message-ID: <20261002161515.932316-1-linmag7@gmail.com>
+Subject: [PATCH 7/7] hvc: add an M3000 firmware console backend
+Date: Fri,  2 Oct 2026 18:14:29 +0200
+Message-ID: <20261002161515.932316-8-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261002161515.932316-1-linmag7@gmail.com>
+References: <20261002161515.932316-1-linmag7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -77,90 +83,241 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Several years ago I salvaged an M3000 SPARC Enterprise box being
-decommissioned at work. The box has been sitting ever since, it did
-not run Linux. It did not seem impossible to get Linux running but
-my earlier attempts failed. I recently found some documentation;
-"SPARC JPS2: Common Specification" and the "Fujitsu SPARC64 II
-Extensions", which gave me some of the missingpieces.
-Getting this up and running required extensive testing, some
-kernel instrumentation, debug printouts and many reboot iterations.
-For thisi, Codex proved very helpful. Along the way, I stumbled upon
-some generic sparc and driver bugs that this series addresses as well.
+Provide hvc0 through the IKKAKU Open Firmware pseudo-console, validating
+model and console properties before matching. Serialize firmware calls,
+keep the bounce buffer in locked mappings and poll input each open tick.
 
-This series adds support for the Fujitsu SPARC Enterprise M3000, with
-SPARC64 VII+, Oberon PCIe, BCM5718 networking and a firmware hvc console.
-It applies to Linux v7.3-rc1, base cee9395acd8043be0644b25c34bfa86623f2b935.
+Keep output buffers const and bound no-progress retries because HVC
+retries EAGAIN indefinitely. A stalled firmware call remains unbounded.
+Use the existing SPARC p1275 interface and HVC output contract.
 
-Patches 1-3 fix existing sparc64 defects in generic clear_page, secondary
-queued-spinlock acquisition and sun4u kernel huge-PUD mappings. Each has
-a Fixes tag. Patches 4-7 add the CPU/MMU/SMP path, PCIe bridge, narrowly
-matched tg3 firmware-state correction and console. They form one series
-so the complete port can be built without collecting prerequisites.
-
-VII context-write and demap synchronization follows the cited JPS2 and
-SPARC64 VII manual sections. Existing Cheetah routines are unchanged:
-similar assembly does not establish the same hardware requirement there.
-
-The final tree includes the demap-all instruction synchronization in the
-CPU/MMU patch. All seven cumulative prefixes build. The exact final image
-boots Gentoo/OpenRC and SSH with eight threads; kernel taint is zero.
-
-HugeTLB/THP, CPU offlining, Oberon MSI and complete RAS recovery remain
-unsupported. Firmware console calls cannot be bounded if firmware stalls.
-
-SPARC64 VII/VII+ support is currently opt-in through Kconfig while the new
-CPU/MMU/SMP paths receive broader testing. The option also excludes HugeTLB
-and THP configurations, which this implementation does not yet support.
-The longer-term aim is to rely on runtime CPU detection once unsupported
-huge-page configurations can be handled safely.
-
-Magnus Lindholm (7):
-  sparc64: return from the generic clear_page implementation
-  sparc64: honor queued spinlock layout in secondary startup
-  sparc64: avoid huge kernel PUD mappings on sun4u
-  sparc64: add SPARC64 VII CPU, MMU and SMP support
-  sparc64: add M3000 Oberon PCIe support
-  tg3: normalize inherited M3000 register byte order
-  hvc: add an M3000 firmware console backend
-
- MAINTAINERS                         |   6 +
- arch/sparc/Kconfig                  |  19 +++
- arch/sparc/include/asm/head_64.h    |  15 ++
- arch/sparc/include/asm/iommu_64.h   |   1 +
- arch/sparc/include/asm/irq_64.h     |   1 +
- arch/sparc/include/asm/setup.h      |   5 +
- arch/sparc/include/asm/smp_64.h     |   4 +
- arch/sparc/include/asm/spitfire.h   |   1 +
- arch/sparc/include/asm/trap_block.h |   6 +
- arch/sparc/kernel/cpu.c             |   3 +
- arch/sparc/kernel/entry.h           |   2 +
- arch/sparc/kernel/head_64.S         |  18 +++
- arch/sparc/kernel/helpers.S         |  41 +++++
- arch/sparc/kernel/iommu.c           |  44 ++++++
- arch/sparc/kernel/irq_64.c          |  50 ++++--
- arch/sparc/kernel/pci_fire.c        |  31 +++-
- arch/sparc/kernel/pci_impl.h        |   1 +
- arch/sparc/kernel/prom_64.c         |   6 +
- arch/sparc/kernel/prom_irqtrans.c   |   7 +
- arch/sparc/kernel/ptrace_64.c       |   7 +
- arch/sparc/kernel/setup_64.c        |  55 +++++++
- arch/sparc/kernel/smp_64.c          |  82 +++++++++-
- arch/sparc/kernel/trampoline_64.S   |  53 ++++++-
- arch/sparc/kernel/traps_64.c        |  27 ++++
- arch/sparc/lib/GENpage.S            |   3 +
- arch/sparc/mm/init_64.c             | 110 ++++++++++++-
- arch/sparc/mm/tsb.c                 |  19 ++-
- arch/sparc/mm/ultra.S               | 236 ++++++++++++++++++++++++++++
- drivers/net/ethernet/broadcom/tg3.c |  91 ++++++++++-
- drivers/tty/hvc/Kconfig             |  10 ++
- drivers/tty/hvc/Makefile            |   2 +
- drivers/tty/hvc/hvc_m3000.c         | 167 ++++++++++++++++++++
- 32 files changed, 1088 insertions(+), 35 deletions(-)
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+---
+ MAINTAINERS                 |   6 ++
+ drivers/tty/hvc/Kconfig     |  10 +++
+ drivers/tty/hvc/Makefile    |   2 +
+ drivers/tty/hvc/hvc_m3000.c | 167 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 185 insertions(+)
  create mode 100644 drivers/tty/hvc/hvc_m3000.c
 
-
-base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3a19da74d00c..5bc9b1cabd0a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10728,6 +10728,12 @@ L:	platform-driver-x86@vger.kernel.org
+ S:	Maintained
+ F:	drivers/platform/x86/fujitsu-laptop.c
+ 
++FUJITSU M3000 FIRMWARE CONSOLE
++M:	Magnus Lindholm <linmag7@gmail.com>
++L:	linux-serial@vger.kernel.org
++S:	Maintained
++F:	drivers/tty/hvc/hvc_m3000.c
++
+ FUJITSU TABLET EXTRAS
+ M:	Robert Gerlach <khnz@gmx.de>
+ L:	platform-driver-x86@vger.kernel.org
+diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
+index 5866195de26a..0feb7ec98f4f 100644
+--- a/drivers/tty/hvc/Kconfig
++++ b/drivers/tty/hvc/Kconfig
+@@ -134,3 +134,13 @@ config HVCS
+ 	  will depend on arch specific APIs exported from hvcserver.ko
+ 	  which will also be compiled when this driver is built as a
+ 	  module.
++
++config HVC_M3000
++	bool "M3000 firmware pseudo-console"
++	depends on SPARC64_VII
++	select HVC_DRIVER
++	help
++	  Provide hvc0 using Open Firmware stdin/stdout on IKKAKU only.
++	  Input is polled; no native UART registers are accessed.
++	  Firmware calls are serialized and use a locked-image bounce buffer.
++	  Say Y to use the M3000 firmware pseudo-console as hvc0.
+diff --git a/drivers/tty/hvc/Makefile b/drivers/tty/hvc/Makefile
+index 98880e357941..5b0277deb7c9 100644
+--- a/drivers/tty/hvc/Makefile
++++ b/drivers/tty/hvc/Makefile
+@@ -11,3 +11,5 @@ obj-$(CONFIG_HVC_IUCV)		+= hvc_iucv.o
+ obj-$(CONFIG_HVC_UDBG)		+= hvc_udbg.o
+ obj-$(CONFIG_HVC_RISCV_SBI)	+= hvc_riscv_sbi.o
+ obj-$(CONFIG_HVCS)		+= hvcs.o
++
++obj-$(CONFIG_HVC_M3000) += hvc_m3000.o
+diff --git a/drivers/tty/hvc/hvc_m3000.c b/drivers/tty/hvc/hvc_m3000.c
+new file mode 100644
+index 000000000000..0ef4c888a6a2
+--- /dev/null
++++ b/drivers/tty/hvc/hvc_m3000.c
+@@ -0,0 +1,167 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Experimental M3000 Open Firmware pseudo-console backend. */
++#include <linux/console.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/irqflags.h>
++#include <linux/string.h>
++#include <linux/spinlock.h>
++#include <linux/timer.h>
++#include <asm/oplib.h>
++#include <asm/spitfire.h>
++#include "hvc_console.h"
++
++#define M3000_WRITE_ATTEMPTS 8
++
++static int m3000_stdin;
++static bool m3000_ready;
++/* Keep firmware buffers within the locked kernel image mappings. */
++static u8 m3000_buffer[256];
++static DEFINE_RAW_SPINLOCK(m3000_buffer_lock);
++static struct timer_list m3000_poll_timer;
++static bool m3000_poll_active;
++
++/*
++ * HVC's idle backoff can exceed the firmware input FIFO's capacity.
++ * Wake its worker each tick while open; keep PROM calls out of the timer.
++ */
++static void m3000_poll_tick(struct timer_list *timer)
++{
++	if (!READ_ONCE(m3000_poll_active))
++		return;
++	hvc_kick();
++	mod_timer(&m3000_poll_timer, jiffies + 1);
++}
++
++static int m3000_open(struct hvc_struct *hp, int data)
++{
++	WRITE_ONCE(m3000_poll_active, true);
++	mod_timer(&m3000_poll_timer, jiffies + 1);
++	return 0;
++}
++
++static void m3000_close(struct hvc_struct *hp, int data)
++{
++	WRITE_ONCE(m3000_poll_active, false);
++	timer_delete_sync(&m3000_poll_timer);
++}
++
++static ssize_t m3000_io(u8 *in, const u8 *out, size_t count)
++{
++	unsigned long args[7], flags;
++	bool input = in != NULL;
++	int ret;
++
++	if (!count)
++		return 0;
++	count = min_t(size_t, count, input ? 1 : sizeof(m3000_buffer));
++	/* Serialize the bounce buffer; p1275 separately serializes firmware. */
++	raw_spin_lock_irqsave(&m3000_buffer_lock, flags);
++	if (!input)
++		memcpy(m3000_buffer, out, count);
++	args[0] = (unsigned long)(input ? "read" : "write");
++	args[1] = 3;
++	args[2] = 1;
++	args[3] = (unsigned int)(input ? m3000_stdin : prom_stdout);
++	args[4] = (unsigned long)m3000_buffer;
++	args[5] = count;
++	args[6] = (unsigned long)-1;
++	p1275_cmd_direct(args);
++	ret = (int)args[6];
++	if (ret > 0 && ret <= count && input)
++		memcpy(in, m3000_buffer, ret);
++	raw_spin_unlock_irqrestore(&m3000_buffer_lock, flags);
++	if (ret == -2 || ret == 0)
++		return input ? 0 : -EAGAIN;
++	if (ret < 0 || ret > count)
++		return -EIO;
++	return ret;
++}
++
++static ssize_t m3000_get(u32 termno, u8 *buf, size_t count)
++{
++	return m3000_io(buf, NULL, count);
++}
++
++static ssize_t m3000_put(u32 termno, const u8 *buf, size_t count)
++{
++	ssize_t ret;
++	int attempt;
++
++	/*
++	 * HVC retries -EAGAIN forever, so drop this chunk without logging when
++	 * the no-progress budget expires. This cannot bound a stalled firmware
++	 * call or lock acquisition.
++	 */
++	for (attempt = 0; attempt < M3000_WRITE_ATTEMPTS; attempt++) {
++		ret = m3000_io(NULL, buf, count);
++		if (ret != -EAGAIN)
++			return ret;
++		cpu_relax();
++	}
++	return -EIO;
++}
++
++static const struct hv_ops m3000_ops = {
++	.get_chars = m3000_get,
++	.put_chars = m3000_put,
++	.notifier_add = m3000_open,
++	.notifier_del = m3000_close,
++	.notifier_hangup = m3000_close,
++};
++
++static bool __init m3000_property_matches(phandle node, const char *prop,
++					 const char *expected)
++{
++	char value[64];
++	int len;
++
++	len = prom_getproperty(node, prop, value, sizeof(value) - 1);
++	if (len <= 0)
++		return false;
++	value[len] = '\0';
++	return !strcmp(value, expected);
++}
++
++static int __init m3000_console_init(void)
++{
++	phandle node;
++	int ret;
++
++	if (tlb_type != sparc64_vii)
++		return -ENODEV;
++	if (!m3000_property_matches(prom_finddevice("/"), "model", "IKKAKU"))
++		return -ENODEV;
++	m3000_stdin = prom_getint(prom_chosen_node, "stdin");
++	if (!m3000_stdin || m3000_stdin == -1 || !prom_stdout || prom_stdout == -1)
++		return -ENODEV;
++	node = prom_inst2pkg(prom_stdout);
++	if (!m3000_property_matches(node, "name", "pseudo-console"))
++		return -ENODEV;
++	node = prom_inst2pkg(m3000_stdin);
++	if (!m3000_property_matches(node, "name", "pseudo-console"))
++		return -ENODEV;
++	ret = hvc_instantiate(0, 0, &m3000_ops);
++	if (ret < 0)
++		return ret;
++	m3000_ready = true;
++	return 0;
++}
++console_initcall(m3000_console_init);
++
++static int __init m3000_tty_init(void)
++{
++	struct hvc_struct *hp;
++
++	if (!m3000_ready)
++		return -ENODEV;
++	timer_setup(&m3000_poll_timer, m3000_poll_tick, 0);
++	hp = hvc_alloc(0, 0, &m3000_ops, sizeof(m3000_buffer));
++	if (IS_ERR(hp))
++		return PTR_ERR(hp);
++	hp->ws.ws_row = 24;
++	hp->ws.ws_col = 80;
++	pr_info("M3000: firmware-backed hvc0 tty ready (serialized, polled input)\n");
++	return 0;
++}
++device_initcall(m3000_tty_init);
 -- 
 2.43.0
 
