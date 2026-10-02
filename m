@@ -1,37 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2CA835F197;
-	Fri,  2 Oct 2026 05:50:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8690232AADB;
+	Fri,  2 Oct 2026 05:53:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790920239; cv=none; b=c3i0qiasntPeW0765a/3+ef9e9qOEvn5R0CMMRf4DND5XB3bFuGCK7dSkNCP6X+OC3vIj14oeLLI4eP3d5UltITPuSBhkuDGTtMv8d8Lw3ozwtVB/ygmS1BdNoBPPDIyh/2X3CD7OLuXwP5UBOaJyYsFmLzrYfC5AONCg19ae70=
+	t=1790920414; cv=none; b=G8jK2sOPfoaLnvR5lw5A1zlUA/YoRdNM044GmXhyjxGTvvP5Asx728Rm6rO9e4Yd9d5H0Uwh1WpoylcFGtuX8gdclhF4BHsNz/3at93LArt1hdoVmVlV5YJNM6uT984wUejFVbgE760phFd4kbZnXCYDRLbidFDPyQmN+rWwRGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790920239; c=relaxed/simple;
-	bh=J8lDDjW+mOazVyUo8+w40DNU0uLvKkLkoZb2dKG/ygg=;
+	s=arc-20240116; t=1790920414; c=relaxed/simple;
+	bh=wUnwSTL0obVCpQIzVoTMTfPbw9p7g2EqvDE7PfTtMDo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=srfdu7CHtm4OHXufZRc7rWhGzu62KfAuUJfQ9pEtRYXJ/wPciX32LqWkX3ECuDeESW7ElXxOfMSaKmLPBG/PeQN6g29U8nLTE9grAHUajbB/UUB/2Mau0/uMOZClEkyH/swqGxtOGtcRPI/e9dbHGOhboxkulwOzm7l2VqiESAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=GwGqzpkr; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=eZzhskd+RNLE7vIAMbZPrlrzQc74yT3WwsBRgt9V6yMEjm01mLQLw2w65/oYtumyz61MrLc7XlpGlBd25XWXL2GTJRm9LN153+fC5uftznNs7Ll+/pW8r7A5FDN38kOz2qx9HlxauSAfcbdB2HCrQ6TmsfzHbA5gnCBgA06hC5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=IRVZ6iJX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="GwGqzpkr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D71A81F00893;
-	Fri,  2 Oct 2026 05:50:37 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="IRVZ6iJX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E5011F00893;
+	Fri,  2 Oct 2026 05:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790920238;
-	bh=LiJ//V/sltvgbD9XrH3hQulh6fc1oNwkWPRM9Sb2Phg=;
+	s=korg; t=1790920413;
+	bh=wUnwSTL0obVCpQIzVoTMTfPbw9p7g2EqvDE7PfTtMDo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=GwGqzpkrBrBJVtFdZ7SHDV4kj3zGIb7zPkjLCFtCPSwe9zi1BkkRgJMNd8tUBCyYK
-	 XAi/RsfqHMq/5fK/PhAA1+/nVTYYKWVBTihhLqw+h+7etTnevtCL4VhVc0AXBsDqeX
-	 FGBOWHXr/Y1wDImxkhaZpnREFj2F5tpLYiXijw18=
-Date: Fri, 2 Oct 2026 07:50:31 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Akira Patafio <kokokoala4211@gmail.com>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, shuah@kernel.org,
-	linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH] tty: pty: preserve open slaves after rejected locked open
-Message-ID: <2026100217-magnetize-sphinx-bc0e@gregkh>
-References: <20261001165552.2439-1-kokokoala4211@gmail.com>
+	b=IRVZ6iJXfvIVZaGBFvlKMK6dLkiFf97VSaTqKVXL4nWtGFKkEVtMpxB8sOtwIWB54
+	 Uyw+ZtL7crf7ExmAlDmKMPYE1vEDAH/24tXV95wmFGbQOi9Wr6x7rPiBh0wTWXGVhc
+	 +Kx1g1qYK2oymPl4vT971PWhR9bicqmlDiz+QPk8=
+Date: Fri, 2 Oct 2026 07:53:26 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Austin Schlegel <Austin.Schlegel@arthrex.com>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 1/2] serial: tegra: fix RX DMA descriptor use-after-free
+Message-ID: <2026100213-widow-cornflake-9881@gregkh>
+References: <20261001-tty-linus-v1-0-ecb8576c802d@arthrex.com>
+ <20261001-tty-linus-v1-1-ecb8576c802d@arthrex.com>
+ <LV8PR11MB8557D32C0AC2AB0271FC1D9FF0892@LV8PR11MB8557.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,29 +46,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261001165552.2439-1-kokokoala4211@gmail.com>
+In-Reply-To: <LV8PR11MB8557D32C0AC2AB0271FC1D9FF0892@LV8PR11MB8557.namprd11.prod.outlook.com>
 
-On Thu, Oct 01, 2026 at 12:55:52PM -0400, Akira Patafio wrote:
-> Opening a locked PTY slave fails with EIO, but the failure path sets
-> TTY_IO_ERROR on the shared slave tty. Previously opened slave files then
-> fail I/O even though their master is still open.
-> 
-> tty_open() releases a file after the slave open callback fails. Merely
-> skipping TTY_IO_ERROR on the rejected open is insufficient: pty_close()
-> can mistake the failed file for the last slave and close the master.
-> Counting tty references is also insufficient because a real last close
-> can race the failed open and its release.
-> 
-> Track which slave files opened successfully. Ignore failed files during
-> close, and mark the master peer closed only when the last successful
-> slave file closes. A selftest checks locked opens with zero, one, and
-> two existing slave files, plus ordinary last-slave close behavior.
-> 
-> Fixes: 699390354da6 ("pty: Ignore slave pty close() if never successfully opened")
-> Signed-off-by: Akira Patafio <kokokoala4211@gmail.com>
+On Fri, Oct 02, 2026 at 04:06:14AM +0000, Austin Schlegel wrote:
+> This e-mail and any files transmitted with it are the property of Arthrex, Inc. and/or its affiliates, are confidential, and are intended solely for the use of the individual or entity to whom this e-mail is addressed. If you are not one of the named recipient(s) or otherwise have reason to believe that you have received this message in error, please notify the sender at 239-598-4302 and delete this message immediately from your computer. Any other use, retention, dissemination forwarding, printing or copying of this e-mail is strictly prohibited. Please note that any views or opinions presented in this email are solely those of the author and do not necessarily represent those of the company. Finally, while Arthrex uses virus protection, the recipient should check this email and any attachments for the presence of viruses. The company accepts no liability for any damage caused by any virus transmitted by this email.
 
-Also, did you forget an Assisted-by: tag here?
-
-thanks,
-
-greg k-h
+Now deleted.
