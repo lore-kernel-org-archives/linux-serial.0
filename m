@@ -1,102 +1,77 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55708432BC2
-	for <linux-serial@vger.kernel.org>; Fri,  2 Oct 2026 07:27:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EC8E433041;
+	Fri,  2 Oct 2026 07:28:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790926064; cv=none; b=EP0SkRph2QHvhl+TyabGXqm06JY0WYoqpG9zGAnIpeH5L40QPY6iz0oNW12NcH3FdwLxaU3imff5k2RnAIDDGDDN1/Vt+cBfoct08zpZmnnd/dhbVr6ywjmC7uJpmMViCdzkcn0319tqkkAdV9z0i+WL7MXZQjw1AOEhq0N4elY=
+	t=1790926090; cv=none; b=O5cT97zZlJzJGUM5rVmTFB0VJk4lcOhkcRqGzEmrGwItssINon/ZvKGFrFioELYY/HJQbiEuwmJ95wATc9fBiEzNnjGnK+eBV/7ZYmAZ/31/F1JOqipRfwhaYDoOtkdW1GrFKEdHubWG8N54M9LC0oDGOhzmsqBdmxmjg2SNriA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790926064; c=relaxed/simple;
-	bh=vFn9KjKsMYiAr1ZmjI3CN9vbnCY4NFPwuUVqfyJJ0J8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NHiib4weX6T7DgsB0on9t39gxd8rt/Umhzt7foyPfemmYRucBATPnoCXEqfnOG14CLt1hVzDpoZorORMhZtDqKOZ91oUTQNOyXdtGKOzpTwrA1mWPdphjJoVsqjgK3VxOu0G1MN1/EIBbMzlDHuvdUk3NlHpYVWp0aIDUsl304U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=eXT1IPgm; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1790926090; c=relaxed/simple;
+	bh=YpX4+5072Cz5bcYafYRHV43Mf/mG6zN/3qIGjFi54os=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=emsxn6Nsq++WSzpXYtspQjls2FmL4HwIsQXUgBc3mFcqcVG4V3PID75+NKXNpHwAah9GicmbHRVlw8A+VJnxiq0cV7Yluk50nJ4sQcLtpPiDcwmM0cWydlzvjVsHP61IO8+UlOd3IXy8NKBFoDvU9LPlNJvlPgEJM9yTD8E/C1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=itxXhBl1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="eXT1IPgm"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49d1fb0cf5eso66150455e9.3
-        for <linux-serial@vger.kernel.org>; Fri, 02 Oct 2026 00:27:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790926059; x=1791530859; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=71zvz099KWIJK9SNeemZUNmD6UFsAC9SZckopHPDOTA=;
-        b=eXT1IPgm3ZquEJPCD41j6+rHlnnVP+LNwo5JRIxszOcDKyjmZWTAz46lsPsO6JcGOw
-         yZy8GkFxMlrpjJ2v3SqaX5vrO3uX+/IOQ3H3b2pQ2jmcHkenF4/QcAA+B5UtqyWD6Xdg
-         +AEVVgAsc+Z7pnUudEg+2M2En+ZVZAtwnWXNWGfwoTr3QDV2WRgzfPnSzzUGWEIFrA4o
-         mLYsiAivANr01DVTrCnOf60op5Kx88i43v6X8CiMWaCDtvIb1ak6eTxOGg9bhwjudM5t
-         1jPaPZjvQeAydEun+6IS3J9mjkJc/wnKRhK4GwgPHWapcoTRAnr0lXiR4eylELIIq+bM
-         3jIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790926059; x=1791530859;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=71zvz099KWIJK9SNeemZUNmD6UFsAC9SZckopHPDOTA=;
-        b=HiMaDXFSAZziWEk7yfLpHXrSx9Rfej6MYV0BWoOFxuImBtEfeG3AK4xcDsjoHsCZ1s
-         rcvtK9KwR65CNmfFcAn+QlB3d7MhtmUaebcA/wcUffPdQSzjR8DV6mUfkpQ0uaUkGLe4
-         MJOBTrXZ+IohS76iBsoFEauitxYn06i0dnoy9QPdGp/vxGNiLBjgmWZeL0lW9pSWCKtq
-         tbvgm6kRRPTG2aYQyPHCXPnVC9RCgkMKPHm6wR3UeWxKnvrdgHnZUbma4GKwfl/yQhKz
-         NpPZMZ4lEC+I/fBVWAnCQr738VaBMozII5ldML5fCrcuUku1tDPMP9nD3Z8RCG1pqZ/k
-         etUA==
-X-Forwarded-Encrypted: i=1; AKwUvBwHgFcwA8ibChx+J34G2KgBewZbhiixdZqmurNl4rnKU1BBmhejJ5Ml+0+4NvYyfVxnBrVSVeHBQKr6Vgw=@vger.kernel.org
-X-Gm-Message-State: AFuF++mgcV6kPg5rBLegkYH9F4d/shrYb5ISxVvMEcC5urf8hiPMJvg/
-	MxlB1uqOnSqLd04tRq1nZZXdaD4Wwshq6mpyNtkc6WIP2GugzQ8qWrKSinskXIvaH6g=
-X-Gm-Gg: AYBFou3yNgy4pUoog+DFqp7MG2/OCyzSBK4ah7Zcgg7s1wq6Dnv5rtGHe+VI8VJuIiS
-	bs1yBhrEWyyc8JqNvCCcio5EZUFcP1Ou2rtngJXUty4pkatvMrD8h8nHtbHaTEmjQpzswo/u+Uo
-	nIg5bnwhLZcyeEL2umS7IgjVLausb82xdbN0z0UlGYcwjL+Dmnq31uuLiJYoDUMzUqlDaZJz01o
-	bbH6fxPefGPVU49AgG+NyaThUH5ofgJExKKy6+CHlwYO+uLsuk0whyvFvGJE5dcDvSOY4C5IOq/
-	rflxqgSHZtFv3QqZaJAB/+QZVOgB0r86gl2oBQJHWjc8eLxHJvVKaB+ro74pDrdYmZSBWSLZ/5v
-	r0cxo4fdAgXRZODpCnzaq8bsnqwaqdZ+Y6H7qsGbeOQZ2IW6xXPSi9YzJfqL0AJntoiY2U4dRtI
-	wJ6lEUxe8S1g8eMalUThTtDg64pymzO4av3k0LxK271+1U7L8DDNF+k5jbofK7pp56No4lbBgW
-X-Received: by 2002:a05:600c:4ec6:b0:49d:1cc7:5ec3 with SMTP id 5b1f17b1804b1-4a02756637cmr33367355e9.9.1790926059441;
-        Fri, 02 Oct 2026 00:27:39 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a03ff3cab2sm19060475e9.2.2026.10.02.00.27.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 00:27:39 -0700 (PDT)
-Date: Fri, 2 Oct 2026 09:27:36 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Imre Kaloz <kaloz@kernel.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject: Re: [PATCH v2] MIPS: SGI-IP27: print the NMI dump on an nbcon console
-Message-ID: <ar9c6LwwwRbKW4fp@pathway.suse.cz>
-References: <20261001191938.3256-1-kaloz@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="itxXhBl1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350531F000FF;
+	Fri,  2 Oct 2026 07:28:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790926084;
+	bh=7ncR0z0XZE0PryC/HJYmrm5CKarQVVxnnV5tCxdDkso=;
+	h=From:To:Cc:Subject:Date;
+	b=itxXhBl1DdZ1lu4TfQW7u+rrAfswYusGesLP9ilRGjr+/SPDBK/7HcaS9H5qPjrgi
+	 UzSRTocTeVstlB404NY5ZnP9nA3zqfrAdzErK9WHkflQGu+alUS9CGyiXU2vvRq/vy
+	 k+HO0DMtEn5RezGLIP/oBLu+a3O53UO4ZVePZ482UGVA9qvcdfiAzjVxmWYfcspE01
+	 yzVHubHGLqvUEYRiqRuTIN/sRVOvN6psMAQRZbPJVJhjqhteQhOxk2u/F+iw7GzzLO
+	 hJ0RznM+C7jmU44ei7/g/FOXLpt7X8vtncavf2uT10vvHJXQ36RLCgJx9s9AyajVYu
+	 t3PRM5JmJ6Vog==
+Received: from johan by xi.lan with local (Exim 4.99.5)
+	(envelope-from <johan@kernel.org>)
+	id 1xCXgX-00000008egp-3eLQ;
+	Fri, 02 Oct 2026 09:28:01 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] tty: add missing driver flag kernel-doc colon
+Date: Fri,  2 Oct 2026 09:27:36 +0200
+Message-ID: <20261002072736.2063004-1-johan@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261001191938.3256-1-kaloz@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Thu 2026-10-01 21:19:38, Imre Kaloz wrote:
-> Since the 8250 console became nbcon, printk() in nmi_dump() only queues
-> records for a printer thread that never runs, as no CPU leaves the NMI
-> handler. Print from an emergency section and flush pending records
-> before the hub reset.
-> 
-> Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
-> Signed-off-by: Imre Kaloz <kaloz@kernel.org>
+A recent change adding a new TTY driver flag left out a colon required
+for well-formed kernel-doc.
 
-Looks good to me:
+Fixes: 8df07fe93573 ("tty: fix saved termios reset race")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/ec3a09d6-4ba4-41b8-abb1-b59e265f4532@infradead.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ include/linux/tty_driver.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index 62e459c5d3ae..40ae3bb13e11 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -74,7 +74,7 @@ struct serial_struct;
+  *	Do not create workqueue when tty_register_driver(). Whenever set, flip
+  *	buffer workqueue can be set by tty_port_link_wq() for every port.
+  *
+- * @TTY_DRIVER_RESET_SAVED_TERMIOS
++ * @TTY_DRIVER_RESET_SAVED_TERMIOS:
+  *	Reset any saved termios settings on device registration when reusing a
+  *	minor number. Must only be set by drivers that guarantee that the minor
+  *	number is no longer in use.
+-- 
+2.55.0
 
-I assume that it would go via mips or drivers tree.
-Please, let me know if you would prefer to push it via printk tree.
-
-Best Regards,
-Petr
