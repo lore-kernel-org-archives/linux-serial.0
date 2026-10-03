@@ -1,60 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7EFF387345;
-	Sat,  3 Oct 2026 01:33:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7018E388E60
+	for <linux-serial@vger.kernel.org>; Sat,  3 Oct 2026 01:33:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790991234; cv=none; b=P0+33VW/kUhs7XeeWrmYFkccFYuoxCc8dv+/oBQYy1MpO+r2FTXF66z9Vd4n1AXVHCX961B8y0wfZzwgmifZJK5HnSptQdkYd2L/M/Ho2wedU9EcNv+Wef8WdhHCjUE5M8EIEWNqKnvMa4Uug4AMvk9xqNyGHWM5XApynfCYTPc=
+	t=1790991237; cv=none; b=ncTeayC9CIwBEdpZZZmAmuiTNcmvxRL8LAgN52OdDbpUpXO8qgBEAmsMIW00ZTzuDE6Pc+oW/bRtYwGNwsDRv8P2y7I9zAQxeDM8MQdUvDPNQwQ3rJtIjvvkxZ93gdlXXoJmjxsOFVyOLx9/Lh3DGXYUhEHLCWA9qRJsa8RUhk4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790991234; c=relaxed/simple;
-	bh=cUz0mZU1sRsREh02G+T1nLcmEoE4wca5SLdkUvPXJbQ=;
+	s=arc-20240116; t=1790991237; c=relaxed/simple;
+	bh=ivLjYrH4rMM0C8lMq6R6WzIjnLeRJaI7ZZu2dWC05vg=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=iCFdLrwd/20kQJkqaveodBVde1/Ykn0UcoMBxtCDIFJz5DjJJehogs0UmLFa/r9dP9hiToiV1P8jruSJfunPzgLzMuIu2zFwD8oPXWXTuZwHXi1B+aWqLnXf7fsEJmKWmAQJQPOoiDS7YMPOs0rKsR1Gb1BueD+fYHvJD/WEubw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LIRCiJFk; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=OoJD2GTmvUndaSAKaLMlqOJquqcWtUtIn8ddqofB6w9WcxvPz2D2rwyIBgEAjLCOt6iZaPbQY5HjN6Wq1/m1gJsEvzXgrHfpz4V8qucfp7LM/ZZ/cMD3g1il4nVGvOl8Sp58/QNWfkcZ4AvcV7zTwWfB1xuoD5yDQheuMACnFyo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bo13yR6L; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LIRCiJFk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F8E1F000FF;
-	Sat,  3 Oct 2026 01:33:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bo13yR6L"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 381CC1F00899;
+	Sat,  3 Oct 2026 01:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790991233;
-	bh=cUz0mZU1sRsREh02G+T1nLcmEoE4wca5SLdkUvPXJbQ=;
+	s=k20260515; t=1790991236;
+	bh=ivLjYrH4rMM0C8lMq6R6WzIjnLeRJaI7ZZu2dWC05vg=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LIRCiJFk0fs6G0WAzbha2upJvaajF88N7CcFAUZpNNk6kVrBFMy6I4765YFXeWIrt
-	 +zHMxiFq9PvoJx3e8AMZakkaKZYfZ2uBvCJteApv1ErOUcvhKzE2Ac7PepLctodDxy
-	 VV9f+fqL/qbEYeeAE1X7E395byXjgvT9xr3bMFUfw5ZMSB2ohYBFU4Ku/vM2fHf+BY
-	 vrkwtg8DasYq1v/qFnNAmNJLcdx/AIYtMp1w1nTOh/iFjLZ5t3+9pIsJpU5ORrgW9D
-	 t115UQsOJwOsL8p8KjnyWAkbIAisewlEQCB0YePSPJAdibfXQ/vn72Y2xvHyJMMhR+
-	 PDiOWs6VKK5HQ==
+	b=bo13yR6LLWm3QsfxK/9cO3pOpZL3UoTeXUPiLEd74saNj3Lwr5AdCq9ZIS5CernrB
+	 jnS5qlzsGwY6HHlGxYUE6Jmg6DMjNJ3A7FTNEIl68Oe2bxsys+6AJoFurDjyNHXSd1
+	 XCF2SBEGQgd4Hy/fLV1rRd5V2t3X8sqeKI/wGOVPMZ5MErOyiPB1TfhrNipZ5gFOI5
+	 f1TqMu9vG25vfKL6W5yciwg9HOcwAcqhR4mpEoZ1Q9eEUKPrEdipviadvisSN9+EMj
+	 yUBJw1501xNb0yOikW8ErB0iMzIbUC73xS7lzPxPKJ6bQGH8hOa2HKxXREr9fWJgUT
+	 qARSMrMW5TkDQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/1] tty: serial: pch_uart: use dmaengine_submit()
- instead of ->tx_submit()
+Subject: Re: [PATCH v2] tty: pty: preserve open slaves after rejected locked
+ open
 Reply-To: sashiko-reviews@lists.linux.dev
-To: Frank.Li@oss.nxp.com
-Cc: linux-serial@vger.kernel.org, Frank.Li@kernel.org, imx@lists.linux.dev
-In-Reply-To: <20261002200927.236033-1-Frank.Li@oss.nxp.com>
-References: <20261002200927.236033-1-Frank.Li@oss.nxp.com>
+To: "Akira Patafio" <kokokoala4211@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261002202455.25324-1-kokokoala4211@gmail.com>
+References: <20261001165552.2439-1-kokokoala4211@gmail.com>
+ <20261002202455.25324-1-kokokoala4211@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 03 Oct 2026 01:33:52 +0000
-Message-Id: <20261003013353.50F8E1F000FF@smtp.kernel.org>
+Date: Sat, 03 Oct 2026 01:33:55 +0000
+Message-Id: <20261003013356.381CC1F00899@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> From: Frank Li <Frank.Li@nxp.com>
+> Opening a locked PTY slave fails with EIO, but the failure path sets
+> TTY_IO_ERROR on the shared slave tty. Previously opened slave files then
+> fail I/O even though their master is still open.
 >=20
-> Replace direct dma_async_tx_descriptor->tx_submit() calls with the
-> proper dmaengine_submit() API wrapper.
+> tty_open() releases a file after the slave open callback fails. Merely
+> skipping TTY_IO_ERROR on the rejected open is insufficient: pty_close()
+> can mistake the failed file for the last slave and close the master.
+> Counting tty references is also insufficient because a real last close
+> can race the failed open and its release.
 >=20
+> Track which slave files opened successfully. Ignore failed files during
+> close, and mark the master peer closed only when the last successful
+> slave file closes. In-kernel callers may pass NULL instead of a file;
+> retain the count-based close behavior for those callers. A selftest
+> checks locked opens with zero, one, and two existing slave files, plus
+> ordinary last-slave close behavior.
+>=20
+> Fixes: 699390354da6 ("pty: Ignore slave pty close() if never successfully=
+ opened")
 > Assisted-by: LLM
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> Signed-off-by: Akira Patafio <kokokoala4211@gmail.com>
 
 Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261002200927.2360=
-33-1-Frank.Li@oss.nxp.com?part=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261002202455.2532=
+4-1-kokokoala4211@gmail.com?part=3D1
 
