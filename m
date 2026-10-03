@@ -1,161 +1,171 @@
-Received: from mail-lr2-f32.google.com (mail-lr2-f32.google.com [74.125.230.96])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0840748E0E7
-	for <linux-serial@vger.kernel.org>; Sat,  3 Oct 2026 16:33:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.96
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6EE339DBF7;
+	Sat,  3 Oct 2026 17:56:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791045236; cv=none; b=HVaGmi1WF+5McWD4dODERnU9n4AB4Jz7SVDLhY+ugy33eusMjwmgDC3XAua/IS26C6qXiUaAdzRA9eMRtlsvmuACNvHCe8JO5+cyKwAgNNqLXtkfpC6VAZaZf0OJXmxO2vsOFiUzxn2CzliQRSE8pZ1APpGX5eegzy9No0uv5Hg=
+	t=1791050178; cv=none; b=mihhuk0eM+ZHhduUmkMyWWtUJJpuckQafOiE5KLt7yW7kovLe7U+Vz5lrXr+Chjy2eos+NKEzaxJtNvFJRwxdPUl5noTMZabulkbXUT4l5S/7TrgC1A85Hss5PS9noVARQyKzyTrsKaA22l7B11r9vUkZ1sB9E+Z5wFAHQptb+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791045236; c=relaxed/simple;
-	bh=3YfD7rZuw88DMuwYczaiDoeSy3itfBMyP/2TnoBot/U=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mj+HdZGycP2hlPLlusiK3B/8nboPR0DgT6QWphLd4ZKOz+FR4oXVYj1lAVFpZnvj2JlKoF7gE3uK21kh4Bht3bcg0Y4mqkSexjNKm35FsT0fI3O6BqD3ABR+25vwHyCc3Mk92NMxqTbFWsxRKYubPb1FiHZ0MpJVFgSBguWC6Mo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RvqZBqbw; arc=none smtp.client-ip=74.125.230.96
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791050178; c=relaxed/simple;
+	bh=Yh0S7crW3O0nxvXrBBYZIO0UTgeI4NX5DbmiBQEpf0Y=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=Wvi7suxEzfVQOgrjzbM2mNXbdDoTugB+0GupGGsFpjZY4en01AfGurmpBd5iRES+mmX4EkmTynQ0idt/6dl+fUTtdfIDEyR2ja1MhEUi3sJKGuapF/Q6hpcZ9ktecHtFW+HW3ZYmVSsO+CrwChIP2zE+5MpR39C+HJZmH6l/BqU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hyz+0w1o; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RvqZBqbw"
-Received: by mail-lr2-f32.google.com with SMTP id 38308e7fff4ca-3a96c7783b1so7022031fa.0
-        for <linux-serial@vger.kernel.org>; Sat, 03 Oct 2026 09:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791045233; x=1791650033; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=V26bRrFo37kOD/3fnaNC94SFt25znV4xHPmGyUnh8ns=;
-        b=RvqZBqbw4n0YXQu589EXJzx0nPG/+lz0XMwDTvAs/2WIzScatcF0WUNUN6lvslgbEh
-         MEOfH0OCkOQlzJvcp5yU8YZ8m7fD0j5GUFyx5SFYY1+h7W0dqaXZZfe7CAfVZTlncgYD
-         BmsmxV8iwVJyfYmQsSz0eS8lTFshsjSyzreUpZaeV/iFaUd1jEAcpBLbxyV0YbxwP5+5
-         fpGV/tep7DnZYXN106Pc3FeYWyj93fNiN039A4e8vfLc016zEI49hEg6WHp37ybQrgkM
-         4ayln15D5w/NxCl5NuzI2EtfLd0+TUpJPMXfRHK1cSyve4WfvxvkFzT0sIzQ/aDfrsPw
-         G6Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791045233; x=1791650033;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=V26bRrFo37kOD/3fnaNC94SFt25znV4xHPmGyUnh8ns=;
-        b=nXQN2Q0svRrXRoZFf3pyoEi8vrmVtaF+l3NKJ2I3+atwpH75JoKI6o+Q+GAxEFcQ2K
-         OOfKUn/gn84PkSv9vQ2vXvfM95Ce5JMrOjjjP+zKfHZ5/u1hNWZl86zFlOZLzXN9MP8g
-         ldNppsls9HEQm7XD+idKYILPM9cmU75h+ifsYnCacXEO2wagGdLSR3PQcIea9exd3n6+
-         BrkVvaKtV8THMG52zENO1o+/RQxeqKLPLW1iPCKDhUq3pWNMvuTJ/kC8jJlgMhJVeP5B
-         0Z6BJZ5uKj2qk6KWa5zMBIFNRcQKN1PIzhb3qRHzPUSfuHEqBImGj/SRft4P5i2K0COn
-         DZog==
-X-Forwarded-Encrypted: i=1; AKwUvBy2xCY874sTq9mSBppI5YTtmy8nnk2ThrgP3AXiJKVZkJi7ln/I1MNQ4byjRFnmi9R8VTBHfpK7UuOb+C8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIWEnfg/LA7Fizzf9c+5Ws/jPE21xIMdsHJIWqfHDMingS19P0O
-	MaR+2a4xTPWWjqPRkychwNjlXTKEJJ/U1aSShTO1Oaf6kIM0ud9s4CO+PV6O4n41507pXHOe
-X-Gm-Gg: AYBFou3UtDg4jmmreEyxg6SMHIPDfS18NnPDAZ9wIKxpJ+5hDUqIgkxKUyvPOA+L5YS
-	WIR7QBqwNzkJk3hhYhYK0JMgkEZ3Vc1gFqcDRhBVxS+BXsBfhGxcTyzbzQhyReIdz05dIaYP+yT
-	P2GDsF/T5/bTNbBx7/niMY+qkgrzpRyVYYLIzJyo7KrGP8TouOLJHmIdzxrkhCo61orU4NLA/kg
-	bC4kZW7iYQqSAnogYXeOi2guQ+JDUZ4g9FLP+HlE03DG3qs1xTCbXaa3KwmvefeT5LGxwt6ruWB
-	Y6I4hehFpYWUvxAyNu/JU/YzdaSVvPqarpPYCcI2SN74AvWSfFpmM6Qw3kT7y/AXbNddH+m6bof
-	wGHijm16AhA4B+HMKJty9q5d6N8GNE8t8OGSkFweN1H2U64WfhH3nDjqJZsdfsDDeTqgeZ2aA1u
-	3mws+R4nxpvpAZ1idNGOEAKzwFMweIEnJTu/+k5TnPurmG+YewhACSIrkvERbv74TXu+9p+4W/Y
-	lXGX+6Leso3gH5pjOTyoQxlrrz/OM4sBXcS89XKbaydfd23TKyQxoqLwy46TUMfPI4rUuUnae0b
-	Uc6eVuZQso14+Or8W2EPFCI=
-X-Received: by 2002:a2e:a98b:0:b0:3a9:7520:172e with SMTP id 38308e7fff4ca-3a975202f06mr7157291fa.17.1791045232579;
-        Sat, 03 Oct 2026 09:33:52 -0700 (PDT)
-Received: from user-x870steellegendwifi (95-25-156-252.broadband.corbina.ru. [95.25.156.252])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a87e333cf3sm21627211fa.39.2026.10.03.09.33.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Oct 2026 09:33:52 -0700 (PDT)
-From: Igor Putko <igorpetindev@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Rob Herring <robh@kernel.org>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot+843bf2f48f4d12e6682e@syzkaller.appspotmail.com,
-	Igor Putko <igorpetindev@gmail.com>
-Subject: [PATCH v2] serial: core: shut down initialized port on removal
-Date: Sat,  3 Oct 2026 19:33:37 +0300
-Message-ID: <20261003163337.45577-1-igorpetindev@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260924192224.3175-1-igorpetindev@gmail.com>
-References: <20260924192224.3175-1-igorpetindev@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hyz+0w1o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C0E1F0089E;
+	Sat,  3 Oct 2026 17:56:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791050177;
+	bh=JjDDZO/D9EHraXMlfraMy9tKVss4FlDPoB4DeSvCAbw=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=hyz+0w1odpBXmY2TzAuXZ4YvAvMcuHid3PUQLQHzozUGVAnMSy+4PFQjW7x6Sy0x6
+	 NiIhVNmA7Eov2jr1uVAkt7IYg5HZ9V7gJD8j6XHULnivRlgLPUmioYlUkeK/5ji4SJ
+	 jAPQAa4H5NBbLuNyQhc/H0+6S4pMxgJxHsE69q6kqTiXA6RDUQ0hQGyRoXCGa7BC/J
+	 tcMsex0zxtnvzA4v9y1ysnu9QACawUK6huAA99NzR43I4QT3T1Hsy93l0vDqqFT3iv
+	 H6NVl4sZFGkynf1SZS+IZeiqS99hcDi+uiHWLYV2g7cktfNMU5PhDIivRDUN+xS8hl
+	 t8bcQIm6RX05g==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v2] serial: fsl_lpuart: add support for GPIO-controlled
+ modem lines
+Reply-To: sashiko-reviews@lists.linux.dev
+To: =?utf-8?b?Sm/Do28gTG91cmVpcm8=?= <joaofl@gmail.com>
+Cc: Frank.Li@kernel.org, imx@lists.linux.dev, linux-serial@vger.kernel.org
+In-Reply-To: <20261003155022.466971-1-joaofl@gmail.com>
+References: <20261003155022.466971-1-joaofl@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 03 Oct 2026 17:56:16 +0000
+Message-Id: <20261003175617.59C0E1F0089E@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-When a serial port configured as a console is opened and subsequently
-closed, tty_port_shutdown() skips invoking port->ops->shutdown() because
-port->console is true. As a result, tty_port_initialized() remains true
-and the port's interrupt handler stays registered in the irq subsystem.
+Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+s) to consider:
+- [Medium] tty: fsl_lpuart: native hardware flow control blocks TX with GPI=
+O CTS
+- [Medium] tty: fsl_lpuart: missing RTS GPIO toggle during RS-485 transmiss=
+ion
+- [Medium] tty: fsl_lpuart: modem status interrupts unconditionally enabled=
+ on startup
+--
 
-If the underlying device is later unbound or removed (e.g. via sysfs
-driver unbind or device hot-unplug), serial_core_remove_one_port()
-unregisters the console, frees uport->name via kfree(), and tears down
-the port without shutting it down or freeing its IRQ. Consequently, the
-irqaction descriptor remains registered in genirq with action->name
-pointing to freed memory.
+commit 992ffb5df51e6a0dce4af1057b32c3465f75e984
+Author: Jo=C3=A3o Loureiro <joaofl@gmail.com>
 
-This triggers a use-after-free read whenever genirq accesses action->name,
-such as when reading /proc/interrupts:
+serial: fsl_lpuart: add support for GPIO-controlled modem lines
 
-  BUG: KASAN: slab-use-after-free in string+0x476/0x570
-  Call Trace:
-   string+0x476/0x570
-   vsnprintf+0x422/0x1300
-   seq_printf+0x...
-   show_interrupts+...
+This commit adds support for GPIO-controlled modem lines (RTS/CTS) to the
+LPUART driver by wiring it up to the serial_mctrl_gpio helpers. It aims to
+support configurations where RTS is driven by software and answers on CTS,
+or where RS-485 needs a GPIO RTS.
 
-Fix this by acquiring port->mutex in serial_core_remove_one_port() after
-console unregistration, clearing port->console under the mutex to prevent
-data races with concurrent tty_port_shutdown(), and invoking
-uart_shutdown(NULL, state) if the port remains initialized. This ensures
-that port->ops->shutdown() is called and the IRQ is freed before
-kfree(uport->name).
+Link: https://lore.kernel.org/all/20260210-rearview-hungrily-536a95fc3385@t=
+horsis.com/
 
-Reported-by: syzbot+843bf2f48f4d12e6682e@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=843bf2f48f4d12e6682e
-Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
-Fixes: f7048b15900f ("tty: serial_core: Add name field to uart_port struct")
-Signed-off-by: Igor Putko <igorpetindev@gmail.com>
----
-v1 -> v2:
-- Clear port->console under port->mutex using scoped_guard() to fix
-  the data race pointed out by sashiko-bot.
-- Verified without synthetic devices by reproducing via sysfs driver
-  unbind (00:04 serial pnp device) and inspecting /proc/interrupts.
-- Do not hold port->mutex across release_port() to preserve existing
-  locking semantics.
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
+art.c
+> index c8575c9652035..909253aab2125 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
 
-Reproducer steps (tested on QEMU with console=ttyS0):
-1. Open and close the console port:
-   exec 3</dev/ttyS0 && exec 3<&-
-2. Unbind the serial device:
-   echo "00:04" > /sys/bus/pnp/drivers/serial/unbind
-3. Read interrupts:
-   cat /proc/interrupts
-   -> triggers KASAN use-after-free in show_interrupts() without this fix.
+[ ... ]
 
- drivers/tty/serial/serial_core.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+> @@ -1844,6 +1863,8 @@ static int lpuart_startup(struct uart_port *port)
+>  	lpuart_request_dma(sport);
+>  	lpuart_hw_setup(sport);
+> =20
+> +	mctrl_gpio_enable_ms(sport->gpios);
+> +
+>  	return 0;
+>  }
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 95774b0f1..f6253cd30 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3213,6 +3213,13 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
- 	if (uart_console(uport))
- 		unregister_console(uport->cons);
+[Severity: Medium]
+Does unconditionally enabling modem status interrupts here defeat the serial
+core's demand-driven .enable_ms callback design?=20
 
-+	scoped_guard(mutex, &port->mutex) {
-+		port->console = false;
-+
-+		if (tty_port_initialized(port))
-+			uart_shutdown(NULL, state);
-+	}
-+
- 	/*
- 	 * Free the port IO and memory resources, if any.
- 	 */
--- 
-2.53.0
+This will permanently enable GPIO interrupts whenever the port is open,
+which introduces unnecessary interrupt overhead.
 
+[ ... ]
+
+> @@ -2912,6 +2939,10 @@ static int lpuart_probe(struct platform_device *pd=
+ev)
+>  		sport->port.rs485_config =3D lpuart_config_rs485;
+>  	sport->port.rs485_supported =3D lpuart_rs485_supported;
+> =20
+> +	sport->gpios =3D mctrl_gpio_init(&sport->port, 0);
+> +	if (IS_ERR(sport->gpios))
+> +		return PTR_ERR(sport->gpios);
+> +
+
+[Severity: Medium]
+When setting up GPIO-controlled modem lines, what happens when hardware flow
+control is enabled via standard userspace termios configuration?
+
+Looking at lpuart_set_termios():
+
+	if (termios->c_cflag & CRTSCTS)
+		modem |=3D UARTMODEM_RXRTSE | UARTMODEM_TXCTSE;
+
+And lpuart32_set_termios():
+
+	if (termios->c_cflag & CRTSCTS)
+		modem |=3D UARTMODIR_RXRTSE | UARTMODIR_TXCTSE;
+
+If cts-gpios is being used, native hardware flow control is erroneously
+enabled without checking if the CTS/RTS lines are being driven by the GPIO
+framework.=20
+
+This causes the LPUART hardware to block transmission waiting for the
+physical CTS pin, ignoring the newly added GPIO CTS line.
+
+[Severity: Medium]
+Additionally, when using RS-485 mode with a board using rts-gpios, does this
+implementation miss toggling the RTS GPIO during transmission?
+
+Looking at lpuart_config_rs485(), it only enables the hardware's auto-RTS
+feature on the dedicated physical RTS pin, which has no effect on the GPIO
+RTS:
+
+		modem |=3D UARTMODEM_TXRTSE;
+
+		/*
+		 * The hardware defaults to RTS logic HIGH while transfer.
+		 * Switch polarity in case RTS shall be logic HIGH
+		 * after transfer.
+		 */
+		if (rs485->flags & SER_RS485_RTS_ON_SEND)
+			modem |=3D UARTMODEM_TXRTSPOL;
+
+Then when starting TX in lpuart_start_tx():
+
+	if (sport->lpuart_dma_tx_use) {
+		if (!lpuart_stopped_or_empty(port))
+			lpuart_dma_tx(sport);
+	} else {
+		if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
+			lpuart_transmit_buffer(sport);
+	}
+
+And similarly in lpuart32_start_tx():
+
+	if (sport->lpuart_dma_tx_use) {
+		if (!lpuart_stopped_or_empty(port))
+			lpuart_dma_tx(sport);
+	} else {
+		ctrl =3D lpuart32_read(port, UARTCTRL);
+		lpuart32_write(port, ctrl | UARTCTRL_TIE, UARTCTRL);
+	}
+
+Because the driver relies exclusively on the native UARTMODIR_TXRTSE
+auto-RTS feature and fails to invoke mctrl_gpio_set(), the GPIO pin is never
+toggled and RS-485 transmission over an RTS GPIO fails.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261003155022.4669=
+71-1-joaofl@gmail.com?part=3D1
