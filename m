@@ -1,141 +1,164 @@
-Received: from mail-qk2-f41.google.com (mail-qk2-f41.google.com [74.125.230.233])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81782264CA
-	for <linux-serial@vger.kernel.org>; Sat,  3 Oct 2026 21:31:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.233
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791063115; cv=none; b=eh0qUhsIvwa8EvqyjJhiTPYNFvhOx4gGvhzQzxl6DzkbhbieOcTXnKNakorb7usmD5NftxoSw/hvRYkJmegpZkc7f11MgWcoM64huL4z5W2AD4RrZiGYhe+D+N0LbEng9qA7AmR30Cgi3g9MIQpd3uYin0AeKruQ9/B6j6x04tU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791063115; c=relaxed/simple;
-	bh=3IGIouzNerHBwDt2XZKFq7EhkZ7ohljzRYzr3vY2Skg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cHU7hEqhA6RdtNtYl8ZYFQ90RjB/G8p4FcDfBrTN9YWLmr0528Rajc1gqMv93CnDVfE2ubS25CnW+aAA3y3dKYLByyBv12MAbVf03YTKBvOc23pIx2FZVj5JKQToAZ1ByXjINoULhwOcgwvQfAQDJnJgTX16dpm8qlQCuomQ47c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cO1qEDJF; arc=none smtp.client-ip=74.125.230.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1176347532
+	for <linux-serial@vger.kernel.org>; Sat,  3 Oct 2026 21:32:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791063173; cv=pass; b=EtTDeRlzz3UiTv7+l33aJNT0IEmFP+y6Hzo4oJAWgt7KktBTPr4yWYEG3AcQRCxYWMZlhvIhzsX/iLmecSSE05EiFI4/LzOyTGqn0ufoghvc7O3qsWQ8ztmsXM8ZzmQgCah/GtcNzKpIrXptFO40Z+Y4/M+8Vf+9N3QfCVIPs0k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791063173; c=relaxed/simple;
+	bh=Vhg9CdEH7+btjINehl2B/FEThVqkGiUPVHx1dzpGa+I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TQBzQAOh+U0MwgFb+4zGHUxub3lTYa+IwzfuYGg44Yg9QTlpjyZ7hafxoIe5gy5YiFL3C3HTCmhSmoEJ3LdotpKpTOPA1cZgh6XW7IQGg7jujs9hpnx3j5bp73jqPZ8J93vRsKF8HWAXMcXARRncT9nJZLrb3GkxmAXUljm748w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UozZgL2J; arc=pass smtp.client-ip=209.85.208.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cO1qEDJF"
-Received: by mail-qk2-f41.google.com with SMTP id af79cd13be357-93e49f4d30bso55456985a.1
-        for <linux-serial@vger.kernel.org>; Sat, 03 Oct 2026 14:31:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UozZgL2J"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6ab006eb282so839210a12.0
+        for <linux-serial@vger.kernel.org>; Sat, 03 Oct 2026 14:32:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791063170; cv=none;
+        d=google.com; s=arc-20260327;
+        b=e2tkrj75VBnOA5O4B8BIJsH9nwwKkuApbKVdbZrwj5ghsLtgRjtbGL0kgzSNcubZ+J
+         QjufHLOtbtKCN4UuALzXWTrRngHpgQmv79CtSbJeCdrMXIvLxOIHWRkeVPxHvgTHkTOU
+         QhzAD5KRQWItZDoLAxlR+My+8Qj21KNPjrvHk4PFQ+IhAq6QwIClSr4nr1GHPyFMZsNt
+         /8oB++xQ2JeTfh7VOa50exItCjCEBNWWsiixe3PVS0nQJGyGsZBzSVoVL+o5C7OsNjI+
+         2/G6d+SG8BeQKwyroFIq1GwaD1NejrmArZauEW2DBN2kR1ScV1f2uMAjlyuuFeAF714j
+         4W/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=af+0t3iUGS2/6SKpeL3Rck7lTZ4b3LAtconFKbgLekw=;
+        fh=Qs8o4c02DbEnLt6ItQ0zf2/0vp3J+hILC3S+ZClGB8s=;
+        b=C9U2pBY23XAIaiABUMXwNtFdUt8HAcbbJitYMxhiuuYYBZmZ62EO1BVROsr7JbPAzH
+         GrGMV5OavTlI+soiys1e32BzdUuuaxqr4CY89bzTImvFtaOpIVGLsaF1RY8lYIIEcobB
+         oQTZs90AnqYF6wjauygHhuS/KWf8TGuPHhJsZONHw9hdqQb94Wej+gvOi/oM+k/vvjwl
+         w41PvvVxRkTj7gWb1WrCqIx6nuJz7Y46J3ALOf2u4NMnTLD2FVg1nVi2Es/9ecDGRvMx
+         guxwRsLHMW5AFtHy90pbPJr+j8fxHVNCZ7QXcuPpJ8LR3dmIQsFv6TD3T5sfRcFZpATt
+         nAAQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791063112; x=1791667912; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EF7nOMoHU/lXOBcLECCEmjeD1XvCzGTt0zKSXYTVC24=;
-        b=cO1qEDJFBTZ8RbLpwOuMh1JIxExF3V/qbsYRFXR2/n08qpclkWkRrTLPcxGWazDYz0
-         lmPavltJ24kckZOQvfDpvpFbw3jJTZ3IjYRBmPwuB/f6hn2yTvMLARJt0EJ+Ni2Hts3E
-         ZoiLepzyGXD4wxrNtG1Stqh/FqwAiIe4Ed5JKqNDkSMmN+2tfRLqyk8vY/sdlC0kXz63
-         qN6mFCSQsjbxgWUnjJV4QIxEtqK/QnmdohT56jgA2b+rZUN0Mu64VAS30YKWh+aBD2JO
-         uVlZ4VRsxumD8LPedX3+ZOeoZxkMGvHcYVZ8GYMAD5RAwYEDGAZzaOhePQSyizuDLnIq
-         KyKA==
+        d=gmail.com; s=20251104; t=1791063170; x=1791667970; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=af+0t3iUGS2/6SKpeL3Rck7lTZ4b3LAtconFKbgLekw=;
+        b=UozZgL2JiWuflMMze8QKvwevHxL6AkoMXRBpPyLxrrLrI9qdGm9P5RPUkz4jQESRUO
+         f28vwqCQyCaImI+BgbILgk/G46wcEBf6RlPTkH6oHlZQS+2bS0C0qotqRs+MPe1DKj6o
+         oRMJQ7I2VdoNCQPXXgKhe0Ybta+eGXyioazihk8LXi/qCyNZUoOzpJlRr9ncYMEL3XES
+         ciXW5KdQOfajwc0+CARD6NUxWIx4WNAuWY63dKDr6vF55t2Xvsb7zNqgkT9EVABKoHhF
+         Ocp6FpTjusrpiNsLxkSxqXpzzOQ546bI580BIrw8TEW4QEJcxbhsTg2EtSmtqGoNgJhG
+         UBuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791063112; x=1791667912;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EF7nOMoHU/lXOBcLECCEmjeD1XvCzGTt0zKSXYTVC24=;
-        b=ayPgmU1kKmqSCLPSzEt8G0/D81E8cachg1bJhfoHrjhAwZOlDLh096JMNuprLW64OW
-         gYHGZfyQjmBe3xbht+zjOD3Y4Qvzpa8DbPx+0VPnw58/SPkXDMSDKXRBUrq498+MFhhV
-         d7UdnGaQfv6e5U0ElDK736GxyWU2htAyBvYBTUm+o49qGYTkyeH2kxGJQ1JHHq/UfFA3
-         nBoZFZiZgNNzS5EvkBEjjS5GuM2qQ5MsOv3wK3Shbf+pFmyBzWjSCVSSauzIXM1Jfv5N
-         lo/RPyseidmhyu/ZQTTLjQXIWv6jVr/JD5Ga1QHgtRoSt3hRB4XUtfQv7HLf1K47RV4Y
-         V9gw==
-X-Gm-Message-State: AFuF++lrFmiGL3YJHMgBJayXzivTWFFryJIHIC18o+kQC/6jL6Bx2nYB
-	X0BcNX8mphdISpiXqlIzz18KPds3BQBNEEP4SDMR4YHyfZH+bf1GAsZPKTJxgEYA
-X-Gm-Gg: AYBFou3Qu9VqlI1wm1Xk03ProsEuLjKt/58rbOkcHck3WslPuKa+BlgORDRC57Iveol
-	ZykOPmfG8P/R4aF169TC2X8BLlTgxe0+La2DoaWsp22FPhe/+bfqFExPY45hhnouGaT5BYxD0d8
-	LoANGveds3hrRu212EeFADPfP81/v2LERyiMiPcWEOqRlp0xh3RwSnUGoppnsRyq78Y+LHXCmBY
-	h8CC0vscd+tZ0I/eCVCkfd1MM/wtPjYuvBVXblxaqPyrlC/cp+ryZyGdxkxCKT9AFuqltYOYNv1
-	KzXCwpBJn05rD+/fa6ltS5kQ7rrnL1u5dkDoft5/SBcsiNeiSwWJlUqeSBKe2QTukp1Kdpc7QQB
-	mS+4y0Rqhl6hVwo/ElXFT6I300vXuY6pzCCMjBpVg+kdaZxV6eyhYfNCtO5pbl+S3DAU+FBQYah
-	2oU8LxPAwyDgUpd5O8Eoeyf/2s1OHQZwkQxh98/h5dPlKdglhJqXiRZm8mVgCT5qDcWAPTH7JlC
-	+/Q/fIUxrZhY0tkpC9cOfg1qXdt7IG3Fsv+z7I/G6AzyqAwx3L3duyGk7X3NmR5gQ1SJqPlddgm
-	l0PJCmtUXngxJ8Biz+HuwzkQcTkmEHC6OQxEfom6m2ulppQX
-X-Received: by 2002:a05:620a:6190:b0:93b:f402:a204 with SMTP id af79cd13be357-93cf1787c37mr1300849285a.51.1791063112470;
-        Sat, 03 Oct 2026 14:31:52 -0700 (PDT)
-Received: from ryzen.lan ([2601:644:8000:7a86::e34])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93cca2c96f4sm526896985a.43.2026.10.03.14.31.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Oct 2026 14:31:52 -0700 (PDT)
-From: Rosen Penev <rosenp@gmail.com>
-To: linux-serial@vger.kernel.org
-Cc: Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linuxppc-dev@lists.ozlabs.org (open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)),
-	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS)
-Subject: [PATCH v3] serial: hvc: use modern IRQ acquisition API
-Date: Sat,  3 Oct 2026 14:31:48 -0700
-Message-ID: <20261003213148.137206-1-rosenp@gmail.com>
-X-Mailer: git-send-email 2.56.0
+        d=1e100.net; s=20260707; t=1791063170; x=1791667970;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=af+0t3iUGS2/6SKpeL3Rck7lTZ4b3LAtconFKbgLekw=;
+        b=trsa3eRp19qBWGEPCH+lX5F+f7Coa8/k4FvtP94gaUmy0Zm3Zw+inhCPsXF/3KPLNp
+         eJxc4T4ecWUm6Gk8ZnHWyeU5sfnWkCrFU4a+AP6X47dRrV2Dz/XSw4KwbSAMjJvJ6X8G
+         DrFT4oB6FRaXhHeO5+lySrg1kTHNwVDePs7v/2jRqZHTY+vhphu+2qiejHVXYz7WdzNe
+         sTHiGl0pOkKBAG9Fj4y4HmGbZ7cTl4fdyjl4a3cCg5hj3oHWRYLfEer2sIljEy+4zUXm
+         XlFNgD9zXZQ8GWF1jMnUpMxnQmmT92R5iIbrYdKeBn8VAorMsm26+SL2+gd3JFOaBoTL
+         56qQ==
+X-Gm-Message-State: AFq9FYJ6mUC+dBLZuej/DUws3ImJqdzwpohzhEYExdLa7qBSUNm5W+o+
+	HHWBACxYLPvfxQms1tb/gZ2V7LCwDWo7vNTLEBrdEgD5sGrbj/QZPqx9M9FcbZfzUKlhX5MUG4O
+	U7dYlRnSLpklHIm1V4Uw6rT2/UO3Bq4o=
+X-Gm-Gg: AYBFou1e+Kyz8wLMj2MIKDFpVeBPEyO++jTM8yLhU3Zm46YiV6jTtmP1f0Rdv/y7rrh
+	D6hBG1SFuE3eHOV2JovWkaRGYv1DDB8AM3DRRWSQlA4iphNCa3dfpBSAXrLxdRaN6DauPojWxJ8
+	Z+ZhxS7J1/bGK837hNgnGEq5KQt0vOzCxHSt+kuYjwmtW5qcrvYZeDKuORGqsd9t4xcwsYfPTvy
+	FiSfy21oyqslg3FwC8Z9s2TUKz9TLwl+Clr8aJrae51thzZDf+mbyOPFOXxQ4mCnKFZC1T2A9SC
+	bNS3tc9yBSeiHk+YiPs9w0cfkG6p95DXUYI7FIS25YPIF/He81n7Dt1i2a8RWvpEBLldTgIm2GR
+	+JoeSZZLY9hvMa1gGgHuTnY+lqJ9EOLSuEDY4oYMJ6fCeoXo2cih8+tZ5/LzKpd/6mNXtkHfvyr
+	LV3B4atiqcs/l+O/0f/iAtv+EBU1xqqTX6Xe3gELFULghJekadFg+RnAcf6xX2yAxa9w==
+X-Received: by 2002:a05:6402:460a:b0:6ac:62c2:bd35 with SMTP id
+ 4fb4d7f45d1cf-6afad8bd818mr2550666a12.13.1791063169767; Sat, 03 Oct 2026
+ 14:32:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260925181530.52953-1-rosenp@gmail.com> <2026100157-unleash-anime-e2cf@gregkh>
+ <DLTSHPPY40S4.1G7I24UTEFX9C@gmail.com> <2026100212-massager-hardware-db44@gregkh>
+In-Reply-To: <2026100212-massager-hardware-db44@gregkh>
+From: Rosen Penev <rosenp@gmail.com>
+Date: Sat, 3 Oct 2026 14:32:37 -0700
+X-Gm-Features: AclHuK-g7Fqct_KQ4yY2h0ysuh8vENWPp09pevlntRadjvfUbDGiPGme2jGtvE0
+Message-ID: <CAKxU2N9SVNL3747nJT-FQgis1O7iBrWzS3XGfXcyM78mUG7fGA@mail.gmail.com>
+Subject: Re: [PATCH] serial: cpm_uart: use irq variable for platform_get_irq()
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Use platform_get_irq_optional() to be able to handle potential
--EPROBE_DEFER and other errors. Move it earlier to avoid having to call
-kfree() on the global array.
-
-Signed-off-by: Rosen Penev <rosenp@gmail.com>
----
- v3: resend.
- v2: move call earlier to avoid failure to reprobe.
- drivers/tty/hvc/hvc_opal.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
-index 402da9e7c534..fb9a566ca213 100644
---- a/drivers/tty/hvc/hvc_opal.c
-+++ b/drivers/tty/hvc/hvc_opal.c
-@@ -13,7 +13,6 @@
- #include <linux/slab.h>
- #include <linux/console.h>
- #include <linux/of.h>
--#include <linux/of_irq.h>
- #include <linux/platform_device.h>
- #include <linux/export.h>
- #include <linux/interrupt.h>
-@@ -157,8 +156,9 @@ static int hvc_opal_probe(struct platform_device *dev)
- 	struct hvc_struct *hp;
- 	struct hvc_opal_priv *pv;
- 	hv_protocol_t proto;
--	unsigned int termno, irq, boot = 0;
-+	unsigned int termno, boot = 0;
- 	const __be32 *reg;
-+	int irq;
- 
- 	if (of_device_is_compatible(dev->dev.of_node, "ibm,opal-console-raw")) {
- 		proto = HV_PROTOCOL_RAW;
-@@ -176,6 +176,10 @@ static int hvc_opal_probe(struct platform_device *dev)
- 	reg = of_get_property(dev->dev.of_node, "reg", NULL);
- 	termno = reg ? be32_to_cpup(reg) : 0;
- 
-+	irq = platform_get_irq_optional(dev, 0);
-+	if (irq == -EPROBE_DEFER)
-+		return irq;
-+
- 	/* Is it our boot one ? */
- 	if (hvc_opal_privs[termno] == &hvc_opal_boot_priv) {
- 		pv = hvc_opal_privs[termno];
-@@ -209,8 +213,7 @@ static int hvc_opal_probe(struct platform_device *dev)
- 		dev->dev.of_node,
- 		boot ? " (boot console)" : "");
- 
--	irq = irq_of_parse_and_map(dev->dev.of_node, 0);
--	if (!irq) {
-+	if (irq < 0) {
- 		pr_info("hvc%d: No interrupts property, using OPAL event\n",
- 				termno);
- 		irq = opal_event_request(ilog2(OPAL_EVENT_CONSOLE_INPUT));
--- 
-2.56.0
-
+On Thu, Oct 1, 2026 at 10:54=E2=80=AFPM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Oct 01, 2026 at 01:38:15PM -0700, Rosen Penev wrote:
+> > On Thu Oct 1, 2026 at 1:46 AM PDT, Greg Kroah-Hartman wrote:
+> > > On Fri, Sep 25, 2026 at 11:15:30AM -0700, Rosen Penev wrote:
+> > >> struct uart_port has its irq member as an unsigned int, which does n=
+ot
+> > >> work when platform_get_irq() returns an error.
+> > >>
+> > >> Use a local irq variable to handle this and write to struct uart_por=
+t's
+> > >> irq member when platform_get_irq() succeeds. On success, it returns =
+an
+> > >> IRQ >=3D 0, which is representable by unsigned int.
+> > >>
+> > >> Fixes: 831603b3e8aa ("serial: cpm_uart: replace irq_of_parse_and_map=
+ with platform_get_irq")
+> > >> Reported-by: kernel test robot <lkp@intel.com>
+> > >> Closes: https://lore.kernel.org/oe-kbuild-all/202609251916.1XlVHLwd-=
+lkp@intel.com/
+> > >> Signed-off-by: Rosen Penev <rosenp@gmail.com>
+> > >> ---
+> > >>  drivers/tty/serial/cpm_uart.c | 10 ++++++----
+> > >>  1 file changed, 6 insertions(+), 4 deletions(-)
+> > >>
+> > >> diff --git a/drivers/tty/serial/cpm_uart.c b/drivers/tty/serial/cpm_=
+uart.c
+> > >> index 39f54bb7b485..ca0acccd3dd8 100644
+> > >> --- a/drivers/tty/serial/cpm_uart.c
+> > >> +++ b/drivers/tty/serial/cpm_uart.c
+> > >> @@ -1517,6 +1517,7 @@ static int cpm_uart_probe(struct platform_devi=
+ce *ofdev)
+> > >>  {
+> > >>    int index =3D probe_index++;
+> > >>    struct uart_cpm_port *pinfo =3D &cpm_uart_ports[index];
+> > >> +  int irq;
+> > >>    int ret;
+> > >>
+> > >>    pinfo->port.line =3D index;
+> > >> @@ -1524,14 +1525,15 @@ static int cpm_uart_probe(struct platform_de=
+vice *ofdev)
+> > >>    if (index >=3D UART_NR)
+> > >>            return -ENODEV;
+> > >>
+> > >> +  irq =3D platform_get_irq(ofdev, 0);
+> > >> +  if (irq < 0)
+> > >> +          return irq;
+> > >> +
+> > >>    platform_set_drvdata(ofdev, pinfo);
+> > >>
+> > >>    /* initialize the device pointer for the port */
+> > >>    pinfo->port.dev =3D &ofdev->dev;
+> > >> -
+> > >> -  pinfo->port.irq =3D platform_get_irq(ofdev, 0);
+> > >> -  if (pinfo->port.irq < 0)
+> > >> -          return pinfo->port.irq;
+> > >> +  pinfo->port.irq =3D irq;
+> > >
+> > > Why did you move where platform_get_irq() is called?
+> >
+> > So that platform_set_drvdata does not get called on failure.
+>
+> Why does that matter?
+To avoid doing unnecessary work.
