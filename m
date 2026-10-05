@@ -1,113 +1,84 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711F94D9F81;
-	Mon,  5 Oct 2026 17:34:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F3BC395AF6
+	for <linux-serial@vger.kernel.org>; Mon,  5 Oct 2026 20:33:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791221659; cv=none; b=scElPLFzg+3oVz0Ae99EBIQZOtwLSY6tr/lhqQV9+n60TNWy++eaxUajd7lpwA6w4tDrn9MnP+9WyC9i1Wq+FYc+S4Dr9ruXyS26na/cBUfbz9Jd47s4RVr05Z/+xD2/Vlvl8hGthzdzCavU9wktMnxfPatAyMqYocdphyCWYRY=
+	t=1791232421; cv=none; b=Pe9q+Wxww4pRGZ1u72qHA+6RiegDollhX/1sTYEVocBs6DSDP031IGjWKlAnlvQZmGL8Pml9i0satzQ9ca5dBaeN8NVJZJeKG0fxCgOo4GTvcS8RVM4fiBFWWcspkY1TAFD19/3+nA5eI28u/9o8o93wkyvOw8JPTOVCiSszFVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791221659; c=relaxed/simple;
-	bh=pDqwHNafpoLXPhLqCPAiIMzBz6dYwF1PKCI+ZHir8QQ=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=m/8TxOf+mGRsjcSJz9st2w40bGGq12x6sMqTdvXkk3dyuXhWrV9gDd7CjfqGLrFmwzl8FhFxIlM0soyds2xpFjQBZWtoYS5fRAUgL/EhVEYUtEPyqrs+OSKjvhrrMhaR5ja3Z9P8DWFcEDGbENXja4p5XdAlW3KdUikWToFUEFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XAshF4N3; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XAshF4N3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870D51F000FF;
-	Mon,  5 Oct 2026 17:34:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791221657;
-	bh=UbP82uNvwU7DMI342WunqOfPuho8S7H5eb6BJ2lZ9rY=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=XAshF4N3VPRk6/f2ygB8Q7Ep4g4F24+moVNA6B2/YjMOGC5NqhDDTk0daKwITBBC/
-	 26Gugw5/8gqy9OUXVvyt33iIUhZkBo9TtE8RfZbm1vT/JwXUCZZ+HdxuGyrRCo/RtZ
-	 GsAJk9wq5NVjrw9r748GyaPS/eLPhU0CDFS5SgcqaEhNyKJNLbIfcK6wpUqLfM1CwU
-	 xla1hXfICsbJ9y4lLDSLIvWy19T7zlvO16VOR1vTRYN/dssXBpHV77DAIkK+3f84b5
-	 CIhAjNhrIV3bDLIebsw958JaHzuufg4l8AILK4/ieu5ZK6M3ataA56yjLWAdgM8K7A
-	 ohud3dEjM4RFA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: serial: snps-dw-apb-uart: Add
- Allwinner A733
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Vinicius Pedrosa" <vinicius.eduardo.pedrosa@gmail.com>
-Cc: linux-sunxi@lists.linux.dev, devicetree@vger.kernel.org, conor+dt@kernel.org, linux-serial@vger.kernel.org, robh@kernel.org
-In-Reply-To: <20261005172538.398522-3-vinicius.eduardo.pedrosa@gmail.com>
-References: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com>
- <20261005172538.398522-3-vinicius.eduardo.pedrosa@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 05 Oct 2026 17:34:17 +0000
-Message-Id: <20261005173417.870D51F000FF@smtp.kernel.org>
+	s=arc-20240116; t=1791232421; c=relaxed/simple;
+	bh=52CTnc3uRnARV5nkbLsIY8LUR6nE+HCF/SgRemhphcU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=dgGcgPX4cI/G0png5/lj05Jd2NfgxDeKr1vAywRGEZA6caV03dwVsbCmVkek323PXZs1DOaoFRuVbX1tgu2WlQPDklw+0SNqyPEGe5LhuNZXKAzhraYkvR/u9tU5h2uO1LvHLAgIrKA4CTC+dTJQZ0pyeZdX0jlXTRIQjYzhCnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-82412fd5f11so2485844a34.1
+        for <linux-serial@vger.kernel.org>; Mon, 05 Oct 2026 13:33:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791232417; x=1791837217;
+        h=content-type:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=2fB2F7bo85uchWlcxhZroQI+bIw+wYQT/SEYf+f5CuY=;
+        b=VmYSbZs4ZsJdT6MVTu8BWQxh50vgRtHGAHupqhVnrc64JxjYPKkT0EraqN4N1e038V
+         K2wrIDk7+Wo9FTHJpaQHA9WaeCn8xGFXsdQnsg/1v7KE94YOtFyoHaWGas599qNa3LqY
+         XjjgmGGUmHBhD0ObBaiSwwpFSlrgFTFwcGLwyy4wIHgQRjkNEfwN8tsMr0NvI+Z8p8SK
+         5nVUL6M3O4acsranKBNcWjrUUNGR7e3V9tXID5EQI/AcNGdVVwXybdsMIwQWdOf6Wksj
+         Ks+rvuV6uARoD70uGTzDTuJ3/D0Z5y+C9qvfT57AKOLSck2u5yzvPiu+lKgZDrAVVNGD
+         AZzg==
+X-Forwarded-Encrypted: i=1; AKwUvBy668QVf66YCyXlhe0i/ySszrWuhS8DI4HZg2TZjv1e9wZoajr+XVJxYB5HXLiiB9u7CIkvoz+GTFXcPfs=@vger.kernel.org
+X-Gm-Message-State: AFuF++meR7p1xULNRQReazzs0Qk3NxaB/TiB6KuDpXx76g3Woa9guysC
+	c47UBExIqtGnJsTDXtNLMS2UaqPuHdue+OqhiFaDtwB1ShJKw5QX5XKfgyYzkBDK8IuXFNI5vvx
+	zOrZbSuJ0z3sylwQDAkht+vpeEluwROWe2a0b2caEHKcotMbtCIPUtF1iDh0=
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-Received: by 2002:a05:6808:1794:b0:4d6:90f4:48b4 with SMTP id
+ 5614622812f47-4f52b4b09d4mr10059732b6e.54.1791232417331; Mon, 05 Oct 2026
+ 13:33:37 -0700 (PDT)
+Date: Mon, 05 Oct 2026 13:33:37 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ac409a1.ae2c267a.265a6c.0007.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Oct 2026)
+From: syzbot <syzbot+listd6a802733fb39afb71c6@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] dt-bindings: Invalid snps,dw-apb-uart fallback for Allwinner A733
---
+Hello serial maintainers/developers,
 
-commit 51cd638ddbc823709bc6b8874d8c1f36411d5573
-Author: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-dt-bindings: serial: snps-dw-apb-uart: Add Allwinner A733
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 16 issues are still open and 50 have already been fixed.
+There are also 3 low-priority issues.
 
-This commit adds the Allwinner A733 UART compatible string to the DesignWare
-APB UART bindings, specifying "snps,dw-apb-uart" as a fallback. It mentions
-that the baud clock cannot change rate and offset 0xc0 is an RS485 control
-register rather than a DLF register.
+Some of the still happening issues:
 
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.ya=
-ml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 86dc259193112..aa8cab5ba3d33 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -51,6 +51,7 @@ properties:
->            - const: renesas,rzn1-uart
->        - items:
->            - enum:
-> +              - allwinner,sun60i-a733-uart
+Ref Crashes Repro Title
+<1> 196     Yes   possible deadlock in tty_buffer_flush (3)
+                  https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+<2> 4       Yes   KASAN: slab-use-after-free Read in check_tty_count
+                  https://syzkaller.appspot.com/bug?extid=39a2135de1558208d3b3
+<3> 4       Yes   memory leak in gsm_activate_mux
+                  https://syzkaller.appspot.com/bug?extid=b5d1f455d385b2c7da3c
 
-[Severity: High]
-Is it safe to use "snps,dw-apb-uart" as a fallback for the A733?
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-When an OS binds to the generic "snps,dw-apb-uart" fallback, the 8250_dwlib
-driver auto-probes offset 0xc0 (DW_UART_DLF) to detect DLF support:
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
 
-drivers/tty/serial/8250/8250_dwlib.c:dw8250_setup_port() {
-    ...
-    old_dlf =3D dw8250_readl_ext(p, DW_UART_DLF);
-    dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-    ...
-}
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
 
-Because 0xc0 is an active R/W RS485 register on the A733, the auto-probe wi=
-ll
-falsely succeed. The generic driver will then set p->set_divisor =3D
-dw8250_set_divisor, which blindly overwrites the RS485 bits with fractional
-divisor calculations on every baud rate change.
-
-Can this corrupt the RS485 configuration and potentially trigger unintended
-hardware states (such as bus collisions) on the RS485 line?
-
-Furthermore, the generic fallback lacks the DW_UART_QUIRK_SKIP_SET_RATE
-quirk, so it will erroneously attempt to call clk_set_rate() on the bus clo=
-ck
-gate during baud rate changes:
-
-drivers/tty/serial/8250/8250_dw.c:dw8250_set_termios() {
-    ...
-    ret =3D clk_set_rate(d->clk, newrate);
-    ...
-}
-
-Given that the generic fallback driver actively misbehaves on this hardware,
-should the compatible definition omit the fallback string so that unmodified
-kernels do not attempt to drive the A733 incorrectly?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261005172538.3985=
-22-1-vinicius.eduardo.pedrosa@gmail.com?part=3D2
+You may send multiple commands in a single email message.
