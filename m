@@ -1,62 +1,64 @@
-Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
+Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA4294D4869
-	for <linux-serial@vger.kernel.org>; Mon,  5 Oct 2026 17:25:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 401F74DB56E
+	for <linux-serial@vger.kernel.org>; Mon,  5 Oct 2026 17:26:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791221161; cv=none; b=JBsofciGnpVeneqwD2nDhIEh7MOoticU5tP61rLnhYBoPWIMflBQtQnC0CqOs95V9H6G+YV2ZMKWOktef73QM7y73urpG55jiQmWjP0Nw3xeiHJv4iflZFl+ZziUVeylkdR86rzOz945N3xZLhx3yvoOmCmoajLX5MsU3bVq/r0=
+	t=1791221168; cv=none; b=oXSa5ZDLAEjQGYmlo45kMGiyc5GFcxYoCQVdlRohDx3nEm2Ggbrn+FW9lP0OkCJ4q5FPFZ4ceidiqR9KTjrCuFvzUzU0rPzqKihiRFq7GHvbUPCd0KrF8auc6wM3FQE6FFID3Mb1RcI+IpRZSZJHTcnjEH0h60Y+D872KixRaqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791221161; c=relaxed/simple;
-	bh=1TovBGqb+S+doAvi0jZy2UcBL66zBbQNb/CjU/As8cs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N5wjc4DrmC5MX2dQNHgpvTFhkgH/OlWnlhCbfpnwaz/IZhbkc8VAL5n8zCsqp8y5RZxkj0nohU/rITU2q51oP8unrdEZSMbtkHhKxeDT4yOJnyygJeBIz80AD1Vcn5CkrJ3rETPjxZH6Yu5wqXiwD19M5JDt+xydwmiVKzqQQ0I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZEXnOBIr; arc=none smtp.client-ip=74.125.224.47
+	s=arc-20240116; t=1791221168; c=relaxed/simple;
+	bh=0tlu23Wb+fnBd//rKVf7iA12CVAByRfBiHkTg/vcoM8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=O+E7FNUZlURiYz1FJ26/BrhYwpOiscMjLI9Ot4SeHEzfPDnBojCONPW4DKaenj5LFxsqn8XAKcNHTikVdobG87tblS6vE5tg3cHl2gVBHzFjEp58XLfVLpv17634LTW7LREeUNV3Y3OJmEEZyWIPEkI85Kd+j1Jb4mJEEZ1sNRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s4PAApbf; arc=none smtp.client-ip=74.125.224.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZEXnOBIr"
-Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-6714595153cso83599d50.0
-        for <linux-serial@vger.kernel.org>; Mon, 05 Oct 2026 10:25:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s4PAApbf"
+Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-66c70f69d3fso1490593d50.1
+        for <linux-serial@vger.kernel.org>; Mon, 05 Oct 2026 10:26:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791221157; x=1791825957; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=B2r0pjGElK1T1XiGX8hF3bDF5aD44JQI3Axp9h+wJZA=;
-        b=ZEXnOBIrX+z2zkjroVD18Leemtz2cHybKvxWxyASXz9ZCU7Wsb+piwNNY8sQFipH+F
-         Fi9x5Qx6/Dd+EcqBUZbQWG/xqH31DmYwwAfP7zzXHbIthCGhonzP0Au9RcMkWzCbbmQ+
-         +PwZHZjBC//3UkOPRHoym2U2QRM7IMNvsI733bUwqqrFCDIqFKELVKvR/c3RF5kYeJ/7
-         ED81X9IP0UKq2MTTOe5GeGpdOv7nffGGUTbE+kqs4YdaDh278MaGU/Y5BBPswLgbKuzw
-         6ct+qFn4qcPhniQ0UbNzYkWkj1c8A5UCTdzDzsezUYAPe9AJFwjGO6xYh/+I/r7Zo52T
-         cVUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791221157; x=1791825957;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1791221165; x=1791825965; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=B2r0pjGElK1T1XiGX8hF3bDF5aD44JQI3Axp9h+wJZA=;
-        b=ZJEHH2lq3s+bWRGJ5PMW4GHpJVloBLx0E2MrR1NZno8h2Jf3mkN/eziW7dd3hJu74u
-         keUeDWrzW0trkSQMJ6WH1sjY1sUdGciK/y3x1oa2VGWYBi0PjUQQ7f0w6P/Ww5HPtd6E
-         KsSdnhE81UNPJNXR9CXQ14E6cqpy1AbDxpOIqounce1tFTPH64/QaeE0ndWec92xOv6m
-         rrf+JpJQUiQXD98m70jECkFc5w/8GqM5/Gt0Lk3WRz++1IBGS0+X2r+do0ijVjy7+FXD
-         gu1I4ELvsCIpjQho6vHzLqr6mNCVCXpT5YMpwY6/ZvU8zYgEt3koRehC+/8BT0EfKm7H
-         aBnA==
-X-Gm-Message-State: AFuF++mjQU6DYjSs7olii31DPLmNoCHaqhbs0YyGWdV+MIPJj2S1vdmn
-	8djad/AtQT9QBljd/20uKdIDL1OveTSVMai8p7s9C750X0NYEFNY2kjmtsCIY+9B4/4=
-X-Gm-Gg: AYBFou01ZXL3nvUHQkugO7F9PC5/ieUMuwc2h3/2WDgHjV/zkIo1i2Bdj5HhqWnGOrJ
-	J5cdJYNU0wMsBceQV323TH1v07OFNSytIED8H5BjyYta76BdMctS26mQwsin0fdAoYOrkeKv4Il
-	Dn/nNwC4AvYlDk2zM6ge3TF6X0rxjBLzMxUl5kuY9imczapFQqxcq4RE3iwTZ+BXeCOaqxAB/yB
-	qNbIIh7MmGA1l2anAa1Gi1NAq+kiRBNxVhVwLgQCDqBxKQu7EOuqlGRdL0zsEmooKSqP+uoBEbS
-	TiZ5SDgZgwwEi94qKo30kwHRjJE4OLJcEz/yxTl/8rlU++4R+Lo0xakw+PQf6wHBE0Rkqi9NnHx
-	TAPIzWBdJC70HOTG6MwE8AJc7axAwjQfIK9AgMuaMb0AbNmNNZz7lVAPDZWB8de7M+ljoMU7gbr
-	DkSDmgHYeUo+HpumUbbzdOrPBQYHiWrd5UqWYZ3CKljVZT1rXwxcr1S5W+NHrXK61Gofb7pJmXs
-	kpHrOfaC7/eiUN6C0PUfT2L7RnE4u4RcBi4Wala+doP6R+jmnLwiK+J/0NxeywHCnh6pzv+BK69
-	A42Oyw==
-X-Received: by 2002:a05:690e:4142:b0:677:d05a:4800 with SMTP id 956f58d0204a3-677f386139fmr150914d50.25.1791221157435;
-        Mon, 05 Oct 2026 10:25:57 -0700 (PDT)
+        bh=tSg+xg0GISK2TLhhUpUId1buzLRTI6rIxrwQhAMstEk=;
+        b=s4PAApbfY21QX23KWxHio34rm6HlbMcddSM7pYE7WIYfSGuVV06/NIXwg0olbnDk8j
+         EOFOpGW7dos9algdEj0QXMU5C5KDV0Ew1bSrFlDazwT7iVlC/1djNpFGuLOhHuaCSWO5
+         Eei1XEN3/sLhU2+w6j0qcQaIve1+r+G2GsS78bQlMnCy+fv0ycF6yuHIbkTzmUGqw5fG
+         rcQ4/lYWWKMQxwiLnPFR0C5tWwTfqxuzzrp3LpppvL9/Uf+yea4QYtxcmMpRyE2bDcI9
+         KNuELPvSFKuN6Ch6v4vilCq7vdm/Do786DhXLfMaQpIhPvBovw7AFgsBS/e036KfLacu
+         1hPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791221165; x=1791825965;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=tSg+xg0GISK2TLhhUpUId1buzLRTI6rIxrwQhAMstEk=;
+        b=Ho9BdU8SCyeVB4i7ROklalKV/ddgvqUPd36xsArzywfUjPh3ue3SoMlFbr4WkJmitP
+         EFGiG1L/sIpOKpj/Ov7mFR7nUcxplcVDMnx99lYhVOZtKZrYukBLJwOJzxpFEGrGcot+
+         V3xEzkAY23nbJ35s0ihx2rh1on5C9+8lF6Fqfs/P6LISMDrbco8hBwIIvgsybBViu8VF
+         eYcSN3s6MW3iOYSje2Npx50p5m+B3zlR7VOOw4WHxts8PMhkQri3k53IHmU+Wzo/vsjL
+         Q7cTgpd0PoycrMtyDBJDnzmj9XuxYbjxql2ZNtYU23xsHmBCM3+8XS5N70bhNMLpnj73
+         Lejw==
+X-Gm-Message-State: AFq9FYLeWpYHwMGY17vpXKwsOJBKqwKMYFVoXzfIAvx/uZevG5YLE3lK
+	Ygy2sfSkksGTAVrXMsOSYecYOeaqVGGuLnyyY7yVuBm9QLCTyW7ZOr6vm5PEmuC8YUQ=
+X-Gm-Gg: AYBFou1BUOa0djGiTc7fQ1bKPLGEUU9duzOE2QFXL8SHdbtN4GleMf44aubmFlqocE+
+	phfaXuEa+qTDmmAdFgA0HiO46cT89i9QXiW5k2mupP6C8v59pAF7+80rua10qh4p4QJRwQF9Z3g
+	hjiM4SrS7m6aI6rcYA97zkDXcDdR5ycUv6lNPDsRXfxPYAswN4hkwo+Uh2RJQka300HaI8Gs9rR
+	hzSoDiJE8LdarN5HOSVbZuUXBzoY4G2WKtXonAHx19AaLN566svHvMn9bOzf7lwTrtA6+oPuzY1
+	PCD9ng462k3kL4x2rwkLzrOZE9bE3U+Yz6dRpGH5NK1H7Bw3TZNLQs2dZ6amTMZ2ImZ4Ax72it0
+	iSck4AklzK1/ufxsQ+op27Fl7QOV7DrQEAVbf13XoHX2jk1IvMeA8fUeD8QiVx9pusby4wasDV0
+	X6nI+iwcTg/8u11HGqbOeqKXxzEwPF1ZhkIf0C5bvLEpIREJsXozQ4bSWKcaSQ836oGhIkiR5Bg
+	uYYKjytDNPUFYvwfvQadWu4I8cTvqj+APqvYkN7RVwSvuX/nPLgP2+MRfU+Sd9HGvLVLr0NEsMt
+	YZRTyA==
+X-Received: by 2002:a05:690e:4006:b0:676:97e6:d7a9 with SMTP id 956f58d0204a3-677bd338f18mr3368433d50.40.1791221165074;
+        Mon, 05 Oct 2026 10:26:05 -0700 (PDT)
 Received: from MaquinaLab.. ([179.179.237.181])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-677c1b1b585sm3449969d50.5.2026.10.05.10.25.52
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-677c1b1b585sm3449969d50.5.2026.10.05.10.26.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2026 10:25:57 -0700 (PDT)
+        Mon, 05 Oct 2026 10:26:04 -0700 (PDT)
 From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
 To: linux-serial@vger.kernel.org
 Cc: gregkh@linuxfoundation.org,
@@ -69,11 +71,14 @@ Cc: gregkh@linuxfoundation.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-sunxi@lists.linux.dev,
-	Enzo Adriano <enzo.adriano.code@gmail.com>
-Subject: [PATCH 0/3] serial: 8250_dw: Allwinner A733 UART support
-Date: Mon,  5 Oct 2026 14:25:35 -0300
-Message-ID: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com>
+	Enzo Adriano <enzo.adriano.code@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/3] serial: 8250_dw: Keep the BUSY-safe divisor hook when DLF is present
+Date: Mon,  5 Oct 2026 14:25:36 -0300
+Message-ID: <20261005172538.398522-2-vinicius.eduardo.pedrosa@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com>
+References: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -82,42 +87,85 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-I'm bringing up mainline on the Radxa Cubie A7Z (Allwinner A733). The
-console worked until the first termios change from userspace, then
-stopped taking interrupts.
+dw8250_probe() installs dw8250_set_divisor(), which brackets the
+DLAB/DLL/DLH sequence with dw8250_idle_enter()/dw8250_idle_exit() so that
+a BUSY UART cannot drop the divisor LCR write. dw8250_setup_port() runs
+afterwards and replaces that hook with the dwlib one whenever it detects
+a DLF register. The dwlib hook programs the divisor through
+serial8250_do_set_divisor() without entering idle.
 
-Patch 1 fixes that in the generic driver: with a DLF register present,
-dw8250_setup_port() replaces the BUSY-safe divisor hook, and the LCR
-retry path then restores IER into DLH. It's tagged for stable.
+When termios changes while the UART is transmitting, the LCR|DLAB write
+is ignored and dw8250_check_lcr() retries it between
+dw8250_idle_enter() and dw8250_idle_exit(). dw8250_idle_exit() restores
+IER while DLAB is still set, so the value lands in DLH. The real IER
+keeps the zero written by dw8250_idle_enter(), and the port gets no
+further TX or RX interrupts while up->ier says they're enabled.
 
-Patches 2-3 add an A733 compatible with two quirks: no clk_set_rate()
-around termios (the baud clock is a fixed bus gate), and no DLF probe
-(offset 0xc0 is an RS485 control register).
+Program DLF from dw8250_set_divisor() inside the idle section and keep
+that hook after dw8250_setup_port().
 
-Tested on a Cubie A7Z, with local DT and clock changes that aren't part
-of this series. The console worked in both directions and a termios
-stress loop ran without stalls or corrupted bytes. The no-DLF check in
-patch 3 was reworked after that run (an if block in place of a goto),
-and this exact revision hasn't been booted yet.
+Observed on an Allwinner A733 (Radxa Cubie A7Z): the first interactive
+tcsetattr() during console output left hardware IER at 0 and up->ier at
+0x07. The shell never printed its prompt or read input. With this change
+alone the same boot reached the prompt and echoed input, and hardware
+IER matched up->ier afterwards.
 
-The A733 DTSI isn't in linux-next yet. Enzo Adriano's posted version
-uses plain "snps,dw-apb-uart" for uart0, so it would need the new
-compatible once this lands.
+Fixes: a7b9ce39fbe4 ("serial: 8250_dw: Ensure BUSY is deasserted")
+Cc: stable@vger.kernel.org
+Signed-off-by: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+---
+The A733 has no real DLF. Offset 0xc0 is an RS485 control register that
+dw8250_setup_port() mistakes for one (patch 3), which is how this path
+was reached. The new DLF write hasn't been tested on a UART with a real
+DLF register.
 
-Based on tty-next.
+ drivers/tty/serial/8250/8250_dw.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Vinicius Pedrosa (3):
-  serial: 8250_dw: Keep the BUSY-safe divisor hook when DLF is present
-  dt-bindings: serial: snps-dw-apb-uart: Add Allwinner A733
-  serial: 8250_dw: Add Allwinner A733 UART
-
- .../bindings/serial/snps-dw-apb-uart.yaml     |  1 +
- drivers/tty/serial/8250/8250_dw.c             | 25 ++++++++++++++++++-
- drivers/tty/serial/8250/8250_dwlib.c          | 22 ++++++++--------
- drivers/tty/serial/8250/8250_dwlib.h          |  1 +
- 4 files changed, 38 insertions(+), 11 deletions(-)
-
-
-base-commit: 36844ea19656fb41278799ef3d5cd52120d89149
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 0ab558230370..ba414306c98a 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -189,6 +189,7 @@ static int dw8250_idle_enter(struct uart_port *p)
+ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+ 			       unsigned int quot, unsigned int quot_frac)
+ {
++	struct dw8250_data *d = to_dw8250_data(p->private_data);
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 	int ret;
+ 
+@@ -196,6 +197,9 @@ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+ 	if (ret < 0)
+ 		return;
+ 
++	if (d->data.dlf_size)
++		dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
++
+ 	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
+ 	if (!(serial_port_in(p, UART_LCR) & UART_LCR_DLAB))
+ 		goto idle_failed;
+@@ -650,7 +654,6 @@ static int dw8250_probe(struct platform_device *pdev)
+ 
+ 	p->set_ldisc	= dw8250_set_ldisc;
+ 	p->set_termios	= dw8250_set_termios;
+-	p->set_divisor	= dw8250_set_divisor;
+ 
+ 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+@@ -767,6 +770,13 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	if (!data->skip_autocfg)
+ 		dw8250_setup_port(p);
+ 
++	/*
++	 * dw8250_setup_port() installs the library divisor hook when it finds
++	 * DLF. Keep the BUSY-safe hook instead: it also programs DLF, and it
++	 * must own DLAB so that a BUSY UART never drops the divisor LCR write.
++	 */
++	p->set_divisor = dw8250_set_divisor;
++
+ 	/* If we have a valid fifosize, try hooking up DMA */
+ 	if (p->fifosize) {
+ 		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
 -- 
 2.43.0
+
