@@ -1,36 +1,36 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11022080.outbound.protection.outlook.com [52.101.66.80])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021074.outbound.protection.outlook.com [40.107.130.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E30548E0FF;
-	Mon,  5 Oct 2026 13:21:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CD7D48820D;
+	Mon,  5 Oct 2026 13:21:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.74
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791206496; cv=fail; b=ZSf8rlDlDWxExLltv36Q58zt7jNxYQqzu9imd5hA2MicuUo4QH3lJluudsHgsqMA85tGb77Pp5b2FdDXxLkdvlFUUlCjQ5w0MU19MUbqgA4nuwPM8WBGgz2Jaiahr8UcO+mNcVxBmLw675J0k1X+8tHlAp3lSgDlHgcv86fl2t0=
+	t=1791206508; cv=fail; b=ugEu2PYZ9E1C+JpE8mGPRw04h64rpFVVn8eyNc1KedCwHoADjGkPfmo1euLlOsgI6oUUfh3Og4V2kaseRSsXWWkNu5Y2CVrkjWJLH2SVmTSq1LQ196eL6/SYYitGlTIaUNZ0a6swqyqnWdFYctA1nVSmOWSB+W50OWEFCGwF1Wc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791206496; c=relaxed/simple;
-	bh=lQORomXZKoGwUpS0uYWGQc8ez7WuXEQubVxg+21ik5w=;
+	s=arc-20240116; t=1791206508; c=relaxed/simple;
+	bh=ZN1PzGRg7AKs6qAUSYGCsyVCs7kJavpDmjjDn9/TIFc=;
 	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=o6TLi8LISoYz1WqNQQZSpfLDAL9kzS5cYBgM9ACaa50qJTXlsTjMl3+xaCGaK+eugPyZDsmxTDGxqk6YPeSFbuVTv4BxgQpExWF07hIoFQbdSO6EJK6thBt1BgmXv0jiiKSXqy+arBu0Uq+qgRQVmRZof5Cmym1ka7FEJfvpAdY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=SZaoXn+9; arc=fail smtp.client-ip=52.101.66.80
+	 To:Cc:MIME-Version; b=G3zHoYR/W/98VLG3u5JEcPfjFsOfH5T4HQ2FjMWNvj6quiR7ae9JVbZao06cj2j9wKmGsjHIYPz9bXbQ2x8uvfIQqCa0cRufXNusAbZ8Nc58AhFJ9e2lhVRZUjnnVkfxuMwwg07wNex9QwN4sep113g6/WIedIhq0EDNtCAQM14=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=NaZ8h3sP; arc=fail smtp.client-ip=40.107.130.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="SZaoXn+9"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="NaZ8h3sP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=LyURQdFHd1zB4Ork0fjEmxRome/hA47CYDFPa6D7/SZhUWQA/M3b4AQy8rgoGJo0l6tDblesRLPU/DCGdJ4PA3Q2IrLo0wkHKB5pdA8fOSMFVclAwilL72tAyH9GT0RItN5AfiM0mzWrtrXwTv3masaaFzpxwpBoMn7qWkQ/7CoNm8jKq/LHkTOdhke+0X6H3or5zFk4bTSacihl+ZANcqj3TNzmK9JRfMFPcx8qBKSgdBm4WSoFPB3p6hv/Yt4BS1qaqcjwDFphDHaCqZ8BEZtB71eOOog0Hfr3IkjB26G5pc5dqFIw6oItEIBEwzwPqLnI1//+YDFs37/YGy2Y3g==
+ b=RgTAHrhDG4IM2a1jPsIscDLy/MyY7eIJjPkw1arlmu94ZcwCjubvf8tDrXEtLnYOxFDkeVzzNyOsq/dKP7CGgenh64doio8EHFxtCSCsf1hKX+vXvSpqbYYcBpfMYIFduKmvdt2xWslK4tF5w6vrWXmM70p53GaVS517L7SOOTfgbtU7my/FJqE8H3W91JA0H1eQmVjyKxp+vIWSve1upB+HQXEDPoDV9YmdRJI5p9fbSx7d5InpKV578rxsK2RpmU1NquHg1e1Bc1uSL10resMQHhDfzERxuGp4ohOWCkihyu806laXZVOeWmMQ+MZT49nMAGzWE8My4wFPLk0BiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vi8U9/Ow7qoyKIi4hrdBG2x7DbfukznxOlAaJQJDUis=;
- b=SREuqVjN9KrwTk7thCB/XP1WrT0LzKYp3L8vfghvbjNh39pQEWMaI5f+/rwG2ILnfNY9gaGFk9Y4cBPySPuJi/3gSw+PjAjuktfo+kAKtKNwdV5Wsd6J/m9qvF2b1ZeriTqTqsp0pdNElruLbYaTX9a7GGHCO7phAuxIZQZ6jWbokRm/E9aMW6nL7hLBzsmIk0+7hBFEO/QaIfCsrZpHkFoze4cMnO1AzeOiPCsEQpLmUe1kzThguSWIYW5mxaARPQxTYxsmcHqBAWpfFDWeDhORSJZKaO5tg+YsFquuUSDDO/sOGTfYOmhUXsqzlB5Bonqade7v/ErGLJW5T+/dsg==
+ bh=EX0Ou+P1DrT2pLKDmiAUxivCnZDDFRA3rjsStmQyUxs=;
+ b=sh2O+DByIYpViRsFQG3urWTE12CpqDFLzFqQXNsq7IZ+KPsfVcITVOAmA19gqBZ1YF1aNK5OEI9oYKN3gDLMWPa66L+SUS4TVDsn2SUTlK729+J40tvRvpwDxtfa/LBb+PWVsD+6K2wAasH6amVw+sG/MnjwIwb7bySxu9+qlH5G3MnuEbKvJ9NioRWlfSm2+UHHlG2Z35jiAHauRcNaDljimFFhLOXpP5wBF0mF/hqWBS15ZeNqFp/pca7mcufQsOd6OgAxJqZV3KXmyir5Qlcu+UpcLv/eAYzkd+w06s5Ng6a086YhAgwY8X2idHL31d6tPI98fa2NZzODHOHMcw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
  dkim=pass header.d=vaisala.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vi8U9/Ow7qoyKIi4hrdBG2x7DbfukznxOlAaJQJDUis=;
- b=SZaoXn+9NUgPEXsTC8+yrybr18Z55C5amei20/Onc2izqDBzgKb69p8z0vvKUkmVET5Ogmv1NDVHNl3AH/O66B+86xzF9c29UucWY8asB5L0uxTQmxGUic0G9wLcuTLbxg29PiyPAHZUkThfP9IGlDzAt0ylldqbG7W/IurvQBQdk+XeIbVqOTVNMy/hhlPalgfcc4Fa6y4EpsS05Crl/CmDTmW0HLCtit66dKGXKLHElWXOC+0DMmtUjh2mUoTArqR16eFO+TOJRRtSJZ0pEhX3nHsoZysIyU0PFS5H9uuwrK5Efcq02su9eX81hkkOLM3oXQi6pDbXgFTQNL8CMQ==
+ bh=EX0Ou+P1DrT2pLKDmiAUxivCnZDDFRA3rjsStmQyUxs=;
+ b=NaZ8h3sP2+KdmRGc+W5hxsPn0YzpyYE3PF2RXO/oxqHkYeGjYw3v8KvvHCiJ94QKA0Lg7m6gRmdqdqR7QCD5fO8P3YvYALiL0B/qiusniUAtxz3skHcvG+2miQX1PoKFeHr/rTkduJiuWjXvm4IpWAxyFqU3bxSFTjNl8vzOQJ68mSc+JbZ/NlZKYmq60f5XSvxvHw1dO97y8fef8jXUZBXwECX01V3Ug7mBqnv6uTt9/yLMTMkpxUZ0+UL+2Jb5k+aTFhchM4QTb4wgCOhwfXWZWFL0QQawKi9mcqGG4RRJmnBNbvFeq2ZgFRVaeCP9Cyg5vbJazOFMmaIjzmWABA==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=vaisala.com;
 Received: from AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
@@ -43,12 +43,12 @@ Received: from AM9PR06MB7907.eurprd06.prod.outlook.com
  ([fe80::a597:33a7:d4e2:1b17%4]) with mapi id 15.21.0472.016; Mon, 5 Oct 2026
  13:20:00 +0000
 From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Date: Mon, 05 Oct 2026 13:19:39 +0000
-Subject: [PATCH v7 8/9] serial: max310x: drive RTS in software when
- hardware delays are too short
+Date: Mon, 05 Oct 2026 13:19:40 +0000
+Subject: [PATCH v7 9/9] serial: max310x: don't transmit while an RS485
+ reconfigure is pending
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261005-max310x-rs485-sw-delay-v7-8-6ae392eca08c@vaisala.com>
+Message-Id: <20261005-max310x-rs485-sw-delay-v7-9-6ae392eca08c@vaisala.com>
 References: <20261005-max310x-rs485-sw-delay-v7-0-6ae392eca08c@vaisala.com>
 In-Reply-To: <20261005-max310x-rs485-sw-delay-v7-0-6ae392eca08c@vaisala.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -58,11 +58,11 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  Tapio Reijonen <tapio.reijonen@kolumbus.fi>, 
  Tapio Reijonen <tapio.reijonen@vaisala.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791206394; l=32271;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791206394; l=6588;
  i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
- bh=lQORomXZKoGwUpS0uYWGQc8ez7WuXEQubVxg+21ik5w=;
- b=GVbipNxMTghjPxmQyPWOI/1T8pu13mKE0CcK4uLUG3VYdbmw8ou05aSpR4VPeYX+I5RFEgpcP
- VEYWyDXB8wnDbQjV09NFmKh+hVoJ08v2Re/NL7IEj2b+GvHhEcrf3Ms
+ bh=ZN1PzGRg7AKs6qAUSYGCsyVCs7kJavpDmjjDn9/TIFc=;
+ b=Hsa0XLwTlTszlS9bbV6+sR1W4rkY6DTPQUeOn0qR8lR3yE3YVs1CmyMa2gOViGAgoAwuWD3A1
+ XoqOJZTD3+pDbVfVOT81e6uwLZ1GwxdZdq1DRAYwXMUaSv8PITbOAA2
 X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
  pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
 X-ClientProxiedBy: GV3P280CA0101.SWEP280.PROD.OUTLOOK.COM
@@ -76,855 +76,222 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR06MB7907:EE_|DU4PR06MB10187:EE_
-X-MS-Office365-Filtering-Correlation-Id: 09092ecb-f089-465f-4514-08df22e35b8b
+X-MS-Office365-Filtering-Correlation-Id: ba0ac49d-a9ea-4a42-8d10-08df22e35bfa
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|52116014|22082099003|18002099003|38350700014|6133799003|10067099003|3023799007|260925022911599003|260925021311599003|260925021911599003|56012099006|5023799004|11063799006;
+	BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|52116014|22082099003|18002099003|38350700014|6133799003|10067099003|56012099006|5023799004|11063799006;
 X-Microsoft-Antispam-Message-Info:
-	DbrY9bUqk4gWIoCFk5QwFIUSKVdoUMJvCRLRfscwRUoljR+DNu3Zxx/syhrn+GEWsAib0ut1hri9Ztp2QA/bVD59Rv2iuo4G4gkul/JCV3FgwPFEjk/fK/Br/79COdYsD3NsYbtVjiFpJIQdQ9Jjn4agDbJoz6DPYDUwKOQgXJL6iAXgzBAcWF0NRjchqbc669/D8xlHnd18BKPkq1YXyOL4Z+87CVMcQnMXq/09nMbsPLFgqOjSN/DbSaZvRgA8AQlLPW2nRdUVsKHp/hHZTHSvYhly+L1OnhXY9bb9/kGQd9smW1YUd26aINtIVTD8WBj4vtontXuTjn1o4aD5pMfh/+Lo+TpIMfZQSZ3N7Y8vYE+u21ANU7LgJhHEeLQOAZSqzD4gezg6C+MUIOmPWCIOvO++XJ/YACrMwIojHFFc3R172xCmXZ2z0SMrMXN3GgWCpRYWwR95xSKmpzwBZKDuD6FjfYS/6v35lavzAO/MbtFGVtVehWGcz4/mjOHIyHEcGH1tRUJRZxdx4a57o8kM7g98zoRM/SG+LrWy885eWGNcqyy5hdQg2OYL0ffUoZcF6pEcukF01/ywFXP9Z1tzNdetu0/zMnGHttZD5BG632zHZYGEqpJi9POAZLk4uaqRToPBhDh9lc/ORh9ZGmALKI0H8CjYrngaSyQopQfkQLHy/PDiR8274fkNEAvPfPzx+ASK6usYUaFu3oNJT53QaOTrASSnf+Eoj5R0rEw=
+	PN4C/3Yp7I9HPz7KgUyFAT9325+s/ORqT9ismJBOZowMh9YD6Yh+edAh3tgF0GlDBsk0e5sTo/L22JHjvQ7ZHvZ59J6Squ9GX9jom/1UFxvH1U4DQtlrdPiw2XkCEU9pTIgQ6UpukLwTLZky/gdud+ZEmKgy7isXAg+0hsipTAUsuJSIE4l9vwos17d7Fa1PEFyeUHHu2PmbqsdoAPNaS1UJE+kpRncQFD7JX/wHwlnZhzKWt+cdFkVkKXXssXDM0J/QYQbVcQVts8SFTpX4LnztyDcgrVTn5yj79Rf5G4rFnPJ0eeF/ss7E4DfR+SEsEJaA3V0oTrRAjyK+BhNJG6zOGc4EUaDXYl92pkDRYetZ/n0UWHF7tiPn4YxoPN+kDo8uo3FHebZVWncPle5epV7LJZLNz0XK+gzIBH4VbAjiJPEiCIb138QEm+oqo0mD85LsqJgjrlSJRqL4Uk2Dgz+8DfE5d3ToRzIh+DryVpscIIdOmxi0a+Asrbm5HzMf7AXh49ixxPPLlG5RhO4QIHghpO1ucxEkbk5ALM2zmmVBPuhTwS0JV0mEpR0os4m+K/BvPWjGVNSpnilgC3mFGh2r7KtLYRWfPjbdGIvnJY7Q8MxP7hebetazOPAU9KgHRmcIoz6D0WW0w71bspbTkLeZlITjkaYGA2TIl91fkA20BT+wUFxoAQsRrKg7XJUIPZJBRISFhO0HBbfS21xkALLxJf12gfSslTo6dCnzEcc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(52116014)(22082099003)(18002099003)(38350700014)(6133799003)(10067099003)(3023799007)(260925022911599003)(260925021311599003)(260925021911599003)(56012099006)(5023799004)(11063799006);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(52116014)(22082099003)(18002099003)(38350700014)(6133799003)(10067099003)(56012099006)(5023799004)(11063799006);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?c0tvV2lJTUo3T3kvZ2c1RXBEaEY2eGp5RE9yZ2g1WlV0VlVqMWFhc2loKzI3?=
- =?utf-8?B?emllSDBuU0xmQ1M1R2EzbVF2TlgvTlZnYzIyNnc0WU9pVkFJMG8rZnhkZ0Zu?=
- =?utf-8?B?cHpXQ0VuZHEwOURubFdYUXp5elhOVjlUVEZPb0VPTHh0RUZYMmRqMXVvMk9S?=
- =?utf-8?B?V2hsKy80SGUwSjhTM1VuR3NhZVYvRDBXWlFwT0wyejRSYy9tb3J4WXdjNTgw?=
- =?utf-8?B?Q00yc3p2aUc2RVZTZDU2K0ZvWnRDYXlEOU5qci93UFZ1UmI3MUlFUzdsdzEy?=
- =?utf-8?B?YnlLSGNZb1NFcGVka0VwN2RRbnpxcmFhUU42MDhjWUZrWkkraEQ4bHZDbkl6?=
- =?utf-8?B?Vmh2alhOOXBkaCtML0R0Z3VtUVhaTzB5eGl4VTVjM1lOUkRrTThUdllPT0RV?=
- =?utf-8?B?bTg1c05UU2J3NFZHZDJhR1YwUElTcUtMcnBQVTdDbFB4Uk56VXFVM01BY1dH?=
- =?utf-8?B?eWRIa3U3dXJTZ1VFTDRmbitQOU9pNGxGNWdLNFkrRTgrdTBNc1IrVWpUd2Jk?=
- =?utf-8?B?bFdiWnlmdk44RFpUcHRaZ1Z0SUdNd0pUSWJUWnZxRHlQNWdPeFNUTmYvR1Jz?=
- =?utf-8?B?clhwNGVmUzdpMnVRK1JlS2xTNytmL0dDZWtWVlBiVlBLSndRWmFYSzczaU9F?=
- =?utf-8?B?ZjQ1WElpczlzZmY1OGI3OExpT0xVditXTDJEY1JlS3Q5enNMcXdnQUIvM0JO?=
- =?utf-8?B?TkpkUHFJQURVbDUrbE5TTFFwc2RWUHprTXR2TmhBd2QyNXJtMUNqWnlUYytp?=
- =?utf-8?B?OGpRR1lKV1JjWVF5K2hxdUc0OGY3aFc4T2RvbENpTFNjak8wRXZKZVNwTGF4?=
- =?utf-8?B?MFpCZVpLTVgxaFB3MVo5ME8xVFB3YWRFbCt6OVBwbUJnblg3ZmgzTnlEYTVJ?=
- =?utf-8?B?OCtib3oxN3hlU29Ic3lVbys3UjBQWGpIRmd4QjdjZkZJeWNDZExkaWFzdTcz?=
- =?utf-8?B?Y2VUVUxQZEFmd2lVQW1aRHRwdEJTclpBTVd4cTRGMGRxbFM0NzZQYzlVYWt0?=
- =?utf-8?B?M1dnTHV5b2JtMFFSRmFDYkhxbW5ueXV2cFJVQlJIcmdXNnBLZ2hlSW9XNUpj?=
- =?utf-8?B?NlVDalVOalJyM0h0d0FIalVYRVo3TWNLanFaNnZjaXpXd2Q3Z0tOUW9hc3lS?=
- =?utf-8?B?VmhHZ1dHZDZVWUJhU1JMT1FuWTRPenB5bTk5cWIyTlRGZk4rYmtNVTc5NG9L?=
- =?utf-8?B?YjBZcjE2MG82N0VuTGNCVXlwODhtSC9lQzBvUEUzdkJ2ajBJc1BjMm9QZndQ?=
- =?utf-8?B?UXA2OXdZYmp5MnJBUEQvd00zS29aRllydlVHTXg1OVByOEVJNzdyNnNGTmtL?=
- =?utf-8?B?aE04cHlRclk3Q05LRTNQY1RNZU1wUndBbnI2T21IN0s4bXZMZlZuZ1J5TnpH?=
- =?utf-8?B?NEhyVzFuK1ZHWFJFL1VtOS93aU1RNmVXUEhxNExnaldybmpveHJadVZMMW1n?=
- =?utf-8?B?cjVLSEpHWmdpYlR5NXRhRW1keHIyWXZkVE5wSVFHZ05Ma21FdnREZUxHR0gz?=
- =?utf-8?B?em5XRVExM0lDYmhOMEEwNi93eWRPTUt1ME1uV1RIdEFGejFON0hZNnQ4Nk9p?=
- =?utf-8?B?aGVYYnZlVVBCWjUwWEFkRUZRMW9YMzJzb2Mrd3I4WHQ4YjBYMmJCc0RnSDZr?=
- =?utf-8?B?aHpCMlcvWVNqSVBvYldBNWEvazh2UW43ZjZKQ0dRQXlnaGhobEZlU2dQOENm?=
- =?utf-8?B?QnZoVDZ3RGdIQjVVZ0xyUWxjc0dMWUpoMUNxTzhvWlY0TUdTb1BCWVFpeDBI?=
- =?utf-8?B?bnNCWU5Uby9IeUo2QW8yeDVIS3I0RFR5dGJBQ3gwTGVMK3YwVW5LZGJEem1I?=
- =?utf-8?B?V0pyNTBrVWhseGlCL1ZuT0JVT2FFT1kvZ0VNeEgxYVl1Y01Ba3JNSm41aWti?=
- =?utf-8?B?dGFDekxHckhsam1QODdlbFZacjFpRWE0bytIdTczNThrUXM2ODQ1MVNNblpk?=
- =?utf-8?B?S0VMRXlMSjlodXJFSGdsaHJCUnU2dEwwMGRkb3EzVS96TG1qcjJKaUk4eEM1?=
- =?utf-8?B?WEdId3pOejBJK3FudWlGUVhZSkVnNmw2d2R5a250cElSM3JYTmZDeVJzeTNp?=
- =?utf-8?B?dndRSGFlT1NqV3Jxa3BKQXBIdHViQ0JPWmx3ejhLYjkwZStPVVFVTXBsNjFQ?=
- =?utf-8?B?MllzZzUzMkJKUk1xTFg1dTczeVNuckN6SStoUWJZN3BNSmlQV2N1K1JsOHJk?=
- =?utf-8?B?VmlNK3dGa2Z0azUwR2QzVGZuSkhpTHJpUnhGQTJhMWRMWWUxbVRDYzc1N3dG?=
- =?utf-8?B?RmFpOVNQZUpkU2oxRXlkdUxSOWFrMWdqL0NLMmNFNDN2cjBwYy9qcThoSWlX?=
- =?utf-8?B?VjI1RUs4VlI3Nk01V0VtWExzN00zeE1UdjBzbnhtS3JzSkxLei9FeWgwYUtX?=
- =?utf-8?Q?/BjzpPoNpgdHyUD4=3D?=
+	=?utf-8?B?dmRmWm9NdTRENkpGOEdvRk9POUgvdDB5alVpTFdad1B4NlQyb0JiamZxQ2Np?=
+ =?utf-8?B?MG53S2l3NXhjWTRTY0hzS0h3OTI0S0psOGNhMG9uOWtlUTN2ak1BMERmRWhV?=
+ =?utf-8?B?eTFtUy85eHpGZnprQUhDSU5EbXBuaEtha2FCR3RKNXYwZGRvL2VIejdMKzRY?=
+ =?utf-8?B?Z0Y2YnNHZStXN2ZEc0c2bnIxNnA2VE1HYys1T3lIOVAwL3BMdHA2cVJndTVR?=
+ =?utf-8?B?ZmxUUzdVRWQyTFRnaW1vcnNDZFdXaXJ3MzlNODhIUVNaRm1oVmFmWkx5WkQ2?=
+ =?utf-8?B?a0NyTUM0c2dlWXdOd2pnQ1NObDByOWNJSHBzRTRNS0NibzU4cGhQbFB5SEc2?=
+ =?utf-8?B?ekY2N1BPQ0FpeWd3S2RXUGJZMFFIdFJUdDZoT1lVRE1haUI2dkM1VkF6aktt?=
+ =?utf-8?B?L0RMdUtpU0NjY0gwQy9GL2VFZm9lNzhXeGVPWWxUSHZZSWJnM3JOS0xmUlhq?=
+ =?utf-8?B?RmJYbzQxOTBERWg0dDN0NUtaS0lYbW8rNi9OSTNLSnBtN2VRWDJCbjUydzZY?=
+ =?utf-8?B?aDd3UklZYVRyVVR3TVFNVzlYNWJxVXo1dXdYYkl2c3NCTStNWUVWRnFjWDhT?=
+ =?utf-8?B?Z3BZb0s4SWpQMnYwTlo2OXRCZzA2cXlxSzNXeUErZFBhOHlDZ2kvODlJdXZT?=
+ =?utf-8?B?MlhMUHlqVkJMeUdhWkVvU0J4d241dkJQYTRZd0FIYlkrL2xneXBBbGNmOVMw?=
+ =?utf-8?B?d1B0WE9XZE04WDdNdXlTRW1ZaWFDRU9vcllUK1N0dXhwR3p6Mm5CaVJobCtE?=
+ =?utf-8?B?SzlOTkNDdzd4L05lYU0vVXlRbkErNEo2dlhqRVZsU1lJNG5idTBVdmludTRC?=
+ =?utf-8?B?MThJK29lSmFkY2luUkorT3Q2dEQ5SzF3VDdZSUsrelJhSW5PQTMrZ0R6bENz?=
+ =?utf-8?B?YmFHdW1EYWx6SWJSUWhSTnIyQldZdklqa0FyYnY5Y1RJM0RmVStWbTh4bUlu?=
+ =?utf-8?B?ekw2S1A2OHBBVkpNczR0bEdYUnpwVmsyQzlzSjg4SG1pT3BmUERiZFQ3OXRB?=
+ =?utf-8?B?L3dUNSszd0lYc1ZQM2JKdzNnRmlDRmVUdzU4SExldkY1bkg1NDBHU3pBZTdj?=
+ =?utf-8?B?QUxPWUFXK1hEdkJKRzhXbkZNS0paRVQzQ0R6S0hNcm51TWV2bk5takZnMnYr?=
+ =?utf-8?B?K3BQK0FiZ296R3FybXU0Z1UzcC9OVm5HRi9iQjJoOFdZTVp6enNrRVpYWFlT?=
+ =?utf-8?B?bERWT245djBKTGJLNUdqRE1USXJMY0RBVzdmNVpaVlA3TG44azU3aFJUSnB5?=
+ =?utf-8?B?VkRvais2MmRrYUFhSDd5enpsSFJWdk1xMEc3MlNtTHgvNzdEeExEcm91eCsy?=
+ =?utf-8?B?clNvMExCMkZhd0RQeWp2SlkxMG9Cc1BCbEZPZVVxdEN1ZVhDb05qdnFWZjR1?=
+ =?utf-8?B?TTQ5SXF4eEpaNEI4YU1Zb1NHeGcyM3hqUWx2cURMWVJjbUNYMU1NaWg0bHJB?=
+ =?utf-8?B?YkN4WnJaRFVWNDVRcXNBTGJJS0lURGRkTXV5bzdNOVI1VU1xNitrQUFhZkUy?=
+ =?utf-8?B?QlpXbm9QYmJSM1NCeG83VEdYK0ZmeGErYzc1T3dDajMvUEFhUjVyWWtOQjZR?=
+ =?utf-8?B?aEpkRnVrNTdETmtLVWRUTTl4MlYvKzZTaTVEenNLQjNtZmI2VmIxcS83clFK?=
+ =?utf-8?B?UkZ5MUFGOFJRWGt3Wmt3QThRTkhMQVI0ZXB4L2xIZlhLNnBnL3E5QXBsZHA2?=
+ =?utf-8?B?KzlKU2V2cU5XUmNtNGdBbWR5OGFrKy9HRDBRcnZPMUY0TGxuQ09aZGhOLzkw?=
+ =?utf-8?B?a0pqVXphcU5iOTVRY0ZnZFRUYnd3Q1VYenFNUVo0NVJ0VTFuQkFhZ3QxYjJE?=
+ =?utf-8?B?U2dvcTIyUW41aGNJcXZscXBtNnBlU01hU3FCa1h6Q3JRUGUrZ1Z0Y21IWmJ3?=
+ =?utf-8?B?aUozUEErcXVzSjkzR1FsMitiSERuYVFDQWxZczVHYlM5ejlSYlhML0REc2tk?=
+ =?utf-8?B?UndvNE9wZGpIL0p0NVE0S3VXMnZEcnA1YlRZUGJTakY2bnd5ZGdEYzVCblQr?=
+ =?utf-8?B?UlFEMU5wdUJTc0xld3RUUnpZTDRsbDJhSmhtRmtXK2dCRitqN0VhakZ3UkZI?=
+ =?utf-8?B?VkNlbUlEUkNhRGIrNnl5REhhWjUvWlJoanRrV3pqWUJKM0k5UjdwREswekFr?=
+ =?utf-8?B?NU5XWDhtdHRHVlAvanB0dWZFek4xajRZMjlXeU1FMkJDZEtyREI3cWY3Y1Q4?=
+ =?utf-8?B?OFkrZ2ZvbWE5bHhKcDhDc3NFSzFSblhHK3MxTmVmSkRxU2M1UWNIdTR2ME5T?=
+ =?utf-8?B?Sm9ISDUwM2VIOUx0eTZkUTZvWXluL1JQSy9HaVdKWTJxUFpjNVE1WFVZUzE5?=
+ =?utf-8?B?NnNvUWFxZnBidDNoZXUzR1EzZHdjNlZwdWt0Uk5UZzUrWTdSd2lOS2ZYVzJh?=
+ =?utf-8?Q?bDuL2Pk6++ZkFKjw=3D?=
 X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09092ecb-f089-465f-4514-08df22e35b8b
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba0ac49d-a9ea-4a42-8d10-08df22e35bfa
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR06MB7907.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 13:20:00.0553
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 13:20:00.7141
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EAXFBOtZ9vmTh0yDTfmCtziMKVoFyhHXlGFhWsyGS79w1GrLFQEp9G5YVJTEYg8PWh/KpY9tl32xz+9my8eQujKSaoMKujRhk9kFKUoNtiA=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6bhxOh3ikTXWNhIcYU4fhwUFa/tPnV3ZU3u8TUbmox+vnshOPtMjqQgkTmudLxaSp4VrskYFsjzaw32EI1rhMAlDiCRRrtgIa/lFb+ooqBk=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR06MB10187
 
-The chip's auto-RTS path can express at most 15 bit-times of RTS setup
-and hold delay - a fraction of a millisecond at typical baud rates -
-while the uapi expresses the delays in milliseconds up to the UART
-core's RS485_MAX_RTS_DELAY. Requests beyond the field were rejected
-with -ERANGE, which makes the core silently wipe port->rs485 and
-disable RS485; a device tree asking for a 20 ms setup delay ends up
-with no RS485 at all and an unusable bus.
+TIOCSRS485 applies its register changes asynchronously: rs485_config()
+stores the new configuration and schedules rs_work, which programs
+HDPIXDELAY, MODE1.TRNSCVCTRL and the RTS path. A write() issued right
+after the ioctl therefore transmits against the old, half-switched
+state. On a single core the ordering is even deterministic: start_tx()
+picks the stale path first, then rs_work reprograms the chip, then
+tx_work pumps the data - with the transceiver already released. A
+TIOCSRS485 switching from the hardware to the software RTS path
+followed immediately by a write puts the whole transfer on the wire
+with the transceiver disabled: nothing reaches the bus and no error is
+reported anywhere. The inverse direction is as old as the asynchronous
+reconfigure itself: enabling RS485 and writing immediately shifts the
+first bytes out before rs_work has enabled the chip's auto-RTS.
 
-Add a software-driven RTS path that takes over whenever the hardware
-cannot represent the requested timing, and clamp the delays to
-RS485_MAX_RTS_DELAY instead of rejecting them.
+Defer instead: rs485_config() marks the reconfigure pending under
+port->lock, start_tx() leaves the data in the kfifo while the mark is
+set, and rs_work restarts the transmission itself once the new
+configuration is fully applied. The rs485-disable path's direct
+tx_work kick is replaced by the same mechanism, which also orders that
+flush after the reconfigure instead of before it.
 
-max310x_set_rts_ctl_params() picks the path: software if either delay
-exceeds what 15 bit-times encode at the current baud rate, or if the
-requested RTS polarity combination cannot be produced by the auto-RTS
-engine; hardware otherwise, as before.
+The restart kick also checks port->x_char: uart_send_xchar() reaches
+start_tx() too, and a lone x_char deferred by the pending gate leaves
+the kfifo empty, so the kick would otherwise skip it and nothing else
+would ever send it - an idle chip FIFO raises no TXEMPTY interrupt.
+And start_tx() re-checks the pending mark after the
+hrtimer_try_to_cancel(-1) path retakes the dropped lock, mirroring the
+tx_teardown re-check there: a TIOCSRS485 posted inside that window
+would otherwise let the transmission proceed on the stale path.
 
-On the software path the RTS envelope is driven by a single hrtimer,
-re-used for the before- and after-send phases (tracked in tx_state),
-plus a single rts_work that toggles RTS. start_tx() begins the
-envelope; rts_work asserts RTS and only then arms the before-send
-timer, so data is never shifted before RTS is on the wire. The timer
-expiry kicks tx_work; once the chip FIFO drains, the same timer is
-re-armed for one character (the byte still in the shift register)
-plus the after-send delay, after which rts_work releases RTS. One
-timer and one work keep the phases mutually exclusive and the RTS
-toggles ordered. A start_tx() landing while the envelope is already in
-its send phase only pumps the new data: rewinding it to the
-before-send phase would insert a spurious setup delay mid-stream.
+rs_work takes port->lock for that restart through
+uart_port_lock_irqsave(): start_tx() may drop and retake the lock
+through the uart_port API on its hrtimer_try_to_cancel(-1) path, and a
+raw spinlock guard around the call would unbalance the nbcon console
+handling underneath.
 
-Teardown is interlocked: shutdown() and an RS485-disabling
-TIOCSRS485 set tx_teardown under port->lock before cancelling the
-timer and works, and start_tx() checks it on entry and again after
-the hrtimer_try_to_cancel(-1) path retakes the dropped lock -
-otherwise a write racing the teardown could re-arm the timer or
-queue rts_work against a port being shut down, leaving the
-transceiver driving the bus after close. The rs485-disable path
-additionally kicks tx_work afterwards, since a racing write may have
-queued data with no envelope left to pump it, and shutdown() now also
-cancels tx_work, which was previously cancelled only in remove(). The
-interlock also fences the adoption path below, so a reconfigure racing
-a teardown cannot re-enable the cancelled timer, and an RS485 disable
-flushes a queued rts_work before the pin is settled: one already past
-its tx_state read would re-assert RTS after the settle.
+The restart also rewinds a send state adopted for the deferred write
+itself: set_rts_ctl_params() cannot tell data the pending gate
+deferred apart from an in-flight transfer's refill by the xmit buffer
+alone, and a deferred write pumped in the adopted send phase would
+skip the configured before-send delay. With the chip FIFO empty the
+adopted state can only be the deferred write: rewind it and let the
+restart run the full envelope.
 
-set_rts_ctl_params() publishes sw_rts_during_tx with a single store
-and settles the RTS idle level only while tx_state is off, because
-serial_core calls set_termios() without port->lock and rs485_config()
-schedules a reconfigure on every TIOCSRS485 - either could otherwise
-release the transceiver mid-envelope. The settle also re-checks
-tx_state after its write and requeues rts_work if an envelope started
-meanwhile: the state read and the register write are not atomic, and
-rts_work re-derives the level from tx_state, so this converges without
-locking. shutdown() gates first - the
-interlock is set and the interrupts are masked before any wait, so
-nothing can start a new envelope or requeue tx_work behind the cancels
-- then honours a running after-send hold, bounded by the after-send
-delay plus two character times (the transmitter is already stopped by
-this point), and cancels the timer and works unconditionally: a
-TIOCSRS485 can clear sw_rts_during_tx while an envelope is still in
-flight, and neither may outlive the port. A hold that did not complete
-within the bound is settled by the final release below regardless.
-break_ctl() on the software path applies the
-configured RTS polarity itself.
-
-A reconfigure can also move the port off the hardware path while the
-chip's auto-RTS still owns a transmission in flight - a termios change
-or TIOCSRS485 pushing a delay above what the hardware can time at the
-new rate. Such transfers are invisible to tx_state, so the idle settle
-would release RTS and the MODE1 write would disable auto-RTS
-mid-transfer, shifting the rest of the data out with the transceiver
-released and no error reported anywhere. Adopt the transfer instead
-when the chip TX FIFO or the xmit buffer is not empty: enter
-MAX310X_TX_SEND and drive RTS manually before auto-RTS is disabled, so
-the pin is never released across the handover, and the normal drain
-path arms the after-send hold - or the adoption arms it directly if
-the FIFO drained while this raced the TX-empty worker. A transfer
-whose last character has already left the FIFO for the transmit shift
-register is still invisible and keeps the old behavior: at most one
-character of early release.
-
-The reverse move strands state instead: a reconfigure onto the
-hardware path mid-envelope left tx_state set, because nothing reset it
-in that direction and the TX-empty hold arming only ran while the
-software path was selected. A later reconfigure back off the hardware
-path then trusted the stale tx_state, skipped both the adoption and
-the idle settle, and disabled auto-RTS with the RTS register released
-- the rest of the transfer in flight shifted out with the transceiver
-off, again with no error reported (hit twice in 79 in-flight
-reconfigures under a multi-process stress test). The TX-empty unwind
-now runs regardless of the selected path - it is a no-op outside an
-envelope - and the reconfigure asserts RTS for any transfer it
-believes exists, stale or live, before auto-RTS is disabled. The hold
-is armed only once no transmittable data remains, so that assert
-cannot cut a burst short when it lands in a FIFO refill window;
-output that is stopped still releases through the hold.
-
-rts_work also derives the level from tx_break: a break can begin while
-the previous envelope's after-send hold is still armed - TIOCSBRK waits
-for the output to drain, which lands the break exactly there - and the
-expiring hold would otherwise release the transceiver mid-break. With
-break ownership in the derivation the hold expiry becomes an idempotent
-re-assert, and break-off restores the idle state as it already does.
-
-shutdown() gives its final RTS release one bit time, and at
-least 100 us, to reach the pin before powering the port down. The
-power-off stops the UART channel clock, and the RTS output stage is
-clocked by it: a release written immediately before the clock stops
-reaches the register but never moves the pin, which stays asserted
-until the next startup restarts the clock - a close racing the
-after-send hold expiry left the transceiver driving the bus, with the
-register reading released and the pin high. The measured propagation
-is about one tick of the 16x oversampling clock - below 50 us at
-1200 baud - so one bit time keeps a 16x margin and scales with the
-clock the output stage runs on; the floor covers rates where a bit is
-shorter than the measured bound. Handing the pin to the
-chip's auto-RTS engine instead was tried and rejected on the wire:
-the pin level is RTSINVERT xor the selected source, so for an
-active-low RTS every single-register step of that handover drives the
-pin to the asserted level, and the same clock stop can freeze it
-there.
-
-Fixes: 55367c620aed ("serial: max310x: Add support for RS-485 mode")
+Fixes: 5bdb48b501e8 ("serial: max310x: Fix RS485 handling")
 Assisted-by: Claude:claude-fable-5
 Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 ---
- drivers/tty/serial/max310x.c | 488 ++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 436 insertions(+), 52 deletions(-)
+ drivers/tty/serial/max310x.c | 51 ++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 42 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index c1fe4ad8878392613cbe4d7805eb8ecb454176d6..5fdb9dfca6027ff0a9284ed994000a5d7587408c 100644
+index 5fdb9dfca6027ff0a9284ed994000a5d7587408c..833ab4d461235d89438b1a7c84c46609fff64453 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -15,6 +15,7 @@
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/gpio/driver.h>
-+#include <linux/hrtimer.h>
- #include <linux/i2c.h>
- #include <linux/kconfig.h>
- #include <linux/module.h>
-@@ -297,15 +298,29 @@ struct max310x_devtype {
- 	u8	power_bit; /* Bit for sleep or power-off mode (active high). */
- };
- 
-+/* Software-timed RS485 RTS envelope phase */
-+enum max310x_tx_state {
-+	MAX310X_TX_OFF,			/* idle, RTS released */
-+	MAX310X_TX_WAIT_BEFORE_SEND,	/* RTS asserted, before-send delay */
-+	MAX310X_TX_SEND,		/* data in flight, awaiting TX-empty */
-+	MAX310X_TX_WAIT_AFTER_SEND,	/* data drained, after-send hold */
-+};
-+
- struct max310x_one {
- 	struct uart_port	port;
- 	struct work_struct	tx_work;
- 	struct work_struct	md_work;
- 	struct work_struct	rs_work;
-+	struct work_struct	rts_work;
-+	struct hrtimer		tx_delay_tmr;
- 	struct regmap		*regmap;
- 	unsigned int		char_time_us;
- 	unsigned int		baud;
-+	bool			sw_rts_during_tx;
-+	bool			cancel_tx_delay_tmr;
-+	bool			tx_teardown;	/* envelope being torn down */
+@@ -319,6 +319,7 @@ struct max310x_one {
+ 	bool			sw_rts_during_tx;
+ 	bool			cancel_tx_delay_tmr;
+ 	bool			tx_teardown;	/* envelope being torn down */
++	bool			rs485_pending;	/* rs_work not yet applied */
  	bool			tx_break;	/* break_ctl() owns the transceiver */
-+	enum max310x_tx_state	tx_state;
+ 	enum max310x_tx_state	tx_state;
  
- 	u8 rx_buf[MAX310X_FIFO_SIZE];
- };
-@@ -696,6 +711,38 @@ static void max310x_rts_ctl(struct uart_port *port, bool rts_state)
- 			    rts_state ? MAX310X_LCR_RTS_BIT : 0);
- }
- 
-+/* RTS level for the transmitting or the idle phase of an RS485 envelope */
-+static bool max310x_rts_level(struct uart_port *port, bool active)
-+{
-+	return active ? (port->rs485.flags & SER_RS485_RTS_ON_SEND) :
-+			(port->rs485.flags & SER_RS485_RTS_AFTER_SEND);
-+}
-+
-+/*
-+ * Drive the RS485 RTS line to match the current tx_state and break
-+ * ownership. This is the only place that touches RTS, and it reads the
-+ * state rather than a fixed assert/deassert intent, so a newer assert is
-+ * never clobbered by a stale release and an expiring after-send hold never
-+ * releases a break in progress. It also arms the before-send timer once the
-+ * RTS edge is on the wire, so data is never shifted before RTS is asserted.
-+ */
-+static void max310x_rts_work_proc(struct work_struct *ws)
-+{
-+	struct max310x_one *one = container_of(ws, struct max310x_one, rts_work);
-+	struct uart_port *port = &one->port;
-+	bool rts_on = READ_ONCE(one->tx_state) != MAX310X_TX_OFF ||
-+		      READ_ONCE(one->tx_break);
-+
-+	max310x_rts_ctl(port, max310x_rts_level(port, rts_on));
-+
-+	guard(spinlock_irqsave)(&port->lock);
-+	if (READ_ONCE(one->tx_state) == MAX310X_TX_WAIT_BEFORE_SEND &&
-+	    !one->cancel_tx_delay_tmr && !hrtimer_active(&one->tx_delay_tmr))
-+		hrtimer_start(&one->tx_delay_tmr,
-+			      ms_to_ktime(port->rs485.delay_rts_before_send),
-+			      HRTIMER_MODE_REL);
-+}
-+
- static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen)
- {
- 	struct max310x_one *one = to_max310x_port(port);
-@@ -792,6 +839,77 @@ static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen)
- 	tty_flip_buffer_push(&port->state->port);
- }
- 
-+static enum hrtimer_restart max310x_tmr_tx(struct hrtimer *timer)
-+{
-+	struct max310x_one *one = container_of(timer, struct max310x_one,
-+					       tx_delay_tmr);
-+
-+	guard(spinlock_irqsave)(&one->port.lock);
-+	if (!one->cancel_tx_delay_tmr) {
-+		if (READ_ONCE(one->tx_state) == MAX310X_TX_WAIT_AFTER_SEND) {
-+			/* After-send hold elapsed: drop RTS via the rts worker. */
-+			WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
-+			schedule_work(&one->rts_work);
-+		} else {
-+			WRITE_ONCE(one->tx_state, MAX310X_TX_SEND);
-+			schedule_work(&one->tx_work);
-+		}
-+	}
-+
-+	return HRTIMER_NORESTART;
-+}
-+
-+static void max310x_delayed_stop_tx(struct uart_port *port)
-+{
-+	struct max310x_one *one = to_max310x_port(port);
-+	unsigned int txlvl;
-+
-+	if (READ_ONCE(one->tx_state) == MAX310X_TX_OFF)
-+		return;
-+
-+	/*
-+	 * Data still queued for transmission defers the hold: a refill is
-+	 * coming and the envelope is not over. Stopped output does not
-+	 * count - it drains nowhere, and the envelope must end.
-+	 */
-+	if (!kfifo_is_empty(&port->state->port.xmit_fifo) &&
-+	    !uart_tx_stopped(port))
-+		return;
-+
-+	/*
-+	 * The kfifo can be empty while the chip TX FIFO is still draining, so arm
-+	 * the after-send hold only once the chip FIFO is empty too - the TX-empty
-+	 * interrupt re-invokes us then. Otherwise the hold starts early and RTS
-+	 * drops mid-character, clipping the last byte(s).
-+	 */
-+	txlvl = max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
-+	if (txlvl)
-+		return;
-+
-+	/*
-+	 * Runs from tx_work without port->lock, so re-check the state under it:
-+	 * shutdown() may have cancelled the envelope meanwhile. Only
-+	 * MAX310X_TX_SEND may arm the hold.
-+	 */
-+	guard(spinlock_irqsave)(&one->port.lock);
-+	if (one->cancel_tx_delay_tmr ||
-+	    READ_ONCE(one->tx_state) != MAX310X_TX_SEND)
-+		return;
-+
-+	if (!hrtimer_active(&one->tx_delay_tmr)) {
-+		/*
-+		 * Add one character for the byte still in the shift register -
-+		 * TX-empty fires as it enters, not as it leaves.
-+		 */
-+		ktime_t delay = us_to_ktime(one->char_time_us +
-+					    port->rs485.delay_rts_after_send *
-+					    USEC_PER_MSEC);
-+
-+		WRITE_ONCE(one->tx_state, MAX310X_TX_WAIT_AFTER_SEND);
-+		hrtimer_start(&one->tx_delay_tmr, delay, HRTIMER_MODE_REL);
-+	}
-+}
-+
- static void max310x_handle_tx(struct uart_port *port)
- {
- 	struct tty_port *tport = &port->state->port;
-@@ -803,8 +921,16 @@ static void max310x_handle_tx(struct uart_port *port)
- 		return;
- 	}
- 
--	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))
-+	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port)) {
-+		/*
-+		 * Unwind the envelope even if a reconfigure has moved the
-+		 * port to the hardware path mid-envelope: a stranded
-+		 * tx_state would make a later reconfigure believe a
-+		 * software envelope still owns RTS.
-+		 */
-+		max310x_delayed_stop_tx(port);
- 		return;
-+	}
- 
- 	/*
- 	 * It's a circ buffer -- wrap around.
-@@ -829,11 +955,64 @@ static void max310x_handle_tx(struct uart_port *port)
- 		uart_write_wakeup(port);
- }
- 
-+/*
-+ * Begin a software-timed RTS envelope: set the before-send phase and queue the
-+ * rts worker to assert RTS. tx_state is set synchronously here (start_tx() holds
-+ * port.lock) so close()/shutdown can see an envelope is in flight; rts_work then
-+ * asserts RTS and arms the before-send timer (see there).
-+ */
-+static void max310x_delayed_start_tx(struct uart_port *port)
-+{
-+	struct max310x_one *one = to_max310x_port(port);
-+
-+	WRITE_ONCE(one->tx_state, MAX310X_TX_WAIT_BEFORE_SEND);
-+	one->cancel_tx_delay_tmr = false;
-+	schedule_work(&one->rts_work);
-+}
-+
-+/* called with port.lock taken and irqs off */
- static void max310x_start_tx(struct uart_port *port)
- {
- 	struct max310x_one *one = to_max310x_port(port);
- 
--	schedule_work(&one->tx_work);
-+	/* A teardown is in progress; nothing may start an envelope or TX. */
-+	if (one->tx_teardown)
-+		return;
-+
-+	if (READ_ONCE(one->sw_rts_during_tx)) {
-+		/*
-+		 * The before- and after-send phases share one delay timer. If an
-+		 * after-send release is pending, cancel it before starting a new
-+		 * TX so the just-asserted RTS is not yanked; re-arming the timer
-+		 * for the before-send phase then supersedes the release.
-+		 */
-+		int res = 0;
-+
-+		if (READ_ONCE(one->tx_state) == MAX310X_TX_WAIT_AFTER_SEND)
-+			res = hrtimer_try_to_cancel(&one->tx_delay_tmr);
-+		if (unlikely(res == -1)) {
-+			one->cancel_tx_delay_tmr = true;
-+			uart_port_unlock(port);
-+			hrtimer_cancel(&one->tx_delay_tmr);
-+			uart_port_lock(port);
-+			/*
-+			 * The lock was dropped: a teardown may have run to
-+			 * completion meanwhile. Re-check before starting.
-+			 */
-+			if (one->tx_teardown)
-+				return;
-+		}
-+
-+		/* Already sending: pump the new data, don't rewind. */
-+		if (READ_ONCE(one->tx_state) == MAX310X_TX_SEND) {
-+			schedule_work(&one->tx_work);
-+			return;
-+		}
-+
-+		max310x_delayed_start_tx(port);
-+	} else {
-+		schedule_work(&one->tx_work);
-+	}
- }
- 
- static irqreturn_t max310x_port_irq(struct max310x_port *s, int portno)
-@@ -946,10 +1125,39 @@ static void max310x_set_mctrl(struct uart_port *port, unsigned int mctrl)
- }
- 
- /*
-- * Program the chip's RS485 RTS timing. The HDPIXDELAY setup and hold fields
-- * count bit-times, four bits per direction, while the uapi expresses the
-- * delays in milliseconds: convert at the current baud rate, rounding up, and
-- * cap at the field maximum.
-+ * A reconfigure can move the port off the hardware RTS path while the chip's
-+ * auto-RTS still owns a transmission in flight; tx_state does not track
-+ * those. Take such a transfer over before auto-RTS is disabled: enter
-+ * MAX310X_TX_SEND, so the caller keeps RTS driven across the handover and
-+ * the normal drain path arms the after-send hold. Returns true when a
-+ * transmission owns RTS - adopted here or started concurrently - and false
-+ * when the line is really idle.
-+ */
-+static bool max310x_adopt_hw_tx(struct max310x_one *one)
-+{
-+	struct uart_port *port = &one->port;
-+
-+	if (!max310x_port_read(port, MAX310X_TXFIFOLVL_REG) &&
-+	    kfifo_is_empty(&port->state->port.xmit_fifo))
-+		return false;
-+
-+	scoped_guard(spinlock_irqsave, &port->lock) {
-+		if (one->tx_teardown)
-+			return false;
-+		if (READ_ONCE(one->tx_state) != MAX310X_TX_OFF)
-+			return true;
-+		WRITE_ONCE(one->tx_state, MAX310X_TX_SEND);
-+		one->cancel_tx_delay_tmr = false;
-+	}
-+
-+	return true;
-+}
-+
-+/*
-+ * Pick hardware or software RTS timing for the current port. The chip can
-+ * deliver up to 15 bit-times of setup/hold delay via HDPIXDELAY; anything
-+ * longer (or any RTS polarity the chip cannot produce automatically) must
-+ * be driven by software via tx_delay_tmr and rts_work.
-  */
- static void max310x_set_rts_ctl_params(struct max310x_one *one)
- {
-@@ -957,25 +1165,35 @@ static void max310x_set_rts_ctl_params(struct max310x_one *one)
- 	struct uart_port *port = &one->port;
- 	unsigned int setup = 0, hold = 0;
- 	u8 mode1 = 0, irda = 0;
-+	bool sw_rts = false;
- 
--	if (port->rs485.flags & SER_RS485_ENABLED) {
--		/* Convert milliseconds to bit-times, rounding up. */
--		setup = DIV_ROUND_UP(one->baud * port->rs485.delay_rts_before_send,
--				     MSEC_PER_SEC);
--		hold  = DIV_ROUND_UP(one->baud * port->rs485.delay_rts_after_send,
--				     MSEC_PER_SEC);
--		setup = min(setup, max_bit_dly);
--		hold  = min(hold,  max_bit_dly);
--
--		mode1 = MAX310X_MODE1_TRNSCVCTRL_BIT;
--		/*
--		 * The auto-RTS engine asserts RTS high on send; for an
--		 * active-low RTS let IRDA.RTSINVERT invert the output stage.
--		 */
--		if (!(port->rs485.flags & SER_RS485_RTS_ON_SEND))
--			irda = MAX310X_IRDA_RTSINVERT_BIT;
-+	if (!(port->rs485.flags & SER_RS485_ENABLED))
-+		goto out;
-+
-+	/* Convert milliseconds to bit-times, rounding up. */
-+	setup = DIV_ROUND_UP(one->baud * port->rs485.delay_rts_before_send,
-+			     MSEC_PER_SEC);
-+	hold  = DIV_ROUND_UP(one->baud * port->rs485.delay_rts_after_send,
-+			     MSEC_PER_SEC);
-+
-+	/*
-+	 * Compare in bit-times: a delay of exactly max_bit_dly bit-times
-+	 * must stay on the hardware path, which a nanosecond ceiling
-+	 * computed from the truncated per-bit time would reject. Without
-+	 * a baud rate the conversion is meaningless - use software.
-+	 */
-+	if (!one->baud || setup > max_bit_dly || hold > max_bit_dly ||
-+	    !!(port->rs485.flags & SER_RS485_RTS_ON_SEND) ==
-+	    !!(port->rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
-+		sw_rts = true;
-+		setup = 0;
-+		hold  = 0;
- 	}
- 
-+out:
-+	/* Assign once; a transient false would be seen by other readers. */
-+	WRITE_ONCE(one->sw_rts_during_tx, sw_rts);
-+
- 	max310x_port_write(port, MAX310X_HDPIXDELAY_REG,
- 			   MAX310X_HDPIXDELAY_SETUP(setup) |
- 			   MAX310X_HDPIXDELAY_HOLD(hold));
-@@ -983,12 +1201,66 @@ static void max310x_set_rts_ctl_params(struct max310x_one *one)
- 	/*
- 	 * A break owns the transceiver: break_ctl() disabled auto-RTS and
- 	 * drives RTS manually, and restores it from the current
--	 * configuration when the break ends. Touching MODE1 here would
-+	 * configuration when the break ends. Touching them here would
- 	 * release the transceiver mid-break.
- 	 */
- 	if (one->tx_break)
+@@ -979,6 +980,16 @@ static void max310x_start_tx(struct uart_port *port)
+ 	if (one->tx_teardown)
  		return;
  
-+	if (port->rs485.flags & SER_RS485_ENABLED) {
-+		if (sw_rts) {
-+			/*
-+			 * Only settle RTS at idle when no transmission owns it.
-+			 * A reconfigure while one is in flight - rs_work runs
-+			 * on every TIOCSRS485 - would otherwise release the
-+			 * transceiver mid-character. A transfer the hardware
-+			 * path owns is invisible to tx_state - adopt it
-+			 * instead of settling. The reverse strand also
-+			 * exists: an envelope the hardware path inherited
-+			 * mid-envelope leaves tx_state set with nothing
-+			 * driving the pin.
-+			 */
-+			if (READ_ONCE(one->tx_state) != MAX310X_TX_OFF ||
-+			    max310x_adopt_hw_tx(one)) {
-+				/*
-+				 * The transfer may be running under auto-RTS:
-+				 * assert before auto-RTS is disabled below so
-+				 * the pin is never released under it, and arm
-+				 * the after-send hold - with the chip FIFO
-+				 * already drained no TX-empty interrupt
-+				 * arrives to arm it.
-+				 */
-+				max310x_rts_ctl(port,
-+						max310x_rts_level(port, true));
-+				max310x_delayed_stop_tx(port);
-+			} else {
-+				max310x_rts_ctl(port,
-+						max310x_rts_level(port, false));
-+				/*
-+				 * serial_core calls set_termios() without
-+				 * port->lock, so an envelope may have started
-+				 * while the idle level was written and the
-+				 * settle can land after its RTS assert.
-+				 * rts_work re-derives the level from
-+				 * tx_state; requeue it to converge.
-+				 */
-+				if (READ_ONCE(one->tx_state) != MAX310X_TX_OFF)
-+					schedule_work(&one->rts_work);
-+			}
-+		} else {
-+			mode1 = MAX310X_MODE1_TRNSCVCTRL_BIT;
-+			/*
-+			 * The auto-RTS engine asserts RTS high on send; for an
-+			 * active-low RTS let IRDA.RTSINVERT invert the output
-+			 * stage.
-+			 */
-+			if (!(port->rs485.flags & SER_RS485_RTS_ON_SEND))
-+				irda = MAX310X_IRDA_RTSINVERT_BIT;
-+		}
-+	} else {
-+		max310x_rts_ctl(port, 0);
-+	}
++	/*
++	 * An RS485 reconfigure is scheduled but not applied yet: transmitting
++	 * now would use the old path against half-programmed registers - a
++	 * TIOCSRS485 switching paths followed immediately by a write puts the
++	 * data on the wire with the transceiver released. Leave the data in
++	 * the kfifo; rs_work restarts TX once the configuration is applied.
++	 */
++	if (one->rs485_pending)
++		return;
 +
- 	max310x_port_update(port, MAX310X_MODE1_REG,
- 			    MAX310X_MODE1_TRNSCVCTRL_BIT, mode1);
- 	max310x_port_update(port, MAX310X_IRDA_REG,
-@@ -1016,12 +1288,27 @@ static void max310x_break_ctl(struct uart_port *port, int break_state)
- 	if (break_state) {
- 		if (!(port->rs485.flags & SER_RS485_ENABLED))
- 			return;
--		max310x_port_update(port, MAX310X_MODE1_REG,
--				    MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
-+		if (READ_ONCE(one->sw_rts_during_tx)) {
-+			max310x_rts_ctl(port, max310x_rts_level(port, 1));
-+		} else {
-+			max310x_port_update(port, MAX310X_MODE1_REG,
-+					    MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
-+			max310x_rts_ctl(port, 1);
-+		}
- 	} else {
-+		/*
-+		 * Reapply the current configuration: a reconfigure that
-+		 * arrived during the break was deferred by the tx_break
-+		 * guard, and RS485 may have been disabled outright - the
-+		 * manually driven RTS must not leak past the break. On the
-+		 * software path the helper also settles the idle level; on
-+		 * the hardware path release the manual RTS - auto-RTS owns
-+		 * the pin again.
-+		 */
- 		max310x_set_rts_ctl_params(one);
-+		if (!READ_ONCE(one->sw_rts_during_tx))
-+			max310x_rts_ctl(port, 0);
- 	}
--	max310x_rts_ctl(port, break_state);
- }
+ 	if (READ_ONCE(one->sw_rts_during_tx)) {
+ 		/*
+ 		 * The before- and after-send phases share one delay timer. If an
+@@ -997,9 +1008,10 @@ static void max310x_start_tx(struct uart_port *port)
+ 			uart_port_lock(port);
+ 			/*
+ 			 * The lock was dropped: a teardown may have run to
+-			 * completion meanwhile. Re-check before starting.
++			 * completion or a reconfigure may have been posted
++			 * meanwhile. Re-check before starting.
+ 			 */
+-			if (one->tx_teardown)
++			if (one->tx_teardown || one->rs485_pending)
+ 				return;
+ 		}
  
- static void max310x_set_termios(struct uart_port *port,
-@@ -1063,9 +1350,10 @@ static void max310x_set_termios(struct uart_port *port,
- 		lcr |= MAX310X_LCR_STOPLEN_BIT; /* 2 stops */
+@@ -1445,6 +1457,8 @@ static void max310x_rs_proc(struct work_struct *ws)
+ {
+ 	struct max310x_one *one = container_of(ws, struct max310x_one, rs_work);
+ 	unsigned int mode2 = 0;
++	unsigned long flags;
++	bool chip_tx_empty;
  
  	/*
--	 * Update LCR register. Leave the TX break bit alone: it is driven by
--	 * break_ctl(), and a whole-register write here would end a break in
--	 * progress.
-+	 * Update LCR register. Leave the TX break and RTS bits alone: they are
-+	 * driven by break_ctl() and by the software-timed RS485 RTS, and a
-+	 * whole-register write here would end a break in progress or release
-+	 * the transceiver mid-character.
- 	 */
- 	max310x_port_update(port, MAX310X_LCR_REG, MAX310X_LCR_TERMIOS_MASK, lcr);
+ 	 * Serialize against break_ctl() and set_termios(), which run under
+@@ -1465,6 +1479,31 @@ static void max310x_rs_proc(struct work_struct *ws)
  
-@@ -1143,7 +1431,9 @@ static void max310x_set_termios(struct uart_port *port,
- 	/*
- 	 * Cache the new baud rate and the time it takes to clock out one
- 	 * character before reprogramming the RS485 RTS delays: the
--	 * millisecond-to-bit-time conversion divides by the baud rate.
-+	 * millisecond-to-bit-time conversion divides by the baud rate, and
-+	 * taking over an in-flight transfer arms the after-send hold from
-+	 * the character time.
- 	 */
- 	to_max310x_port(port)->baud = baud;
- 	to_max310x_port(port)->char_time_us =
-@@ -1163,6 +1453,10 @@ static void max310x_rs_proc(struct work_struct *ws)
- 	 */
- 	guard(mutex)(&one->port.state->port.mutex);
- 
-+	/* Flush an rts_work that read tx_state before the disable cleared it. */
-+	if (!(one->port.rs485.flags & SER_RS485_ENABLED))
-+		cancel_work_sync(&one->rts_work);
-+
- 	max310x_set_rts_ctl_params(one);
- 
- 	if (one->port.rs485.flags & SER_RS485_ENABLED &&
-@@ -1173,14 +1467,37 @@ static void max310x_rs_proc(struct work_struct *ws)
+ 	max310x_port_update(&one->port, MAX310X_MODE2_REG,
  			    MAX310X_MODE2_ECHOSUPR_BIT, mode2);
- }
- 
-+/* called with port.lock taken and irqs off */
- static int max310x_rs485_config(struct uart_port *port, struct ktermios *termios,
- 				struct serial_rs485 *rs485)
- {
- 	struct max310x_one *one = to_max310x_port(port);
- 
--	if ((rs485->delay_rts_before_send > 0x0f) ||
--	    (rs485->delay_rts_after_send > 0x0f))
--		return -ERANGE;
-+	rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
-+	rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send,  100U);
 +
 +	/*
-+	 * Make sure no SW-timed RTS toggle survives an RS485 disable, even
-+	 * if the delay timer happens to be running right now.
++	 * The configuration is applied: release any TX that start_tx()
++	 * deferred while the reconfigure was pending, now on the right
++	 * path. start_tx() can drop and retake the lock through the
++	 * uart_port API - a raw spinlock guard here would unbalance it.
 +	 */
-+	if (!(rs485->flags & SER_RS485_ENABLED)) {
-+		one->tx_teardown = true;
-+		one->cancel_tx_delay_tmr = true;
-+		if (hrtimer_try_to_cancel(&one->tx_delay_tmr) == -1) {
-+			uart_port_unlock(port);
-+			hrtimer_cancel(&one->tx_delay_tmr);
-+			uart_port_lock(port);
-+		}
-+		WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
-+		one->tx_teardown = false;
++	chip_tx_empty = !max310x_port_read(&one->port,
++					   MAX310X_TXFIFOLVL_REG);
++
++	uart_port_lock_irqsave(&one->port, &flags);
++	one->rs485_pending = false;
++	if (one->port.x_char ||
++	    !kfifo_is_empty(&one->port.state->port.xmit_fifo)) {
 +		/*
-+		 * The port stays alive, and a write that raced the teardown
-+		 * may have left data queued with no envelope left to pump it.
-+		 * Kick tx_work; RS485 is disabled, so the plain path is right.
++		 * A send state adopted without chip data is the deferred
++		 * write itself: restart it as a fresh envelope so the
++		 * before-send delay is honoured.
 +		 */
-+		if (!kfifo_is_empty(&port->state->port.xmit_fifo))
-+			schedule_work(&one->tx_work);
++		if (chip_tx_empty &&
++		    READ_ONCE(one->tx_state) == MAX310X_TX_SEND)
++			WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
++		max310x_start_tx(&one->port);
 +	}
++	uart_port_unlock_irqrestore(&one->port, flags);
+ }
+ 
+ /* called with port.lock taken and irqs off */
+@@ -1490,17 +1529,11 @@ static int max310x_rs485_config(struct uart_port *port, struct ktermios *termios
+ 		}
+ 		WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
+ 		one->tx_teardown = false;
+-		/*
+-		 * The port stays alive, and a write that raced the teardown
+-		 * may have left data queued with no envelope left to pump it.
+-		 * Kick tx_work; RS485 is disabled, so the plain path is right.
+-		 */
+-		if (!kfifo_is_empty(&port->state->port.xmit_fifo))
+-			schedule_work(&one->tx_work);
+ 	}
  
  	port->rs485 = *rs485;
  
-@@ -1215,7 +1532,15 @@ static int max310x_startup(struct uart_port *port)
- 	max310x_port_update(port, MAX310X_MODE2_REG,
- 			    MAX310X_MODE2_FIFORST_BIT, 0);
++	one->rs485_pending = true;
+ 	schedule_work(&one->rs_work);
  
--	/* Configure the RS485 RTS timing and the RS485/RS232 mode bits. */
-+	one->tx_teardown = false;
-+
-+	/*
-+	 * Configure the RS485 RTS timing (HW auto-RTS vs software-driven) and
-+	 * the RS485/RS232 mode bits. Don't hardcode HW auto-RTS here - let
-+	 * max310x_set_rts_ctl_params() pick HW or SW per the configured
-+	 * delays, otherwise the chip's auto-RTS would override the software
-+	 * RTS hold and the after-send delay is lost.
-+	 */
- 	max310x_set_rts_ctl_params(one);
- 
- 	if (port->rs485.flags & SER_RS485_ENABLED &&
-@@ -1246,7 +1571,15 @@ static void max310x_shutdown(struct uart_port *port)
- {
- 	struct max310x_one *one = to_max310x_port(port);
- 
--	/* Disable all interrupts */
-+	/*
-+	 * Gate new transmissions and interrupts first: a concurrent
-+	 * start_tx() either sees the interlock or happens-before it, and
-+	 * nothing below may start a new envelope. The timer and the works
-+	 * stay live for now - they are what completes a running after-send
-+	 * hold.
-+	 */
-+	scoped_guard(spinlock_irqsave, &port->lock)
-+		one->tx_teardown = true;
- 	max310x_port_write(port, MAX310X_IRQEN_REG, 0);
- 
- 	/*
-@@ -1256,25 +1589,69 @@ static void max310x_shutdown(struct uart_port *port)
- 	max310x_port_update(port, MAX310X_MODE1_REG,
- 			    MAX310X_MODE1_TXDIS_BIT, MAX310X_MODE1_TXDIS_BIT);
- 
-+	if (READ_ONCE(one->sw_rts_during_tx)) {
-+		/*
-+		 * Honour a running after-send hold before the port is
-+		 * powered down. The bound covers the final character -
-+		 * tx_empty() cannot see the transmit shift register - plus
-+		 * the hold itself. Data beyond that is abandoned: it is
-+		 * only still queued when the tty layer was told not to
-+		 * wait, and the release below drives RTS to idle
-+		 * regardless.
-+		 */
-+		unsigned int tries = port->rs485.delay_rts_after_send +
-+			2 * DIV_ROUND_UP(one->char_time_us, USEC_PER_MSEC);
-+
-+		while (READ_ONCE(one->tx_state) != MAX310X_TX_OFF && tries-- > 0)
-+			fsleep(USEC_PER_MSEC);
-+	} else {
-+		/*
-+		 * Let the character in flight finish (the chip has no
-+		 * transmitter-idle status), then empty the FIFO: auto-RTS
-+		 * releases only once the transmitter is empty, and the
-+		 * power-off below would freeze an asserted pin until the
-+		 * next open. The hold is at most 15 bit-times.
-+		 */
-+		fsleep(one->char_time_us);
-+		max310x_port_update(port, MAX310X_MODE2_REG,
-+				    MAX310X_MODE2_FIFORST_BIT,
-+				    MAX310X_MODE2_FIFORST_BIT);
-+		max310x_port_update(port, MAX310X_MODE2_REG,
-+				    MAX310X_MODE2_FIFORST_BIT, 0);
-+		if (port->rs485.flags & SER_RS485_ENABLED && one->baud) {
-+			unsigned int hold = DIV_ROUND_UP(one->baud *
-+					port->rs485.delay_rts_after_send,
-+					MSEC_PER_SEC);
-+
-+			fsleep(max(DIV_ROUND_UP((hold + 1) * USEC_PER_SEC,
-+						one->baud), 100U));
-+		}
-+	}
-+
- 	/*
--	 * Let the character in flight finish (the chip has no
--	 * transmitter-idle status), then empty the FIFO: auto-RTS releases
--	 * only once the transmitter is empty, and the power-off below
--	 * would freeze an asserted pin until the next open.
-+	 * The wind-down is over: cancel unconditionally. The SW/HW decision
-+	 * is recomputed on every reconfigure, so a TIOCSRS485 can clear
-+	 * sw_rts_during_tx while an envelope is still in flight, and
-+	 * neither the timer nor the works may outlive the port.
- 	 */
--	fsleep(one->char_time_us);
--	max310x_port_update(port, MAX310X_MODE2_REG,
--			    MAX310X_MODE2_FIFORST_BIT,
--			    MAX310X_MODE2_FIFORST_BIT);
--	max310x_port_update(port, MAX310X_MODE2_REG,
--			    MAX310X_MODE2_FIFORST_BIT, 0);
--	if (port->rs485.flags & SER_RS485_ENABLED && one->baud) {
--		unsigned int hold = DIV_ROUND_UP(one->baud *
--				port->rs485.delay_rts_after_send,
--				MSEC_PER_SEC);
--
--		fsleep(max(DIV_ROUND_UP((hold + 1) * USEC_PER_SEC,
--					one->baud), 100U));
-+	scoped_guard(spinlock_irqsave, &port->lock)
-+		one->cancel_tx_delay_tmr = true;
-+	cancel_work_sync(&one->tx_work);
-+	hrtimer_cancel(&one->tx_delay_tmr);
-+	cancel_work_sync(&one->rts_work);
-+	WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
-+
-+	if (READ_ONCE(one->sw_rts_during_tx)) {
-+		max310x_rts_ctl(port, max310x_rts_level(port, false));
-+		/*
-+		 * The power-off below stops the UART clock that moves the
-+		 * RTS pin: released too late, the write reaches the register
-+		 * but the pin stays at its old level until the next startup
-+		 * restarts the clock. Give the release one bit time (at
-+		 * least 100 us) to reach the pin - the measured propagation
-+		 * is about one tick of the 16x oversampling clock.
-+		 */
-+		fsleep(max(one->char_time_us / 10, 100U));
- 	}
- 
- 	max310x_power(port, 0);
-@@ -1566,6 +1943,11 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
- 		INIT_WORK(&s->p[i].md_work, max310x_md_proc);
- 		/* Initialize queue for changing RS485 mode */
- 		INIT_WORK(&s->p[i].rs_work, max310x_rs_proc);
-+		/* Initialize queue for software-driven RTS toggling */
-+		INIT_WORK(&s->p[i].rts_work, max310x_rts_work_proc);
-+		hrtimer_setup(&s->p[i].tx_delay_tmr, max310x_tmr_tx,
-+			      CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+		s->p[i].tx_state = MAX310X_TX_OFF;
- 	}
- 
- #ifdef CONFIG_GPIOLIB
-@@ -1676,6 +2058,8 @@ static void max310x_remove(struct device *dev)
- 	int i;
- 
- 	for (i = 0; i < s->devtype->nr; i++) {
-+		hrtimer_cancel(&s->p[i].tx_delay_tmr);
-+		cancel_work_sync(&s->p[i].rts_work);
- 		cancel_work_sync(&s->p[i].tx_work);
- 		cancel_work_sync(&s->p[i].md_work);
- 		cancel_work_sync(&s->p[i].rs_work);
+ 	return 0;
 
 -- 
 2.47.3
