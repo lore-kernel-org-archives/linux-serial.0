@@ -1,54 +1,54 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021074.outbound.protection.outlook.com [40.107.130.74])
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11022080.outbound.protection.outlook.com [52.101.66.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9236D483BD1;
-	Mon,  5 Oct 2026 13:20:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6387348B37F;
+	Mon,  5 Oct 2026 13:20:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.80
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791206468; cv=fail; b=pxvEYdDa2D3Ajv3gnlUYc3nAltX0yjcj5GOKwMj8XFRZYsdZiLNUbU0MgU15DVuyNWuRgxL9UCNSzsf+lQ2G9Nqpn4Akbwo0mNhdihp58GuVGm73rVI9hFh5W++uSsJlTIX5VeenUnCeBECxQfaWGBBhwd1AlNxFRxL7pfhgHAU=
+	t=1791206474; cv=fail; b=KzwRsnZrcrOkeAduWoX51RR/gPITjXEp8qymfy+nTX8dTUexGPwJ2UZ+i8d5M+Bk+p2hAaSmTITJFZ1bGuBzj/O/RZk7MsyBsTE8y1Ts39Zgi1FN5niMg0rU9gMSxFaC4Q+Ar7nsA7tpM/S54LIqJGbUM3IBjt7hpcIWs2q9lpk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791206468; c=relaxed/simple;
-	bh=ONFssbccF7R5JxXySBUPDO0nqw68IxVCdSoVjRSgI5k=;
+	s=arc-20240116; t=1791206474; c=relaxed/simple;
+	bh=PdLOMwp6EK9w0jElHyf3mZq3J5zhzx9wDoD4vh3LIto=;
 	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=n5CekCnY+NBaO2526ARel9JsB39xG5gRj0n7hE6b8i+RGbbkrotW5qYdWRVlw1U0anoOVJM/A25jqLjiB/3t2veinuCW0LpvZJ+hPI2EBAwjlIMjH4OrcrCUKxpeGdMJVvHpBy/uMFdIYRq1mmoKWV49vt8EhBJTbLRPMxaHgxY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=QnsmEbKP; arc=fail smtp.client-ip=40.107.130.74
+	 To:Cc:MIME-Version; b=iJeRHdf+Ox3N22LJ2srZg0XqeDe2Vt4zTP931ou7HYjinwolO47Ux0AspZCNZtFoeHm9n4LlEf3JI2EdZK8WroIHwJfCGCXDQTsFhsCI+paIvslIy2UWF04+dOdc2eJZYl/cQ4RaNqyl9UWLs0U/Wbo5tRhz41SKnJwgsm/IwIk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=H7scdS4f; arc=fail smtp.client-ip=52.101.66.80
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="QnsmEbKP"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="H7scdS4f"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=e+uMoQVg+fxkaRI3gX68a5BgieofMkIn6pysm4DlTZXdlx8X3z9gDHwa4bNXQW32Xq7U0TTrfX9kMc7/Ib53DQvqoFGvMQx8+4M7U9tlHEoaJYJ+l1QTlKwy4oIhiU5QD3SkpjuErOvJipky/oa5qYal0IW9K7EMGeiOgUoqUK35woBMvHQsFt53qVAmh94v+CDgX48x+xjclM8elVYHwAweVQXKVI96UyCXwH2d7UB0KL1VsVyHVimmhkAbdAgGYWgjGC/pyudtrxsPY8mRm9JKUhItmrmK2HYNM5OfRnuYkBwkMRfG8taPn5hsC6f6u6ZMhmrytnXBAuwFacIHKA==
+ b=UX+cMLbikgtQjw5gRUzPk6Gd1Sr3iGoWqC0mMJNitZ8hzqbK7Jh8AKEfSZBnN2yhgBfPbH9FdW29mT7GJRDBbQ2Gb97EE+qeqJNJnsfTUIJBgacWFrih5PiCqBBp3UDdNWlLi4GOsiXqhIkSJVQiAgsV9t6LlDpvBNYBRf4KCoagIPmurc12qvRyE0UkwxE6myR5mMZmRUQJbpx8E70WLhNbsiYZC8i8ITgAtUS7qC4zmqgAvZSs/WdCnY9g9cQFDe1neLUdVOCQPzRrVH34IvIvtr/JwVFT2CZY2fGDqKYysrhHuYAQjxAcw8f6m3oeF7y9IrrrJ8VNMpHuIxTngg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Enx81wo6Qe7BB2dtSscFYIe9m5mKCZc0t2UUtgKFd1g=;
- b=m7uGkuMZSZfcP36Zk1zoinIqOmLsnuvXMnMMcwvaXLX+3k/wXWqbdAQPe0+pDQ2jbmFcenpEbRzlfXKrB8J5kEbbl/vKKJjXgcX8vJx5fgmqJt2pdjFbaBFS6IJbYwBOtJLRGTNktbmT2nkIGQLERTroXG7MoNieBJYJZI/UrVhCDbWKtao7RBaRyNUNAe4a9ks3Aq6k3PUIJYx7iNoY6buDOzq/Dxxd/E5ytZDY6FoyA/q12uk7tie4jzh0ka3uBs77m7BKeNB6f8uTfK8GxvXNI+t1Cs+qKcYrQ4P0yQ6cAZMZk0hDybYYUofu78dwrk0oamym6M34RrBvjv5law==
+ bh=hnFy/d19nVKI2iDgW0YQnzZewt5hBOlU9FqKyol3LKA=;
+ b=rBSDrZiqK8UoVBsNZQv0g3SG8uWMwLIBdD9cYFR+0RWmtIhPstkCAvk/JOoiJdkEPAUMd7t4v3D11+rJ6gUR5HBDYJA3zlu71f7/TnOpCzNj93yUl4mcnBsdcBrxO27pee5CnJOj+HOFt9/9edKFxVOTJwZc+ePFZywf1ZM+8yr0yXjHL86SaxoYUiAdxjsFDj7T/LaJ+NqkWIbxhH7uaxKLegvpfU7hZtWE/nuxykKBh6PY2T3dBQZxpaBc9XDnRbL4M2t/1b8735xj3yvxO0YvnWjGC3wVRTPiwwetVrVlTfckMVIbO8LwTmGRTq/aqa2HwLiJRj3dTbwonGFfEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
  dkim=pass header.d=vaisala.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Enx81wo6Qe7BB2dtSscFYIe9m5mKCZc0t2UUtgKFd1g=;
- b=QnsmEbKPZcSFngCGNYekp+XOlUk0vFQndQCShd3DSqpSofW+c6eb/iu/AIMp+8cvzZq/f13+goBs4V+j/M4Ld1qzD+KqAOdaQ52qk8YertEw7qPaUfktVqneLV7DoXk0vON2dLC99kZ2FouLnOAFd9ZnRSQp/vj8qIMf/daCfUVeRuAk1IPbStlGO3ulhlmB9d1gypoCblXnM89WAQSrd2w1zcM7BvMA5TsS8tZMQef0jJ0m2uW8vkVlaHnhz34XhAUOFnpZVhqRubkOK/m8dCPSyqbfSlngzBNrCommaVlSkHkaGNsyEkVNjiVSywyMNVwneiM++SHmsxWsLo2Ljw==
+ bh=hnFy/d19nVKI2iDgW0YQnzZewt5hBOlU9FqKyol3LKA=;
+ b=H7scdS4fCZLAwo6Mjof8i2ueC0ft+QuqISTTBmg1XM+jLNRhB5KWf5CPNqp8cZfCz83RsNv/BmRofNx4gppffI933I5yyxOLkCu/NsgmslJjfimQWExoXAvDWwVCGzQ7SZBgnsaSao/OUlK6Uvtz/5c8rU6aftDZXL6meB+vrhvoT1tJbRmQVKP+vzMkdjKOBDq0dOKMQfwzsnzAIP8cr/si0nd2jjqirDJl9DNnwIUUv0/GH/pC5nEmzBYo67C6ZOB0UgiyYTr5oW9CwDutqyuHSXX7S9ef9wt6nOqnAHfrLcQ6RpRzR+5V4ppZkF0L8K/R6ybsHi32jfX2z4lYTg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=vaisala.com;
 Received: from AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
  by DU4PR06MB10187.eurprd06.prod.outlook.com (2603:10a6:10:622::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Mon, 5 Oct
- 2026 13:19:58 +0000
+ 2026 13:19:59 +0000
 Received: from AM9PR06MB7907.eurprd06.prod.outlook.com
  ([fe80::a597:33a7:d4e2:1b17]) by AM9PR06MB7907.eurprd06.prod.outlook.com
  ([fe80::a597:33a7:d4e2:1b17%4]) with mapi id 15.21.0472.016; Mon, 5 Oct 2026
- 13:19:58 +0000
+ 13:19:59 +0000
 From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Date: Mon, 05 Oct 2026 13:19:34 +0000
-Subject: [PATCH v7 3/9] serial: max310x: centralize the RS485 transceiver
- programming
+Date: Mon, 05 Oct 2026 13:19:37 +0000
+Subject: [PATCH v7 6/9] serial: max310x: support active-low RTS on the
+ hardware path
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261005-max310x-rs485-sw-delay-v7-3-6ae392eca08c@vaisala.com>
+Message-Id: <20261005-max310x-rs485-sw-delay-v7-6-6ae392eca08c@vaisala.com>
 References: <20261005-max310x-rs485-sw-delay-v7-0-6ae392eca08c@vaisala.com>
 In-Reply-To: <20261005-max310x-rs485-sw-delay-v7-0-6ae392eca08c@vaisala.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -58,11 +58,11 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  Tapio Reijonen <tapio.reijonen@kolumbus.fi>, 
  Tapio Reijonen <tapio.reijonen@vaisala.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791206394; l=6071;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791206394; l=3681;
  i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
- bh=ONFssbccF7R5JxXySBUPDO0nqw68IxVCdSoVjRSgI5k=;
- b=DFE0gMdTek4sJA79Wy2bgu/eOZXuLD34yei/UgRGQeMEZjmKWQL+w+cjlITuES06a4bJav6X0
- W5iXGobauxFCY/BgmbpPhSbhJykw94hfNqpKSXan/WzkcUa98d1NDE8
+ bh=PdLOMwp6EK9w0jElHyf3mZq3J5zhzx9wDoD4vh3LIto=;
+ b=CRDX09jAx+IC525SJZzOSb95BMChM1zG/4gKZJhIyu4uSXXJaDUfSS1K37747HQfen5m5X7iv
+ KCYd5im1amwAWulirfAbD/7HhCRfo1gDSEJ848EJvHUNLY4/5LYL4Mi
 X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
  pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
 X-ClientProxiedBy: GV3P280CA0101.SWEP280.PROD.OUTLOOK.COM
@@ -76,218 +76,151 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR06MB7907:EE_|DU4PR06MB10187:EE_
-X-MS-Office365-Filtering-Correlation-Id: fbd13be2-7294-4a5e-1f47-08df22e3599f
+X-MS-Office365-Filtering-Correlation-Id: a657be11-0283-4eda-7d01-08df22e35ab3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|52116014|22082099003|18002099003|38350700014|6133799003|10067099003|56012099006|11063799006;
+	BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|52116014|22082099003|18002099003|38350700014|10067099003|3023799007|56012099006|11063799006;
 X-Microsoft-Antispam-Message-Info:
-	iedc8/RrJZywTSfG/TT9zQ0i92OEDgKQMzmSih9iXhid/g0Zty8Nj8bWfX6r2mZmAXf8gVg09Kpny8BnNoC3ASyh/cEIiJR8ysC+onsCCRZET9B+KR/rcI8y+bsHReIydz7/yQMhWHHQEhJPmLQmEdRze3C1svwYkMxtfyvqKC4m29nWhKOft7DhGMotqsVWE6OCcBllZaqzGs6A97a2cEJ0RS5rzgcRGH4REzvRv9qDGHwq1qWkoNTfE0MV4oBKb7bRhZxzUO2PXxnVb+ImiqjVgggMhtoGyipYEK8jItouwbxGZHq/pdWBM+Vq5FIXgeKrJFjh+mku9nclFgiLTL2LHgil1802wCUXwOulFjuM0P2pd0lnsrNxbkWtz3DtebY+J8sw7G52DOTyqUYR/FiN9YPpZE26D8X51Q0KJsR4ieQg8OJfPQ4nHhETfZr4BFdQmZJcfVHlLPW+aBcVIs1K5lWqMI83c8A6VICKMNhaFGnQa6DleRvWlegu+2TqozX7ectnz/UfqYsWdX6RSopc7yuuMojxgCiKVYhvbyHuiXvBhLRCm60YCblVUsFFN//SmDr6/ZvdjrN5Gm7OH+f/IHElHxesesztikS6YnBxWbALFj9S67lSS1Dkj5MhDGF4RzLLMzFG2cPv+K8lQF+mOwrbT2ODIL1zCn9A4LfebzOBUShHZJsoejJmEPvXrbx25ICYGMO0fZxrugZn1lX8x7g+PRpTZ334Zpb9rcU=
+	0qeTQdW6IeCUwrAuQOH4MwnuJLUTtrdPgoa7YSzqbVUNFwN6fFabAJHkkf9oStv71KjqpTVsXHSmGl8Z8zY2+SL+JmY4u5agVQqUNDgneIK8JSw/EyMYOe3Pg3jalSiXKbMyhtxjn+Ny3gUDd2yH3zikKW2ZREcyIkjQ5XQcrFSGAK6iN4HbsQd2JZvAhRshTcxezYwaAvnDvVwB8ezoiyvyZletSYNlD2W7SHatWEL//DMN+86GOrbCGsDGjTrM0r7e81d3Fxxy8ZR9cX48BoAgAunyqUDAV3DJS7xnYR0KMCrmLi68HhGWoJmF5ZCIM/YqH0/rWwvuwHmEX34Kpnwcay9wWS2Pm4/Tcb9oLKXrs/vr6sERHl+FHccz00hWv8hoYHhVw4RWZjzU2omA1Mrp2IdZcfiHdsItk0Av+4RqeGKA4bNGJRgpx8jRN0+4e1S1X57X1f9W+nDKRXXXRorLIIfHhXGDCDrMz216Rv9fK4WCp0335td9U6nYaHKH7LLGR3ZzZ9LFD3p8aZF03qeEDW0eboKpDHTGsFs3WrwNyfi3SR52DXCF6IVMd80+bb14n+AO0zuZv4MQnVlSjA+RfbyrRsKQAgGITNP216073xdcj9V/+KcIT5HaNBF58EDAWwLG8VU9ZVLlUSwBPihX6dPPDrJCM3ctLPc+cTnqoaVvos77B53xg45ToKMDF7YUp44X8K4DmyE8QEF1Yw==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(52116014)(22082099003)(18002099003)(38350700014)(6133799003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(52116014)(22082099003)(18002099003)(38350700014)(10067099003)(3023799007)(56012099006)(11063799006);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YVJGNXVha2hoMW1ZSklhZUZyYXhZVmpjM3lBTlhsMlBobDlHWWh5NC9QeFU4?=
- =?utf-8?B?L1NEU3RkOEtmQURoR1drRkJzWTN1b2FjL1p3WTBXbG55QU9DRk44ZU42S29F?=
- =?utf-8?B?bjlhenBtNktTdEl3MnBERFB0U2x0OXB4UkZZZTF5UVBZdUJlSkJyMTh2YlRk?=
- =?utf-8?B?YS9QZFplL2hjVUdtcGJrMVBKUDQzODdNa2pTQzRxdnpkT2lJTW5JbFp2ZUl3?=
- =?utf-8?B?OUVPcDAwRzJoTGppd2tneHBkVEx3WUNiQTJlMjFtV1orUzR3WEsyRUlDcEdy?=
- =?utf-8?B?NU0vdFNJNGhwckxUNHlGMUwyRXkrQ1Y2MkdPZC9rQ2sxeUdLdC9NNi91S2VY?=
- =?utf-8?B?WFBLc3ZUVFBoTExBNUhNOGpnd3pDUEdlRWpIYVA4ZENiR0I0emZ6Z3NpZlRp?=
- =?utf-8?B?K2xPVXZ5NGl1RnVkdGppSmtQL3dEZkNoT2tweEhmUkx1eHJkM0FnZUNZTU1l?=
- =?utf-8?B?ZUdEQ2R2ZlRyWjFvbllySWV5cy9ZdHFoTnd0WlVjQ1h1YXVsR3lBSDVpck1p?=
- =?utf-8?B?VE5uV2tCZ09YaWsycS9hdDBTWEoreWd5Q2lNS1VYckpHVnZVeUwycFdEVXp4?=
- =?utf-8?B?elFjemE2TEU2V1R0anJRZXNXMXkwS1VDR3p4RWlIOGpWL3gybTVvWWVVcmFp?=
- =?utf-8?B?bGhZdXJUQlAxdFVkcXFrVG9RVnBBLy8zWDk0dkQrUEdLOFVzeVZnYUNYb2NH?=
- =?utf-8?B?R3c4ZW8xQ0JoR3VURjYyTHk0YWFLcDJ5NGptWG9NeFBmcXdqVUNxQW1xVjdK?=
- =?utf-8?B?RkUvTGxhSEVOQVZBeFZEVGc2bUszSTJFdDNBTVVJTTZHeXdqUUxYMTVXdThi?=
- =?utf-8?B?NnY3WG9uWU41UmNkL20ydG1TM0I3L2dhY3lBN1ZrbFFVUGVZUVFTc0U5d3VW?=
- =?utf-8?B?T2Vkd25malNWNEJFOHA1cnJZVEJqbDR0cGQyWXpLUVlJZGNWYzh0Q1V0UU93?=
- =?utf-8?B?dmRxVGdDRVBJblQzV2J0SUhoNU9MQSs1Z2dqQXA3R1hvM1ZWTnNrQTVnSURG?=
- =?utf-8?B?Wlg4NDdqNUdLQTVvcXIvNFZDd3hhTmZvaHV3VjU1RmVlc2VWK3pJQk9Kb255?=
- =?utf-8?B?TVB1dmUvZGI5Ym55cTRLNkhXQjlMUEJoZFFVSVN2VlVDZys1eGFsYVA5TlNQ?=
- =?utf-8?B?bHN5N1kxVGVubDJPNHZhRVpkaXVBRFFvRnJISDNEVWk1VGpSR3EzOWlYSTNU?=
- =?utf-8?B?UjRmUVdoRDFYM2NSWXkvUjJhdVRNWXd5QXJtMUovb2tXQ1RIQnJiWlBzd1Y1?=
- =?utf-8?B?YzhiOHczRURvTjZjMHBsdW54TSt1RkdXVnZQeENlWi9JbE9yUDY0Y2Nva3Y4?=
- =?utf-8?B?akUwMWFWdU9YbmZJQkx2VlBYbjR2L1NYSzZRNUdPYWxnUVoxTWpiWWtyQ3FM?=
- =?utf-8?B?NkpHY3RrcWJ6c25DdVFJdFRIQmxqeEtDdGlCQ1dNV2pGMnNEWWdZVWJRV2RZ?=
- =?utf-8?B?S29kR3hGMFV3ZU1xM1M5SUFWM0ZkZyttUWVxcms5b005RDZmT29DSUxiUWV1?=
- =?utf-8?B?N1ZHZ3AyR3ZOSG5lNUhmemFSaG9vQlZUWS92SUttRzB4VzVGY3d0c0UwT3ls?=
- =?utf-8?B?emorRXJYZnE2VjlNUEtLOVd3eFU2Q3pBcVB2c01GTGV2NXpWcXpWdi9lZlVY?=
- =?utf-8?B?K1JrSEV3Ukd3UGJSNDkwUCt5Q0g2dGdLYmM1OVIxMTRJN1l2UFliUkJvZmNG?=
- =?utf-8?B?K05zYUVRR2FhV3dCNVZXckJwV0VNWWdaRDBXSU1vYTN5T2N2S2JEWU9TZGZr?=
- =?utf-8?B?ajZDckhuOU9sUzdRclhuU1R6MTBLNlhKdWcwU0R2Y3pZK3Q1Q0dTcTZKZGFy?=
- =?utf-8?B?ZHFPNVNrcStpNkZpd2ZIOStSK2JqcURNcDQ2Ty9zdUVXcldBOTFXTmk4U3RC?=
- =?utf-8?B?dSszd1p0M1pGd1BaT2hDNllXdjhHM0xQZStkN0RWeGJqT1d4c2VRbjRicUV2?=
- =?utf-8?B?d3llV0toVTF3czZucHNrYktqQWI1alJzUmw5MlNOOFpjYjd6U2VHQUgrRUF4?=
- =?utf-8?B?YllGOWo5c0xmS0VKVnphRGhOQS80N3FVMWFjZEo0UkxlaXFOMWZiT0ViQ2JR?=
- =?utf-8?B?TnVFeTllVmI1WjljUVUyMWNSSlQ2T1p1VXNwYkE3Si90MVZZWU5CdzNwUC9y?=
- =?utf-8?B?NDFSSUsvV3IrUDJNUXVnT0VSMHZnK0VuU2JFUHN6K1BISTZPa2JoMHlsMGpn?=
- =?utf-8?B?aTF5QXhrRnhVZXVEUEhMS1I0dWNTRmd2VG11aTVKQ3dkcFhZaXJwME5wT3Bk?=
- =?utf-8?B?cFFQaDRXZEVEbkJlRGk2RERjY1FTNjVuRnZZNkdpWGJDWlpYeWFTbXNIZzls?=
- =?utf-8?B?K1BKNjN0YU0xSVJUOG42UWpMTDZNTWhINzMzZXFDNVQ2dTNwV2c5R21kOW5I?=
- =?utf-8?Q?JItC/IuWiXs43U4M=3D?=
+	=?utf-8?B?VWw1bEtUTHhCa0h4VlJBQXJhNjBPbkpjSVNydmpjSDgvOC9QSUpCMVpIMkNy?=
+ =?utf-8?B?eHNUTERBRUFGeHdabjZJM1NGUk1zTlJUczNkQS9qVkM3MHpEV09mTmhGbGRa?=
+ =?utf-8?B?Rzh1UkY5YyszUlpNMkRydm9QdCs1dldWZnY0eWJwbUxoNXU3d2hIMFMyMXcz?=
+ =?utf-8?B?U0FKa21xNUp5QWRzK2FGZDlNbENEV0ZTeTh6N2dJamNtZnJXRXNSdHA3bSt4?=
+ =?utf-8?B?SHNnVEw1Q2dSckh0VUhhUC9rTWN6OTRqRTZ4WEgvTmFaOFRUZ3pOcmFvaWJi?=
+ =?utf-8?B?SS8wY1VJVmVrL0wwWXZ3ZjUzUVZyUmNJdmZPVzh2dG1DajZ3L2F2Z1B6Z1cx?=
+ =?utf-8?B?QkpSVzVsQjMvSE00aksyd3lsdEwvQWJ2NmN2dDNhVm03WVAzTWNJMjVIdTIw?=
+ =?utf-8?B?N0F6djJWZE84VlFSQ2xwK1lBVlpsTm1qbnVmL3o3aFUvYXVGZkdHd3FUUWJM?=
+ =?utf-8?B?N0p1REVSd091TE9oeEV4QkZlRWFaektTRmJlVVZwdzJwclVVdjQ5VFNaQS83?=
+ =?utf-8?B?S3Q0cXprcW9kOEh1SlN2S1ZSMG5tQmFacFV4Zld1V29ERGF2M2dSWVhvekVT?=
+ =?utf-8?B?NVFNNEJFRHcxZnJGZTFRZ2VqMGRwMEtOWnZZT3dTUEV6Z0c5REV0dGZuWW1N?=
+ =?utf-8?B?b3FhemFQV2IzK09iVk9jalRuaU9XMm5qaWlpUWE1dEpiMHo2Y2txTExXOWRs?=
+ =?utf-8?B?RnMwS0VMTmFVUXB1V05jK28zUUJweXlSa1JublNUMlZSREdVLzQyTFRtQXUr?=
+ =?utf-8?B?MXhEVjFQSzR3ZVd2NXVTWDBUVVNiWkM1L1lBNkordytiN0QyMWR1NnN6TW9z?=
+ =?utf-8?B?NEdZL1ZhVkFHTXJCZU5BMXo4TGZWeUF6UXpBeXJFV0FVQ1g0UVhVeGt6MmRX?=
+ =?utf-8?B?c3B0ZjFGM3RhemdkK1kvUURsUlBNMjVOVjlQVnF2Tlp4VVh0S29US1ZRYVhL?=
+ =?utf-8?B?K01FTUVJQkhueXV2Q0QxdGdsaE9ybHlWTDhINnVzU011dEdHVm1RVU1rN1RF?=
+ =?utf-8?B?Y2xqQnJ1YzBNQWE1a3RQUWlVcFJXSTVHd1FHSTVocTdHZU1sM21LT1NYMnRa?=
+ =?utf-8?B?TytIQUxaN1ZmNFFaSkN0aktxbjMxYWVzcWtnbzdYcWV0NE1FSSt0YitJRk15?=
+ =?utf-8?B?eHlEeCtDOU1TVk40WFNHekNFcE14SkpNaG5ZamoxbGJESXN4N2RSUE5qR2FW?=
+ =?utf-8?B?RStIUkg0WTJJMjJWcmhLYTBtdkVaZW42S0krSXpKT2RmM1R1SkZzQ2dtV3Y3?=
+ =?utf-8?B?R2lFSHNPbDJMUXFtT0p6ZEREQ2Y3MTR5WmNCa1FFYVZkc3ZJMUhTcm5UZ1hV?=
+ =?utf-8?B?ZmdacmlYRHFlTHJMaEFDTVFOYUluQjNtd2hyQ09jRWEvSG53c1N1WUNmZlRr?=
+ =?utf-8?B?ZVhaV2IvR21ZVlgvRzcrWDRvTlhqcUgyaDNRakdiU3BOazVZb1FWWHhYa1ZP?=
+ =?utf-8?B?S2JTTDM4OVM4c0xNSXNCMk4vbkMyQUtWTkVXUEhKNEFiVXltS3FYSlNEc016?=
+ =?utf-8?B?Q1Vua01PNWl0aFhXd2U1U3ZLbFM2Y2lHZjd4M2F4NXI4TE5PNTE1MXo0Sm9O?=
+ =?utf-8?B?ZVVKWlFDbEdPM040WERWbnZYbU5VTzBMNnI0NW9rUUp1VUlodDdIR2JRNmp5?=
+ =?utf-8?B?Nzk0RnBRdnoyR1E5aWNlZmt4dzhvMm9aYUlQWmwxei96QzBlM2tPN2ZXQUZH?=
+ =?utf-8?B?QmZYM2NZRWhNN29MVzFPSEEzWWhENm9RdmpxbHdDQnFkTExBYzYrRUpBWWtl?=
+ =?utf-8?B?dUxBZ1pPcDNFUDJqR3FNZkZFZUNuSlQ2ODRWaStxOXB6TUhpT005bzFkWWpo?=
+ =?utf-8?B?UXpYSGEzcm9Bd0FtTHZ4MnBpd2dGTHdLSmRyZ2VwSzVFOWMvNVVONVVQQ1ph?=
+ =?utf-8?B?TE1sWGprd2VHOGE3WXdBaUJzYTBhWkM0dFgrNTNTc3BDTStQaW1jZGppU05G?=
+ =?utf-8?B?OGNXbmhqU2pqSmlqaWJJa1dmcms0MzM2R3hFcjI0QWRiaTRaZzEyWVBmS01o?=
+ =?utf-8?B?Vm1LTXJiaEZRcVNtVlBwTXFoRklQM2J5dGY3SUZXa0FDclhaSmNGTGZlM2Vm?=
+ =?utf-8?B?aGIrRGtoY3dscll4ZDN1THNkZk5ubkhGbzY3L3hTRTZQQTFObGo4QkpZNnZ4?=
+ =?utf-8?B?a0JSeU1MaTIrMGJFY0pSTkNRbERsc25YVWNSKzN2NVZ3MDBPVVppTWdyejBz?=
+ =?utf-8?B?ZmpaUjJRdDVyc0Z5UVNuM3VJbjRMcllXTnRXS0xLclFuek5lMmEwRUJtQVIy?=
+ =?utf-8?B?N2NhTDIzNHpIVUF6ZTN5c1U2dndxeXo5Yzh5VjVMd1lXV3NoT2dkY0gwY212?=
+ =?utf-8?B?S0RrOWZIZmY3MUkwMkRpVE56bmEvZVdqSnNvMjcwWUtXWVl6SU90bCtHRXJS?=
+ =?utf-8?Q?iXqF6P10oEczVnyE=3D?=
 X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbd13be2-7294-4a5e-1f47-08df22e3599f
+X-MS-Exchange-CrossTenant-Network-Message-Id: a657be11-0283-4eda-7d01-08df22e35ab3
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR06MB7907.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 13:19:56.7145
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 13:19:58.5633
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pQ+4uGgRihV4lHlrTGQDZU2aYfndST1VNa12YreOpNdgnhTPaOSrDVVUlDBTxlwK1CgWcgWmYPm1FBAz/7K+c9f2rclXFjl8FuZxE1jRenU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: zZhvJ4pF3acULew2QFV92UNplMLcj5GrWDnRYLzPYp9vfo0YLjQGmFvRIfShZq2FVxk56gMktIlR3kd50jQON90M1r8ZhTjmxzKSn6trwpQ=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR06MB10187
 
-The HDPIXDELAY RTS delays and the MODE1 auto-transceiver enable are
-programmed in three places - the rs485-config worker, startup() and
-break_ctl()'s break-off restore - each with its own copy of the
-register sequence. Move the sequence into a helper,
-max310x_set_rts_ctl_params(), together with the tx_break guard that
-keeps the MODE1 write away from a break in progress; the break-off
-restore reapplies the current configuration through the same helper.
+The chip's auto-RTS engine asserts the RTS_ pin high while data is
+shifting out, so a transceiver with an active-low driver-enable could
+not use the hardware RS485 path at all: SER_RS485_RTS_AFTER_SEND is
+not in the supported flags and the core normalizes it away with
+"invalid RTS setting, using RTS_ON_SEND instead".
 
-No functional change intended. The copies differed only in that
-startup() clamped the delays to the 4-bit field while the worker wrote
-them unclamped; the helper clamps, and the difference is unreachable
-while rs485_config() still rejects delays above 15 ms with -ERANGE.
-Break-off additionally rewrites HDPIXDELAY with the values it already
-holds, a no-op on the wire.
+The output stage is invertible: program IRDA.RTSINVERT when the
+requested polarity is active-low and advertise SER_RS485_RTS_AFTER_SEND
+in rs485_supported. A break already drives break_state onto the RTS
+bit unadjusted, which remains correct because RTSINVERT inverts the
+output stage itself, not the register value.
 
 Assisted-by: Claude:claude-fable-5
 Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 ---
- drivers/tty/serial/max310x.c | 85 ++++++++++++++++++++++++--------------------
- 1 file changed, 47 insertions(+), 38 deletions(-)
+ drivers/tty/serial/max310x.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 319517bee63fdf5e67c311d2575083fd0d8a5870..85353401e09b1481996142432b1279f44fefff1d 100644
+index e08e506360d72a3ef4c0ebdca2e60d864973f909..0c40283f44ba1df712607218aef24cb642ba3918 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -934,6 +934,38 @@ static void max310x_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	schedule_work(&one->md_work);
- }
+@@ -164,6 +164,7 @@
+ /* IRDA register bits */
+ #define MAX310X_IRDA_IRDAEN_BIT		(1 << 0) /* IRDA mode enable */
+ #define MAX310X_IRDA_SIR_BIT		(1 << 1) /* SIR mode enable */
++#define MAX310X_IRDA_RTSINVERT_BIT	(1 << 2) /* Invert RTS output */
  
-+/*
-+ * Program the chip's RS485 RTS timing (HDPIXDELAY) and the auto
-+ * transceiver control (MODE1) from the current configuration. The
-+ * rs485-config worker, startup() and break_ctl()'s break-off restore
-+ * each carried their own copy of this sequence.
-+ */
-+static void max310x_set_rts_ctl_params(struct max310x_one *one)
-+{
-+	struct uart_port *port = &one->port;
-+	unsigned int delay;
-+	u8 mode1 = 0;
-+
-+	delay = (clamp(port->rs485.delay_rts_before_send, 0U, 15U) << 4) |
-+		clamp(port->rs485.delay_rts_after_send, 0U, 15U);
-+	max310x_port_write(port, MAX310X_HDPIXDELAY_REG, delay);
-+
-+	if (port->rs485.flags & SER_RS485_ENABLED)
-+		mode1 = MAX310X_MODE1_TRNSCVCTRL_BIT;
-+
-+	/*
-+	 * A break owns the transceiver: break_ctl() disabled auto-RTS and
-+	 * drives RTS manually, and restores it from the current
-+	 * configuration when the break ends. Touching MODE1 here would
-+	 * release the transceiver mid-break.
-+	 */
-+	if (one->tx_break)
-+		return;
-+
-+	max310x_port_update(port, MAX310X_MODE1_REG,
-+			    MAX310X_MODE1_TRNSCVCTRL_BIT, mode1);
-+}
-+
- static void max310x_break_ctl(struct uart_port *port, int break_state)
- {
- 	struct max310x_one *one = to_max310x_port(port);
-@@ -956,10 +988,7 @@ static void max310x_break_ctl(struct uart_port *port, int break_state)
- 		max310x_port_update(port, MAX310X_MODE1_REG,
- 				    MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
- 	} else {
--		max310x_port_update(port, MAX310X_MODE1_REG,
--				    MAX310X_MODE1_TRNSCVCTRL_BIT,
--				    (port->rs485.flags & SER_RS485_ENABLED) ?
--				    MAX310X_MODE1_TRNSCVCTRL_BIT : 0);
-+		max310x_set_rts_ctl_params(one);
+ /* HDPIXDELAY accessor macros */
+ #define MAX310X_HDPIXDELAY_SETUP(val)	(((val) & 0x0f) << 4)
+@@ -951,7 +952,7 @@ static void max310x_set_rts_ctl_params(struct max310x_one *one)
+ 	const unsigned int max_bit_dly = 15;
+ 	struct uart_port *port = &one->port;
+ 	unsigned int setup = 0, hold = 0;
+-	u8 mode1 = 0;
++	u8 mode1 = 0, irda = 0;
+ 
+ 	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		/* Convert milliseconds to bit-times, rounding up. */
+@@ -963,6 +964,12 @@ static void max310x_set_rts_ctl_params(struct max310x_one *one)
+ 		hold  = min(hold,  max_bit_dly);
+ 
+ 		mode1 = MAX310X_MODE1_TRNSCVCTRL_BIT;
++		/*
++		 * The auto-RTS engine asserts RTS high on send; for an
++		 * active-low RTS let IRDA.RTSINVERT invert the output stage.
++		 */
++		if (!(port->rs485.flags & SER_RS485_RTS_ON_SEND))
++			irda = MAX310X_IRDA_RTSINVERT_BIT;
  	}
- 	max310x_rts_ctl(port, break_state);
- }
-@@ -1083,36 +1112,23 @@ static void max310x_set_termios(struct uart_port *port,
- static void max310x_rs_proc(struct work_struct *ws)
- {
- 	struct max310x_one *one = container_of(ws, struct max310x_one, rs_work);
--	unsigned int delay, mode1 = 0, mode2 = 0;
-+	unsigned int mode2 = 0;
  
- 	/*
- 	 * Serialize against break_ctl() and set_termios(), which run under
--	 * port->mutex: the tx_break test below and the MODE1 write must not
-+	 * port->mutex: the tx_break-guarded register writes must not
- 	 * straddle a break starting or ending.
+ 	max310x_port_write(port, MAX310X_HDPIXDELAY_REG,
+@@ -980,6 +987,8 @@ static void max310x_set_rts_ctl_params(struct max310x_one *one)
+ 
+ 	max310x_port_update(port, MAX310X_MODE1_REG,
+ 			    MAX310X_MODE1_TRNSCVCTRL_BIT, mode1);
++	max310x_port_update(port, MAX310X_IRDA_REG,
++			    MAX310X_IRDA_RTSINVERT_BIT, irda);
+ }
+ 
+ static void max310x_break_ctl(struct uart_port *port, int break_state)
+@@ -996,7 +1005,9 @@ static void max310x_break_ctl(struct uart_port *port, int break_state)
+ 	 * The chip's auto-RTS asserts the transceiver only while FIFO data is
+ 	 * shifting out, and a break is not FIFO data. Disable auto-RTS for the
+ 	 * break duration and drive RTS manually so the break reaches the wire;
+-	 * restore auto-RTS when the break ends.
++	 * restore auto-RTS when the break ends. For an active-low RTS,
++	 * IRDA.RTSINVERT already inverts the RTS_ output stage, so break_state
++	 * is driven as it is.
  	 */
- 	guard(mutex)(&one->port.state->port.mutex);
+ 	if (break_state) {
+ 		if (!(port->rs485.flags & SER_RS485_ENABLED))
+@@ -1416,7 +1427,8 @@ static int max310x_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
+ #endif
  
--	delay = (one->port.rs485.delay_rts_before_send << 4) |
--		one->port.rs485.delay_rts_after_send;
--	max310x_port_write(&one->port, MAX310X_HDPIXDELAY_REG, delay);
-+	max310x_set_rts_ctl_params(one);
- 
--	if (one->port.rs485.flags & SER_RS485_ENABLED) {
--		mode1 = MAX310X_MODE1_TRNSCVCTRL_BIT;
-+	if (one->port.rs485.flags & SER_RS485_ENABLED &&
-+	    !(one->port.rs485.flags & SER_RS485_RX_DURING_TX))
-+		mode2 = MAX310X_MODE2_ECHOSUPR_BIT;
- 
--		if (!(one->port.rs485.flags & SER_RS485_RX_DURING_TX))
--			mode2 = MAX310X_MODE2_ECHOSUPR_BIT;
--	}
--
--	/*
--	 * A break owns the transceiver: break_ctl() disabled auto-RTS and
--	 * drives RTS manually, and restores it when the break ends. Leave
--	 * MODE1 alone meanwhile or the break goes undriven mid-way.
--	 */
--	if (!one->tx_break)
--		max310x_port_update(&one->port, MAX310X_MODE1_REG,
--				    MAX310X_MODE1_TRNSCVCTRL_BIT, mode1);
- 	max310x_port_update(&one->port, MAX310X_MODE2_REG,
--			MAX310X_MODE2_ECHOSUPR_BIT, mode2);
-+			    MAX310X_MODE2_ECHOSUPR_BIT, mode2);
- }
- 
- static int max310x_rs485_config(struct uart_port *port, struct ktermios *termios,
-@@ -1156,21 +1172,14 @@ static int max310x_startup(struct uart_port *port)
- 	max310x_port_update(port, MAX310X_MODE2_REG,
- 			    MAX310X_MODE2_FIFORST_BIT, 0);
- 
--	/* Configure mode1/mode2 to have rs485/rs232 enabled at startup */
--	val = (clamp(port->rs485.delay_rts_before_send, 0U, 15U) << 4) |
--		clamp(port->rs485.delay_rts_after_send, 0U, 15U);
--	max310x_port_write(port, MAX310X_HDPIXDELAY_REG, val);
--
--	if (port->rs485.flags & SER_RS485_ENABLED) {
--		max310x_port_update(port, MAX310X_MODE1_REG,
--				    MAX310X_MODE1_TRNSCVCTRL_BIT,
--				    MAX310X_MODE1_TRNSCVCTRL_BIT);
-+	/* Configure the RS485 RTS timing and the RS485/RS232 mode bits. */
-+	max310x_set_rts_ctl_params(one);
- 
--		if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
--			max310x_port_update(port, MAX310X_MODE2_REG,
--					    MAX310X_MODE2_ECHOSUPR_BIT,
--					    MAX310X_MODE2_ECHOSUPR_BIT);
--	}
-+	if (port->rs485.flags & SER_RS485_ENABLED &&
-+	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
-+		max310x_port_update(port, MAX310X_MODE2_REG,
-+				    MAX310X_MODE2_ECHOSUPR_BIT,
-+				    MAX310X_MODE2_ECHOSUPR_BIT);
- 
- 	/*
- 	 * Configure flow control levels:
+ static const struct serial_rs485 max310x_rs485_supported = {
+-	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX,
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
++		 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX,
+ 	.delay_rts_before_send = 1,
+ 	.delay_rts_after_send = 1,
+ };
 
 -- 
 2.47.3
