@@ -1,366 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11021099.outbound.protection.outlook.com [52.101.65.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47A747A883;
-	Mon,  5 Oct 2026 10:50:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791197429; cv=none; b=rpm/EAwVRaFvdU8Q9RhS+c7nP99k5EpaOKycaXe+zRp8EyPWp0BDtDT6ctHO/drxkJnrmPhb4jNrlVtoEvlq9Yt5yhxrGadeAkt2ejvwUm9sx6DIxCEAhhp656Sli1nniVmjjgKd3PjGV+yAuoX5xy1ff+Q/+jZGwWqN1EA3Xz0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791197429; c=relaxed/simple;
-	bh=YGDhlmcqxyB467cF+myHTsIJbcHCBo5ygBNyKyt1gHE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TkY6TI6OYFWe5zCiSsZ8Vca887ghzhfe0O7uq19jZOSUSc2rrSQBFFqsle/VvJxqo0VVBAmV5fI2XGQAc5gHfSz5wja5dX4AJiF6EIrt++SqGUYWPI+lsEkeYiry4tD8oiJ8oCPfuz95CO5BI1FrPfbaJYe7J+kKCqe1874FVCI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NuV4R0Nd; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05520471D1C;
+	Mon,  5 Oct 2026 10:51:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.99
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791197522; cv=fail; b=NFzV7u6OzDApHygdtojm5OcyNh4KyzLVltch71euWsXM2O1yyLxpMOkT7hO9Gtl8QNmxDXGYgLPFNxKJPDE8sae3Xeg0RNvhv2/DCUE+ZGF763DRZomX6nOtr2SHuW+RonHhHLJHYQggjnuelhLewC5zPjhzgu8Yicfe5R/5AV0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791197522; c=relaxed/simple;
+	bh=pnALeUrm6t9wiVrp8xFjqL0ouiwxut5o2XemZul1Rl4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=H7gRPtlDJXVYEjDRkfEOIURzfGbi0/QhJCIyTGhVAg+m+QJ3IqjrYbd/GdRQQunT19DqutCFlP9LovhiAUbCfhctLG0bX8h42SLrxQnFSb32cYpuLIiDNvvMTC9KHKVZ5kBGAei+nXym7Bace6mjvCb7hAfh1AOgkkbjpDJwX3s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=UYvEMYsA; arc=fail smtp.client-ip=52.101.65.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NuV4R0Nd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC531F00893;
-	Mon,  5 Oct 2026 10:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791197427;
-	bh=dNNu6FxDNOOWjNZIXKqoN5QQzPfYosIUED3AJWJ62cA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=NuV4R0Ndzki6VgB4Om4UUR9MgwgrCfkDvYNpScrdMa8v6zgXtRhGbYNLY8o6xqR9X
-	 WZMwikc6KCkeH1v78mAGgD5+QpJvL8eYyNOXjE+BI1OfcfRcgjEVInuynXSqGyo5Ll
-	 KW91Nr3aNCxs4Yd3hApAAHQgw1NnnauvVWpzbvw8tJ828dbL51RmsPt6RfWZb3yQRW
-	 pbxpmsidwPYxW0bMYBtGuBnhwXVZinQcwSO9rXSiV6dskijym854NtJ5TXtzYd2QR1
-	 AtHLbhVf3r9ngpvLs0nDmVvEwShhjy1uECf8whixppree5lwxS+YOLwPZ5aH7A4PLc
-	 ACtkjOcCQT7/w==
-Date: Mon, 5 Oct 2026 11:50:19 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jisheng Zhang <jszhang@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-	Brian Masney <bmasney+clk@redhat.com>,
-	Jerome Brunet <jbrunet+clk@baylibre.com>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Frank Li <Frank.Li@nxp.com>, Lee Jones <lee@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-i3c@lists.infradead.org, mfd@lists.linux.dev,
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 08/20] dt-bindings: reset: add Synaptics SL261X SoCs
-Message-ID: <asOA6-r41fuoGkEo@squawk>
-References: <20260929061417.20733-1-jszhang@kernel.org>
- <20260929061417.20733-9-jszhang@kernel.org>
- <20260929-sprang-stir-af07a907ccb2@spud>
- <ar0npPCHX1P5Gjzx@xhacker>
- <20260930-legend-helium-ca5a0ff56709@spud>
- <ar_POzPRppAwK7ui@xhacker>
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="UYvEMYsA"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=l32Wuu8ZXz1eXl8qRE+8GRXarrZrlITNDmCKhYbBbDy6XHiV00pegu3TpYHgZbSro2/al1TuFy1+hMIQdSHINm15kYH6oS2lgMVfV2uFzdhhZoT5c9XynxMawjLUBGH6nE7aFHyJijOMEescBzqkdmEw8RmkZ7Op/2YaIFcKOsZlgl/Owt/akgVxEJOFrULA8pwxtlvgt421eRn7h/mgmkIqXtQmWx9hdfd/puxKH/ROv96pYqVXAJC47zjoS6/M95ZylaevLLirwLUiVKNKADoB2et77+9KIclkE0IWgqj5DHtcoAggc2HEMdCIrOVF0S28J0J2Y/nhHq8uA8A0Lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pnALeUrm6t9wiVrp8xFjqL0ouiwxut5o2XemZul1Rl4=;
+ b=ERbXuy16U54/2NdRJAWkx8y7QlQqo7GV4d8e5WEwnDqKmgBLfMKRqNk1ck8qM3X0I5OSUaL1sloX0O+IJJ056c6M0EfLyK9w4jzg4bH9CvqTDRSAs77L8EuBE67tu7/rFE+gdOHaOIjEFXnyEaOeOnZwYeqM0jBvTTFInhjn4taefubNvDHVp0EYKFIjkxy3xnlM5IwmkMcjamqn0Ts2J07qq51mimGQ1S+d8Xt7w9Adwj0Ldwqws6jfUkKknZ9NWnid0NNQ0FPgIfcGt0LQvSwUeOy0dNpQ5wO6rOTHhmkJsnQesOvZQCZ2gev50eD9WqF0IO265av8xT5Ez3WIkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pnALeUrm6t9wiVrp8xFjqL0ouiwxut5o2XemZul1Rl4=;
+ b=UYvEMYsA/HlWfhvMEIzKYb9X2K80cnAkVrmwSpIgAb3f1PMOataNtCcZtukQFQ48ZcG4zRHqzHB4GqwhHx3vKVnvyiv3ENCexcoEHN4zKm4TR/bF/vBzqJVVZfpng9uaEuNIYBR1VJJCG6RIYEQQfjgp3+rXw4XcuZ1OJno1b7DbV8BOOEFPhn/Vb1mgfRSH6P3oeBrNrFqIkkbiokSScgZEVbMGGypny861Qp3jwYVyeL0aO8iwnOgR2rZZVX+9AP07Fwz9JDVGcVaMh7oWqiD2bUVfcsvNDjv7/iRq9v5hJo+OH2YvusESawN4Z+ev+xnD4dmdzfcUhvk7+HjJyw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
+ by PA3PR06MB9837.eurprd06.prod.outlook.com (2603:10a6:102:4aa::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Mon, 5 Oct
+ 2026 10:51:52 +0000
+Received: from AM9PR06MB7907.eurprd06.prod.outlook.com
+ ([fe80::a597:33a7:d4e2:1b17]) by AM9PR06MB7907.eurprd06.prod.outlook.com
+ ([fe80::a597:33a7:d4e2:1b17%4]) with mapi id 15.21.0472.016; Mon, 5 Oct 2026
+ 10:51:51 +0000
+Message-ID: <b20fcb96-964e-46bc-b06c-0d0fcbf596d1@vaisala.com>
+Date: Mon, 5 Oct 2026 13:51:49 +0300
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 5/9] serial: max310x: wait for TX to drain before
+ powering down in shutdown
+To: Maarten Brock <Maarten.Brock@sttls.nl>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Tapio Reijonen <tapio.reijonen@kolumbus.fi>
+References: <20261004-max310x-rs485-sw-delay-v6-0-3a0ef13ed9e3@vaisala.com>
+ <20261004-max310x-rs485-sw-delay-v6-5-3a0ef13ed9e3@vaisala.com>
+ <GV2PR05MB119415B20C7D800FA6279CE4183962@GV2PR05MB11941.eurprd05.prod.outlook.com>
+Content-Language: en-US
+From: Tapio Reijonen <tapio.reijonen@vaisala.com>
+In-Reply-To: <GV2PR05MB119415B20C7D800FA6279CE4183962@GV2PR05MB11941.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: OL1P279CA0071.NORP279.PROD.OUTLOOK.COM
+ (2603:10a6:e10:15::22) To AM9PR06MB7907.eurprd06.prod.outlook.com
+ (2603:10a6:20b:3a6::23)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Gk8IWZpUcu6PCSl4"
-Content-Disposition: inline
-In-Reply-To: <ar_POzPRppAwK7ui@xhacker>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR06MB7907:EE_|PA3PR06MB9837:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8d0d6f9d-4178-47f0-6dff-08df22cea9d3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|22082099003|18002099003|4143699003|10067099003|56012099006|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	Rx98PvYNC83DPii5ZuaV065LrCnawhhF5Zv0FiOHvc/LBMReeyY0T5jHUXM0a8HtDEq4uzNA5L1MpHGXyBNNxyT3yCojLtj7APJb5D6gtOrqktMPw13Y3nj8fjPeLWfIXPlOUMt/YZqG7sX55QXRh32V07UpumJORsZqtjyxiORZbVQ/SSeBGmdqmUXNueu0VMtsO2R7uY5IhtgjjG+AptX2l1IeLp57b2HqZ1ov2F5Fh1WWPDLRnFY0ERdKjReXKwAEtsbbfg+F1uRAqsubZ2P2B30p4h2+JvpizYAhqnZI7xXW+/Iyb8pVvQiGDoNAYn1+8oxNQuBeigPukVF/kF+REAUJ1sB7aXrbtZZI50I1l8dmSiupfH9EUPQ+wjyp2Nz1FMuzWpDsznijogZEBHR2CSSEO5YgTGveDneOy4Su/K00uq3NcDHpZP6/L88nC0yrvnWZE+iRCAt9YL2oyU8oNXIsedBzYTWD2tcIDvlsnrN7pQtH7B3c76frDWZWtU6RGp9YgeuoGPBh8XMoA3bt7TUVS4RuozJxwhF6gclg9aLrb32fWhSchaa7WlckKK80j88EGHuwn2RMQCN6CMsKW4XV9huJcRbSC4GZZx+1PGQKoOlKVwE9HXk+rLUPHxXqnD+aax0QjgcdylKGghVOLvQJDpoKU0+Z7HJ/hdg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(22082099003)(18002099003)(4143699003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SEppVzhoMEFyTEFsbjkrdEtEb3RBZUw0RFVxcEJpVzhhWlJHVUVmVCt4OWVB?=
+ =?utf-8?B?TlRwSEJVRkV2Mk9KWnhubXo1SEJ6aUJDN1pUYjl4am5rcnRTdzhDdy9DNm1n?=
+ =?utf-8?B?cDVzR1VXWThDYXU4Ykt4TGIvbVlUQmRITEJaQ0trd29VLzhDb0VKOERzUzBB?=
+ =?utf-8?B?MWxvMm1QUmc4a2FNaUc5SHJWVTNTSE11SU4wRE9nVm82ZE5WZllUNGJYNzll?=
+ =?utf-8?B?RURUT0VBQUpWeW10RkNwVEdaY0xlUG5CbytPYjJ3TXROZ0tEV1hWdk1qbUNa?=
+ =?utf-8?B?dHJjN3U0bDMzczlUQzdueUZXeXVWY2xicy9rb3NSamI2ZEVycjNMek11bjhT?=
+ =?utf-8?B?a0dDUUxKdjhqd29oZ1hJOFoyVnJVbWluTitDbnJOSFFYL1VsVUQxUVIrKzJT?=
+ =?utf-8?B?bVZtK3dBYXgrQUFwQXJ4U1A3MSszUkw5a3ZUUi9BOWx5OU9qeVZZUEJJVW9Y?=
+ =?utf-8?B?VFM4UjlwVUtwMmhaQmVJNWdQbG9GRHcxNm1aUHg4ZURmUUYra3BtN0xGVVlM?=
+ =?utf-8?B?UHQ0cEIzQVdmV3AwNGg2ZGlsMW9ubTY3U1ZLZzRyVXdjY1VSNVV3bmRDT2Qz?=
+ =?utf-8?B?K1M1ckRJNVFaekwrZklNUG9LZ2s5dzg5VmxMVUVydHVGT3BaaHhKQW5KZExk?=
+ =?utf-8?B?amlhM0NrZnVGUFNBejN2NHM1V1cxbEFJM3c0QUMreEIwL1l3dzBBQkJDQktE?=
+ =?utf-8?B?WndYYVR6Ujk4MXR5clpxQ2cxVVY3aWxaUHdVS1luNnlDaXNyRCs2aS9uOGZT?=
+ =?utf-8?B?OENPVjBjMlBtV2ZRaGdncXBlUU9OOVBiN3lVWkp2aVZWS1RVQXBuV0p1V0dl?=
+ =?utf-8?B?TzBrTHJsS0w3MzVBbGtzUURMWS9wSjFYdFllbEdIL20wWktkMnRQaXYxSEdS?=
+ =?utf-8?B?UEN3VzRrWTJTa2pnVVhTbGMzeDl6ZWIrakpTZ0hWV2RoYi9oTVlPVzJaS29O?=
+ =?utf-8?B?cFBSVTVHYkhkWTQwUEtkV3Ivc0ozT3Viemk1eHVMOGVEbzlYQVpHRndCaGtz?=
+ =?utf-8?B?RFZQYkdRZUtwZUJ6a0lPdllQZ3dwRGJGNjJUNnRDSlZJMHl1MVBYbTIwSVZX?=
+ =?utf-8?B?UWpzelNZbEpPc0loNXAyU2V6dGJadVdsRVozN05neGEybmZxNU5VUUF6L1dz?=
+ =?utf-8?B?R3BBK3UyNEdkbkViK0dPb3V5dTI1MWRyN1dwOU92K0hnUFBaSVZiUE9NRTI0?=
+ =?utf-8?B?VkpFMHh2cjVIbFNveDV1RTEvbEpKcGJrYjhQaWNaUFNFS2Zzb0QxTVFxR1dh?=
+ =?utf-8?B?c3MvbkxQTkdXWGgvNWs5eGFHb1d2UCtrTDBPK21vK0ltaVNDcG1LN0tXMUdu?=
+ =?utf-8?B?MTA5TVloRzI4bkZrWmtPNnJkZEsvWENPNkFRVHZtQWdKbU9QR3NzVkNicnFq?=
+ =?utf-8?B?b2d4NnJLYTFHY2hMRFZmM0ltS1BjN0JBRWkxaThGRHRPTksvNmtNbGoyZ2or?=
+ =?utf-8?B?OG50bVJ3YXU0M3l0a3BsSkJUZE1EVm9pOERBWnUrWklzT2crWndSL2ZwbjhB?=
+ =?utf-8?B?WERuY21FZHlRaklQcytXUllIYWRZemZJdVlkUGRBZkdrRzdZZVV0STk5UU43?=
+ =?utf-8?B?NjF1bXNDRVczdkZLcXQ5TUkrM2w3VzQ1RWJBVHpaYlVSNTR3OThlREk3bTc5?=
+ =?utf-8?B?SVA1bkpKOVlKWFVHbWlncGI5RkxINUdPd0xpT2RPcjQxbUdHeEl4MXRhN2pK?=
+ =?utf-8?B?c09zdlhVaDRZTmtTalp3WGMvL1NERW5BaDhkeVdxaUlxdENZYmsrZGRrWXoz?=
+ =?utf-8?B?RzF0ejZRTlpaWWp0ODZoVXJtbzFWQzFGa0dsczNuRkJ2Wk1lKzc2OEY4V2kr?=
+ =?utf-8?B?aUlvN3dwZkJYaFBLeFNUbmRuSHVKYUxVZVFWUWtxUUtNSTZzWXlMNGZrcDJl?=
+ =?utf-8?B?UEVRUlptMnU5TUJqdWJFcENZUjVTbVJXTHB1YWZDUk9oUjZGQmxaZ0tWUnha?=
+ =?utf-8?B?Y1kzeSs4ZTVlS2RodnZQTDRVZ3JxNjJieVhteVJYSnIrRVNycmxtL01vcTky?=
+ =?utf-8?B?M1JmZWNNMEVubDMxQWRBQkQrMXJzRmVrZE5Bck9najlMblMrZ3didzBDVUVD?=
+ =?utf-8?B?dnZoZGNDOHliTWpTYks2RW5FYjVTVmhsUUtkRkowT0V6aU8xcFd0VFFnd0Ew?=
+ =?utf-8?B?RklIYnJNZlFkT3h2cytBRnd0WEN0MGROTzZreTJhRHhwYlVLQTdaVkx0OWhm?=
+ =?utf-8?B?eUVlQWxCWG9NbnhGZkxTam1Cd0ZYMUpYM1NaSDUyYVlYbWkxajRYdnRYRXpa?=
+ =?utf-8?B?dzJBdjFmUHFGdzVGaWtvT2k0YVg4alk4b1JhaWp4RzZBeEJMeXM5eFkvWlhB?=
+ =?utf-8?B?ai91Q21GWFlham9XRUZCTXVpd3RPMXdrRkhJNjV1SGc0MVU2Mk5tTjhRWEhJ?=
+ =?utf-8?Q?NioWgF94rLhdy9Bs=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d0d6f9d-4178-47f0-6dff-08df22cea9d3
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR06MB7907.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 10:51:51.9253
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3Gf9uzA/ivRX8vd+nh0oi8Z7CETIGMgGD1jpbP4JnlTVY6+JTfjKWY67EBwx6kC60czLId+uuVtGM5+QZueOdegl51Fo1Rwd1+H6iU8yaKc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA3PR06MB9837
 
---Gk8IWZpUcu6PCSl4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 02, 2026 at 11:35:23PM +0800, Jisheng Zhang wrote:
-> On Wed, Sep 30, 2026 at 05:49:18PM +0100, Conor Dooley wrote:
-> > On Wed, Sep 30, 2026 at 11:15:48PM +0800, Jisheng Zhang wrote:
-> > > On Tue, Sep 29, 2026 at 08:44:13PM +0100, Conor Dooley wrote:
-> > > > On Tue, Sep 29, 2026 at 02:14:05PM +0800, Jisheng Zhang wrote:
-> > > > > Add device tree bindings for the resets on Synaptics SL261X SoCs.
-> > > > >=20
-> > > > > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > > > > ---
-> > > > >  .../bindings/reset/syna,sl261x-reset.yaml     | 40 ++++++++++
-> > > > >  include/dt-bindings/reset/syna,sl261x-reset.h | 80 +++++++++++++=
-++++++
-> > > > >  2 files changed, 120 insertions(+)
-> > > > >  create mode 100644 Documentation/devicetree/bindings/reset/syna,=
-sl261x-reset.yaml
-> > > > >  create mode 100644 include/dt-bindings/reset/syna,sl261x-reset.h
-> > > > >=20
-> > > > > diff --git a/Documentation/devicetree/bindings/reset/syna,sl261x-=
-reset.yaml b/Documentation/devicetree/bindings/reset/syna,sl261x-reset.yaml
-> > > > > new file mode 100644
-> > > > > index 000000000000..8cfec17df800
-> > > > > --- /dev/null
-> > > > > +++ b/Documentation/devicetree/bindings/reset/syna,sl261x-reset.y=
-aml
-> > > > > @@ -0,0 +1,40 @@
-> > > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > > > +# Copyright (C) 2026 Synaptics Incorporated
-> > > > > +%YAML 1.2
-> > > > > +---
-> > > > > +$id: http://devicetree.org/schemas/reset/syna,sl261x-reset.yaml#
-> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > > +
-> > > > > +title: Synaptics SL261X reset controller
-> > > > > +
-> > > > > +maintainers:
-> > > > > +  - Jisheng Zhang <jszhang@kernel.org>
-> > > > > +
-> > > > > +description: The reset controller node must be a sub-node of the=
- chip
-> > > > > +  controller node on SL261X SoCs.
-> > > > > +
-> > > > > +properties:
-> > > > > +  compatible:
-> > > > > +    enum:
-> > > > > +      - syna,sl261x-soc-reset
-> > > > > +      - syna,sl261x-system-reset
-> > > > > +
-> > > > > +  "#reset-cells":
-> > > > > +    const: 1
-> > > > > +
-> > > > > +required:
-> > > > > +  - compatible
-> > > > > +  - "#reset-cells"
-> > > > > +
-> > > > > +additionalProperties: false
-> > > > > +
-> > > > > +examples:
-> > > > > +  - |
-> > > > > +    chip: chip-control@f7e10000 {
-> > > > > +        reg =3D <0xf7e10000 0x1000>;
-> > > > > +
-> > > > > +        chip_rst: reset {
-> > > > > +            compatible =3D "syna,sl261x-soc-reset";
-> > > > > +            #reset-cells =3D <1>;
-> > > > > +        };
-> > > >=20
-> > > > Why can't this just be part of the parent node?
-> > >=20
-> > > Good question! IMHO, the reasons are:
-> > >=20
-> > > 1. the so called Gbls(Gbl means global) such as mcuGbl and
-> > > chip control Gbl contain not only reset, pinctrl and clk/plls
-> > > but also some other registers for different purposes, e.g in the
-> > > chip control gbl, there are some registers to control eth phy sel(RMII
-> > > or RGMII), and TXC 90 degree selection etc. These registers will
-> > > be used by the Ethernet driver;
-> > >=20
-> > > While there's no pinctrl regs in avioGbl and vppGbl. In the vppgbl,
-> > > there are some registers for DPHYTX etc.
-> > >=20
-> > > As can been, in different Gbls, there maybe different purposes regist=
-ers, no
-> > > obvious patterns.
-> > >=20
-> > > So the question here is why not split the gbl into different register
-> > > spaces, and abstract each space for each function group?
-> >=20
-> > No, you misunderstood. I'm not asking for the register space to be
-> > split, I am asking why you cannot do
-> > | syscon@f7e1000 {
-> > | 	compatible =3D "syna,sl2610-soc-syscon", "syscon";
-> > | 	reg =3D <0xf7e10000 0x1000>;
-> > | 	#clock-cells =3D <1>;
-> > | 	#reset-cells =3D <1>;
-> > | };
-> > With this kind of thing, you can either use the auxiliary bus or
-> > MFD_CELL_NAME() to create the other devices. The latter is good if
-> > you've got a region with clocks that also has resets thrown in, the
-> > former is probably better if you have a syscon with a genuine
-> > assortment of different functions that you're going to be looking up via
-> > phandle.
->=20
-> I see your points now. But there are two problems with this solution:
->=20
-> 1. Besides reset, pinctrl and clk, the so called "Gbl" also contains
-> registers for other purpose, e.g DPHYTX, when we need the driver for
-> DPHYTX, I assume I could also go with the auxiliary bus or MFD_CELL_NAME(=
-),
 
-Correct.
+On 10/5/26 13:12, Maarten Brock wrote:
+> Would it not be better to retrieve the fifo level and multiply that
+> by char_time_us to wait first? Yes, the (MAX3109) datasheet mentions
+> its value may sometimes be inaccurate, but the worst that can happen
+> is waiting too long. And after that use this max310x_tx_empty().
 
->=20
-> 2. where should the driver(s) and dt-bindings doc be put?
-> I assume drivers/soc/synaptics/ and
-> Documentation/devicetree/bindings/soc/synaptics?
+That would tighten the loop, but v7 drops the drain altogether - see
+my reply to the review bot elsewhere in this thread. Draining turned
+out to be wrong twice over: the wait is an uninterruptible sleep of
+up to fifosize+1 character times per close() (~26 s at 50 baud, and
+unbounded when CTS flow control holds the FIFO), and a close() with
+data still queued on the auto-RTS path powers the port down
+mid-transmission, where the stopped UART clock freezes RTS at its
+asserted level until the next open - reproduced on the wire.
 
-Personally, this is where I put them in the MFD_CELL_NAME() case. In the
-aux bus case, there's generally no "parent" driver that just probes
-children, so it'd go into clock or whatever the main purpose is.
+In v7, shutdown() stops the transmitter instead: MODE1 TxDisabl lets
+the character in flight complete, data beyond it is abandoned (it is
+only still queued when the tty layer was told not to wait for it),
+the FIFOs are reset so the auto-RTS engine sees the transmitter empty
+and releases RTS, and the power-off waits the configured after-send
+hold plus one bit time. With the transmitter stopped the fill level
+no longer matters; the remaining one-character wait covers the shift
+register, which no level register reports.
 
-Thanks,
-Conor,.
-
->=20
-> Kindly correct me if I misunderstood something.
->=20
-> Thanks
-> >=20
-> > > Two blocking
-> > > points make this impossible and ugly: different reg space may not be
-> > > aligned at 4KB boundary, e.g reset: 0x350 ~ 0x37c; eth phy sel:0xa18;
-> > > some registers which belong to similar functionality, e.g clks, may n=
-ot be
-> > > adjacent.
-> >=20
-> > This sort of thing, with non-adjacent clocks is still possible, you have
-> > a regmap just like before.
-> >=20
-> > > So the best way is to abstract these GBLs via. "syscon", "simple-mfd"=
-, and
-> > > put necessary subnodes such as reset, pinctrl and clks under the GBL
-> > > node. If the registers in GBL is misc control, pass the syscon phandle
-> > > to the main driver, e.g I planed to pass the syscon phandle to GMAC
-> > > driver to control the RMII/RGMII selection.
-> >=20
-> > And you can get the regmap from other drivers by doing phandle or
-> > compatible based lookups just like before.
-> >=20
-> > >=20
-> > > 2.follow current bg2 and bg2q style
-> > > e.g arch/arm/boot/dts/synaptics/berlin2q.dtsi
-> > >=20
-> > > IMHO, why bg2 and bg2q dtsi files are implemented as current
-> > > style is due to the above point 1.
-> >=20
-> > Unfortunately, this is the berlin2q devicetree showing its age, we've
-> > been pushing people away from nodes that exist just to probe a driver
-> > and don't provide any additional value. Something like
-> > | chip-control@f7e10000 {
-> > |     reg =3D <0xf7e10000 0x1000>;
-> > |=20
-> > |     chip_rst: reset {
-> > |         compatible =3D "syna,sl261x-soc-reset";
-> > |         #reset-cells =3D <1>;
-> > |     };
-> > |=20
-> > |     chip_clk: clock {
-> > |         compatible =3D "syna,sl261x-soc-clock";
-> > |         #clock-cells =3D <1>;
-> > |     };
-> > is exactly the pattern we are trying to avoid.
-> >=20
-> > Cheers,
-> > Conor.
-> >=20
-> > >=20
-> > > Kindly let me know if there's a better solution.
-> > >=20
-> > > > From a quick check of the dts, the node with this subnode didn't al=
-so
-> > > > have a system-reset node too, so there's no conflict or anything of=
- that
-> > > > nature.
-> > > >=20
-> > > > > +    };
-> > > > > diff --git a/include/dt-bindings/reset/syna,sl261x-reset.h b/incl=
-ude/dt-bindings/reset/syna,sl261x-reset.h
-> > > > > new file mode 100644
-> > > > > index 000000000000..7034f58aae5b
-> > > > > --- /dev/null
-> > > > > +++ b/include/dt-bindings/reset/syna,sl261x-reset.h
-> > > > > @@ -0,0 +1,80 @@
-> > > > > +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-> > > > > +/*
-> > > > > + * Copyright (C) 2026 Synaptics Incorporated
-> > > > > + *
-> > > > > + * Author: Jisheng Zhang <jszhang@kernel.org>
-> > > > > + */
-> > > > > +
-> > > > > +#ifndef _DT_BINDINGS_SL261X_RESET_H
-> > > > > +#define _DT_BINDINGS_SL261X_RESET_H
-> > > > > +
-> > > > > +/* ACPU subsystem */
-> > > > > +#define RST_SOC_SDIO0		0
-> > > > > +#define RST_SOC_USB0		1
-> > > > > +#define RST_SOC_EMMC		2
-> > > > > +#define RST_SOC_GETH0		3
-> > > > > +#define RST_SOC_SDIO1		4
-> > > > > +#define RST_SOC_USB1		5
-> > > > > +#define RST_SOC_GETH1		6
-> > > > > +#define RST_SOC_USB0PHY		7
-> > > > > +#define RST_SOC_USB0CORE	8
-> > > > > +#define RST_SOC_USB0MAHB	9
-> > > > > +#define RST_SOC_USB1PHY		10
-> > > > > +#define RST_SOC_USB1CORE	11
-> > > > > +#define RST_SOC_USB1MAHB	12
-> > > > > +#define RST_SOC_UART0		13
-> > > > > +#define RST_SOC_UART1		14
-> > > > > +#define RST_SOC_UART2		15
-> > > > > +#define RST_SOC_UART3		16
-> > > > > +#define RST_SOC_I2C0		17
-> > > > > +#define RST_SOC_I2C1		18
-> > > > > +#define RST_SOC_SPI0		19
-> > > > > +#define RST_SOC_SPI1		20
-> > > > > +#define RST_SOC_SPI2		21
-> > > > > +#define RST_SOC_SPI3		22
-> > > > > +#define RST_SOC_APBTIMERS	23
-> > > > > +#define RST_SOC_APBSYSCNT	24
-> > > > > +#define RST_SOC_APBWDT		25
-> > > > > +#define RST_SOC_APBGPIO		26
-> > > > > +#define RST_SOC_APBDMA		27
-> > > > > +#define RST_SOC_GPUCORE		28
-> > > > > +#define RST_SOC_NPUCORE		29
-> > > > > +#define RST_SOC_AVIOAIOG	30
-> > > > > +#define RST_SOC_AVIOVPPG	31
-> > > > > +#define RST_SOC_AVIOVIPG	32
-> > > > > +
-> > > > > +/* system subsystem */
-> > > > > +#define RST_SM_ADCCORE		0
-> > > > > +#define RST_SM_ADCPRST		1
-> > > > > +#define RST_SM_CAN0PRST		2
-> > > > > +#define RST_SM_CAN0SRST		3
-> > > > > +#define RST_SM_CAN1PRST		4
-> > > > > +#define RST_SM_CAN1SRST		5
-> > > > > +#define RST_SM_GPIOPRST		6
-> > > > > +#define RST_SM_GPIOSRST		7
-> > > > > +#define RST_SM_I2CM0PRST	8
-> > > > > +#define RST_SM_I2CM0SRST	9
-> > > > > +#define RST_SM_I2CM1PRST	10
-> > > > > +#define RST_SM_I2CM1SRST	11
-> > > > > +#define RST_SM_I3CPRST		12
-> > > > > +#define RST_SM_I3CSRST		13
-> > > > > +#define RST_SM_PDMPRST		14
-> > > > > +#define RST_SM_PDMSRST		15
-> > > > > +#define RST_SM_PVTHSRST		16
-> > > > > +#define RST_SM_PVTPRST		17
-> > > > > +#define RST_SM_PWMPERIRST	18
-> > > > > +#define RST_SM_PWMPRST		19
-> > > > > +#define RST_SM_SPIMPRST		20
-> > > > > +#define RST_SM_SPIMSRST		21
-> > > > > +#define RST_SM_SPISPRST		22
-> > > > > +#define RST_SM_SPISSRST		23
-> > > > > +#define RST_SM_UART0PRST	24
-> > > > > +#define RST_SM_UART0SRST	25
-> > > > > +#define RST_SM_UART1PRST	26
-> > > > > +#define RST_SM_UART1SRST	27
-> > > > > +#define RST_SM_UART2PRST	28
-> > > > > +#define RST_SM_UART2SRST	29
-> > > > > +#define RST_SM_UART3PRST	30
-> > > > > +#define RST_SM_UART3SRST	31
-> > > > > +
-> > > > > +#endif /* _DT_BINDINGS_SL261X_RESET_H */
-> > > > > --=20
-> > > > > 2.53.0
-> > > > >=20
-> > >=20
-> > >=20
->=20
->=20
-
---Gk8IWZpUcu6PCSl4
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCasOA6wAKCRB4tDGHoIJi
-0tAeAP9g4V0Uppa+RPpNSegPViM1PGFBb2qMlUfL3Eqtfqq5rwD8DNvWRbx6J1Y2
-bBUZpYZhNV0JSq2I6MV77ygY10S8cQ4=
-=9BJK
------END PGP SIGNATURE-----
-
---Gk8IWZpUcu6PCSl4--
+Tapio
