@@ -1,158 +1,194 @@
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11023081.outbound.protection.outlook.com [40.107.162.81])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 786DB35B636;
-	Tue,  6 Oct 2026 04:06:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791259574; cv=fail; b=X4S0+VHjT+wxvV8Kkp7zA5TBAQCZJWCdL0MeUoLXiIUGwbxqFTVEGiI0cIok7ri/dWV8VScQK0lb/TmYyL7fxpqJSFwEfNzlCi3g5rvGM09De9OHsOx3Fzam8+XulEuqskgdk2cC+/MvHNn/dd+T0B9qexWu4kJCJUmLwmCwsXY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791259574; c=relaxed/simple;
-	bh=HE1RDIHubKIOk/3f84uTn4q36hP7WHs11XmaEBstJYE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ohPED+j0LuDpEwCkwXySltHlkQLFbQ+Nf/69aRcYtW1CUXygaECWRvxLNTzBKUc4UU5liKOIDpvJinoEXdzjQBgbmffhyZtJxbUJ3ykYaNNxHNj5XIThj3DeamnJs/ECoha+f6Cys1xdwQ0R/nrtF7SpgWNRe5E9UREaCFZ92r0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=L28DL6D8; arc=fail smtp.client-ip=40.107.162.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 355033ABDA8;
+	Tue,  6 Oct 2026 09:47:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791280025; cv=none; b=uoSCsxMaT6JNcyUCft3ouiRA2UOS6P/dWf5kiOoEOUyz2uar8U02ceA7Burl/eKNuwuMmDhcqGRwM4uGgel8kdqwGnK2AA+eSMy00wqsirsPwgBjvwKL9Bpr65GjmRSkTIZf2QHAHmjDt/BI4pnRUd71/TkSxV3FQi6WXtK67ek=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791280025; c=relaxed/simple;
+	bh=FLHj0G5aOhXs16x0OKE7+C6AYvH6VvieuGt1QUJ8GBU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h7t3ut55w56MqAWyuvZ9cYaDmNeF0FIzt8ID/ZoJJ+FExMfRwrjitGblf6zETuLPmL8Vm5AgpJXgB9FDRAmJa02CiULMyRcgGLNvPFWUZNqlRfCzdOmLLXjBaYMkXb8HxnT/Xm1iUD76fao4l/QbZLPWtAbkC6G9I/qn9Bs+k/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Q3i20Eq+; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="L28DL6D8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QFQPtEFcJEYhj98WnMbVYeTgFJlyFZw2ChKUU/SzQC0CChNBNwrEb7FBK/bivNISLaZPo4bRtWpmqed6CXs2959hgPQX+Vx0tJ4sHyXPZa3X9PjHnUhBEGRCha+rGQTOaWumO6nQTG4iqvM5kiqtznlZ9FPXVFQIyRxHgEdaXAi6OU95jwtuvKgCy4G/gTyzdXfpBJrSbeuCZtSFzNjSd6CCUPO19bdUsSusT8jQHC8qdIbL+2WfZ5kBfusN26Qh4ybpOgvol6ZYhNiCtgiDOlVqWzGBAQ44ghobLehc7BY+4STLWmoRrORbxd2hjShbw369VLT6j7vI1lT+e6Hyyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HE1RDIHubKIOk/3f84uTn4q36hP7WHs11XmaEBstJYE=;
- b=ZIF9jCFmcTPm0W92LxTq9YkQu1fns6hqjAsOtD6zPDU9smWJ0WcZuiK225IaE9UQgWhtvEGeA/EfhkW3Sj/RXyuTj4dy/C7OkTsoctz0AkTcKO065fZHF/qANWievW/E1qLvI/IPvrftvVWaKG3MmN9x1Z2WJuHX8YPcitJb59t1EpwXE/oMU17IrWj/K6s9kegc2CRGJpHT69pFPDmuqyEaxn+0BNcWKE1FIiq6uIYv4XI03ievRfcdj3H6PPbRvTZLqCQGSdHv0AWwKBzD830Ubroe6cDzDZlUt/QB8pQqcbgQ2DZfFj7hI4E/NJHD6xeC21AGOjYbI/2tqSCuvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HE1RDIHubKIOk/3f84uTn4q36hP7WHs11XmaEBstJYE=;
- b=L28DL6D8scSFu5DL4P1eErK8+jPWGbDEfX8C97rVSB0hTMTctgFC6oP99e6/hjsacGhzaiYUqspFeN6GpdSMCVwh/79tBO5pIitaTT+kpb3e4E6ylWnEq4UW4+wEuzmy1DBlLuqOzlzw+6kfVLOk10TrJc/uzHTkAKiFik+d+6W5gvt0PnBoHzdWzBrLgOGuWO91UO59FGY25KqnRReiFHlVnJAvHOuNIHpy/pN4ueflmHG6G9P3jvIVb5P6dkEDol7m1fGR98DKyCZ/PIeMBBmdM49EIxlW2JfrjwLsWBhAgVnllHl389H545qUPq/rHuanaA/DMPBmJ73NG8X6JQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-Received: from AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
- by DB9PR06MB7867.eurprd06.prod.outlook.com (2603:10a6:10:294::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.15; Tue, 6 Oct
- 2026 04:06:08 +0000
-Received: from AM9PR06MB7907.eurprd06.prod.outlook.com
- ([fe80::a597:33a7:d4e2:1b17]) by AM9PR06MB7907.eurprd06.prod.outlook.com
- ([fe80::a597:33a7:d4e2:1b17%4]) with mapi id 15.21.0472.016; Tue, 6 Oct 2026
- 04:06:08 +0000
-Message-ID: <a69c09a9-76d8-46c2-9aa3-64b7a961cdad@vaisala.com>
-Date: Tue, 6 Oct 2026 07:06:06 +0300
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/9] serial: max310x: don't clobber the TX break bit in
- set_termios
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Tapio Reijonen <tapio.reijonen@kolumbus.fi>,
- Maarten Brock <Maarten.Brock@sttls.nl>
-References: <20261005-max310x-rs485-sw-delay-v7-0-6ae392eca08c@vaisala.com>
- <20261005-max310x-rs485-sw-delay-v7-1-6ae392eca08c@vaisala.com>
- <20261005115737.3a26240eadeff00262e920ff@hugovil.com>
-Content-Language: en-US
-From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-In-Reply-To: <20261005115737.3a26240eadeff00262e920ff@hugovil.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: GV3P280CA0006.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:b::6)
- To AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Q3i20Eq+"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D46B1516;
+	Tue,  6 Oct 2026 02:47:00 -0700 (PDT)
+Received: from [192.168.178.24] (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 483123F763;
+	Tue,  6 Oct 2026 02:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1791280023; bh=FLHj0G5aOhXs16x0OKE7+C6AYvH6VvieuGt1QUJ8GBU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Q3i20Eq+Va1cYGLHzHDjsaxDQ6/8kKdT9HfUX2/YU9b59PkMqzReJ3bYlgbAAACi7
+	 MVlx22Wz3O4rozJTYWcAV6Uxl4T3QAkRD0Nv2E/eWhLIzHp5Y4oTvw9/PrA5w/GZCd
+	 byo17B/sRhxboDUuQH/48nb+kLyKHpqoHkaAG+w0=
+Message-ID: <db561de8-cef7-4945-93ee-b0d434eb806b@arm.com>
+Date: Tue, 6 Oct 2026 11:46:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR06MB7907:EE_|DB9PR06MB7867:EE_
-X-MS-Office365-Filtering-Correlation-Id: e2601663-b97a-4f8f-d9f7-08df235f2669
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|23010399003|1800799024|10067099003|56012099006|5023799004|11063799006|4143699003|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	NObWffUVrEHK6AfLf7ex3VLTrhwquVOoocRpZY15KTLJzHstsIckOPh30cu2IuUvxZ6f14tfKAZWDgFJPruk7iUx43iv4C79yTrgdqX+YWP1XNMd+IvtpbiSL/GcZCekiN1Pr2uUlmCMt2qj8RhIe6ZUAU+YGs5207y/FpW1sZBfmwVOv6LnEQKFS+AAW3w5BEaEqziasADWgm6WddDzY+tQXbHizL0R+mHGHwpsDAFo8l6kHyqE4ebDakff2hE+mZQv15CyxZeJKB8FoO7OyafSnZ7HiKVlaz8TWgEJ/PMjIeOebIzweDrG5LJInexKkFJ+j10oZJtfM6q/Zz5tu6GuvpA/2H6OF8QtNYe15eC5D2+6WsyEa6KblCUTW4zfVHy76Fywo8U8MV96tg7L2REC+csQx8qoivrg2gLXKw28sxQIuODciIEVzwBM+9Y23qTY1gT4d8NIlQ7pXukxduo+LnhEyu+l+/YgsOI9xvL3s04pHOP6KpigvyFg1GT7BRuEimg99b0KYaBHfF0VpJ8jdi24RBL4iO9ol111uOjF2adTV+KOgopyReWimu0ahIGltXnVlRZs63aI5LZmx4ASOZkvkFSwRqsbd0Ath396x+DVcnEjIErFL3TfHavEs/TjYygznl/bK5hMv9cSAtgzGxGoVy2HthxmtZsgELY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(23010399003)(1800799024)(10067099003)(56012099006)(5023799004)(11063799006)(4143699003)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NU5WbXUwcEJUVVpCOVIreVhIMnJZM1BWZ05TNW1wWGhKVkZtSlpNZ0srTkpz?=
- =?utf-8?B?bEM0OERuc3VMTG1oRSs3T3FVN21LZ3M4K2k3TXU2elQwb2pDekRiZ0ZPQUhk?=
- =?utf-8?B?cHRKQTRNMkI2cFFSZEtQTzh2aUVkZFhITDNqUlNEcGN1KytSTU4zL250b3Fh?=
- =?utf-8?B?Z0JiRGoxUVNIdVdYR3MzUm5Qb082NDFBRWlGcXAwNERLdzQ1Zm96M0tWaDM0?=
- =?utf-8?B?dXVoaCtyNFhSM3d4WVRsVWdLbmYwTVl3cG9IWHNFN3NZS09EK05nRHNuZUdy?=
- =?utf-8?B?aStWRVhGMWpNd3dWSEh2cS9ScGdhd0pwQnNhTzlHb3h6VlNKRmdvaWsrVC9S?=
- =?utf-8?B?a1l3M2xLbGlJSW9tUGtsaVk1bTJMckdDOUZSeDhkT1Yyd3ZTaU1xVThlcFYv?=
- =?utf-8?B?bFhKcVo5T3VZUTRTKzdiMkNvblVMMmFaQlUrWkc4bEoxNkY0TXFPdnJBS1BG?=
- =?utf-8?B?R1JYVVhQWERjbnpOQUpKWVJVY1ZpOVZPcUlJazJzRGRMdjV5OFlwNW5MeGgw?=
- =?utf-8?B?ZFRUeWhUanZsbmxPSnRyWkNUVjdyU1FCdWx1Q1lmTzd0M3Bmb3RVWENOUWpv?=
- =?utf-8?B?MEVsZ2JMVmFHUWQyVjVQNHRkeWkwTW9sUU1EVmlwekdTODc2a0YzU0VuRERw?=
- =?utf-8?B?Y1hRTU1FTWZuaGxPUzdnVFc5T2xNNUl2dWpsSzFWU2FhVGRUYWVWZ0VPdVFl?=
- =?utf-8?B?S1czZWFieDA5VU1YeDd6MUNCeDRJNHptOVFUdzVrMThLTWxRa3RtSTA3RUFG?=
- =?utf-8?B?Z3l2ZVNHcTRsSWVQMUswUHZLR0JVOUM5dTJtdVJOK2UrclA1VWlUU1daOXNR?=
- =?utf-8?B?L3pydytWMWF3WWtkS1p5Z29LZjdNTkdwZldwU09wdm1tVWE3aDMraUNGQXVH?=
- =?utf-8?B?aml2VWVOV2VZcU45Tk9FTW5scVFKRWM0bWozellXUkg3TmJtUC8xcFJqV2pF?=
- =?utf-8?B?ZjNKcFFScXVFVGJZOXh1Y3dReURuUm9MWGpGTnZyb21CaklpVm1jbStuUTNw?=
- =?utf-8?B?U1NnOVRhYzQzWVgxWFUvbXdVdmFza3BUWVVyM2dOMjBhOFhDMTRMdEVtMVdv?=
- =?utf-8?B?dSttbDEwMi9jNC9WYWJYVDlwdDVLZFdjaUVqNzZuamFWRzR1c3BqOEMvVnNJ?=
- =?utf-8?B?dWsxMFRZT01JRncvZEVxWFpFUmlheHFNbCszV0s1SWp0RmdLbkZXMWRPVE11?=
- =?utf-8?B?aHFac1pHYk5wL3NGK21DSzY0Y0ovS1dyWDFhWlB1b1Iyd3dSY3V1L2ZHQWI1?=
- =?utf-8?B?N0hzb0dYYWhxdGpGOVk5djJVeEhjOU5VQ2VtRFpJaTdlUlRGNUg1TGh5WTR5?=
- =?utf-8?B?ZlNleS9BM3JEN0hhbG94SkwvTHNCY0twR1M0YXBneWxGOXQ5SVlrZkk2VlNQ?=
- =?utf-8?B?U3dpVUxaTm85SkdIVkhHdXlnTHljdGxhbzNic294bzJuaE9rckV0bDBmRC9S?=
- =?utf-8?B?QjFuNWhuOFdkaU5vbXh1dWV5K2NIdXgxQnVFUVYrN25RSlNiL2pQNld2MW5l?=
- =?utf-8?B?T3NyQWpqeVFyQnlNbmpKcXA1ekU4ajFTSW1BUFJINjQrVmY2eGZ0eFF4eUpt?=
- =?utf-8?B?OENOTDNJZzFYeThOMlJlVlRpUkdiajU1Wk1xNUxCTEJRVmM1R1ZWeXFXdmNG?=
- =?utf-8?B?VjJQajdqbmtaYWFaSTE0eWtZOE9NSW9iaE1jbFdvTmQxajVidXdNMGkrWDdy?=
- =?utf-8?B?NVVQUGlTVGN0RkVPOEFkOFdiTHhVZ082YVorNVNuZUFvYzNjUkNpTkQ1am5n?=
- =?utf-8?B?OXNEcmhqVDVBSFBlcXFQc3N0RjZDY1U3WU0vTEFIOXJCMkVtd01rNHdpbm9x?=
- =?utf-8?B?UzlCVzdHVUZiRjZNU1pHb0tSQWhldE1lZGJ4YWNsUnZhNm80OHN3cktoSy82?=
- =?utf-8?B?eHZlTUdDMGQwTUpTZ1V6cjFiU2FmUzlaVzdvb1J4LzdpV0VjRVE3blZweFBU?=
- =?utf-8?B?S2VvSzJyeG00b2RZTEtYSHdqVFhNRnBMNHM3MlRaUkZYUDIyU2p3VTgzNHJ5?=
- =?utf-8?B?cXlJSCtUVER3dzgxK2JPUGFua1pySCtoQ0lTampzQk9wdDhpaWUxZTJMSDk3?=
- =?utf-8?B?QksvcThVTTg1K3B3THZXNVc5NmExU2x3STN0Zk96TExnNTlIdUtXVXNkdEEy?=
- =?utf-8?B?S1BQTG8vVjVtMWV2VHAyRG5nT2xxanYzQnM5ZWsxTU9iUGVEYzU5SzdBbzhO?=
- =?utf-8?B?OGMvTG05UmlQN3JSOUVWN25FYURMSVgwYkErMGZ6YVNiRmVHM1ZkWFlmTHE3?=
- =?utf-8?B?ck4zNGc5SVgyUHlmUXN0VzVub0t1QXV5SEM2cXRjUkpPU0J1dE9NbVBlcUU2?=
- =?utf-8?B?V01kSmlOOFIwWUxhQkRVbmxLMUt3WnVuRldYRUZOZFlvTUg0eFo0TmFhOHhI?=
- =?utf-8?Q?MogZBn6LUgjypFdc=3D?=
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2601663-b97a-4f8f-d9f7-08df235f2669
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR06MB7907.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2026 04:06:08.5514
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zQaYl1YeZZP9CSs0Gnzio5g9rnoi8Xbac9d2p09CjgQvat/acvJaibuDE9oV5b+5JSc8Cuol6fEc2q+KOZL9czlxi1Ze1gQcG7GNVmZVF4w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR06MB7867
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] serial: 8250_dw: Add Allwinner A733 UART
+To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>,
+ linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, andriy.shevchenko@linux.intel.com,
+ ilpo.jarvinen@linux.intel.com, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+ Enzo Adriano <enzo.adriano.code@gmail.com>
+References: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com>
+ <20261005172538.398522-4-vinicius.eduardo.pedrosa@gmail.com>
+Content-Language: en-GB
+From: Andre Przywara <andre.przywara@arm.com>
+In-Reply-To: <20261005172538.398522-4-vinicius.eduardo.pedrosa@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Hugo,
+Hi Vinicius,
 
-On 10/5/26 18:57, Hugo Villeneuve wrote:
+On 10/5/26 19:25, Vinicius Pedrosa wrote:
+> The A733 UART is clocked from its bus clock gate, which can't change
+> rate. dw8250_set_termios() still gates it around a no-op clk_set_rate()
+> on every termios change. That stalls the character being shifted out
+> and corrupts it on the wire. Use the existing SKIP_SET_RATE quirk, as
+> other SoCs with a fixed UART clock do.
+> 
+> Offset 0xc0 is the RS485 control register on this SoC (A733 User
+> Manual, UART_485_CTL), not DLF. dw8250_setup_port() writes all ones
+> there, reads back a nonzero 9-bit value and takes it for a 9-bit DLF.
+> Every later divisor change then writes the fractional divisor into the
+> RS485 control register. Add a NO_DLF quirk so dwlib skips that probe.
 
-> You commit message indicate only part of what your patch changed,
-> but not why.
->
-> In this case, IIUC, your patch prevent ending a preconfigured
-> TX break when calling set_termios()?
+many thanks for digging into this, and superficially it looks like the 
+right thing to do. But looking into some manuals, it seems like 
+Allwinner added this RS485 support on registers +0xc0, 0xc4 and 0xc8 
+already a while ago: I find it in the H6, H616, A523 manuals, for 
+instance. And while register 0x50004c0 ignores writes on the H616, the 
+corresponding 0x25004c0 reacts on the A523, so at least that one is 
+already broken.
+So as Sashiko mentioned, we would technically need to drop the fallback 
+compatible, and doing this also for the A523 would break all older 
+kernels, so that isn't a good option.
 
-Yes, exactly: a break asserted with TIOCSBRK must stay on the wire
-until TIOCCBRK, but any termios change landing in between rewrote the
-whole LCR register and silently ended the break early. The second
-hunk covers the leftover that fix exposes: nothing clears a break
-still asserted when the port is closed - the unconditional LCR write
-was the accidental recovery - so startup() now clears it, the same
-way 8250 does.
+Now when I write 0xffffffff into +0xc0 on the A523, I read 0x9f back, so 
+there are zero bits in the middle, which doesn't match the expected 
+contiguous bitmask for the fractional divider bits.
+So I was wondering if we should refine the DLF detection instead? Only 
+when the readback from 0xc0 returns some 2^n-1 value we assume DLF is 
+implemented?
 
-I can reword the message for a v8 to lead with that user-visible
-failure rather than the register mechanics.
+Alternatively making DLF a (negative?) DT/ACPI property instead, and 
+keep the fallback compatible?
+I guess this all depends a bit on what the snps,dw-apb-uart compatible 
+string really covers, and if Allwinner hacked^Wchanged the IP, by adding 
+their RS485 bits on top of on older Designware IP, or if this is a valid 
+configuration.
 
-Tapio
+Cheers,
+Andre
+
+> Signed-off-by: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+> ---
+>   drivers/tty/serial/8250/8250_dw.c    | 13 +++++++++++++
+>   drivers/tty/serial/8250/8250_dwlib.c | 22 ++++++++++++----------
+>   drivers/tty/serial/8250/8250_dwlib.h |  1 +
+>   3 files changed, 26 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index ba414306c98a..ea33aa644cda 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -52,6 +52,7 @@
+>   #define DW_UART_QUIRK_CPR_VALUE		BIT(5)
+>   #define DW_UART_QUIRK_IER_KICK		BIT(6)
+>   #define DW_UART_QUIRK_SKIP_EMPTY_FIFO_READ	BIT(7)
+> +#define DW_UART_QUIRK_NO_DLF		BIT(8)
+>   
+>   /*
+>    * Number of consecutive IIR_NO_INT interrupts required to trigger interrupt
+> @@ -606,6 +607,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+>   		p->serial_out = dw8250_serial_out38x;
+>   	if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
+>   		p->set_termios = dw8250_do_set_termios;
+> +	if (quirks & DW_UART_QUIRK_NO_DLF)
+> +		data->data.no_dlf = true;
+>   	if (quirks & DW_UART_QUIRK_IS_DMA_FC) {
+>   		data->data.dma.txconf.device_fc = 1;
+>   		data->data.dma.rxconf.device_fc = 1;
+> @@ -892,6 +895,15 @@ static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
+>   	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+>   };
+>   
+> +/*
+> + * The baud clock is the bus clock gate, whose rate cannot change, and offset
+> + * 0xc0 is the RS485 control register rather than DLF.
+> + */
+> +static const struct dw8250_platform_data dw8250_sun60i_a733_data = {
+> +	.usr_reg = DW_UART_USR,
+> +	.quirks = DW_UART_QUIRK_SKIP_SET_RATE | DW_UART_QUIRK_NO_DLF,
+> +};
+> +
+>   static const struct dw8250_platform_data dw8250_intc10ee = {
+>   	.usr_reg = DW_UART_USR,
+>   	.quirks = DW_UART_QUIRK_IER_KICK,
+> @@ -913,6 +925,7 @@ static const struct dw8250_platform_data dw8250_tda54 = {
+>   
+>   static const struct of_device_id dw8250_of_match[] = {
+>   	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
+> +	{ .compatible = "allwinner,sun60i-a733-uart", .data = &dw8250_sun60i_a733_data },
+>   	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+>   	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+>   	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+> index 9bb02a4ab11f..9c6f3d926ad5 100644
+> --- a/drivers/tty/serial/8250/8250_dwlib.c
+> +++ b/drivers/tty/serial/8250/8250_dwlib.c
+> @@ -209,16 +209,18 @@ void dw8250_setup_port(struct uart_port *p)
+>   	}
+>   	up->capabilities |= UART_CAP_NOTEMT;
+>   
+> -	/* Preserve value written by firmware or bootloader  */
+> -	old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
+> -	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
+> -	reg = dw8250_readl_ext(p, DW_UART_DLF);
+> -	dw8250_writel_ext(p, DW_UART_DLF, old_dlf);
+> -
+> -	if (reg) {
+> -		pd->dlf_size = fls(reg);
+> -		p->get_divisor = dw8250_get_divisor;
+> -		p->set_divisor = dw8250_set_divisor;
+> +	if (!pd->no_dlf) {
+> +		/* Preserve value written by firmware or bootloader  */
+> +		old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
+> +		dw8250_writel_ext(p, DW_UART_DLF, ~0U);
+> +		reg = dw8250_readl_ext(p, DW_UART_DLF);
+> +		dw8250_writel_ext(p, DW_UART_DLF, old_dlf);
+> +
+> +		if (reg) {
+> +			pd->dlf_size = fls(reg);
+> +			p->get_divisor = dw8250_get_divisor;
+> +			p->set_divisor = dw8250_set_divisor;
+> +		}
+>   	}
+>   
+>   	reg = dw8250_readl_ext(p, DW_UART_UCV);
+> diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+> index ee7a07fac0f6..ca0dfd6d056e 100644
+> --- a/drivers/tty/serial/8250/8250_dwlib.h
+> +++ b/drivers/tty/serial/8250/8250_dwlib.h
+> @@ -88,6 +88,7 @@ struct dw8250_port_data {
+>   	/* Hardware configuration */
+>   	u32			cpr_value;
+>   	u8			dlf_size;
+> +	bool			no_dlf;		/* Offset 0xc0 is not DLF */
+>   
+>   	/* RS485 variables */
+>   	bool			hw_rs485_support;
+
