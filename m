@@ -1,194 +1,165 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 355033ABDA8;
-	Tue,  6 Oct 2026 09:47:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFDBC3D9DB1;
+	Tue,  6 Oct 2026 10:19:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791280025; cv=none; b=uoSCsxMaT6JNcyUCft3ouiRA2UOS6P/dWf5kiOoEOUyz2uar8U02ceA7Burl/eKNuwuMmDhcqGRwM4uGgel8kdqwGnK2AA+eSMy00wqsirsPwgBjvwKL9Bpr65GjmRSkTIZf2QHAHmjDt/BI4pnRUd71/TkSxV3FQi6WXtK67ek=
+	t=1791281953; cv=none; b=ScK7RoHGXESGhFn21aco6twga69gJYpWQzKCt2mRfq1qniQqeUTa91aaTtLYT3/Z6eGWfhGJLhuPALJY6sm+XxO+VU3CKcejvBO5CuN9OLL4cAtpU5kfgeKWmCy20uwcdC8k7/QFuaYiIM5Gj+Ryma06ivua8/W44GS3CP9WJXQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791280025; c=relaxed/simple;
-	bh=FLHj0G5aOhXs16x0OKE7+C6AYvH6VvieuGt1QUJ8GBU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=h7t3ut55w56MqAWyuvZ9cYaDmNeF0FIzt8ID/ZoJJ+FExMfRwrjitGblf6zETuLPmL8Vm5AgpJXgB9FDRAmJa02CiULMyRcgGLNvPFWUZNqlRfCzdOmLLXjBaYMkXb8HxnT/Xm1iUD76fao4l/QbZLPWtAbkC6G9I/qn9Bs+k/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Q3i20Eq+; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1791281953; c=relaxed/simple;
+	bh=OaNAldnz+9ckvaaYLOdUyTKTxlfPsmmT7rxhIfzTZfI=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=FVXLD0yDIP3eudbvVCzR+VQoZgcbg3eeyKq7MU2HRoCJcEOapilS3CzVX/Tdsgw4GHHUfpJg+2IihXGhpzsfvnlgxF/wB4RD/1eo57Bikhs7xRoeIOJZ4hL6g/WwjRTnCfoLFhtC9NFPaSP1pSBFXgIxjDVTSvKsWAvFfQVhcKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CUHzSEhs; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Q3i20Eq+"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D46B1516;
-	Tue,  6 Oct 2026 02:47:00 -0700 (PDT)
-Received: from [192.168.178.24] (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 483123F763;
-	Tue,  6 Oct 2026 02:47:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1791280023; bh=FLHj0G5aOhXs16x0OKE7+C6AYvH6VvieuGt1QUJ8GBU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Q3i20Eq+Va1cYGLHzHDjsaxDQ6/8kKdT9HfUX2/YU9b59PkMqzReJ3bYlgbAAACi7
-	 MVlx22Wz3O4rozJTYWcAV6Uxl4T3QAkRD0Nv2E/eWhLIzHp5Y4oTvw9/PrA5w/GZCd
-	 byo17B/sRhxboDUuQH/48nb+kLyKHpqoHkaAG+w0=
-Message-ID: <db561de8-cef7-4945-93ee-b0d434eb806b@arm.com>
-Date: Tue, 6 Oct 2026 11:46:59 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CUHzSEhs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791281950; x=1822817950;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=OaNAldnz+9ckvaaYLOdUyTKTxlfPsmmT7rxhIfzTZfI=;
+  b=CUHzSEhs/pI0coPsrwaTaEvUuOU5oOorbcKG6Vv2UIHs/z5v3r1+L1Dn
+   yFOAHE55MN8fS4noTF6Yg8r8kHaA8ejsol8yLmySQJoN4aveR2mBqOvnG
+   Xr6Td5qTxq31VlycU9D6JI/bQKQ0559C5RpYOrJF3baFLGlrTA71qnTHx
+   9NYs7m6R/XFwfG6uioq+NLa8zWNHTPz54nuO9/sus+Z0GJRAq60EXOKqI
+   9kDTMOlTVFawbFaV4TPGTAd1FxiWcqhvYfeNNjOuJ1LTX6jnuIXQCkz6K
+   nkubXhgCilbDLtChBhk79iAzXmEuwprQ/IqpKb2xC/e8c+qtzD4Bexzoi
+   Q==;
+X-CSE-ConnectionGUID: woGwG97VRlOtgBLAQm+GmA==
+X-CSE-MsgGUID: uK8qBbD9TduxudWM4LreOw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11926"; a="18262"
+X-IronPort-AV: E=Sophos;i="6.27,143,1787036400"; 
+   d="scan'208";a="18262"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2026 03:19:08 -0700
+X-CSE-ConnectionGUID: QUQMRA4IRUOXSw9Jo2tKew==
+X-CSE-MsgGUID: QBBKzDfhTF+AyiqrjBbPsg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,143,1787036400"; 
+   d="scan'208";a="276620896"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.106])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2026 03:19:05 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 6 Oct 2026 13:19:02 +0300 (EEST)
+To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+cc: linux-serial <linux-serial@vger.kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, robh@kernel.org, krzk+dt@kernel.org, 
+    conor+dt@kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, 
+    linux-sunxi@lists.linux.dev, Enzo Adriano <enzo.adriano.code@gmail.com>, 
+    stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] serial: 8250_dw: Keep the BUSY-safe divisor hook
+ when DLF is present
+In-Reply-To: <20261005172538.398522-2-vinicius.eduardo.pedrosa@gmail.com>
+Message-ID: <e9538164-3565-a702-c26b-bdc0b8cb1c6c@linux.intel.com>
+References: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com> <20261005172538.398522-2-vinicius.eduardo.pedrosa@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] serial: 8250_dw: Add Allwinner A733 UART
-To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>,
- linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, andriy.shevchenko@linux.intel.com,
- ilpo.jarvinen@linux.intel.com, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
- Enzo Adriano <enzo.adriano.code@gmail.com>
-References: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com>
- <20261005172538.398522-4-vinicius.eduardo.pedrosa@gmail.com>
-Content-Language: en-GB
-From: Andre Przywara <andre.przywara@arm.com>
-In-Reply-To: <20261005172538.398522-4-vinicius.eduardo.pedrosa@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-Hi Vinicius,
+On Mon, 5 Oct 2026, Vinicius Pedrosa wrote:
 
-On 10/5/26 19:25, Vinicius Pedrosa wrote:
-> The A733 UART is clocked from its bus clock gate, which can't change
-> rate. dw8250_set_termios() still gates it around a no-op clk_set_rate()
-> on every termios change. That stalls the character being shifted out
-> and corrupts it on the wire. Use the existing SKIP_SET_RATE quirk, as
-> other SoCs with a fixed UART clock do.
+> dw8250_probe() installs dw8250_set_divisor(), which brackets the
+> DLAB/DLL/DLH sequence with dw8250_idle_enter()/dw8250_idle_exit() so that
+> a BUSY UART cannot drop the divisor LCR write. dw8250_setup_port() runs
+> afterwards and replaces that hook with the dwlib one whenever it detects
+> a DLF register. The dwlib hook programs the divisor through
+> serial8250_do_set_divisor() without entering idle.
+
+Yeah, non-dwlib code should own the hook if it sets one.
+
+> When termios changes while the UART is transmitting, the LCR|DLAB write
+> is ignored and dw8250_check_lcr() retries it between
+> dw8250_idle_enter() and dw8250_idle_exit(). dw8250_idle_exit() restores
+> IER while DLAB is still set, so the value lands in DLH. The real IER
+> keeps the zero written by dw8250_idle_enter(), and the port gets no
+> further TX or RX interrupts while up->ier says they're enabled.
 > 
-> Offset 0xc0 is the RS485 control register on this SoC (A733 User
-> Manual, UART_485_CTL), not DLF. dw8250_setup_port() writes all ones
-> there, reads back a nonzero 9-bit value and takes it for a 9-bit DLF.
-> Every later divisor change then writes the fractional divisor into the
-> RS485 control register. Add a NO_DLF quirk so dwlib skips that probe.
-
-many thanks for digging into this, and superficially it looks like the 
-right thing to do. But looking into some manuals, it seems like 
-Allwinner added this RS485 support on registers +0xc0, 0xc4 and 0xc8 
-already a while ago: I find it in the H6, H616, A523 manuals, for 
-instance. And while register 0x50004c0 ignores writes on the H616, the 
-corresponding 0x25004c0 reacts on the A523, so at least that one is 
-already broken.
-So as Sashiko mentioned, we would technically need to drop the fallback 
-compatible, and doing this also for the A523 would break all older 
-kernels, so that isn't a good option.
-
-Now when I write 0xffffffff into +0xc0 on the A523, I read 0x9f back, so 
-there are zero bits in the middle, which doesn't match the expected 
-contiguous bitmask for the fractional divider bits.
-So I was wondering if we should refine the DLF detection instead? Only 
-when the readback from 0xc0 returns some 2^n-1 value we assume DLF is 
-implemented?
-
-Alternatively making DLF a (negative?) DT/ACPI property instead, and 
-keep the fallback compatible?
-I guess this all depends a bit on what the snps,dw-apb-uart compatible 
-string really covers, and if Allwinner hacked^Wchanged the IP, by adding 
-their RS485 bits on top of on older Designware IP, or if this is a valid 
-configuration.
-
-Cheers,
-Andre
-
+> Program DLF from dw8250_set_divisor() inside the idle section and keep
+> that hook after dw8250_setup_port().
+> 
+> Observed on an Allwinner A733 (Radxa Cubie A7Z): the first interactive
+> tcsetattr() during console output left hardware IER at 0 and up->ier at
+> 0x07. The shell never printed its prompt or read input. With this change
+> alone the same boot reached the prompt and echoed input, and hardware
+> IER matched up->ier afterwards.
+> 
+> Fixes: a7b9ce39fbe4 ("serial: 8250_dw: Ensure BUSY is deasserted")
+> Cc: stable@vger.kernel.org
 > Signed-off-by: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
 > ---
->   drivers/tty/serial/8250/8250_dw.c    | 13 +++++++++++++
->   drivers/tty/serial/8250/8250_dwlib.c | 22 ++++++++++++----------
->   drivers/tty/serial/8250/8250_dwlib.h |  1 +
->   3 files changed, 26 insertions(+), 10 deletions(-)
+> The A733 has no real DLF. Offset 0xc0 is an RS485 control register that
+> dw8250_setup_port() mistakes for one (patch 3), which is how this path
+> was reached. The new DLF write hasn't been tested on a UART with a real
+> DLF register.
+> 
+>  drivers/tty/serial/8250/8250_dw.c | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index ba414306c98a..ea33aa644cda 100644
+> index 0ab558230370..ba414306c98a 100644
 > --- a/drivers/tty/serial/8250/8250_dw.c
 > +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -52,6 +52,7 @@
->   #define DW_UART_QUIRK_CPR_VALUE		BIT(5)
->   #define DW_UART_QUIRK_IER_KICK		BIT(6)
->   #define DW_UART_QUIRK_SKIP_EMPTY_FIFO_READ	BIT(7)
-> +#define DW_UART_QUIRK_NO_DLF		BIT(8)
->   
->   /*
->    * Number of consecutive IIR_NO_INT interrupts required to trigger interrupt
-> @@ -606,6 +607,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->   		p->serial_out = dw8250_serial_out38x;
->   	if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
->   		p->set_termios = dw8250_do_set_termios;
-> +	if (quirks & DW_UART_QUIRK_NO_DLF)
-> +		data->data.no_dlf = true;
->   	if (quirks & DW_UART_QUIRK_IS_DMA_FC) {
->   		data->data.dma.txconf.device_fc = 1;
->   		data->data.dma.rxconf.device_fc = 1;
-> @@ -892,6 +895,15 @@ static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
->   	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
->   };
->   
-> +/*
-> + * The baud clock is the bus clock gate, whose rate cannot change, and offset
-> + * 0xc0 is the RS485 control register rather than DLF.
-> + */
-> +static const struct dw8250_platform_data dw8250_sun60i_a733_data = {
-> +	.usr_reg = DW_UART_USR,
-> +	.quirks = DW_UART_QUIRK_SKIP_SET_RATE | DW_UART_QUIRK_NO_DLF,
-> +};
+> @@ -189,6 +189,7 @@ static int dw8250_idle_enter(struct uart_port *p)
+>  static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+>  			       unsigned int quot, unsigned int quot_frac)
+>  {
+> +	struct dw8250_data *d = to_dw8250_data(p->private_data);
+>  	struct uart_8250_port *up = up_to_u8250p(p);
+>  	int ret;
+>  
+> @@ -196,6 +197,9 @@ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+>  	if (ret < 0)
+>  		return;
+>  
+> +	if (d->data.dlf_size)
+> +		dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
+
+It might be better to add __dw8250_set_divisor() to dwlib to keep the DLF 
+setting code in one place. If the dwlib side does d->data.dlf_size check, 
+8250_dw side doesn't need to care about DLF stuff but can just 
+unconditionally call __dw8250_set_divisor().
+
 > +
->   static const struct dw8250_platform_data dw8250_intc10ee = {
->   	.usr_reg = DW_UART_USR,
->   	.quirks = DW_UART_QUIRK_IER_KICK,
-> @@ -913,6 +925,7 @@ static const struct dw8250_platform_data dw8250_tda54 = {
->   
->   static const struct of_device_id dw8250_of_match[] = {
->   	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
-> +	{ .compatible = "allwinner,sun60i-a733-uart", .data = &dw8250_sun60i_a733_data },
->   	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
->   	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
->   	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-> index 9bb02a4ab11f..9c6f3d926ad5 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -209,16 +209,18 @@ void dw8250_setup_port(struct uart_port *p)
->   	}
->   	up->capabilities |= UART_CAP_NOTEMT;
->   
-> -	/* Preserve value written by firmware or bootloader  */
-> -	old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
-> -	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-> -	reg = dw8250_readl_ext(p, DW_UART_DLF);
-> -	dw8250_writel_ext(p, DW_UART_DLF, old_dlf);
-> -
-> -	if (reg) {
-> -		pd->dlf_size = fls(reg);
-> -		p->get_divisor = dw8250_get_divisor;
-> -		p->set_divisor = dw8250_set_divisor;
-> +	if (!pd->no_dlf) {
-> +		/* Preserve value written by firmware or bootloader  */
-> +		old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
-> +		dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-> +		reg = dw8250_readl_ext(p, DW_UART_DLF);
-> +		dw8250_writel_ext(p, DW_UART_DLF, old_dlf);
+>  	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
+>  	if (!(serial_port_in(p, UART_LCR) & UART_LCR_DLAB))
+>  		goto idle_failed;
+> @@ -650,7 +654,6 @@ static int dw8250_probe(struct platform_device *pdev)
+>  
+>  	p->set_ldisc	= dw8250_set_ldisc;
+>  	p->set_termios	= dw8250_set_termios;
+> -	p->set_divisor	= dw8250_set_divisor;
+>  
+>  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>  	if (!data)
+> @@ -767,6 +770,13 @@ static int dw8250_probe(struct platform_device *pdev)
+>  	if (!data->skip_autocfg)
+>  		dw8250_setup_port(p);
+>  
+> +	/*
+> +	 * dw8250_setup_port() installs the library divisor hook when it finds
+> +	 * DLF. Keep the BUSY-safe hook instead: it also programs DLF, and it
+> +	 * must own DLAB so that a BUSY UART never drops the divisor LCR write.
+> +	 */
+> +	p->set_divisor = dw8250_set_divisor;
 > +
-> +		if (reg) {
-> +			pd->dlf_size = fls(reg);
-> +			p->get_divisor = dw8250_get_divisor;
-> +			p->set_divisor = dw8250_set_divisor;
-> +		}
->   	}
->   
->   	reg = dw8250_readl_ext(p, DW_UART_UCV);
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-> index ee7a07fac0f6..ca0dfd6d056e 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.h
-> +++ b/drivers/tty/serial/8250/8250_dwlib.h
-> @@ -88,6 +88,7 @@ struct dw8250_port_data {
->   	/* Hardware configuration */
->   	u32			cpr_value;
->   	u8			dlf_size;
-> +	bool			no_dlf;		/* Offset 0xc0 is not DLF */
->   
->   	/* RS485 variables */
->   	bool			hw_rs485_support;
+>  	/* If we have a valid fifosize, try hooking up DMA */
+>  	if (p->fifosize) {
+>  		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
+> 
+
+It might be safer approach to NULL check .set_divisor in dwlib before 
+setting it as ordering requirements like this are easy to miss.
+
+-- 
+ i.
 
