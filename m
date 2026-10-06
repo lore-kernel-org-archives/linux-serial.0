@@ -1,139 +1,102 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173AF2FDC20;
-	Tue,  6 Oct 2026 15:36:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FACF2DC792;
+	Tue,  6 Oct 2026 18:17:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791300999; cv=none; b=R2FJMA9NPbLr7BYTm0AazD2wzViIPIyPBoP+k/2nwLMoqJS+pria3o1a0u1h65kVVSZzMvK2Ayr0M9JKkSPx2IUnPTbLsHXVL//4zS7we5up2CvB5vZ64hGp6MEclZdwNbc1075fnYizgMa+1CqAxRHBZjlHCySgSmF7Hrs3tvk=
+	t=1791310662; cv=none; b=SwBUNho4bTT8zhyeLV/U7IUnabA7Ta5PX/flxf1LA15QBQcz/smSNw/POmjVMKxN05+4kVJs7hrI8SsDdc1DuFx+bMt4DRno6EQxDroG95++ZeOC6r+vOOiqR4hNcui8MwU2ZyoBWMitE/S7FUEnDOORjPZ+rF93b6X2WYcJom8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791300999; c=relaxed/simple;
-	bh=4Wx6FlxLELJH4KUGi3iAA9os2hDmzpV95j74p16rwA8=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=ui/b3JL52tmnZfqfzxGwREesE5mHNTsfsDPBhNyHkHTiZuSV+AxBSLzBx67bxLGpMnTNrJ4ITdk3S+gCO46OdDjJUxrhGk/w0sEW/quZE7bAEbFyEHB0/8TyCO2a9Sfg56zzWDTJwQv/hi1/0Z7ZMx58cdS8VWWwuNQpxvo8yjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=XK1u3Slw; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1791310662; c=relaxed/simple;
+	bh=sgYfUcu7GyRGgxbZhaOkxktNM/oFDer4hX5xhaurLGI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=tH3odawkr20m5LrJgCOSN9DbR8KTRHzJ9HyjO/GkdloHwhtNS53HauOpt4VcmuNXqsojWv6rxxcG+EYRFBW5kHL61GPBW7544RL+C3HEXlt9y9bZ1g6wOOqIocWszzGLVf49Kr/0bVBsrDYVWzIryqXefFWISLUguaYWKzpFIUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fwElanHY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="XK1u3Slw"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=+8CSBT2OQAOa7nJB3rRl2U1wh9CwAZDl+AQNBGfWpBE=; b=XK1u3Slw/qXMmriQFbFmg1ehMb
-	srmBpIViseRWCKIRL2StJpRLyv0VEY3k5SVbGEGN4Q2CPyoznmyN+F74TyZiCt7SvdVaOtDRPGPMZ
-	9AaWcoHkXC/Lrl65iob7y8g4NlOJaSK4VhXCuzr6IstSovPgE7RvjqbxhYRTVCxIhO5k=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1xE7DV-000000007NO-1cs1;
-	Tue, 06 Oct 2026 11:36:35 -0400
-Date: Tue, 6 Oct 2026 11:36:34 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Hui Peng <benquike@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, Ilpo
- =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v7 2/2] serial: core: reject baud_base values that
- overflow port->uartclk in uart_set_info()
-Message-Id: <20261006113634.67dcefd86c007e115a5fa150@hugovil.com>
-In-Reply-To: <20260930125901.778868-3-benquike@gmail.com>
-References: <20260930125901.778868-1-benquike@gmail.com>
-	<20260930125901.778868-3-benquike@gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fwElanHY"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E5A5BC4AF60;
+	Tue,  6 Oct 2026 18:17:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1791310662;
+	bh=sgYfUcu7GyRGgxbZhaOkxktNM/oFDer4hX5xhaurLGI=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=fwElanHYNnfyPGagNOVh13y4hanQUvipjW55IMHO5ViMv7hH4VHNOutY3fNydrCoZ
+	 9KQM6Da681uxziqnwDf7WIza9o2ZY7nvz8zOfE3YHrIFC1kXGfcfZLC0OGICX0tZS5
+	 J6pW4uDyJl8Fbb1hDTQ+Jp6jKnQ8ZF3ReCvtBESBxm+JQoeVif/ZBoKrMoOtY+6f1u
+	 vNFxcJVwFELqg+bs1RiiTRt+tD1YqIOl1fRcAfG8G4Lq6lTF95Bc3/xrVh4UphhVGW
+	 c/Yev65PDPv3KdgAsag3KaniKNovLVJrJPvMvyxlYS1DWvDB3Fw0eOnyNQdkwaq2Ai
+	 wxMObFVBbPFrw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5562CA5FED;
+	Tue,  6 Oct 2026 18:17:41 +0000 (UTC)
+From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
+Date: Tue, 06 Oct 2026 21:17:39 +0300
+Subject: [PATCH RFC v2 01/10] dt-bindings: vendor-prefixes: Add Securifi
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261006-b4-cs75xx-v2-1-b7d6e1e24d44@gmail.com>
+References: <20261006-b4-cs75xx-v2-0-b7d6e1e24d44@gmail.com>
+In-Reply-To: <20261006-b4-cs75xx-v2-0-b7d6e1e24d44@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Drew Fustini <fustini@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Jason Li <jason.li@cortina-access.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
+ Fil Dunsky <filipp.dunsky@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791310659; l=948;
+ i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
+ bh=cJwqTaoWX2eJxg+ff3KcczPwLtWrJdQ6O7AAzDuJAuA=;
+ b=Vr3oBnffvK0bolCHdLxxw90SgVGlbFLam1KSdvhzvgkKBUJ3HJvoGyjNlQHfeMQfOY1Jy9SDJ
+ zCA36Uk4nVTC1xQB0+Dm70VMkA7zLqQ0An8pmQ5Y6tq2tZTvgX4XFw4
+X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
+ pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
+X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
+ auth_id=1085
+X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
+Reply-To: filipp.dunsky@gmail.com
 
-Hi Hui,
+From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-On Wed, 30 Sep 2026 12:59:01 +0000
-Hui Peng <benquike@gmail.com> wrote:
+Securifi Ltd. makes the Almond series of touchscreen Wi-Fi routers.
+Add a vendor prefix for it.
 
-> In uart_set_info(), new_info->baud_base is multiplied by 16 and stored in
-> uport->uartclk (an unsigned int):
->=20
->   uport->uartclk =3D new_info->baud_base * 16;
->=20
-> While uart_set_info() checks if (uartclk =3D=3D 0) and
-> if (new_info->baud_base < 9600), when new_info->baud_base exceeds
-> UINT_MAX / 16 with low bits set (for example, 0x10000001), multiplying
-> by 16 wraps around in 32-bit unsigned arithmetic to a small non-zero value
-> (16), bypassing both uartclk =3D=3D 0 and new_info->baud_base < 9600 and
-> setting uport->uartclk =3D 16 (baud_base =3D 1, well below the required
-> minimum of 9600 * 16).
->=20
-> Use check_mul_overflow(new_info->baud_base, 16, &uartclk) in
-> uart_set_info() to reject overflowing baud_base values with -EINVAL.
->=20
-> Tested in QEMU against Linux 7.3.0-rc3 by calling ioctl(fd, TIOCSSERIAL,
-> &ss) with ss.baud_base =3D 0x10000001 on /dev/ttyS1: on the unfixed kernel
-> TIOCSSERIAL succeeds (ret =3D 0) and wraps uport->uartclk to 16
-> (TIOCGSERIAL reports baud_base =3D 1), whereas with the fix applied
-> TIOCSSERIAL returns -EINVAL and preserves the existing uport->uartclk.
->=20
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Fixes: 6eabce6608d6 ("serial: core: check uartclk for zero to avoid divid=
-e by zero")
+Reviewed-by: Linus Walleij <linusw@kernel.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The final statement that returns zero baud rate was already present
-before 6eabce6608d6. My commit added the warning, so I am not
-sure if this additional Fixes tag is justified?
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 5ddeae3a697..71e6f82a71f 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1497,6 +1497,8 @@ patternProperties:
+     description: SDMC Technology Co., Ltd
+   "^seagate,.*":
+     description: Seagate Technology PLC
++  "^securifi,.*":
++    description: Securifi Ltd.
+   "^seeed,.*":
+     description: Seeed Technology Co., Ltd
+   "^seirobotics,.*":
 
-
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> Assisted-by: LLM
-> Signed-off-by: Hui Peng <benquike@gmail.com>
-> ---
-> Changes in v7:
-> - Use check_mul_overflow() instead of raw UINT_MAX / 16 comparison as
->   suggested by Jiri Slaby.
->=20
->  drivers/tty/serial/serial_core.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 6ed0195e6912..9a8f4c2e1180 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -14,6 +14,7 @@
->  #include <linux/tty_flip.h>
->  #include <linux/serial_core.h>
->  #include <linux/console.h>
-> +#include <linux/overflow.h>
->  #include <linux/gpio/consumer.h>
->  #include <linux/kernel.h>
->  #include <linux/of.h>
-> @@ -931,9 +932,11 @@ static int uart_set_info(struct tty_struct *tty, str=
-uct tty_port *port,
->  	old_custom_divisor =3D uport->custom_divisor;
->=20
->  	if (!(uport->flags & UPF_FIXED_PORT)) {
-> -		unsigned int uartclk =3D new_info->baud_base * 16;
->=20
->  		/* check needs to be done here before other settings made */
-> -		if (uartclk =3D=3D 0)
-> +		unsigned int uartclk;
-> +
-> +		if (check_mul_overflow(new_info->baud_base, 16, &uartclk) ||
-> +		    uartclk =3D=3D 0)
->  			return -EINVAL;
->  	}
-> --=20
-> 2.47.3
->=20
+-- 
+2.53.0
 
 
---=20
-Hugo Villeneuve
