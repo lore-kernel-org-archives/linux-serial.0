@@ -1,156 +1,126 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com [209.85.222.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E2545A286
-	for <linux-serial@vger.kernel.org>; Wed,  7 Oct 2026 08:51:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A825D45D92F
+	for <linux-serial@vger.kernel.org>; Wed,  7 Oct 2026 09:34:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791363102; cv=none; b=d0ONH7PHvzoe0totxjmrEqHMnXdPyn2yNargdZOM4TTRvDsLWCwkRauCvWPxtb3WyJnQ8K7MstMgjIuaGycMDplwsHsZCjAh5+TEyyoRsI82f5nepFsG8XxEqfOJ7/OM4yPDPDlWiO/rzrTQoGucLCbZ6hhp3qnRE5NDtOVxW/Y=
+	t=1791365662; cv=none; b=iu9DKIW3QPH4qiDnnOBwl9Fc6tAI/yo9VEnusRaJy4Rnh3sUKwcOOM7IYV0EAP9ssoi4i7rsOLIzDbYU5Ix+BxvMPynyX+MmGX/mnJ+OS84z+GMlcCaAoJocQzxjA1mK44SjUetHngV99x9Ez6+x4D50s4Umiw/tvUb+AUFiIXQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791363102; c=relaxed/simple;
-	bh=CiCPHoKbA7QwOLstlzHIyTwZHiWB29u57jr15U2ffdY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Z7Y7dI346tYCS8yvDzTijmhNcDa1xnEneD10Z92daZ7HUc+S5d7Fg+pmxZHNwtDCFu1JTo7QUm034m9idO7fKq1NWhpyJFm6RaXIDH6ySLN9TmQrUHyROfH5ikrLAMwNHyOEwRPLxamHrpf90ov/Hu8s3nGiQyOmVK6nwpClV/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=U4OpEcQk; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YfPNoujj; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1791365662; c=relaxed/simple;
+	bh=DEQoUozW/Cs8HCbMPzg7ZPhOKB0dfvcgpHAGzkIkN5g=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=rHNkFZnF8CfhWHca9f8ukNNfc/r0s1OMCJzljfxjbRlCHpdb2ai28GKnPEJb1uvgROCQWOxywyhFE6mNFszRvDugfTYyaA/cnWZdbWSKe6vAeAwI5VfmjvhOorIh3dK/fHFMGNoCnvc0ODnkDvAJtU2vHBKhyrlEcBayRwq4mzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T5hCY+Q1; arc=none smtp.client-ip=209.85.222.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="U4OpEcQk";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YfPNoujj"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6977jbZ6119022
-	for <linux-serial@vger.kernel.org>; Wed, 7 Oct 2026 08:51:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	YRMO/BIFTS6t5KCadnTGwzkaBkcMRT2kVp1MYvn8vlI=; b=U4OpEcQkQIQ4z5ej
-	X4PJJ8RUbYDn3oovYkwGFkhHWi6r5CyCyPlzQ/d05CTJCrQ6IKSAfCgYAA6rW5Jz
-	giHiRMXWfsdCljgvOd4zpvdcxeU8JHTfljCgbK1WD0kNzZ+4giroSrHf6q3uXj3g
-	yEApDeVOHzVf42ENaGHa1nIdV2GZ7zWB2FcQNdVi+BVEhhk/Yeu+bhE2chvvWspc
-	k/uqDJtOeQTeQP7fqxW1foOGAbfVOCN6Con/wxoYOxxKrz0zs/dYC6gSwQKknrJW
-	y33M3sgngOmOpox9KbL8Gv3+7NiE171C7tRE/1PSxnEDdT6ErsD/Y2oD/VtIo6YY
-	94AQGQ==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h5fc58pv2-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Wed, 07 Oct 2026 08:51:40 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-3a47a81e70bso4037716a91.0
-        for <linux-serial@vger.kernel.org>; Wed, 07 Oct 2026 01:51:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T5hCY+Q1"
+Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-989a4cab97dso257319241.0
+        for <linux-serial@vger.kernel.org>; Wed, 07 Oct 2026 02:34:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1791363100; x=1791967900; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=YRMO/BIFTS6t5KCadnTGwzkaBkcMRT2kVp1MYvn8vlI=;
-        b=YfPNoujjzYkqOobFz5aB1TDTBYPTrnIW8H+psjxkZreV/LyLZOl0EX31al7GwGCDFs
-         UHS8YIYn3ag5ONpgmIrGWMvsSt5I7JB6Zws1QcWujpmRqaHVagdTuT0wuem3xf+Ak7/m
-         OLo93p9xxWGOEfPa2g9F+7ehJq6NXNBltyhnYe4FzgsHFRek0xRHO3BIiFnmVawg2Xxb
-         3CdRHlJdLUiYbmHqoShxwZ9ZIrglrH3ZfDMcRmkanc4rPwf2sXiNbNuStlDBsLEMlozd
-         T+M25qsOCJ0YWpIe6TMCaQgCnMMqU4AhDDrKJ2So0kz5QhKtXXY5S+rOzUeGUALOZvYN
-         plLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791363100; x=1791967900;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1791365649; x=1791970449; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=YRMO/BIFTS6t5KCadnTGwzkaBkcMRT2kVp1MYvn8vlI=;
-        b=kBZxLV7Y6VUbd9ZhD95fjCI1qeCN6JeuPhkGyJ8ycwAQkmG3QYQLx6rxxdKOle2mDG
-         9F9O0HaKkVrZRfWZZ0kP7aTPnoyjBoUdLQlO1zmfzbtGhbGtAfXGR9R2ycQnlFveD8DQ
-         ttWAJKC+HD1/Xcu1ba4pWa2XajDpXAalGJMo+RnLs+bjG/2FqGa8kTVrdOMB7C9AC7hZ
-         SJpgYhYwJO3fgtSbogJRrYcM2LMA7hKy4YiZ3vuhRaAXkI2Y2WcbltSK15P19TvdQ2v9
-         JkwzLN7BAzGMWmJonC5MAKszMRXdSem/sIIEKEHU5DXWCcNFGz8fz8n2ZWhSn2ilDAmL
-         Zekw==
-X-Forwarded-Encrypted: i=1; AKwUvBx8BHB4VLfyJf9tLYuTkoJYsabFMpnUjg4ZPq+cH4zNv9zw/JxBVh+zBu791wCisNZdb8r4uvFmZobCrOA=@vger.kernel.org
-X-Gm-Message-State: AFq9FYI6ajgMbQlTnykBfGfH3vept+16AUAPyW0nId9gUTv62UwBAT5m
-	B2rwSHE6/OZ41oUqxZumslbta1qjucFiQMCZHAZXVZL66PNCuT+qdiOYals4DrVQRXiF5/DzkeK
-	pOZ98ydvF50DkLnC9UoJn2Ax+KEmuY9gwy0DTQ+zePUiE+GOZ4UptJz20soNXqm4Yknk=
-X-Gm-Gg: AYBFou2Usi+q2jLo7rdozzJ47tjxfA+q3+jijGEtvcWimJq47FWRSdeBtxd2P/Ark2b
-	JqakU87HrXpcV0DyyTJ96sydAD8NrO1zwPTeCIa1Sga18hHiA+hX+fxaU1Uv7SJM8aU/bNFr3eE
-	TLBbudTWf0xRAbqsgvIeMtqTo6XzTEUVFBxvtlI2CH+BFJUUwfpUVvDcDtS7jYBsbKQiEroEB6X
-	4iTu5HMGJUHDI34iEPLhRGdK63BWsgtos6dGdMPAH3xpxRhvdN526DNnvVSjNcOJIo+CzdueMaN
-	g5Mzpy4Tf6iQ/1zoBESo3VYwS+NH2E8iJ3mn100RUFxzvVW5EktkGstD8HFr8Lf48XWuOvxtFYD
-	7E/pHIbORosXV2C5eT3ikcf5dxPHje33X
-X-Received: by 2002:a17:90a:c883:b0:3a0:bf0a:c9da with SMTP id 98e67ed59e1d1-3a8a1bbf160mr1409060a91.47.1791363099914;
-        Wed, 07 Oct 2026 01:51:39 -0700 (PDT)
-X-Received: by 2002:a17:90a:c883:b0:3a0:bf0a:c9da with SMTP id 98e67ed59e1d1-3a8a1bbf160mr1409044a91.47.1791363099481;
-        Wed, 07 Oct 2026 01:51:39 -0700 (PDT)
-Received: from [10.217.219.98] ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e60482cab0sm6760885ad.50.2026.10.07.01.51.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2026 01:51:39 -0700 (PDT)
-Message-ID: <57f068a0-41fa-4986-8702-8fd3d6dc0976@oss.qualcomm.com>
-Date: Wed, 7 Oct 2026 14:21:31 +0530
+        bh=DEQoUozW/Cs8HCbMPzg7ZPhOKB0dfvcgpHAGzkIkN5g=;
+        b=T5hCY+Q1YMRifQtJNpwfpRHJrL96eu66NyO8k/fOU6xriMjkUVzewqsf+D9cDW+g2S
+         y+Z1vlokkYNXulEAg5ZorFJ5Bsd3AKNI6pOR5grOajPc9/p7m1haNxusFKr5/SGG6qIW
+         DuE7xac9VE4JG34//XrBq9thtiGBXDRKtWR6lPJNK+zgcaTFW5RmJdS6FC8pfXhyqvxc
+         RoGCL7KD+kO+5VWDsidVJqE1tb7RzrrPhGuIVOmyd8CQhpui/9kakH6dgM+7hs826n0O
+         fOhLVQ2hjPaPkjdJ3gupw+0hwXzH97/RcnF29X9h4OSOGcCzonsyE4kbsbJpqAQU87OX
+         ymDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791365649; x=1791970449;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=DEQoUozW/Cs8HCbMPzg7ZPhOKB0dfvcgpHAGzkIkN5g=;
+        b=uInoxtK6ujMpsgwbgAbBO+QhwqRSF5F1wdeFIJM6mRQt3NvJPcoKqXK5FPhO63JhFd
+         KKE5qblfQqFo8XRWPqhJ5uJ8Getoxh9rWcvAUek6KEP1sZSP09SA4NVzreLHfKcH6H0m
+         dNLO1NnK2LOXJD1n0NJ0FaT0IRkL4HAKxYgabTCOBoOhBhXh6JVq4MP6jMPBwbV80Jgy
+         1aCqouWP9Ny1eHfm0CNLhcIqii9EX9VREyTzmxCJMOq/6dN1QRPq66ugUFVQPI+2S0Ht
+         2uUSHrMHGSsDQktICP2fbz5/cOzJSOi7fbcIZIqbTbwFjOYHH3YKXYO7AdJWP+gORiXH
+         O/6g==
+X-Forwarded-Encrypted: i=1; AKwUvBwdq/q8CAv2IDrdMAuPusvFenUlyABW7Z2oOj63mexUjzFpGZ/mxz0pbKWAueBsgFJq0S6wj3O1ZwOoMo4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIGl3YUuOVlv7flsL03Ssxfu3nLNQl/MHHuoYg9WP99w9s1ThNr
+	JROHc//od8dUC0L/NDl3OfmIbkzbqpu1T7vstY8T1yXvKUJxuNCfWIvY
+X-Gm-Gg: AYBFou2YpXbGEyQj3Eo0Bt+EOboNE6GYex0XXnVWtP/cpaOzeN4W1Fg5KJqTcLtKwN2
+	QeAER7rzg5IB9BNynPi8dIxoGXSMpllXd7cqEczR3UzI+tzrPqoY4Lhp7vArPdKyDs08/H4rUV2
+	bBhsSVEYeUPi/yjI0NsC12N3gcJtG0a9jMDAIm11ysWU6HNbPCyGv0vaxyGIgkF/viQVI6rGnmG
+	3UjoWZGFJrZG4V1Pq7Y98u5uJMp5/GGSdTxKnzILDSXjHNhYe7OGMAVP4nBirKDFQ9sriKU4S+i
+	Gumtf+modUovDOnPFL6zaXRwffZGonJ4Bj+yw+9hJf9ZYJo2Yrw7jG/THcZ0qDCaC963KkpRTmF
+	MeIVT7dfhPoIGOxkTx8ew/18abFMOVu7NjsJbSR9LOSo+jyZ56FwMUR4ABioRyGciCsrw1JlZfC
+	2cA7uSxszfpChDo95qgow64f9QYjCOzaoxQoYu/cit7ztn7vmoI81Vh7V34pVvJZxPcBnoIcO/G
+	AvjXInE7mvzCbLX/xTiQwNzrXGOEVL2tYHork85ZaRA0kdr44pSYb8zpsI4kMBLbfBXQZ1mNoOw
+	VjCU8Xo=
+X-Received: by 2002:a05:6102:2909:b0:7bd:732e:c615 with SMTP id ada2fe7eead31-7ca38e16ffamr456522137.26.1791365649209;
+        Wed, 07 Oct 2026 02:34:09 -0700 (PDT)
+Received: from MaquinaLab.. ([179.179.237.181])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7ca218138c6sm1319958137.12.2026.10.07.02.34.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2026 02:34:08 -0700 (PDT)
+From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+To: Andre Przywara <andre.przywara@arm.com>,
+	linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	andriy.shevchenko@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	Enzo Adriano <enzo.adriano.code@gmail.com>
+Subject: Re: [PATCH 3/3] serial: 8250_dw: Add Allwinner A733 UART
+Date: Wed,  7 Oct 2026 06:33:23 -0300
+Message-ID: <20261007093323.22104-1-vinicius.eduardo.pedrosa@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261006193046.540252-1-vinicius.eduardo.pedrosa@gmail.com>
+References: <20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com> <20261005172538.398522-4-vinicius.eduardo.pedrosa@gmail.com> <603b4f40-2a60-4bc5-8b98-ada7a52fead9@arm.com> <20261006193046.540252-1-vinicius.eduardo.pedrosa@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/9] soc: qcom: geni-se: Remove OPP rate reset from
- resource deactivation
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
-        konrad.dybcio@oss.qualcomm.com, Sudeep Holla <sudeep.holla@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Ulf Hansson <ulfh@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
-        Andi Shyti <andi.shyti@kernel.org>
-Cc: chandana.chiluveru@oss.qualcomm.com, arm-scmi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-References: <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-0-091697dbeb02@oss.qualcomm.com>
- <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-4-091697dbeb02@oss.qualcomm.com>
-Content-Language: en-US
-From: Mukesh Savaliya <mukesh.savaliya@oss.qualcomm.com>
-In-Reply-To: <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-4-091697dbeb02@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA3MDAzNSBTYWx0ZWRfX5xPWJ+hf75o4
- OzpSBc4KP9tC8uG89i8LbyRAPFlBPWOo8PtDldwvqlvCfjd3QfKB+PgOxiHcLeba+aCs1mQWUE4
- VP0Y88cUmauJndukmpryGuGBm0jZNmg=
-X-Proofpoint-GUID: g0J6hYnVVVdlbb5t7SwUjFUjNdTehkXe
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA3MDAzNSBTYWx0ZWRfX/0IyYwjsqH2k
- ZOVUfTjlX7hNfoxPi7jxkLecXL3GoA+nLNZZvlzpSOUYWIzgxqrjFRHUG4G0mGAw9LF2ZApdit/
- P+imjZ9R482buzBiA5AdT2RINe6GFyTJHkul9IqQQAFw7du0+EPSGvh2r0DLNCFHdtFNvSYL8O/
- P1HbJgnpg4ydjiyUaq3WQkhOfAwfQ5SyLJa/Yyd2VEAM89WAEpK9G1IzPx+2nVHTfZEIPelz+lD
- EoRR+08YUtJBzUnhod7CYI6sOzVWdNo9s98qN26S62excZzTiXDO9ugK0iLGeB2nR01YnLSOMvt
- HugrFKChS1ByLZWznH96i/peh/T3Y980uuatARal66tbCJ7b8ziePSbBnjEv8qxxVrhTAzi95pp
- nZo+nkP6l5jIR21OF3jYh4dEUFTw50VLEmM+6FmJpYR6RpoA5KXDHD3K6ephmEt77MjHYLUzkNF
- 2ZN1Ia2ZE656jMPJtxg==
-X-Proofpoint-ORIG-GUID: g0J6hYnVVVdlbb5t7SwUjFUjNdTehkXe
-X-Authority-Analysis: v=2.4 cv=a6+lZkSF c=1 sm=1 tr=0 ts=6ac6081c cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=EUspDBNiAAAA:8 a=9QLVM3U_lBk_t3napV8A:9 a=QEXdDO2ut3YA:10
- a=uKXjsCUrEbL0IQVhDsJ9:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-07_03,2026-10-06_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 adultscore=0 suspectscore=0 malwarescore=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 clxscore=1015 impostorscore=0
- phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
- definitions=main-2610070035
+Content-Transfer-Encoding: 8bit
 
+Hi Andre,
 
+Correction to my last mail: the v2 change I proposed there is wrong.
 
-On 8/27/2026 11:29 PM, Praveen Talari wrote:
-> Remove the dev_pm_opp_set_rate(se->dev, 0) call from
-> geni_se_resources_deactivate().
-> 
-> OPP resource management should be controlled by the consumer driver.
-> Additionally, clocks are already disabled by geni_se_clks_off(), making
-> the OPP rate reset unnecessary during resource deactivation.
-> 
-> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
-> ---
-Reviewed-by: Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>
+Gating only when clk_round_rate() differs from the current rate is
+e5d6bd25f93d ("serial: 8250_dw: Do not reclock if already at correct
+rate"). 7dfae6cbadc1 reverted it because it broke the dw UARTs on Bay
+Trail and Cherry Trail. Mine compares against clk_get_rate() instead of
+p->uartclk. Peter suggested that variant in the revert thread, and Hans
+pointed out it's the same check, since uartclk comes from clk_get_rate()
+at probe.
+
+From my reading of clk.c, the flag you mentioned seems to explain the
+regression. The LPSS "-update" gate is registered with
+CLK_SET_RATE_PARENT | CLK_SET_RATE_GATE in drivers/acpi/x86/lpss.c.
+Preparing it rate-protects the gate and its divider parent, and while
+they're protected clk_round_rate() returns the current rate. So the
+check always says there's nothing to do. The divider never gets
+reprogrammed. Hans's debug log in
+<20240317214123.34482-1-hdegoede@redhat.com> has a request for 1843200
+rounded to 153600, the rate already set. I can't test LPSS.
+
+So on LPSS the CCF does ask for the gate, and the disable/enable in
+dw8250_set_termios() is how the driver gets clk_set_rate() past it.
+
+For v2 I'm inclined to keep SKIP_SET_RATE for the A733, like JH7100
+(b0ad20a3b64b) and SG2044 (cad4dda82c7e). The A733 bus-uart gates carry
+no rate flags, so the rate calls there are no-ops. Calling
+clk_set_rate() with the clock running and gating only on -EBUSY might
+work for everyone, but it needs BYT/CHT testing I can't do.
+
+This is separate from DLF. v2 still uses your 2^n - 1 check for that,
+with no A733 quirk.
+
+Thanks,
+Vinicius
