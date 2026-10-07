@@ -1,77 +1,120 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F2683B8D79
-	for <linux-serial@vger.kernel.org>; Wed,  7 Oct 2026 11:42:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A3C648123D;
+	Wed,  7 Oct 2026 13:04:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791373389; cv=none; b=G0b8ISArLWpIOUSaVtBdkCsZGNnvHC87bF5oY4LXUF3ukQMBI9DjSodDXXoTFeKlzy9I1QVKtWiPjo0RoBWBRVpcYWpzjMQYs0UgdbbTDt70Cy32AU36I9LCXNsuCecenO1N2nEFpfH3//TvSV3zKUrMrtnuJwq0GIXGRYP7H0Q=
+	t=1791378260; cv=none; b=KfhoPsE5Onxd321Km5d8MTDl7jaqB3f2D/VFeBqVWOvFZZeikcAcycbZKjhP/R0VYu3T4dBQpotJlR1K9cOKLGez20U2xTef77orwXD/ldW0nvXjSvwQ0vsWuAL8gvhJ7Z9TEY38TnIBPavfKLJYinExvDZjUtSWFWYgdmi2Pno=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791373389; c=relaxed/simple;
-	bh=ivEueNLxHk2vH0nhb5BeLMWpDwc53kCrNP3a0jUDX2E=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LdcMJcbCES0EahDCaViBmNOpK7Q3ZOMOC/9x8lraN5cc22treoEp5uVOmWIyjtdax9JTpzR+w0P9Xvc9dJSe0hOtJ7H5d2jrt24bh5ninNRAX2yplmXuymLLGD/6w1HJ48L5ByU2lws/W0ebdPUDNXWtM4gpiwrA7L37Ygmk6dU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Absiup7E; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791378260; c=relaxed/simple;
+	bh=5mZkqvWfwnKehqKFwrP7aZW+mFT+j0HzqFsdn24VQTQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O/TNn7if229I5vWW2bHGB01nz2ziP1+UBWDzt7yGguFUpDe5KtGAwkzoCIF4U+2ekBC5IjPMjmcyH+jQKF3eUEWxn27Tc8JVzkQBIMW+jIzNHQfkPVeUmExL0AEtsmUKGmt8E0FjgF/XyOTU1OydXWCWctU3ZttXaDjTxVFTkoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ck86f0xc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Absiup7E"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B927C1F008A6
-	for <linux-serial@vger.kernel.org>; Wed,  7 Oct 2026 11:42:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ck86f0xc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F1C1F0089C;
+	Wed,  7 Oct 2026 13:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791373375;
-	bh=ivEueNLxHk2vH0nhb5BeLMWpDwc53kCrNP3a0jUDX2E=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=Absiup7ECYSXtrMLN/bQJldHdg5wxZGDLix0U8l7vCt6iJ5wXNpBZmIZqT7C+5lHq
-	 27PTTD4MsUwJmOOuo3mI9KClXBNcemGkTqBc75zSm8ywK/a1kOT8bsCzs9DKtNh5fq
-	 ulv+K8+ZCyA3qODDwnMeU8aaH4vpY6oT5LIGLvRN/rfTLyPIOVGbXtcV8z8mecRZ3b
-	 +t8oiIH+2V3L1ciu9oGJQvQIFIyV1XLMKbkeB0NBcTea0TaPuafymBDujnjZ9wrKIs
-	 084xhaNxwgT7ZmQwakmkMkT1vmNxyUsFFF4UPjTNLsHFKPbdnSC68reF373N4Nyy7r
-	 uCIZ2h73YJHwQ==
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5bccc96684dso1129015e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 07 Oct 2026 04:42:55 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBxBcHu4GQep40z7+hY9W8zEw/iSj3a/LRkaCJGtexOIls9ZAniwyFHZ+twY9p/5vkdLLppdc1Y2PSZe5nY=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLYrj1kFrhRUZKrKslvsAklkULs82k3PVS8MFrqkOj2b9VWi4eN
-	Whh043SFcVXxvGwEE04DhBWPDfY4aKeJn+LzMCxnM63K7Ir/OEaMQKBoF7B8Htqvs3slcIntbM5
-	AavcC8prMFvZmmQNwe3ljos+IWMJHOYU=
-X-Received: by 2002:a05:6512:10d6:b0:5b8:eb3a:759b with SMTP id
- 2adb3069b0e04-5bcd071739fmr695555e87.42.1791373374528; Wed, 07 Oct 2026
- 04:42:54 -0700 (PDT)
+	s=k20260515; t=1791378249;
+	bh=84dEnMeuxrpA4ZytGyYSFXT69ied57NAHmkJ88VCEwo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ck86f0xc2CyGGyVLDv7x7A5CYBIiIREoK9vzmSZrJJoVU5Fui+jaOoBwuvPC1akts
+	 VK5Vkqyv3ceUs1NDgN2lzNiJZ/WyZ1g9fCWRhSn4CWWLfrS/Pmr1w7JOvyWMTzq2aD
+	 EQr9IXjicpH4f35gCg6N26FMrbndK4O0orx5NkbJIUpcTvAZF7ITsBuRPjREWPDP05
+	 UvdwEIDsHbnpZZOHorMYCPgIAf3gE4P1TRY+9jKlDwa7wJyivbvnXejfBaJ7CZXCg7
+	 BJk1go18+uvlkRXX98pfwLIp+AElof1cXWWFD6moSkHw5ulwXCP3yUQOJokSdaOvhw
+	 GWysHkg2VvgNA==
+Date: Wed, 7 Oct 2026 14:04:05 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Jisheng Zhang <jszhang@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: serial: snps-dw-apb-uart: Add Synaptics
+ sl2610 uart
+Message-ID: <20261007-450d3d9a4f4a2c07cc088067@squawk>
+References: <20261005151918.25259-1-jszhang@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261006-b4-cs75xx-v2-0-b7d6e1e24d44@gmail.com> <20261006-b4-cs75xx-v2-10-b7d6e1e24d44@gmail.com>
-In-Reply-To: <20261006-b4-cs75xx-v2-10-b7d6e1e24d44@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 7 Oct 2026 13:42:41 +0200
-X-Gmail-Original-Message-ID: <CAD++jLnnRQtkM70jJG4+a399jAoGTX14uQVV0VRi-xqUeA9xXw@mail.gmail.com>
-X-Gm-Features: AclHuK8nAoHDN1ANkg2tOlHkE-yX--9Ilsr5akWlC4NL-_UZZlci4TouPpcsIFE
-Message-ID: <CAD++jLnnRQtkM70jJG4+a399jAoGTX14uQVV0VRi-xqUeA9xXw@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 10/10] MAINTAINERS: Add entry for Cortina Systems CS75xx
-To: filipp.dunsky@gmail.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Jason Li <jason.li@cortina-access.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="bj9ENhqRtHEDsn4P"
+Content-Disposition: inline
+In-Reply-To: <20261005151918.25259-1-jszhang@kernel.org>
+
+--bj9ENhqRtHEDsn4P
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 6, 2026 at 8:17=E2=80=AFPM Fil Dunsky via B4 Relay
-<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
+On Mon, Oct 05, 2026 at 11:19:18PM +0800, Jisheng Zhang wrote:
+> Add the compatible for the UARTs of the Synaptics SL2610, which are
+> compatible with the Synopsys DesignWare APB UART.
+>=20
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>=20
+> since v1:
+>  - use sl2610 instead of sl261x
+>  - send as a separate patch
+>=20
+>  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.ya=
+ml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> index 664305de4986..a40f2737e71b 100644
+> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> @@ -34,7 +34,16 @@ allOf:
+>        properties:
+>          resets:
+>            minItems: 2
+> -    else:
+> +
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              enum:
+> +                - starfive,jh7110-uart
+> +                - syna,sl2610-uart
 
-> From: Fil Dunsky <filipp.dunsky@gmail.com>
->
-> Add an entry covering the Cortina Systems CS75xx platform code, device
-> trees, bindings and UART driver.
->
-> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+Is the number of uart resets on this device variable?
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+> +    then:
+>        properties:
+>          resets:
+>            maxItems: 1
+> @@ -80,6 +89,7 @@ properties:
+>                - starfive,jh7100-hsuart
+>                - starfive,jh7100-uart
+>                - starfive,jh7110-uart
+> +              - syna,sl2610-uart
+>                - ultrarisc,dp1000-uart
+>            - const: snps,dw-apb-uart
+>        - const: snps,dw-apb-uart
+> --=20
+> 2.53.0
+>=20
 
-Yours,
-Linus Walleij
+--bj9ENhqRtHEDsn4P
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCasZDRQAKCRB4tDGHoIJi
+0jcSAP0TrHMLDbVz+kxj8bftwsGZujBCJhGVBfHKLKOcWYrA6AD/X6tmnmvPEqja
+kAVRwzx2SZtcrWuwhzEkVEC6gvvWswE=
+=AK5Q
+-----END PGP SIGNATURE-----
+
+--bj9ENhqRtHEDsn4P--
