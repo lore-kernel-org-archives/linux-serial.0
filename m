@@ -1,120 +1,153 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A3C648123D;
-	Wed,  7 Oct 2026 13:04:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C63495504;
+	Wed,  7 Oct 2026 14:13:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791378260; cv=none; b=KfhoPsE5Onxd321Km5d8MTDl7jaqB3f2D/VFeBqVWOvFZZeikcAcycbZKjhP/R0VYu3T4dBQpotJlR1K9cOKLGez20U2xTef77orwXD/ldW0nvXjSvwQ0vsWuAL8gvhJ7Z9TEY38TnIBPavfKLJYinExvDZjUtSWFWYgdmi2Pno=
+	t=1791382398; cv=none; b=LViIy5T3v6E2K6JmhIsSrtMss/qPGD4sJ3JtxdjAys1aVX+qOGSyp1DArb5NOQcYjfIHTYps0NmSr6PaF6wshLMSRRBMRAy2JKRirXXEhRhdLzBQqvmQ6wzwHsLcvgGSVaCcLxiMQhTiAgHoUwdE7KI4J2UqDZS0QmCZ8yeUID4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791378260; c=relaxed/simple;
-	bh=5mZkqvWfwnKehqKFwrP7aZW+mFT+j0HzqFsdn24VQTQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O/TNn7if229I5vWW2bHGB01nz2ziP1+UBWDzt7yGguFUpDe5KtGAwkzoCIF4U+2ekBC5IjPMjmcyH+jQKF3eUEWxn27Tc8JVzkQBIMW+jIzNHQfkPVeUmExL0AEtsmUKGmt8E0FjgF/XyOTU1OydXWCWctU3ZttXaDjTxVFTkoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ck86f0xc; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791382398; c=relaxed/simple;
+	bh=HiOi5e2T4x225gImL/TJWJ8DefHkXVdDKplaSxviIzI=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=ErDVGa9WgK+PC+n5cZLUXur9s3FQmlca+0LAhLLBCAHmQMBFJBXmEjgr0Vi2LPUYNbdNQLcIgkdRFipE91zb7sz1Wj4e8RZh2BZfylem5CODzzkr9aM6P7y96zWYDcXdsJcRPStS6UcowG+r8Hxlt+g7foMDJ/UBQzUxjU2jybY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=BgtzNttB; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ck86f0xc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F1C1F0089C;
-	Wed,  7 Oct 2026 13:04:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791378249;
-	bh=84dEnMeuxrpA4ZytGyYSFXT69ied57NAHmkJ88VCEwo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ck86f0xc2CyGGyVLDv7x7A5CYBIiIREoK9vzmSZrJJoVU5Fui+jaOoBwuvPC1akts
-	 VK5Vkqyv3ceUs1NDgN2lzNiJZ/WyZ1g9fCWRhSn4CWWLfrS/Pmr1w7JOvyWMTzq2aD
-	 EQr9IXjicpH4f35gCg6N26FMrbndK4O0orx5NkbJIUpcTvAZF7ITsBuRPjREWPDP05
-	 UvdwEIDsHbnpZZOHorMYCPgIAf3gE4P1TRY+9jKlDwa7wJyivbvnXejfBaJ7CZXCg7
-	 BJk1go18+uvlkRXX98pfwLIp+AElof1cXWWFD6moSkHw5ulwXCP3yUQOJokSdaOvhw
-	 GWysHkg2VvgNA==
-Date: Wed, 7 Oct 2026 14:04:05 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jisheng Zhang <jszhang@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: serial: snps-dw-apb-uart: Add Synaptics
- sl2610 uart
-Message-ID: <20261007-450d3d9a4f4a2c07cc088067@squawk>
-References: <20261005151918.25259-1-jszhang@kernel.org>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BgtzNttB"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=og/7X/CjUI0QTbRR3oumV+UU2alUYe1L0SW6ZkPwQAM=; b=BgtzNttBQNs2zSg2TxM81D+pk2
+	B4k69hlrfZ/vktZL0kHeJHcYmMmvcQpZR+twOcxTl2KT47ihiHjq61pSAhzoHWsc1mqd8+hUWPGgA
+	1+c2yiymnSxGsF7ijPoRtGx1EcUi/OwIShIOshfWFfSEUzDHozy2A2/5I70NNQhifxe8=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1xESOK-000000008MD-0enk;
+	Wed, 07 Oct 2026 10:13:08 -0400
+Date: Wed, 7 Oct 2026 10:13:07 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Hui Peng <benquike@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, Ilpo
+ =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy
+ Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v8 1/2] serial: core: fix baud rate fallback in
+ uart_get_baud_rate()
+Message-Id: <20261007101307.223cfb6fe59699a2b52eac1a@hugovil.com>
+In-Reply-To: <20261007094719.1362769-2-benquike@gmail.com>
+References: <20261007094719.1362769-1-benquike@gmail.com>
+	<20261007094719.1362769-2-benquike@gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bj9ENhqRtHEDsn4P"
-Content-Disposition: inline
-In-Reply-To: <20261005151918.25259-1-jszhang@kernel.org>
-
---bj9ENhqRtHEDsn4P
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-On Mon, Oct 05, 2026 at 11:19:18PM +0800, Jisheng Zhang wrote:
-> Add the compatible for the UARTs of the Synaptics SL2610, which are
-> compatible with the Synopsys DesignWare APB UART.
+Hi Hui,
+
+On Wed,  7 Oct 2026 09:47:17 +0000
+Hui Peng <benquike@gmail.com> wrote:
+
+> When uart_get_baud_rate() evaluates a requested baud rate against a port's
+> supported limits [min, max], the retry loop operates as follows:
 >=20
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+>   try =3D=3D 0: Evaluates the requested baud rate. If out of range and an=
+ old
+>             termios is available, it switches termios to old.
+>   try =3D=3D 1: If old is also out of range (or unavailable), the fallbac=
+k rule
+>             at the end of the loop clips baud to [min, max - 1] and encod=
+es
+>             it into termios via tty_termios_encode_baud_rate(termios, bau=
+d,
+>             baud).
+>   try =3D=3D 2: Evaluates baud =3D tty_termios_baud_rate(termios) for the=
+ newly
+>             encoded clipped rate, which now satisfies min <=3D baud && ba=
+ud
+>             <=3D max and returns baud from within the loop body.
+
+The loop terminates immediately after try =3D=3D 1. I see that below even
+you acknowledge that fact. This is confusing and it does not
+properly describe the current behavior. You should instead write
+something like:
+
+     try =3D=3D 2: no more action, the loop exit immediately
+
+and adjust your other comments accordingly.
+
+
+> However, because the current loop bound is for (try =3D 0; try < 2; try++=
+),
+> the loop terminates immediately after try =3D=3D 1 without executing try =
+=3D=3D 2 to
+> re-evaluate the clipped rate. Upon loop exit, the function hits WARN_ON(1)
+> and returns 0, which triggers a fatal divide-by-zero (Oops: divide error)
+> in uart_get_divisor():
+>=20
+>   WARNING: drivers/tty/serial/serial_core.c:548 at uart_get_baud_rate+0x1=
+36/0x260
+>   [ ... ]
+>   divide error: 0000 [#1] PREEMPT SMP KASAN
+>=20
+> Increase the loop retry limit in uart_get_baud_rate() from 2 to 3 iterati=
+ons
+> (try < 3) so that clipped fallback baud rates are re-evaluated in try =3D=
+=3D 2.
+>=20
+> Tested in QEMU against Linux 7.3.0-rc3 by setting B4000000 on /dev/ttyS0 =
+via
+> tcsetattr(): on the unfixed kernel it triggers WARN_ON(1) and divide-by-z=
+ero
+> Oops, whereas with this fix applied uart_get_baud_rate() smoothly falls b=
+ack
+> to 115200 without error.
+>=20
+> Fixes: 091ea8e5d34e ("serial: core: prevent division by zero by always re=
+turning non-zero baud rate")
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM
+> Signed-off-by: Hui Peng <benquike@gmail.com>
 > ---
+> Changes in v8:
+> - Rewrote commit description to detail the step-by-step loop iteration
+>   progression (try =3D=3D 0, try =3D=3D 1, try =3D=3D 2) as requested by =
+Ilpo J=E4rvinen
+>   and Greg Kroah-Hartman.
 >=20
-> since v1:
->  - use sl2610 instead of sl261x
->  - send as a separate patch
+>  drivers/tty/serial/serial_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >=20
->  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index f91bcfa30113..6ed0195e6912 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -470,7 +470,7 @@ unsigned int uart_get_baud_rate(struct uart_port *por=
+t, struct ktermios *termi
+>  	 * Ask the low level driver to verify the baud rate if it can't
+>  	 * then it will have encode_baud_rate set the Closet else .
+>  	 */
+> -	for (try =3D 0; try < 2; try++) {
+> +	for (try =3D 0; try < 3; try++) {
+>  		baud =3D tty_termios_baud_rate(termios);
 >=20
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.ya=
-ml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 664305de4986..a40f2737e71b 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -34,7 +34,16 @@ allOf:
->        properties:
->          resets:
->            minItems: 2
-> -    else:
-> +
-> +  - if:
-> +      not:
-> +        properties:
-> +          compatible:
-> +            contains:
-> +              enum:
-> +                - starfive,jh7110-uart
-> +                - syna,sl2610-uart
-
-Is the number of uart resets on this device variable?
-
-> +    then:
->        properties:
->          resets:
->            maxItems: 1
-> @@ -80,6 +89,7 @@ properties:
->                - starfive,jh7100-hsuart
->                - starfive,jh7100-uart
->                - starfive,jh7110-uart
-> +              - syna,sl2610-uart
->                - ultrarisc,dp1000-uart
->            - const: snps,dw-apb-uart
->        - const: snps,dw-apb-uart
+>  		/*
 > --=20
-> 2.53.0
+> 2.47.3
 >=20
 
---bj9ENhqRtHEDsn4P
-Content-Type: application/pgp-signature; name=signature.asc
 
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCasZDRQAKCRB4tDGHoIJi
-0jcSAP0TrHMLDbVz+kxj8bftwsGZujBCJhGVBfHKLKOcWYrA6AD/X6tmnmvPEqja
-kAVRwzx2SZtcrWuwhzEkVEC6gvvWswE=
-=AK5Q
------END PGP SIGNATURE-----
-
---bj9ENhqRtHEDsn4P--
+--=20
+Hugo Villeneuve
