@@ -1,277 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBC3C3B3BE6;
-	Fri,  9 Oct 2026 14:58:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75BCB3CFF62
+	for <linux-serial@vger.kernel.org>; Fri,  9 Oct 2026 15:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791557930; cv=none; b=f20faLjJtQ/ogLYlAvSDVgcRYmCjlHN8IH4VTDkCRQTFmmcNqt6bNlbJi/Zz/Loxwf9tmneitbsALblFMRQUzUPyjrrOVeFel6vk+TIeTVv0PIhRXFDWIaSSzZSskDGSP4qZIly0dO9cY7/m8D7ojg0VfgfcRkeBacco5+Hrk3A=
+	t=1791559630; cv=none; b=LyfSZdAKIIJ0L3MpfTO/yFVnq35yk8cBzA3bT6HpA0/UJPT90ogMtUIkAU6BaOPmdM3ApSmh4wC3ZhEqzX776gR6h47Q/CaeFEU+ukitWQ0cMxiT8n7vN0A6iLZI+DjUJaV1WPa7bp0V9tHD29BBr8EEsrw9uzUsL4R5RQcAWN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791557930; c=relaxed/simple;
-	bh=cHfQVjGwTWN3mvTSbJ4bmJy0NC2sVCOgxbk5TVTcD4w=;
+	s=arc-20240116; t=1791559630; c=relaxed/simple;
+	bh=KwZjs64/rTuFe0HBKIyW10VbcdJrpzSWVqBnN+zFKDI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SWBq/3tDfyuSBU95fSMPyhxP/dLQMikPRCGJRXbc0lE6L4roJLp4WIDNkpUodgIHJZOpDs/3CyuC8ItlGpt3d/TWAsDJhxrZb3vWgc4cUcA5e6pAMaeiiRgdZKJmy+RluQQ5HIpAOae1O/OdH/OCQVIcfj4EjlquN4KkirO9hMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oB2P4myO; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=KJTEEsGlknDgxscftTfK1dVl5yZmTTPJhQsI/neGqJ4LnBimAdc0jJOnP9JVZW3MmtzDf+OAKoB2kxKAGQlPwaf4fAM1AqZMjXdirDQ1bjgKEGOchvZaXSiUCZjF30hPC1IpVqjVGBodawGdOydOtTILQRpVCtDG0Lddbw5EAVo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=UB/1uD29; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oB2P4myO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 347611F000FF;
-	Fri,  9 Oct 2026 14:58:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791557928;
-	bh=J/ONsV+WMtPXVXfEYwgkgLrKLerfe5w3ubhZH2PKm7w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=oB2P4myO0GpdK6FMZk/oWFksORFCClpCMXEpB++z2aZo0R6mQqhI/nwj10JTfZCLZ
-	 YbARhQzN51Q67l2DyjbKkdA5j3FouF2S/Yv9KQPPOn0ReT7SzcGozEbzuylML/dJrr
-	 8f8skk/VY6PgI6KhOwMQE5LpBr3+uyRta046TWvWO6MolvmNT5PONTMxM1KjmCeyNx
-	 DhJ5Z5XQBzyY+d7gcxO+/3Sr4RFlUVm7l1KUnx8k/R3K2J+rBKZar8g+9w8BPAIDX/
-	 wBcm8GtmETD8aoHYe6hKbqG9n/uWus8XP6U+DnPFNtpr3N06V/uJOQVir5yOtW08b4
-	 EnpSEukL7MluQ==
-Date: Fri, 9 Oct 2026 15:58:40 +0100
-From: Conor Dooley <conor@kernel.org>
-To: zjzhao@edatec.cn
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, hugo@hugovil.com,
-	hy@wkmic.com, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-api@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] dt-bindings: serial: Document WK2xxx SPI UART
-Message-ID: <20261009-0d3ee8f71d04ab70c387db33@squawk>
-References: <cover.20261009.wk2xxx.v5@edatec.cn>
- <20261009082530.248219-1-zjzhao@edatec.cn>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UB/1uD29"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a1698ea378so36821035e9.2
+        for <linux-serial@vger.kernel.org>; Fri, 09 Oct 2026 08:27:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1791559628; x=1792164428; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=40jmrkdv9yTSAmdr7iVbfZIED5uVomcFd8fALW8sm6A=;
+        b=UB/1uD29POMtua/TFSmvLQecBxQzsgZ0sdD6kG6YK9yXV8/xbhffxtDRMcarmY7ORx
+         Fvncys5suZkthRtfxxyllkZCBIh7dQMtlTGyoLbynFFnaZpd7N4OcHxOYpYezTYkZ3zL
+         uBa9G7Zpvp3b1ptGB15Sx1nhj+F5Dg142LuR2ZTxNV5mf7nR2RdQyJDyQ+/EIHSy7syV
+         iH/Dkf83jq+lTTvMtz9ZANkTu5rWtzvAKFqpvYi6mGX6mYahrsmyIn6PKhE54rWTUAIN
+         06oYwFdBXgN+DPygEfoLnyhzL1K2EVbMHbRYAzXdbqg/KYR1Me4OUm1ApEilv5V3IhaX
+         MlbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791559628; x=1792164428;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=40jmrkdv9yTSAmdr7iVbfZIED5uVomcFd8fALW8sm6A=;
+        b=P1+zVt6whWrzD+Vchl8X1/M/7mP2k3H7d9K5cV0ld/qd8p8apdbe8dJG77tuGvnaW4
+         3HzLcC16NNjAEUPL3dBG5eMASPPBL3pnItcAUx2U/MIWsQDly7VaPubZG656l2iJTwQv
+         Zj8lGLWUr3UcApVxPgUvkVYjWr3p3rNk8IRiP1pWf+u9RXTCx2/ma2ynwrtdsk4SGG3V
+         dtAQq5V6KpBSLwSoA/IFb89gAznsBV/6JjDixzIQvLogmY13AP7Nx3vmwGUJeXrmVIpG
+         c5sS6IY8FhkS7frvb2v1a8Wc92Hvj1H9cu+2oxhBY+6c8NHMehQVPLTVpZgxLf1jGPhB
+         B48A==
+X-Forwarded-Encrypted: i=1; AKwUvBzE5xqUDlWyRxjQ+95/beharQUoUyJLUQW6/FLdPBiT4nLrW+FnAhkrKw7JxHUfkO7QiTIsfPiIIkPo+pM=@vger.kernel.org
+X-Gm-Message-State: AFuF++kFq1IjCI0BlSh4D0XXg6ij5kF9mzWpc74GXlfoR/dg3S14Lsak
+	DDCZNHYwIZZaqnPFRYMg3cHPswQsD/FZ6hL2BTmPRkWxePoAwOJ0UL692zbMPSQJZHQ=
+X-Gm-Gg: AYBFou3+leWyHtBxm6Kvl7c55byPrjna5KA3VVvfijhUlbIGZHaLzh/5N1oFtw2Z8ax
+	7HBcYTkIl2C4QyaRtQ3OAO8g207Qzt3RtZTPQ+5YDlrlD8/Fsbqsexl+t5lRuOSN1OCwg5FL/q4
+	qy7dQ7ScfqMx/NWuC9ykIKQJUQQ0vlyJ/4SPOjGYMpKJIGW9s8kXZv/KKR4YPSL0TZxRsnRcoD6
+	8VIVUpIIGUkuJzcBlZv1Jv9LMgbwnOlepRdhz6ylgRZ/vh3JP6+L11qcCQiSwiCNxdUfPHsanXp
+	8aqqtO1rXhDeFxQIjQEHcmV8b2Qg8jp/j/P+V1wZVuYYGabWg05pO1vmA63bYXY46+1gbfyec85
+	KrpJeO7KsaDXmX9ojBw7HQ89i6vUyA0G5LMJjEAwkAePw23E/wBJXUIf0/JXrIXFQfVbjV+EFEl
+	8OF+o9TE9AGt26JCu/BQu8N33Fk/lihbX/AUgF1Wa6Fs5301j5fUC/6LX4LVvmJLvQ9mliciHvS
+	5JkWFjnefk=
+X-Received: by 2002:a05:600c:8b78:b0:4a0:25d5:e853 with SMTP id 5b1f17b1804b1-4a18e4ddd99mr41776475e9.35.1791559627674;
+        Fri, 09 Oct 2026 08:27:07 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18bea1fefsm75191635e9.11.2026.10.09.08.27.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2026 08:27:07 -0700 (PDT)
+Date: Fri, 9 Oct 2026 17:27:04 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Christian Brauner <brauner@kernel.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-serial@vger.kernel.org, oliver.sang@intel.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nbcon/reboot: Flush nbcon consoles synchronously on
+ reboot
+Message-ID: <askHyBX6EPaMYnRt@pathway.suse.cz>
+References: <20261008150852.8286-1-pmladek@suse.com>
+ <20261009065152.udyfFRHx@linutronix.de>
+ <asiu8orjDvRJMKuX@pathway.suse.cz>
+ <87qzhzxatd.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="GcGhcH9vO+oZF4fF"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261009082530.248219-1-zjzhao@edatec.cn>
+In-Reply-To: <87qzhzxatd.fsf@jogness.linutronix.de>
 
---GcGhcH9vO+oZF4fF
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri 2026-10-09 15:34:30, John Ogness wrote:
+> On 2026-10-09, Petr Mladek <pmladek@suse.com> wrote:
+> > Anyway, IMHO, we should switch to NBCON_PRIO_EMERGENCY for the post-running
+> > states and flush the pending messages immediately. It is more
+> > reliable. It is easy to find the locations when system_state() is set.
+> > And all follow-up printk() calls will try the direct flush so that
+> > they won't rely on an explicit flush.
+> 
+> We need to be careful about abusing CPU state in order to get certain
+> functionality. We already have things in place to gracefully switch to
+> atomic after shutting down the printing kthreads.
 
-On Fri, Oct 09, 2026 at 04:24:07PM +0800, zjzhao@edatec.cn wrote:
-> From: Zi Jie Zhao <zjzhao@edatec.cn>
->=20
-> Add a DT binding for the WK2xxx SPI-to-UART bridge ICs (WK2124,
-> WK2132, WK2168, WK2212 and WK2204) from Chengdu Weikai
-> Microelectronics (WKmic).
->=20
-> Describe each UART channel with a serial@N child node carrying its
-> serial and RS-485 properties. Register the wkmic vendor prefix based
-> on the vendor website.
->=20
-> Differentiate compatible strings by channel count and register
-> availability. WK2124 and WK2132 lack hardware flow-control and
-> RS-485 registers. WK2212 is a separate two-channel model that
-> supports both features. Reject serial@2 and serial@3 on the
-> two-channel members.
->=20
-> Correct the WK2202 compatible used in the public v4 series to
-> WK2212. WK2202 in the public reference driver is a typo.
->=20
-> Require the standard clocks property for the single external
-> reference clock used by the chips.
->=20
-> Assisted-by: LLM
-> Signed-off-by: Zi Jie Zhao <zjzhao@edatec.cn>
-> ---
->  .../bindings/serial/wkmic,wk2124.yaml         | 119 ++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
->  MAINTAINERS                                   |   7 ++
->  3 files changed, 128 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/wkmic,wk2124=
-=2Eyaml
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/wkmic,wk2124.yaml b=
-/Documentation/devicetree/bindings/serial/wkmic,wk2124.yaml
-> new file mode 100644
-> index 000000000000..47a0cbdb5ca1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/wkmic,wk2124.yaml
-> @@ -0,0 +1,119 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/wkmic,wk2124.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: WKmic WK2xxx SPI to UART bridge
-> +
-> +maintainers:
-> +  - Huang Yang <hy@wkmic.com>
-> +
-> +description:
-> +  The WK2xxx family (WK2124, WK2132, WK2168, WK2212 and WK2204) are SPI =
-to
-> +  UART bridge ICs from WKmic (Chengdu Weikai Microelectronics). Each IC
-> +  exposes two or four full-duplex UART channels with 256-byte RX/TX FIFOs
-> +  through a single SPI slave interface and one interrupt line, and is
-> +  clocked from a single external reference clock. Each channel is
-> +  described by a "serial@N" child node that carries its own serial and
-> +  RS-485 properties.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - wkmic,wk2124
-> +      - wkmic,wk2132
-> +      - wkmic,wk2168
-> +      - wkmic,wk2212
-> +      - wkmic,wk2204
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    description:
-> +      When missing, the device driver uses polling instead.
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +patternProperties:
-> +  "^serial@[0-3]$":
-> +    type: object
-> +    description: A single UART channel of the chip.
-> +    allOf:
-> +      - $ref: /schemas/serial/serial.yaml#
-> +      - $ref: /schemas/serial/rs485.yaml#
-> +    properties:
-> +      reg:
-> +        description: UART channel number on the chip.
-> +        maximum: 3
-> +    required:
-> +      - reg
-> +    unevaluatedProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - wkmic,wk2132
-> +              - wkmic,wk2212
-> +    then:
-> +      patternProperties:
-> +        "^serial@[23]$": false
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    xtal: clock-11059200 {
-> +        compatible =3D "fixed-clock";
-> +        clock-frequency =3D <11059200>;
-> +        #clock-cells =3D <0>;
-> +    };
+This explains why I see the messages even without this patch.
+I wonder what is actually going on in the test.
 
-Drop this node here please, the infra will populate it at runtime to
-make your example work.
+The log contains:
 
-pw-bot: changes-requested
+</paste>
+LKP: ttyS0: 256: LKP: tbox cant kexec and rebooting forcely
+</paste>
 
-Otherwise, it looks fine.to me..
+I see this message in lkp-tests/bin/lkp-setup-rootfs:
 
-Thanks,
-Conor.
+<cat lkp-tests/bin/lkp-setup-rootfs>
+lkp_reboot()
+{
+	local tbox_state="rebooting"
+	[ -n "$1" ] && tbox_state="rebooting_$1"
 
+	set_tbox_wtmp $tbox_state
 
-> +
-> +    spi {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        serial@0 {
-> +            compatible =3D "wkmic,wk2204";
-> +            reg =3D <0>;
-> +            spi-max-frequency =3D <10000000>;
-> +            clocks =3D <&xtal>;
-> +            interrupt-parent =3D <&gpio>;
-> +            interrupts =3D <24 IRQ_TYPE_LEVEL_LOW>;
-> +            #address-cells =3D <1>;
-> +            #size-cells =3D <0>;
-> +
-> +            serial@0 {
-> +                reg =3D <0>;
-> +            };
-> +
-> +            serial@1 {
-> +                reg =3D <1>;
-> +                rs485-rts-active-low;
-> +                linux,rs485-enabled-at-boot-time;
-> +            };
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Doc=
-umentation/devicetree/bindings/vendor-prefixes.yaml
-> index ba2002969373..cdc04229d642 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -1907,6 +1907,8 @@ patternProperties:
->      description: Wireless Tag (qiming yunduan)
->    "^wits,.*":
->      description: Shenzhen Merrii Technology Co., Ltd. (WITS)
-> +  "^wkmic,.*":
-> +    description: Chengdu Weikai Microelectronics Co., Ltd. (http://www.w=
-kmic.com/)
->    "^wlf,.*":
->      description: Wolfson Microelectronics
->    "^wm,.*":
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3b2eb2a7a89a..e4a2443524d4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -29432,6 +29432,13 @@ M:	Miloslav Trmac <mitr@volny.cz>
->  S:	Maintained
->  F:	drivers/input/misc/wistron_btns.c
-> =20
-> +WK2XXX SPI UART DRIVER
-> +M:	Huang Yang <hy@wkmic.com>
-> +L:	linux-serial@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/serial/wkmic,wk2124.yaml
-> +F:	drivers/tty/serial/wk2xxx.c
-> +
->  WMI BINARY MOF DRIVER
->  M:	Armin Wolf <W_Armin@gmx.de>
->  R:	Thomas Wei=DFschuh <linux@weissschuh.net>
-> --=20
-> 2.43.0
->=20
+	# Avoid get stuck in yocto minimal rootfs.
+	# LKP: rebooting
+	# [    8.124081] LKP: rebooting
+	# # (shell prompt)
+	is_virt && [ -e '/proc/sysrq-trigger' ] && {
+		sync
+		echo s >/proc/sysrq-trigger
+		echo b >/proc/sysrq-trigger
+	}
 
---GcGhcH9vO+oZF4fF
-Content-Type: application/pgp-signature; name=signature.asc
+	start_reboot_watchdog
+	reboot_tbox 2>/dev/null
 
------BEGIN PGP SIGNATURE-----
+	exit
+}
+[...]
+	if tbox_cant_kexec; then
+		echo_to_tty "LKP: tbox cant kexec and rebooting forcely"
+		lkp_reboot "cant_kexec"
+	fi
+</cat lkp-tests/bin/lkp-setup-rootfs>
 
-iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaskBIAAKCRB4tDGHoIJi
-0gioAQCCXaZVxKgZfqGh8sn8aKKnA4/fEW+1CqDV00+hrVxY3QEAs+zNzGhcF2W8
-HY1y72jE+YymGtDIu1QvxfGFOIl2mwI=
-=eOrH
------END PGP SIGNATURE-----
+so, it ends with reboot_tbox which is:
 
---GcGhcH9vO+oZF4fF--
+<cat lkp-tests/lib/reboot.sh>
+reboot_tbox()
+{
+	reboot
+}
+</cat lkp-tests/lib/reboot.sh
+
+which is classic reboot. I am not sure where it expects the warning.
+I actually can't find the code which prints:
+
+<paste>
+BUG: kernel reboot-without-warning in test stage
+</paste>
+
+I might need to try reproducing it with the lkp-test framework.
+But it has to wait for the next week.
+
+Best Regards,
+Petr
