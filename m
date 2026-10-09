@@ -1,128 +1,208 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F31924CE685;
-	Fri,  9 Oct 2026 11:26:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C4FC43F4AD;
+	Fri,  9 Oct 2026 12:59:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791545211; cv=none; b=WdJapZzXW6te6L3tTIZgHc9oKLFAS+dpyz2dOScy8cIIxvmFV7yB8Kh4HULJPnAVQWP9WKbm+CHY5p/JO7wIdPN829lLtYfaKCKRNM2ID4CSz3QG0fnB4XpleZjeKozYNPB6DB9ALnmLPBn3Jc68FAfiGudsRjhDIE/HznLG+ug=
+	t=1791550754; cv=none; b=MZPxA+2MwEcTLkeyi9f9Lj5OzP/IiZE+SY7xq2/9wYmlrCXGT+Nh//cLTkKzlEaIU3/lnmmyJzF7V1i8+bg81HpR5rtQVCw1gv1xyAR+DvA7hfrvshSKrtg5FdZImw63/Ok0Qt3WJkU5OuKFMt9k8/nk2IZXR4CavV39gHPLMHQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791545211; c=relaxed/simple;
-	bh=D8Qm16gkPfaCWXF8TmMukmsvclVCI68/eOVmJaYMe1E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jnRR4iS61G9y5tbmZnVIgT1mj1twmFNeO6lOByb5LqBj5B8H8QnQVUZAM59Q4ohVVaZwsZqdonrBjXvO8sN1QGJYdTkKB/zyVQVQ4/1m3XgumUcIT4NKVgEg1bRo15vnV52nzFr5+F+ZPM7Hac0jQHFpi24bfSfVgW3Mg8SARSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DdaXsgpL; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791550754; c=relaxed/simple;
+	bh=O3HPNiC/H6q/R/UqjxAM9mOq/yQeP0MwgcnJdZbOPAM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KDQ28bKEPE2nHS8tBkQLVNBYn6WtIwG8eCut24dPPGn4fHxnSGwN3PmxfhRG1uO7LFOdhTAo5MkR3Qoff9n3UrR5NpJ5DjNYQmXFkg5D0va+xU7tIhj8jWGrqa8RRjy7afyruoO/v7nef9025ktODGYrHM/v+XDaRV+TK/sekL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=oSNwUpTQ; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=hcfEm8Bl; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DdaXsgpL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C09A1F000FF;
-	Fri,  9 Oct 2026 11:26:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791545199;
-	bh=gVFvoh+N93eNVEZd1ChTGR6VE46A6MIAlZYNVvFXQJc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=DdaXsgpLR/fJ4nrkqsRVqxQVnzrVDy4sAVe5pSU1jwi33xMKVXSibpNlVnqdzhh9C
-	 jmd325q20C73dE0Spuhg6P5mejTubme5ll5y0tz5tWw5yvT+2JL2zobz8YZmPmSQ9+
-	 Fxd9MqvpmnNUvtZzcpKJ40un7ExwbKDKcu5JqtsntcpbKuTY/PIueV90GJ0woi3FaG
-	 yPW9zlpQnaHcwAA+Cm4eW9lIKiruxrqVdcDU1tyjjlNxi6trn4I+L0+sunyqZYBlGa
-	 VK5lUqxZ0LQ8dV9CQzD+MopG91kXfUgSYcW+xx401jtzzJYopZdNSwgjPi+vO9AZVG
-	 tcsY3nNJPIBkw==
-Message-ID: <a9e45c44-00ae-4963-b8e5-dbf6ffa18975@kernel.org>
-Date: Fri, 9 Oct 2026 13:26:32 +0200
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="oSNwUpTQ";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hcfEm8Bl"
+Date: Fri, 9 Oct 2026 14:59:07 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1791550749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YA/AaboNi3kj/HKsO3IF65GjFnmZrdFwxRX2y8NDDDE=;
+	b=oSNwUpTQCVH7lrBBlsXlbo6wu8uh5vxiFD0ugQxgpbcjgI4MHMFcg0nfz5D3WfwnXSfl8U
+	iFRwZRUqBa+zo3Xgr8frX7CwmM/r+/8BXC/Ly254lRkGTDgkAXGReAclormUmKKc0bmm+B
+	s0M3Uh4RWxtSCH/fKUBCc2uyMxWqdQXcjYroWvpOr8K520KICkbMfoUlw3IMYKvQdDPbrY
+	pYuKyzrn6Wits7gKs+XyI7LlVWGReOIEpYVN/bqL/zz1x8oVcKaTx41WJonaWOCnZxY/qe
+	iL0i8DO9qiU9EFZ/+i8dx9LEN9RqX3VW3ZSuS48tfQaYsI5HJ+FibTugxoZIIA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1791550749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YA/AaboNi3kj/HKsO3IF65GjFnmZrdFwxRX2y8NDDDE=;
+	b=hcfEm8Bl+gLQPrLfwcEeghv7JRQ93mE/jxF6KBkPb1T7jwOfc66S3dNdIV1f9gz1VySvkq
+	9oEiFCCQczkVaEDg==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Petr Mladek <pmladek@suse.com>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Christian Brauner <brauner@kernel.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-serial@vger.kernel.org, oliver.sang@intel.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nbcon/reboot: Flush nbcon consoles synchronously on
+ reboot
+Message-ID: <20261009125907.SvaRdfv6@linutronix.de>
+References: <20261008150852.8286-1-pmladek@suse.com>
+ <20261009065152.udyfFRHx@linutronix.de>
+ <asiu8orjDvRJMKuX@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: add
- ambarella,cv75-uart
-To: longzhao@ambarella.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc: Linus Walleij <linusw@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- Long Zhao <zl020895@163.com>, linux-kernel@vger.kernel.org
-References: <20261009-cv75-uart-v1-0-38c098efaa99@ambarella.com>
- <20261009-cv75-uart-v1-1-38c098efaa99@ambarella.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20261009-cv75-uart-v1-1-38c098efaa99@ambarella.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <asiu8orjDvRJMKuX@pathway.suse.cz>
 
-On 09/10/2026 12:59, Long Zhao via B4 Relay wrote:
-> From: Long Zhao <longzhao@ambarella.com>
+On 2026-10-09 11:08:02 [+0200], Petr Mladek wrote:
+> On Fri 2026-10-09 08:51:52, Sebastian Andrzej Siewior wrote:
+> > On 2026-10-08 17:08:52 [+0200], Petr Mladek wrote:
+> > > NBCON consoles emit messages in a dedicated kthreads when the system
+> > > is working properly. printk() tries to flush them synchronously in
+> > > explicitly marked emergency context and in panic().
+> > > 
+> > > Another situation where printk() could not rely on kthreads are the various
+> > > reboot and halt code paths. They can be detected by the `system_state`
+> > > variable.
+> > > 
+> > > Let's default to NBCON_PRIO_EMERGENCY for the post-running states.
+> > > printk() will automatically try flushing the consoles synchronously.
+> > > Also do not rely on printk() and explicitly flush the consoles
+> > > after these states are set.
+> > 
+> > while this seems okay, didn't we have pr_flush() to flush the output on
+> > shutdown/ reboot?
 > 
-> Add the Ambarella CV75 compatible string to the Synopsys DW APB UART
-> binding. The block is Ambarella IP with a DW-like register map, so it
-> is described as a DW APB UART variant.
+> Good point! We should clean this up.
 > 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
-> Signed-off-by: Long Zhao <longzhao@ambarella.com>
-> ---
->  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Anyway, IMHO, we should switch to NBCON_PRIO_EMERGENCY for the post-running
+> states and flush the pending messages immediately. It is more
+> reliable. It is easy to find the locations when system_state() is set.
+> And all follow-up printk() calls will try the direct flush so that
+> they won't rely on an explicit flush.
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 49f51b002879..cec5c679f1a9 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -51,6 +51,7 @@ properties:
->            - const: renesas,rzn1-uart
->        - items:
->            - enum:
-> +              - ambarella,cv75-uart
+> An ideal solution would be to add an wrapper, e.g.
+> 
+> 	void set_syste_state(enum system_states state)
+> 	{
+> 		system_state = state;
+> 
+> 		if (system_state > SYSTEM_RUNNING)
+> 			pr_flush(0, true);
+> 	}
+> 
+> 
+> Another thing is that printk_trigger_flush() is an overkill.
+> It tries to wake kthreads even via irq_work but we are
+> interested only in the direct flush.
+> 
+> I am not sure why neither me nor John used pr_flush().
+> It might be because it originally did not flush atomic consoles
+> directly. At least I had an outdated mental map.
 
+The nbcon should be awake because there is outstanding printing to be
+done as far as I understand. It is just not running or behind. So you
+would need just wait until the thread is done before you continue.
 
-This depends on vendor prefix patch at least from next point of view.
+This pops up now because the 8250 does it via the thread now. If you
+don't have an atomic console implementation but use the thread anyway
+(say the PREEMPT_RT case) then you would end up with the same problem,
+right?
 
-Best regards,
-Krzysztof
+Recently I did play with CPU shutdown and noticed that PREEMPT_RT misses
+an irq_work sync which explained missing printk output. You probably
+recall the printk part of this :)
+
+Now that I look more into it, the above with pr_flush() does not work
+because by the time SYSTEM_SUSPEND is assigned it expects interrupts to
+be disabled (or disables them a few lines earlier).
+
+emergency_restart() looks like a bad candidate for a flush.
+kernel_restart_prepare() on the other hand would be good. And there is a
+flush in kernel_power_off().
+
+In general I would expect sysrq-b to reboot immediately without the
+flush but an ordinary reboot should flush.
+
+> Also the timeout should not be needed because all consoles should
+> be flushed directly. But it can be solved by using zero timeout.
+> 
+> In fact, we should block the kthreads to prevent seeing more
+> incomplete/interrupted messages, see the commit c41c0ebfa1e0eb
+> ("printk/nbcon: Block printk kthreads when any CPU is in an emergency
+> context"). Something like:
+
+But if we have more than one console and more than one CPU we could let
+them flush in parallel and just wait for them do be done?
+
+> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+> index d8f8ec836eea..1c21c1e65b00 100644
+> --- a/kernel/printk/nbcon.c
+> +++ b/kernel/printk/nbcon.c
+> @@ -1187,13 +1187,14 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
+>  		return true;
+>  
+>  	/*
+> -	 * Block the kthread when the system is in an emergency or panic mode.
+> -	 * It increases the chance that these contexts would be able to show
+> -	 * the messages directly. And it reduces the risk of interrupted writes
+> -	 * where the context with a higher priority takes over the nbcon console
+> -	 * ownership in the middle of a message.
+> +	 * Block the kthread when the system is in an emergency, going down,
+> +	 * or panic mode. It increases the chance that these contexts would
+> +	 * be able to show the messages directly. And it reduces the risk of
+> +	 * interrupted writes where the context with a higher priority takes
+> +	 * over the nbcon console ownership in the middle of a message.
+>  	 */
+>  	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
+> +	    unlikely(system_state > SYSTEM_RUNNING) ||
+>  	    unlikely(panic_in_progress()))
+>  		return false;
+>  
+> @@ -1249,10 +1250,12 @@ static int nbcon_kthread_func(void *__console)
+>  			return 0;
+>  
+>  		/*
+> -		 * Block the kthread when the system is in an emergency or panic
+> -		 * mode. See nbcon_kthread_should_wakeup() for more details.
+> +		 * Block the kthread when the system is in an emergency, going
+> +		 * down, or panic mode. See nbcon_kthread_should_wakeup() for
+> +		 * more details.
+>  		 */
+>  		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
+> +		    unlikely(system_state > SYSTEM_RUNNING) ||
+>  		    unlikely(panic_in_progress()))
+>  			goto wait_for_event;
+>  
+> 
+> But wait, this might cause regression on netconsole which sets
+> CON_NBCON_ATOMIC_UNSAFE and is not able to flush the messages
+> directly a safe way.
+
+same as PREEMPT_RT.
+
+> A possibility would be to use con->write_thread() when pr_flush()
+> is called in task context. It should be safe in most shutdown
+> code paths except for the emergency_restart().
+> 
+> And we need an explicit pr_flush() even later in the halt
+> and maybe even some unsafe flush later in emergency_restart()
+> code path.
+> 
+> Sigh, this is getting complicated.
+
+So maybe just identify the few spots in the reboot case.
+
+> Best Regards,
+> Petr
+
+Sebastian
