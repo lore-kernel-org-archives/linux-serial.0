@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C86FF3B42EF;
-	Fri,  9 Oct 2026 06:17:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 596A541DED5;
+	Fri,  9 Oct 2026 06:18:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791526658; cv=none; b=Son+omePEwBxRSyEIA+1NjL6kHQA3ImkEJQ9Fwq1qJiuHKrisivqMjzlmbWI/6svY6fJE9pPjeSoXomiNik4swXPTnHzLu8vABgZO0q1CvdDNfTGe409TojKO2jrJCxHlBC+PnQvX4WXLbTDyTWvyWFv0imH0f0aj9Mw1P4PeTo=
+	t=1791526718; cv=none; b=JoIxMl3EVN6ikgoKuqbxW7jgUSZgmAsuifi6M0xxAoz3Zln7Go6tnTg6VgVWfuR57YHWbIHdd3mq7OwKGrd+aEEes3scjecve4McTNXQLJlCSMN3r5wqKbx5c+Nu9N9g0Rk+oad4TbggyLx4/a73NAI26r2N9400904EqakXAFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791526658; c=relaxed/simple;
-	bh=g8HMS841Ml2LT1mVaPGCe0fKSKLbT1kX1rmB2BGpkCo=;
+	s=arc-20240116; t=1791526718; c=relaxed/simple;
+	bh=jlVofPMWRTO6BNu+lrmDB/2BeEDBzeK8GVfASDwfDOI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RcjhypPCQFz+vhnnipy3jYWdvQB+CN0Vs8Khrlju2GRqjY+gzC5KVy0mhzAyKNw2RmBmkYjUwWiP9gKFCRt31709c725FFAkUKlLYxwxabSYBxPa2hfcGtSIufyd/Rz9Xs5djFPzNIgwq4lvj0XXj04hcfZCO4SJJcBnDteelZg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RkkVlO2w; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=Tb2czaCoTRgH9+p+RQhvie8+hW9VuRT+Cu1WYlTBZYv2MEOZJHEtC272phyawdj0csy4W8eF7OKCJq7H8ZYdcH3t7AZVzRmUPB4SXGfxdRU3GGcazT2bI4QkVQQtVaRZx5W5BhUGCQN0BqL3SeK3agQAeP2Ip+avUTbxB/0q3xw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FrJmr/HE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RkkVlO2w"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD4521F000FF;
-	Fri,  9 Oct 2026 06:17:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FrJmr/HE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 986CA1F000FF;
+	Fri,  9 Oct 2026 06:18:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791526657;
-	bh=nax+qR3WkXrdd/17dR8KmIckTBU+DT+nvC3wPuMV13g=;
+	s=k20260515; t=1791526716;
+	bh=aD5VNEXrsAZD09ITKSVZfH7wvD/HmRUW+GrH01TcdDI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=RkkVlO2wB4e44gpc0Tbozg2oRfskIKbDFnFuUNv9hl2LFo0gSipOXafhRVsL+hYqW
-	 znC7BvTwZ+48AvAZY/GLAJriX2IOONR8AJsTpwRGqkcDQZuF8YrOTkUYKnMf0Xi4Oc
-	 4u87/YFTmqwkzl0A3XtbRTXMJccHu+bfALE/8ZL6W4cjjfrb7u63zy/3d25QKiGSq2
-	 DFpX4t95bHn5fYTMDyLJsGR/ywUH2L3V4kDbym+/2JhqSnXnaq/AEfhXXzm6LbU/5W
-	 pwC3qE/+xNJdcE4EYkUqz8wabSFX2XRks64JbQGEOBFwLFEqPZP1SlMJ/8tTmfKet5
-	 azHr6SmyxBZZg==
-Message-ID: <b2256847-3ec1-47e8-ac79-ceca86eb09e7@kernel.org>
-Date: Fri, 9 Oct 2026 08:17:27 +0200
+	b=FrJmr/HEfyez54mezwhBgQlOjh5Ae3I38NYT1TRPE4Q0VEBY4Lqvvk9R6Y7CLuTA0
+	 xMDeVFfNG5gR4abR2z7FVagfqOIjRd0/t6HFHSA883iEJWqimaKC+5/FUfl+p8Qj4W
+	 srImSJRJgkKKHl2f597XlRpacu3eEoTjgtDfRpagJycxSbZPEw4Ub1BdIiziJCIM5o
+	 dx8GC4hFtn+r/+DiuhkqpAUqc24oDNUUeZ6Pxa9ljiOhDa57AnyFapOTxYhDR7r88l
+	 7XcMRd20YUXh/TFUirv1FSOUDg31O3xX4Rd7xAAJBsKaC7oWVfpqvPY99yowHZopj9
+	 Iq1IOMySNSgeA==
+Message-ID: <1161b935-6897-4724-a05f-998d0be6b9ed@kernel.org>
+Date: Fri, 9 Oct 2026 08:18:25 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,15 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 04/18] dt-bindings: pinctrl: add Ambarella CV75 pinctrl
-To: Linus Walleij <linusw@kernel.org>, longzhao@ambarella.com
-Cc: Arnd Bergmann <arnd@arndb.de>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>,
- Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>,
- Bartosz Golaszewski <brgl@kernel.org>,
+Subject: Re: [PATCH v8 00/18] Ambarella CV75 SoC minimal bring-up
+To: Bartosz Golaszewski <brgl@kernel.org>, longzhao@ambarella.com
+Cc: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>,
+ Linus Walleij <linusw@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>,
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -53,10 +52,12 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
  mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
  linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
 References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
- <20260921-cv75-v5-v8-4-282ff5d98dda@ambarella.com>
- <CAD++jLmKF5XxHsJX29sdXC_6JHKn-7HkE=N+TKtk5xODtQj3_w@mail.gmail.com>
+ <CAMRc=Mf-0oLOPZsPboE0dzOGE2AzNE0LXmv9fcmgWO47FtGu1g@mail.gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -102,27 +103,28 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <CAD++jLmKF5XxHsJX29sdXC_6JHKn-7HkE=N+TKtk5xODtQj3_w@mail.gmail.com>
+In-Reply-To: <CAMRc=Mf-0oLOPZsPboE0dzOGE2AzNE0LXmv9fcmgWO47FtGu1g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 01/10/2026 09:03, Linus Walleij wrote:
-> On Mon, Sep 21, 2026 at 6:23 AM Long Zhao via B4 Relay
-> <devnull+longzhao.ambarella.com@kernel.org> wrote:
-> 
->> From: Long Zhao <longzhao@ambarella.com>
+On 21/09/2026 12:31, Bartosz Golaszewski wrote:
+> On Mon, 21 Sep 2026 06:23:19 +0200, Long Zhao via B4 Relay
+> <devnull+longzhao.ambarella.com@kernel.org> said:
+>> This series adds minimal Ambarella CV75 support for early bring-up with
+>> a serial console: DT bindings, RCT clocks, pinctrl, PL061 GPIO via
+>> gpio-regmap, 8250_dw UART quirks, ARCH_AMBARELLA, CV75 EVK DT, and
+>> MAINTAINERS.
 >>
->> Document the CV75 pin controller binding using generic function and
->> groups properties for pinmux configuration.
+>> This is a single unified series. Please apply via the SoC
+>> tree; subsystem maintainers are Cc'd for their pieces.
 >>
->> Reviewed-by: Linus Walleij <linusw@kernel.org>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
->> Signed-off-by: Long Zhao <longzhao@ambarella.com>
 > 
-> This patch 4/18 applied to the pinctrl tree.
-> 
+> As I said before: this brings in a lot of potentially conflicting code into
+> drivers/gpio/ so I'll need an immutable branch to pull or I can queue the GPIO
+> part myself and provide an immutable branch to other trees.
 
-There is a dependency, you cannot take this patch alone.
+Just please do not take the patches which have dependencies, like
+bindings etc.
 
 Best regards,
 Krzysztof
