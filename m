@@ -1,85 +1,87 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D323A5E90
-	for <linux-serial@vger.kernel.org>; Fri,  9 Oct 2026 06:58:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 649F13D9526
+	for <linux-serial@vger.kernel.org>; Fri,  9 Oct 2026 06:58:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791529131; cv=none; b=Y97Ly4SafNUHL1gnQnr299pT9e9F457foH3vByw1cquo7vqk5EImXpuU9hSqVhz71hpwQqE8TlSHJglAu3i5EHsGsZQzQcjzDTITQjPiaI7vSWbcagkYcuCN+K/XJ7nswy/U5K9TG47ajL+/wZ5ZOROqthQLRJV1G9ewPjhnQ1w=
+	t=1791529138; cv=none; b=gxJbG8ZHvlcLh8MgRiABT1v7uJ/N2L0cPcMP2y0/dq0DHUCSUk+mDwqLQk+oClv051MJLoUqdkYhGnpXWZppZQkO9KWSnwkau3LzPT3T3CcX93c63OSy0FtQtA564piWOQxEYqq3uQlQ2hJLaKQnerGczEFgGkkbAkKkzUS9eeA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791529131; c=relaxed/simple;
-	bh=eKy7aW5cGjwegx4nzL/W7tmnNG2iMKFhFizCpsDBd1w=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=QFfGEdc3M3oVXJzbqiwtbYIr4kMTrgT8HYluECqKa5/Q6oKGPe/izodAc0c9C+HpL3grdKCgoDnRauc7ZsSNYrYxYtczSpMuWuijsVoAqR9dnlaKQyHaFcTmvmRXP/KCPmpxqvmeS4/xFEr/ZY3uKgmK2X21YxiN7FbeCmJf874=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Y30A0ZqY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=iliolux5; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1791529138; c=relaxed/simple;
+	bh=etezjtKq84RmKKFwlxvqbxkYNKXZRTfCGt9+9ybA+P0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=n7PfXqFkfcS33z0ts15LdGfa6BRd6WveQUQwPjieOerfz3MYYYQ0HZ/OnpY/HTD2dHXKbrkt2eD4KLFF2R0zDrGjjID+BqrOoXHpM0c5nqyGYhq1Elt7kAaegdGpeRGYllbOH+vUZF7FdFwqaSB/UdXijGxmm67QNQgdKI18Ngs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kBX3o8IQ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ClwZRfk+; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Y30A0ZqY";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="iliolux5"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6993HB3D1598074
-	for <linux-serial@vger.kernel.org>; Fri, 9 Oct 2026 06:58:50 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kBX3o8IQ";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ClwZRfk+"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6993HK9I966470
+	for <linux-serial@vger.kernel.org>; Fri, 9 Oct 2026 06:58:56 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=4EYWCqhhTUL7OpT9NVgvbM
-	UnffT1MdTryqJzCFDDtL8=; b=Y30A0ZqYdd/gkzx6Orn0/OWeJBI9y+DesxeSeq
-	bsLFBcqYTUWPT3/XaUeKsCrxVnVefwJyYnEAYMDbt4g7KORXWfehhAI9S+a7epT5
-	bFcDtNnQOs1IERAavPRKBxJj+vR2E5XBEdUPzqro/rZWcMeV3FLwwipP6qtKZUPt
-	nMBgzgSABJINDa2W01ylJzuLrJEDADxXt6v+kNKnZd1553uyDmQUNCH2u7YSZwoG
-	3j91sxK+LDC0xyiP3RbTb3+1kZO2dVQ2oaHNfjTkZGqO6ZoI/7gyM5nKEr/agXtI
-	0s8KF6PeQ5b0hYfpviyS7VpqFqCbuHAYOlxs54SaPcOW/dhg==
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h6nufs4t4-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	7KByrBfALr8GgfkLAO2yXCXT1aba1OS74wxtQzGISJs=; b=kBX3o8IQ8pZ+xswY
+	AtjXBSemSpsNG9amdZkIbhvhsi1kOGVLwy4ZK5wMmZy48o646HpbCI/vJlMDfZ3M
+	8NDfrCSz+aIZjjDOumgXgcT2d1fz0zwMAOoS6Y1cFq33lxYDfNqK/VDPXx8cyx84
+	X1W8kpzPYPyHXyND6vKsMAjkXWakbr2tw0FU5MaTwzsvMs1gvWWCrMUHN/kP2Qsf
+	MasXO+xQYzGKZ3EasKaVxykE0vxTlOyhAsyLDbNy1Y2rsmd/2+LLndnhEfT5+Saz
+	afXeOVH+OC8XUk2m+HZ0692CzNVP5D45Ckw/nMzs82X7M7aRB+uawvk/ONj+NvQI
+	b01JjA==
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h6fyj2apn-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Fri, 09 Oct 2026 06:58:49 +0000 (GMT)
-Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-cc7e0321ec1so6535046a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 08 Oct 2026 23:58:49 -0700 (PDT)
+	for <linux-serial@vger.kernel.org>; Fri, 09 Oct 2026 06:58:56 +0000 (GMT)
+Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-88a1de72cf7so1412128b3a.0
+        for <linux-serial@vger.kernel.org>; Thu, 08 Oct 2026 23:58:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1791529129; x=1792133929; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=4EYWCqhhTUL7OpT9NVgvbMUnffT1MdTryqJzCFDDtL8=;
-        b=iliolux5QcY8/cwrtEcZC5dcsQiY3efXw2fBUdZhEbQhcK/dJOTVMwLq2XEqAiE17B
-         4XlS4Ph0EbUxWzA6N8GkoU8sO+yoJpLJHohu75Ap5Pk0wlQw+OE+l7YQFB43uuFOJsRA
-         2QDQpIe0TIsl7PB+FHBDh9Ynfmzmj1xmxr4nx3F7Y3sI2uBmquF1YZZfwqttgL7fa9vC
-         qB+XpxVVJ4uStdzzs5FUtWYR/EKjVsLQh2sdxm8HfoItSaw6cSTJ8cxOO+jJD5AWwQt3
-         pfKDRTPBWPOumlUizEoTAL1ZLO/9Nj4V5/ZTG6qb9k7xz5BYZN7LIQ3ckFWvBstKkD4/
-         dmeg==
+        d=oss.qualcomm.com; s=google; t=1791529135; x=1792133935; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7KByrBfALr8GgfkLAO2yXCXT1aba1OS74wxtQzGISJs=;
+        b=ClwZRfk+pAgyo7C/VFVCxBYSTz2xmdbWIVy1Mh4EbW8pP/UUFmDQp/cJnlqHsCNdgE
+         PR9CPK+SSCtKPUXPjL1T2zsqMEh9udlKmA8D681kPi/8mJ2SdedXhpLExClXn5bGu6Tk
+         YcFLpsjWpF6oDuS6NumipugLnwZFViwv6vM/cQnxDz4yzb85Vs+DCQadxkhWXnG+Ukpy
+         BYSxLGiidwcNC6FsHnj+h1eZZtBQK7cWMQ1FG3EMulYg9Xzkpmfiq84wAEli91vvPIDf
+         JDNY/wXPvYKx86hzwn684gVMNE5xuG6ITHIfoPbUnqPjv0cIodNaSPNuKuySgbFhhbuS
+         w+wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791529129; x=1792133929;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=4EYWCqhhTUL7OpT9NVgvbMUnffT1MdTryqJzCFDDtL8=;
-        b=WwoTsujZlC/ETydcx9IpycRHRCMwEeYmbXgyd2VectOaVQEiJzDBz2chc4TrxHMPgD
-         YaSKw9A2J5Z0QdmgXHrGZPWvIp1PbyxEDSCpCbPhP8cLvSyObL0ksFMdnPjLtkFJFez7
-         lKcMZ6JFVh6bEMi/MrevbwzkNrKvJp2ccW5gI4VPeaHsYbEXzt0S/ydtOmhk6jHJR0XK
-         xvyFigbAkGB52DHzAYV1ZO/oAM/yuToyoZD0XVNdS8h/7qK085mCTDxQbHW7dRTLNMhK
-         7lg9UQg9vK3CiBHceGCLHtw/+OEZlvJY3D0Evn4u08UFc3vV0ejat2Mp5EFCilgYemmf
-         d83w==
-X-Forwarded-Encrypted: i=1; AKwUvBzM422rG1C2Q2s/I1v5OCq4f2Zk9tDwln0xSOS0SxV+N2EluzrE7pA/iEvC8GrDvqLnNifsS7tvPTZbw80=@vger.kernel.org
-X-Gm-Message-State: AFuF++m7W0W9OxnNo2ALYbNfvjhIqmBHfxphRsUE7nlpSlV1ZeFnksKC
-	uk1Tp1Mp+jHMyH31nuR5Dp/x+br1mU431bl64yD/n8ZKvP+tQ8n8JJlUQ/UujzY3uclr6BuAs7I
-	eFVz15oarQ0E2OM4Mljg7YNqi/3mxBoH80zl9of8n/HoVjF0E4Dbv5IQFM8GuDuWo2fo=
-X-Gm-Gg: AYBFou1zfPfP8q80bS07iySx4hDlHYDOpVLnzxDtBajEAJFex6S3iajosmLbc86NXkH
-	KH94Bp9YVxEu6cZ20hzLN2ckgkwfj+bHCxiUZR4gbSSMlUYL7ddU0NhxPCF/t7AAJTk/W6sw6Yi
-	w13ctSI3MkKInlM2kId6rxIOUGWoCOgUsUKTAdAHXT8fJw1aK7YTfOu/L0/TIqjaslXvCa7wWhP
-	v2whTRX4wkzMFwK4MvkxQ0yX458pmft7k0NCtmjp8caiWtH3eZ6QEFbbC3OBEST+6M2gzWwsxMk
-	u2WYt2Ch+W6exo4PRHq+MdFdJhrWp7x4UEI2wQ8JYeb+I55/3bFtjKJX4PNPAjrVgEzQKZgmAh5
-	Z5n3kWT7A9i5Q8iyFIl8e
-X-Received: by 2002:a05:6300:2290:b0:3dd:a007:cb2d with SMTP id adf61e73a8af0-3e16be44435mr752858637.41.1791529129154;
-        Thu, 08 Oct 2026 23:58:49 -0700 (PDT)
-X-Received: by 2002:a05:6300:2290:b0:3dd:a007:cb2d with SMTP id adf61e73a8af0-3e16be44435mr752839637.41.1791529128689;
-        Thu, 08 Oct 2026 23:58:48 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791529135; x=1792133935;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=7KByrBfALr8GgfkLAO2yXCXT1aba1OS74wxtQzGISJs=;
+        b=kmsN9e058ivcN2Uyj+cUwMdHx1XG/CBm5Wr2ZWLBp3KsujQr8PM4UsY5GUH8W2UDf3
+         vgJQd7pkCNrzHOtXo1EvZ7FKCx0h/s3bcVlWENTdCJrij75ESkY9YbUivSVWNT+Pho7W
+         OnFmGFUCJf7OeiACVTyvo93V7u6zD4RKxHXx+56hiNX9zM9tmPpUOOVNTkWK3k9r/hFh
+         1wrVP+EXOaZhnVVbPj4yhR4tFZ7nSnw9Sk+bjPnWmJWUgfswc8rryNacjvVdxDOUyxKY
+         Pk6BkRoe4yYiVFicsu6BNHXX8nFDu5bnhKTdiRjp4PH982ZaggbwSpYdl2nMnxxW1oLW
+         TZiQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzcS7uQcGvBWfE3e/1we6Y4puAemJWxmuBG6VSYTutWKDAOU43YXr55m9YLX/MoptMcsox8Fwim7zLKB+8=@vger.kernel.org
+X-Gm-Message-State: AFuF++kLcwOFFOFpfPKkz45T2F7/N6ap2OCQDzHqlGIvvV85ibEutA9Q
+	bGfptNwhuYztqySOH0dvGZi+qDESuE6EJExEAHFWss+ZCxyvrRaZFE9E6CvnfDszjVYgSggMKJ/
+	PlxpA4vASWxGb68VEVDxAX2FDvdAFmLZMqbn0Ax9rh5vCeyk6YzJ7zhiEN+pz1doqShY=
+X-Gm-Gg: AYBFou2Zps20HXJ+u5x/dpDNnrIvmUu07Y4MHgV/UYJyc0VEBFC2crpeSDJ4d2Gaau1
+	HpBBQRH5RdJS0d0sDpXHTxIccNPX+0itefNQd6jtrQzIrN/CKnqWZGDBIv3z7O/Uh99P3XIh6Rm
+	47vXVE2iarVpFmldqe5zAsrYbf19aqw3IXWGVQj3lp4XtAjfue5wkPzaRku/5h36Sds5IA5e57E
+	3w6P7rXtA1SOs3EuBE3OeQage2ff16H3TAX+O1YLuo+3h3KFO/AkAMxdTZvKITiKN2ng5POcJCd
+	y3viE3PyNRqvXAwmoYl2l+uZ0VSNygAClWXUntZvPbw2m942watck9yHnPmVZibxi0HnNXhBRjS
+	whgvFN2pDSw4mtal/CsP8
+X-Received: by 2002:a05:6300:49c:b0:3e1:1d22:aafd with SMTP id adf61e73a8af0-3e164fcfdadmr966484637.32.1791529135221;
+        Thu, 08 Oct 2026 23:58:55 -0700 (PDT)
+X-Received: by 2002:a05:6300:49c:b0:3e1:1d22:aafd with SMTP id adf61e73a8af0-3e164fcfdadmr966472637.32.1791529134727;
+        Thu, 08 Oct 2026 23:58:54 -0700 (PDT)
 Received: from [10.213.103.163] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cd3d9e088efsm499980a12.11.2026.10.08.23.58.42
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cd3d9e088efsm499980a12.11.2026.10.08.23.58.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2026 23:58:48 -0700 (PDT)
+        Thu, 08 Oct 2026 23:58:54 -0700 (PDT)
 From: Naresh Maramaina <naresh.maramaina@oss.qualcomm.com>
-Subject: [PATCH 0/4] tty: serial: qcom_geni_serial: Add GPI DMA support
-Date: Fri, 09 Oct 2026 12:27:52 +0530
-Message-Id: <20261009-add-gpi-dma-support-for-uart-v1-0-c69e728df686@oss.qualcomm.com>
+Date: Fri, 09 Oct 2026 12:27:53 +0530
+Subject: [PATCH 1/4] dmaengine: qcom: gpi: Add UART transfer support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,10 +90,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAHCQyGoC/yXMwQrCMAyA4VcZORvIOlaGryIe6pLOCK6lWUUYe
- 3er3v7v8u9gUlQMzt0ORV5qmtaG/tTBfA/rIqjcDI6c74kmDMy4ZEV+BrSacyobxlSwhhbjEN1
- INPiJPbRFLhL1/dtfrn9bvT1k3r5POI4P6CsuDYAAAAA=
-X-Change-ID: 20261008-add-gpi-dma-support-for-uart-53f2500368d6
+Message-Id: <20261009-add-gpi-dma-support-for-uart-v1-1-c69e728df686@oss.qualcomm.com>
+References: <20261009-add-gpi-dma-support-for-uart-v1-0-c69e728df686@oss.qualcomm.com>
+In-Reply-To: <20261009-add-gpi-dma-support-for-uart-v1-0-c69e728df686@oss.qualcomm.com>
 To: konrad.dybcio@oss.qualcomm.com, Vinod Koul <vkoul@kernel.org>,
         Frank Li <Frank.Li@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
         Konrad Dybcio <konradybcio@kernel.org>,
@@ -106,85 +107,230 @@ Cc: linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
         praveen.talari@oss.qualcomm.com,
         Naresh Maramaina <naresh.maramaina@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791529122; l=1956;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791529122; l=6625;
  i=naresh.maramaina@oss.qualcomm.com; s=20260316; h=from:subject:message-id;
- bh=eKy7aW5cGjwegx4nzL/W7tmnNG2iMKFhFizCpsDBd1w=;
- b=l5g/hTqngweTjeXJIqJaTcnNRfYdVfYBFtN7DqdkZc4UXHijLsdkAC3AjuumT3OhIdAiqJ6ZU
- Plx4SATFpBkD29JmeH6qNbeWpJrS/0Fvs3e5ThsUDEZhULKSLlwF3A1
+ bh=etezjtKq84RmKKFwlxvqbxkYNKXZRTfCGt9+9ybA+P0=;
+ b=3csQ9vavv4D5uWJ1KcGZ22SjdsAEgSR63ad+u+Ca8yohioxZTT42A3yHIpN2oPhKAH0v7243+
+ 3Oay5hKaKHwDU+Y7V+TpigqylUzEcFVQQeTTQUQDsjozLJ4S9NDWf96
 X-Developer-Key: i=naresh.maramaina@oss.qualcomm.com; a=ed25519;
  pk=j7iST9yrLbsgWcWrqdlUNIOWl2WBl4wV1q35/n9SCkg=
-X-Authority-Analysis: v=2.4 cv=afn0Dhot c=1 sm=1 tr=0 ts=6ac890a9 cx=c_pps
- a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+X-Authority-Analysis: v=2.4 cv=BfpNQbt2 c=1 sm=1 tr=0 ts=6ac890b0 cx=c_pps
+ a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
  a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=EUspDBNiAAAA:8 a=CXWnIO0hCF0je_3tyHEA:9 a=QEXdDO2ut3YA:10
- a=3WC7DwWrALyhR5TkjVHa:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA5MDAyNyBTYWx0ZWRfX542VHYtISzoF
- pSy6C4X1qAWo+M/WqVBKnmkMe6N4SxgDOSeICrzzuc92Ilumv/ZofpTdpUiB7pKog3F5X4NpI80
- Wy/wHqwkF3zOJMb0WYMgLa/37jEgYQ4=
-X-Proofpoint-GUID: msl9NuNhVu_zYPCwq1XgciIaEES3uEi0
-X-Proofpoint-ORIG-GUID: msl9NuNhVu_zYPCwq1XgciIaEES3uEi0
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA5MDAyNyBTYWx0ZWRfX1jZgo1Zk9z2v
- cn5IsoBSo4LyLNaoN+hv4TTT4GzZ3iMvGgfSrluqe99NqMObzBaR0225QQEecwMySTonNv3ZJ79
- 4B/K1C4/8q4ZPfGycT9ScesmTo2FXzTxQY6Y1ErnTbBidIQFENViAezVCXO+3BSUiKYi0L/0Nc1
- T0COA/QdY6APBBcuu9UdeLOcXDTIFQJuKKBS5otcdlGLI5K498Sfdua9HTcJDbElETbRaV4NyJL
- qyNILltLOq7ocJe0YfdZEQX+IrIQbHVcM/9XQvdWyhB0YhQyKPvYuipA1fN0o5CCk28cgE/c0Zk
- pRMXiX7ARPQCKJyYq7yascdzWBksZ1eDAOgMG+/WfNevOewhqQ+LXYmLBK2Aq3eyVCnjWgP+rvP
- VMO0EeckggljCijNTt+SOuaoX9LnLnZzh4owY+7h3iGBOw48U4Y9I/C2mrIeqtiyhJZ71mDzbVy
- UR3F4Z03CrRvgsa3HQA==
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=EUspDBNiAAAA:8 a=q9FSIy8fX9HaZm_J2qEA:9 a=QEXdDO2ut3YA:10
+ a=IoOABgeZipijB_acs4fv:22
+X-Proofpoint-ORIG-GUID: OomHZGTsaQ_4MGJiGxTyAvtWmAH1LK1S
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA5MDAyNyBTYWx0ZWRfX0HIKQokK85ef
+ THTg5Nie7kGs9kKb+uNakktVDaSxOaEPCJ+Nfn374wOYkTzsJEtA+AenZrXZ/C/dqlomS0HjPWX
+ xLmuKqE1teWlEGj0OP2bHqrfvv7bd+BXSeQys/xDgro0V0/9irZIRE++Y/CWjaIHj6X2v9OG8oV
+ XBtLoMjcVFqOoErm72SoUYHTOEuBi8HNAIGTXxkJNm+okAEMczYnFTQlOGi4/TM9wpTaLGEJlC2
+ Y+dR18o6ZjF7VvWDNoUVFQzc5/znPpuhrSiAHkRE0u/5dMoWDCfSHJqlMtIL1zDLBY3AYRSTFc3
+ I0r3qAwrSSyboJzgr5pSaZ1ZkS+QroPrQxX16AWP1dhVXDyMrCHFHPhdcNFcrFU8/gCU6R5uuuL
+ Aslcon0a4IvsBJTWcTeL66mXwxmbJ8d3fBV3Ke4YBDwBZI0k00nbnXG4mjC/O00MrOYZThdXpuO
+ ck/ujjT3XzWCxPzEMVw==
+X-Proofpoint-GUID: OomHZGTsaQ_4MGJiGxTyAvtWmAH1LK1S
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA5MDAyNyBTYWx0ZWRfX/v7LzIkN42tc
+ npxs9kZ2hC9501ITgjZbPm5yfKHEDmTp3/ujnMc8V1ZnU+KPezGziLC2ugKpBGzj6fH4JzRroGT
+ uuz9D54HHoXXu2MjMiv8dHQftn25shI=
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-10-09_02,2026-10-08_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 adultscore=0 suspectscore=0 impostorscore=0 bulkscore=0
- phishscore=0 clxscore=1011 priorityscore=1501 spamscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610020000 definitions=main-2610090027
+ priorityscore=1501 malwarescore=0 impostorscore=0 phishscore=0
+ lowpriorityscore=0 spamscore=0 bulkscore=0 adultscore=0 clxscore=1011
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610020000
+ definitions=main-2610090027
 
-QUP serial engines support FIFO, SE DMA and GPI DMA transfer modes.
-The qcom_geni_serial driver currently supports FIFO and SE DMA modes.
+The GPI DMA driver currently supports TRE construction for SPI and I2C
+clients, but not for UART clients. Add the UART CONFIG0 and GO TRE
+definitions and expose a UART peripheral configuration structure so
+UART clients can describe their transfer parameters.
 
-Add support for serial engines configured to operate in GPI DMA mode.
+Build the TRE sequence needed for UART transfers. Emit a CONFIG0 TRE
+when a configuration update is requested, followed by a GO TRE and
+a DMA TRE for the transfer buffer.
 
-The Qualcomm GPI DMA driver is extended with UART transfer support,
-UART-specific TRE accounting and handling for transfer-completion
-events generated during channel cancellation.
-
-The qcom_geni_serial driver is updated to detect GPI DMA operation,
-manage UART transfers through DMAengine and program UART parameters
-through GPI peripheral configuration.
-
-This series currently supports 2-wire UART operation (TX/RX) and has
-been validated across multiple baud rates and transfer sizes.
-4-wire UART operation with CTS/RTS flow control is not included in
-this series. GPI DMA support for CTS/RTS will be added separately
-after implementation and validation.
-
-The series is organized as follows:
-
-1. Add UART transfer support to the GPI DMA driver
-2. Calculate UART TRE count per direction
-3. Ignore cancelled transfer-completion events
-4. Add GPI DMA support to qcom_geni_serial
+Add the UART case to the TRE construction path in gpi_prep_slave_sg().
 
 Signed-off-by: Naresh Maramaina <naresh.maramaina@oss.qualcomm.com>
 ---
-Naresh Maramaina (4):
-      dmaengine: qcom: gpi: Add UART transfer support
-      dmaengine: qcom: gpi: Calculate UART TRE count per direction
-      dmaengine: qcom: gpi: Ignore cancelled transfer-completion events
-      tty: serial: qcom_geni_serial: Add GPI DMA support
+ drivers/dma/qcom/gpi.c           | 101 +++++++++++++++++++++++++++++++++++++--
+ include/linux/dma/qcom-gpi-dma.h |  33 +++++++++++++
+ 2 files changed, 131 insertions(+), 3 deletions(-)
 
- drivers/dma/qcom/gpi.c                | 153 ++++++++-
- drivers/soc/qcom/qcom-geni-se.c       |   4 -
- drivers/tty/serial/qcom_geni_serial.c | 576 ++++++++++++++++++++++++++++++++--
- include/linux/dma/qcom-gpi-dma.h      |  33 ++
- 4 files changed, 732 insertions(+), 34 deletions(-)
----
-base-commit: aac26bee2287c88af5be5a5ff96d783b19a28790
-change-id: 20261008-add-gpi-dma-support-for-uart-53f2500368d6
+diff --git a/drivers/dma/qcom/gpi.c b/drivers/dma/qcom/gpi.c
+index c41bfac65ddf..fb26a286e5df 100644
+--- a/drivers/dma/qcom/gpi.c
++++ b/drivers/dma/qcom/gpi.c
+@@ -30,6 +30,21 @@
+ #define TRE_FLAGS_LINK		BIT(11)
+ #define TRE_FLAGS_TYPE		GENMASK(23, 16)
+ 
++/* UART CONFIG0 WD0 */
++#define TRE_UART_C0_CHAR_SZ		GENMASK(2, 0)
++#define TRE_UART_C0_STOP_BIT_LEN	GENMASK(4, 3)
++#define TRE_UART_C0_PARITY		GENMASK(7, 5)
++#define TRE_UART_C0_LOOPBACK		BIT(8)
++#define TRE_UART_C0_HW_FLOW_CTRL_EN	BIT(10)
++#define TRE_UART_C0_PACKING		BIT(24)
++
++/* UART CONFIG0 WD1 */
++#define TRE_UART_C0_RX_STALE_TIMEOUT	GENMASK(23, 0)
++#define TRE_UART_C0_RX_RFR_LEVEL	GENMASK(29, 24)
++
++/* UART GO WD0 */
++#define TRE_UART_GO_CMD		GENMASK(4, 0)
++
+ /* SPI CONFIG0 WD0 */
+ #define TRE_SPI_C0_WORD_SZ	GENMASK(4, 0)
+ #define TRE_SPI_C0_LOOPBACK	BIT(8)
+@@ -1793,6 +1808,80 @@ static int gpi_create_spi_tre(struct gchan *chan, struct gpi_desc *desc,
+ 	return tre_idx;
+ }
+ 
++static int
++gpi_create_serial_tre(struct gchan *chan, struct gpi_desc *desc,
++		      struct scatterlist *sgl, enum dma_transfer_direction direction)
++{
++	struct gpi_serial_config *serial = chan->config;
++	struct device *dev = chan->gpii->gpi_dev->dev;
++	struct gpi_tre *tre;
++	dma_addr_t address;
++	unsigned int tre_idx = 0;
++	unsigned int i;
++	bool set_config = (direction == DMA_DEV_TO_MEM) ?
++			   serial->set_rx_config :
++			   serial->set_tx_config;
++
++	/* create config tre if applicable */
++	if (set_config) {
++		tre = &desc->tre[tre_idx];
++		tre_idx++;
++		tre->dword[0] = u32_encode_bits(serial->char_size, TRE_UART_C0_CHAR_SZ);
++		tre->dword[0] |= u32_encode_bits(serial->stop_bit_len, TRE_UART_C0_STOP_BIT_LEN);
++		tre->dword[0] |= u32_encode_bits(serial->parity, TRE_UART_C0_PARITY);
++		tre->dword[0] |= u32_encode_bits(serial->loopback_en, TRE_UART_C0_LOOPBACK);
++		tre->dword[0] |= u32_encode_bits(serial->hw_flow_ctrl_en,
++						 TRE_UART_C0_HW_FLOW_CTRL_EN);
++		tre->dword[0] |= u32_encode_bits(serial->packing, TRE_UART_C0_PACKING);
++		if (direction == DMA_MEM_TO_DEV) {
++			/* No configuration for dword1 of TX channel */
++			tre->dword[1] = 0;
++		} else if (direction == DMA_DEV_TO_MEM) {
++			tre->dword[1] = u32_encode_bits(serial->rx_stale_timeout,
++							TRE_UART_C0_RX_STALE_TIMEOUT);
++			tre->dword[1] |= u32_encode_bits(serial->rfr_level,
++							 TRE_UART_C0_RX_RFR_LEVEL);
++			serial->set_rx_config = false;
++		}
++
++		tre->dword[2] = u32_encode_bits(serial->clk_div, TRE_C0_CLK_DIV);
++		tre->dword[2] |= u32_encode_bits(serial->clk_src, TRE_C0_CLK_SRC);
++
++		tre->dword[3] = u32_encode_bits(TRE_TYPE_CONFIG0, TRE_FLAGS_TYPE);
++		tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_CHAIN);
++	}
++
++	/* create the GO tre */
++	tre = &desc->tre[tre_idx];
++	tre_idx++;
++
++	tre->dword[0] = u32_encode_bits(serial->opcode, TRE_UART_GO_CMD);
++	tre->dword[1] = 0;
++	tre->dword[2] = 0;
++	tre->dword[3] = u32_encode_bits(TRE_TYPE_GO, TRE_FLAGS_TYPE);
++	tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_CHAIN);
++
++	/* create the dma tre */
++	tre = &desc->tre[tre_idx];
++	tre_idx++;
++
++	address = sg_dma_address(sgl);
++	tre->dword[0] = lower_32_bits(address);
++	tre->dword[1] = upper_32_bits(address);
++	tre->dword[2] = u32_encode_bits(sg_dma_len(sgl), TRE_DMA_LEN);
++	tre->dword[3] = u32_encode_bits(TRE_TYPE_DMA, TRE_FLAGS_TYPE);
++	if (direction == DMA_MEM_TO_DEV)
++		tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_IEOT);
++	else if (direction == DMA_DEV_TO_MEM)
++		tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_IEOB);
++
++	for (i = 0; i < tre_idx; i++)
++		dev_dbg(dev, "TRE:%d %x:%x:%x:%x\n", i, desc->tre[i].dword[0],
++			desc->tre[i].dword[1], desc->tre[i].dword[2], desc->tre[i].dword[3]);
++
++	return tre_idx;
++}
++
+ /* copy tre into transfer ring */
+ static struct dma_async_tx_descriptor *
+ gpi_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
+@@ -1841,11 +1930,17 @@ gpi_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
+ 		return NULL;
+ 
+ 	/* create TREs for xfer */
+-	if (gchan->protocol == QCOM_GPI_SPI) {
++	switch (gchan->protocol) {
++	case QCOM_GPI_SPI:
+ 		i = gpi_create_spi_tre(gchan, gpi_desc, sgl, direction);
+-	} else if (gchan->protocol == QCOM_GPI_I2C) {
++		break;
++	case QCOM_GPI_I2C:
+ 		i = gpi_create_i2c_tre(gchan, gpi_desc, sgl, direction, flags);
+-	} else {
++		break;
++	case QCOM_GPI_UART:
++		i = gpi_create_serial_tre(gchan, gpi_desc, sgl, direction);
++		break;
++	default:
+ 		dev_err(dev, "invalid peripheral: %d\n", gchan->protocol);
+ 		kfree(gpi_desc);
+ 		return NULL;
+diff --git a/include/linux/dma/qcom-gpi-dma.h b/include/linux/dma/qcom-gpi-dma.h
+index 332be28427e4..ba42e8383391 100644
+--- a/include/linux/dma/qcom-gpi-dma.h
++++ b/include/linux/dma/qcom-gpi-dma.h
+@@ -83,4 +83,37 @@ struct gpi_i2c_config {
+ 	bool multi_msg;
+ };
+ 
++/**
++ * struct gpi_serial_config - serial config for peripheral
++ *
++ * @rx_stale_timeout: serial rx stale timeout
++ * @clk_div: source clock divider
++ * @clk_src: serial clock
++ * @stop_bit_len: stop bit length
++ * @char_size: UART character size
++ * @rfr_level: auto rfr level for FIFO threshold
++ * @parity: set parity type
++ * @opcode: go TRE opcode for tx and rx
++ * @hw_flow_ctrl_en: hardware flow control enable when set
++ * @set_tx_config: set tx channel peripheral config
++ * @set_rx_config: set rx channel peripheral config
++ * @packing: set packing config
++ * @loopback_en: serial loopback enable when set
++ */
++struct gpi_serial_config {
++	u32 rx_stale_timeout;
++	u32 clk_div;
++	u32 clk_src;
++	u8 stop_bit_len;
++	u8 char_size;
++	u8 rfr_level;
++	u8 parity;
++	u8 opcode;
++	bool hw_flow_ctrl_en;
++	bool set_tx_config;
++	bool set_rx_config;
++	bool packing;
++	bool loopback_en;
++};
++
+ #endif /* QCOM_GPI_DMA_H */
 
-Best regards,
---  
-Naresh Maramaina <naresh.maramaina@oss.qualcomm.com>
+-- 
+2.34.1
 
