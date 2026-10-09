@@ -1,114 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57E3A4CCDF7;
-	Fri,  9 Oct 2026 11:00:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B04339768D
+	for <linux-serial@vger.kernel.org>; Fri,  9 Oct 2026 11:11:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791543604; cv=none; b=vAt39wyI9N97AoZKw/JF6LIwQ8OiMzbmJN3qZeFgN5urdLQ9S+yxRltGMOcgboWqkwns9T/zlgMe/odjs6I79WIw69KOdH1vgmdHKyXf9DupiTlBdGm9YaNNwhXFMpRAMEKwc6aiEIvH/TUAyimr1Ysf3BLVNEk9JasyUBQyn0I=
+	t=1791544327; cv=none; b=XTlcmjjgZT8UY/ew/eFg9qoAIQ5GMmkGZFEGiuGsVl1LVgHlS+psQMJT37jCjXtkEPpOmqttvzikKm1SpJ0Dsgd5KAOD5Ydzo5wbtG6TWdpkp/uSiF3wMXnyAFpT4j4JgORgHy+z3ktZI+CUijUIBx57miiswKPVHPnIa4I3hFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791543604; c=relaxed/simple;
-	bh=neVZVTGq666oWAg78l5pu/vXnnOetgC6TABJJdn6H6U=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=c7hSL2bZDRh9YxIp01biTt8d4ILbOPLdeILprLoww+omI0SNWwJr2EUk6nRTUgs1uYBq3JmYgrNJ086U1h/KnN00FEiguKZC4UrlfmmtuC8rEdbQnf4cbLzC3HP/QtS612pVzBeK4ammzHKCUEqaX4RzKpavfZi55vZFekOoJIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uogObXJi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1791544327; c=relaxed/simple;
+	bh=uCmnarb/qso5Zm62JTG5lKQG5AeMfw8PnLN6MX6NFTU=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=e12WGES6iSY7E3COooKUVN0tuTUi6gnTt2+6H9JfCT0W+Jv7VrDd7DKYFFl9vRa6r9gFajOL5IOr9xrra7o2EuJtq9xNe4HfKDIwoJ/6CDMNfXSeeU61B84ckFGuffkUY9DEdbiuYDGbhZz1++TWNZFgKNwPnwhifx5BgLLM/Jg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SRKtb3oi; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uogObXJi"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3D222C2BCF4;
-	Fri,  9 Oct 2026 11:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1791543603;
-	bh=neVZVTGq666oWAg78l5pu/vXnnOetgC6TABJJdn6H6U=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=uogObXJiR8xRxnnlKQ6Rgnq4vwp5qA1SQKNHoATsEarbDUDBKR4EgjerVbW5YOUOI
-	 y4v4GdWRAKYmescq0TLfsURzbFt45fY+rVds6nDshBETklPYi7vxyAFmfD6/7WCGp9
-	 EqUpssRYELWaEUSWyoJZgUYzW3attmD4W9zg+xalw80OLmfn/nCiK5z3yGE3A2/rod
-	 rxuHkVYmwz9ggytdqnqUbhg5/FJvCR5zWv/1712qI5e/Jywb58t7xYojXy+ZSDelPc
-	 +VyxTsqn504N+tObx4VMUbS8FCSddQGHqNVaTvlv2ZhvXOriQ/9X2SZPRZ6vWhNPUw
-	 /gYvu9cgm7ZDA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296F8CA6019;
-	Fri,  9 Oct 2026 11:00:03 +0000 (UTC)
-From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
-Subject: [PATCH 0/2] serial: add Ambarella CV75 8250_dw quirks
-Date: Fri, 09 Oct 2026 18:59:57 +0800
-Message-Id: <20261009-cv75-uart-v1-0-38c098efaa99@ambarella.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SRKtb3oi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791544319; x=1823080319;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=uCmnarb/qso5Zm62JTG5lKQG5AeMfw8PnLN6MX6NFTU=;
+  b=SRKtb3oisYtcb0JKYu8F7wAL6KHsi63z+IG1jVUQw+bfx2qeXfjnpqBl
+   sRXd2358LmxtyGCVb+YIqnEdlx8aT9fAdGNXUqszY6GsHjFSLDUhjnCsJ
+   FZbNTzZLw5qdBvKPXDQNNsCAilMNXIr/AI+9dQC1hyDDxuNiWlFMy637A
+   tJywwGTJ5TfycsFCEMeVMBQxexm2V2S6BQ/LYrzpqFe26CiwYIZkd9Ww3
+   48VZSixPslDZ9hRWd1qtkGvogPIaskRwiBxXTh9mTWN5xe0JKakmwiqTM
+   5P5DEfKxA5lCrw1HozWyXaWl6/mqc5hgxIuYKVPb+nXA4rG7zK/aIM5eT
+   Q==;
+X-CSE-ConnectionGUID: Inzd914dSeiVz4w9HLDWgQ==
+X-CSE-MsgGUID: +SMm98UZQouHBFipGciLZg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11929"; a="349440"
+X-IronPort-AV: E=Sophos;i="6.27,148,1787036400"; 
+   d="scan'208";a="349440"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 04:11:58 -0700
+X-CSE-ConnectionGUID: MlWoDZJvRYWzQBv++VNb+A==
+X-CSE-MsgGUID: CNnz9xF/RHufth645ygVCg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,148,1787036400"; 
+   d="scan'208";a="2113166"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.39])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 04:11:56 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 9 Oct 2026 14:11:53 +0300 (EEST)
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 1/3] serial: 8250_lpss: do not touch uninitialized line
+ in ehl_serial_exit()
+In-Reply-To: <ef47d676a44346e058f29a00c8701484db722831.1791524724.git.jirislaby@kernel.org>
+Message-ID: <5b38ebef-0df1-04a0-d736-d1c2295cd062@linux.intel.com>
+References: <cover.1791524724.git.jirislaby@kernel.org> <ef47d676a44346e058f29a00c8701484db722831.1791524724.git.jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAC3JyGoC/yXMQQqAIBBA0avErBPUzKirRAuzqaZFhWYE4d2zW
- j74/Bs8OkIPTXaDw5M8bWuCyDOws1knZDQkg+RSC84rZs+qZMG4gyllNJd1r20hIPW7w5Gu79V
- 2v33oF7THO4AYH1MDUtVtAAAA
-X-Change-ID: 20261007-cv75-uart-44a6029b6c31
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc: Linus Walleij <linusw@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
- Long Zhao <longzhao@ambarella.com>, Long Zhao <zl020895@163.com>, 
- linux-kernel@vger.kernel.org
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791543601; l=1588;
- i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
- bh=neVZVTGq666oWAg78l5pu/vXnnOetgC6TABJJdn6H6U=;
- b=UDsqMyCeNg+ceA9+UGB3+s8T/RKumgGDR1bj2HJxvAUybi0k6HA0umzSTH8mMAFDByMHfPa4s
- y5Nd+VU1TdeCOOSBzhqSo2BYIg4XLI/HBf+5s69cAhW8AyfTIukmAvB
-X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
- pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
-X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
- auth_id=903
-X-Original-From: Long Zhao <longzhao@ambarella.com>
-Reply-To: longzhao@ambarella.com
+Content-Type: multipart/mixed; boundary="8323328-595913266-1791544313=:8329"
 
-Split from the combined CV75 bring-up series. The 8250_dw driver does
-not depend on ARCH_AMBARELLA. The binding uses the ambarella vendor
-prefix, which is added by the SoC series and is not in mainline yet;
-dt_binding_check needs that prefix.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-These patches match the UART patches in the combined v9.
+--8323328-595913266-1791544313=:8329
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Link: https://patch.msgid.link/20261001-cv75-v5-v9-0-486cc289a4b8@ambarella.com
+On Fri, 9 Oct 2026, Jiri Slaby (SUSE) wrote:
 
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-To: linux-serial@vger.kernel.org
-Cc: Linus Walleij <linusw@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Cc: Conor Dooley <conor+dt@kernel.org>
-Cc: devicetree@vger.kernel.org
-Cc: Long Zhao <longzhao@ambarella.com>
-Cc: Long Zhao <zl020895@163.com>
-Cc: linux-kernel@vger.kernel.org
+> lpss8250_probe() calls lpss->board->exit() on its error path. For the
+> EHL board, that is ehl_serial_exit() and it does:
+> serial8250_get_port(lpss->data.line)->dma =3D NULL;
+>=20
+> But when lpss8250_dma_setup() or serial8250_register_8250_port() fails,
+> lpss->data.line was never assigned. As lpss is kzalloc()ed, line is 0
+> and ehl_serial_exit() clears the dma pointer of an unrelated port --
+> serial8250_ports[0], i.e. ttyS0, which is often the console.
+>=20
+> Initialize lpss->data.line to -1 in probe and skip the clearing in
+> ehl_serial_exit() if no port was registered.
+>=20
+> Fixes: 5318f70da7e8 ("serial: 8250_lpss: Balance reference count for PCI =
+DMA device")
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Assisted-by: LLM
+> --
+> Cc: "Ilpo J=C3=A4rvinen" <ilpo.jarvinen@linux.intel.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/8250/8250_lpss.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/825=
+0/8250_lpss.c
+> index 776ec1ef29d6..c5257847a94c 100644
+> --- a/drivers/tty/serial/8250/8250_lpss.c
+> +++ b/drivers/tty/serial/8250/8250_lpss.c
+> @@ -183,6 +183,9 @@ static int ehl_serial_setup(struct lpss8250 *lpss, st=
+ruct uart_port *port)
+> =20
+>  static void ehl_serial_exit(struct lpss8250 *lpss)
+>  {
+> +=09if (lpss->data.line < 0)
+> +=09=09return;
+> +
+>  =09struct uart_8250_port *up =3D serial8250_get_port(lpss->data.line);
 
-Assisted-by: LLM
-Signed-off-by: Long Zhao <longzhao@ambarella.com>
----
-Long Zhao (2):
-      dt-bindings: serial: snps-dw-apb-uart: add ambarella,cv75-uart
-      serial: 8250_dw: add Ambarella CV75 quirks
+Declaration now ends up mid-function for a non-cleanup variable so this=20
+should be split to two lines.
 
- .../bindings/serial/snps-dw-apb-uart.yaml          |  1 +
- drivers/tty/serial/8250/8250_dw.c                  | 32 ++++++++++++++++++++++
- 2 files changed, 33 insertions(+)
----
-base-commit: 34cf6dafc47441dfb6b356a095b89c3585a93714
-change-id: 20261007-cv75-uart-44a6029b6c31
+> =20
+>  =09up->dma =3D NULL;
+> @@ -329,6 +332,8 @@ static int lpss8250_probe(struct pci_dev *pdev, const=
+ struct pci_device_id *id)
+>  =09=09return ret;
+> =20
+>  =09lpss->board =3D (struct lpss8250_board *)id->driver_data;
+> +=09/* for tests in lpss->board->exit() */
+> +=09lpss->data.line =3D -1;
+> =20
+>  =09memset(&uart, 0, sizeof(struct uart_8250_port));
+> =20
+>=20
 
-Best regards,
---  
-Long Zhao <longzhao@ambarella.com>
+--=20
+ i.
 
-
+--8323328-595913266-1791544313=:8329--
