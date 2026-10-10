@@ -1,134 +1,151 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8E47175A68;
-	Sat, 10 Oct 2026 01:11:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 953203BE155
+	for <linux-serial@vger.kernel.org>; Sat, 10 Oct 2026 03:46:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791594677; cv=none; b=Y787kgeOYGh0ZkxD712DJyOQcMxj7i7E/hmNDdm+edIzXk614Up+kBv7BeIkVSXtjz+bLriKtWzh4UpvqKTEMzeTYvU0/p+NgjKYvruJ9jFUWR2G6cPTlc3hKPCZhsbpQlVWPbUVAUoOK0sIvOBaRqz3AHwI5KXbtMEGD6OtaII=
+	t=1791604005; cv=none; b=t4jsf/Yj8vPLKWf6oQibulLxrWddwqWR+ZJT8mtSnSeT5bF6tm7ZQ+CX64XDo386WzYOGjWETLoez0gpk1yoS2tiW6d7WH+6/qlgxS/TOkaw0CZ/GDfNdrmdYBePVWzp6EroWu+sAri8gZ6I3IJmQgBI1Yd0tmhmZfuVY1jFGdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791594677; c=relaxed/simple;
-	bh=UErRGcKL/uGrCfi/20f2xr+wm/BTrybHItYVUX6mDxs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=odbFu0WH6oLk1dWUoKW5eIXCqXLz8DbLM1FVqeQE7VKBub/ETDG5HZcKTaw6zm1v1tD2y3xeKrBhEoJIWnzMOWptCKHujvum97q3NAVm7mfHP1eThpynXFFOluP4YgudPKd51EDZKhc6BhcJzaj8nDSgpdL61fqit74yegV8Nw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZM0ddwry; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791604005; c=relaxed/simple;
+	bh=k8TPoiMwAjR5GOxMyjwMDX7WGOJ4rF1M+VeIYQvoBuc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Wu4i3xXjKRoplcuzzR5Z8h7A2SmG9Q5m0NE6ry2yzrPtW4qMWyoMR77KOhRlNjAmR+8zdiUj3+YHfTQse35SHKd6wArT18dgmHaleyLiI/81Xz6qHxkc0tWngVcglHzXoN0aD4/1EkBCulY8CJJF15ZDDvs+eDxCmYuLf8dJd28=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cs.unc.edu; spf=pass smtp.mailfrom=cs.unc.edu; dkim=pass (2048-bit key) header.d=cs.unc.edu header.i=@cs.unc.edu header.b=CdaTJCv5; arc=none smtp.client-ip=209.85.219.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cs.unc.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cs.unc.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZM0ddwry"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791594676; x=1823130676;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UErRGcKL/uGrCfi/20f2xr+wm/BTrybHItYVUX6mDxs=;
-  b=ZM0ddwry+9gMr5s+mi88tP6EVd7dIHkMW0fLKe3u0NNpiw4QR6kAutI/
-   ppbCaQFHB05/tlTIwHblXcw2zAiYI7cpbRsUWIKAycqj4pWRnRVG+Q1S9
-   u8NYc25ODqYkfTaFLGSwlIWjdPXHaSDCNFUm+K8mGfJXCUqemsX3RzcMV
-   fDd7U+G4RsUBMFotOnQpg62j9Hf1sknK5e6SRJwrTPlhibm7/Fde+ZoZa
-   q1SFGbY3gRE7BlSn5veV9fAUDmTHnBgN+KYQ+DQJ+jB3qhSvO/2uj3Zsw
-   KUA5RsQ6sHM4CIyhK9NFy08YmUX4XbXxt0JwaKIU7Ju2+tKOWXpK9KJF3
-   A==;
-X-CSE-ConnectionGUID: KepNQ5PvRaedQ+xBE7MkOA==
-X-CSE-MsgGUID: QIWuanScTNGYNea6j4x84w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11930"; a="403079"
-X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
-   d="scan'208";a="403079"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 18:11:16 -0700
-X-CSE-ConnectionGUID: yhgaFlczRx+LLewp7pWV7A==
-X-CSE-MsgGUID: tA/mBHqkTdaAJHZfKHMDAQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
-   d="scan'208";a="892557"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa010.fm.intel.com with ESMTP; 09 Oct 2026 18:11:12 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xFLcC-000000006MQ-2rJh;
-	Sat, 10 Oct 2026 01:11:08 +0000
-Date: Sat, 10 Oct 2026 09:11:08 +0800
-From: kernel test robot <lkp@intel.com>
-To: Naresh Maramaina <naresh.maramaina@oss.qualcomm.com>,
-	konrad.dybcio@oss.qualcomm.com, Vinod Koul <vkoul@kernel.org>,
-	Frank Li <Frank.Li@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abel Vesa <abelvesa@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=cs.unc.edu header.i=@cs.unc.edu header.b="CdaTJCv5"
+Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-917d595138fso3123456d6.3
+        for <linux-serial@vger.kernel.org>; Fri, 09 Oct 2026 20:46:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cs.unc.edu; s=google; t=1791604000; x=1792208800; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=9496Z4xJQFpi1+eiTqu1gpT5LZKW67A1SEVUrT0nCjI=;
+        b=CdaTJCv5K2w4VqQdCyMp8bT1M3Pt1kh4zC9XkltN1kt0+A7w/KupiwBQEhKJ1NYQRS
+         lPeie4y1Q5tabABFfu0rKopRhAzIxYyIDTqeu8ee1M/qLkseDTtLtO/AsxWK13a647K8
+         MrXNFZQvF38hf29HMfmz+aPqusM8DqUmEPw4yXcJgm9Am+dUcH/xs/hyRYYemcF4z6Dx
+         kc6yYKbNlDUnQXCaI2mvbxa5SPRQdJx1rg2zelyygENubFwOk1IUZaQJC+YxcS3p+z0b
+         fzKR+OGlfCoxsoHfgTNZMoO433rC48JS8c39irec9ta+OBivBTydE7UeLE5jFSWpBCZm
+         rG/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791604000; x=1792208800;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=9496Z4xJQFpi1+eiTqu1gpT5LZKW67A1SEVUrT0nCjI=;
+        b=dxJ0ggpLX+ZkLHYTyzc485W6Bifi3elUw57iYs9hhchp4qOkMFvUO8bU8bmBj94j0W
+         WdK6SM7xywMDj/7LWRPj8Hu/gJxT79baRxuXpjIPX9F2mqPXhVM+4xqIIhLSCr9lrQWg
+         /Ly8Rvq7BzRxDVO917wMaM8nUSiCYF70F02xjhItgCqUOqMJ0gS+2b5By19LBTf0d8S4
+         oiynZPzpA/fbR0zp9lvqNwZa69TPrYkBwjMU6Ld0bHwZOUtq/JrQHxXKKzQPQqBP1I8P
+         cKWoJECCqoWF7UkEIhdVSE5PplO5k8P5URjrVG5CE2OpNvXLas+tM2aBucvEk4oEFnAO
+         2Vjw==
+X-Forwarded-Encrypted: i=1; AKwUvBzNTng669QMwWI5XtJbuvCmCh/58QqL3xEfrxIqUacnaYHr9gOk0/vkNNWh/XvIgrkUyC+4v6mS4hG5Vk4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJSMPFJlaJMRi5KFTqhBkqDknlY6sNdU8A6ByOsv8lP3VwIJrM9
+	cHvG/h26Y2LbVV+LlY3/RxvorkJrrRIreTboQ0DvWroB6yDfHWcuuXt14KBUdXeg+w==
+X-Gm-Gg: AYBFou1vesJDpiSCv3ZR+SPmgPw117uiAb9asaeR4Ok0EVrsIlivWwoBp+A+za46sD/
+	d0DueZUFBhZ8+DIGxxSiG8oxsO7uhbAfWoO2LSMfOyjQYtcu6JJ1turEnlCiAzCh/BTZU+r4r8d
+	+DxJVlc54YhqO3p8FjE6FpUfkWB0RRiXFXNWzofjr3VXcayk+bquQDB8vsl+yzPEH6XtC2POjcs
+	yA2LVyxHglyerVO2axoF1RIChIqXpdeDl+clPQ+B4YdFcGIAVhnecCmE0pO01GIkOWKrkQWjZHb
+	up9NapFNIoUXGcBHEuNSU4K9/xx35o4Q8/MDcyV2F/cLSUgnxYYGHDnGGijIU9loKjTTPL2RmHE
+	UPS0qtpjr6YP/bdJy1lBEEmc43t+rZoAjOLa5HhzLwgbmUKgI/iaIOfCaTqLepug/olMMgNGWsl
+	na4n8b0urOmqstESt3sbKaopWG3/hsPrLkb6TY1dT2QHjkifJJ3YFANPsrpuHP69eG+zfUWJryV
+	YXNdwUDKm+NYxrVXQDerg==
+X-Received: by 2002:a05:6214:4291:b0:919:aba4:22e5 with SMTP id 6a1803df08f44-91b554ec072mr64283936d6.18.1791604000205;
+        Fri, 09 Oct 2026 20:46:40 -0700 (PDT)
+Received: from cobra01.cs.unc.edu (cobra01.cs.unc.edu. [152.2.130.143])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91b550e1068sm35475306d6.46.2026.10.09.20.46.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2026 20:46:39 -0700 (PDT)
+From: Hengyu Liang <hengyul@cs.unc.edu>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+Cc: Johan Hovold <johan@kernel.org>,
 	linux-serial@vger.kernel.org,
-	Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
-	Aniket Randive <aniket.randive@oss.qualcomm.com>,
-	chandana.chiluveru@oss.qualcomm.com,
-	jyothi.seerapu@oss.qualcomm.com, praveen.talari@oss.qualcomm.com,
-	Naresh Maramaina <naresh.maramaina@oss.qualcomm.com>
-Subject: Re: [PATCH 4/4] tty: serial: qcom_geni_serial: Add GPI DMA support
-Message-ID: <202610100800.CCtA9f8L-lkp@intel.com>
-References: <20261009-add-gpi-dma-support-for-uart-v1-4-c69e728df686@oss.qualcomm.com>
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH] serial: core: fix TIOCSSERIAL and TIOCSERCONFIG on uninitialised ports
+Date: Fri,  9 Oct 2026 23:46:16 -0400
+Message-ID: <20261010034616.3915864-1-hengyul@cs.unc.edu>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261009-add-gpi-dma-support-for-uart-v1-4-c69e728df686@oss.qualcomm.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Naresh,
+Commit 8ca59f7baee7 ("serial: fix ioctl hangup race") made
+uart_set_info() and uart_do_autoconfig() return -EIO when TTY_IO_ERROR
+is set, so that they do not run on a port that has been hung up.
 
-kernel test robot noticed the following build warnings:
+However, TTY_IO_ERROR is also set on a port that could not be started,
+for example because its type is unknown, and by uart_shutdown(), which
+both functions call. As of now, setserial cannot configure a port that
+the kernel did not detect, and an autoconfig that follows a port, irq or
+type change in the same setserial call fails on any port.
 
-[auto build test WARNING on aac26bee2287c88af5be5a5ff96d783b19a28790]
+The issue can be reproduced with setserial (busybox) on a port without
+a detected UART, for example ttyS3 of a QEMU guest:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Naresh-Maramaina/dmaengine-qcom-gpi-Add-UART-transfer-support/20261009-122753
-base:   aac26bee2287c88af5be5a5ff96d783b19a28790
-patch link:    https://lore.kernel.org/r/20261009-add-gpi-dma-support-for-uart-v1-4-c69e728df686%40oss.qualcomm.com
-patch subject: [PATCH 4/4] tty: serial: qcom_geni_serial: Add GPI DMA support
-config: arc-allmodconfig (https://download.01.org/0day-ci/archive/20261010/202610100800.CCtA9f8L-lkp@intel.com/config)
-compiler: arc-linux-gcc (GCC) 16.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261010/202610100800.CCtA9f8L-lkp@intel.com/reproduce)
+    setserial /dev/ttyS3 uart 16550A
+    setserial -g /dev/ttyS3
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610100800.CCtA9f8L-lkp@intel.com/
+Before commit 8ca59f7baee7 ("serial: fix ioctl hangup race"), the
+result is:
 
-All warnings (new ones prefixed by >>):
+    /dev/ttyS3, UART: 16550A, Port: 0x02e8, IRQ: 3
 
-   drivers/tty/serial/qcom_geni_serial.c: In function 'qcom_geni_serial_gpi_tx_unmap':
->> drivers/tty/serial/qcom_geni_serial.c:1424:29: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-    1424 |         port->tx_dma_addr = (dma_addr_t)NULL;
-         |                             ^
-   drivers/tty/serial/qcom_geni_serial.c: In function 'qcom_geni_serial_gpi_tx_xfer_work':
-   drivers/tty/serial/qcom_geni_serial.c:1613:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-    1613 |                 port->tx_dma_addr = (dma_addr_t)NULL;
-         |                                     ^
-   drivers/tty/serial/qcom_geni_serial.c: In function 'qcom_geni_serial_unprepare_gpi_rx_dma':
-   drivers/tty/serial/qcom_geni_serial.c:1670:47: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-    1670 |                         gpi->rx_dma_addr[i] = (dma_addr_t)NULL;
-         |                                               ^
+After that commit, the result is:
 
+    setserial: can't set serial info: Input/output error
+    /dev/ttyS3, UART: unknown, Port: 0x02e8, IRQ: 3
 
-vim +1424 drivers/tty/serial/qcom_geni_serial.c
+This patch will check tty_port_active() in these two functions instead.
+uart_hangup() clears it under the port mutex, and it stays set on an
+open port that could not be started.
 
-  1414	
-  1415	static void qcom_geni_serial_gpi_tx_unmap(struct qcom_geni_serial_port *port)
-  1416	{
-  1417		struct qcom_geni_serial_gpi *gpi = port->gpi;
-  1418	
-  1419		if (!port->tx_dma_addr)
-  1420			return;
-  1421	
-  1422		dma_unmap_single(port->se.dev->parent, port->tx_dma_addr,
-  1423				 gpi->xmit_size, DMA_TO_DEVICE);
-> 1424		port->tx_dma_addr = (dma_addr_t)NULL;
-  1425	}
-  1426	
+Fixes: 8ca59f7baee7 ("serial: fix ioctl hangup race")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hengyu Liang <hengyul@cs.unc.edu>
+---
+Commit 8ca59f7baee7 is in the stable queue for 7.2.
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Tested on v7.3-rc6 in QEMU (8250). A TIOCSSERIAL that is held in
+copy_from_user() with userfaultfd while the tty is hung up with
+TIOCVHANGUP still gets -EIO from uart_set_info() with this patch.
+
+ drivers/tty/serial/serial_core.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 6332ed545c89..81a985424694 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -896,7 +896,11 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 	upf_t old_flags, new_flags;
+ 	int retval;
+ 
+-	if (!uport || tty_io_error(tty))
++	/*
++	 * TTY_IO_ERROR is also set on a port that could not be started, and
++	 * this is how such a port is configured. Only refuse a hung up port.
++	 */
++	if (!uport || !tty_port_active(port))
+ 		return -EIO;
+ 
+ 	new_port = new_info->port;
+@@ -1144,7 +1148,8 @@ static int uart_do_autoconfig(struct tty_struct *tty, struct uart_state *state)
+ 	 */
+ 	scoped_cond_guard(mutex_intr, return -ERESTARTSYS, &port->mutex) {
+ 		uport = uart_port_check(state);
+-		if (!uport || tty_io_error(tty))
++		/* As in uart_set_info(), only refuse a hung up port. */
++		if (!uport || !tty_port_active(port))
+ 			return -EIO;
+ 
+ 		if (tty_port_users(port) != 1)
+-- 
+2.53.0
+
