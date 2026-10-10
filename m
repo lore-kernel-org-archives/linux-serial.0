@@ -1,149 +1,149 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m118102.qiye.163.com (mail-m118102.qiye.163.com [115.236.118.102])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9249D36C5BF
-	for <linux-serial@vger.kernel.org>; Sat, 10 Oct 2026 08:11:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791619881; cv=pass; b=ECiahYW4vfwt1Tr/bjK6vdYYJIiFMV1KdalHYBwqNwlAtZfN6dqBgyynI5gcuJugiVJjYmsaPt57hPt/49BTTG/V3Td2ye74DjsR13UIIXkrmDVsswctqgi/sJi46QWmeRSEb+6qrajJ24e5p3vsHhwSatAduxZz/PoA5IBVjlc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791619881; c=relaxed/simple;
-	bh=3Y/fF6+yWSNp7n7WrJyW9ic7hhZX15xNpxqUx5k4mho=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FdUOTuYE45ahh62puYyU0b9IaRpR6CoQ/+HYlwRIoE64kphPt9FyQdTMGJN76PKY/6fSnCFgMwDbvKMYspv5S+wVvm+Yzte4L2Psd6s6GSQHOVx/2QI5bcmJp20etA9TwZHS+hUYau0eOSgehtzEfuVf37/lbDNfnLdmFWnVPlQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NgKg0Osd; arc=pass smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97B3D30F819;
+	Sat, 10 Oct 2026 10:07:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.236.118.102
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791626853; cv=none; b=bpqstBjzB5GFjkeywu4IXAbFCCybTC7mTC4wgnflZEL6NN6VG5OYrWViDVOLzVXqsnWnoCDM7DVUkaajf9uSaboLlWpJ3/CcawekPBbcLXeORoOLXZT9BKVIsyrh/PbAuoihWsrgr5urTkugMX5wB7z1QMOg7dEhOhK4ZPk5UJ8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791626853; c=relaxed/simple;
+	bh=Wayv4Ajw2MYBb2/zludqSex+fzbEtxkQ7xSQ+/aicK4=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=F17thlgcfbAh4XXp7tfJwJFSGjQKUGgA8P5uh7p4Hc2yaoqYvCNSLq6Ia2hW9ubmjPT9jgw5wkhBfaeqZLYybmG0OnZb5zu8IKPBPJxwPGHrwQpa5bVlwGhHNrlu8E4TINws/p/qUP3HwaidclUIKkbcErqiZBW3dNqzX4WwRo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=JkVxQK8V; arc=none smtp.client-ip=115.236.118.102
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NgKg0Osd"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c2e5f8fe879so81770966b.3
-        for <linux-serial@vger.kernel.org>; Sat, 10 Oct 2026 01:11:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791619878; cv=none;
-        d=google.com; s=arc-20260327;
-        b=kYEIb9n6hWOvDaVIIv+BGWZLJ0b26D/pOTxnrvcu1E4FX8F5wflcUB095wpcB4bHZG
-         wLp8z2Ja0ift5BhZ+VBoc1KKoSqbHFJ3MOUY44MeT9nI4TpGD+lEANIO0QtLx2rWwKBe
-         DLnY33HYyKtSc9Y5Ze9SNwzhKLWfG0vYm9zUFOL7P6QBz/PlEi54xJuWJOmoIgXtL6Wd
-         mis1pVgGjvL1uLh1CbgqTG2DCo2e3TnD5pfr/4+WwT0tOoJuxn8zrbkEEt3qvpvd1fJF
-         92Z3+EpZN7dUXfDelcqHIc7DPgrzrar6u6eqIlHazcz8qN5lYT6f/4/nj7Z5018Wd5/p
-         q3aA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=3Y/fF6+yWSNp7n7WrJyW9ic7hhZX15xNpxqUx5k4mho=;
-        fh=lkXatp21VcuQYYZnSBEa44U08xNw0VLAuNXxU50VR+E=;
-        b=c4zylIb0WgJluiQ6OPl+LYk9ujDbSoTrdEEjrAZLdkDkf0uOQCf3bZdNqUpr80uGa1
-         y/53/eCwmHnlK5bMkbtl+qCq+2QFBmXKlhyOw8aWw9581rubMH3nDvuuM6owuTsKTvvP
-         6SPI4FN46L+P7tONuL8p8alY7ZttbKzqF7U+EIC/2x4P1Dkdz4vVhzrCZbGflCTAzEw7
-         Ltn8BHxE7HoOsX2KnHZZ08jSFiMfqWt4gA9TZ6oWDyIeAiw/r0SNT2U5qJHuwjoM9f7D
-         ApxSyXB4GqI2HZZ403oZnce9yfIk4PiRcPtHpiKEIIHtCv9QKAMQ+Sk0FZtt5tH6xrtM
-         ScRA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791619878; x=1792224678; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=3Y/fF6+yWSNp7n7WrJyW9ic7hhZX15xNpxqUx5k4mho=;
-        b=NgKg0OsdU/Za3gEPX3nXLxLPAOaH+SfzqxcRzsVU18uNYiDCWR1QnMU+xloBEpCIxV
-         jU0PRb0KvDF9OdduOT+qKILQZhhu1IYBLkyPOmmVCaB7rFX1mbP+7nOgBFonLGdsbIQH
-         USaA3JSnk7cK4ANbASBr0LvZcGA2Z6X7aqomFySr9SS1c00PviIF8DSK/Ygfv998sk4n
-         1bfdlBbwdpHE/8Vaw4ZS/P6A4vY5VujyM1npVj1KeLEDLhkJs+pMDrkBS6lqQsq5vqcZ
-         VbvaIgoZhfCZ+JlfMouPpK25GB+Jy6lPP+XTTtOJI7avI/R+FvqPyaKhm9j+E3i8D/vL
-         UdMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791619878; x=1792224678;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=3Y/fF6+yWSNp7n7WrJyW9ic7hhZX15xNpxqUx5k4mho=;
-        b=S0urXUUbn2S1k+pWF+VQyGv/VbBSC2femBW83ZS8zLzgJXr2dM/aexKeKTlM0SpAUr
-         kriOdMvAPSn0LcO52vesbJvdZ8bAxHJogjj+S7SF7T+5OJ/of0zoyjt6De+RqHYqzGgm
-         L092EUlIcbzBNtOV//Un3djqOXQS1vpoxfIERMSMSwnvdb3m9I4+5GVP4clSwEeHi40T
-         w6+UCS+MJ91dCVQ5PYu5cOT5WCTFWEbWXrx8DilgQ/9KLFqKNPO3zJv7dgEPksX789GG
-         fYrKy0XmkUnQLjV86gZCmp1Usk56KNEkFZDl41ExRIFTYIwaLvObK7I/rro2YP+KhSnf
-         NFHg==
-X-Forwarded-Encrypted: i=1; AKwUvBzqBHWM7eykR4YvufescRaTfsEYjPgAq35HHfoJsXkC0wc8sIeJKTFe0ozMaCxssKAiPSCieelrpzWEck0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYINgL4/pIz44+Uj3oSwqIbVBuqyUOv+44JGL7oRsaeM5v0KYQH/
-	Q7jOpKnhARebPTu4jF9n7AibJxDu7LIrc8FYCrKDFLxlkO8RKflfoM6xSr5Mxz220Kkcfp97Aoi
-	+EuO3x8kd5KDa7vy8G3q4EqMb5Dg3skw=
-X-Gm-Gg: AYBFou3iRbhf+mGYAxlv6eG3Ns2wFyklpwtnhDbC/oeQmcFjqNcXKe1N0hwFotdazGC
-	wotnEEDBHNyhPQN7md12CKG7ZhBhJf5pkQcVyX43dhQ3WGF6t9RQYzf5lok2RciO9s2OGoZvMx1
-	gx6ljmeEB7tdMZOne+NaFlAZs3ZCpiszubncQBHQfwerZdEn3B2p3iRP1XClFdGfbRwc5cgWGvM
-	YPb9TTEHZdA3cpGPGqyfgDgJoCohniT5L0SJPlYbZatMfTfPqQTanJtpebbQKG0t5Kd9RVd2aGR
-	Ot12Vf67c/DrY3bCEJQH/rqF+QXkzD4r6Y8bmOYJ6924MUumTXUUqgSFs7UPdepfvw1luKDRY7D
-	29I+6R2oisAtToQdPrOFV8EmjZvU0BwaKiuULTZItFQ5Impx4kdAOwApMdsQKHboaUUJaa/ngtI
-	9R2dV4dks/KTlRqpV1YufjUGn2GaSAPcz6aXCATXE=
-X-Received: by 2002:a17:907:d0b:b0:c2a:f439:f028 with SMTP id
- a640c23a62f3a-c31aa062933mr436250066b.24.1791619877631; Sat, 10 Oct 2026
- 01:11:17 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="JkVxQK8V"
+Received: from localhost.localdomain (unknown [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 508f9b372;
+	Sat, 10 Oct 2026 18:02:07 +0800 (GMT+08:00)
+From: Shawn Lin <shawn.lin@rock-chips.com>
+To: Ulf Hansson <ulfh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-mmc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Shawn Lin <shawn.lin@rock-chips.com>
+Subject: [PATCH] tty: serial: move sdio_uart from mmc/core to tty/serial
+Date: Sat, 10 Oct 2026 18:01:57 +0800
+Message-Id: <1791626517-18161-1-git-send-email-shawn.lin@rock-chips.com>
+X-Mailer: git-send-email 2.7.4
+X-HM-Tid: 0aa12543426203a4kunm685a0dbb9700e
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1kYFggdWUFKV1ktWUFJV1kPCRoVCBIfWUFZGktOS1YZGUpMSh5OGB
+	hITB1WFRQJFhoXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0
+	tIVUpLSU9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=JkVxQK8V9+FgwbR2cLuC8PhpoC43nU2ohQwPt1nvtnklFdIpOUoIU6cvtpim2XGyfLnAg6xwZvP1gpJZbvqO5/ZhNqvnYMSiMPl/imgt1U6dNxSIJVq/HJkbFFel2ZnT0/oBeejTOxrRk6vnbYCf53WrwZ0cp3Y3KIQebISrpBE=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=a2Kq4on5A/+8+LrB8kwW5NvAdeankGNyxTEEWGV8OjA=;
+	h=date:mime-version:subject:message-id:from;
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20261008-aspeed-vuart-v1-1-d2be17c99cd7@phil.gs>
- <CAHp75VdiO9tPX2vLqsX2-omNvs-YjkWWD-HOiqyDSzpJrrZ_5w@mail.gmail.com> <60996F21-A12C-4FCC-9D5E-9D188A4ADBEA@phil.gs>
-In-Reply-To: <60996F21-A12C-4FCC-9D5E-9D188A4ADBEA@phil.gs>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sat, 10 Oct 2026 11:10:41 +0300
-X-Gm-Features: AclHuK-dIO95E4MKMHhfgONiaVmppwEdlr0lng2Exqtg0ehIlNhsjdfo0t3-x7w
-Message-ID: <CAHp75VdmMwXRQFKLG8c4yAsVA5=eFZA3jagtMGb-qVswcQ88Wg@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_pci: Add support for ASPEED BMC VUARTs over PCIe
-To: Phil Rosenthal <phil@phil.gs>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Corey Minyard <corey@minyard.net>, 
-	"openipmi-developer@lists.sourceforge.net" <openipmi-developer@lists.sourceforge.net>, 
-	Andy Shevchenko <andy@kernel.org>, Joel Stanley <joel@jms.id.au>, 
-	Andrew Jeffery <andrew@codeconstruct.com.au>, Ryan Chen <ryan_chen@aspeedtech.com>, 
-	"linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>, Ninad Palsule <ninad@linux.ibm.com>, 
-	Andrew Lunn <andrew@lunn.ch>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 9, 2026 at 4:45=E2=80=AFPM Phil Rosenthal <phil@phil.gs> wrote:
-> > On Oct 9, 2026, at 4:57=E2=80=AFAM, Andy Shevchenko <andy.shevchenko@gm=
-ail.com> wrote:
-> >
-> > There is already a driver for this 8250_aspeed_vuart.c. Please, do not
-> > add new quirks to 8250_pci.c.
->
-> Thanks for the review.
->
-> As far as I can tell, 8250_aspeed_vuart.c drives the other end of the
-> VUART. It is an OF platform driver (aspeed,ast2400-vuart and
-> aspeed,ast2500-vuart) for Linux running on the BMC itself: it depends on
-> ARCH_ASPEED, has no PCI ID table, and programs the BMC-side GCRA/GCRB
-> registers (VUART enable, host SIRQ routing), which the host cannot
-> reach.
->
-> This patch is for the host side. There the VUART appears as 16550
-> registers in BAR1 of the BMC's PCIe function (1a03:2402), and nothing
-> binds that function today,
+sdio_uart is an SDIO function driver, not part of the MMC/SDIO core.
+Keeping it in drivers/mmc/core/ is misplaced: it registers to the SDIO
+bus (sdio_register_driver) and only uses the public SDIO API from
+include/linux/mmc/, with no dependency on any mmc core internals.
 
-In the comments to the patch you told that ipmi_si matches it.
+Other SDIO function drivers live under their respective functional
+subsystem, e.g. the SDIO WiFi drivers are under drivers/net/wireless/.
+sdio_uart should likewise be placed under its functional subsystem, tty,
+just like the PCIe and I2C/SPI transport drivers (men_z135_uart,
+sc16is7xx, max310x) that live under drivers/tty/serial/.
 
-> so SOL goes quiet once Linux starts. I don't
-> see a way to reuse 8250_aspeed_vuart.c for it, but please correct me if
-> I'm missing something.
->
-> Understood about 8250_pci.c. Would a separate driver be acceptable,
-> e.g. drivers/tty/serial/8250/8250_aspeed_pci.c using 8250_pcilib, along
-> the lines of 8250_pericom.c? It would do the same as this patch: find
-> the VUARTs the BMC has enabled in BAR1 and register them as polled
-> ports. If that works for you, I'll send it as v2.
+Historically almost all changes to this driver were tty API changes
+(e.g. tty_operations adjustments, alloc_tty_driver removal), yet
+scripts/get_maintainer.pl never listed the TTY maintainers while the
+file lived under drivers/mmc/core/. Moving it under drivers/tty/serial/
+makes get_maintainer.pl report the proper TTY/serial maintainers and
+reviewers, which benefits future maintenance of this driver.
 
-What has Pericom to do with all this?
+No functional change. The CONFIG_SDIO_UART symbol is intentionally kept
+unchanged to avoid breaking existing configs; the dependency is updated
+to 'TTY && MMC' accordingly.
 
-...
+Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
+---
 
-I will look into this deeper when I return from the LPC 2026 trip, but
-what you are doing sounds really wrong.
+ drivers/mmc/core/Kconfig                     |  7 -------
+ drivers/mmc/core/Makefile                    |  1 -
+ drivers/tty/serial/Kconfig                   | 10 ++++++++++
+ drivers/tty/serial/Makefile                  |  1 +
+ drivers/{mmc/core => tty/serial}/sdio_uart.c |  0
+ 5 files changed, 11 insertions(+), 8 deletions(-)
+ rename drivers/{mmc/core => tty/serial}/sdio_uart.c (100%)
 
---=20
-With Best Regards,
-Andy Shevchenko
+diff --git a/drivers/mmc/core/Kconfig b/drivers/mmc/core/Kconfig
+index 14d2ecb..03061b1 100644
+--- a/drivers/mmc/core/Kconfig
++++ b/drivers/mmc/core/Kconfig
+@@ -64,13 +64,6 @@ config MMC_BLOCK_MINORS
+ 
+ 	  If unsure, say 8 here.
+ 
+-config SDIO_UART
+-	tristate "SDIO UART/GPS class support"
+-	depends on TTY
+-	help
+-	  SDIO function driver for SDIO cards that implements the UART
+-	  class, as well as the GPS class which appears like a UART.
+-
+ config MMC_TEST
+ 	tristate "MMC host test driver"
+ 	help
+diff --git a/drivers/mmc/core/Makefile b/drivers/mmc/core/Makefile
+index 485b4f5..7d909f3 100644
+--- a/drivers/mmc/core/Makefile
++++ b/drivers/mmc/core/Makefile
+@@ -18,5 +18,4 @@ mmc_core-$(CONFIG_DEBUG_FS)	+= debugfs.o
+ obj-$(CONFIG_MMC_BLOCK)		+= mmc_block.o
+ mmc_block-objs			:= block.o queue.o
+ obj-$(CONFIG_MMC_TEST)		+= mmc_test.o
+-obj-$(CONFIG_SDIO_UART)		+= sdio_uart.o
+ mmc_core-$(CONFIG_MMC_CRYPTO)	+= crypto.o
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index bf680d2..3864cef 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1387,6 +1387,16 @@ config SERIAL_MEN_Z135
+ 	  This driver can also be build as a module. If so, the module will be called
+ 	  men_z135_uart.ko
+ 
++config SDIO_UART
++	tristate "SDIO UART/GPS class support"
++	depends on TTY && MMC
++	help
++	  SDIO function driver for SDIO cards that implements the UART
++	  class, as well as the GPS class which appears like a UART.
++
++	  This driver can also be built as a module. If so, the module will
++	  be called sdio_uart.
++
+ config SERIAL_SPRD
+ 	tristate "Support for Spreadtrum serial"
+ 	select SERIAL_CORE
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index bba7b21..d63b126 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -77,6 +77,7 @@ obj-$(CONFIG_SERIAL_SCCNXP)		+= sccnxp.o
+ obj-$(CONFIG_SERIAL_SC16IS7XX)		+= sc16is7xx.o
+ obj-$(CONFIG_SERIAL_SC16IS7XX_SPI)	+= sc16is7xx_spi.o
+ obj-$(CONFIG_SERIAL_SC16IS7XX_I2C)	+= sc16is7xx_i2c.o
++obj-$(CONFIG_SDIO_UART)			+= sdio_uart.o
+ obj-$(CONFIG_SERIAL_SH_SCI)		+= sh-sci.o
+ obj-$(CONFIG_SERIAL_SIFIVE)		+= sifive.o
+ obj-$(CONFIG_SERIAL_SPRD)		+= sprd_serial.o
+diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/tty/serial/sdio_uart.c
+similarity index 100%
+rename from drivers/mmc/core/sdio_uart.c
+rename to drivers/tty/serial/sdio_uart.c
+-- 
+2.7.4
+
