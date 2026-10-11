@@ -1,64 +1,64 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC57645C6ED
-	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 19:57:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD290457E5E
+	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 19:57:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791748671; cv=none; b=i+LN0aoXc2XfoAMzylSZimqwrrGm1PnvgRVjVvva02CpdFSBLNAZ+HN6Ds1OBPT2cUml56QSkySbSyK57wIRScAIsRg5Xo5aqVwRraS17bzZkqIpGlUWX16eeM+gx9rh6/UiK9rSqsrk8blkektGUqkjg6M0CUlMsmGZMtYH2A8=
+	t=1791748673; cv=none; b=JNHiqP3GvpZncAXockYNlgS2HbgjKiEp9rZORZfKQ5qNIsxyhnhODRfz8hvTeEiqLjqij6jbPZgFzay+g0z3HWLw4LWzVBNh6jOMLCCu7rRhqTx3nS/3pC2vPogv6BD8t/uGweO6bUgY3036VrCMBxg2PJJfjOXIfJyzXQsfsj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791748671; c=relaxed/simple;
-	bh=Le1SYPb2jPNj5MhF8OuGIlzFKKsBR2rEDTHPqcMQNeM=;
+	s=arc-20240116; t=1791748673; c=relaxed/simple;
+	bh=Nadl7HsFYXW6P9DTRKvVWpxRaLB4EMXS+QpbLsbVDjI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dx5Q531ChHYpPYxhFPlEFHewlZkX2B7qgKlfYhgCULWZtQqu8730jkaOUHX7UwVSoGb+Rw0vbxzeDBCnOyXokOMWiYBLb+Oi1gI+5tZ2C89LUalMCAfV3r/E8O/nofUytkg2VXFLttcpM91yF36fAZ+Oxr8yDlGGcMz7Zp6CS/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q1DXwjwZ; arc=none smtp.client-ip=209.85.218.49
+	 MIME-Version; b=KfTxGEH0uQ0cMW74+HrQJ8VqupUzdKZcFPDK0ZTefQE0NHu9mSI8/mRc398bI2KsXnuxfiVKNKbbEsNJtTmnr7MhcNlZAcQuCfnySh5HjOWcBnuYoI2xrhP6esYJcRUfBJUnTQ52CG8NEPReWSNTfvamkmdGzAz2OydwECcNxjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ROms9/7j; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q1DXwjwZ"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-c2e5e090746so108808466b.0
-        for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 12:57:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ROms9/7j"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-c263415982eso145919466b.0
+        for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 12:57:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791748668; x=1792353468; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791748670; x=1792353470; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=ZtyEZmwj0f19Lpw83gnqEqbS3r4hbHydMWKTWR/TdRU=;
-        b=Q1DXwjwZx0ewCGYTzlldBhwAvBE5AFrZmnFiUCBx4qQIm27xdFd9CxirUs56NxYjun
-         Ur4oHEYAn7SBy3slGVOLiEU1iGdv5fAE9yo2QbNaAkaGYMQIYpz8VA4+5jBObOTkpIbQ
-         g1gf07nXLAGnZEFljdbRhALTcYoJB0TQQoFM/pwlVtJ2O4UW27SyQOjwy/Frb3+TMrpo
-         oJVh2DRQkq4zP6IVGarJBh+/4Ij35cn2xEoJ1cJ3r2Fu2lo1+fh6h/Ci2+lF0iCa1sRG
-         jwoE4rpvY+suqOtbQhOAx/jGZTIGKLOmg8PRDB+ZKrs+58Lrby/s4bixVTkt1OBUtfJV
-         +bzA==
+        bh=bd3F/qTb7l7go4vsYHnwO4e8nInvYSKDA0ySqIxH6Y0=;
+        b=ROms9/7jMiTg+0GA5yfz0ljiBokccfUoeyAvsZ8NCtoJuaiZ0e8CY8kZqz3M4J7XVU
+         SSvM7hhTuiE03VeEwjdnWUUEoncUTXlWGSNxH9ppoFDtS5B07xMCxB2nzxnaz8sDE3i0
+         4WQtTymxISjjAuvhSThEqzhHvyugiLwxgBm+uOt792Fk1wHGY/EXqlFL6voaDwjmh0Dd
+         ua5nLoSOHFdAmjkltTlc3BXZPZdLJPN9abIKunM8EuIFcH1pIFxmtDkw/4hRA+3Xylvh
+         hw8AgRfv0wdYi2dWZ8JatEs4lDvDOYDBqYixAqY8Rnp0xaIHPa9RhkO+6+W7sZc9b2WD
+         Arjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791748668; x=1792353468;
+        d=1e100.net; s=20260707; t=1791748670; x=1792353470;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ZtyEZmwj0f19Lpw83gnqEqbS3r4hbHydMWKTWR/TdRU=;
-        b=RLlqYLxiPwxxHCJTzfI0tigt7EirH8jwCMe5731HysnI88Zg6O9Njih2uv7X824WOI
-         wD4ZMDBLTUhAx31YXVPEsgDlBts0/hyBUJdd2/ktn3ixqE8CrtTe73D53EehLeIgpoIl
-         HWzjQQuXMvKLKhwz/fOqRDaaym4dbAp12Bag7VigHPlx6Aa984AORzR4ahaFt1DkZQ1q
-         riIQI6n2R+TgJcJiMK8yLK6cVTMcKnAvv4nniV+85ybk0jGNGdiAEOW/5j5tdroLGe0N
-         2LZHso8AFoLbAPYJBz3HODFctB0D6Mxo594tJEVjFo17bilou+mqacgjV/BbTEBkC1dv
-         HjMA==
-X-Forwarded-Encrypted: i=1; AKwUvByoFymFKW5iKP8aqZQl1CHHvFGxu/i5DKIHyWBCtXhmeDov5BwcrKMkB9Ez1Oi4KNAtnfUYPMg1RL1BkQM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJud4iR7iRkPyGsspJQIpckueOxfXRjDFXEkJytdP4vkjxAtz3g
-	/2oEN6D5ksdoZUWKxk90raZc25IKvSqli8fRKvS3DGvmrpHCZ1HKcHxY
-X-Gm-Gg: AYBFou1MXnHFXmwYGITIcg6rU3Ka+oMnexo/tAqwTvbItwvr/9pF4gsWK8OYrPVM+LG
-	aUX3MSIyiOdPZd4wQyj74eChQmfNlli0q6NEO/dr96epsPL1L5W4MR0IvrMgBxEtG9LaX2sqaC8
-	4HIJsu1bMxe5lOlqxQhwOeKzGTvc01HwQ6Yp9W/G/tjD20jQLRyiWqpATIiSuesZsua8PC+wnEw
-	VawRDH5ZHqT45DGUN5G37sDwq627wKFOy7Kc/z+H3wJj9EhVGBRdYLvbjGPl+Isrc31/CS5T5Eq
-	7lFO2EfIsgiRzcwLGmImrTKzEoANWrKOU07ufQ9StbawVdYVCQ4CFzq04AU6f6LTWIUPQTLv1h5
-	itHtOpumtlpDnd03XBR31VaeqdnjlZ0K79/5W/vftWmYtfsNhSRMB4D7i4YeHzlKVJyU9OPiT/H
-	lZuFywxEKexxER+4640h4s3+fKK6F0uUOzuMI2l2zlNmfqCgDeeZ++yERKZ/TqQeyOntSdL8v8J
-	UK5xhrwZ3nipYNcqRH72wjUVjdURVnVKq6EF0eEYORMIxfNQso=
-X-Received: by 2002:a17:906:dc8c:b0:c31:8984:7fad with SMTP id a640c23a62f3a-c31a9feb114mr762553566b.15.1791748668114;
-        Sun, 11 Oct 2026 12:57:48 -0700 (PDT)
+        bh=bd3F/qTb7l7go4vsYHnwO4e8nInvYSKDA0ySqIxH6Y0=;
+        b=SQqWxYtTtJnMQIKnslryJUP/t8eRc9IIJKLuRpf/BBSsFkG8kusBHJFC6UpDx5vRza
+         Kp3qrvgQtkLqrxpWIuOvX05ZjcmkWAtJHOp38c/y7CODLP+M/C1kMui1tXtTbz6sqkaS
+         9ZYQRCyux/vqtuyiZqKtPBrc92ax9vo5leCeb6t789MRGazW4pr5kkbENpJI253VyCE6
+         muL9rUAFAXpdKjeYypgIMKfeLEKfjlJRaNjb/mmT4n2Id0NIXZsoUnuGPPlL9s0mhaWP
+         Q7wtWQZFZXF2LaqCTp0umXDkUe7WnLjXpNXWiqXmxdhzHo3bLfi7R1VyLSUoOf7Sio3K
+         Pd2A==
+X-Forwarded-Encrypted: i=1; AKwUvBzOJzreHHGv5yZ+zwBUCu+VD15U0aOHUhi+9ZzartgX0R/2biPgOA3wVuhh1eLcgwPLN17JIdLfMgfI8y4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLLTWoZIHYptS4TzZvDHGbhA1FXxsj1NNWtXOZMQM2t/QbjwW+r
+	aQjo0X7OaxZ+o/mnH2c++7PbEFtH2w52M2QqQePKGOHkCfRGUGkf5h9Y
+X-Gm-Gg: AYBFou3pdt13zYb4d10FPz7oThEssaSXXDAd+OLxP4xNZ94oti1VaH3V5dFNpFQ/8yo
+	SJKMhcdl1OKcoPx3mkDF98oP6qm40ne91H8vRmcDsIhq33hTArV4sjrbeMf0DyrBm02St4jel1E
+	VKvWuk7EMUzxZZAYyU6l0LAlPmuH3fOAAnXylNR9W5x+/QKJFdHPYXMR4yMsMtK/EtUIu2RgZZw
+	iQuub1K5XJgr+x0OLmVMnmAV7RxwvgpFokfLsBHBorsX+sCnpUtS1H6K+uRT3yQieHmfPjGgluI
+	2EHOtHFBCKRCkSX7v9o8Sf2+TX7/XmfEgVWflQtYXWh504QxyHXNrj457Nw6Q4X2DHuQpbKtiBL
+	j51Kivyi650zo23sK4ALsToEx3KzJiRYIXtOpD3qO0Lm09TB3X7FSjXxsjISANgMACRyVi2ckqR
+	Q8U6Q+B/hk7tvFc4FoVYEmfJQbMI1hmcubfzX9J2i8+3kYR2I425k+GDyJkUPnDpgjhcUfrXwsd
+	MohPHPxZq2iaTdq89msF7ftnQe0EjzQKneuj1RC
+X-Received: by 2002:a17:907:9694:b0:c20:9447:bd5e with SMTP id a640c23a62f3a-c31a9fa1d3amr847020866b.9.1791748670007;
+        Sun, 11 Oct 2026 12:57:50 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9a3ae9fsm381315566b.26.2026.10.11.12.57.46
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9a3ae9fsm381315566b.26.2026.10.11.12.57.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 12:57:47 -0700 (PDT)
+        Sun, 11 Oct 2026 12:57:48 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: davem@davemloft.net,
 	andreas@gaisler.com,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	oleg@redhat.com,
 	linmag7@gmail.com,
 	stable@vger.kernel.org
-Subject: [PATCH v2 1/6] sparc64: return from the generic clear_page implementation
-Date: Sun, 11 Oct 2026 21:55:53 +0200
-Message-ID: <20261011195729.981243-2-linmag7@gmail.com>
+Subject: [PATCH v2 2/6] sparc64: honor queued spinlock layout in secondary startup
+Date: Sun, 11 Oct 2026 21:55:54 +0200
+Message-ID: <20261011195729.981243-3-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261011195729.981243-1-linmag7@gmail.com>
 References: <20261011195729.981243-1-linmag7@gmail.com>
@@ -86,33 +86,91 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-GENclear_page falls through into generic_patch_pageops after clearing
-its page. The patcher then rewrites kernel text on each invocation.
-Return to the caller once the clear loop completes, as GENcopy_page does.
-This affects processors using the generic page-operation fallback.
+The trampoline's ldstub modifies the queue-tail byte of prom_entry_lock,
+not its locked byte, because SPARC64 uses big-endian queued spinlocks.
+Acquire the word with CASA, release byte three and poll while contended.
+Retain the predicted-branch barriers for Spitfire erratum 51.
 
-Fixes: 6c70b6fc7b6f ("[SPARC64]: Do not assume sun4v chips have load-twin/store-init support.")
+See qspinlock_types.h for the layout and JPS2 A.10/A.35 for CASA/MEMBAR.
+
+Fixes: 145d97858597 ("arch/sparc: Enable queued spinlock support for SPARC")
 Cc: stable@vger.kernel.org
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/sparc/lib/GENpage.S | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/sparc/kernel/trampoline_64.S | 34 +++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
-diff --git a/arch/sparc/lib/GENpage.S b/arch/sparc/lib/GENpage.S
-index c143c4d1de3f..6ce11108e143 100644
---- a/arch/sparc/lib/GENpage.S
-+++ b/arch/sparc/lib/GENpage.S
-@@ -48,6 +48,9 @@ GENclear_user_page:
- 	bne,pt	%xcc, 1b
- 	 add	%o0, 64, %o0
- 
-+	retl
+diff --git a/arch/sparc/kernel/trampoline_64.S b/arch/sparc/kernel/trampoline_64.S
+index 51bf1eb92a36..62f404b3079a 100644
+--- a/arch/sparc/kernel/trampoline_64.S
++++ b/arch/sparc/kernel/trampoline_64.S
+@@ -106,9 +106,19 @@ startup_continue:
+ 	 * We lock 'num_kernel_image_mappings' consequetive entries.
+ 	 */
+ 	sethi		%hi(prom_entry_lock), %g2
+-1:	ldstub		[%g2 + %lo(prom_entry_lock)], %g1
++	/* Big-endian qspinlock: acquire the whole 32-bit value, not byte 0. */
++	or		%g2, %lo(prom_entry_lock), %g2
++1:	lduw		[%g2], %g1
+ 	brnz,pn		%g1, 1b
+ 	 nop
++	mov		1, %g1
++	casa		[%g2] ASI_P, %g0, %g1
++	brnz,pn		%g1, 1b
 +	 nop
-+
- #define BRANCH_ALWAYS	0x10680000
- #define NOP		0x01000000
- #define GEN_DO_PATCH(OLD, NEW)	\
++	/* Spitfire erratum 51: barrier in a predicted-taken delay slot. */
++	ba,pt		%xcc, 2f
++	 membar		#Sync
++2:
+ 
+ 	/* Get onto temporary stack which will be in the locked
+ 	 * kernel image.
+@@ -212,7 +222,10 @@ startup_continue:
+ 	 nop
+ 
+ 	sethi		%hi(prom_entry_lock), %g2
+-	stb		%g0, [%g2 + %lo(prom_entry_lock)]
++	/* Match membar_safe() for Spitfire erratum 51. */
++	ba,pt		%xcc, 2f
++	 membar		#StoreStore | #LoadStore
++2:	stb		%g0, [%g2 + %lo(prom_entry_lock) + 3]
+ 
+ 	ba,pt		%xcc, after_lock_tlb
+ 	 nop
+@@ -326,9 +339,19 @@ after_lock_tlb:
+ 	wrpr		%g0, 0, %wstate
+ 
+ 	sethi		%hi(prom_entry_lock), %g2
+-1:	ldstub		[%g2 + %lo(prom_entry_lock)], %g1
++	/* Big-endian qspinlock: acquire the whole 32-bit value, not byte 0. */
++	or		%g2, %lo(prom_entry_lock), %g2
++1:	lduw		[%g2], %g1
+ 	brnz,pn		%g1, 1b
+ 	 nop
++	mov		1, %g1
++	casa		[%g2] ASI_P, %g0, %g1
++	brnz,pn		%g1, 1b
++	 nop
++	/* Spitfire erratum 51: barrier in a predicted-taken delay slot. */
++	ba,pt		%xcc, 2f
++	 membar		#Sync
++2:
+ 
+ 	/* As a hack, put &init_thread_union into %g6.
+ 	 * prom_world() loads from here to restore the %asi
+@@ -389,7 +412,10 @@ after_lock_tlb:
+ 	 add		%sp, (2047 + 128), %o0
+ 
+ 3:	sethi		%hi(prom_entry_lock), %g2
+-	stb		%g0, [%g2 + %lo(prom_entry_lock)]
++	/* Match membar_safe() for Spitfire erratum 51. */
++	ba,pt		%xcc, 2f
++	 membar		#StoreStore | #LoadStore
++2:	stb		%g0, [%g2 + %lo(prom_entry_lock) + 3]
+ 
+ 	ldx		[%l0], %g6
+ 	ldx		[%g6 + TI_TASK], %g4
 -- 
 2.43.0
 
