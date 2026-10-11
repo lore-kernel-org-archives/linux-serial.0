@@ -1,112 +1,64 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F6283BCD0E
-	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 19:59:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5173845A285
+	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 20:01:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791748775; cv=none; b=UtIewhlPLuNiwB1gyyZcOeuSf6qdHYjDT8nRE3CvVcq22g24QF35qli/MAayJM68FQ3PlyFHO0EVbt5yjilx4o1onYyelspUQj5/Mpuddrj/K6PC6ZBmTZJj/ywJLZ8InA8tZe0W3H+3ykdWv/iQvjEhoVg2f1etJY86azRbM8U=
+	t=1791748898; cv=none; b=EmZc5V8Q9TJ9fa0+A7y7z6cnWaZaKrAecrJpXn4yMyPYYBvp1vJKlLCfphsV1UvFj/gy1FjPZu1SNW4QU0Hyg7hW7Wa0PgqHPU62Vt2w5hblENJJLphv5raNa+8Db/ohQ//u6htgVX4ZcKjRo7XdoTbD5unChYCWdw6V/zpNt2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791748775; c=relaxed/simple;
-	bh=/IZ5GN/rkQDYU/T0e2XcgWtwVV5F/ZldOx+M84bMchw=;
+	s=arc-20240116; t=1791748898; c=relaxed/simple;
+	bh=akzXxuhCVd0J5CulfWaqm/jHK9yHyBJFJCoxe8uMGDU=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=u2y6pa0THSMcGDK5ksiMitJJWnr7box2XrnuTXwJ1GrULPZGerebl+/4bRnajGClwFAO6d6NNXsp4ZZhToev4aGQ8jN3TH+RSBBFBVp2fghIt1LEY0JdElzMPKaN4mDH74nCYURsO80bC1r251t3cl/IFZ0MwUsy8Hnrwks7meQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A6qkMHuI; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=n9p5BF1uNYWbmKGe1ZCdH0fFolFbqPbXX4aQ6gM2Ix9cL4Zz88XEmUfsiuS1qGyzaKl6eBR6bB0cWxb8oExWhPkBcsten5D2c9KLO1AJ3iIVfEpZxE8G6/s1vSLltTt8NKd9aMRFohxFzsg1GPxGQGN3r1L7Ri7q5HOOE3eqqig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TPhKTq0O; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A6qkMHuI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 366561F0089B;
-	Sun, 11 Oct 2026 19:59:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TPhKTq0O"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18AC1F0089C;
+	Sun, 11 Oct 2026 20:01:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791748774;
-	bh=ohqxcyFMxRAMYrJNnGSOigCIi614RjGunYtsIuP+G+I=;
+	s=k20260515; t=1791748896;
+	bh=akzXxuhCVd0J5CulfWaqm/jHK9yHyBJFJCoxe8uMGDU=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=A6qkMHuIxfgL0FGaYNyGC8Uj0KHAfFgTBfVRv7csqyktaAhn7/2TWeuJjBguGGyza
-	 RpR4UWZbxdYUlrJ9FsjO/jquqlXqzKAJOxu8Wu54S8P1A9qdQAAAG2OnZlWq9iJx8z
-	 nDFdGriVh7rZCpNiVJn4tfl6Nr/TpDew8+E/ED4BRq0y2zIPr1eWrs3qqJFYkP9FF8
-	 ayZqkPaTc4Qw/TL4odeYGzgNWzms507yyMnBTKtHQm1ypAmKuqZravR7lJ+DbWQsrf
-	 mFhpa9luiJQVMiLorcGF2lWwUEWMl7HjMt7cybThoLUVu8WRSqtYaxyfGq1rRPZuAO
-	 q66JIb+lULKJQ==
-Message-ID: <sashiko-outbox-167434@kernel.org>
+	b=TPhKTq0OOapjJGmcBRN75m6ZLo3D4dDMtAtBj07u1AXtiWpxwqRJ2ZF1XgVA1up/9
+	 +QG7iVHIrdqQA5AS23sz6tbWg5dsQTDY6vYR39V6eLEB+ZxmeyGMydOD668yy3F0Zg
+	 FdYBFGMDCeE7BnIHc9PmneU9Rdllvs04SobMrsHSOz08rikAxho3pzk2NzaX5gdpWs
+	 qIbt4L/51shwgc++BL0tpiSLa1iksssvprAK+u1f+naX8Q7R6QXmYzSzAmdYilOJVX
+	 LwIpGyFASgPD1gcWo87E6WQm/tcEN2HOm27gU5HJqmECPg8ajQ1y8iDmQ4J9DRlrSq
+	 8qvcj2cTMPF/g==
+Message-ID: <sashiko-outbox-167437@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: amba-pl011: keep transmitter enabled when
- disabling RS485
+Subject: Re: [PATCH v2 1/6] sparc64: return from the generic clear_page
+ implementation
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Nicolai Buchwitz" <nb@tipi-net.de>
+To: "Magnus Lindholm" <linmag7@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261011-fix-pl011-rs485-txe-v1-1-302b6c034b7f@tipi-net.de>
-References: <20261011-fix-pl011-rs485-txe-v1-1-302b6c034b7f@tipi-net.de>
+In-Reply-To: <20261011195729.981243-2-linmag7@gmail.com>
+References: <20261011195729.981243-1-linmag7@gmail.com>
+ <20261011195729.981243-2-linmag7@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 11 Oct 2026 19:59:33 +0000
+Date: Sun, 11 Oct 2026 20:01:36 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Medium] tty: serial: amba-pl011: stalled transmission when disabling RS4=
-85 during deferred start
---
+> GENclear_page falls through into generic_patch_pageops after clearing
+> its page. The patcher then rewrites kernel text on each invocation.
+> Return to the caller once the clear loop completes, as GENcopy_page does.
+> This affects processors using the generic page-operation fallback.
+>=20
+> Fixes: 6c70b6fc7b6f ("[SPARC64]: Do not assume sun4v chips have load-twin=
+/store-init support.")
+> Cc: stable@vger.kernel.org
+>=20
+> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 
-commit fd97eed6e0ab8bd63d1bb5300339347d34c58cdc
-Author: Nicolai Buchwitz <nb@tipi-net.de>
-
-serial: amba-pl011: keep transmitter enabled when disabling RS485
-
-This commit addresses an issue where disabling RS485 mode on an open port
-turns off the transmitter, causing pending output and active DMA transfers
-to stall. It updates pl011_rs485_config() to leave the transmitter enabled
-and cancel pending timers when transitioning out of RS485 mode.
-
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
-011.c
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2397,8 +2397,24 @@ static int pl011_rs485_config(struct uart_port *po=
-rt, struct ktermios *termios,
->  	struct uart_amba_port *uap =3D
->  		container_of(port, struct uart_amba_port, port);
-> =20
-> -	if (port->rs485.flags & SER_RS485_ENABLED)
-> +	if ((port->rs485.flags & SER_RS485_ENABLED) &&
-> +	    !(rs485->flags & SER_RS485_ENABLED)) {
-> +		u32 cr =3D pl011_read(uap, REG_CR);
-> +
-> +		/*
-> +		 * Leaving RS485 mode, which only enables the transmitter while
-> +		 * sending. Don't stop it, as that stalls a DMA transfer still
-> +		 * in flight. Drop a pending deferred stop and keep it enabled.
-> +		 */
-> +		hrtimer_try_to_cancel(&uap->trigger_start_tx);
-
-[Severity: Medium]
-Does canceling trigger_start_tx here without manually starting the
-transmission risk permanently stranding queued characters?
-
-If a userspace application writes data with a non-zero delay_rts_before_send
-in RS485 mode, transmission is deferred via this timer.
-
-If the application then immediately disables RS485 mode via ioctl(TIOCSRS48=
-5)
-before the timer fires, this code cancels the start timer.
-
-Since there is no fallback to manually kick the stalled transmission (such =
-as
-calling pl011_dma_tx_start() or pl011_start_tx_pio()), the TX interrupt
-remains masked and the DMA is never started. This could cause subsequent
-calls to tcdrain() or close() to hang indefinitely.
-
-> +		hrtimer_try_to_cancel(&uap->trigger_stop_tx);
-> +		uap->rs485_tx_state =3D OFF;
-> +
-> +		cr |=3D UART011_CR_TXE | UART011_CR_RXE;
-> +		pl011_write(cr, uap, REG_CR);
-> +	} else if (port->rs485.flags & SER_RS485_ENABLED) {
->  		pl011_rs485_tx_stop(uap);
-> +	}
+Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261011-fix-pl011-=
-rs485-txe-v1-1-302b6c034b7f@tipi-net.de?part=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261011195729.9812=
+43-1-linmag7@gmail.com?part=3D1
+
