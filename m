@@ -1,62 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DB3836194E
-	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 20:30:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AD512AD00
+	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 20:32:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791750626; cv=none; b=JdWcjC6VaG/mA/T4yEK2M4hboknnbg7WTynqumm6+bIwTmaHV7YTi6J9k768VfTx0GFLXAuc+PUjAbfjld/hkpA/kn0cgjh/yMyqHGH/+DWQ8vj5EMd/So9EAnGgYWUQ0FEyM95dMIQtIAKs4YdvzBpu132oVWJu/dkbWC/+zMg=
+	t=1791750779; cv=none; b=S35HhGq0X22U2wjy7xJs6yZct8gT4sSQ0UgoAPUiZor+lGfhlQckEefHBLuLtbEKpYomgGzC//OAw67U9406hdu+v30jqLU7f8G+ZrCo3x0uPYhdr18zLfeS5lbsPTr+HxODvrn1z7uJOBAD5B+Iph5rTtXv4aEV7plicYOteEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791750626; c=relaxed/simple;
-	bh=eRHXhPAfCh8yvbeptToI9/K+EaqI9BXz9a1JzM0c23M=;
+	s=arc-20240116; t=1791750779; c=relaxed/simple;
+	bh=YChLvPC6VsICt3nqGzRj97p3ru8MgGqXhtbHFkpyibY=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=VkMcnCp6mSHu4WDiXaFqo3UD40NDXwL+0ndRUMk2kt3IoSFDyHM1xQfejV/BHWrIboVHiRCe2ZEJBfJPfZLAPErrurz2DZ/HBGvstCrw8LaCROw5wzqFydCP08r6KTTfKoJiV0I56C4vnjvyt8PVz6wXzRqoUUrnEUhhx8GMreU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iH/vPZVp; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=Oy4SWBzT0/LqRYJb8tiXQdmVWVVo4J6raagx6KJWvTCiRTM6LIyaKNR3HoXUQT27j0Zuk0kYyiDGagn45Hd5m83t3FGZ0ZlEI2Cy1JYEC5h3NITj0fKxmR9Q0w2WuGOAJp9Y3FKNNTRDbTlbFYMueQun0UvarJmZ+htmdUPa8dQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G+B4A2re; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iH/vPZVp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30A691F0089B;
-	Sun, 11 Oct 2026 20:30:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G+B4A2re"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81DDA1F0089B;
+	Sun, 11 Oct 2026 20:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791750625;
-	bh=eRHXhPAfCh8yvbeptToI9/K+EaqI9BXz9a1JzM0c23M=;
+	s=k20260515; t=1791750778;
+	bh=YChLvPC6VsICt3nqGzRj97p3ru8MgGqXhtbHFkpyibY=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=iH/vPZVpXqGmxiWJ3t8DZNRTeJCypT7eKOfs4bWIC3LeB0KMKrceUtLflbYC9sQ3B
-	 /0GcNkNSqHzTtooNbmGPkk2YEMEqf7ckkqBRSOqBGH+VXElbuZALLRrJpzNwO0OlSV
-	 dvgYZcILSGgr7Y/ni1Ic1qj/zBj92dJo3NmdzE+IQUPBRseF6Z7LCy9dhs/RyCv+yE
-	 jcknyf9QJD2R/5jJzBtIYyX0gC+BHOVorhn0TZP/tU2Midv+myzS9OiX8YFl7T4S8a
-	 Wy8fLNHPFi2vKEuJ8pwRflabuIg8gEGNhEkH9rpHkU6DUt8WKZYQhqDLE5y5zFGwLt
-	 UhNDZx2el9t0A==
-Message-ID: <sashiko-outbox-167451@kernel.org>
+	b=G+B4A2reRi8B/eERZSJhQt0QHykq8m//8kYUjH0wySv9MYTSd7ftiN+vJjPaCkLb8
+	 vhbeY6ZSyXurrw1ti+QhZUr4hxyfew0x+oR1Y4Zm5IK69M4R+tnH4L+PNCHWOjE+ck
+	 jTm19jIpNi6pVfD7+fgser1z/GsWlHsddW+JjOxLVFZzIlCscXONT7a6iIFFPHng6B
+	 Xv579VsdBCEeFC840Px9fOaK5wRTGqwsw/tee1xaXNMOzgQk0ROzFlI3sZXe/irwVz
+	 jLmibEvITpss2Wb1qDTzqRNecQrxSNtHLqERuE9OIOr5txyv/xTnGkBvHD59fT2rrI
+	 pGECCQIIYZaLQ==
+Message-ID: <sashiko-outbox-167455@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: amba-pl011: honour delay_rts_before_send for
- every write
+Subject: Re: [PATCH] serial: amba-pl011: drive the bus during break in RS485
+ mode
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Nicolai Buchwitz" <nb@tipi-net.de>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261011-fix-pl011-rs485-rts-delay-v1-1-5078e61bc408@tipi-net.de>
-References: <20261011-fix-pl011-rs485-rts-delay-v1-1-5078e61bc408@tipi-net.de>
+In-Reply-To: <20261011-devel-pl011-rs485-break-v1-1-62ff402378c6@tipi-net.de>
+References: <20261011-devel-pl011-rs485-break-v1-1-62ff402378c6@tipi-net.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 11 Oct 2026 20:30:24 +0000
+Date: Sun, 11 Oct 2026 20:32:58 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> While the driver waits out delay_rts_before_send, another write calls
-> pl011_start_tx() again. pl011_rs485_tx_start() then switches straight
-> to SEND, and the data goes out before the delay has passed.
+> In RS485 mode the transceiver is enabled only while data is sent. A
+> break set with TIOCSBRK therefore never reaches the bus, and protocols
+> that start each frame with a break, like DMX512, do not work.
 >=20
-> Leave the start to the trigger_start_tx timer while it is pending.
+> Handle an active break like a transmission. Enable the transceiver
+> before setting the break, after delay_rts_before_send if one is
+> configured. When the break ends, stop transmitting unless the TX path
+> is still sending data.
 >=20
-> Fixes: 2c1fd53af21b ("serial: amba-pl011: Fix RTS handling in RS485 mode")
-> Cc: stable@vger.kernel.org
 > Signed-off-by: Nicolai Buchwitz <nb@tipi-net.de>
 
 Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261011-fix-pl011-=
-rs485-rts-delay-v1-1-5078e61bc408@tipi-net.de?part=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261011-devel-pl01=
+1-rs485-break-v1-1-62ff402378c6@tipi-net.de?part=3D1
 
