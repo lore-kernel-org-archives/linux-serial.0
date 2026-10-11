@@ -1,131 +1,171 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 458293290AA
-	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 20:09:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2DD518FDDE
+	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 20:09:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791749372; cv=none; b=sMH9nEI7gU4zn566d9mf7syitO1DoAqSDpXj1ITRuwbAk9MViZSCRIRfHD8S87dn4EgsclOUIrpgN/xx5cOYFWkvFG3McZui5YuL2YAZ2Rs3z99W7dC4s+dQiELpUdjpspunpWHtw4zGJGOU20rEJ6k1GEuplUCJBp6Cj3gwyZY=
+	t=1791749398; cv=none; b=h73Snju8jcOxFkSuJSi5ZGhPvUPhAMzi2xrvs9XQShO30IWziVp/ItVNqTADe9MAJa1uNoUBZm6mfHKmfv5RF0zJjlQCC7d0lXZUbYsmU+OkZUSuHf2YBfzIm2XWg3imR0RC0OGFqunM8CSlfH5X9MPNCQUz7jeVTJtFqIYM2zI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791749372; c=relaxed/simple;
-	bh=rnYiWJ9VOvd3WsIYxa9/IJFGSXvywIacoL8nb0wHHkk=;
+	s=arc-20240116; t=1791749398; c=relaxed/simple;
+	bh=zpsuHZXGSB0U6SkrXB7Yzaf6Pv9xWHOzCtHifvVCTBg=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=K8MLe0ActXRfWAQr9yT6ULNPUgJsIs+ax4zctCgC27rpgGAFFyBY7qpgdgN0kTF8JPdhvGpBTqLCmDXfa7sPhYnHTE7cPb79rm5cFbeFERx9snXbuua51rIV0WrsThm0Ij+VkaLPZd2wot+S3ug29yBbWAAoNvJCf5aC9gazo6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LkbNuo2m; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=g7mUB3t6LmCfP7xk3T51WNfomOjcVqyU8uKYv6yYlQR0IvnY29nAHLdRDq7RCfAxgDeYM3VS3r0dRZkja9ZbfLsje061Tb1q1HZXqnK4HsmEqZ8AuuCA9IQNvdRRY2pihJr0t7H+gmItdcl8NW2dDvqRDXzD5pQzb6IPYnE6pmk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B/64HCuV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LkbNuo2m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA6B1F0089B;
-	Sun, 11 Oct 2026 20:09:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B/64HCuV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 604EB1F0089B;
+	Sun, 11 Oct 2026 20:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791749370;
-	bh=EW3RQoCh802IvbpnApM9VBzlOpsk/OT9np+zs2hZ1uU=;
+	s=k20260515; t=1791749396;
+	bh=Jw0S/T21m+k0JLJUlq1ASybbdCnZApQHxKIHfPzDGuo=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LkbNuo2mgouSJzRgFSLJYgQrEb2bVzZtb4DrFdXuijf6Ra54SPxhAzfmJmL/0NKIe
-	 EO1tBtFEZp5fJueJYYJvapEXhVBxSMXfZi2EUTsbzW5OpZeeArYCj97upYFgagS9we
-	 1Q4iK0fq+HTF4oUACfSSr8EVCrrKAvXRXlAThkAlrTq9lwMfz/R6xll6EwrAQpVcSz
-	 8lY7/WdVI9lgp3hEYuVp4VDQwpMhcuKRGGBi9nigs3lJ94OomCdsyv8W3eA/Bb0m04
-	 CHilLqqjMg3YvQPDl3V0Wr7iJqdbGxi2W2On7XgdM0BZ13h+0XvRrmXFAau2hxg3eD
-	 dZKNKNxg+Xt6Q==
-Message-ID: <sashiko-outbox-167445@kernel.org>
+	b=B/64HCuVEWJaGlKvtu5e1vodMfRMTcJHtNvqrvz85iZyZjk5mv5tZKyx1HqjyaUC2
+	 2o0VNsVpAAM3rqU/HhI/P/mvdru3ZlyaneA91O5xIHHXE3t+PWHC7C5Q62Y2tmBF+S
+	 MqG2vFQO3IfSybPosrE2eErF3DEvn6R9zve8ezyu5fm27Yu8JEbDooLZgN1Cq5smka
+	 SmbLlrewlH/MMM0eXxLETiWUsaBIORKukY+jQCN812wpud9a//38OcZaMwIGpbpvN7
+	 HxIL3SMxHhQ3Wze6cgJD0NcwExpEGSIj7xqmwMbzWBT99ILmiuhCpFCvkZRYV1KYW0
+	 xb9FESbMlkdqg==
+Message-ID: <sashiko-outbox-167446@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 4/6] sparc64: add SPARC64 VII CPU, MMU and SMP
- support
+Subject: Re: [PATCH v2 5/6] sparc64: add M3000 Oberon PCIe support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Magnus Lindholm" <linmag7@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261011195729.981243-5-linmag7@gmail.com>
+In-Reply-To: <20261011195729.981243-6-linmag7@gmail.com>
 References: <20261011195729.981243-1-linmag7@gmail.com>
- <20261011195729.981243-5-linmag7@gmail.com>
+ <20261011195729.981243-6-linmag7@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 11 Oct 2026 20:09:30 +0000
+Date: Sun, 11 Oct 2026 20:09:56 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+Thank you for your contribution! Sashiko AI review found 3 potential issue(=
 s) to consider:
-- [High] sparc64: missing VII membar synchronization for __flush_tlb_mm and=
- xcall
+- [High] mm: dma_4u_free_coherent leaves stale IOMMU mappings on non-Oberon=
+ platforms
+- [Medium] sparc64: missing check for irq_alloc() failure in build_irq() co=
+rrupts IRQ 0
+- [Low] sparc/pci: missing NULL check for 'reg' property array in DT initia=
+lizers
 --
 
-commit 3658cc67da72bc2e25beda7e9124cb710a511258
+commit 789a2867a71401d078d82b2a2031ee8cc4266973
 Author: Magnus Lindholm <linmag7@gmail.com>
-sparc64: add SPARC64 VII CPU, MMU and SMP support
 
-This commit adds support for SPARC64 VII and VII+ processors in the Fujitsu
-M3000. It introduces separate CPU, MMU, and SMP paths, managing CPU topology
-and restrainable ECC errors. It also provides separate demap routines to sa=
-tisfy
-hardware synchronization requirements that are missing in the Cheetah paths.
+sparc64: add M3000 Oberon PCIe support
 
-> diff --git a/arch/sparc/mm/ultra.S b/arch/sparc/mm/ultra.S
-> index 70e658d107e02..c4a9647d6eb04 100644
-> --- a/arch/sparc/mm/ultra.S
-> +++ b/arch/sparc/mm/ultra.S
+This commit adds support for the Fujitsu M3000 Oberon PCIe bridge. It
+preserves firmware link setup, handles IOTSB cache line flushes for DVMA
+translations, and routes legacy interrupts using the bridge's ten-bit
+target ID.
+
+> diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
+> index 7613ab0ffb89d..9132f0535ce43 100644
+> --- a/arch/sparc/kernel/iommu.c
+> +++ b/arch/sparc/kernel/iommu.c
+
 [ ... ]
-> @@ -981,6 +981,242 @@ xcall_kgdb_capture:
+
+> @@ -253,6 +281,15 @@ static void dma_4u_free_coherent(struct device *dev,=
+ size_t size,
+>  	npages =3D IO_PAGE_ALIGN(size) >> IO_PAGE_SHIFT;
+>  	iommu =3D dev->archdata.iommu;
 > =20
->  #endif /* CONFIG_SMP */
-> =20
-[ ... ]
-> +	.globl		sparc64_vii_patch_cachetlbops
-> +sparc64_vii_patch_cachetlbops:
-> +	save		%sp, -128, %sp
+> +	if (iommu->iommu_cache_flush) {
+> +		iopte_t *base =3D iommu->page_table +
+> +			((dvma - iommu->tbl.table_map_base) >> IO_PAGE_SHIFT);
+> +		unsigned long i;
 > +
-> +	sethi		%hi(__flush_tlb_mm), %o0
-> +	or		%o0, %lo(__flush_tlb_mm), %o0
-> +	sethi		%hi(__cheetah_flush_tlb_mm), %o1
-> +	or		%o1, %lo(__cheetah_flush_tlb_mm), %o1
+> +		for (i =3D 0; i < npages; i++)
+> +			iopte_make_dummy(iommu, base + i);
+> +		iommu_sync_mapping(iommu, base, npages);
+> +	}
+>  	iommu_tbl_range_free(&iommu->tbl, dvma, npages, IOMMU_ERROR_CODE);
 
 [Severity: High]
-Does this incorrectly reuse the Cheetah variant for VII hardware?
+Does this leave stale IOMMU mappings on non-Oberon platforms?
 
-The commit message explicitly notes that SPARC64 VII requires hardware
-synchronization (membar #Sync) for context writes and instruction demaps,
-and that the existing Cheetah assembly does not establish this. However,
-sparc64_vii_patch_cachetlbops patches __flush_tlb_mm using
-__cheetah_flush_tlb_mm, which lacks the required membar #Sync after writing
-to ASI_DMMU.
+When dma_4u_free_coherent() frees memory, the hardware IOMMU page table
+entries (IOPTEs) mapping that memory need to be invalidated before the
+physical pages are returned to the kernel allocator.
 
-> +	call		tlb_patch_one
-> +	 mov		19, %o2
-> +
-> +	sethi		%hi(__flush_tlb_page), %o0
+By guarding the iopte_make_dummy() loop with if (iommu->iommu_cache_flush),
+this clears the hardware translation only for Oberon. For other SPARC64
+platforms, the hardware IOMMU entries remain valid, potentially allowing
+a malfunctioning or malicious device to perform a DMA use-after-free and
+corrupt newly re-allocated kernel memory.
+
+> diff --git a/arch/sparc/kernel/irq_64.c b/arch/sparc/kernel/irq_64.c
+> index 3f55c69d5f3bc..b0f3b26656d46 100644
+> --- a/arch/sparc/kernel/irq_64.c
+> +++ b/arch/sparc/kernel/irq_64.c
+
 [ ... ]
-> +#ifdef CONFIG_SMP
-> +	sethi		%hi(xcall_flush_tlb_page), %o0
-> +	or		%o0, %lo(xcall_flush_tlb_page), %o0
-> +	sethi		%hi(__vii_xcall_flush_tlb_page_patch), %o1
-> +	or		%o1, %lo(__vii_xcall_flush_tlb_page_patch), %o1
-> +	call		tlb_patch_one
-> +	 mov		3, %o2
+
+> @@ -642,6 +661,17 @@ unsigned int build_irq(int inofixup, unsigned long i=
+clr, unsigned long imap)
+>  	return irq;
+>  }
+> =20
+> +unsigned int oberon_build_irq(int inofixup, unsigned long iclr,
+> +			      unsigned long imap)
+> +{
+> +	unsigned int irq =3D build_irq(inofixup, iclr, imap);
+> +	struct irq_handler_data *data =3D irq_get_handler_data(irq);
 > +
-> +	/* VII uses 32-entry fTLBs: do not use the Spitfire 64-slot sweep. */
-> +	sethi		%hi(xcall_flush_tlb_kernel_range), %o0
-> +	or		%o0, %lo(xcall_flush_tlb_kernel_range), %o0
-> +	sethi		%hi(__cheetah_xcall_flush_tlb_kernel_range), %o1
-> +	or		%o1, %lo(__cheetah_xcall_flush_tlb_kernel_range), %o1
-> +	call		tlb_patch_one
-> +	 mov		44, %o2
-> +#endif
+> +	if (data)
+> +		data->oberon =3D true;
+> +	return irq;
+> +}
 
-[Severity: High]
-Is xcall_flush_tlb_mm missing from this patch block?
+[Severity: Medium]
+Is there a missing check for an irq_alloc() failure here?
 
-By omitting xcall_flush_tlb_mm entirely, it seems remote CPUs will fall back
-to the unpatched Spitfire handler. This would violate the JPS2 F.10.1
-synchronization requirements and potentially leave the VII hardware exposed=
- to
-stale TLB or pipeline states.
+The newly introduced oberon_build_irq() wrapper calls build_irq().
+If irq_alloc() fails during device initialization or under extreme resource
+pressure, it returns 0. build_irq() does not check for this 0 return
+value and proceeds to use it as a valid IRQ.
 
-> +
-> +#ifdef DCACHE_ALIASING_POSSIBLE
-> +	sethi		%hi(__flush_dcache_page), %o0
+This would cause irq_set_chip_and_handler_name() and irq_get_handler_data()
+to operate on IRQ 0. Since IRQ 0 is bound to the system timer interrupt
+on SPARC64, could this corrupt the system timer and lead to a system hang?
+
+> diff --git a/arch/sparc/kernel/prom_irqtrans.c b/arch/sparc/kernel/prom_i=
+rqtrans.c
+> index 5752bfd73ac0c..60fd6b0f47e13 100644
+> --- a/arch/sparc/kernel/prom_irqtrans.c
+> +++ b/arch/sparc/kernel/prom_irqtrans.c
+
 [ ... ]
+
+> @@ -553,6 +556,7 @@ static void __init fire_irq_trans_init(struct device_=
+node *dp)
+>  	regs =3D of_get_property(dp, "reg", NULL);
+>  	dp->irq_trans->data =3D irq_data;
+> =20
+> +	irq_data->oberon =3D of_device_is_compatible(dp, "pciex108e,80f8");
+>  	irq_data->pbm_regs =3D regs[0].phys_addr;
+>  	irq_data->portid =3D of_getintprop_default(dp, "portid", 0);
+>  }
+
+[Severity: Low]
+Does this code need a NULL check for the 'reg' property?
+
+of_get_property() can return NULL if the property is missing or malformed.
+This would lead to a NULL pointer dereference when accessing
+regs[0].phys_addr.
+
+While SPARC OpenBoot PROM typically guarantees the presence of 'reg'
+properties for PCI root nodes, making this mostly theoretical in practice,
+it appears to violate the API contract. Other sibling drivers enforce
+this check. Should we add a NULL check in fire_irq_trans_init() and
+pci_fire_pbm_init() to protect the new Oberon PCIe bridge compatibility?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261011195729.9812=
-43-1-linmag7@gmail.com?part=3D4
+43-1-linmag7@gmail.com?part=3D5
