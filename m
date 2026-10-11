@@ -1,364 +1,112 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49F645D1B9
-	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 19:57:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F6283BCD0E
+	for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 19:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791748682; cv=none; b=WeoNlnclNS+BZZkup0otr/kMABCRA6VLXKv6l752GsZBAzO0CSESD1PvWzuntuAKOVLNKgdsW8hp/i50TMnNDbQsiQP2Cpfuck8LHC/oHB1/YKttbdAg1Sc3+HNj/Qkb15jQLdj44q5bwT+bi3lgRH4a+R2o2HkASIh0b1ue0t8=
+	t=1791748775; cv=none; b=UtIewhlPLuNiwB1gyyZcOeuSf6qdHYjDT8nRE3CvVcq22g24QF35qli/MAayJM68FQ3PlyFHO0EVbt5yjilx4o1onYyelspUQj5/Mpuddrj/K6PC6ZBmTZJj/ywJLZ8InA8tZe0W3H+3ykdWv/iQvjEhoVg2f1etJY86azRbM8U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791748682; c=relaxed/simple;
-	bh=QdB4IaBJBb0z7A0G/+ogZtW+U9p2I7V17gS4yPD647U=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TjrgzEelwge5PVZJf92Gmr78O8Uxg9HiyLc7qr08DgjGS2kmFYfmu+fgP2lGfiX/BLpFNOLQdt1SFDOFKbo/NqkGOrcbt6TMw/Dv+loEx9nv054Gbs+IsoXZ8bp5hIfCmhOU7yR4QMwh8JRf7iJMhUqmFkem8pH9IpBoT4JiT7I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QsgvZeTA; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791748775; c=relaxed/simple;
+	bh=/IZ5GN/rkQDYU/T0e2XcgWtwVV5F/ZldOx+M84bMchw=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=u2y6pa0THSMcGDK5ksiMitJJWnr7box2XrnuTXwJ1GrULPZGerebl+/4bRnajGClwFAO6d6NNXsp4ZZhToev4aGQ8jN3TH+RSBBFBVp2fghIt1LEY0JdElzMPKaN4mDH74nCYURsO80bC1r251t3cl/IFZ0MwUsy8Hnrwks7meQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A6qkMHuI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QsgvZeTA"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c2e7496f947so202075966b.1
-        for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 12:57:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791748678; x=1792353478; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=anERnWHtuXwEcIQ8AkUzNcW+B0MsW+CJ1YCPxhosgmo=;
-        b=QsgvZeTAt9wfjx0f/5C51c5ox7EVF3o6Ij1IyxJW0Y3wB059vtHH6L09LFd46jJeK7
-         KnfmYfthVbbNGOYKVdDJEbkvFlx30fU+CXLFMSqU31oq807QssohcjflW5CE2BZN7HA5
-         vjQ1VklyEvKw8Tg4nmf+rb/ib3+E2YU0DNfIkl/7IAXH5xcmHytuaY1x4IKDLxdIylCI
-         /ckReOhmOyPl0/NjnHqfqo6qX9rCKkRUti9sc5UscBHs0MIVsN6aDjdCXk03GdeCumv+
-         IXPhwZG6/aJBH4WtL/4vf3mEi96aXWcetHX8RwupKKx/oSXH7fnlkZOl2xDAO/4PaAq4
-         IZjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791748678; x=1792353478;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=anERnWHtuXwEcIQ8AkUzNcW+B0MsW+CJ1YCPxhosgmo=;
-        b=GUmUFWJYqCAxDrdVq1RQSC8bwoToFZ6KRxCYw/y3ywVuIO2d0AfzmQC3fIURghzviO
-         Hvpk2vL4O/gfBmvjS01rPt+hNAHwpPhnA6JYrPoiInvuAOevByMLLpRUKXQkqbAtG6/A
-         JwL/APTPlgo6MmKq4hDjy3qUacEjiNEJ6WDF6hFc9b4hfPgZlQHgtBztfF+mDoMPLLQx
-         8Z6newDFuvE9g1GYC0Ow51d0/6lk8WjL8bsbzkZ/nPswF0lr+6PqV8yCL/7b+XyHBY4N
-         ytXofy46juFrpA8mjit5itzW/geUWZ8D/IjeRPyWoTZdv61YUxbdlx9YY3QbK/Mmuhqh
-         RQ4A==
-X-Forwarded-Encrypted: i=1; AKwUvByjTEKAe+raPTSP+A2iBTOm7XiVpCfR1JnwkG+icWXprJPI/wGvB5fljbOkPNeVdZVEF7v3JVvmAEtIIMY=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJ49avvCE/D13oRq8zfzxd/TBseVwxzHtxTpaNFEojs12WiGBJv
-	hwro7LB/b0Ue+VfLnSUYrDvBNKLNB6MrEFYrSMK96cwNpk4CgbV/EiT6
-X-Gm-Gg: AYBFou3trAxbM5GKoWq2h3+hm9M0UYehlgeIw5kIzszFOkwKdt6ZZTfAKLuWtVWg4iu
-	cFTOLowBg5fh6WeX9kz4e2z0DZDIl64pBgEY8CsZnYAuuB2HeQLptMtw7pSSK7rq9VeFoHb6Ryt
-	5ePb4SkQ4mybMkC8Vaa/3Sx1V2NOf+LhkOOCSPvF9u/0pUKfa1gWPvsouDLuo5ktgB3wpB4KABN
-	f7lkv5di8gLobFLIqWAY3P9OYAKXbbYWMRjRUurb2bN9AKqsRXozmGRBGnE2zRAaPGtj/2MVGQ4
-	eF+u0YfNT1FZqsZ/mbzhkBY9PzEfczbdBPf7u1vqjh9EMTyeYDcdlHMsBPR68TILYgzJYqr6pig
-	xXJYPjNyANjhMCL4wnXI1hzJHeA7yfN/6FDLMN+0smfx9fH8MJpsXIAc2dPKvblXK04tPWIxYAo
-	Mp79tHrSwzD6YYHGnnrHvviTaSVP20IgM+ViPWJzsW1G+nY5LcF8QG+H3+22UfdJXdVJ/A5iNBl
-	VgFYzkm8ktpOylY/5qfBoPVrdDqJCQfg0+/ODFS
-X-Received: by 2002:a17:907:3e0d:b0:c2e:80b0:deb3 with SMTP id a640c23a62f3a-c31a9a10e74mr851073766b.7.1791748678067;
-        Sun, 11 Oct 2026 12:57:58 -0700 (PDT)
-Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9a3ae9fsm381315566b.26.2026.10.11.12.57.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 12:57:56 -0700 (PDT)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: davem@davemloft.net,
-	andreas@gaisler.com,
-	sparclinux@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	linux-serial@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	krzk@kernel.org,
-	oleg@redhat.com,
-	linmag7@gmail.com
-Subject: [PATCH v2 6/6] hvc: add an M3000 firmware console backend
-Date: Sun, 11 Oct 2026 21:55:58 +0200
-Message-ID: <20261011195729.981243-7-linmag7@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261011195729.981243-1-linmag7@gmail.com>
-References: <20261011195729.981243-1-linmag7@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A6qkMHuI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 366561F0089B;
+	Sun, 11 Oct 2026 19:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791748774;
+	bh=ohqxcyFMxRAMYrJNnGSOigCIi614RjGunYtsIuP+G+I=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=A6qkMHuIxfgL0FGaYNyGC8Uj0KHAfFgTBfVRv7csqyktaAhn7/2TWeuJjBguGGyza
+	 RpR4UWZbxdYUlrJ9FsjO/jquqlXqzKAJOxu8Wu54S8P1A9qdQAAAG2OnZlWq9iJx8z
+	 nDFdGriVh7rZCpNiVJn4tfl6Nr/TpDew8+E/ED4BRq0y2zIPr1eWrs3qqJFYkP9FF8
+	 ayZqkPaTc4Qw/TL4odeYGzgNWzms507yyMnBTKtHQm1ypAmKuqZravR7lJ+DbWQsrf
+	 mFhpa9luiJQVMiLorcGF2lWwUEWMl7HjMt7cybThoLUVu8WRSqtYaxyfGq1rRPZuAO
+	 q66JIb+lULKJQ==
+Message-ID: <sashiko-outbox-167434@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] serial: amba-pl011: keep transmitter enabled when
+ disabling RS485
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Nicolai Buchwitz" <nb@tipi-net.de>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261011-fix-pl011-rs485-txe-v1-1-302b6c034b7f@tipi-net.de>
+References: <20261011-fix-pl011-rs485-txe-v1-1-302b6c034b7f@tipi-net.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 11 Oct 2026 19:59:33 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Provide hvc0 through the M3000 Open Firmware pseudo-console, validating
-the firmware model and console endpoints before registering it. Keep
-firmware buffers in locked kernel mappings and serialize their use in
-atomic console contexts through the existing SPARC p1275 interface.
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [Medium] tty: serial: amba-pl011: stalled transmission when disabling RS4=
+85 during deferred start
+--
 
-Poll input while the TTY is open and synchronize close with timer
-rearming. Return zero on no progress so HVC retries buffered TTY output
-but drops stalled console chunks instead of spinning indefinitely.
-A firmware call that does not return remains unbounded.
+commit fd97eed6e0ab8bd63d1bb5300339347d34c58cdc
+Author: Nicolai Buchwitz <nb@tipi-net.de>
 
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- MAINTAINERS                 |   6 ++
- drivers/tty/hvc/Kconfig     |  10 ++
- drivers/tty/hvc/Makefile    |   1 +
- drivers/tty/hvc/hvc_m3000.c | 205 ++++++++++++++++++++++++++++++++++++
- 4 files changed, 222 insertions(+)
- create mode 100644 drivers/tty/hvc/hvc_m3000.c
+serial: amba-pl011: keep transmitter enabled when disabling RS485
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3a19da74d00c..5bc9b1cabd0a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10728,6 +10728,12 @@ L:	platform-driver-x86@vger.kernel.org
- S:	Maintained
- F:	drivers/platform/x86/fujitsu-laptop.c
- 
-+FUJITSU M3000 FIRMWARE CONSOLE
-+M:	Magnus Lindholm <linmag7@gmail.com>
-+L:	linux-serial@vger.kernel.org
-+S:	Maintained
-+F:	drivers/tty/hvc/hvc_m3000.c
-+
- FUJITSU TABLET EXTRAS
- M:	Robert Gerlach <khnz@gmx.de>
- L:	platform-driver-x86@vger.kernel.org
-diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-index 5866195de26a..0feb7ec98f4f 100644
---- a/drivers/tty/hvc/Kconfig
-+++ b/drivers/tty/hvc/Kconfig
-@@ -134,3 +134,13 @@ config HVCS
- 	  will depend on arch specific APIs exported from hvcserver.ko
- 	  which will also be compiled when this driver is built as a
- 	  module.
-+
-+config HVC_M3000
-+	bool "M3000 firmware pseudo-console"
-+	depends on SPARC64_VII
-+	select HVC_DRIVER
-+	help
-+	  Provide hvc0 using Open Firmware stdin/stdout on IKKAKU only.
-+	  Input is polled; no native UART registers are accessed.
-+	  Firmware calls are serialized and use a locked-image bounce buffer.
-+	  Say Y to use the M3000 firmware pseudo-console as hvc0.
-diff --git a/drivers/tty/hvc/Makefile b/drivers/tty/hvc/Makefile
-index 98880e357941..38c8cf349053 100644
---- a/drivers/tty/hvc/Makefile
-+++ b/drivers/tty/hvc/Makefile
-@@ -11,3 +11,4 @@ obj-$(CONFIG_HVC_IUCV)		+= hvc_iucv.o
- obj-$(CONFIG_HVC_UDBG)		+= hvc_udbg.o
- obj-$(CONFIG_HVC_RISCV_SBI)	+= hvc_riscv_sbi.o
- obj-$(CONFIG_HVCS)		+= hvcs.o
-+obj-$(CONFIG_HVC_M3000)		+= hvc_m3000.o
-diff --git a/drivers/tty/hvc/hvc_m3000.c b/drivers/tty/hvc/hvc_m3000.c
-new file mode 100644
-index 000000000000..1285e2db2fab
---- /dev/null
-+++ b/drivers/tty/hvc/hvc_m3000.c
-@@ -0,0 +1,205 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * M3000 Open Firmware pseudo-console backend.
-+ * Copyright (C) 2026 Magnus Lindholm
-+ */
-+#include <linux/console.h>
-+#include <linux/err.h>
-+#include <linux/init.h>
-+#include <linux/irqflags.h>
-+#include <linux/mutex.h>
-+#include <linux/string.h>
-+#include <linux/spinlock.h>
-+#include <linux/timer.h>
-+#include <asm/oplib.h>
-+#include <asm/spitfire.h>
-+#include "hvc_console.h"
-+
-+struct m3000_console {
-+	int stdin;
-+	bool ready;
-+	u8 buffer[256];
-+	raw_spinlock_t buffer_lock;
-+	struct timer_list poll_timer;
-+	struct mutex poll_mutex; /* Serialize open against synchronous close. */
-+	spinlock_t poll_lock; /* Protect active state and timer rearming. */
-+	bool poll_active;
-+};
-+
-+/* Keep the firmware buffer within the locked kernel image mappings. */
-+static struct m3000_console m3000_consoles[] = {
-+	{
-+		.buffer_lock = __RAW_SPIN_LOCK_UNLOCKED(m3000_consoles[0].buffer_lock),
-+		.poll_mutex = __MUTEX_INITIALIZER(m3000_consoles[0].poll_mutex),
-+		.poll_lock = __SPIN_LOCK_UNLOCKED(m3000_consoles[0].poll_lock),
-+	},
-+};
-+
-+static struct m3000_console *m3000_console(u32 termno)
-+{
-+	if (termno >= ARRAY_SIZE(m3000_consoles))
-+		return NULL;
-+	return &m3000_consoles[termno];
-+}
-+
-+/*
-+ * HVC's idle backoff can exceed the firmware input FIFO's capacity.
-+ * Wake its worker each tick while open; keep PROM calls out of the timer.
-+ */
-+static void m3000_poll_tick(struct timer_list *timer)
-+{
-+	struct m3000_console *con = timer_container_of(con, timer, poll_timer);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&con->poll_lock, flags);
-+	if (con->poll_active) {
-+		hvc_kick();
-+		mod_timer(&con->poll_timer, jiffies + 1);
-+	}
-+	spin_unlock_irqrestore(&con->poll_lock, flags);
-+}
-+
-+static int m3000_open(struct hvc_struct *hp, int data)
-+{
-+	struct m3000_console *con = m3000_console(hp->vtermno);
-+	unsigned long flags;
-+
-+	if (!con)
-+		return -ENODEV;
-+	mutex_lock(&con->poll_mutex);
-+	spin_lock_irqsave(&con->poll_lock, flags);
-+	con->poll_active = true;
-+	mod_timer(&con->poll_timer, jiffies + 1);
-+	spin_unlock_irqrestore(&con->poll_lock, flags);
-+	mutex_unlock(&con->poll_mutex);
-+	return 0;
-+}
-+
-+static void m3000_close(struct hvc_struct *hp, int data)
-+{
-+	struct m3000_console *con = m3000_console(hp->vtermno);
-+	unsigned long flags;
-+
-+	if (!con)
-+		return;
-+	mutex_lock(&con->poll_mutex);
-+	spin_lock_irqsave(&con->poll_lock, flags);
-+	con->poll_active = false;
-+	spin_unlock_irqrestore(&con->poll_lock, flags);
-+	/* Block reopen until the callback has finished and cannot rearm. */
-+	timer_delete_sync(&con->poll_timer);
-+	mutex_unlock(&con->poll_mutex);
-+}
-+
-+static ssize_t m3000_io(struct m3000_console *con, u8 *in,
-+			const u8 *out, size_t count)
-+{
-+	unsigned long args[7], flags;
-+	bool input = in;
-+	int ret;
-+
-+	if (!count)
-+		return 0;
-+	count = min(count, input ? 1 : sizeof(con->buffer));
-+	/* Console writes can run with interrupts disabled; this lock cannot sleep. */
-+	raw_spin_lock_irqsave(&con->buffer_lock, flags);
-+	if (!input)
-+		memcpy(con->buffer, out, count);
-+	args[0] = (unsigned long)(input ? "read" : "write");
-+	args[1] = 3;
-+	args[2] = 1;
-+	args[3] = (unsigned int)(input ? con->stdin : prom_stdout);
-+	args[4] = (unsigned long)con->buffer;
-+	args[5] = count;
-+	args[6] = (unsigned long)-1;
-+	p1275_cmd_direct(args);
-+	ret = (int)args[6];
-+	if (ret > 0 && ret <= count && input)
-+		memcpy(in, con->buffer, ret);
-+	raw_spin_unlock_irqrestore(&con->buffer_lock, flags);
-+	if (ret == -2 || ret == 0)
-+		return 0;
-+	if (ret < 0 || ret > count)
-+		return -EIO;
-+	return ret;
-+}
-+
-+static ssize_t m3000_get(u32 termno, u8 *buf, size_t count)
-+{
-+	struct m3000_console *con = m3000_console(termno);
-+
-+	return con ? m3000_io(con, buf, NULL, count) : -ENODEV;
-+}
-+
-+static ssize_t m3000_put(u32 termno, const u8 *buf, size_t count)
-+{
-+	struct m3000_console *con = m3000_console(termno);
-+
-+	/* HVC retries zero for TTY writes but drops stalled console output. */
-+	return con ? m3000_io(con, NULL, buf, count) : -ENODEV;
-+}
-+
-+static const struct hv_ops m3000_ops = {
-+	.get_chars = m3000_get,
-+	.put_chars = m3000_put,
-+	.notifier_add = m3000_open,
-+	.notifier_del = m3000_close,
-+	.notifier_hangup = m3000_close,
-+};
-+
-+static bool __init m3000_property_matches(phandle node, const char *prop,
-+					  const char *expected)
-+{
-+	char value[64];
-+	int len;
-+
-+	len = prom_getproperty(node, prop, value, sizeof(value) - 1);
-+	if (len <= 0)
-+		return false;
-+	value[len] = '\0';
-+	return !strcmp(value, expected);
-+}
-+
-+static int __init m3000_console_init(void)
-+{
-+	struct m3000_console *con = &m3000_consoles[0];
-+	phandle node;
-+	int ret;
-+
-+	if (tlb_type != sparc64_vii)
-+		return -ENODEV;
-+	if (!m3000_property_matches(prom_finddevice("/"), "model", "IKKAKU"))
-+		return -ENODEV;
-+	con->stdin = prom_getint(prom_chosen_node, "stdin");
-+	if (!con->stdin || con->stdin == -1 || !prom_stdout || prom_stdout == -1)
-+		return -ENODEV;
-+	node = prom_inst2pkg(prom_stdout);
-+	if (!m3000_property_matches(node, "name", "pseudo-console"))
-+		return -ENODEV;
-+	node = prom_inst2pkg(con->stdin);
-+	if (!m3000_property_matches(node, "name", "pseudo-console"))
-+		return -ENODEV;
-+	ret = hvc_instantiate(0, 0, &m3000_ops);
-+	if (ret < 0)
-+		return ret;
-+	con->ready = true;
-+	return 0;
-+}
-+console_initcall(m3000_console_init);
-+
-+static int __init m3000_tty_init(void)
-+{
-+	struct m3000_console *con = &m3000_consoles[0];
-+	struct hvc_struct *hp;
-+
-+	if (!con->ready)
-+		return -ENODEV;
-+	timer_setup(&con->poll_timer, m3000_poll_tick, 0);
-+	hp = hvc_alloc(0, 0, &m3000_ops, sizeof(con->buffer));
-+	if (IS_ERR(hp))
-+		return PTR_ERR(hp);
-+	hp->ws.ws_row = 24;
-+	hp->ws.ws_col = 80;
-+	return 0;
-+}
-+device_initcall(m3000_tty_init);
--- 
-2.43.0
+This commit addresses an issue where disabling RS485 mode on an open port
+turns off the transmitter, causing pending output and active DMA transfers
+to stall. It updates pl011_rs485_config() to leave the transmitter enabled
+and cancel pending timers when transitioning out of RS485 mode.
 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
+011.c
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2397,8 +2397,24 @@ static int pl011_rs485_config(struct uart_port *po=
+rt, struct ktermios *termios,
+>  	struct uart_amba_port *uap =3D
+>  		container_of(port, struct uart_amba_port, port);
+> =20
+> -	if (port->rs485.flags & SER_RS485_ENABLED)
+> +	if ((port->rs485.flags & SER_RS485_ENABLED) &&
+> +	    !(rs485->flags & SER_RS485_ENABLED)) {
+> +		u32 cr =3D pl011_read(uap, REG_CR);
+> +
+> +		/*
+> +		 * Leaving RS485 mode, which only enables the transmitter while
+> +		 * sending. Don't stop it, as that stalls a DMA transfer still
+> +		 * in flight. Drop a pending deferred stop and keep it enabled.
+> +		 */
+> +		hrtimer_try_to_cancel(&uap->trigger_start_tx);
+
+[Severity: Medium]
+Does canceling trigger_start_tx here without manually starting the
+transmission risk permanently stranding queued characters?
+
+If a userspace application writes data with a non-zero delay_rts_before_send
+in RS485 mode, transmission is deferred via this timer.
+
+If the application then immediately disables RS485 mode via ioctl(TIOCSRS48=
+5)
+before the timer fires, this code cancels the start timer.
+
+Since there is no fallback to manually kick the stalled transmission (such =
+as
+calling pl011_dma_tx_start() or pl011_start_tx_pio()), the TX interrupt
+remains masked and the DMA is never started. This could cause subsequent
+calls to tcdrain() or close() to hang indefinitely.
+
+> +		hrtimer_try_to_cancel(&uap->trigger_stop_tx);
+> +		uap->rs485_tx_state =3D OFF;
+> +
+> +		cr |=3D UART011_CR_TXE | UART011_CR_RXE;
+> +		pl011_write(cr, uap, REG_CR);
+> +	} else if (port->rs485.flags & SER_RS485_ENABLED) {
+>  		pl011_rs485_tx_stop(uap);
+> +	}
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261011-fix-pl011-=
+rs485-txe-v1-1-302b6c034b7f@tipi-net.de?part=3D1
