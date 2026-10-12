@@ -1,20 +1,21 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A096A25F99F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A08FC1A681E;
 	Mon, 12 Oct 2026 01:58:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791770335; cv=none; b=jDDkpI5248DWJLwAuNo+3JsjtKmj59T7jUSQ5rx8QX6zoyN2wIhRb93cxGBPU9e5IzVYMY2l+uBgF59e5lg4oRP0jEFKuPT6gX2faRa1QcjjrFs5d2q9TOuQHChuu8mlPsn3gHQ8yj7Q36OThAUGNxdYMOFNQ+a/SfHfaZTJGJI=
+	t=1791770335; cv=none; b=S1EXFTwXi95b60KlI0VRfE6NCzDxP5qtdSzQcWXkzr3G/6uNZUUr7cT87K/6PIsQ5BPRY0dkUH7TQc1ATo+S/FnaSCfh+gqnfZdk99nWsLSzSO2DR/jbUHz8oYiouvZtt7VLmGHK6RPLWVvRERuxylRddu/s4BPkdJxbkC4cWQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791770335; c=relaxed/simple;
-	bh=m/WK/MyD22PzCKpazs4O7b+IE6Lv4Bm9Vny3DgkQtcE=;
-	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=F9hOacQv8PLd7yZyzMQmZ7SlUQgw852dTjTg9Kg9p8eJ4Dn5gKie3yMQGtPtQkao89YQ623BtIL/NcpZ2lxA9DtxS13+okSy/tSM1vGFZVKX2SHmfW9gp6eTSMRr40NOAR+i/dF0KBeXkFPH91r9e6lFNKRJQnJcpe+e5wSPNKo=
+	bh=vUBBKsJC60PeUQEj0KaclnvKmaEo9afhpvfb6mCluBU=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=ilHWiZqlD4jiuIORmzoANDnNkefE6uNDGC+MTsxH7qQCTE0utayudWBjQjFdOFTqC3sHgzfnNdITDDPfp1cbR8TI4fxVJF9rbTL1D0kK9le4pSDggA7p1pgwTsmJTBjzWXg4IzFOQ0jZ1TJ4sWPh9mBoqdjpVW+UpVVw3jrtJE0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 9D7FD92009C; Mon, 12 Oct 2026 03:49:48 +0200 (CEST)
+	id 416BF92009D; Mon, 12 Oct 2026 03:49:55 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 9267392009B;
-	Mon, 12 Oct 2026 02:49:48 +0100 (BST)
-Date: Mon, 12 Oct 2026 02:49:48 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id 3A52592009B;
+	Mon, 12 Oct 2026 02:49:55 +0100 (BST)
+Date: Mon, 12 Oct 2026 02:49:55 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>
@@ -22,9 +23,11 @@ cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>, Kees Cook <kees@kernel.org>,
     Lukas Wunner <lukas@wunner.de>, John Ogness <john.ogness@linutronix.de>, 
     Jiayuan Chen <jiayuan.chen@shopee.com>, Gerhard Engleder <eg@keba.com>, 
     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/1] serial: core: Don't clobber the baud rate on hangup
+Subject: [PATCH v2 1/1] serial: core: Don't clobber the baud rate on hangup
  via B0
-Message-ID: <alpine.DEB.2.21.2610120150230.55767@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2610120150230.55767@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2610120231550.55767@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2610120150230.55767@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -32,88 +35,83 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="-2058476832-1387339034-1791767440=:55767"
-Content-ID: <alpine.DEB.2.21.2610120211240.55767@angie.orcam.me.uk>
+Content-Type: text/plain; charset=US-ASCII
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Requesting hangup via the B0 baud rate has this nasty side effect of 
+clobbering the previously set rate for the port unless it happens to be 
+9600bps or the port minimum rate if higher.  Consequently if there's a 
+consumer still active at the other end, then it receives garbled data 
+from any other producers outputting messages to the port, such as 
+init(8) or the kernel console.
 
----2058476832-1387339034-1791767440=:55767
-Content-Type: text/plain; CHARSET=US-ASCII
-Content-ID: <alpine.DEB.2.21.2610120211241.55767@angie.orcam.me.uk>
+There doesn't appear to be any particular reason for this clobbering 
+other than that we have been doing it since 2.1.131, so take a saner 
+approach and keep track of the most recently set baud rate and then use 
+it whenever hangup has been requested.
 
-Greg,
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+---
+Changes from v1, 
+<https://lore.kernel.org/r/alpine.DEB.2.21.2605242242330.1450@angie.orcam.me.uk/>:
 
- As we discussed at LPC, this is an update to the fix previously posted as 
-an RFC.  I have verified it with the system originally affected, running 
-the console at 115200bps; see the attached console output logs for the bad 
-vs fixed case.  All that needed to be done to reproduce it was to keep 
-killing getty(8)s repeatedly until init(8) decided something was wrong and 
-chose to put their inittab(5) entries into a snooze, leaving the line(s) 
-at the wrong speed setting.
+- Cache the most recently set actual baud rate in port->hup_speed and use 
+  it whenever the B0 rate has been requested since the old termios may be 
+  NULL or have the B0 rate recorded.
+---
+ drivers/tty/serial/serial_core.c |   16 +++++++++-------
+ include/linux/serial_core.h      |    1 +
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
- NB this fixes the missing %B0 literal markup as a part of the doc update.  
-I've concluded it's not worth splitting off into a separate patch.  Let me 
-know if you think otherwise.
-
- Previous iteration (v1) at
-<https://lore.kernel.org/r/alpine.DEB.2.21.2605242242330.1450@angie.orcam.me.uk/>.
-
-  Maciej
----2058476832-1387339034-1791767440=:55767
-Content-Type: text/plain; CHARSET=US-ASCII; NAME=swarm-bad.log
-Content-Transfer-Encoding: BASE64
-Content-ID: <alpine.DEB.2.21.2610120210400.55767@angie.orcam.me.uk>
-Content-Description: 
-Content-Disposition: ATTACHMENT; FILENAME=swarm-bad.log
-
-G1tIG1tKDXN3YXJtLm9yY2FtLm1lLnVrIGxvZ2luOiAA/gD+AAAAAAAA/gAA
-8AAA8AD+AADwAADwAP4A/gAA8AAA8AD+AAAAwAD+AP4A/gAA8AD+AADwAAAA
-AAAAAPgAAPAA/gAA8AAA8AD+AAAAwAAA8AD+AAAAAAAAAPgAAPAAAPAAAADA
-AADwAP4AAPAA/gD+AAAAAAAA/gAA8AAA8AAAAMAAAPAAAAAAAAAA+AAA8AAA
-8AAA8AD+AP4A/gAA8AD+AP4AAPAA/gAAAAAAAP4A/gD+AAAAAAAA/gD+AP4A
-/gAA8AD+AP4A/gAA8AD+AP4AAPAA/gD+AP4AAPAA/gAAAAAAAADwAADwAAAA
-wAD+AP4A/gD+AP4A/gD+AP4AAAAAAAAA8AAA8AAA8AAA8AD+AP4AAAAAAAD+
-AP4AAPAA/gAAAMAA/gD+AADwAP4AAPAAAAAAAAAA8AAA8AAAAMAAAPAA/gD+
-AADwAP4A/gD+AADwAP4A/gAAAAAAAP4AAPAAAADAAP4AAADAAP4A/gD+AP4A
-APAA/gAAAMAAAPAA/gAAAAAAAAD4AADwAADwAADwAP4A/gD+AP4AAPAAAPAA
-/gAAAAAAAAD4AADwAP4A/gD+AADwAAAAAAAAAPgAAPAA/gD+AP4A/gD+AADw
-AP4A/gAA8AD+AP4A/gD+AP4A/gAAAMAA/gD+AP4A/gAA8AD+AP4AAPAA/gD+
-AP4AAAAAAAAA8AD+AAAAAAAA/gD+AAAAAAAA/gAA8AAA8AD+AADwAADwAP4A
-/gAA8AAA8AD+AAAAwAD+AP4A/gAA8AD+AADwAAAAAAAAAPgAAPAA/gAA8AAA
-8AD+AAAAwAAA8AD+AAAAAAAAAPAAAPAAAPAAAADAAADwAP4AAPAA/gD+AP4A
-AADAAADwAADwAAAAwAAA8AAAAAAAAADwAADwAADwAADwAP4A/gD+AADwAP4A
-/gAA8AD+AAAAAAAA/gD+AP4AAAAAAAD+AP4A/gD+AADwAP4A/gD+AADwAP4A
-/gAA8AD+AP4A/gAA8AD+AAAAAAAAAPgAAPAAAADAAP4A/gD+AP4A/gD+AP4A
-/gAAAAAAAAD4AADwAADwAADwAP4A/gAAAAAAAP4A/gAA8AD+AAAAwAD+AP4A
-APAA/gAA8AAAAAAAAAD4AADwAAAAwAAA8AD+AP4AAPAA/gD+AP4AAPAA/gD+
-AAAAAAAA/gAA8AAAAMAA/gAAAMAA/gD+AP4A/gAA8AD+AAAAwAAA8AD+AAAA
-AAAAAPAAAPAAAPAAAPAA/gD+AP4A/gAA8AAA8AD+AAAAAAAAAPAAAPAA/gD+
-AP4AAPAAAAAAAAAA+AAA8AD+AP4A/gD+AP4AAPAA/gD+AADwAP4A/gD+AP4A
-/gD+AAAAwAD+AP4A/gD+AADwAP4A/gAA8AD+AP4A/gAAAAAAAADwAP4AAAAA
-AAD+AP4AAAAAAAD+AADwAADwAP4AAPAAAPAA/gD+AADwAADwAP4AAADAAP4A
-/gD+AADwAP4AAPAAAAAAAAAA8AAA8AAA8AD+AP4A/gD+AP4AAAAAAAAA+AAA
-8AD+AP4A/gD+AP4A/gD+AADwAADwAP4A/gD+AADwAP4AAAAAAAAA+AAA8AAA
-AAAAAP4A/gAA8AAA8AD+AP4A/gD+AP4AAADAAP4A/gD+AADwAP4A/gAA8AD+
-AP4AAPAA/gD+AP4AAPAA/gD+AADwAP4AAAAAAAAA+AAA8AAAAMAA/gD+AP4A
-/gAA8AD+AADwAADwAP4AAADAAP4A/gAAAAAAAADwAADwAP4AAPAA/gD+AADw
-AP4A/gAAAAAAAADwAADwAAAAwAD+AP4AAAAAAAD+AP4A/gAA8AD+AP4A/gAA
-8AD+AAAAAAAAAPgAAPAAAPAAAPAA/gD+AP4A/gD+AADwAP4A/gAAAMAA/gD+
-AP4A/gAA8AD+AADwAP4A/gD+AP4AAPAA/gAAAMAA/gD+AP4A/gAAAAAAAADw
-AP4AAAAAABtbSBtbSg1zd2FybS5vcmNhbS5tZS51ayBsb2dpbjogDQo=
-
----2058476832-1387339034-1791767440=:55767
-Content-Type: text/plain; CHARSET=US-ASCII; NAME=swarm-fixed.log
-Content-Transfer-Encoding: BASE64
-Content-ID: <alpine.DEB.2.21.2610120210401.55767@angie.orcam.me.uk>
-Content-Description: 
-Content-Disposition: ATTACHMENT; FILENAME=swarm-fixed.log
-
-G1tIG1tKc3dhcm0ub3JjYW0ubWUudWsgbG9naW46IElOSVQ6IElkICJTMCIg
-cmVzcGF3bmluZyB0b28gZmFzdDogZGlzYWJsZWQgZm9yIDUgbWludXRlcw0K
-SU5JVDogSWQgIlMxIiByZXNwYXduaW5nIHRvbyBmYXN0OiBkaXNhYmxlZCBm
-b3IgNSBtaW51dGVzDQpJTklUOiBubyBtb3JlIHByb2Nlc3NlcyBsZWZ0IGlu
-IHRoaXMgcnVubGV2ZWwNChtbSBtbSnN3YXJtLm9yY2FtLm1lLnVrIGxvZ2lu
-OiANCg==
-
----2058476832-1387339034-1791767440=:55767--
+linux-serial-uart-get-baud-rate-hup.diff
+Index: linux-macro/drivers/tty/serial/serial_core.c
+===================================================================
+--- linux-macro.orig/drivers/tty/serial/serial_core.c
++++ linux-macro/drivers/tty/serial/serial_core.c
+@@ -461,15 +461,15 @@ EXPORT_SYMBOL(uart_update_timeout);
+  * @max: maximum acceptable baud rate
+  *
+  * Decode the termios structure into a numeric baud rate, taking account of the
+- * magic 38400 baud rate (with spd_* flags), and mapping the %B0 rate to 9600
+- * baud or min argument, whichever is greater.
++ * magic 38400 baud rate (with spd_* flags), and mapping the %B0 rate to the
++ * previously used rate provided by @port.
+  *
+  * If the new baud rate is invalid, try the @old termios setting. If it's still
+  * invalid, clip to the nearest chip supported rate.
+  *
+- * The @termios structure is updated to reflect the baud rate we're actually
+- * going to be using. Don't do this for the case where B0 is requested ("hang
+- * up").
++ * The @termios and @port structures are updated to reflect the baud rate
++ * we're actually going to be using. Don't do this for the case where %B0
++ * is requested ("hang up").
+  *
+  * Locking: caller dependent
+  */
+@@ -514,10 +514,12 @@ uart_get_baud_rate(struct uart_port *por
+ 		 * Special case: B0 rate.
+ 		 */
+ 		if (baud == 0)
+-			return max(min, 9600);
++			return port->hup_speed;
+ 
+-		if (baud >= min && baud <= max)
++		if (baud >= min && baud <= max) {
++			port->hup_speed = baud;
+ 			return baud;
++		}
+ 
+ 		/*
+ 		 * If the range cannot be met then try again with
+Index: linux-macro/include/linux/serial_core.h
+===================================================================
+--- linux-macro.orig/include/linux/serial_core.h
++++ linux-macro/include/linux/serial_core.h
+@@ -569,6 +569,7 @@ struct uart_port {
+ 
+ 	bool			hw_stopped;		/* sw-assisted CTS flow state */
+ 	bool			cons_flow;		/* user specified console flow control */
++	speed_t			hup_speed;		/* speed to use for B0 rate (hang-up) */
+ 	unsigned int		mctrl;			/* current modem ctrl settings */
+ 	unsigned int		frame_time;		/* frame timing in ns */
+ 	unsigned int		type;			/* port type */
