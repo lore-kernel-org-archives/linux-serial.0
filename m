@@ -1,97 +1,171 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A0936EA93;
-	Mon, 12 Oct 2026 07:35:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 534192DECA3;
+	Mon, 12 Oct 2026 09:41:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791790504; cv=none; b=MqGQhaX1CurZ1Nko6wyH48/OHBC13J8MB93smQwEH7AXggUvex2J1y+E8bp6LgQJ6hhWLMccxRlRwipjK4Y8CKKsLg0WvKlcm8KxNudIunIpe1AmXIVvHHg6PVrrfv6Pz2tB+mjovZZwCdLCb9sgxGVCNSlSWSkNYlJkQ5T5QSg=
+	t=1791798082; cv=none; b=qQT8bklU9ToxKJvdAVJeWOvJUjSlO81DXSQJcRzsNtJ1+6OPW4DNlncMVIUrRAMqBqFWypeZ4tj7xwarPDXXNeMzYfguyOsMFGflHWVKNrL5nK99AH7ji33UL1y0EWqw9DLyMPNnXF8PN1AC696LY4DLBFpTUhlasoRSpAEvb9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791790504; c=relaxed/simple;
-	bh=IfIXiTykCz0xjBObFyhrB/LWEMsOLwR04eU+20HNza8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kaN8mnXRd36/Pti5Du8raYp4XreXCOtOWKIcIvCEDsiIFP+rLACEMKFAuntm9dZnnIQQCaLMGaWSqsrPXH7r2ElvDW2Lt2foI0V7tNuIJA0QsFisRJiQil7j79IwpWvf0wfqWyUmTyPz7HZv2fbNdB1TG701puOrt8FK2cYnres=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iPlG8crY; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791798082; c=relaxed/simple;
+	bh=PdlP18nBDjAvBRvvus9niiB+c4f4AJsdjcgnqSheA3Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=teox3NZxsXKSPIey17ou5J6KIMucPp/Kem3PF1wsT8LqIY/9lUDBQwucI+8cnz4WHghDT9SvgSmqkh2VeefdnlXPbKVHGX4sqLgUyEDkm7McM9cKvacJpemMFSJMNdZhoLgFqTSpHLu1BH1HNrlPgYjVMDMr2W2H11SrmngRB/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=fXjw5plW; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=XcwjQeiB; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=fXjw5plW; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=XcwjQeiB; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iPlG8crY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791790500; x=1823326500;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IfIXiTykCz0xjBObFyhrB/LWEMsOLwR04eU+20HNza8=;
-  b=iPlG8crYIxgqSwAYZoIX91/NdvAJBFVsN6JeKMFWj/h4vdnNZCpdU8l6
-   SXg7YTKg/9wutn4aLpiBl2B8UN5xYFbKOfZQJMZ355G4WEArnDxoU2IgQ
-   gUPaCwXqU1GCWObvxRJA0z14Lx7ocBeC86d3f7yHjlxAy3aFQPJMq7P0P
-   yozEb4X7wbhY9zckXOU/McbjFxnepxGO+hGnnnhhR8c0XOQQL8bce1QSL
-   mFb8J9bsz3XaxQJzrd+TqNlR3+RFBNpVTR8QZHJBZTxINSNibdENyCkxl
-   VmsdYv0aAsqkXrwXVwnUAkosCqI4SW33+WEQE46n+zsWK3L+wWEwHzuIW
-   Q==;
-X-CSE-ConnectionGUID: ZhgpIrs5RVahHFRnm/vshg==
-X-CSE-MsgGUID: lNzU6kxPQw6iDEmeStIigw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11932"; a="482462"
-X-IronPort-AV: E=Sophos;i="6.27,153,1787036400"; 
-   d="scan'208";a="482462"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 00:35:00 -0700
-X-CSE-ConnectionGUID: SrlQe+BZR8GU+QavfGSruA==
-X-CSE-MsgGUID: EoEqP+0AQYCJnBd5KXT9mw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,153,1787036400"; 
-   d="scan'208";a="1155237"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa009.fm.intel.com with ESMTP; 12 Oct 2026 00:34:57 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xGAYg-00000000B9R-0qsD;
-	Mon, 12 Oct 2026 07:34:54 +0000
-Date: Mon, 12 Oct 2026 15:34:36 +0800
-From: kernel test robot <lkp@intel.com>
-To: Magnus Lindholm <linmag7@gmail.com>, davem@davemloft.net,
-	andreas@gaisler.com, sparclinux@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, krzk@kernel.org, oleg@redhat.com,
-	linmag7@gmail.com
-Subject: Re: [PATCH v2 4/6] sparc64: add SPARC64 VII CPU, MMU and SMP support
-Message-ID: <202610121549.5ejZQ08o-lkp@intel.com>
-References: <20261011195729.981243-5-linmag7@gmail.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="fXjw5plW";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="XcwjQeiB";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="fXjw5plW";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="XcwjQeiB"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 36E9F1F76C;
+	Mon, 12 Oct 2026 09:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1791798078; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=bJNeydmS+Bv5T0KGL6oxtmcxHWfJHOsLHVT649w3VS4=;
+	b=fXjw5plWuJzANw3j/2tiwepo4C6KajON2cNmDs4mKXYym7X6gS54MZstFxJUKxDpkMvGud
+	6939hb//vvYE0hXf8P0nTI8zTrG5zA9QXto5xAPt9Px6lH9YXTghf512yDqdKipZL3dh/4
+	hn8W4PSuf69B8W30dNSZ35PWWaVPEBs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1791798078;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=bJNeydmS+Bv5T0KGL6oxtmcxHWfJHOsLHVT649w3VS4=;
+	b=XcwjQeiB47qMxcY2WRJBRbpCynk4T3r3dDcpdkaJv3KQTd1Hh0GffH8Mo48aLIX1N4YLiD
+	sm6hvKp0oFnc5nDQ==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=fXjw5plW;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=XcwjQeiB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1791798078; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=bJNeydmS+Bv5T0KGL6oxtmcxHWfJHOsLHVT649w3VS4=;
+	b=fXjw5plWuJzANw3j/2tiwepo4C6KajON2cNmDs4mKXYym7X6gS54MZstFxJUKxDpkMvGud
+	6939hb//vvYE0hXf8P0nTI8zTrG5zA9QXto5xAPt9Px6lH9YXTghf512yDqdKipZL3dh/4
+	hn8W4PSuf69B8W30dNSZ35PWWaVPEBs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1791798078;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=bJNeydmS+Bv5T0KGL6oxtmcxHWfJHOsLHVT649w3VS4=;
+	b=XcwjQeiB47qMxcY2WRJBRbpCynk4T3r3dDcpdkaJv3KQTd1Hh0GffH8Mo48aLIX1N4YLiD
+	sm6hvKp0oFnc5nDQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id C2B2D13314;
+	Mon, 12 Oct 2026 09:41:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id vPIGKD2rzGr6dgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Mon, 12 Oct 2026 09:41:17 +0000
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	deller@gmx.de,
+	James.Bottomley@HansenPartnership.com,
+	simona@ffwll.ch
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	sashiko-reviews@lists.linux.dev,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH 0/2] vt: Simplify console-blanking interface
+Date: Mon, 12 Oct 2026 11:27:37 +0200
+Message-ID: <20261012094114.38549-1-tzimmermann@suse.de>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261011195729.981243-5-linmag7@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Action: no action
+X-Spam-Score: -3.01
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_MISSING_CHARSET(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	TO_DN_SOME(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_TO(0.00)[linuxfoundation.org,kernel.org,gmx.de,HansenPartnership.com,ffwll.ch];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	MIME_TRACE(0.00)[0:+];
+	URIBL_BLOCKED(0.00)[suse.de:dkim,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	ARC_NA(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim];
+	RCPT_COUNT_SEVEN(0.00)[11];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de]
+X-Spam-Level: 
+X-Rspamd-Queue-Id: 36E9F1F76C
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
 
-Hi Magnus,
+The vt subsystem calls con_blank with what appears to be non-sensical
+value. This is because the values and the type of the blank argument
+do not match: it mixes up console blank state and monitor DPMS levels
+for powersaving. The implmentations of con_blank in various consoles
+suffer from the same problem. Update con_blank to a clearer interface.
+Also update the consoles.
 
-kernel test robot noticed the following build warnings:
+Patch 1 does a bit of preparation. It converts a boolean parameter
+from int to bool, so that its meaning is clearer.
 
-[auto build test WARNING on cee9395acd8043be0644b25c34bfa86623f2b935]
+Patch 2 updates con_blank. The callback's blank parameter now controls
+blanking in general. The new blank_mode parameter controls the monitor
+status and related powersaving.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Magnus-Lindholm/sparc64-return-from-the-generic-clear_page-implementation/20261011-215553
-base:   cee9395acd8043be0644b25c34bfa86623f2b935
-patch link:    https://lore.kernel.org/r/20261011195729.981243-5-linmag7%40gmail.com
-patch subject: [PATCH v2 4/6] sparc64: add SPARC64 VII CPU, MMU and SMP support
-config: sparc64-defconfig (https://download.01.org/0day-ci/archive/20261012/202610121549.5ejZQ08o-lkp@intel.com/config)
-compiler: clang version 24.0.0git (https://github.com/llvm/llvm-project 51b433b4f56c531c0d95ba15e1a15e06c399d552)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261012/202610121549.5ejZQ08o-lkp@intel.com/reproduce)
+Tested with vgacon on a SiS 6202 VGA and with fbcon on a Matrox G200
+VGA device. The latter also ran fbcon via DRM fbdev emulation. Its easy
+to test this with setterm, like this
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610121549.5ejZQ08o-lkp@intel.com/
+  setterm --blank force                        # blank
+  setterm --blank poke                         # unblank
+  setterm --blank force --powersave powerdown  # blank and turn off monitor
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+Blanking and unblanking still works in all tested cases.
 
->> WARNING: modpost: vmlinux: section mismatch in reference: fill_in_one_cpu+0x310 (section: .text) -> vii_cpu_topology (section: .init.text)
+Thomas Zimmermann (2):
+  vt: Use boolean as parameter to do_blank_screen() and
+    do_unblank_screen()
+  vt: Distinguish between blanking and VESA blank mode in con_blank
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+ drivers/tty/vt/vt.c                 | 25 ++++++++--------
+ drivers/tty/vt/vt_ioctl.c           | 12 ++++----
+ drivers/video/console/dummycon.c    |  4 +--
+ drivers/video/console/newport_con.c |  4 +--
+ drivers/video/console/sticon.c      |  4 +--
+ drivers/video/console/vgacon.c      | 44 +++++++++++++++--------------
+ drivers/video/fbdev/core/fbcon.c    | 23 +++++++--------
+ include/linux/console.h             |  9 ++++--
+ include/linux/vt_kern.h             |  5 ++--
+ 9 files changed, 69 insertions(+), 61 deletions(-)
+
+
+base-commit: b0bd9fb9e92aae2a653efa1d0407daa2aabe99d0
+-- 
+2.55.0
+
