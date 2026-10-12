@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155BE4BB276;
-	Mon, 12 Oct 2026 17:33:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A724BE438;
+	Mon, 12 Oct 2026 17:34:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791826407; cv=none; b=q5/IEspCo8KDnzpjKQ4jFhKoV0jAVxMJ1MbnWIl8upNwIkdw9oxN9yrbF8qPViMb09PDbY6ulNLZINpu0uwutENUvJ7si85hCYiR4nr/TzR0aER/kbAJEHL5gLrFixsvE6+Uhx/UzthbfPNmuNYQ02poYf5sYz7xmn2ar95tg6k=
+	t=1791826443; cv=none; b=p60JnSu7ggMdJikCugAlrrh0/OyQlfl2Dv5wfLwlnzzjckw90hZYrOoGJGt7U5tjFBGwJ7VFRBzUE2e28MJQOWAR/wi9tFyKnts0xjk3Cf86ARoRR0r3Sy301MJDLPxbaH8o8LzPnPxRmN1F8R7SECKk0ro2aL2FqJXXmqLaf1U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791826407; c=relaxed/simple;
-	bh=oQB+x6MvTR6ZDcYVdfq2mywssSY535nE3GXO3nD0XJA=;
+	s=arc-20240116; t=1791826443; c=relaxed/simple;
+	bh=1nSfmm9N0Z+H9y3FTSeViqfDnJJc63zQ1XA4HVN2Haw=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=nAkqxxIdBpJpTHDuLkwaE676wiauV0u63jmxijXsg/HTZMJNJYAyP9ZE9Nk8eCq8d3nkvwWioFAFT9QoPxIgeL4OAi9cg4vY0GZ2elBqqK9mxX31lBXsBHxZJbE9CmMXTt1p1BmWEFpFiP8xNXBPhuEHFuZq2PqNrODaO+HvEQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CyRcgx/x; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=hOh/CWz9rV1+jbn0msz6lS6jNjb82fhYuqYUoziEcvSEDHzUTFPMryihHsE1hu1suTYKVgs3/hmjcnlsGYtBH1kbIqRPpn+g5f3QofkFNj/7pglTnGydlWVoIpj5DEyXBmFlkrlLLW5dgOSCCZYZqmafX1KoL1WOsEBFi40XC0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mULL1bX0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CyRcgx/x"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E63E1F0089B;
-	Mon, 12 Oct 2026 17:33:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mULL1bX0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F251A1F0089B;
+	Mon, 12 Oct 2026 17:34:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791826405;
-	bh=oQB+x6MvTR6ZDcYVdfq2mywssSY535nE3GXO3nD0XJA=;
+	s=k20260515; t=1791826442;
+	bh=1nSfmm9N0Z+H9y3FTSeViqfDnJJc63zQ1XA4HVN2Haw=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=CyRcgx/xGCKs9r/D9cil4BY9ODM0ivlqUB3EOcLQBhU/8d+3O5pRUnvtGYRe9+I2S
-	 bRFETiozpoLECTmQkthRyyZyOJb6KjAx90ph5+qARk9oJa4hSrUl7mx0afmuHPmMLq
-	 lTUxbC8sJ3QXywtw4CR5huyzr1Fxn7qUW4fjplwVFRjfJ9s6UXwdIVd5Ap0uvlBRap
-	 4nNRoWiYMboL2JNqrwwoIbz7dG/rNzUzQPdZ5KtPlUiheh0UkDdQLgTxh/DL79KxKw
-	 QUuCkEhylnA7ditIHRKzau8t/8gE3t1vn48tpmfJ74FJn7bL1FfKr06TbEwW2QQ8Xa
-	 gpt5HcIoGf1vw==
-Message-ID: <sashiko-outbox-168460@kernel.org>
+	b=mULL1bX0wPWqXXynm2E8QSS3sZGZjStSFsl63WNA1q1Nff7aD9ZVdpFZfYb1CXEpV
+	 FtXHwa3TCJV+C578eklHt2YYgFqnf04rkVkXmr1/8ZawQf9meknaSLvTJX9f8LUNZm
+	 zBua+LTMf1nCo/bXi9Ap7CfFmKDgLezbAn1B6j1fbarknY5VO1Y+JiZ9WOQDjEwHfW
+	 WETFyEY9wMkCUvf+b+Q+HCsIW9kzSYtK6+0uS5P+wpzRvp58pC/ZOjbRsj2ckXmalv
+	 Rkd9K6eeRfVzEV72hRK28P7+jMz29TYx+wJ3hJKu2g8Nkp5b9I9sYgENiyMxqalmEp
+	 4eCEHunem3Fnw==
+Message-ID: <sashiko-outbox-168462@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 09/10] ARM: multi_v7_defconfig: Enable Cortina
- Systems CS75xx support
+Subject: Re: [PATCH v4 06/10] dt-bindings: serial: Add Cortina Systems
+ CS7542 UART
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Fil Dunsky" <filipp.dunsky@gmail.com>
-Cc: devicetree@vger.kernel.org, conor+dt@kernel.org, robh@kernel.org, linux-serial@vger.kernel.org
-In-Reply-To: <20261012-b4-cs75xx-v4-9-df250d903682@gmail.com>
+Cc: linux-serial@vger.kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, robh@kernel.org
+In-Reply-To: <20261012-b4-cs75xx-v4-6-df250d903682@gmail.com>
 References: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
- <20261012-b4-cs75xx-v4-9-df250d903682@gmail.com>
+ <20261012-b4-cs75xx-v4-6-df250d903682@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 12 Oct 2026 17:33:24 +0000
+Date: Mon, 12 Oct 2026 17:34:01 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,8 +47,8 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 > From: Fil Dunsky <filipp.dunsky@gmail.com>
 >=20
-> Enable the Cortina Systems CS75xx platform and its UART driver with
-> console support, as used on the Securifi Almond+ router.
+> Add the binding for the UART found in the Cortina Systems CS75xx
+> (Goldengate G2) SoCs such as the CS7542.
 >=20
 > Reviewed-by: Linus Walleij <linusw@kernel.org>
 > Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
@@ -57,5 +57,5 @@ Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261012-b4-cs75xx-=
-v4-0-df250d903682@gmail.com?part=3D9
+v4-0-df250d903682@gmail.com?part=3D6
 
