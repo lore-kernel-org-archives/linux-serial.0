@@ -1,110 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B2B4ACC94;
-	Mon, 12 Oct 2026 16:13:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AACC639A060;
+	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791821624; cv=none; b=dEgyAAOKc+Wi0mg5S0EJL9ibDzuWUghH9LkJEvaD77WAEYHbCi1Jex7LllPkffiuZfLVk3ShuF8US6OLUe4YmR6vZWf0FGEqqfNWj6772n8xRvlfa0zI5pZ8ewEv22giPXFwWhcJFz242J68QpSUcAql6z6gd7fFOXSmbc9PpKY=
+	t=1791826277; cv=none; b=opcOEN65LGDVQXZWLvnMQWqxRAYCdhzzYP3OuTmj9zFAq6VuvgcUGphdzZ+Y7fhFAgoEaBaFBSCFbhBQ4DVkCv90RCb4cE/SAmZxGj4X93VgVv/QirkCVpaF4E8ST5MD7QtNWo5ikkkTdm0AUSeEIqrVXCUV7UnxHpJJzIcXYZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791821624; c=relaxed/simple;
-	bh=VnUgvhekT2CkIj8Wza4EB/CsgfDSyBd0FRK4QXOUaZg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=q2B6oFxXPNbtgSHb/Dk5QqRBnXV4EV222xSK5yj2NHHC2z5fnYb5O8wmTM+1gsznqeaKsSE05vA8fG7S9t9Ju88LBgM3ojyPEDNXOVO62AP9PWFsV2SMBAuav/R7kZrT06cr0Ln7K58UWnUCJcq8jQ0vqNx6sPdKK5kv+WcA2mo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=v04EPpsI; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791826277; c=relaxed/simple;
+	bh=FGdKrLdjAm6HnyfgClKCSC4phcR13IbYQ7jKtBJyQUM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=riq22n4c+ttqRVUQUk8l5axWKwNlV44LVYtBomZHaNASz2vlEpdYSov4rf+7TfuMhu2UIB9cfQun3I8en9f4du0WpUw0cTec3j5OT5e0sx6GVtfrZXkkNK0sSkm/6EhZWRlitukg7FGG/kSdy3CwQdBJ59+NQMUJthlEAXfwtZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XDFqDzcb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="v04EPpsI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F851F0089B;
-	Mon, 12 Oct 2026 16:13:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1791821623;
-	bh=IEvo9ENkwkWplxj1NTic5h2muwUJVN5MraC5LTJMp7w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=v04EPpsIsX8PrEAYKxATrJcP3IWbDkWFyn2LdFg8UMvzpT4gvhNCKzmuZJ8Onuz/+
-	 nI5aj/Zn66c06jh2WmiwdHNnL789ocz1m5L/rzJ5M5cApB2ZQaR+u0S+CSuQofcQ/H
-	 M4KG8eeZJGm3z8/ZqYjLySPjQ0XYshgelzCxAdw0=
-Date: Mon, 12 Oct 2026 18:13:48 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: jirislaby@kernel.org, deller@gmx.de,
-	James.Bottomley@hansenpartnership.com, simona@ffwll.ch,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-	sashiko-reviews@lists.linux.dev
-Subject: Re: [PATCH 1/2] vt: Use boolean as parameter to do_blank_screen()
- and do_unblank_screen()
-Message-ID: <2026101205-deserve-flinch-d584@gregkh>
-References: <20261012094114.38549-1-tzimmermann@suse.de>
- <20261012094114.38549-2-tzimmermann@suse.de>
- <2026101228-unfreeze-drearily-670f@gregkh>
- <1ad9f380-7efe-4323-acbc-a3cca3420184@suse.de>
- <6f774188-86ef-4a84-84c9-d8e45fa3db45@suse.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XDFqDzcb"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 555E9C2BCFC;
+	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1791826277;
+	bh=FGdKrLdjAm6HnyfgClKCSC4phcR13IbYQ7jKtBJyQUM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=XDFqDzcb727K5va9BCMIKRhAt1J1sqfBXa0rvIPvzNHWQdRaohbstP/q8R8TDRAkD
+	 mjTkkiwGLRAsTUmiiAQ0itpqQPYSBWbLCqGzZM8IQjurtbounCR7Ln6cJ6gCAc871O
+	 mokvDgn0pVtFmlqTTmVPW00gdqNf/AUYYOnTLd9Bi5uR6eULFbmRwxKcPDCCnRIPw2
+	 2l4/lJu4rKjnjA3Oyy/Z9Uyv295AsZuxDZJNFBgbgPd8qV1x71DvGwc6+APowTcZv7
+	 rfP6ZMLEwbn+8Zx2r55eEFKYzqRXroJu8AqsqDwni8TYFWc5ShczoLJj7/E19AcyUi
+	 8oH8Ze8MuugoA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D90CA9ED0;
+	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
+From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
+Date: Mon, 12 Oct 2026 20:31:15 +0300
+Subject: [PATCH v4 01/10] dt-bindings: vendor-prefixes: Add Securifi
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6f774188-86ef-4a84-84c9-d8e45fa3db45@suse.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261012-b4-cs75xx-v4-1-df250d903682@gmail.com>
+References: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
+In-Reply-To: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Drew Fustini <fustini@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Jason Li <jason.li@cortina-access.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
+ Fil Dunsky <filipp.dunsky@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791826275; l=944;
+ i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
+ bh=xgnzc7i7xTN4fotWpFnT0TA7w9z1wGvQ4nKXVlJT/zc=;
+ b=hVSDL/W9MqlTEJ6UxujEEtPx4G+EfXwDby1xdbv2njp9D333VEk186E6O2lGNX9YvZzwYg6Ey
+ NqGpj32mtp5A2NXX+UZkDnaUn38L/Ee5yetV5iABf1tQf4pTad/PCz6
+X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
+ pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
+X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
+ auth_id=1085
+X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
+Reply-To: filipp.dunsky@gmail.com
 
-On Mon, Oct 12, 2026 at 02:41:34PM +0200, Thomas Zimmermann wrote:
-> 
-> 
-> Am 12.10.26 um 14:28 schrieb Thomas Zimmermann:
-> > Hi
-> > 
-> > Am 12.10.26 um 13:30 schrieb Greg KH:
-> > > On Mon, Oct 12, 2026 at 11:27:38AM +0200, Thomas Zimmermann wrote:
-> > > > The parameters to do_blank_screen() and do_unblank_screen() signal
-> > > > whether the call is part of a switch between text and graphics mode.
-> > > > Convert to boolean. No functional changes.
-> > > > 
-> > > > Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-> > > > ---
-> > > >   drivers/tty/vt/vt.c              | 20 ++++++++++----------
-> > > >   drivers/tty/vt/vt_ioctl.c        | 12 ++++++------
-> > > >   drivers/video/fbdev/core/fbcon.c |  4 ++--
-> > > >   include/linux/vt_kern.h          |  5 +++--
-> > > >   4 files changed, 21 insertions(+), 20 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> > > > index 57edf37495a8..9e7b4419b422 100644
-> > > > --- a/drivers/tty/vt/vt.c
-> > > > +++ b/drivers/tty/vt/vt.c
-> > > > @@ -3374,7 +3374,7 @@ static void console_callback(struct
-> > > > work_struct *ignored)
-> > > >           scrollback_delta = 0;
-> > > >       }
-> > > >       if (blank_timer_expired) {
-> > > > -        do_blank_screen(0);
-> > > > +        do_blank_screen(false);
-> > > Same type of comment here, this bool doesn't really tell what is
-> > > happening at all (not your fault, 0/1 doesn't either.)
-> > > 
-> > > I'm all for this patch but shouldn't this be fixed up to be 2 different
-> > > named functions entirely?
-> > 
-> > Can you elaborate?  Do you mean there should be a separate helper and
-> > callback for switching between KD_TEXT and KD_GRAPHICS?
-> > 
-> > Looking through the *_blank_screen() helpers and the console
-> > implementations, I think we'd mostly duplicate code. Mode-switching and
-> > blanking are tightly coupled.  Semantics get a bit cleaner with the
-> > change you proposed to patch 1, I think.
-> 
-> And looking even further, it's not entirely clear why consw.con_blank even
-> receives the mode_switch parameter.  The consoles track it with some
-> internal state, but all of the mode information is available in struct
-> vc_data.vc_mode as well.  I think mode_switch and similar booleans could be
-> replaced with using vc_mode directly.
+From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Yeah, that would be best overall, as the structure has the "state"
-needed, no need to keep it separate in random variables.  This is some
-old code before we all learned not to have global variables :)
+Securifi Ltd. makes the Almond series of touchscreen Wi-Fi routers.
+Add a vendor prefix for it.
 
-thanks,
+Reviewed-by: Linus Walleij <linusw@kernel.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-greg k-h
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 5ddeae3a6..71e6f82a7 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1497,6 +1497,8 @@ patternProperties:
+     description: SDMC Technology Co., Ltd
+   "^seagate,.*":
+     description: Seagate Technology PLC
++  "^securifi,.*":
++    description: Securifi Ltd.
+   "^seeed,.*":
+     description: Seeed Technology Co., Ltd
+   "^seirobotics,.*":
+
+-- 
+2.53.0
+
+
