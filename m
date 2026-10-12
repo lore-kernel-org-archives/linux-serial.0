@@ -1,161 +1,111 @@
-Received: from out203-205-221-155.mail.qq.com (out203-205-221-155.mail.qq.com [203.205.221.155])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F37248FF9A;
-	Mon, 12 Oct 2026 15:19:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.155
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4CFF4A2066
+	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 15:30:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791818380; cv=none; b=PdeUP6W+vtyCFfLr4gtOBSztX/NrluyQ0re6PfeqIS/udrAPpHiZY7zJ0biK5zDVUx43jbPL+qwVf5fWqeV5vR6/Otk0Azc6ZPX94natoAQQvQ3a1KfTLmiVSBC5Zuo73wtDc26hWzXDJjF5bJEEQbrpueP2GVgkhFyy+0tKlDg=
+	t=1791819058; cv=none; b=Hmhg865nDT4VPpBr6Gy8/eMM8f7UVL71CA0dT7QhUdQDU3aTAfTmbe+ZkGjw9TK/mKY6WTNONGk6QpWaSgck6DMauiF/O7Q4yIdVBuhQ12mYAVn9YbAaF/SpJOfvQYk2s04e47+kDKsyA2uMuXo8768ydAgINNi22uS7JaGm3LE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791818380; c=relaxed/simple;
-	bh=OWylyIefKFPUmHKX93Ks0I5PsUBqwAK54eM+KhIrKeE=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=NjaB2OM0asDa6f97paAAINKQQbtjfZOfbPjDA+uuP3LlXStIo5dFd3+4t9yNDrcluQP87xM5IcCAfu0cDADA3x202VpdKGaJfIWWqk3xO4Xzxl+Iw0VuXXak0Psv88qymD5sYbLNBO89aV9ozbWT5hWp38YokkDeRx9ZAjJcC9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=veF5P943; arc=none smtp.client-ip=203.205.221.155
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+	s=arc-20240116; t=1791819058; c=relaxed/simple;
+	bh=WB+qqlQn1AJfa+/vqmASRAcpIQr3p1b5gKobOKMtuTw=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=Op9ezGvRNwwnjIQX4dvDZBx/5Hh7JYIHQIzOwkj1nqUc3Hgi2MT05H5LyoXVnf+E6q/09ijk4VNLxMOs6OtcJgNCDasvT0j5m1SzsGkPypMtdN2D0CpWzoxZxBc3wrvmZrOH/UTT5dllblrXwqIUaNiq9kjEpFY6bqgiffYTP84=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=guSwJLOF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="veF5P943"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1791818373; bh=5fgfkf1VJtkzY+vpSfke4wLKD2w9rs5+vYerqyHRQeo=;
-	h=From:To:Cc:Subject:Date;
-	b=veF5P943Ctwerb2fj5Tkb4d3c78c4gB7zhNHQvLO0tqEmlflPANw35j5aCG0jLhDh
-	 h25QxUEXCLd7cKWdyQtVawwsaNdRrYGkbG5MWp4RaA5RE1d014i15Q5Cur6/ClpeCn
-	 GYVegP+/U4vVOHuz8oZ6FgrwSIDBr0+Yc6CDqu0o=
-Received: from localhost.localdomain ([14.116.239.37])
-	by newxmesmtplogicsvrsza73-0.qq.com (NewEsmtp) with SMTP
-	id 4DF99A53; Mon, 12 Oct 2026 23:19:31 +0800
-X-QQ-mid: xmsmtpt1791818371tp425s1w5
-Message-ID: <tencent_323D31BEC6A1CD2A843E2E48242C774ECE09@qq.com>
-X-QQ-XMAILINFO: NnYhxYSyuBnLsLTkWQTkJW4GtCG8e4/sWtKYGel8myIFXIcZ/e59lzta51p0WT
-	 B/q/deeiNpOL2CpiqEUmcKQON+vQB9FLOKvKwfmQ9hwjYvyah9MArTzqz29g598rB8VTTLQDQhyJ
-	 QM+R7FUVtYEqeEwaVXOKnBNK+UbUHkyMKqWxrxmdWiTHfe4B4Ujv9G5RjTYC2dA7KijtpkoPN0ox
-	 aZiC/ePtiu8XbupK9axI0LVShr+loO49MInYJEsrGUEvbg78vX8jCmu34EYYzFHp4KaHfqaR/TY4
-	 MnI9g0SoGp1iCP7E9NAzChkh9NN8hAn4Qgef7PYV9zDTI6UhyAdYqWCCdTV6MhzfqgJ7gkxtTwtg
-	 8eELPaXDiX2QYa9lYj8CsaYMBm/izuU5609uvvwHTu3zyMsh8jDT7S/rokwujzjzXxhorT4tlZFF
-	 aIZ9TS081Q5kKG18LkrDpTG0ha8LZ9/OwpM6m9BclbXMm071eF82MLY8zqJzCY197iYALxd96sm6
-	 EPS/WcLx086Uyz03C27rZ2oQ82AHmInugFCwZlIqUXzoVvFGzzfCI4v6hmFfCNAqJik/3hL46nV+
-	 dS/93KMfzD1vQoa9FZ5/Ij3eycmflzvjFNc3ctY0S84M7WHcz0C0h8sGNafAhFEWeHfjp5BX/w7K
-	 CZ+2CVW36DHwSXbrSnGHPOQmDjZZf+nmFp2YPqtqbq8ZmgvbAc4fVJFDLhXsRywZi2UKRFjKFR2k
-	 iVmf1P/sVcpWNXNGNRjfhGsz7OhqHY7Z/4jGLqymL9za0FlsrQJoJtBO+Q/P4dGguAsgyxiXtp8O
-	 wo+1TtZyyVsK7ppcqaR4y6VSUZdmiOL635eMjtWbyxtquguS6ruRdT4S3gZofnwYfOJ8F1E5Tcd+
-	 XGlgDILegUFWZNg+A1+U72+8u2BLvQKYQ0psI6wvvDG8V0JMAp8SSIfwdaoOkc4XXfXXnqaLHUHy
-	 OOp1I3RpGLG1fYIWm05tj84Lf9pxLOnO7+9L5Bnsu/8sxv9mEAT1+BrW5Cg7qUdp7nRfslRwPcZP
-	 JgRn2tPpT7mWu09tStEfd0dcVcy4XIqlaI3BQexEgzH5v/h5dR
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
-From: shatyuka@qq.com
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Shatyuka <shatyuka@qq.com>
-Subject: [PATCH] tty: hvc: dcc: Detect JTAG connection only on CPU core 0
-Date: Mon, 12 Oct 2026 23:17:33 +0800
-X-OQ-MSGID: <20261012151733.53461-1-shatyuka@qq.com>
-X-Mailer: git-send-email 2.36.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="guSwJLOF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48D8B1F0089C;
+	Mon, 12 Oct 2026 15:30:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791819056;
+	bh=JAaKhuSSYBE/WibNIeTnUd832JjhiBUFDMnro8TMaFQ=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=guSwJLOFNZ82297XuC3SQoV8KnnvPOLa6oe5o0iv6gro9jVETYblYp0x1w/SBgN+a
+	 LXdCvkRDaY2ZgLVi4Mn/oGMy5CSweznLF33tAz0kPJDnb5aIg0RJuPeRwqdJs1BJci
+	 HDCoqYUDGYlzCs4I1om+WE7gH1aBMdxYfO3jK9zP59QOZ665YskRKkw6prh10hT1fj
+	 YuCeq5WQoXHuAfTVXi/lRy5ncYXtUXf817Aj+CSzKdQLERPpo6hlrwCK4kS65galec
+	 tZRD/spl25GzVG8VoUTOpmTGba0TESN42+EX7T+EfgImF6fyrqi2e4syjbMZuefDeY
+	 WfLxZVnXQLcDQ==
+Message-ID: <sashiko-outbox-168336@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] tty: hvc: dcc: Detect JTAG connection only on CPU core
+ 0
+Reply-To: sashiko-reviews@lists.linux.dev
+To: shatyuka@qq.com
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <tencent_323D31BEC6A1CD2A843E2E48242C774ECE09@qq.com>
+References: <tencent_323D31BEC6A1CD2A843E2E48242C774ECE09@qq.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 12 Oct 2026 15:30:55 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: Shatyuka <shatyuka@qq.com>
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [Medium] tty: hvc: dcc: Meaningful code and commit message mismatch
+--
 
-On SMP, migration can occur inside hvc_dcc_check() during
-device_initcall, so the CPU writing the probe character and the CPU
-reading the TXfull status may not be the same, which can hang the
-system.
+commit 0189cf9a56296b2c974669020e309b13432dff40
+Author: Shatyuka <shatyuka@qq.com>
 
-Commit 4419da5d5d4b1788568b ("tty: hvc: dcc: Bind driver to CPU core0
-for reads and writes") cached the DCC availability detected on core 0
-during console_initcall. However, this is not sufficient: if DCC is
-not detected as available and another CPU later calls
-hvc_dcc_check(), the check is not actually performed on core 0.
+tty: hvc: dcc: Detect JTAG connection only on CPU core 0
 
-Multiple checks are unnecessary: nobody is going to plug/unplug JTAG
-during kernel boot and expect it to work. Cache the return value of
-hvc_dcc_check() from device_initcall and reuse the cached value during
-console_initcall. This avoids complex SMP-related code and ensures the
-result is always from core 0.
+This commit aims to prevent system hangs caused by SMP migration during JTAG
+DCC detection by caching the availability status. It simplifies the logic by
+performing the check once and reusing the cached value.
 
-Signed-off-by: Shatyuka <shatyuka@qq.com>
----
- drivers/tty/hvc/hvc_dcc.c | 30 ++++++++----------------------
- 1 file changed, 8 insertions(+), 22 deletions(-)
+>    Multiple checks are unnecessary: nobody is going to plug/unplug JTAG
+>    during kernel boot and expect it to work. Cache the return value of
+>    hvc_dcc_check() from device_initcall and reuse the cached value during
+>    console_initcall. This avoids complex SMP-related code and ensures the
+>    result is always from core 0.
 
-diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
-index dfc5c9c38f07..fc8dcbce9b5b 100644
---- a/drivers/tty/hvc/hvc_dcc.c
-+++ b/drivers/tty/hvc/hvc_dcc.c
-@@ -29,6 +29,9 @@ static DEFINE_SPINLOCK(dcc_lock);
- static DEFINE_KFIFO(inbuf, u8, DCC_INBUF_SIZE);
- static DEFINE_KFIFO(outbuf, u8, DCC_OUTBUF_SIZE);
- 
-+/* Cached result of hvc_dcc_check() */
-+static bool dcc_core0_available;
-+
- static void dcc_uart_console_putchar(struct uart_port *port, u8 ch)
- {
- 	while (__dcc_getstatus() & DCC_STATUS_TX)
-@@ -90,36 +93,18 @@ static ssize_t hvc_dcc_get_chars(uint32_t vt, u8 *buf, size_t count)
- }
- 
- /*
-- * Check if the DCC is enabled. If CONFIG_HVC_DCC_SERIALIZE_SMP is enabled,
-- * then we assume then this function will be called first on core0. That way,
-- * dcc_core0_available will be true only if it's available on core0.
-+ * Check if the DCC is enabled. This function will be called once on core 0.
-  */
- static bool hvc_dcc_check(void)
- {
- 	unsigned long time = jiffies + (HZ / 10);
--	static bool dcc_core0_available;
--
--	/*
--	 * If we're not on core 0, but we previously confirmed that DCC is
--	 * active, then just return true.
--	 */
--	int cpu = get_cpu();
--
--	if (IS_ENABLED(CONFIG_HVC_DCC_SERIALIZE_SMP) && cpu && dcc_core0_available) {
--		put_cpu();
--		return true;
--	}
--
--	put_cpu();
- 
- 	/* Write a test character to check if it is handled */
- 	__dcc_putchar('\n');
- 
- 	while (time_is_after_jiffies(time)) {
--		if (!(__dcc_getstatus() & DCC_STATUS_TX)) {
--			dcc_core0_available = true;
-+		if (!(__dcc_getstatus() & DCC_STATUS_TX))
- 			return true;
--		}
- 	}
- 
- 	return false;
-@@ -265,7 +250,8 @@ static int __init hvc_dcc_console_init(void)
- {
- 	int ret;
- 
--	if (!hvc_dcc_check())
-+	dcc_core0_available = hvc_dcc_check();
-+	if (!dcc_core0_available)
- 		return -ENODEV;
- 
- 	/* Returns -1 if error */
-@@ -279,7 +265,7 @@ static int __init hvc_dcc_init(void)
- {
- 	struct hvc_struct *p;
- 
--	if (!hvc_dcc_check())
-+	if (!dcc_core0_available)
- 		return -ENODEV;
- 
- 	if (IS_ENABLED(CONFIG_HVC_DCC_SERIALIZE_SMP)) {
--- 
-2.36.1
+[Severity: Medium]
+Is the direction of the caching described correctly here?
 
+The code implementation seems to do the opposite: it caches the value during
+console_initcall and reuses it during device_initcall.
+
+> diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
+> index dfc5c9c38f074..fc8dcbce9b5b1 100644
+> --- a/drivers/tty/hvc/hvc_dcc.c
+> +++ b/drivers/tty/hvc/hvc_dcc.c
+
+[ ... ]
+
+> @@ -265,7 +250,8 @@ static int __init hvc_dcc_console_init(void)
+>  {
+>  	int ret;
+> =20
+> -	if (!hvc_dcc_check())
+> +	dcc_core0_available =3D hvc_dcc_check();
+> +	if (!dcc_core0_available)
+>  		return -ENODEV;
+
+[Severity: Medium]
+Is the return value of hvc_dcc_check() actually cached here in
+hvc_dcc_console_init() during console_initcall, contradicting the commit
+message?
+
+> =20
+>  	/* Returns -1 if error */
+> @@ -279,7 +265,7 @@ static int __init hvc_dcc_init(void)
+>  {
+>  	struct hvc_struct *p;
+> =20
+> -	if (!hvc_dcc_check())
+> +	if (!dcc_core0_available)
+>  		return -ENODEV;
+
+[Severity: Medium]
+Could this be the exact reverse of what is stated in the commit message,
+since the cached value is reused here in hvc_dcc_init() during
+device_initcall?
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/tencent_323D31BEC6A=
+1CD2A843E2E48242C774ECE09@qq.com?part=3D1
