@@ -1,203 +1,288 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B3348642E;
-	Mon, 12 Oct 2026 12:08:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3EE9421EFB;
+	Mon, 12 Oct 2026 12:08:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791806888; cv=none; b=Eye9MEpTpZosrusvrMlptWIxtbOanehEj/6iR1HO+eq21CoGdmmfE80ujsFDR3uDwcuz3o2/zI8A12oz8FLUGzi6Vi0xdZq3i6Dw1kb4UGUqhGjzWTRED+kDBJHz1Ouqkga05N+vOBhhP6xsT8s8oHI9pqbyic29y845MucNyR8=
+	t=1791806900; cv=none; b=hUEDCuJHRWtR4JGg8r2nFYmb3Nrd628Rve5BF35gs22DuPibTZr33YagbcGlAXi91k1kUXPo5aUD4KETsWqLZ7TtNX4eKUThlok+ttMRm6fapErpD/JGNWt/iXXSghpmn/8hee/VHCXuNha3tC2yEnfh+NF/ydFdXFgO2hpQBZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791806888; c=relaxed/simple;
-	bh=Af2rJwTr5nFcIKoopPQ4GInJJDGqew2SccZzEbRgXiw=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=F7VOUxXfXkYleIAy4NAbHPcnl3g7EvhR3ntKyHmHq/7pQ8qnjXf66gpGN+l/5ds9quKGXQ0RmxcHbu3li9RquN/BsmGqQ03u4/Ose3eMBIUvTfqdVS9yVjjTG4uKvyeB9o/w9lApxVdravTmHx+5zRiQ/ra2FoXMxxoCTwZMjoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TWM95jLd; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1791806900; c=relaxed/simple;
+	bh=xSrGuh9vlWH6PaqJUqXiXJoV/rg2YETpWui1f9Lu7bc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZpzW4WALO9CdvZPBr+2pqejvL6Snx67ijJ/TTd5vZZTby+84YtRSgaJHdnl5S9jl1cFIx90tANvprhqY+vNRQ4o5oQj55DFUHR3LZUpjwYP8l3wMO9T37UeIRhX488YFPrSaxHhG/jPgfCMiUQYibqTZ0vKyQcL5DY5MUF5b6V4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VVLd+1QO; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Ey7fcp18; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VVLd+1QO; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Ey7fcp18; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TWM95jLd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791806887; x=1823342887;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Af2rJwTr5nFcIKoopPQ4GInJJDGqew2SccZzEbRgXiw=;
-  b=TWM95jLdCGv4d4+hCPyG3mFYq/qNpd8+KUpuEYwBChe649gBJMRglPiS
-   d0+GQ/56t+mtFOP+tsfgKGRPLZzfxzbMw+Z5HsqnhqJDg0/1+SHLwRPoV
-   Yl4iFDMEkSyHpVF0YYKgWaNaD2zc9gQGdJh6lUljU6cdRpmAM4QZZIES3
-   ZKwCkYbZYN1T3iBc6fkX8L1Lnig+bz+M0CpJyWnRCSt4dYsTGPnILDM5j
-   +O98+N/s8uOrdeYljZnViNw+VL7FQFhvQgitFnVN/3Y19yRgb2V8j91Pv
-   34T890ksFZJnOPFiTm/epvRR4KBURd16dKCTM3yOoG+2ukE4ErurIdtji
-   Q==;
-X-CSE-ConnectionGUID: mxXOfxZBQ1efqLFbWlHznA==
-X-CSE-MsgGUID: 6uzFdAltRYu7u3LUwYhS7Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11932"; a="398563"
-X-IronPort-AV: E=Sophos;i="6.27,153,1787036400"; 
-   d="scan'208";a="398563"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 05:08:06 -0700
-X-CSE-ConnectionGUID: XZBPbvynT6CoXx7hsw0ChA==
-X-CSE-MsgGUID: TcM/EikPRCGHo8GaHbyr5g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,153,1787036400"; 
-   d="scan'208";a="983754"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.202])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 05:08:04 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 12 Oct 2026 15:08:00 +0300 (EEST)
-To: khaliforce <kforce@gmail.com>
-cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_dw: retain programmed timing for BUSY
- waits
-In-Reply-To: <1791785420.8010663.945898876521967.uart-busy-frame-time@gmail.com>
-Message-ID: <3f9f7b12-0edd-1683-6f8b-f14802db832f@linux.intel.com>
-References: <1791785420.8010663.945898876521967.uart-busy-frame-time@gmail.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VVLd+1QO";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Ey7fcp18";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VVLd+1QO";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Ey7fcp18"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id E1B7521DF6;
+	Mon, 12 Oct 2026 12:08:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1791806895; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=WvADoobcQwjPCCRIQkVH+8ppTjgfgndh1wPf3i42xI0=;
+	b=VVLd+1QOJcRdyRMIsD3e2HrVo94LEa7rPhPhVc+XAAnlYJo60INVyl62VSpWU7qFvWlt0f
+	6OzxrNSlMNI0DDhPNlArHhUAb6LiLNnfm6tsG/vb44mC9XViGXWDOl+5dTj4DKdId/ct5G
+	4sDXvx0kG7WMnoDuOfhDkOOC7cMkLE0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1791806895;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=WvADoobcQwjPCCRIQkVH+8ppTjgfgndh1wPf3i42xI0=;
+	b=Ey7fcp18BLwuqlIrNwuZapbPdvMT/LrXSqF7evKRgsScVbyN8xMsqDv/D6azGB49WJefL9
+	fLitqGCoXLTajYBw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1791806895; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=WvADoobcQwjPCCRIQkVH+8ppTjgfgndh1wPf3i42xI0=;
+	b=VVLd+1QOJcRdyRMIsD3e2HrVo94LEa7rPhPhVc+XAAnlYJo60INVyl62VSpWU7qFvWlt0f
+	6OzxrNSlMNI0DDhPNlArHhUAb6LiLNnfm6tsG/vb44mC9XViGXWDOl+5dTj4DKdId/ct5G
+	4sDXvx0kG7WMnoDuOfhDkOOC7cMkLE0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1791806895;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=WvADoobcQwjPCCRIQkVH+8ppTjgfgndh1wPf3i42xI0=;
+	b=Ey7fcp18BLwuqlIrNwuZapbPdvMT/LrXSqF7evKRgsScVbyN8xMsqDv/D6azGB49WJefL9
+	fLitqGCoXLTajYBw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 743B91342D;
+	Mon, 12 Oct 2026 12:08:15 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id Y0oYCq/NzGpLFwAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Mon, 12 Oct 2026 12:08:15 +0000
+Message-ID: <07fa4562-6e34-48b4-ba2c-eb053c2aa7b8@suse.de>
+Date: Mon, 12 Oct 2026 14:08:14 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] vt: Distinguish between blanking and VESA blank mode
+ in con_blank
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, deller@gmx.de,
+ James.Bottomley@hansenpartnership.com, simona@ffwll.ch,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-fbdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+ sashiko-reviews@lists.linux.dev
+References: <20261012094114.38549-1-tzimmermann@suse.de>
+ <20261012094114.38549-3-tzimmermann@suse.de>
+ <2026101255-extending-concrete-2fc7@gregkh>
+Content-Language: en-US
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <2026101255-extending-concrete-2fc7@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-4.29 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	XM_UA_NO_VERSION(0.01)[];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	RCVD_TLS_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	MID_RHS_MATCH_FROM(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_CC(0.00)[kernel.org,gmx.de,hansenpartnership.com,ffwll.ch,vger.kernel.org,lists.linux.dev];
+	TO_DN_SOME(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,imap1.dmz-prg2.suse.org:helo,suse.com:url]
+X-Spam-Score: -4.29
+X-Spam-Level: 
+X-Spam-Flag: NO
 
-On Mon, 12 Oct 2026, khaliforce wrote:
+Hi
 
-> Baud changes update frame_time before the programmed divisor changes.
+Am 12.10.26 um 13:29 schrieb Greg KH:
+> On Mon, Oct 12, 2026 at 11:27:39AM +0200, Thomas Zimmermann wrote:
+>> The con_blank callback in struct consw encodes blanking and display
+>> blank mode in a single parameter named blank. Its semantics equal
+>> the FB_BLANK constants from the fbdev subsystems. Yet it is of type
+>> enum vesa_blank_mode, which describes VESA DPMS levels of the attached
+>> monitor. Although related, this is something else.
+>>
+>> For this reason, calls to con_blank fill the blank parameter with
+>> values that appear non-sensical at first. For example, to blank the
+>> console, but keep the monitor on, vt passes VESA_VSYNC_SUSPEND (eq '1').
+>> This is because consoles interpret '1' as pixels-off-but-monitor-on.
+>> The constant VESA_VSYNC_SUSPEND actually means monitor-vsync-off. And
+>> the argument used for monitor-vsync-off is VESA_VSYNC_SUSPEND+1.
+>>
+>> To fix this by splitting blank into two parameters, blank and blank_mode.
+>> The new blank is a boolean to control the display blanking. If cleared,
+>> the console creates display output, if set the console does not. The
+>> new parameter blank_mode specifies the VESA blank mode for the monitor
+>> and equals VESA DPMS levels. If blank is set, blank_mode gives a hint
+>> to the console, on how to set up the signal to the monitor.
+>>
+>> The actual interpretation is up to the console. Newportcon and sticon
+>> only handle blank or not-blank. Fbcon and vgacon implement blank plus
+>> the VESA DPMS handling. The implementation of both consoles is again
+>> somewhat confusing because types and values do not match. Clean up
+>> both with the new blank/blank_mode logic.
+>>
+>> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+>> ---
+>>   drivers/tty/vt/vt.c                 | 11 ++++----
+>>   drivers/video/console/dummycon.c    |  4 +--
+>>   drivers/video/console/newport_con.c |  4 +--
+>>   drivers/video/console/sticon.c      |  4 +--
+>>   drivers/video/console/vgacon.c      | 44 +++++++++++++++--------------
+>>   drivers/video/fbdev/core/fbcon.c    | 19 +++++++------
+>>   include/linux/console.h             |  9 ++++--
+>>   7 files changed, 51 insertions(+), 44 deletions(-)
+>>
+>> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+>> index 9e7b4419b422..f762c965351d 100644
+>> --- a/drivers/tty/vt/vt.c
+>> +++ b/drivers/tty/vt/vt.c
+>> @@ -4671,7 +4671,7 @@ void do_blank_screen(bool entering_gfx)
+>>   	if (console_blanked) {
+>>   		if (blank_state == blank_vesa_wait) {
+>>   			blank_state = blank_off;
+>> -			vc->vc_sw->con_blank(vc, vesa_blank_mode + 1, false);
+>> +			vc->vc_sw->con_blank(vc, true, vesa_blank_mode, false);
+> I hate adding random bool to function parameters as now you need to go
+> look them up to try to determine exactly what happened.
+>
+> Why not just 2 different callbacks:
 
-Why not fix this problem instead? It would seem wrong to have wrong value 
-in ->frame_time.
+Sounds like a cleaner design.
 
+
+>
+>> -static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
+>> +static bool vgacon_blank(struct vc_data *c, bool blank, enum vesa_blank_mode blank_mode,
+>>   			 bool mode_switch)
+>>   {
+>> -	switch (blank) {
+>> -	case VESA_NO_BLANKING:		/* Unblank */
+>> +	if (blank) {
+>> +		switch (blank_mode) {
+>> +		case VESA_NO_BLANKING:	/* Normal blanking */
+>> +			if (!mode_switch && vga_video_type == VIDEO_TYPE_VGAC) {
+>> +				vga_pal_blank(&vgastate);
+>> +				vga_palette_blanked = true;
+>> +				return 0;
+>> +			}
+>> +			vgacon_set_origin(c);
+>> +			scr_memsetw((void *)vga_vram_base, BLANK,
+>> +				    c->vc_screenbuf_size);
+>> +			if (mode_switch)
+>> +				vga_is_gfx = true;
+>> +			return 1;
+>> +		default:		/* VESA blanking */
+>> +			if (vga_video_type == VIDEO_TYPE_VGAC) {
+>> +				vga_vesa_blank(&vgastate, blank_mode);
+>> +				vga_vesa_blanked = blank_mode;
+>> +			}
+>> +			return 0;
+>> +		}
+>> +	} else { /* Unblank */
+>>   		if (vga_vesa_blanked) {
+>>   			vga_vesa_unblank(&vgastate);
+>>   			vga_vesa_blanked = VESA_NO_BLANKING;
+>> @@ -814,24 +834,6 @@ static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
+>>   		vga_is_gfx = false;
+>>   		/* Tell console.c that it has to restore the screen itself */
+>>   		return 1;
+>> -	case VESA_VSYNC_SUSPEND:	/* Normal blanking */
+>> -		if (!mode_switch && vga_video_type == VIDEO_TYPE_VGAC) {
+>> -			vga_pal_blank(&vgastate);
+>> -			vga_palette_blanked = true;
+>> -			return 0;
+>> -		}
+>> -		vgacon_set_origin(c);
+>> -		scr_memsetw((void *) vga_vram_base, BLANK,
+>> -			    c->vc_screenbuf_size);
+>> -		if (mode_switch)
+>> -			vga_is_gfx = true;
+>> -		return 1;
+>> -	default:		/* VESA blanking */
+>> -		if (vga_video_type == VIDEO_TYPE_VGAC) {
+>> -			vga_vesa_blank(&vgastate, blank - 1);
+>> -			vga_vesa_blanked = blank;
+>> -		}
+>> -		return 0;
+>>   	}
+> This can be vgacon_blank() and vgacon_unblank(), right?  That way we
+> have a hint as to what is happening and don't have to try to remember
+> that a bool as parameter 2 is blank/unblank.
+
+Yeah, we can do that.  We'd also not need the VESA mode in the unblank 
+case. It's always VESA_NO_BLANKING there.
+
+Best regards
+Thomas
+
+>
+> thanks,
+>
+> greg k-h
+>
+
+-- 
 --
- i.
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
+GF: Stefan Gaiser, Jochen Jaser, Abhinav Puri, (HRB 36809, AG Nürnberg)
 
-> A switch to a faster baud rate therefore shortens the DesignWare BUSY
-> wait.
-> The wait can expire while a frame at the old baud rate remains active.
-> 
-> Use the programmed frame duration for FIFO and BUSY waits.
-> Account for UART clock changes.
-> 
-> Fixes: a7b9ce39fbe4 ("serial: 8250_dw: Ensure BUSY is deasserted")
-> Signed-off-by: khaliforce <kforce@gmail.com>
-> ---
-> Compared the complete patch off/on on MangoPi MQ Pro UART0.
-> Kept other port patches, kernel options and DTB identical.
-> Tested BUSY changes from 9600, 1200 and 300 to 115200.
-> All 11 paired changes fail without the patch and pass with it.
-> Each trial returns 64 matching loopback bytes.
-> 
->  drivers/tty/serial/8250/8250_dw.c    | 20 ++++++++++++++++++--
->  drivers/tty/serial/8250/8250_dwlib.c |  4 ++++
->  drivers/tty/serial/8250/8250_dwlib.h |  4 ++++
->  3 files changed, 26 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 51d026f20825..03be503bcef0 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -17,6 +17,8 @@
->  #include <linux/device.h>
->  #include <linux/io.h>
->  #include <linux/lockdep.h>
-> +#include <linux/math64.h>
-> +#include <linux/minmax.h>
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
-> @@ -131,6 +133,9 @@ static int dw8250_idle_enter(struct uart_port *p)
->  	struct dw8250_data *d = to_dw8250_data(p->private_data);
->  	unsigned int usr_reg = d->pdata ? d->pdata->usr_reg : DW_UART_USR;
->  	struct uart_8250_port *up = up_to_u8250p(p);
-> +	unsigned int frame_time = d->data.frame_time ?: p->frame_time;
-> +	unsigned int saved_frame_time = p->frame_time;
-> +	u64 scaled_frame_time;
->  	int retries;
->  	u32 lsr;
->  
-> @@ -139,6 +144,12 @@ static int dw8250_idle_enter(struct uart_port *p)
->  	if (d->uart_16550_compatible)
->  		return 0;
->  
-> +	if (d->data.frame_time && d->data.frame_time_uartclk && p->uartclk) {
-> +		scaled_frame_time = (u64)frame_time * d->data.frame_time_uartclk;
-> +		scaled_frame_time = DIV_ROUND_UP_ULL(scaled_frame_time, p->uartclk);
-> +		frame_time = min_t(u64, scaled_frame_time, U32_MAX);
-> +	}
-> +
->  	d->in_idle = 1;
->  
->  	/* Prevent triggering interrupt from RBR filling */
-> @@ -156,8 +167,10 @@ static int dw8250_idle_enter(struct uart_port *p)
->  	 *
->  	 * FIXME: frame_time delay is too long with very low baudrates.
->  	 */
-> +	p->frame_time = frame_time;
->  	serial8250_fifo_wait_for_lsr_thre(up, NULL, p->fifosize);
-> -	ndelay(p->frame_time);
-> +	p->frame_time = saved_frame_time;
-> +	ndelay(frame_time);
->  
->  	serial_port_out(p, UART_MCR, up->mcr | UART_MCR_LOOP);
->  
-> @@ -167,7 +180,7 @@ static int dw8250_idle_enter(struct uart_port *p)
->  		if (!(serial_port_in(p, usr_reg) & DW_UART_USR_BUSY))
->  			break;
->  		/* FIXME: frame_time delay is too long with very low baudrates. */
-> -		ndelay(p->frame_time);
-> +		ndelay(frame_time);
->  	} while (--retries);
->  
->  	lsr = serial_lsr_in(up);
-> @@ -188,6 +201,7 @@ static int dw8250_idle_enter(struct uart_port *p)
->  static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
->  			       unsigned int quot, unsigned int quot_frac)
->  {
-> +	struct dw8250_port_data *d = p->private_data;
->  	struct uart_8250_port *up = up_to_u8250p(p);
->  	int ret;
->  
-> @@ -200,6 +214,8 @@ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
->  		goto idle_failed;
->  
->  	serial_dl_write(up, quot);
-> +	d->frame_time = p->frame_time;
-> +	d->frame_time_uartclk = p->uartclk;
->  	serial_port_out(p, UART_LCR, up->lcr);
->  
->  idle_failed:
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-> index 8859e66d2d71..d74ff203f904 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -39,8 +39,12 @@ static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
->  static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
->  			       unsigned int quot, unsigned int quot_frac)
->  {
-> +	struct dw8250_port_data *d = p->private_data;
-> +
->  	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
->  	serial8250_do_set_divisor(p, baud, quot);
-> +	d->frame_time = p->frame_time;
-> +	d->frame_time_uartclk = p->uartclk;
->  }
->  
->  void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios,
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-> index 1fe52332e774..5472c13ca92e 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.h
-> +++ b/drivers/tty/serial/8250/8250_dwlib.h
-> @@ -88,6 +88,10 @@ struct dw8250_port_data {
->  	u32			cpr_value;
->  	u8			dlf_size;
->  
-> +	/* Timing for the programmed divisor. */
-> +	u32			frame_time;
-> +	u32			frame_time_uartclk;
-> +
->  	/* RS485 variables */
->  	bool			hw_rs485_support;
->  };
-> 
+
