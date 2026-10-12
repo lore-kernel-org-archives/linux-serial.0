@@ -1,131 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73E98331207
-	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 02:10:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ED3531A807
+	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 05:53:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791771051; cv=none; b=QADP9DA4vWtuzqdnQ8Fqwdpqy2a87r+LJNvwzI4wsP3/eUCj7BDg4yomZaH8ByS3CaQRTvMDIx7us7Tpv0ya5x6YO9HqWyr6KhUAnS/2aKrCI0UcHB1/cKswQCNGOeTLlg7aw8pacKqLXXBIqmR5Hn9rbNgQPwNc6P3yJaL4zVQ=
+	t=1791784428; cv=none; b=MNsHr6SVTBUEtaAIkuaHBewD+JOaUCeT5PnHCi6v+Y0xVLsutGmf0JuIV4dJM3qsfpD05cloA4DKLA8uQ49k4r6TzjCYRJ2PGHsXDsYF9p40tL9mK4Jghn3/bMjVQU94YJuLNEHS4eodLDCOXSKCI+GccDbbq5tioK3H9y5qCo0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791771051; c=relaxed/simple;
-	bh=jHSd8RRQaMsiV+mhGFWewU9Ixg0xJha+quY/4+AAnvM=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=uOIXcylHMaMKbYblXoJ+ilJXhXFzNHkl3kmgAenTKp4aRZClHRZifuw0Y4oLnedMYHJjByk8ajID4Q3/9SLvq4oyVOG1VQB1qaKRn4Os7nj1uRJhNTMi1orWb6p4UVSiS6EHi+/qKxg5F0e/tSTSfpqR4EdDmrYN+ZcvoRhJlnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QsmbPVam; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791784428; c=relaxed/simple;
+	bh=qswfbpQeqcrPhyuB29KsZjVoIGAnB+lHjaZ3nFk7l10=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=RH2sIVajRJ75pHjQYjal5ucnSJC3anwUQ9MhhKHxHhoOyo+NmJcigYlkpcSHAQLSbIE6ZecAM4AMot0XHr4bTqIO+mD4XFOfTzh0p3eU9R5m5KwyKYOTC/PcTDSapVIaz9gTPZxHN59KXw8cScUt7LaBp7qrlTA5hNuv3k7I0Pg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fOVA2eQQ; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QsmbPVam"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8FCE1F0089B;
-	Mon, 12 Oct 2026 02:10:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791771050;
-	bh=wAHWANcuWaRCaOwVrrgs7qrqHQSZ+nR1pD2CpoanKM0=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=QsmbPVamgvlun6/7Gq3/zKVHqMIW9AxFGhY+9jv3l2cBRkuqtsjHeRroRDzQuUf1P
-	 Mlc2YgMq9SLA3OEH3Znm/VFy7VCK7zBeXkNUuC43gTOeUf6NI884PQD+uvRn4EwQma
-	 yuscw4iEmjGjfmR0cbxfwwseP4k4U75cew9kqlLi41tiHVwtzOlM9mFATUy6v/Ny6T
-	 sZkjciT/J3Q9lgYEAHHJli1EPJrSt+udWxTKmheKFaJJJHh9xHwSmqKIvV627mY37F
-	 BPcCnzCfEhYhAgtnrMr6MAE+sA0BIjO9Tfl5cHW5Tz8Z6EfE4SmXNi3RuwZnbSnaqo
-	 buhP6B5jQmx4A==
-Message-ID: <sashiko-outbox-167551@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 1/1] serial: core: Don't clobber the baud rate on
- hangup via B0
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <alpine.DEB.2.21.2610120231550.55767@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2610120150230.55767@angie.orcam.me.uk>
- <alpine.DEB.2.21.2610120231550.55767@angie.orcam.me.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 12 Oct 2026 02:10:49 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fOVA2eQQ"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4a172eb31f0so9561855e9.1
+        for <linux-serial@vger.kernel.org>; Sun, 11 Oct 2026 22:53:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791784425; x=1792389225; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PothssnYOQBqU06oPmf6jtHUTyL9DrHCtzHqtSv9s2A=;
+        b=fOVA2eQQN7BXC+t8TrO2PzmNbOiGSK9HvjILQkpSPQH+HfOqemTdtjS9oMVCNWVneK
+         0peP0bMmBO2nnXic28jT/veYHgEghgpxaZbWw2pvoemE/2CvS3oiD1OqqbzD8mbtZxIo
+         wiMUutDm6bi3LtQlh+uMNKV0caE7aQesl8CeFrFjQQTbzfPNVMtdT8OQ6u6CsiHGr2hs
+         ZonUvQ9KBdh85lJBBkXNgXMG3ZJ5RS9itPfoRZSJq12UmR2Bd6GqsSIBCHKcV2Ae1VxU
+         sCidaWwgQB89t9r2EO6n/Rtz4ofyhsMqlywBHR8GAwzUvBsC3IgDKUAAsMMNrVy2QkHI
+         ilgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791784425; x=1792389225;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=PothssnYOQBqU06oPmf6jtHUTyL9DrHCtzHqtSv9s2A=;
+        b=k8tQud5hnPg1Dlo16iBJ+7HuYI1nWYKavdg4ns1BNH7qm0pOQPl2Yxo2PhjN9nxBgK
+         k/6ZpXDkxjizLGDWUn39LQUs6a/4gyXAxSUBe94uEOGok6FZauVE5hGU0yAtWMxV5IZe
+         u4bh8a5xwrzazPKSIh5DelULfQx6Mg0tHEx0SDmm1towAG708Mgu+Nfgyuxq8UzRSZP0
+         a9UDHEIdr35n9cE2OIxlazBdjjj4oMOex0PtdXT5UsURku7G7m80+pYUQbxS38bN9JKi
+         /PM5YQoOKCXLo3VQJFdsfKeEBjsfudGTYm5OZtHPhcRMsny3QBnodmx1GNyQ15sPsj1z
+         /tqg==
+X-Forwarded-Encrypted: i=1; AKwUvBx5nvdTVKnBMG9vYPS3TVjF2ELdOksdcLSnMV8Kb68yKBqFQAGu2pzmhRh93H39x3n6Bi7+tlxaMbY0JMg=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIHndQpb4dZ48gtdV+UDwrRPK3xQBJxrT9HG+iOcmwkqnjOocjQ
+	pA9muE5gjGsRlWHZFbeoxrCAHyQ3FevcIPxXfU1b5Qe8/1zYvDaJEAHh
+X-Gm-Gg: AYBFou3vBMSQSi42x7vXsvrYJWj9UeNWXaAeAWrCp44tUsufAU9Wv+7Qu6cJobu/m+K
+	SzyEOsncvZANrvmXaDOc4JGqznnViusRwGZUO6/VCjWk8zQhLlZ9Rq18HNVzgVp1b2V7WhrCIQD
+	JSvQQ4nNYH1aaUARJpSD7CVWzkcJeJEyijs0NAQpZ7JyKy+eqGlnVnQOCc7de7QrU+HTpcRkK+J
+	+jVbAaVlPaRqk9uZHF0Bmj4YPlU0XhTr6X07Yttevmnrm0ozaLWJOI6OBuLKXAMjv6zHoUlHnHX
+	GkUdlDSOF1YXfjBO4g6xz/o7Pb2qzYdWtuzFNSgsFMO27SUzSkVg9I43/NremY8zvv6mg/71yO9
+	IUDKTUyB+mDNNb6hOnN5lCUzoKUvUcPs4b/Ip7lVjbcOOt3qP2jyEBH3L5lL6PeHDVnY8HmhGAs
+	T0eRWqEcqLiTqSKgWn4cb1qzaBtKeT6aF5J+jmdZvGqEqsVzq0JHyS5dzKXbM76PolQ2NoCcuL7
+	AS463u3833uJk3YAsu7FlbacvFZnryg9kxy7pKRz/G2/E2vo82GoJoD4ksNaA6KbXgrRNeV/kMi
+	oaoMd0s0ougD0zh8idBF6E95QBarjkahhz5UEhcV0XDqkLmhcQN6vyBQXimJL+lyzOvX8LQhPBQ
+	=
+X-Received: by 2002:a05:600c:6207:b0:49f:ff73:9971 with SMTP id 5b1f17b1804b1-4a18e4aff66mr150789045e9.18.1791784424879;
+        Sun, 11 Oct 2026 22:53:44 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-2a02-3100-a8ab-0f01-016a-c770-797f-eaee.310.pool.telefonica.de. [2a02:3100:a8ab:f01:16a:c770:797f:eaee])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18e49792bsm417935035e9.4.2026.10.11.22.53.43
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 11 Oct 2026 22:53:44 -0700 (PDT)
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Karl Mehltretter <kmehltretter@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: ma35d1: Do not force-enable an unselected console
+Date: Mon, 12 Oct 2026 07:53:40 +0200
+Message-Id: <20261012055340.16719-1-kmehltretter@gmail.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
-- [High] tty: division by zero in uart_get_divisor() on uninitialized port-=
->hup_speed
-- [Medium] tty: serial: data race on port->hup_speed in uart_get_baud_rate()
---
+When another console is selected and there is no matching ttyNVT console
+argument, the core accepts the MA35D1 console without calling its setup
+function because it has CON_ENABLED set before registration.  Its index
+remains -1 and printk repeatedly reports an invalid port, flooding the
+console and preventing boot.
 
-commit 3c831138bb5fb81f1a02fc66246315af11bf6bbc
-Author: Maciej W. Rozycki <macro@orcam.me.uk>
+Let the console core enable it after successful setup.
 
-serial: core: Don't clobber the baud rate on hangup via B0
+Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
+Assisted-by: LLM
+Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+---
+ drivers/tty/serial/ma35d1_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Requesting hangup via the B0 baud rate clobbers the previously set rate
-unless it is 9600bps or the port minimum. This commit tracks the most
-recently set baud rate in port->hup_speed and uses it whenever the B0
-rate is requested.
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 0809655f4395..3be30fb05513 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -639,7 +639,7 @@ static struct console ma35d1serial_console = {
+ 	.write   = ma35d1serial_console_write,
+ 	.device  = uart_console_device,
+ 	.setup   = ma35d1serial_console_setup,
+-	.flags   = CON_PRINTBUFFER | CON_ENABLED,
++	.flags   = CON_PRINTBUFFER,
+ 	.index   = -1,
+ 	.data    = &ma35d1serial_reg,
+ };
+-- 
+2.53.0
 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 319a4b427f3a3..3390e4d142127 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-[ ... ]
-> @@ -514,10 +514,12 @@ uart_get_baud_rate(struct uart_port *port, struct k=
-termios *termios,
->  		 * Special case: B0 rate.
->  		 */
->  		if (baud =3D=3D 0)
-> -			return max(min, 9600);
-> +			return port->hup_speed;
-
-[Severity: High]
-Does this risk a division by zero panic?
-
-If a new struct uart_port is initialized, port->hup_speed defaults to 0.
-If a B0 rate is requested before any valid rate is set (such as via
-console=3DttyS0,0 or an early tcsetattr with B0), this returns 0.
-
-This 0 is then passed down to helpers like uart_get_divisor(), which
-calculates the divisor as:
-
-	quot =3D DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
-
-It can also reach uart_update_timeout(), which calculates the frame time:
-
-	port->frame_time =3D (unsigned int)DIV64_U64_ROUND_UP(temp, baud);
-
-In both cases, passing a 0 baud rate will result in a divide-by-zero
-hardware exception.
-
-> =20
-> -		if (baud >=3D min && baud <=3D max)
-> +		if (baud >=3D min && baud <=3D max) {
-> +			port->hup_speed =3D baud;
-
-[Severity: Medium]
-Could this result in a data race on port->hup_speed?
-
-In the standard uart_set_termios() path, uart_get_baud_rate() is called
-holding only port->mutex and termios_rwsem, not port->lock.
-
-At the same time, atomic console write paths execute asynchronously from
-hardirq or NMI holding only the nbcon lock. For example:
-
-drivers/tty/serial/8250/8250_port.c:serial8250_console_restore() {
-	...
-	baud =3D serial8250_get_baud_rate(port, &termios, NULL);
-	...
-}
-
-This calls into uart_get_baud_rate() without holding port->mutex. A
-concurrent tcsetattr() and atomic console write can trigger an unprotected
-data race on port->hup_speed. A torn read or write on this variable could
-yield a garbage baud rate and lead to hardware misconfiguration.
-
->  			return baud;
-> +		}
-> =20
->  		/*
->  		 * If the range cannot be met then try again with
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/alpine.DEB.2.21.261=
-0120150230.55767@angie.orcam.me.uk?part=3D1
