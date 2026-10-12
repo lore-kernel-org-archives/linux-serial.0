@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37852437448;
-	Mon, 12 Oct 2026 07:04:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3976043D4E0;
+	Mon, 12 Oct 2026 07:05:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791788668; cv=none; b=KnSIJevGveM+n1gbYJtMMXCr0eOSV7UHFEbVsauNyaKzNqu/N4ArVNVwsODQ2wHPqzyP3AC3Del2+pOGaLaAnna/5hyiHEBWnGPdpANHJBaFy1WRx8xAYRNG8T+vzBfLbWI7eHmgxt3ZR5PfHzSafK1y4Or1xZGpV37l+smmTtw=
+	t=1791788704; cv=none; b=X98A0sZyeRSy8knP2ZqDpanhVUSvIki9tOX/GLY0oiSVVQq4CmR9q9I1ehXwIBaXhOg6bkfAL7nP7sMTzP7kll8k3LB2K0RuJarAHRB42k2cn7EPjF096Xg12f+XnAYHH0bEQ0CMgDmscfJ7RF7Yc9VQm3q4QrLvnMbdWHIAB0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791788668; c=relaxed/simple;
-	bh=njVTeMFlWCMn4UN3hjmEl1tC2Is0UxJm45Y9QN9dZL8=;
+	s=arc-20240116; t=1791788704; c=relaxed/simple;
+	bh=ouCFy+dwMHH9NWljsqsG6wpt076jdl0A2KjeW/VwWGs=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=gQOysRXClTlMh+GJJOigistP0Ph7CyHE+RG0WWOHQCnFhG3zoGiX+163IpBFJpp9SoRlE0H6PBvbp9RuW85JyyINaQ0aQiRpuSQEF7MAgJ4hbcuyLuoAthe29U6aXQx0MLOSEcjsM0i47EaCBqDke7h/na9XIOVEpKOIIYataAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YdRFOa9B; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=pzKARFBBgjW3jb4IgTJMwDezFF4hRyjbkUaarStMd2ShS/AGNChTdr30eBB5zpuZGBmAO8l1kSSPXnhU207MoWwIDf+jczdWwAyztac8VMJL3QoIuRM059qCYRLAj2m74/ejWatr70VFfgwYpnrCZ+NVkwXy8mvjJXRV36C6SAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ggMKgF8a; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YdRFOa9B"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D78E1F0089B;
-	Mon, 12 Oct 2026 07:04:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ggMKgF8a"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E6701F0089B;
+	Mon, 12 Oct 2026 07:05:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791788666;
-	bh=njVTeMFlWCMn4UN3hjmEl1tC2Is0UxJm45Y9QN9dZL8=;
+	s=k20260515; t=1791788702;
+	bh=ouCFy+dwMHH9NWljsqsG6wpt076jdl0A2KjeW/VwWGs=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=YdRFOa9B5CYZYq62m4JbF8ktXxaGOOZ7/sWMYkiRE4jUgqTXixuqbgjRcUVlrstsK
-	 8K/DuNJL34LIoSMK7Hf1fQ5yrc0yvK/uiOCnOf3ImYJW+u3uWz4sqqm3MAc3z8DGZt
-	 tZiU+aGAjUv7/dlMFeLCQlEY+FQ21/vkRUDO51wh6hZA6TQPu5cT6nZ+5NRY2+wwCo
-	 +gvx6ZNTF0Lja9de1WXhVUFQGxl7uMPSRfRTQ9crpvOrLy+DjVb4Mg4rt196NyOf7S
-	 /jc6g+74ySbnwLIbTa2cM+BNZy/ULzpxdGVW9AGYfP/yfKGvg3hF0wS8mxD8Fc17vL
-	 r+taMW262T3hg==
-Message-ID: <sashiko-outbox-167772@kernel.org>
+	b=ggMKgF8a0MBIL9mLkRWhYX3flOI4gJNgwynpItp7MmDKv2hd5pyfgvtPkWoSPZcpF
+	 wU1MW/vO9ep/7NwNlG5FIYrwEe4Pbmf68aASdKroqsM58zYeoixm8fkpT/HtakvqEJ
+	 xMlWLtC1i9xdq8cXxAn3pxVFKV3SKkanQ9ShmuCXs3SKjKCdIV/Q5EEs1j/5FR6qU4
+	 85GrAwn14acXL4QVvgX1gUKYbScnimF+4snoSUXw+VT0xXgQd6N2TSIK47eC/a+ryo
+	 2I/7GlLozscZRd9tzIaO5blbJoswD4aD//JiI66AuGA6Y6kYqHwSFOu68kij2MuoTm
+	 8KolN3swvl9WA==
+Message-ID: <sashiko-outbox-167773@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC v3 08/10] ARM: dts: cortina: Add CS7542 SoC and
- Securifi Almond+ board
+Subject: Re: [PATCH RFC v3 05/10] ARM: debug: Add Cortina Systems CS75xx
+ UART0 support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Fil Dunsky" <filipp.dunsky@gmail.com>
-Cc: conor+dt@kernel.org, robh@kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20261012-b4-cs75xx-v3-8-0e0d17a098cf@gmail.com>
+Cc: robh@kernel.org, linux-serial@vger.kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20261012-b4-cs75xx-v3-5-0e0d17a098cf@gmail.com>
 References: <20261012-b4-cs75xx-v3-0-0e0d17a098cf@gmail.com>
- <20261012-b4-cs75xx-v3-8-0e0d17a098cf@gmail.com>
+ <20261012-b4-cs75xx-v3-5-0e0d17a098cf@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 12 Oct 2026 07:04:26 +0000
+Date: Mon, 12 Oct 2026 07:05:02 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,28 +47,15 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 > From: Fil Dunsky <filipp.dunsky@gmail.com>
 >=20
-> Add a minimal description of the Cortina Systems CS7542 SoC: the two
-> Cortex-A9 cores, SCU, GIC, global timer, private timer and watchdog,
-> PL310 L2 cache controller and the four on-chip UARTs.
+> Add low-level debug output through UART0 of the Cortina Systems CS75xx
+> SoCs. The UART is mapped at a fixed virtual address by the generic
+> debug_ll_io_init(), so no platform map_io is needed.
 >=20
-> The peripheral clock (APB) runs at 100, 150 or 170 MHz depending on the
-> boot strap pins. Until there is a driver for the global control block
-> that reads the straps, model it as a fixed clock whose rate is provided
-> by the board.
->=20
-> The Securifi Almond+ is a touchscreen Wi-Fi router with 512 MiB of DDR3,
-> 512 MiB of NAND flash, a QCA8337 switch, QCA9880 and AR9580 Wi-Fi and an
-> ASM1042 USB 3.0 controller behind the SoC PCIe root ports. For now,
-> describe the memory, the console UART and a ramoops region, and reserve
-> the top 64 MiB of RAM which the vendor firmware hands to the packet
-> engine queue manager.
->=20
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
 > Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
 Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261012-b4-cs75xx-=
-v3-0-0e0d17a098cf@gmail.com?part=3D8
+v3-0-0e0d17a098cf@gmail.com?part=3D5
 
