@@ -1,78 +1,77 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E2D235AC1C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1EC34EEEE;
 	Mon, 12 Oct 2026 09:41:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791798082; cv=none; b=LZu2reHTuGJgaUhjs2rdiN9ULvJd6Ab9uJNU8cF/0mKe0AX2auGryI3RL0W3HrpyLX1KWqS5VJOJM+A6Cuae7V2o230LztCqit4fhvSOUYnPikwVDzvT6zv4mw2pjYhf75dKUJ1Nq8RmdsgqJSDb3WZMJVAAPhOIERfCnNsEpJU=
+	t=1791798083; cv=none; b=o4v+jWQrzbRdYimR18ZTwas44ynE8FMeh8q91F6u5Cgqr5f8+QNxvXo2r5BsTUUYFNNsO/V1+h6hZ5h+3rcnLwTI3Omrkpj745QlM94gY+T4+BGy9+ubtCkQrDskMjOE1zT4n+mK5Uyiw3OWsYAtxZzH0c7IFCK5ppm7kL3Yhz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791798082; c=relaxed/simple;
-	bh=SiOHAZBqFV0Hqn7b7O+fryzY/wDj9loA8SWLFcgUP5I=;
+	s=arc-20240116; t=1791798083; c=relaxed/simple;
+	bh=pXrtYxHmiro9JBT4aUg+cLeimZFMsHTHKshBSEbcQmA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QgUVsfXFuszM1Ym5Z9ZiKIkkPEFXMiMlup0pNkxLIVi2bxLTr0+JBdC0d/GDwkATShPhi0BMxVpES5aWELh6Q6OMU+GS19NIXGAEslr0l5+hSSuXNAiuMERDIUEj9Zv+uLa8RtVbmuKIuPgGu9tQpF0mElFxHmVbMjaTnUNHxl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oRhJ2MDc; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Bq7Wh1Mf; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oRhJ2MDc; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Bq7Wh1Mf; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version; b=g3fuieRvwHpOGfijZKpq+j4JrXC98ZNmofPMwM6xYXAmhW1Rkgl1oAY2LpKtO37qRo8OaumonuHNo5uvxWaX9+d8UIwxfVD6QyuBgt9PE8noWmYlpsj5hj8Bgz1RF7gPFpmY5sF61D6swUoQkjRkycRsmJz9fzC9e06hJV5kjMo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=b50S5vfV; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=4We06Ar0; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=b50S5vfV; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=4We06Ar0; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oRhJ2MDc";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Bq7Wh1Mf";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oRhJ2MDc";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Bq7Wh1Mf"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="b50S5vfV";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="4We06Ar0";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="b50S5vfV";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="4We06Ar0"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id B0D5521DFB;
+	by smtp-out1.suse.de (Postfix) with ESMTPS id D2B4821E69;
 	Mon, 12 Oct 2026 09:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1791798078; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=8TL3RmCIVGPHzikpqeQy4EyRAhGOCipxTVLidp1fyLY=;
-	b=oRhJ2MDcLBmKU/Cl7FVQGBbveURkLJWqLzfPq/djneZhAwGcjbpwhIdLhW5Eidtawxb2R/
-	ODgBd/ItXk/h0t8rsBdjBd5vlOBJLFStccFkAwH3l6mhkjtBVk4yR4IESN2BuDe1qAEQJ3
-	XcxxUIWLwadvYKx/6QOwzHyrMSaE0qE=
+	bh=Y0iODFkuYRmj0jeuiVHk+xppSK1jEbAaNPxjpNdcyGw=;
+	b=b50S5vfVvP/bWltspX7IYudmcYlnfBPOJ2bYO4+W5wBuV/bkVUdWG0MUX0aHlIOfQPbbyB
+	L6sdGenNKjJXliWU5hzYIUOv2oAmx/7CV3rmIED0vTJYr2PJ1eZrZie3ASvBgaDSItQnRY
+	2oIAaqlmNpXHAlFrGNe9oPXGlFWitsA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1791798078;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=8TL3RmCIVGPHzikpqeQy4EyRAhGOCipxTVLidp1fyLY=;
-	b=Bq7Wh1Mf4IbfOX9vnCxkPqrTo/6ug28emFfsg4xX2hrTY3vsmlBUWneRe4zj+SGn1KNQyd
-	q2UCmWx1zwjdfwCA==
+	bh=Y0iODFkuYRmj0jeuiVHk+xppSK1jEbAaNPxjpNdcyGw=;
+	b=4We06Ar0o6q1lDpKRDYgXIWHg+nsxJun4izEe8pozfElpf4Kt6Efr+tc7RSJPJSV0CRJNp
+	nHZ+Vz5h7KoN0FCg==
 Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=oRhJ2MDc;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=Bq7Wh1Mf
+	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1791798078; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=8TL3RmCIVGPHzikpqeQy4EyRAhGOCipxTVLidp1fyLY=;
-	b=oRhJ2MDcLBmKU/Cl7FVQGBbveURkLJWqLzfPq/djneZhAwGcjbpwhIdLhW5Eidtawxb2R/
-	ODgBd/ItXk/h0t8rsBdjBd5vlOBJLFStccFkAwH3l6mhkjtBVk4yR4IESN2BuDe1qAEQJ3
-	XcxxUIWLwadvYKx/6QOwzHyrMSaE0qE=
+	bh=Y0iODFkuYRmj0jeuiVHk+xppSK1jEbAaNPxjpNdcyGw=;
+	b=b50S5vfVvP/bWltspX7IYudmcYlnfBPOJ2bYO4+W5wBuV/bkVUdWG0MUX0aHlIOfQPbbyB
+	L6sdGenNKjJXliWU5hzYIUOv2oAmx/7CV3rmIED0vTJYr2PJ1eZrZie3ASvBgaDSItQnRY
+	2oIAaqlmNpXHAlFrGNe9oPXGlFWitsA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1791798078;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=8TL3RmCIVGPHzikpqeQy4EyRAhGOCipxTVLidp1fyLY=;
-	b=Bq7Wh1Mf4IbfOX9vnCxkPqrTo/6ug28emFfsg4xX2hrTY3vsmlBUWneRe4zj+SGn1KNQyd
-	q2UCmWx1zwjdfwCA==
+	bh=Y0iODFkuYRmj0jeuiVHk+xppSK1jEbAaNPxjpNdcyGw=;
+	b=4We06Ar0o6q1lDpKRDYgXIWHg+nsxJun4izEe8pozfElpf4Kt6Efr+tc7RSJPJSV0CRJNp
+	nHZ+Vz5h7KoN0FCg==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 2012D139AF;
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 71375139B0;
 	Mon, 12 Oct 2026 09:41:18 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id vPIGKD2rzGr6dgAAD6G6ig:T2
+	id vPIGKD2rzGr6dgAAD6G6ig:T3
 	(envelope-from <tzimmermann@suse.de>); Mon, 12 Oct 2026 09:41:18 +0000
 From: Thomas Zimmermann <tzimmermann@suse.de>
 To: gregkh@linuxfoundation.org,
@@ -86,9 +85,9 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-parisc@vger.kernel.org,
 	sashiko-reviews@lists.linux.dev,
 	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 1/2] vt: Use boolean as parameter to do_blank_screen() and do_unblank_screen()
-Date: Mon, 12 Oct 2026 11:27:38 +0200
-Message-ID: <20261012094114.38549-2-tzimmermann@suse.de>
+Subject: [PATCH 2/2] vt: Distinguish between blanking and VESA blank mode in con_blank
+Date: Mon, 12 Oct 2026 11:27:39 +0200
+Message-ID: <20261012094114.38549-3-tzimmermann@suse.de>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261012094114.38549-1-tzimmermann@suse.de>
 References: <20261012094114.38549-1-tzimmermann@suse.de>
@@ -99,215 +98,311 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Queue-Id: B0D5521DFB
-X-Rspamd-Action: no action
-X-Spam-Level: 
-X-Spamd-Result: default: False [-3.01 / 50.00];
+X-Spamd-Result: default: False [-2.80 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
 	MID_CONTAINS_FROM(1.00)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
 	R_MISSING_CHARSET(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	NEURAL_HAM_SHORT(-0.20)[-1.000];
 	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[11];
 	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
 	FREEMAIL_TO(0.00)[linuxfoundation.org,kernel.org,gmx.de,HansenPartnership.com,ffwll.ch];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
 	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.de:+];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
+	URIBL_BLOCKED(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:email];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
 	RCVD_TLS_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:dkim,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns];
-	RCPT_COUNT_SEVEN(0.00)[11];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:email];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
 	FREEMAIL_ENVRCPT(0.00)[gmx.de]
+X-Spam-Score: -2.80
+X-Spam-Level: 
 X-Spam-Flag: NO
-X-Spam-Score: -3.01
 
-The parameters to do_blank_screen() and do_unblank_screen() signal
-whether the call is part of a switch between text and graphics mode.
-Convert to boolean. No functional changes.
+The con_blank callback in struct consw encodes blanking and display
+blank mode in a single parameter named blank. Its semantics equal
+the FB_BLANK constants from the fbdev subsystems. Yet it is of type
+enum vesa_blank_mode, which describes VESA DPMS levels of the attached
+monitor. Although related, this is something else.
+
+For this reason, calls to con_blank fill the blank parameter with
+values that appear non-sensical at first. For example, to blank the
+console, but keep the monitor on, vt passes VESA_VSYNC_SUSPEND (eq '1').
+This is because consoles interpret '1' as pixels-off-but-monitor-on.
+The constant VESA_VSYNC_SUSPEND actually means monitor-vsync-off. And
+the argument used for monitor-vsync-off is VESA_VSYNC_SUSPEND+1.
+
+To fix this by splitting blank into two parameters, blank and blank_mode.
+The new blank is a boolean to control the display blanking. If cleared,
+the console creates display output, if set the console does not. The
+new parameter blank_mode specifies the VESA blank mode for the monitor
+and equals VESA DPMS levels. If blank is set, blank_mode gives a hint
+to the console, on how to set up the signal to the monitor.
+
+The actual interpretation is up to the console. Newportcon and sticon
+only handle blank or not-blank. Fbcon and vgacon implement blank plus
+the VESA DPMS handling. The implementation of both consoles is again
+somewhat confusing because types and values do not match. Clean up
+both with the new blank/blank_mode logic.
 
 Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 ---
- drivers/tty/vt/vt.c              | 20 ++++++++++----------
- drivers/tty/vt/vt_ioctl.c        | 12 ++++++------
- drivers/video/fbdev/core/fbcon.c |  4 ++--
- include/linux/vt_kern.h          |  5 +++--
- 4 files changed, 21 insertions(+), 20 deletions(-)
+ drivers/tty/vt/vt.c                 | 11 ++++----
+ drivers/video/console/dummycon.c    |  4 +--
+ drivers/video/console/newport_con.c |  4 +--
+ drivers/video/console/sticon.c      |  4 +--
+ drivers/video/console/vgacon.c      | 44 +++++++++++++++--------------
+ drivers/video/fbdev/core/fbcon.c    | 19 +++++++------
+ include/linux/console.h             |  9 ++++--
+ 7 files changed, 51 insertions(+), 44 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 57edf37495a8..9e7b4419b422 100644
+index 9e7b4419b422..f762c965351d 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -3374,7 +3374,7 @@ static void console_callback(struct work_struct *ignored)
- 		scrollback_delta = 0;
- 	}
- 	if (blank_timer_expired) {
--		do_blank_screen(0);
-+		do_blank_screen(false);
- 		blank_timer_expired = 0;
- 	}
- 	notify_update(vc_cons[fg_console].d);
-@@ -3636,7 +3636,7 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
- 	case TIOCL_BLANKSCREEN:	/* until explicitly unblanked, not only poked */
- 		scoped_guard(console_lock) {
- 			ignore_poke = 1;
--			do_blank_screen(0);
-+			do_blank_screen(false);
- 		}
- 		break;
- 	case TIOCL_BLANKEDSCREEN:
-@@ -4659,7 +4659,7 @@ static int set_vesa_blanking(u8 __user *mode_user)
- 	return 0;
- }
- 
--void do_blank_screen(int entering_gfx)
-+void do_blank_screen(bool entering_gfx)
- {
- 	struct vc_data *vc = vc_cons[fg_console].d;
- 	int i;
-@@ -4671,7 +4671,7 @@ void do_blank_screen(int entering_gfx)
+@@ -4671,7 +4671,7 @@ void do_blank_screen(bool entering_gfx)
  	if (console_blanked) {
  		if (blank_state == blank_vesa_wait) {
  			blank_state = blank_off;
--			vc->vc_sw->con_blank(vc, vesa_blank_mode + 1, 0);
-+			vc->vc_sw->con_blank(vc, vesa_blank_mode + 1, false);
+-			vc->vc_sw->con_blank(vc, vesa_blank_mode + 1, false);
++			vc->vc_sw->con_blank(vc, true, vesa_blank_mode, false);
  		}
  		return;
  	}
-@@ -4680,7 +4680,7 @@ void do_blank_screen(int entering_gfx)
+@@ -4680,7 +4680,7 @@ void do_blank_screen(bool entering_gfx)
  	if (entering_gfx) {
  		hide_cursor(vc);
  		save_screen(vc);
--		vc->vc_sw->con_blank(vc, VESA_VSYNC_SUSPEND, 1);
-+		vc->vc_sw->con_blank(vc, VESA_VSYNC_SUSPEND, true);
+-		vc->vc_sw->con_blank(vc, VESA_VSYNC_SUSPEND, true);
++		vc->vc_sw->con_blank(vc, true, VESA_NO_BLANKING, true);
  		console_blanked = fg_console + 1;
  		blank_state = blank_off;
  		set_origin(vc);
-@@ -4702,7 +4702,7 @@ void do_blank_screen(int entering_gfx)
+@@ -4701,8 +4701,9 @@ void do_blank_screen(bool entering_gfx)
+ 
  	save_screen(vc);
  	/* In case we need to reset origin, blanking hook returns 1 */
- 	i = vc->vc_sw->con_blank(vc, vesa_off_interval ? VESA_VSYNC_SUSPEND :
--				 (vesa_blank_mode + 1), 0);
-+				 (vesa_blank_mode + 1), false);
+-	i = vc->vc_sw->con_blank(vc, vesa_off_interval ? VESA_VSYNC_SUSPEND :
+-				 (vesa_blank_mode + 1), false);
++	i = vc->vc_sw->con_blank(vc, true,
++				 vesa_off_interval ? VESA_NO_BLANKING : vesa_blank_mode,
++				 false);
  	console_blanked = fg_console + 1;
  	if (i)
  		set_origin(vc);
-@@ -4721,7 +4721,7 @@ EXPORT_SYMBOL(do_blank_screen);
- /*
-  * Called by timer as well as from vt_console_driver
-  */
--void do_unblank_screen(int leaving_gfx)
-+void do_unblank_screen(bool leaving_gfx)
- {
- 	struct vc_data *vc;
- 
-@@ -4767,13 +4767,13 @@ EXPORT_SYMBOL(do_unblank_screen);
- 
- /*
-  * This is called by the outside world to cause a forced unblank, mostly for
-- * oopses. Currently, I just call do_unblank_screen(0), but we could eventually
-- * call it with 1 as an argument and so force a mode restore... that may kill
-+ * oopses. Currently, I just call do_unblank_screen(false), but we could eventually
-+ * call it with true as an argument and so force a mode restore... that may kill
-  * X or at least garbage the screen but would also make the Oops visible...
-  */
- static void unblank_screen(void)
- {
--	do_unblank_screen(0);
-+	do_unblank_screen(false);
- }
- 
- /*
-diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-index ecefe4a666f2..1241b39d6e68 100644
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -273,9 +273,9 @@ static int vt_kdsetmode(struct vc_data *vc, unsigned long mode)
- 
- 	/* explicitly blank/unblank the screen if switching modes */
- 	if (mode == KD_TEXT)
--		do_unblank_screen(1);
-+		do_unblank_screen(true);
- 	else
--		do_blank_screen(1);
-+		do_blank_screen(true);
- 
- 	return 0;
- }
-@@ -1152,9 +1152,9 @@ static void complete_change_console(struct vc_data *vc)
- 	 */
- 	if (old_vc_mode != vc->vc_mode) {
- 		if (vc->vc_mode == KD_TEXT)
--			do_unblank_screen(1);
-+			do_unblank_screen(true);
- 		else
--			do_blank_screen(1);
-+			do_blank_screen(true);
+@@ -4753,7 +4754,7 @@ void do_unblank_screen(bool leaving_gfx)
  	}
  
- 	/*
-@@ -1182,9 +1182,9 @@ static void complete_change_console(struct vc_data *vc)
+ 	console_blanked = 0;
+-	if (vc->vc_sw->con_blank(vc, VESA_NO_BLANKING, leaving_gfx))
++	if (vc->vc_sw->con_blank(vc, false, VESA_NO_BLANKING, leaving_gfx))
+ 		/* Low-level driver cannot restore -> do it ourselves */
+ 		update_screen(vc);
+ 	if (console_blank_hook)
+diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
+index 7d02470f19b9..50aaccffcccf 100644
+--- a/drivers/video/console/dummycon.c
++++ b/drivers/video/console/dummycon.c
+@@ -79,7 +79,7 @@ static void dummycon_putcs(struct vc_data *vc, const u16 *s, unsigned int count,
+ 	raw_notifier_call_chain(&dummycon_output_nh, 0, NULL);
+ }
  
- 			if (old_vc_mode != vc->vc_mode) {
- 				if (vc->vc_mode == KD_TEXT)
--					do_unblank_screen(1);
-+					do_unblank_screen(true);
- 				else
--					do_blank_screen(1);
-+					do_blank_screen(true);
- 			}
- 		}
+-static bool dummycon_blank(struct vc_data *vc, enum vesa_blank_mode blank,
++static bool dummycon_blank(struct vc_data *vc, bool blank, enum vesa_blank_mode blank_mode,
+ 			   bool mode_switch)
+ {
+ 	/* Redraw, so that we get putc(s) for output done while blanked */
+@@ -99,7 +99,7 @@ static void dummycon_putc(struct vc_data *vc, u16 c, unsigned int y,
+ 			  unsigned int x) { }
+ static void dummycon_putcs(struct vc_data *vc, const u16 *s, unsigned int count,
+ 			   unsigned int ypos, unsigned int xpos) { }
+-static bool dummycon_blank(struct vc_data *vc, enum vesa_blank_mode blank,
++static bool dummycon_blank(struct vc_data *vc, bool blank, enum vesa_blank_mode blank_mode,
+ 			   bool mode_switch)
+ {
+ 	return false;
+diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
+index ecbbe2e4e2a6..90e6d70f94bb 100644
+--- a/drivers/video/console/newport_con.c
++++ b/drivers/video/console/newport_con.c
+@@ -476,12 +476,12 @@ static bool newport_switch(struct vc_data *vc)
+ 	return true;
+ }
+ 
+-static bool newport_blank(struct vc_data *c, enum vesa_blank_mode blank,
++static bool newport_blank(struct vc_data *c, bool blank, enum vesa_blank_mode blank_mode,
+ 			  bool mode_switch)
+ {
+ 	unsigned short treg;
+ 
+-	if (blank == VESA_NO_BLANKING) {
++	if (!blank) {
+ 		/* unblank console */
+ 		treg = newport_vc2_get(npregs, VC2_IREG_CONTROL);
+ 		newport_vc2_set(npregs, VC2_IREG_CONTROL,
+diff --git a/drivers/video/console/sticon.c b/drivers/video/console/sticon.c
+index 6f58e6a9e76a..00e5f86dd35a 100644
+--- a/drivers/video/console/sticon.c
++++ b/drivers/video/console/sticon.c
+@@ -299,10 +299,10 @@ static bool sticon_switch(struct vc_data *conp)
+     return true;	/* needs refreshing */
+ }
+ 
+-static bool sticon_blank(struct vc_data *c, enum vesa_blank_mode blank,
++static bool sticon_blank(struct vc_data *c, bool blank, enum vesa_blank_mode blank_mode,
+ 			 bool mode_switch)
+ {
+-    if (blank == VESA_NO_BLANKING) {
++    if (!blank) {
+ 	if (mode_switch)
+ 	    vga_is_gfx = 0;
+ 	return true;
+diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
+index 536e7fe4d142..a3a45b6956df 100644
+--- a/drivers/video/console/vgacon.c
++++ b/drivers/video/console/vgacon.c
+@@ -797,11 +797,31 @@ static void vga_pal_blank(struct vgastate *state)
  	}
+ }
+ 
+-static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
++static bool vgacon_blank(struct vc_data *c, bool blank, enum vesa_blank_mode blank_mode,
+ 			 bool mode_switch)
+ {
+-	switch (blank) {
+-	case VESA_NO_BLANKING:		/* Unblank */
++	if (blank) {
++		switch (blank_mode) {
++		case VESA_NO_BLANKING:	/* Normal blanking */
++			if (!mode_switch && vga_video_type == VIDEO_TYPE_VGAC) {
++				vga_pal_blank(&vgastate);
++				vga_palette_blanked = true;
++				return 0;
++			}
++			vgacon_set_origin(c);
++			scr_memsetw((void *)vga_vram_base, BLANK,
++				    c->vc_screenbuf_size);
++			if (mode_switch)
++				vga_is_gfx = true;
++			return 1;
++		default:		/* VESA blanking */
++			if (vga_video_type == VIDEO_TYPE_VGAC) {
++				vga_vesa_blank(&vgastate, blank_mode);
++				vga_vesa_blanked = blank_mode;
++			}
++			return 0;
++		}
++	} else { /* Unblank */
+ 		if (vga_vesa_blanked) {
+ 			vga_vesa_unblank(&vgastate);
+ 			vga_vesa_blanked = VESA_NO_BLANKING;
+@@ -814,24 +834,6 @@ static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
+ 		vga_is_gfx = false;
+ 		/* Tell console.c that it has to restore the screen itself */
+ 		return 1;
+-	case VESA_VSYNC_SUSPEND:	/* Normal blanking */
+-		if (!mode_switch && vga_video_type == VIDEO_TYPE_VGAC) {
+-			vga_pal_blank(&vgastate);
+-			vga_palette_blanked = true;
+-			return 0;
+-		}
+-		vgacon_set_origin(c);
+-		scr_memsetw((void *) vga_vram_base, BLANK,
+-			    c->vc_screenbuf_size);
+-		if (mode_switch)
+-			vga_is_gfx = true;
+-		return 1;
+-	default:		/* VESA blanking */
+-		if (vga_video_type == VIDEO_TYPE_VGAC) {
+-			vga_vesa_blank(&vgastate, blank - 1);
+-			vga_vesa_blanked = blank;
+-		}
+-		return 0;
+ 	}
+ }
+ 
 diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 615fa596b7cc..274f6bf6e165 100644
+index 274f6bf6e165..7f75b4f5da74 100644
 --- a/drivers/video/fbdev/core/fbcon.c
 +++ b/drivers/video/fbdev/core/fbcon.c
-@@ -3051,9 +3051,9 @@ void fbcon_fb_blanked(struct fb_info *info, int blank)
- 
- 	if (con_is_visible(vc)) {
- 		if (blank)
--			do_blank_screen(0);
-+			do_blank_screen(false);
- 		else
--			do_unblank_screen(0);
-+			do_unblank_screen(false);
+@@ -2287,18 +2287,19 @@ static void fbcon_generic_blank(struct vc_data *vc, struct fb_info *info,
  	}
- 	par->blank_state = blank;
  }
-diff --git a/include/linux/vt_kern.h b/include/linux/vt_kern.h
-index d008c3d0a9bb..b4e3a2543777 100644
---- a/include/linux/vt_kern.h
-+++ b/include/linux/vt_kern.h
-@@ -10,6 +10,7 @@
- #include <linux/vt.h>
- #include <linux/kd.h>
- #include <linux/tty.h>
-+#include <linux/types.h>
- #include <linux/mutex.h>
- #include <linux/console_struct.h>
- #include <linux/mm.h>
-@@ -29,8 +30,8 @@ int __vc_resize(struct vc_data *vc, unsigned int cols, unsigned int lines,
- 		bool from_user);
- struct vc_data *vc_deallocate(unsigned int console);
- void reset_palette(struct vc_data *vc);
--void do_blank_screen(int entering_gfx);
--void do_unblank_screen(int leaving_gfx);
-+void do_blank_screen(bool entering_gfx);
-+void do_unblank_screen(bool leaving_gfx);
- void poke_blanked_console(void);
- int con_font_op(struct vc_data *vc, struct console_font_op *op);
- int con_set_cmap(unsigned char __user *cmap);
+ 
+-static bool fbcon_blank(struct vc_data *vc, enum vesa_blank_mode blank,
++static bool fbcon_blank(struct vc_data *vc, bool blank, enum vesa_blank_mode blank_mode,
+ 			bool mode_switch)
+ {
+ 	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_par *par = info->fbcon_par;
++	int blank_state = !blank ? FB_BLANK_UNBLANK : blank_mode + 1;
+ 
+ 	if (mode_switch) {
+ 		struct fb_var_screeninfo var = info->var;
+ 
+ 		par->graphics = 1;
+ 
+-		if (!blank) {
++		if (!blank_state) {
+ 			var.activate = FB_ACTIVATE_NOW | FB_ACTIVATE_FORCE |
+ 				FB_ACTIVATE_KD_TEXT;
+ 			fb_set_var(info, &var);
+@@ -2308,16 +2309,16 @@ static bool fbcon_blank(struct vc_data *vc, enum vesa_blank_mode blank,
+ 	}
+ 
+ 	if (fbcon_is_active(vc, info)) {
+-		if (par->blank_state != blank) {
+-			par->blank_state = blank;
+-			fbcon_cursor(vc, !blank);
+-			par->cursor_flash = (!blank);
++		if (par->blank_state != blank_state) {
++			par->blank_state = blank_state;
++			fbcon_cursor(vc, !blank_state);
++			par->cursor_flash = (!blank_state);
+ 
+-			if (fb_blank(info, blank))
+-				fbcon_generic_blank(vc, info, blank);
++			if (fb_blank(info, blank_state))
++				fbcon_generic_blank(vc, info, blank_state);
+ 		}
+ 
+-		if (!blank)
++		if (!blank_state)
+ 			update_screen(vc);
+ 	}
+ 
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 502d1abe3f50..19f80556e9b2 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -56,8 +56,10 @@ enum vc_intensity;
+  * @con_switch: notifier about the console switch; it is supposed to return
+  *		true if a redraw is needed.
+  * @con_blank:  blank/unblank the console. The target mode is passed in @blank.
+- *		@mode_switch is set if changing from/to text/graphics. The hook
+- *		is supposed to return true if a redraw is needed.
++ *		@blank_mode contains the requested level of power saving
++ *		if @blank is true. @mode_switch is set if changing from/to
++ *		text/graphics. The hook is supposed to return true if a redraw
++ *		is needed.
+  * @con_font_set: set console @vc font to @font with height @vpitch. @flags can
+  *		be %KD_FONT_FLAG_DONT_RECALC. (optional)
+  * @con_font_get: fetch the current font on @vc of height @vpitch into @font.
+@@ -97,7 +99,8 @@ struct consw {
+ 			unsigned int bottom, enum con_scroll dir,
+ 			unsigned int lines);
+ 	bool	(*con_switch)(struct vc_data *vc);
+-	bool	(*con_blank)(struct vc_data *vc, enum vesa_blank_mode blank,
++	bool	(*con_blank)(struct vc_data *vc, bool blank,
++			     enum vesa_blank_mode blank_mode,
+ 			     bool mode_switch);
+ 	int	(*con_font_set)(struct vc_data *vc,
+ 				const struct console_font *font,
 -- 
 2.55.0
 
