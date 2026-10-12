@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365D34BF943;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 482A64BF94F;
 	Mon, 12 Oct 2026 17:31:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791826278; cv=none; b=uMflG9wa/RDqkkShqzp5VxEPi78gFdoSfcRSIrXAVaa/PZ5KBWWKx8lJLeaDMX4wJ+tHfAA6kPAPfWHAKD5uM1wX8rywCUWSZymYLB2z6x1WMbCRwCN2yxOjsVP5fVuQVZfTP05E4IhDh9OCFlb95ZIMDP/7SJvQDmHUivMilsE=
+	t=1791826278; cv=none; b=OU0a+CSNr4CH0Vv+r5s9l48tvFPbv3rODuytFY/IQC6J2GAU4Zs25XVuPFHXaYT+oS2s4rUkhHfVNRXQw6AqxOsTpJ86JDjQsOuDyg48u1wBk5SOTR7R6dEMq4WuppCvPsjFu7KCZpwCGHXPtaPcbuzxZloDHbcBog7NjVRLtGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791826278; c=relaxed/simple;
-	bh=ta+sCYa3B5iIapBdVCBKSs7ysLBr0yERQl2LLQed9nw=;
+	bh=GCubckKkvtS/EOiOIxWc0YpDQoyEYzgiiDMrguNF01I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=JHNAYZanzIZQpmjEtCGjyruXgx7TxwDggwWsU7WeMpfayy8433Q8wvIJJ49/CcK5F0+aenqzR3K0qxHSWIi72fy2z1XjzDriiUZW7KAUZurHN9wSKsE6guyePEbojdeR8aOCLP0cl8l3XZE1aYNCVs8HSuyM/ALFoZGn9HMxho4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=av5Cyf44; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=e9sON7JbSh0AIt0x5PiZRAa1+ysFwjEtpr6C7aGK/RquIS2uAZp/l/CgFjSMnUAQzKxuXS2Yu3gRusVYtW+yofvuCTiMocp9PvIPHS6fFaEh+r4N0yzyg/yE6eQQlUDr92qMaUMIYHBrxP1ds1RxTdZ0KkLU4SDC9uUWcuVI0+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n+yV1LXp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="av5Cyf44"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CF254C2BCFD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n+yV1LXp"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F2AE0C2BD00;
 	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1791826277;
-	bh=ta+sCYa3B5iIapBdVCBKSs7ysLBr0yERQl2LLQed9nw=;
+	s=k20201202; t=1791826278;
+	bh=GCubckKkvtS/EOiOIxWc0YpDQoyEYzgiiDMrguNF01I=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=av5Cyf44hSHHeb3QYE8ikNjcauX+do3+/plVFROhEbZGzqQKgQLYUZb3CIRLCrCSq
-	 BQJUz/5N002zn2g0cCMYTtdp/cWOrrIo/A5s9nrh2Br4M3OutCp1Fk1yyvoZziQATm
-	 UiG4OBiZz8aCezRu2ouHfZtVkAQO7XXO2PskMgCjq7hp5FQPOpNVIdffKm0Su14QqT
-	 TQ0yp5vLaWBhFYVea9DZJ4kp9X9yeQZc9OzBT6Rhzh86ihXTmIwL5wYaWUG0T4uYaB
-	 SMjvOuoc8xm6L3ZgQESzRGf0QAxLl5nUYFN+PTQo7dGgiM8sHwg/zPigSR8Khm8/uG
-	 uib7SMDoAAA0A==
+	b=n+yV1LXpWIReonDDWt5VY/94r5W7mn9LSUdbaSU74X22ZvNylW1VNDIY5XbkjhTTS
+	 SQ6oC1TSkfSL7dgiIHB3BXMF/AuCBuRWUyTQPgP0xFI1jDxOHagtZuMpvnTzj1bUO/
+	 j1wUTFoDMUDAWfjAvYp8qi82UuR1LXLPxZTCKcQCRf8DDAh5xpgMCB8R91cfPBaR5V
+	 rJklVrmmig9DAlWGBLCftjBb23G4uG8mMDe6xk7GwNM9FqRrV5tVOcGMuRH+SVyUtJ
+	 wl5iDzLKskBCtp9ZgoaJTKs5oyRnIGGmdXgRbXyu7y2NWkIpN/LqOz04cyRomU+RAP
+	 bhazAde6dETDA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7F7CA9EDD;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF91DCA9EDE;
 	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
 From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Date: Mon, 12 Oct 2026 20:31:22 +0300
-Subject: [PATCH v4 08/10] ARM: dts: cortina: Add CS7542 SoC and Securifi
- Almond+ board
+Date: Mon, 12 Oct 2026 20:31:24 +0300
+Subject: [PATCH v4 10/10] MAINTAINERS: Add entry for Cortina Systems CS75xx
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261012-b4-cs75xx-v4-8-df250d903682@gmail.com>
+Message-Id: <20261012-b4-cs75xx-v4-10-df250d903682@gmail.com>
 References: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
 In-Reply-To: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
 To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
@@ -58,11 +57,11 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Jason Li <jason.li@cortina-access.com>, 
  Fil Dunsky <filipp.dunsky@gmail.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791826275; l=6446;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791826275; l=1124;
  i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=Kz/iJoUxk1DvFqhFj+/+lUnb7liycFbnebAqJPAqCnM=;
- b=s4HmijCuvqxTe3+D/b2Qj1bGYtN7jNsgHktHoXwy6O+KwsLqF9F8v/P+pCAhHqiRukmoe+6D2
- HOQ8tWbok8fACLh1ddJqzXfibYPIo7hBfPVP+s/dOhWng8XmZjSTASb
+ bh=NwAetqwg8dZTsEYKE0lK90ntL9PQOHqCts3OMdvEgqE=;
+ b=gD/lajkp6aakN54TRwqEiJb1/VfUGhcjzDONHf3KkYw1H7rqzEjVyCXTFyvD0YVtlP3SPUqpr
+ ctM++Kj0Y30Ak24GeWT1G47vXmUeZo4MmcTG1o+Pt63xXmHNGADsIoQ
 X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
  pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
 X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
@@ -72,246 +71,37 @@ Reply-To: filipp.dunsky@gmail.com
 
 From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Add a minimal description of the Cortina Systems CS7542 SoC: the two
-Cortex-A9 cores, SCU, GIC, global timer, private timer and watchdog,
-PL310 L2 cache controller and the four on-chip UARTs.
-
-The peripheral clock (APB) runs at 100, 150 or 170 MHz depending on the
-boot strap pins. Until there is a driver for the global control block
-that reads the straps, model it as a fixed clock whose rate is provided
-by the board.
-
-The Securifi Almond+ is a touchscreen Wi-Fi router with 512 MiB of DDR3,
-512 MiB of NAND flash, a QCA8337 switch, QCA9880 and AR9580 Wi-Fi and an
-ASM1042 USB 3.0 controller behind the SoC PCIe root ports. For now,
-describe the memory, the console UART and a ramoops region, and reserve
-the top 64 MiB of RAM which the vendor firmware hands to the packet
-engine queue manager.
+Add an entry covering the Cortina Systems CS75xx platform code, device
+trees, bindings and UART driver.
 
 Reviewed-by: Linus Walleij <linusw@kernel.org>
 Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 ---
- arch/arm/boot/dts/Makefile                         |   1 +
- arch/arm/boot/dts/cortina/Makefile                 |   3 +
- .../dts/cortina/cs7542-securifi-almondplus.dts     |  55 +++++++++
- arch/arm/boot/dts/cortina/cs7542.dtsi              | 127 +++++++++++++++++++++
- 4 files changed, 186 insertions(+)
+ MAINTAINERS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 28fba538d..cf4433001 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -12,6 +12,7 @@ subdir-y += broadcom
- subdir-y += calxeda
- subdir-y += cirrus
- subdir-y += cnxt
-+subdir-y += cortina
- subdir-y += gemini
- subdir-y += hisilicon
- subdir-y += hpe
-diff --git a/arch/arm/boot/dts/cortina/Makefile b/arch/arm/boot/dts/cortina/Makefile
-new file mode 100644
-index 000000000..93be6c9ae
---- /dev/null
-+++ b/arch/arm/boot/dts/cortina/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0
-+dtb-$(CONFIG_ARCH_CORTINA_ACCESS) += \
-+	cs7542-securifi-almondplus.dtb
-diff --git a/arch/arm/boot/dts/cortina/cs7542-securifi-almondplus.dts b/arch/arm/boot/dts/cortina/cs7542-securifi-almondplus.dts
-new file mode 100644
-index 000000000..e2988c687
---- /dev/null
-+++ b/arch/arm/boot/dts/cortina/cs7542-securifi-almondplus.dts
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-+/*
-+ * Device Tree Source for the Securifi Almond+ router
-+ */
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2d137a339..176046436 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2914,6 +2914,17 @@ F:	tools/perf/tests/shell/coresight/*
+ F:	tools/perf/util/cs-etm-decoder/*
+ F:	tools/perf/util/cs-etm.*
+ 
++ARM/CORTINA SYSTEMS CS75XX ARM ARCHITECTURE
++M:	Fil Dunsky <filipp.dunsky@gmail.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
++S:	Maintained
++F:	Documentation/devicetree/bindings/arm/cortina.yaml
++F:	Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
++F:	arch/arm/boot/dts/cortina/
++F:	arch/arm/include/debug/cs75xx.S
++F:	arch/arm/mach-goldengate/
++F:	drivers/tty/serial/cortina-uart.c
 +
-+/dts-v1/;
-+
-+#include "cs7542.dtsi"
-+
-+/ {
-+	model = "Securifi Almond+";
-+	compatible = "securifi,almondplus", "cortina,cs7542";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	memory@0 {
-+		device_type = "memory";
-+		reg = <0x00000000 0x20000000>;
-+	};
-+
-+	reserved-memory {
-+		ranges;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+
-+		ramoops@1bf00000 {
-+			compatible = "ramoops";
-+			reg = <0x1bf00000 0x100000>;
-+			record-size = <0x20000>;
-+			console-size = <0x80000>;
-+			ecc-size = <16>;
-+			no-map;
-+		};
-+
-+		/* Reserved for the packet engine queue manager */
-+		qm-buffer@1c000000 {
-+			reg = <0x1c000000 0x4000000>;
-+			no-map;
-+		};
-+	};
-+};
-+
-+&apb_clk {
-+	clock-frequency = <150000000>;
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/cortina/cs7542.dtsi b/arch/arm/boot/dts/cortina/cs7542.dtsi
-new file mode 100644
-index 000000000..29b0b7da8
---- /dev/null
-+++ b/arch/arm/boot/dts/cortina/cs7542.dtsi
-@@ -0,0 +1,127 @@
-+// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-+/*
-+ * Device Tree Source for the Cortina Systems CS7542 SoC
-+ */
-+
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+	interrupt-parent = <&gic>;
-+
-+	/* Rate is selected by the boot strap pins, set by the board */
-+	apb_clk: clock-apb {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-output-names = "apb";
-+	};
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a9";
-+			reg = <0>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a9";
-+			reg = <1>;
-+			enable-method = "cortina,cs7542-smp";
-+			cpu-release-addr = <0 0xf00000b8>;
-+			next-level-cache = <&l2>;
-+		};
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		ranges;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+
-+		uart0: serial@f0070110 {
-+			compatible = "cortina,cs7542-uart";
-+			reg = <0xf0070110 0x30>;
-+			interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&apb_clk>;
-+
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@f0070140 {
-+			compatible = "cortina,cs7542-uart";
-+			reg = <0xf0070140 0x30>;
-+			interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&apb_clk>;
-+
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@f0070170 {
-+			compatible = "cortina,cs7542-uart";
-+			reg = <0xf0070170 0x30>;
-+			interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&apb_clk>;
-+
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@f00701a0 {
-+			compatible = "cortina,cs7542-uart";
-+			reg = <0xf00701a0 0x30>;
-+			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&apb_clk>;
-+
-+			status = "disabled";
-+		};
-+
-+		l2: cache-controller@f5010000 {
-+			compatible = "arm,pl310-cache";
-+			reg = <0xf5010000 0x1000>;
-+			cache-unified;
-+			cache-level = <2>;
-+			arm,shared-override;
-+			arm,tag-latency = <1 1 1>;
-+			arm,data-latency = <1 1 2>;
-+		};
-+
-+		scu@f8000000 {
-+			compatible = "arm,cortex-a9-scu";
-+			reg = <0xf8000000 0x100>;
-+		};
-+
-+		timer@f8000200 {
-+			compatible = "arm,cortex-a9-global-timer";
-+			reg = <0xf8000200 0x20>;
-+			interrupts = <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
-+			clocks = <&apb_clk>;
-+		};
-+
-+		timer@f8000600 {
-+			compatible = "arm,cortex-a9-twd-timer";
-+			reg = <0xf8000600 0x20>;
-+			interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
-+			clocks = <&apb_clk>;
-+		};
-+
-+		watchdog@f8000620 {
-+			compatible = "arm,cortex-a9-twd-wdt";
-+			reg = <0xf8000620 0x20>;
-+			interrupts = <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_EDGE_RISING)>;
-+			clocks = <&apb_clk>;
-+		};
-+
-+		gic: interrupt-controller@f8001000 {
-+			compatible = "arm,cortex-a9-gic";
-+			reg = <0xf8001000 0x1000>,
-+			      <0xf8000100 0x100>;
-+			#interrupt-cells = <3>;
-+			interrupt-controller;
-+		};
-+	};
-+};
+ ARM/CORTINA SYSTEMS GEMINI ARM ARCHITECTURE
+ M:	Hans Ulli Kroll <ulli.kroll@googlemail.com>
+ M:	Linus Walleij <linusw@kernel.org>
 
 -- 
 2.53.0
