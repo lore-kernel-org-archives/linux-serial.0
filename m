@@ -1,215 +1,235 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A71A1DB95E;
-	Mon, 12 Oct 2026 06:46:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 342993BF695;
+	Mon, 12 Oct 2026 06:58:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791787596; cv=none; b=W4/0mztSL8eE7c0UKyEXOryGcTnGXugPwImnTaCa+bISBYGKZDC132uipV/8RjpjPMNOFDZMDSCeKwBVtWwGJ0xPRoXVGsJJQsKyoSbOQtFhoI/KpH1taNQjS/KvbgQxWiFRGlQVRbbk10JGJ1+CtF7xJk74EYLZErFz5IjO1ds=
+	t=1791788313; cv=none; b=XJ1QcfrkYvdvYHE0Wbc+25VsYaiZ1gOe13UnDoAxQf1+54YwQdhqUZjxGak2jk5+jMVUfHcK6V0qZXkVTG7K95SaehVwiW7Q4zjb01wLGSn4QOi95iBvYQ6mGwWI+gGxAKfzeOq2Q/1Z2ZBRjTS/0k6kZiGS2FHLkfIosVKre+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791787596; c=relaxed/simple;
-	bh=U3KfXKdEMgL10QyENu9mAQCgxY51Iu08VIuskFAv1/o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=naJVZ/FXhNsS6rhuE61OvkdeMB3S6qw5Joyzh7RixDRxA7/PhUBc/5EFhthyqMX+QhfXlzQ+vxSAqVRjZeL58+6mmoC5xsPsKRb1b7qVQ1V16ykoseKlOLlToAWEZd9U6+6nfn5OyGjInEQ5Uq18A9hpr5a8+xsl5KLSVjI3iKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mP4GUgGY; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791788313; c=relaxed/simple;
+	bh=Zqu/tSVbAqblPBfbAmLs7pWlt0A/41yBky4wSLvy1r4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=QvPNe4Q0Fvpu+riTH8LTWpg1VnSfI6bBq+aaQOzzLim7dENynvQaO2drjKzBlBgbc7StQM1BfYBK6mRYnAZnvhpVYloydTEuHhgebQEDgPqJFymD515czvTe0z7uIUptG2o9Qfr9mgd3EzG7+a34e/zG1k3pHX15OaOnrfT5h0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f0r4aaq/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mP4GUgGY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65741F008A1;
-	Mon, 12 Oct 2026 06:46:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791787595;
-	bh=1er6KN0USDluOlCwl7bI7udanJGh8XBrVh6eYmX9B2E=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=mP4GUgGYNCxnuPmvg1lujMqLPA7vMvng2SS0pBMHoCRbwwxluGZ1CHCAITsQFxIwd
-	 x7wKsblnmPblKZwTGS63Z/VPkeuzGjAUyGwhVXZx5K7K7unAzwoOLZVUFY+nkDURjW
-	 X0PNZL/iyeF9Cmy/UiMXAC9LcPt+sCJ2zDtDxDVofUzZDrWFH4BbiVCkN31UXOkwew
-	 7cFyBQv7+jpMiLRzknsZ4/q2Gv1tg6cM3zuY9oI8TvIJk3SVGG9xD3lPxaYZfAFa/o
-	 FSMhNavBKkxYI/LnLbQ/SDmexIWtlzK0PhS9vRqFDnFRDwv0wP34GrPxp+Iu/3/Ysz
-	 nTnGWliycn2uQ==
-Message-ID: <1f66c850-faa7-477f-9535-761074ccc077@kernel.org>
-Date: Mon, 12 Oct 2026 08:46:30 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f0r4aaq/"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB041C2BCC7;
+	Mon, 12 Oct 2026 06:58:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1791788313;
+	bh=Zqu/tSVbAqblPBfbAmLs7pWlt0A/41yBky4wSLvy1r4=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=f0r4aaq/L8ful3QG2gop8/IiJwfZpJmVOPis5JK/2XujGLTLwOSnik6fKRz7xROpx
+	 d7nLDZ8LnzaLY1bfRZ7AN/JvnKoGebK7HRgDsQY4SWIejcQqUb4Qhrz+MAmwJsugUz
+	 VfdzB/Ey9kLgqjSgqHcY/gTaKcFw/BKNSWpM1kxnxkigpTnFtwzmIg/mIq2IL6K9MX
+	 pn5khx4ip/hH8izc8KX+ld9gDl7rV3Y5g9uDrD5H+q8HXO1t4ybep56zd/8ln6M0Wd
+	 2gdEcB8I812UNtqiIr41AT+w54ntva/RL0QMFfVvfW7uFmr62M8lODvI4cA/mgVOcd
+	 4+SKpuqsqLkqQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DFFCA9EC5;
+	Mon, 12 Oct 2026 06:58:32 +0000 (UTC)
+From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
+Subject: [PATCH RFC v3 00/10] ARM: Add support for Cortina Systems CS75xx
+ and Securifi Almond+
+Date: Mon, 12 Oct 2026 09:58:30 +0300
+Message-Id: <20261012-b4-cs75xx-v3-0-0e0d17a098cf@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/6] hvc: add an M3000 firmware console backend
-To: Magnus Lindholm <linmag7@gmail.com>, davem@davemloft.net,
- andreas@gaisler.com, sparclinux@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
- linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- krzk@kernel.org, oleg@redhat.com
-References: <20261011195729.981243-1-linmag7@gmail.com>
- <20261011195729.981243-7-linmag7@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20261011195729.981243-7-linmag7@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22Nyw6CMBBFf4XM2prpAxBXJiZ+gFvDotQKQwRMi
+ wRD+HdL3bo8NyfnLuCtI+vhmCzg7ESehj6A3CVgGt3XltE9MAgUGRYSWaWY8Xk6zwyl1MKgylM
+ 8QPBfzj5ojq0bXC9nKH+jf1etNeNW2bSG/Di4T3yceJT/xCfOkKmM50apTKaiONWdpufeDB2U6
+ 7p+AX4pSey5AAAA
+X-Change-ID: 20260930-b4-cs75xx-033a2c047508
+To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Drew Fustini <fustini@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Jason Li <jason.li@cortina-access.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
+ Fil Dunsky <filipp.dunsky@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791788310; l=8504;
+ i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
+ bh=Zqu/tSVbAqblPBfbAmLs7pWlt0A/41yBky4wSLvy1r4=;
+ b=LPVfHI2bD0keab8gWznjgmCmHcwX6+Yk7nwoZ17b3QLgAEv6xgCK0H1h86UksgBw+xDm67zHQ
+ ApRIqapbAeKCzHHQZ95I+6rG/dXP0udIjBOE2TeIm2Zeg08RybbP7UI
+X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
+ pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
+X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
+ auth_id=1085
+X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
+Reply-To: filipp.dunsky@gmail.com
 
-On 11. 10. 26, 21:55, Magnus Lindholm wrote:
-...
-> --- /dev/null
-> +++ b/drivers/tty/hvc/hvc_m3000.c
-> @@ -0,0 +1,205 @@
+This series adds initial support for the Cortina Systems CS75xx
+("Goldengate G2") network processors and the first board using one, the
+Securifi Almond+ touchscreen Wi-Fi router (CS7542, 2x Cortex-A9 r2p1,
+PL310 r3p2, 512 MiB DDR3, 512 MiB NAND).
 
-> +struct m3000_console {
-> +	int stdin;
-> +	bool ready;
-> +	u8 buffer[256];
-> +	raw_spinlock_t buffer_lock;
-> +	struct timer_list poll_timer;
-> +	struct mutex poll_mutex; /* Serialize open against synchronous close. */
-> +	spinlock_t poll_lock; /* Protect active state and timer rearming. */
-> +	bool poll_active;
+There is no public documentation for the SoC. The register information
+comes from the GPL vendor kernels (Linux 2.6.36 for the Almond+, Linux
+4.9 for the Verizon FiOS G1100 which uses the same SoC) and from
+disassembly of the stock U-Boot 2009.11. A full out-of-tree port
+(clock, irqchip, GPIO, I2C, RTC, NAND, PCIe, MDIO and the packet engine)
+runs on Linux 6.18 in OpenWrt; this series is the first, minimal step to
+get the platform into mainline:
 
-Perhaps group these a bit better, so that there are not such holes?
+  - bindings: vendor prefix, SoC/board compatibles, an SMP enable method
+    and the UART,
+  - the platform Kconfig and SMP bring-up (the generic DT machine is
+    used, there is no DT_MACHINE_START),
+  - DEBUG_LL for UART0,
+  - a UART driver with console and earlycon support,
+  - SoC dtsi and board dts describing the CPUs, GIC, SCU, timers, L2,
+    UARTs and memory,
+  - multi_v7_defconfig and MAINTAINERS updates.
 
-> +};
-...
-> +/*
-> + * HVC's idle backoff can exceed the firmware input FIFO's capacity.
-> + * Wake its worker each tick while open; keep PROM calls out of the timer.
-> + */
-> +static void m3000_poll_tick(struct timer_list *timer)
-> +{
-> +	struct m3000_console *con = timer_container_of(con, timer, poll_timer);
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&con->poll_lock, flags);
+Patches 6-7 (serial binding and driver) do not depend on the rest and
+can go through the tty tree.
 
-Any reason not to use guard()s?
+Testing: build tested with multi_v7_defconfig (GCC 14 and Clang 21,
+W=1) and checked with dt_binding_check/dtbs_check. On a Securifi
+Almond+ this series boots next-20260929 to an initramfs shell with
+both CPUs online ("smp: Brought up 1 node, 2 CPUs"; IPIs and the TWD
+timer tick on both cores); the L2C-310, the global and TWD timers and
+the UART driver (ttyCS0) come up. The kernel was started from a
+running OpenWrt system with a small kexec-style loader rather than
+from the stock U-Boot, because U-Boot enters the kernel with the MMU
+on (see 2 below).
 
-> +	if (con->poll_active) {
-> +		hvc_kick();
-> +		mod_timer(&con->poll_timer, jiffies + 1);
-> +	}
-> +	spin_unlock_irqrestore(&con->poll_lock, flags);
-> +}
-> +
-> +static int m3000_open(struct hvc_struct *hp, int data)
-> +{
-> +	struct m3000_console *con = m3000_console(hp->vtermno);
-> +	unsigned long flags;
-> +
-> +	if (!con)
-> +		return -ENODEV;
-> +	mutex_lock(&con->poll_mutex);
-> +	spin_lock_irqsave(&con->poll_lock, flags);
+Things I would like feedback on, hence the RFC:
 
-Same here.
+1. The stock U-Boot arms the CPU0 private (TWD) watchdog before
+   starting the kernel; without a driver the board resets after ~300
+   seconds. The OpenWrt port disarms it in init_early, which I did not
+   want to propose here. Instead, a driver for "arm,cortex-a9-twd-wdt"
+   (the binding exists, but there is currently no driver for it) that
+   takes over the running watchdog on all CPUs is written and tested
+   on this board; I will post it with the follow-up series. Until
+   then, this series on its own boots but resets after ~5 minutes.
+   Is a TWD watchdog driver the preferred way to deal with this?
 
-> +	con->poll_active = true;
-> +	mod_timer(&con->poll_timer, jiffies + 1);
-> +	spin_unlock_irqrestore(&con->poll_lock, flags);
-> +	mutex_unlock(&con->poll_mutex);
-> +	return 0;
-> +}
-> +
-> +static void m3000_close(struct hvc_struct *hp, int data)
-> +{
-> +	struct m3000_console *con = m3000_console(hp->vtermno);
-> +	unsigned long flags;
-> +
-> +	if (!con)
-> +		return;
-> +	mutex_lock(&con->poll_mutex);
-> +	spin_lock_irqsave(&con->poll_lock, flags);
+2. The same U-Boot enters the kernel with the MMU and data cache
+   enabled (identity map with XN set, dirty lines left in the D-cache),
+   which breaks the decompressor. The OpenWrt port carries a small
+   workaround at the start of arch/arm/boot/compressed/head.S that
+   cleans the cache and turns the MMU off. It is not part of this series.
+   Replacing the bootloader is possible but risky for users of this
+   (discontinued) device. Would a quirk of that kind be acceptable in
+   head.S at all, or should this be solved outside the kernel (e.g. a
+   chain-loaded bootloader)? For the tests below the kernel was started
+   from a running Linux with the MMU off, so this was not an issue.
 
-And here.
+3. The APB clock is 100, 150 or 170 MHz depending on the boot strap pins.
+   It is modelled as a fixed-clock with the rate set in the board dts.
+   A clock driver for the global control block, which also contains the
+   strap, pinmux and reset registers, will follow and replace it.
 
-> +	con->poll_active = false;
-> +	spin_unlock_irqrestore(&con->poll_lock, flags);
-> +	/* Block reopen until the callback has finished and cannot rearm. */
-> +	timer_delete_sync(&con->poll_timer);
-> +	mutex_unlock(&con->poll_mutex);
-> +}
-> +
-> +static ssize_t m3000_io(struct m3000_console *con, u8 *in,
-> +			const u8 *out, size_t count)
-> +{
-> +	unsigned long args[7], flags;
-> +	bool input = in;
+4. The Cortex-A9 r2p1 is also affected by errata 742230, 742231, 743622
+   and 751472, whose workarounds are not available on multiplatform
+   kernels because they are expected to be applied by the bootloader.
+   The stock U-Boot does not apply them. Is there a preferred way to
+   deal with this?
 
-You can test "in" below directly, right?
+5. The UART ports are named ttyCS to avoid clashing with the 8250 driver
+   in multi_v7_defconfig, and PORT_GENERIC is used instead of a new port
+   type. The FIFO depth is not documented; the driver assumes 16.
 
-> +	int ret;
-> +
-> +	if (!count)
-> +		return 0;
-> +	count = min(count, input ? 1 : sizeof(con->buffer));
-> +	/* Console writes can run with interrupts disabled; this lock cannot sleep. */
-> +	raw_spin_lock_irqsave(&con->buffer_lock, flags);
+6. The top 64 MiB of RAM are reserved: the vendor firmware gives them to
+   the packet engine queue manager and the stock kernel is booted with
+   mem=448M. The reservation will be referenced by the network driver
+   later; I kept it now so that the memory is not handed out and later
+   claimed.
 
-scoped_guard()
+Planned follow-ups, as separate series: the regbus interrupt
+controller, GPIO, I2C and TWD watchdog (ready, tested on this board),
+then the global control block/clock, RTC, NAND,
+PCIe (DesignWare glue), MDIO, the Ethernet/packet engine and a fix for
+the SX8650 touchscreen.
 
-> +	if (!input)
-> +		memcpy(con->buffer, out, count);
-> +	args[0] = (unsigned long)(input ? "read" : "write");
-> +	args[1] = 3;
-> +	args[2] = 1;
-> +	args[3] = (unsigned int)(input ? con->stdin : prom_stdout);
-> +	args[4] = (unsigned long)con->buffer;
-> +	args[5] = count;
-> +	args[6] = (unsigned long)-1;
-> +	p1275_cmd_direct(args);
-> +	ret = (int)args[6];
-> +	if (ret > 0 && ret <= count && input)
-> +		memcpy(in, con->buffer, ret);
-> +	raw_spin_unlock_irqrestore(&con->buffer_lock, flags);
-> +	if (ret == -2 || ret == 0)
+---
+Changes in v3:
+- serial: do not put the console setup callback in .init.text, it is
+  called from a probe that may be deferred past boot (sashiko-bot)
+- collect Reviewed-by tags
+- Link to v2: https://patch.msgid.link/20261006-b4-cs75xx-v2-0-b7d6e1e24d44@gmail.com
 
-That's full of magic constants. Can we have defines for those?
+Changes in v2:
+- serial: drop the empty break_ctl, request_port and release_port
+  callbacks, comment why set_mctrl stays, add a copyright line (Greg)
+- serial: take the port lock around all IE accesses in startup, flush
+  stale RX data on startup and disable the receiver on shutdown
+- serial: bound the RX loop per interrupt, check RXDAT_VALID in
+  poll_get_char, scale the console TX drain timeout with the frame time
+- serial: serialise port index allocation, reject too low clock rates
+- serial: name the driver after the vendor (cortina-uart.c,
+  SERIAL_CORTINA), as the same block is used in the Cortina Access SoCs
+  (Linus Walleij, Arnd Bergmann); the binding and the help text name
+  the Cortina Systems CS75xx and Cortina Access parts (Jason Li)
+- serial binding: describe the CS7542 only; other SoCs get their own
+  compatible with "cortina,cs7542-uart" as fallback (Conor Dooley)
+- debug: keep the character register intact on BE8 in senduart
+- platform: move arch/arm/mach-cortina to arch/arm/mach-goldengate, as
+  mach-gemini is a Cortina SoC too, and use one ARCH_CORTINA_ACCESS
+  symbol for the whole family, as for the 64-bit Cortina Access parts,
+  with the rationale in the commit message (Linus Walleij, Krzysztof
+  Kozlowski, Arnd Bergmann); mach-goldengate vs. mach-cortina is still
+  open, I am happy to rename the directory if mach-cortina is preferred
+- collect Reviewed-by and Acked-by tags
+- Link to v1: https://patch.msgid.link/20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com
 
-> +		return 0;
-> +	if (ret < 0 || ret > count)
-> +		return -EIO;
-> +	return ret;
-thanks,
--- 
-js
-suse labs
+---
+Fil Dunsky (10):
+      dt-bindings: vendor-prefixes: Add Securifi
+      dt-bindings: arm: Add Cortina Systems CS7542 and Securifi Almond+
+      dt-bindings: arm: cpus: Add Cortina Systems CS7542 enable method
+      ARM: goldengate: Add support for the CS75xx SoC family
+      ARM: debug: Add Cortina Systems CS75xx UART0 support
+      dt-bindings: serial: Add Cortina Systems CS7542 UART
+      tty: serial: Add Cortina UART driver
+      ARM: dts: cortina: Add CS7542 SoC and Securifi Almond+ board
+      ARM: multi_v7_defconfig: Enable Cortina Systems CS75xx support
+      MAINTAINERS: Add entry for Cortina Systems CS75xx
+
+ Documentation/devicetree/bindings/arm/cortina.yaml |  31 ++
+ Documentation/devicetree/bindings/arm/cpus.yaml    |   2 +
+ .../bindings/serial/cortina,cs7542-uart.yaml       |  52 ++
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ MAINTAINERS                                        |  11 +
+ arch/arm/Kconfig                                   |   2 +
+ arch/arm/Kconfig.debug                             |  16 +-
+ arch/arm/Makefile                                  |   1 +
+ arch/arm/boot/dts/Makefile                         |   1 +
+ arch/arm/boot/dts/cortina/Makefile                 |   3 +
+ .../dts/cortina/cs7542-securifi-almondplus.dts     |  55 ++
+ arch/arm/boot/dts/cortina/cs7542.dtsi              | 127 +++++
+ arch/arm/configs/multi_v7_defconfig                |   3 +
+ arch/arm/include/debug/cs75xx.S                    |  37 ++
+ arch/arm/mach-goldengate/Kconfig                   |  18 +
+ arch/arm/mach-goldengate/Makefile                  |   2 +
+ arch/arm/mach-goldengate/platsmp.c                 |  71 +++
+ drivers/tty/serial/Kconfig                         |  24 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/cortina-uart.c                  | 583 +++++++++++++++++++++
+ 20 files changed, 1040 insertions(+), 2 deletions(-)
+---
+base-commit: 6474fa070f2b8013b4b87350b775b8c3be6e8aac
+change-id: 20260930-b4-cs75xx-033a2c047508
+
+Best regards,
+--  
+Fil Dunsky <filipp.dunsky@gmail.com>
+
+
