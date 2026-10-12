@@ -1,104 +1,138 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mail.tipi-net.de (mail.tipi-net.de [194.13.80.246])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86C023D3CEA;
-	Mon, 12 Oct 2026 14:14:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF41748E0D3;
+	Mon, 12 Oct 2026 14:24:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.13.80.246
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791814460; cv=none; b=EIdOKPdViTXNBRUE+HZb+1ISy7h7VggNOkOPiXr7qENQSGfu+C77qfF/RKdVsNLY8mHM2goZQOQKA05J36e6i0EQ2zUweMTLRtzBDn+EUovm5NA3jlYwNsiKGWKbeVS6cQv7yvj3aM55yfPilvvIZfKOxRAmdgzSQW52BSBWUXg=
+	t=1791815045; cv=none; b=U3J2sQZ3V0US61PGWNcmYV45HzgShNiRRSICSE/IrxHr4Z6ARoiHmdUUAbC3aXmQnv3Qd49/WSKV1EZItCq08Yxhg6OUye9nQp9BmGJFdzB/BvuWmLWNSytsUpdZY6h3w0bIT2VHA5zBACUep9JmFhCQuYQv/ghKS0rdiVIOJ6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791814460; c=relaxed/simple;
-	bh=kV73uqIkz1gigmsOedM7PoqESt/yOwPLUTsBM7w0c7I=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tgKef5gDrnnjdR3UvVw1sl9uAtIhhWF6mVRQdRjfSnJxm6CRhpvHG0tgJeS7I0kugCY4xBl9Ve0/QrIOSJ4GgRPXHLfx6AgkWa9IvN9eUBdizPQI5iaPpd3Jkt6nSu/48dadBFhb2c2em+FiMz/Ct4EGYMkMCo0DnmgZtjF/zpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OXuNRqHy; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XENPiXtK; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1791815045; c=relaxed/simple;
+	bh=e5u7Q6/lf+tkTUuzF7jxOV25e2hAJ1vVxdBBAWz1Occ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Pwhbmb2477E4DzsnYM5rTJ0jw7Uw4V9n3A4UTQMN1oyJIwesMhXg9aTQmmfTLSLvWUUs6z9KMaQ19LTKXQ6RsH8A9o4ZNXYrAQ5ko4gUFNH9St80FQWdsjUWCGZna92+x+xrNXF++1jYR5jNDNP8JfdaVDt/Kb8LFXIjii2ztN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tipi-net.de; spf=pass smtp.mailfrom=tipi-net.de; dkim=pass (2048-bit key) header.d=tipi-net.de header.i=@tipi-net.de header.b=zf7kh9tQ; arc=none smtp.client-ip=194.13.80.246
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tipi-net.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tipi-net.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OXuNRqHy";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XENPiXtK"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1791814457;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MAhC3w4x6SO8S0tKilkyEO20IHMEvKk4g6c9AZ0BlC0=;
-	b=OXuNRqHyLqtOYD1KPGh3MgZUc5sohbm8SH+eE0LoWJRIbOOYgpzsl/dRA4BABC8giI4ldx
-	bzD4wpdTLcDH73kujqdeVkLAGpKreaIshxJxz0hrjWjl5AJI4EbGT0S7EsWF7RYyE9kyNN
-	e3plsfRcjnyR8YukDPUFuGfRHbu3HPG6DCWa8bXOej6YBLljWrHrU3xDxO0UcpfGIcpHZ0
-	gyipJyg+fID6ORT5GnGsx8osxrqHF2vMxH6/NciemG+97tkal6dRVC5VFegsaqcOOYUQnQ
-	cuY37HKgeDEkonf8HjGssENXrZEolsuoOeOW9FxASSikm5JVwnKIULecUezk9Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1791814457;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MAhC3w4x6SO8S0tKilkyEO20IHMEvKk4g6c9AZ0BlC0=;
-	b=XENPiXtKoyygKkz7Chpoc1n6BCA2zILBMJr1oHQTMKLxFqcGW7gnkeZLQAl/v7V7IITTQz
-	xXo3LDx7vMEjYfAw==
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek
- <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
- <rostedt@goodmis.org>, Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Oleg
- Nesterov <oleg@redhat.com>, Christian Brauner <brauner@kernel.org>,
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-serial@vger.kernel.org,
- oliver.sang@intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] nbcon/reboot: Flush nbcon consoles synchronously on reboot
-In-Reply-To: <87jynnxd5v.fsf@jogness.linutronix.de>
-References: <20261008150852.8286-1-pmladek@suse.com>
- <20261009065152.udyfFRHx@linutronix.de>
- <87jynnxd5v.fsf@jogness.linutronix.de>
-Date: Mon, 12 Oct 2026 16:20:16 +0206
-Message-ID: <87h5irxayv.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=tipi-net.de header.i=@tipi-net.de header.b="zf7kh9tQ"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 55138A012B;
+	Mon, 12 Oct 2026 16:23:52 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tipi-net.de; s=dkim;
+	t=1791815032; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding; bh=QVj3/QJ0hK8bdL+nizOsq34wKHXNf3Wx2LzCotAFaeM=;
+	b=zf7kh9tQpNkyVPBEAXbq81UOCDmvnBwRxr9dZoexhY3/rU/YDft8JwSL7vg7fJxTS5ce5x
+	cEZjfxQqwHX4uRIGeDLMfQEDSX+ZKrlmwjVIM744fEabEnsVfSpEHwSU0A9eM2ky/pHgWc
+	6zl0Mm+KKZDcRWgxDshLoIrO2DtljfkVvMczC8PdyHoYG5XeHe29NPXyyxRwie8Rnvqhtn
+	C0MjHlWBc6phmNRB0p8oHzzGJ0hUBxUpa8pMcTajjj1KjFydWPJljAl/KV2BGlbaZPhJlM
+	iQc1VYF458G9zvGcX08HRTdT++PeyKRPZ4baNE5TBd38FhXzvVL6Z7qxCJ2Wlw==
+From: Nicolai Buchwitz <nb@tipi-net.de>
+Date: Mon, 12 Oct 2026 16:23:50 +0200
+Subject: [PATCH v2] serial: amba-pl011: keep transmitter enabled when
+ disabling RS485
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261012-fix-pl011-rs485-txe-v2-1-e9bf7d218389@tipi-net.de>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/32NwQ6CMBBEf4X07JpuwSqe/A/DAcpW1hggbSUY0
+ n+3xbu3ecmbmU14ckxeXItNOFrY8zQmUIdCmKEdHwTcJxZKKo0SESyvML9ycr66nCCsBFYjoal
+ 1betWpObsKGn76r35sX93TzIhT2VjYB8m99lvF8ze/4cFAaGUqtNGllV3trfAM8NI4diTaGKMX
+ xkdK0XKAAAA
+X-Change-ID: 20261011-fix-pl011-rs485-txe-f61e1c969f9a
+To: Russell King <linux@armlinux.org.uk>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ stable@vger.kernel.org, Nicolai Buchwitz <nb@tipi-net.de>
+X-Mailer: b4 0.16.0
+X-Last-TLS-Session-Version: TLSv1.3
 
-On 2026-10-12, John Ogness <john.ogness@linutronix.de> wrote:
->> while this seems okay, didn't we have pr_flush() to flush the output on
->> shutdown/ reboot?
->
-> We have the syscore.ops.shutdown registered notifier that gracefully
-> shuts down the kthread printers and transitions to atomic printing.
->
-> There is a pr_flush() in kernel_power_off(), but actually that is no
-> longer needed and should be removed.
+Disabling RS485 on an open port calls pl011_rs485_tx_stop(), which
+turns off the transmitter. Only the RS485 TX path turns it back on, so
+any later output stays queued and tcdrain() hangs until the port is
+closed.
 
-After reviewing [0] I am reminded why pr_flush() exists in
-kernel_power_off(). It is purely for legacy consoles on PREEMPT_RT.
+pl011_rs485_tx_stop() also checks only the hardware FIFO. If a DMA
+transfer has started but has not filled the FIFO yet, the transmitter
+is turned off under the transfer and the DMA channel never recovers.
 
-I am wondering if instead printk_kthreads_shutdown() should make an
-effort in this case (legacy + PREEMPT_RT):
+When leaving RS485 mode, cancel pending deferred starts and stops, leave
+the transmitter enabled and start any TX that was still waiting for
+delay_rts_before_send.
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 0bbf6409d467a..10b655f05fa56 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3776,6 +3776,15 @@ static void printk_kthreads_shutdown(void *data)
- 		 */
- 		nbcon_atomic_flush_pending();
- 	}
+Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Nicolai Buchwitz <nb@tipi-net.de>
+---
+Noticed while implementing a DMX master on a CM5 with its PL011.
+Userspace turns RS485 mode off to send the break, and the port then
+stopped transmitting.
+
+Tested on that board with an RS485 transceiver at 9600, 115200 and
+250000 baud.
+---
+Changes in v2:
+- Start TX that was still waiting for delay_rts_before_send instead of
+  dropping it (sashiko)
+- Link to v1: https://patch.msgid.link/20261011-fix-pl011-rs485-txe-v1-1-302b6c034b7f@tipi-net.de
+
+To: Russell King <linux@armlinux.org.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+To: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/amba-pl011.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c4824c201e1c..2ad6ccfdb52c 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2397,8 +2397,31 @@ static int pl011_rs485_config(struct uart_port *port, struct ktermios *termios,
+ 	struct uart_amba_port *uap =
+ 		container_of(port, struct uart_amba_port, port);
+ 
+-	if (port->rs485.flags & SER_RS485_ENABLED)
++	if ((port->rs485.flags & SER_RS485_ENABLED) &&
++	    !(rs485->flags & SER_RS485_ENABLED)) {
++		bool tx_pending = uap->rs485_tx_state == WAIT_AFTER_RTS;
++		u32 cr = pl011_read(uap, REG_CR);
 +
-+	/*
-+	 * If legacy kthread printing is in use, give it a chance to
-+	 * flush any backlog. The kthread is not stopped because when
-+	 * forced, it is the only way legacy consoles can print.
-+	 */
-+	if (force_legacy_kthread() && printk_legacy_kthread)
-+		pr_flush(1000, true);
++		/*
++		 * Leaving RS485 mode, which only enables the transmitter while
++		 * sending. Don't stop it, as that stalls a DMA transfer still
++		 * in flight. Drop pending deferred starts and stops and keep
++		 * it enabled.
++		 */
++		hrtimer_try_to_cancel(&uap->trigger_start_tx);
++		hrtimer_try_to_cancel(&uap->trigger_stop_tx);
++		uap->rs485_tx_state = OFF;
 +
- 	console_list_unlock();
- }
++		cr |= UART011_CR_TXE | UART011_CR_RXE;
++		pl011_write(cr, uap, REG_CR);
++
++		/* Start TX that was still waiting for delay_rts_before_send */
++		if (tx_pending && !uart_tx_stopped(port) &&
++		    !pl011_dma_tx_start(uap))
++			pl011_start_tx_pio(uap);
++	} else if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		pl011_rs485_tx_stop(uap);
++	}
+ 
+ 	/* Make sure auto RTS is disabled */
+ 	if (rs485->flags & SER_RS485_ENABLED) {
 
-That would still not cover the final "Power down", so probably the
-pr_flush() should also continue to exist in kernel_power_off(). But it
-is PREEMPT_RT + legacy specific, so I am not too happy about it.
+---
+base-commit: a90ee4305c4a5df72c11b31dacfdc76e00fcf78a
+change-id: 20261011-fix-pl011-rs485-txe-f61e1c969f9a
 
-John
+Best regards,
+--  
+Nicolai Buchwitz <nb@tipi-net.de>
 
-[0] https://lore.kernel.org/lkml/a68e2e94-b4c6-4791-b581-ecbf3fee28e9@paulmck-laptop
