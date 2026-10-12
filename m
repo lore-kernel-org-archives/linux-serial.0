@@ -1,112 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FE9133EB1A;
-	Mon, 12 Oct 2026 07:13:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA084399D6
+	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 07:24:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791789187; cv=none; b=WUX68y0JM0kSyI0YK+ZwJHoD2BcRsQRpEbvAyemTxxFNKkc3nAmzSTwRekFaWtWjIBfSQsywnWnIy1wwlp3CxAOQ2X3K9RJ3QbQfY83aip911a6xi9lgM9g6mMSspvFM+7QpeQhluJUoDIqn/sF75SYQ4jyD2Wek4fD6gN5XKd0=
+	t=1791789888; cv=none; b=anpNS7DbZk9ehFfrK5L4aRFdfushOQ3u/J5hB1GQ5SWvW54dMZbOVSL7TYgpyfyZ9vA4wpjkum+cDyWCP87mlk2aCmEGZ7IcE1voHzUP1gnOWZ2XW51KoSuF9ExxFqex9AdYYlBrVxtoDZrbD28MaVG2YEMJWdRLekQ28mGNPeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791789187; c=relaxed/simple;
-	bh=Fs0kvdWDU3W8mYHEPO/FQh5D7VyutRtD62nvkLQ5hyw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pTfTrTRI9MfTbf4vi8lSSkcRXrQmNsqIDInpoF4UxKBTL8nAAGXZm0fXq+vPGP1c94iCFW3CMEChN9pCW+5rT3d9/+HQ24/d6rFgw6vflVVWGzWB/f39HhRO3SwYtkisRH3ms6vGOZVS1uI7sfp/L0JQz3jVmgSsnD2oZ18VncA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d8LF/P53; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791789888; c=relaxed/simple;
+	bh=jV17N1XnG5N3su2j27UvWD50Emp1boXs8D7A8+3TlcU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=NDLIBk6LOu4c8XEG0mphIW/zfaOTwd65R6E3rUPOV10rdzl7Ge56Ccb/eM3rSFB1fqWJqwJHTN1FtaFmmxudhblzxU1UjZ07SZOCT34K9t5GtlIL64cY4Q2YaxI2EPEpBdP9LH2wlYOd/pLJ+QhI11CpL2wp3tt8oVCOIHxRTtE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=de2lYInm; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d8LF/P53"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAA231F0089B;
-	Mon, 12 Oct 2026 07:13:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791789186;
-	bh=j9P9Thm7k1bsTkDg7xE+z5+IM8J6E4SnMRqSInghayM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=d8LF/P53oD5NARKfglhUkJANYrDk1HBbEfsaLzQQ1xFbwIdvZ5x1y1w0LzUTXez/S
-	 ciBH0mByAXMShPi76rcrybdFYwS3ubzuZMnZCHHea7kqWP3ByOL79DT20dRoqzLDBQ
-	 GnP2sF3UrE6Xnr/hA8E2zfZqwRuyDMkm+JChun/AVd3A/MCVYyqcXFSArRAyfF7DMI
-	 9wW5GB6L4YCkWYxHNB0NwKmUmDikntXacn9wVPWYvXtif+6u/oBu2IKNQjrs/vLDvP
-	 b0SnIMsGDOpb29uKFLBeR3vM1UA2pr6liOO8Dp/qXupcODOHDtVjGX9rodPpvuHovq
-	 /MKF6ye97QKhA==
-Message-ID: <b48bdddf-2218-4164-8a76-e9cfa2802111@kernel.org>
-Date: Mon, 12 Oct 2026 09:13:02 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="de2lYInm"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a1698ea378so12318415e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 00:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791789886; x=1792394686; darn=vger.kernel.org;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CV4XRNqthVu3jHiDgMNv0zc2zrlUjFwHtxZxyGCKLaE=;
+        b=de2lYInmXLjrAgQWTM2tuSxy18BhEZYiJmZQYuHlxVsriTY2f+l0E5S3dDakUFxK+g
+         vMfFzd1wZ78JMnHTXjv29O8+7EGD/Sprhy/X+n6kLq+D3adBmJAjan/lx9FUgPgy6msq
+         XROyye6iEomYtJ6wlfbtT5MRKdjdiuSkuxGSJWy/Vxh9VZaAK+7sWwoSnenYb76GorkK
+         GrLu+IAzaR30mWYMSlJULjk8oPVBA4ntWFZQ6AxNN21w7bNC36R7vdbu8xBQLsEzwksK
+         erKKDLaTGcZS+FVA7vk1lEYdPAuttewf5y4cTAyUbZCClGE34AHbJwEbfsGPWSkKnoxv
+         37vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791789886; x=1792394686;
+        h=content-type:mime-version:content-transfer-encoding:message-id:date
+         :references:in-reply-to:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=CV4XRNqthVu3jHiDgMNv0zc2zrlUjFwHtxZxyGCKLaE=;
+        b=QMyMURBZfjmdL5cPiClcbW/MlXRtZ4oVy2xYnYDSNeBfsHc782RoW8dNtYBqEh/6Z9
+         PGf1fZe6zP9U02R4aw8Pgm+ltQdEebyJ+VjXq12mylyr2NsarvE4x9Qv/OYLofccPw67
+         hYgjUvCbcw3fEiIL7AzQl2io/3i6JVd1DaHTN1wVWORVLbVRlK6MUj1Io9Vxw8wSBfSv
+         qu2wmNZIFxFlxVBQxRjxlcjwPyJICRxQWjG53wwZj6waxn36ECnCVW3DdwS7fn8mekL1
+         qGA4DP0IJ+pe0w+iHSgHRQ3617CqcHOb1B3dELS8qD75Ctev3RE1WWczefGJwYZhdToe
+         iYwA==
+X-Forwarded-Encrypted: i=1; AKwUvBxDBR+RcaWZenLBhXL4p4dfBshB8/VBcR+uKYBNxOQo7hqGlliu12CRRJtP6+lTliKg9dTNBmilP1N8hTw=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJikr/OnRzYnMRlE1J5Hjy685oqfCBi01L0UfC9LATzkpjZHoFc
+	4q+fGn1/mxEqkZks7SQT4O7qAqrDt0UQLMgErOyk5zBF09YgZX7seMOG
+X-Gm-Gg: AYBFou3rwIN93GvDt3a94aZ/O02QUKsY1XhzeEIVMMuObWRVDh2rWb8/VZgSlIzv1kr
+	OwkxSwv4SA/cN5L+dkstBvPFmdHqgCT+qX6VdYZzzd5Q40eFPjkaiy/iHHO2J9dpIMmkw5Rhvv1
+	gonbIU7N0YZkpuDm4/g33ZodXIHp3/ACBqYiqcHDKKa4EGSJvvutyUTuNI/3t1AAnnGK83Jsbxv
+	etClBCoezSUig27fFs3LUDLP2bjHBF82tng77F9rDCEPEUKr6DP5DzgEOZAu+TsblachxTKw9e/
+	XBL4nljiLNjynaFpEhASnQ0iXocSfCiJW/V/bf9m6ObxqfDFE8WNmxfddw5yrg03Cff7N1VXCZX
+	0/FqEQPSaFwHD7SeD98Z/FDjJ4XWw7/BbiK1HhtYpiCnw0g+dlORUKWfxzSN84KWp6+i4FzwUqs
+	XxfOKnSeNnLqJOk5jf3xa9ZVsvsUrwyq4chtnTN57YmCFFoUqd4m7RuCumbiXtXxi8fL4C7ZH8P
+	y6aKsQo3vMV+y7JPyXysYKoUy6NTog2zniNja6sDdDpCX0ADlQ2+VYctpTrK7mQ1ek=
+X-Received: by 2002:a05:600c:4ecc:b0:49c:fa21:e749 with SMTP id 5b1f17b1804b1-4a18e4d55f2mr191008715e9.31.1791789885437;
+        Mon, 12 Oct 2026 00:24:45 -0700 (PDT)
+Received: from [127.0.1.1] (ip-024-215.users.dtel.ru. [91.210.24.215])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18e48db03sm380276065e9.3.2026.10.12.00.24.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2026 00:24:44 -0700 (PDT)
+From: Fil Dunsky <filipp.dunsky@gmail.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: sashiko-reviews@lists.linux.dev, linux-serial@vger.kernel.org,
+ robh@kernel.org, devicetree@vger.kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH RFC v3 07/10] tty: serial: Add Cortina UART driver
+In-Reply-To: <b48bdddf-2218-4164-8a76-e9cfa2802111@kernel.org>
+References: <20261012-b4-cs75xx-v3-0-0e0d17a098cf@gmail.com>
+ <20261012-b4-cs75xx-v3-7-0e0d17a098cf@gmail.com>
+ <sashiko-outbox-167778@kernel.org>
+ <b48bdddf-2218-4164-8a76-e9cfa2802111@kernel.org>
+Date: Mon, 12 Oct 2026 10:24:34 +0300
+Message-ID: <179178987463.76422.8459872081179927553@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v3 07/10] tty: serial: Add Cortina UART driver
-To: sashiko-reviews@lists.linux.dev, Fil Dunsky <filipp.dunsky@gmail.com>
-Cc: linux-serial@vger.kernel.org, robh@kernel.org,
- devicetree@vger.kernel.org, conor+dt@kernel.org
-References: <20261012-b4-cs75xx-v3-0-0e0d17a098cf@gmail.com>
- <20261012-b4-cs75xx-v3-7-0e0d17a098cf@gmail.com>
- <sashiko-outbox-167778@kernel.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <sashiko-outbox-167778@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; format="fixed"
 
-On 12. 10. 26, 9:10, sashiko-bot@kernel.org wrote:
->> +static void cortina_uart_set_termios(struct uart_port *port,
->> +				     struct ktermios *termios,
->> +				     const struct ktermios *old)
->> +{
-> [ ... ]
->> +	uart_port_lock_irqsave(port, &flags);
+On 12. 10. 26, 9:13, Jiri Slaby wrote:
+> On 12. 10. 26, 9:10, sashiko-bot@kernel.org wrote:
+>>> +static void cortina_uart_set_termios(struct uart_port *port,
+>>> +				     struct ktermios *termios,
+>>> +				     const struct ktermios *old)
+>>> +{
+>> [ ... ]
+>>> +	uart_port_lock_irqsave(port, &flags);
+>
+> Seeing this, why not to use guard()?
 
-Seeing this, why not to use guard()?
+No good reason. v4 uses guard()/scoped_guard() for the port lock in
+startup, shutdown and set_termios, the sysrq-aware
+guard(uart_port_lock_check_sysrq_irqsave) in the interrupt handler, and
+guard(mutex) for the port table in probe and remove. console_write()
+keeps the explicit lock/trylock pair for the oops case.
 
->> +
->> +	port->ignore_status_mask = 0;
->> +	if (!(termios->c_cflag & CREAD))
->> +		port->ignore_status_mask |= CORTINA_UART_RXDAT_VALID;
->> +
->> +	uart_update_timeout(port, termios->c_cflag, baud);
+v4 also addresses the RX points sashiko raised in this mail: the driver
+now sets read_status_mask/ignore_status_mask from INPCK/IGNPAR, reports
+parity and framing errors as TTY_PARITY/TTY_FRAME, and inserts the
+overrun marker after the characters drained from the FIFO. The hardware
+latches these errors only in the interrupt status register (RXDAT has
+just the data and a valid bit), so the error is charged to the first
+character read in that interrupt.
 
--- 
-js
-suse labs
+Thanks,
+Fil
+
