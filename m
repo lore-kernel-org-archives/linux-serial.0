@@ -1,102 +1,97 @@
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71E3D3CE489;
-	Mon, 12 Oct 2026 19:58:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EAA249AA49;
+	Mon, 12 Oct 2026 20:28:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791835089; cv=none; b=FN9X0akVBHzrmsZsPEZ2YtrxJQ0TYRZHa/YerZmNsPwmi9Z/v8kcBY2rpp2Sb6wfLGHZqhm9kVstmk0WHrvBruwhgTpqtQqy4vmYHo4y8mS7ROH/HM0BGgrMfFSCDG5S+Gb8ZejFQv+ST1G6bztuyCQn5ss5n8QH9ed1NwXxUGM=
+	t=1791836892; cv=none; b=r3Fu4NcMjWmq5t/N0DlqCjqvV2hyy9mewBNZR17Vxb+fW8i+3mhb0buolNK+g4gQgnvXTZIhebZCmgZFQe+hE7DlTlgvILfszd5IRYhBwWNZfLFPGbTlOSj98OIC69Vy3698KIF9xPNIUB3Cxbzvvj03sQwTNj0hxAESrkVUx5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791835089; c=relaxed/simple;
-	bh=N5wVf6huEusiIDNk/5c7GdFjensv5aDGIBXaan7le38=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 MIME-Version:Content-Type; b=GHyi2PORWQXnhlwSRD2Xwty9Eq13hjpMfZto2WinocpIQZ1lblOR1+4R2u6mzfJjiJfq19scnU4ShhlRu9BHuZyii3FFHd2pRjb5YUEwCSIBo+fv0IcsGMjjHg7LIR69NRS88zMhfG4HDJGl3CPsRrmOmLVr1IlWhT1DQNZ03F0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gregoirelayet.com; spf=pass smtp.mailfrom=gregoirelayet.com; dkim=pass (2048-bit key) header.d=gregoirelayet.com header.i=@gregoirelayet.com header.b=PF8ax70J; arc=none smtp.client-ip=80.241.56.161
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gregoirelayet.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gregoirelayet.com
+	s=arc-20240116; t=1791836892; c=relaxed/simple;
+	bh=HhcV9cAX46l21QPoJJnWGRnUgvHnzefXF/e5LbBtemk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tsd2K73fXfK0p+tiFkXiTLRQjzVs0Y+8FwHvvlCymgcK8KgrgSh0sj9M+aJUWxR2d+HqWMP8WKpssoqLSIdpRJH4BTbtSVwsDcO0VEK4RaHLdurPU2toGKtC7KQRPIMAdARbI6yIPAcWpXshMxEaiBS0cgb2LegztrX35uGRJv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FeoRhPci; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gregoirelayet.com header.i=@gregoirelayet.com header.b="PF8ax70J"
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4j3Stq0Bq7zKncP;
-	Mon, 12 Oct 2026 21:57:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gregoirelayet.com;
-	s=MBO0001; t=1791835075;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=N5wVf6huEusiIDNk/5c7GdFjensv5aDGIBXaan7le38=;
-	b=PF8ax70J4DdyyWDaVMYwj5BE9zGWp42Vu/wpb0TiSgmOPrO0MuzhosaYT7WyWPyJ9DKebB
-	3bu6rYTuPlqXT7cBNYoP8GQf/lF5l1+r6gi0evdglP3kqA7RyKAXytMGtGdqj4z21Rsskd
-	ryFxVMS3Ohw+HdfqHJ4jweB5DBklDOKt1f2nwZP4HwEk7+5VY/KmGHN9diO/P5xb4gs/tR
-	AYlgjOD7NuvkvInPEdUtdqa5ikxa7ptY6CYyZ4osKwLC8bSqeuQfx9yn4P3O5JlHXrfLq1
-	eo5rNPpmPXUcyDvjgIFSSfx+O/RQByINOzwoMXIaNbB3bPwL8qAGrrq+rPWXIg==
-Authentication-Results: outgoing_mbo_mout;
-	dkim=none;
-	spf=pass (outgoing_mbo_mout: domain of git@gregoirelayet.com designates 2001:67c:2050:b231:465::102 as permitted sender) smtp.mailfrom=git@gregoirelayet.com
-Date: Mon, 12 Oct 2026 21:57:51 +0200 (CEST)
-From: git@gregoirelayet.com
-To: Tan Siewert <tan.siewert@9elements.com>, Phil Rosenthal <phil@phil.gs>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FeoRhPci"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791836888; x=1823372888;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HhcV9cAX46l21QPoJJnWGRnUgvHnzefXF/e5LbBtemk=;
+  b=FeoRhPciwJZIruQCljBI5hk8Cfhzy49zJmbCnrJ25EPmM9oqvmADDBUg
+   lW9yO0MaP6Lhg5xoytl6KBLAXLIVdUk8HorwU59Bh1znBQFeBVpJ9teGf
+   NtxZHdrPj8ZnquIOUyEq2S/UvJt3qQVLCYoyksefS0wuQvBXZ4XrWn88Q
+   RiE9DXuz+Kv1dcFxCU79xIP3sZYB8RV4758dRd5cIDk2ZXU0w7zLgM+SW
+   Si4YA7w7IWZcZYN70JdqhwzHU8jVbtSTiGRfNtZw+Pgn290TOtahr7/Y2
+   a7AX9IPB7hArdPGwe7oboVvN4ecGKzSbeJKtfzjWgbA0iW6Tj+Fg9Inj9
+   Q==;
+X-CSE-ConnectionGUID: VUALo0awRsOakQBss/gaHA==
+X-CSE-MsgGUID: bg5sPVHsQ2eiSQAqP8zj0A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="560464"
+X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
+   d="scan'208";a="560464"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 13:28:07 -0700
+X-CSE-ConnectionGUID: yQb4YRTvQTWRrY+FLY4hpQ==
+X-CSE-MsgGUID: bRPGHh87Si2dv5uN3kaxdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
+   d="scan'208";a="904251"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.179])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 13:28:05 -0700
+Date: Mon, 12 Oct 2026 23:28:02 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Ferry Toth <ftoth@exalondelft.nl>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Corey Minyard <corey@minyard.net>,
-	"openipmi-developer@lists.sourceforge.net"
- <openipmi-developer@lists.sourceforge.net>,
-	Andy Shevchenko <andy@kernel.org>, Joel Stanley <joel@jms.id.au>,
-	Andrew Jeffery <andrew@codeconstruct.com.au>,
-	Ryan Chen <ryan_chen@aspeedtech.com>,
-	"linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-	Ninad Palsule <ninad@linux.ibm.com>, Andrew Lunn <andrew@lunn.ch>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Message-ID: <1803265916.1474637.1791835071520@app.mailbox.org>
-In-Reply-To: <e2e3d98b-9a89-4845-aa7d-0e23a1d95f70@9elements.com>
-References: <20261008-aspeed-vuart-v1-1-d2be17c99cd7@phil.gs>
- <CAHp75VdiO9tPX2vLqsX2-omNvs-YjkWWD-HOiqyDSzpJrrZ_5w@mail.gmail.com>
- <60996F21-A12C-4FCC-9D5E-9D188A4ADBEA@phil.gs>
- <CAHp75VdmMwXRQFKLG8c4yAsVA5=eFZA3jagtMGb-qVswcQ88Wg@mail.gmail.com>
- <2F1931BE-F0F0-4F21-BED4-67080A40AEA9@phil.gs>
- <e2e3d98b-9a89-4845-aa7d-0e23a1d95f70@9elements.com>
-Subject: Re: [PATCH] serial: 8250_pci: Add support for ASPEED BMC VUARTs
- over PCIe
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] Revert "serial: 8250_port: Drop duplicate NULL
+ check"
+Message-ID: <as1C0qoAwkBBCEcC@ashevche-desk.local>
+References: <20261010193755.187706-2-ftoth@exalondelft.nl>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v8.52.252
-X-Originating-Client: com.openexchange.ox.gui.dhtml
-X-Rspamd-Queue-Id: 4j3Stq0Bq7zKncP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261010193755.187706-2-ftoth@exalondelft.nl>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hey !
+On Sat, Oct 10, 2026 at 09:37:56PM +0200, Ferry Toth wrote:
+> This reverts commit 7885af04df6e4efd72910200c1bfc079d61202e4.
+> 
+> Commit 7885af04df6e ("serial: 8250_port: Drop duplicate NULL check")
+> added `up->dma = NULL;` to serial8250_release_dma(), with the stated
+> intent of making sure DMA would not be used again after release.
+> 
+> However, up->dma is assigned once at probe time.  serial8250_do_startup()
+> only calls serial8250_request_dma() when up->dma is non-NULL, so after
+> the first close the pointer stays NULL and DMA is never re-acquired.
+> 
+> On Intel Tangier (Edison) with HSU DMA this causes a regression: the
+> first port open uses TX DMA, the second and later opens transmit in PIO
+> mode, producing 64-byte FIFO bursts with ~50us gaps between them.
 
-> @Gr=C3=A9goire do you remember why `8250_aspeed_vuart` sets the PCIe clas=
-s=20
-> code to `0xff000000`?
+As discussed off-list with Ferry the culprit patch was inspired
+by 8250_omap implementation which may have the same bug lurking.
+Thanks, Ferry, for a good catch!
 
-The ASPEED chip can expose multiple things over the PCI bus (VUART, KCS, ma=
-ilbox and shared memory). From my research, there is no such thing in the P=
-CI specification for MFD PCIe class, or a way to specify multiple classes.
+Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Also, assigning a PCI class as UART or IPMI KCS would cause some drivers to=
- probe it automatically, binding the resource.
-
-Even then, UART and IPMI KCS drivers assume specific offsets for the data p=
-aths which are incompatible with the ones from ASPEED.
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Setting it to Unassigned class 0xFF seems to be a good fit.=20
-
-
-I hope this clears things out.
-
-Regards,
-Gr=C3=A9goire
