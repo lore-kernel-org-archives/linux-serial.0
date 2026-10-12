@@ -1,143 +1,154 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D5833A0B31;
-	Mon, 12 Oct 2026 07:08:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34DD4344DB5;
+	Mon, 12 Oct 2026 07:10:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791788934; cv=none; b=O3MKNw/AJM02vomOWLlpMmTTQU/GJB7onnlkWnLKC1pNaFQKzHUH3gbCM65A6fDsK7wjrD5ajPX5SD8MRTRZtUozM99RLxnw3Ri4CekU200Gn2PmsojMUU71No4uuf5pv2i2b8xorcHnfDc5wE2HLtlPYJbo+LVQzTK6MZ0n14Q=
+	t=1791789038; cv=none; b=Yt6Pwy90oj2mlHMFxEESaykZm3fHQK+Y2l70dqAVO/ij7K5jgAR2805DGJaAWqHLGcXQU05G1q7AUcROPbdj9xLcDKR2flN0eMEDOzFRYDx6wrlOsgr/CZdDxyVoacl+FutLdn/1r6C++RoUypvBuXj3Dfpjng5En3UrlZ6+zDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791788934; c=relaxed/simple;
-	bh=drUbEhE++aOdd9MpkdF8jZSgZtyEnmUugWsYHm0GI0s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sZ9qw74kk6yk/J6yGv2Gx1qEnvO1xU4/XNuNpTmlfYnFTz1+eSiNri/Q8yKzTn1EEXNib/8rOmhgTly/YUQskmdDDaThzwbEK1jX0G87laFhWUROrTRZdhY4nYvJyhl4tP4f3os0X1fTsPlW2OhM5bvhXBnU7Iu36wvjeDt364g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dh8Tzq5i; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791789038; c=relaxed/simple;
+	bh=aWNSiGvmWwfPTRDLd2tEzJcP2Ho296YgMCTmeUW9n2c=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=iV2hQ5SvxaP03wGTdBoTHFuP1fMzRU4flmoZkAdChWOl9fmfiBOXL8tac3Mz97uNwbWRQHzUWJh112FfAZOF1WEEFn5VO3ojjkT7UoXugmQl6OjGX/ITQYWUydZnqiDHRLOhD0nJ4/mPzH/Gzciv5K7yLbY6ebp0GBQZHUkgLAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gd2yTJXY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dh8Tzq5i"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB4871F0089B;
-	Mon, 12 Oct 2026 07:08:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gd2yTJXY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E221F0089C;
+	Mon, 12 Oct 2026 07:10:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791788932;
-	bh=26xk8dmr8jAYc6qjJPKF+8t0Zh2+xvf1YvI7IcgDOWY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=dh8Tzq5i6OFbiLUQVPyzoIX1TjwIyFQ4zN5zuhkp/UclM1zWpwD321+qfk3Yb+/JN
-	 GlvJcxC2ZfT1zUVgrHKaqpSyZlwMuSq5QM2waEyBtyrUHSA7a9SYT1Cjg3Q+8hCxxn
-	 jIxv4a0SsMSNrpUk8gTTOb6LAeROiNWQc/S1dEvfN69xsdvDvmX+WCMs79sJrHdqvG
-	 EI6qnumKh3yL/mgoeT3yrgCvOqntrANSbYOaYdifEa/O+sRgn+E7ZqkF5h/Mwafr/z
-	 M5uy5+ybylexYpw6bdaIeBARyauiDqPjNbqaPehuUHjeW+Fgwz1W4ILMMTX06MXv63
-	 Nv7vEm/pyc2Zw==
-Message-ID: <a0eca34d-5eb2-4730-b8c7-0f2302bcf265@kernel.org>
-Date: Mon, 12 Oct 2026 09:08:40 +0200
+	s=k20260515; t=1791789037;
+	bh=GsG+1IVi38sXkYbVdya7eJ1kcaTSmijwDDxtlHU8dv0=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=gd2yTJXYy2bbPYjKjYJOkzYo3ebQXDoR1bsaVLjCUqxF8KblhDeIBsc7vXS1+gMc3
+	 iNZpM4iuYWbENyeKbG/nMsvJMFtdHpHVUMvnBTtckLDxwORtxlzqrS2xpzP0rYgIeL
+	 gf5pCR6p1ax7OCs7niEibB5lvHQHyF1n8GJvto8dn8mTd3WBsoRqaBu06MXRnGla0z
+	 G4knI4KYKzDd4OgpgC7Hm65D2YYjA6e/bR3UakJj9FhvLnZv0mnqMd6zkvmZCiHEq+
+	 FMyCXM6ZvSdKbX6RXHWj3tA2OHpgINGI98qBAIw9veX8MwtHJHnOsj7rRC4TaljSYO
+	 1W3nyhtzLO20g==
+Message-ID: <sashiko-outbox-167778@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH RFC v3 07/10] tty: serial: Add Cortina UART driver
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Fil Dunsky" <filipp.dunsky@gmail.com>
+Cc: linux-serial@vger.kernel.org, robh@kernel.org, devicetree@vger.kernel.org, conor+dt@kernel.org
+In-Reply-To: <20261012-b4-cs75xx-v3-7-0e0d17a098cf@gmail.com>
+References: <20261012-b4-cs75xx-v3-0-0e0d17a098cf@gmail.com>
+ <20261012-b4-cs75xx-v3-7-0e0d17a098cf@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 12 Oct 2026 07:10:36 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 04/18] dt-bindings: pinctrl: add Ambarella CV75 pinctrl
-To: Linus Walleij <linusw@kernel.org>
-Cc: longzhao@ambarella.com, Arnd Bergmann <arnd@arndb.de>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>,
- Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>,
- Bartosz Golaszewski <brgl@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Long Zhao <zl020895@163.com>, Lee Jones <lee@kernel.org>,
- mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
- <20260921-cv75-v5-v8-4-282ff5d98dda@ambarella.com>
- <CAD++jLmKF5XxHsJX29sdXC_6JHKn-7HkE=N+TKtk5xODtQj3_w@mail.gmail.com>
- <b2256847-3ec1-47e8-ac79-ceca86eb09e7@kernel.org>
- <CAD++jLkrXXg9xrhAZ8HETc5Qcv5BbkY-ibjvzBmE5WZVqDEGWQ@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <CAD++jLkrXXg9xrhAZ8HETc5Qcv5BbkY-ibjvzBmE5WZVqDEGWQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-On 12/10/2026 09:06, Linus Walleij wrote:
-> On Fri, Oct 9, 2026 at 8:17 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->> On 01/10/2026 09:03, Linus Walleij wrote:
-> 
->>> On Mon, Sep 21, 2026 at 6:23 AM Long Zhao via B4 Relay
->>> <devnull+longzhao.ambarella.com@kernel.org> wrote:
->>>
->>>> From: Long Zhao <longzhao@ambarella.com>
->>>>
->>>> Document the CV75 pin controller binding using generic function and
->>>> groups properties for pinmux configuration.
->>>>
->>>> Reviewed-by: Linus Walleij <linusw@kernel.org>
->>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
->>>> Signed-off-by: Long Zhao <longzhao@ambarella.com>
->>>
->>> This patch 4/18 applied to the pinctrl tree.
->>
->> There is a dependency, you cannot take this patch alone.
-> 
-> Oops, but is it a DTS dependency so if none of the other patches go in through
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [Medium] tty: serial: cortina: corrupted RX data passed as TTY_NORMAL on =
+parity/framing errors
+- [Low] serial: incorrect ordering of overrun error reporting in TTY buffer
+--
 
-No, it is a bindings dependency, introducing new DT bindings warning for
-both your tree and next. Your tree is fine in this case as long as next
-is also fine... but next is not, because that patch did not make it there.
+commit 3e704212d6dee31d61d2da0a1c4e2caaf3d70e2e
+Author: Fil Dunsky <filipp.dunsky@gmail.com>
 
-We cannot have any new DT bindings warnings in next.
+tty: serial: Add Cortina UART driver
 
-> this merge window it'd still be OK right?
-> 
-> I think the other patches are still being reviewed and we are at -rc7 so..
-Best regards,
-Krzysztof
+This commit adds a driver for the UART found in Cortina Systems CS75xx
+(Goldengate G2) SoCs. It implements the current serial core API and devm
+resource management, and supports the system console and earlycon.
+
+> diff --git a/drivers/tty/serial/cortina-uart.c b/drivers/tty/serial/corti=
+na-uart.c
+> new file mode 100644
+> index 0000000000000..0c2733a7c6b1d
+> --- /dev/null
+> +++ b/drivers/tty/serial/cortina-uart.c
+[ ... ]
+> +static void cortina_uart_rx_chars(struct uart_port *port, u32 status)
+> +{
+> +	struct tty_port *tport =3D &port->state->port;
+> +	unsigned int budget =3D CORTINA_UART_RX_BUDGET;
+> +	u32 data;
+> +
+> +	if (status & CORTINA_UART_IRQ_RX_OVERRUN) {
+> +		port->icount.overrun++;
+> +		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+> +	}
+
+[Severity: Low]
+Could this result in the TTY_OVERRUN marker being inserted before the older,
+valid characters are extracted from the FIFO?
+
+When a hardware overrun occurs, the RX FIFO is full of older, valid
+characters, while the newly arriving characters that did not fit were lost.
+By inserting the TTY_OVERRUN marker before the while loop that drains the
+FIFO, it appears the driver places the error marker before the older
+characters in the TTY stream.
+
+Would this cause the TTY layer to report the data loss in the wrong
+chronological position relative to the valid data? The overrun marker should
+likely be inserted after the valid characters in the FIFO have been drained.
+
+> +	if (status & CORTINA_UART_IRQ_RX_PARITY)
+> +		port->icount.parity++;
+> +	if (status & CORTINA_UART_IRQ_RX_STOP)
+> +		port->icount.frame++;
+> +
+> +	while (budget-- && !(readl(port->membase + CORTINA_UART_INFO) &
+> +			     CORTINA_UART_INFO_RX_EMPTY)) {
+> +		u8 ch;
+> +
+> +		data =3D readl(port->membase + CORTINA_UART_RXDAT);
+> +		if (!(data & CORTINA_UART_RXDAT_VALID))
+> +			continue;
+> +
+> +		port->icount.rx++;
+> +		ch =3D FIELD_GET(CORTINA_UART_RXDAT_DATA, data);
+> +
+> +		if (port->ignore_status_mask & CORTINA_UART_RXDAT_VALID)
+> +			continue;
+> +		if (uart_prepare_sysrq_char(port, ch))
+> +			continue;
+> +
+> +		tty_insert_flip_char(tport, ch, TTY_NORMAL);
+> +	}
+
+[Severity: Medium]
+Is it intentional that received characters are unconditionally flagged as
+TTY_NORMAL and pushed to the TTY buffer, even if the interrupt indicated a
+parity or framing error?
+
+When the hardware detects a parity or framing error, it increments the
+corresponding statistics but then unconditionally inserts all received
+characters into the TTY buffer with the TTY_NORMAL flag.
+
+[ ... ]
+> +static void cortina_uart_set_termios(struct uart_port *port,
+> +				     struct ktermios *termios,
+> +				     const struct ktermios *old)
+> +{
+[ ... ]
+> +	uart_port_lock_irqsave(port, &flags);
+> +
+> +	port->ignore_status_mask =3D 0;
+> +	if (!(termios->c_cflag & CREAD))
+> +		port->ignore_status_mask |=3D CORTINA_UART_RXDAT_VALID;
+> +
+> +	uart_update_timeout(port, termios->c_cflag, baud);
+
+[Severity: Medium]
+Should port->read_status_mask or port->ignore_status_mask be configured here
+for parity and framing errors?
+
+By not populating these masks based on termios->c_iflag (e.g., INPCK, IGNPA=
+R,
+PARMRK), it appears the driver completely bypasses termios error-handling
+policies and silently passes corrupted data to userspace as perfectly valid
+characters.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261012-b4-cs75xx-=
+v3-0-0e0d17a098cf@gmail.com?part=3D7
