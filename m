@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D9D94BEE54;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27C684BF92D;
 	Mon, 12 Oct 2026 17:31:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791826278; cv=none; b=XxoCSzAiQ5NV27Kv/h6c1KCYdJJeTRU5c07GB13Whp0uyPqYfIVAC8JayRKyH7PZjhdl7yobwZWtpCy7qwrkYYt5iJYMSkpTAWedd2xAKJWbJ0lPK6ZCkNZqO93nrBblRnoUVRt5zFWY7/sCdbuLyBbKKP2t1Cy8zfwLmUnV328=
+	t=1791826278; cv=none; b=ksA2U2fGFG/EFycDR+F5DnGlfoMUWCA8koHqbMiYYLnkW6fVBPS53lXA6nVepaaIZIc4sxOKjPBerOOignmKicNB//X474FSYXVrnuJsLzfZANSYP8vQLuFlG6ay/yPO/0AQn96QSE3ZspKZJA5gclim35T4qNaFnU7I7aFPe0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791826278; c=relaxed/simple;
-	bh=8gR7BhNXPoHr5C+6JPztbmGwaJrI/VU6fS5GUB1Vw7A=;
+	bh=Ct9uOeYC8SA1Sm9EyJBjZtg8CNMYCoQgwWRIa6qWDME=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FHBgxgVpkjtKgQhw5TJDkfGg848hN9uLSwH9A/G9U0b6IH/XKFKSlUWnX83w2VZHiM+9kUE+ZEBdgBPJOYz3j1Lt5gMHQaHsns32f7jRmh6FQHZyOCKJWCV/2oLTWudkY8LyTn4Nnr3iJZT4mMyXhZt0Q8nuqRJ2n3C7GWDGkJI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q8CSBzqG; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=LyYdajNdSzkV6GQAPmTNLsV3/HLkfOtGjbdi8SPG6t2PJ0xrqy+4qiqdh/JDnyFodvU9p+u6tBOzSh43JLG3CcMRF/3xUMZYIP4la20YfiWbc7/TP/3upIVq8FUK1gXujjg3XkcYXsgXVPwXEyOt4z/mUdVzSTRthShYScJRFrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TbEPVowy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q8CSBzqG"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AD827C4DDEC;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TbEPVowy"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 93BC4C4AF68;
 	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1791826277;
-	bh=8gR7BhNXPoHr5C+6JPztbmGwaJrI/VU6fS5GUB1Vw7A=;
+	bh=Ct9uOeYC8SA1Sm9EyJBjZtg8CNMYCoQgwWRIa6qWDME=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Q8CSBzqGHOXNH1FkQCMBSLmLi0tW9NTyX1bwFESLt+8jytGb9fS2wJpdvV4Jb21cj
-	 47Wt62ytqU+T3gMpOQWnJWL08r8I3Juxc9z7oCoddkcShTA0w7DqlMpGTJlmpOonhX
-	 Zrct03LJ3y2J+XXe5wKye7scl0+Aci5pwISzO9o/dmwjvSmZp8JNBy7dK1XmKTQDdo
-	 FAqA/q4xzb8HhRYhx668UVSnmNUqUUgoTgHjowigFWjfRxUaP47qUPnhU/SuXtcrV6
-	 YiC4xiZyjgP8+lRvmCYMdadobffYRKOhwtfAQhWBEAOkU57FkA8+MlX5n2xdpCaCaP
-	 /Oa9vmgy0Yjeg==
+	b=TbEPVowyfE4aWlOS6YuFdGwGJ8SpAt+ADuZTH2QJ91pmHoF4DjtC0aOYURB3aZQDX
+	 S4C2gULxsbrJTIrj3SmBQfKXRMyMaDwAkkQ82jEhHP2ry+fkqNDLSDgr/kSIZgv30K
+	 OXrqeLThRjoa8g9UnkeeaAOCYo8wgt3/mdbWZhBE49RfgP/QKx8pyzRkytBwCAopOD
+	 pG7Qlyjn8QhOvMNta5OzxwEjvsJBtb2kt8xMs8ByQsebg1IJeaK4QPtwH/XNz+aoK0
+	 NRWax0N9JfUe/w/9TCgG9YXSGWeauV7FsCl3/KTuFqaCnLzAiJUEhns2Guo9ONJERJ
+	 x35bY6KiF5fSQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 968F1CA9EDE;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E48ACA9ED0;
 	Mon, 12 Oct 2026 17:31:17 +0000 (UTC)
 From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Date: Mon, 12 Oct 2026 20:31:20 +0300
-Subject: [PATCH v4 06/10] dt-bindings: serial: Add Cortina Systems CS7542
- UART
+Date: Mon, 12 Oct 2026 20:31:19 +0300
+Subject: [PATCH v4 05/10] ARM: debug: Add Cortina Systems CS75xx UART0
+ support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261012-b4-cs75xx-v4-6-df250d903682@gmail.com>
+Message-Id: <20261012-b4-cs75xx-v4-5-df250d903682@gmail.com>
 References: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
 In-Reply-To: <20261012-b4-cs75xx-v4-0-df250d903682@gmail.com>
 To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
@@ -58,11 +58,11 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Jason Li <jason.li@cortina-access.com>, 
  Fil Dunsky <filipp.dunsky@gmail.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791826275; l=1934;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791826275; l=4419;
  i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=DBYjTP1f13Z8VgqM2RKT5FXuSk8m/3+wuQ5DQ1oXB5o=;
- b=/0Hiis9cJAy0Ozd2zKEImMFxFSb511Sz+caOZuNZuB53vsCwyTVnO3p33jd8Wc0wJbunj5uYF
- F9+523GfwXJChaTev0ogQBdMZGZIRDHlEG9yo51dgq8Fh7Ske9DJyYk
+ bh=Kf0Hkr00xHM1irusJF0y6k3iCjmsska+Ga40A3ySHZk=;
+ b=48tcoMU8R7UlWG6fiv+UqhwvPktWywijkrZcDimrChV5MQWhePdjEbQhy2AiGKwsUmaIKYLxQ
+ T5MaQSFQdD2ArVLkgZk477WoAhs6iTJhI41FmAg0qBYy92bzVmr8iTH
 X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
  pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
 X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
@@ -72,73 +72,122 @@ Reply-To: filipp.dunsky@gmail.com
 
 From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Add the binding for the UART found in the Cortina Systems CS75xx
-(Goldengate G2) SoCs such as the CS7542.
+Add low-level debug output through UART0 of the Cortina Systems CS75xx
+SoCs. The UART is mapped at a fixed virtual address by the generic
+debug_ll_io_init(), so no platform map_io is needed.
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
 Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 ---
- .../bindings/serial/cortina,cs7542-uart.yaml       | 52 ++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ arch/arm/Kconfig.debug          | 16 ++++++++++++++--
+ arch/arm/include/debug/cs75xx.S | 37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml b/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index abcf14f10..c43fe288b 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -308,6 +308,15 @@ choice
+ 		  Say Y here if you want the debug print routines to direct
+ 		  their output to the second serial port on these devices.
+ 
++	config DEBUG_CS75XX_UART0
++		bool "Kernel low-level debugging messages via CS75xx UART0"
++		depends on ARCH_CORTINA_ACCESS
++		help
++		  Say Y here if you want the debug print routines to direct
++		  their output to UART0 of Cortina Systems CS75xx SoCs. This
++		  is the console port on the Securifi Almond+. The UART is
++		  expected to be set up by the bootloader.
++
+ 	config DEBUG_DAVINCI_DA8XX_UART1
+ 		bool "Kernel low-level debugging on DaVinci DA8XX using UART1"
+ 		depends on ARCH_DAVINCI_DA8XX
+@@ -1531,6 +1540,7 @@ config DEBUG_LL_INCLUDE
+ 	default "debug/vt8500.S" if DEBUG_VT8500_UART0
+ 	default "debug/zynq.S" if DEBUG_ZYNQ_UART0 || DEBUG_ZYNQ_UART1
+ 	default "debug/bcm63xx.S" if DEBUG_BCM63XX_UART || DEBUG_BCMBCA
++	default "debug/cs75xx.S" if DEBUG_CS75XX_UART0
+ 	default "debug/digicolor.S" if DEBUG_DIGICOLOR_UA0
+ 	default "debug/brcmstb.S" if DEBUG_BRCMSTB_UART
+ 	default "mach/debug-macro.S"
+@@ -1632,6 +1642,7 @@ config DEBUG_UART_PHYS
+ 	default 0xe8008000 if DEBUG_R7S72100_SCIF2 || DEBUG_R7S9210_SCIF2
+ 	default 0xe8009000 if DEBUG_R7S9210_SCIF4
+ 	default 0xf0000000 if DEBUG_DIGICOLOR_UA0
++	default 0xf0070110 if DEBUG_CS75XX_UART0
+ 	default 0xf1012000 if DEBUG_MVEBU_UART0_ALTERNATE
+ 	default 0xf1012100 if DEBUG_MVEBU_UART1_ALTERNATE
+ 	default 0xf7fc9000 if DEBUG_BERLIN_UART
+@@ -1670,7 +1681,7 @@ config DEBUG_UART_PHYS
+ 		DEBUG_RMOBILE_SCIFA4 || \
+ 		DEBUG_S3C64XX_UART || \
+ 		DEBUG_BCM63XX_UART || DEBUG_BCMBCA || DEBUG_ASM9260_UART || \
+-		DEBUG_DIGICOLOR_UA0 || \
++		DEBUG_CS75XX_UART0 || DEBUG_DIGICOLOR_UA0 || \
+ 		DEBUG_AT91_UART || DEBUG_STM32_UART || \
+ 		DEBUG_STIH41X_ASC2 || DEBUG_STIH41X_SBC_ASC1 || \
+ 		DEBUG_STIH418_SBC_ASC0
+@@ -1708,6 +1719,7 @@ config DEBUG_UART_VIRT
+ 	default 0xf7000800 if DEBUG_S3C64XX_UART && DEBUG_S3C_UART2
+ 	default 0xf7000c00 if DEBUG_S3C64XX_UART && DEBUG_S3C_UART3
+ 	default 0xf7020000 if DEBUG_AT91_SAMA5D2_UART1
++	default 0xf7070110 if DEBUG_CS75XX_UART0
+ 	default 0xf7fc9000 if DEBUG_BERLIN_UART
+ 	default 0xf8007000 if DEBUG_HIP04_UART
+ 	default 0xf8009000 if DEBUG_VEXPRESS_UART0_CA9
+@@ -1772,7 +1784,7 @@ config DEBUG_UART_VIRT
+ 		DEBUG_QCOM_UARTDM || \
+ 		DEBUG_S3C64XX_UART || \
+ 		DEBUG_BCM63XX_UART || DEBUG_BCMBCA || DEBUG_ASM9260_UART || \
+-		DEBUG_DIGICOLOR_UA0 || \
++		DEBUG_CS75XX_UART0 || DEBUG_DIGICOLOR_UA0 || \
+ 		DEBUG_AT91_UART || DEBUG_STM32_UART || \
+ 		DEBUG_STIH41X_ASC2 || DEBUG_STIH41X_SBC_ASC1 || \
+ 		DEBUG_STIH418_SBC_ASC0
+diff --git a/arch/arm/include/debug/cs75xx.S b/arch/arm/include/debug/cs75xx.S
 new file mode 100644
-index 000000000..2879a7188
+index 000000000..967821add
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/cortina,cs7542-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/arch/arm/include/debug/cs75xx.S
+@@ -0,0 +1,37 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Debugging macro include header for the Cortina Systems CS75xx UART
++ */
 +
-+title: Cortina UART
++#define CS75XX_UART_TXDAT		0x10
++#define CS75XX_UART_INFO		0x18
++#define CS75XX_UART_INFO_TX_FULL	(1 << 2)
++#define CS75XX_UART_INFO_TX_EMPTY	(1 << 3)
 +
-+maintainers:
-+  - Fil Dunsky <filipp.dunsky@gmail.com>
++		.macro	addruart, rp, rv, tmp
++		ldr	\rp, =CONFIG_DEBUG_UART_PHYS
++		ldr	\rv, =CONFIG_DEBUG_UART_VIRT
++		.endm
 +
-+description:
-+  The UART found in the Cortina Systems CS7542 (Goldengate G2) SoC. It has
-+  transmit and receive FIFOs and a 24-bit baud rate divider running from the
-+  peripheral (APB) clock. Other SoCs with the same block, the rest of the
-+  CS75xx family and the Cortina Access parts, are to be added with their own
-+  compatible string and "cortina,cs7542-uart" as the fallback.
++		.macro	senduart, rd, rx
++		ARM_BE8(rev \rd, \rd)
++		str	\rd, [\rx, #CS75XX_UART_TXDAT]
++		ARM_BE8(rev \rd, \rd)
++		.endm
 +
-+allOf:
-+  - $ref: serial.yaml#
++		.macro	waituartcts, rd, rx
++		.endm
 +
-+properties:
-+  compatible:
-+    const: cortina,cs7542-uart
++		.macro	waituarttxrdy, rd, rx
++1001:		ldr	\rd, [\rx, #CS75XX_UART_INFO]
++		ARM_BE8(rev \rd, \rd)
++		tst	\rd, #CS75XX_UART_INFO_TX_FULL
++		bne	1001b
++		.endm
 +
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    serial@f0070110 {
-+        compatible = "cortina,cs7542-uart";
-+        reg = <0xf0070110 0x30>;
-+        interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&apb_clk>;
-+    };
++		.macro	busyuart, rd, rx
++1002:		ldr	\rd, [\rx, #CS75XX_UART_INFO]
++		ARM_BE8(rev \rd, \rd)
++		tst	\rd, #CS75XX_UART_INFO_TX_EMPTY
++		beq	1002b
++		.endm
 
 -- 
 2.53.0
