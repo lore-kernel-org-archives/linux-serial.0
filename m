@@ -1,104 +1,161 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B74E53AFD06
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 09:07:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA05D395AE4;
+	Tue, 13 Oct 2026 09:09:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791882452; cv=none; b=tXfjjH6m1xjRUYM++2xUl8yLzyGwr18YNEFWjCLJbImbiiftiEjEa+3Jgyo1GV40pAk4eNkekWED6AZuC9qJ4kOTpru5EjNSkigBpbbdy+crc/2/kwOQ2TFQMeHaDcdb6U2om+HoxMVjbPSsFoSkihOYvqqrN9QDxSY1Yxs0o/Y=
+	t=1791882572; cv=none; b=ubGue2RrpHng5NlaGyGFKmG6z1x7znFNClKy4xVvcoKx5tMW76sqctPc0YZuE/S2oObGN4imE83LaJwzYl5kAWjnxZ2hh8jMNaP7r6ONhgGMAg/lE6+Cqzy09PWEiBOXvgEx0+L6CgyQjq4afRCo/8LPAxJwp+qGxojTAO8LyMk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791882452; c=relaxed/simple;
-	bh=EHv62jhll6vjCk7xDTGv3L9j7vvvleMv+b8f2f75tno=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=C1ga25aJN2DkTuAOxoNybbVp7Ddc3bHTcUTSUQjBiuj9w0QxRFqtDaSsdAgFbQyhm6wDBzRtyVAEf/1CSVQpvSrW3725WdPyLkPcr0NwYiibJnuNXxwvln6Czh/FhAKKqa4gx37FVF9LRaWaD3AJZg0ySrg263bVpdP7QjgIHHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IA0rxXZr; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791882572; c=relaxed/simple;
+	bh=IQ/UNuFHURdJ5ziTLh4qZrD8MOsGX3B11CY5vdjd4ZM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FU1G4ecdDUbUi/WDiLX1eZMGnCLIREscso5TsSBEUPMpKHlgS6SEqZNz1lY5kFsk3Fk+q6A4KSTM/YtxyHFUmvQRwA+/fPcLXlhTqZBQaK0S8Q9pu72LB+5jskUPhHfXcSA8i5RH3hCpXISk8vsEIizUrcTvwlhEJhYDiTMJ8hM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hwG7vtZ6; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IA0rxXZr"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4a171b677d2so15938365e9.0
-        for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 02:07:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791882449; x=1792487249; darn=vger.kernel.org;
-        h=content-type:mime-version:content-transfer-encoding:message-id:date
-         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EHv62jhll6vjCk7xDTGv3L9j7vvvleMv+b8f2f75tno=;
-        b=IA0rxXZrTn3ItzYPM9XuFSeYBGOdgkRSe+ia45yNDYvFQ39P955oiKskFp5M5a+yQw
-         g1v9G3yprf4W274N3nUS3Sl5gnNeMbVqBFElQpQlKClRYswdep09DwzmTLWgRxTGgpzp
-         kiFrEibbRZtqbx1XUHAPsRQnjYX+K9sfx0Ou9LEVBbDlk+/ZIo4osL9c5QcftjnN/JqG
-         bV9znXUe7LifrTq+oUzZ8F8XE2aO6KNFTJ49exrJDD6Tfo62kRYutmKhGwvg3K6SfuMA
-         WK+1jMdi05M6lnmoI6xIllT0JC74FoLVF/8aZ6TPQ2A7fZWcWW1XqZZuOjl/99XX3gWl
-         85+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791882449; x=1792487249;
-        h=content-type:mime-version:content-transfer-encoding:message-id:date
-         :references:in-reply-to:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=EHv62jhll6vjCk7xDTGv3L9j7vvvleMv+b8f2f75tno=;
-        b=y4Qqo9vU0STntljzGfIjA82Pb9O0ZtMYec2WNOKwWz3Xe8Mm/aO/8V+Jy62CGoV9gg
-         1dvlYp1LyB6mzzygpklBR8/6x8KN+K+GnNtV8Xz0wpO2hJ5L4SDCHPf8rRIQ1In+4bMi
-         /31P1TCTFsNVwn8/DcGZiIOCQ3HOHSZ90LO3SUcppkKZZqYHnc25yu39bt+n2LYewqf4
-         Ab4DNGVO8eSqI84xd+8wN5ir96VqrcJ68Gs7sXaj1GVMhP1xT4KS1WeJQYAC6gs6UKv2
-         AD8hrhUZM2uXFVXkxj23sdN/7xY8OWKyciB6p+AAPKiz2vxXXU56fiFKOhyWS5dhXQAs
-         yDXw==
-X-Forwarded-Encrypted: i=1; AKwUvByMm37ohEu+jUdakDj1cADDmN+9WjnUl+wFguT11QiRwPlydSafXMa22pBaIMIjO4qc8yMPodAl9qwN/Z4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIRxrVmB/yg2nBElYd1+UjM7om79dAOUWP86IK9T3282LKdKRzK
-	Tw/Gy0gQrIB4PuOU5BX6aSp9cM35sIwuym0SrXwZRgAy7WOEj8TuhyEL
-X-Gm-Gg: AYBFou2EGwnh9KVOFhR7KPxIcaXgY0jSc2XVLPpNkXv7nde94LtKeMPYgZ3yaKWleCH
-	8knctnA55MBPk6q58ZyKvp31K0v3/AlGFpsflWN8fzMRw9sMWzswKctkxXl3FP4cdhAXWMucxE+
-	Tq/MF1Kx/erjarnkX0We4RxxNcHDxUsh7gz+kiK5HEuYjJeb55CVJLAlLCAPcpGkx5IEslg/s8X
-	zebda/+ilv/O4RJg0pjdu3WFLLUUklelfDn9oSuO61baqHRvFiF721bNZ5GQv2ZPhaP4Mej65YT
-	ps9ioLPPFwf8V5mLCdkYip92GslZEd+Za+G6yM8CB3QUW6fwwhkJ/N9TJ1+Vw20NC02qMFnu252
-	hLw36wT5M1eyRWlf6nviPVFAxFZxpwCBg/+/+rLIwTSgJSiOT3GmEIeakIrInfge8IBwT1DSCyv
-	JZYfKGRL1K+t8HYR5yCpumIGlBpzt4fPT8HQb2Cxh3C6xqRKAbimb4MtGHNKiu+MJYk9t++W7BX
-	ArbYjPX0ynnOk1msTCb/I//JBIRQRYg0yWna7AzWcKL7+ZUwIA9vz0hEw==
-X-Received: by 2002:a05:600c:3e07:b0:4a1:a009:9724 with SMTP id 5b1f17b1804b1-4a1a00997f1mr85302755e9.7.1791882448859;
-        Tue, 13 Oct 2026 02:07:28 -0700 (PDT)
-Received: from [127.0.1.1] (ip-024-215.users.dtel.ru. [91.210.24.215])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18bf31b83sm360478255e9.12.2026.10.13.02.07.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 02:07:28 -0700 (PDT)
-From: Fil Dunsky <filipp.dunsky@gmail.com>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- Jason Li <jason.li@cortina-access.com>,
- "Conor.Dooley" <conor.dooley@microchip.com>
-Subject: Re: [PATCH v6 00/10] ARM: Add support for Cortina Systems CS75xx and
- Securifi Almond+
-In-Reply-To: <192a1f7f-79e6-403f-9910-d46b871cae2b@app.fastmail.com>
-References: <20261013-b4-cs75xx-v6-0-37e8f3969b7c@gmail.com>
- <971b67a9-7e3a-4fde-a8a1-e5a78f8d6436@kernel.org>
- <179187343453.3124451.12229499654368455627@gmail.com>
- <192a1f7f-79e6-403f-9910-d46b871cae2b@app.fastmail.com>
-Date: Tue, 13 Oct 2026 12:07:25 +0300
-Message-ID: <179188244540.3423842.17952003148776663506@gmail.com>
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hwG7vtZ6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791882571; x=1823418571;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IQ/UNuFHURdJ5ziTLh4qZrD8MOsGX3B11CY5vdjd4ZM=;
+  b=hwG7vtZ6YBR7AfXPt3DffO1F6MMLYFDQchc4k9T2NfR2dDokx/8E9Mej
+   ZHpA6HCI6U+FsX+rNWpqN8HVMBYL1IJJqtIqtKP9RWXrWgzp8N/CNJ7E9
+   OFgovNi5Z3U6KINz9JdhtblHU8BlUk3mfkw4VloBFmDxf359h+iSaYlCS
+   ORL36WNZT0nN37qSpJxxP8O+L8qk79jC5wCopYVdKxnVhxhlKMxL+pnCa
+   IN77ybNQBHPPrveoNRrnyfbd4IroAJaDMTg2Jlt55g2RTvuioon8OHA4A
+   2EkAqVjd4dYmS3RjmGnYuFlFZ//dcUZYt5BXm6wq7pW8gcYXw3E1LDRJe
+   w==;
+X-CSE-ConnectionGUID: fPqzkKJTSviPLrXKqzkBKg==
+X-CSE-MsgGUID: AaWK8NZNSZy+UpjoFEwQnA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="595188"
+X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
+   d="scan'208";a="595188"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 02:09:30 -0700
+X-CSE-ConnectionGUID: BgXYAbCpQMSPY4ai3EmgtQ==
+X-CSE-MsgGUID: Z+SacHifQmOu6wFBhA0rHQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
+   d="scan'208";a="1196513"
+Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.48])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 02:09:20 -0700
+Date: Tue, 13 Oct 2026 12:09:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+	Richard Cochran <richardcochran@gmail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Ryan Chen <ryan_chen@aspeedtech.com>,
+	Billy Tsai <billy_tsai@aspeedtech.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <ray.jui@broadcom.com>,
+	Scott Branden <scott.branden@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-mediatek@lists.infradead.org,
+	linux-parisc@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 6/6] serial: 8250: make port operations work on struct
+ uart_8250_port
+Message-ID: <as31PsESOgLUhMB6@ashevche-desk.local>
+References: <cover.1791873876.git.jirislaby@kernel.org>
+ <c59fa203f325e0fe7601ea0fbc0d222c8b37f9eb.1791873876.git.jirislaby@kernel.org>
+ <as3etnbZatn4sbfx@ashevche-desk.local>
+ <c6b08f53-b5ee-44c8-93d1-54fdf5994ed2@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="fixed"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c6b08f53-b5ee-44c8-93d1-54fdf5994ed2@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 13, 2026, at 11:04, Arnd Bergmann wrote:
-> Please just wait until all soc patches for the 7.4 merge window are
-> upstream, I don't think anyone is going to look at this before
-> then anyway.
+On Tue, Oct 13, 2026 at 09:53:26AM +0200, Jiri Slaby wrote:
+> On 13. 10. 26, 9:33, Andy Shevchenko wrote:
+> > On Tue, Oct 13, 2026 at 08:48:51AM +0200, Jiri Slaby (SUSE) wrote:
 
-Will do, I will rebase on v7.4-rc1 and send the next version after
-that, with all the comments collected until then.
+...
 
-Thanks,
-Fil
+> > > -	rc = serial8250_register_8250_port(&port);
+> > > -	if (rc < 0)
+> > > +	struct uart_8250_port *uport = serial8250_register_8250_port(&port);
+> > > +	if (IS_ERR(uport)) {
+> > > +		rc = PTR_ERR(uport);
+> > >   		goto err_sysfs_remove;
+> > > +	}
+> 
+> > Also do not define
+> > variables in the middle of the code (it's only allowed for auto cleanup
+> > variables and for-loop iterators).
+> 
+> Why, actually?
+
+Because it's the style. Linus also told it many times (I am tired to repeat
+this, I leave it to you to find his words on lore.kernel.org).
+
+> First, it is used in the kernel quite a few times already
+> [1]. Second, while it is sort of c++ism (and I like to use modern c++), it
+> makes the life of the variable a lot more obvious.
+> 
+> [1] eg. see output of: rg -U -C 5 '}\n+\s+struct .*\*.*=' drivers/
+
+(you made me to install something I haven't heard about, it's better to use
+ `git grep` though)
+
+Note excluded __free() if I get regexp correctly
+
+$ rg -U -l '}\n+\s+struct .*\*[^)]*=' drivers/ | less
+drivers/ufs/host/ufs-qcom.c
+drivers/dma/xilinx/xilinx_dma.c
+drivers/dma/idxd/init.c
+drivers/media/platform/raspberrypi/rp1-cfe/csi2.c
+drivers/gpib/agilent_82357a/agilent_82357a.c
+drivers/gpib/ni_usb/ni_usb_gpib.c
+drivers/tty/serial/samsung_tty.c
+drivers/s390/scsi/zfcp_scsi.c
+drivers/gpio/gpiolib-shared.c
+drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_irq.c
+drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_dmub.c
+drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+drivers/gpu/drm/msm/msm_gem_vma.c
+drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
+drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+
+So, less than dozen of drivers doing wrong is not an argument, try something
+better. But thanks, I will check and address this in some of the above.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
