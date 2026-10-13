@@ -1,141 +1,211 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E627A37A83D
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 06:48:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 435273EB105
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 06:48:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791874136; cv=none; b=K2iTj7qBuR9nW3L062wu4VQ2fBte9z65JY53nta2wkmyrdUHiuPojmJbD1yXooosqEH2QBGPEPRw4dP6/VT5cO/S/kqEZQn4RJvJFOW1NZ0IJ8zxuWx2+2oT7iRCQrh29Dwcj2VcjK0CM0jnTCrliQwAdJgNV/OROtpE8KoaW3M=
+	t=1791874137; cv=none; b=ds/2OqAfIMQ8iaoexxStvENDh+vwg74jj+KEUo3b5AhCNa0QDA8qLTw7h+VMOuTo0nWTnNlWNzwaRE4PKnx5RkkDASqx6acqQYpaZpTspsfULdgMnQeFQ1iwJouYcUNVdb388MeMQbi789Z8SUN16RCdfGQuFNNGTXL8MpDEnpA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791874136; c=relaxed/simple;
-	bh=lZwVx9oBWFSuMCyyi9nzP4RJwEvT44kXBPxvtrCiye8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OFXJATpo7SLYBrIUk5YPO7e6Ua2I7xRSha1rdhcaqU/VDwExr5/ulmFsgpEl16tuegd00+9jq4nEd/Xo812ZaDmmlu+ZHl3XnUp5dLMH5ytm3oWPf7ao0Bvu0/qZv4jfx2yyr9BVFddozLOIG1CD9koa1b2HbP4L8cRTKFO8dSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ikoTxFII; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791874137; c=relaxed/simple;
+	bh=GIGqHdy7Dp8Jfd9natvTvh1J3NM+ZuKuRsvfGuNkMX0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ZmpPe6idqrXbFqjMGMjXi44T62T0AxMI3mlsHQ6J2BD25URTyp5GW1BJ9xi30lPBIr8cLaVa1hJVp61Gc8z1+81isnTMeKuYD5eRFAWvq3S4CYOREY/xECbuNAxtJy5RCHwhr9vCijbR2INz3D42VdQhvngsEob6mPaC+cKdfWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X0iakSrG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ikoTxFII"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EE51F000FF;
-	Tue, 13 Oct 2026 06:48:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X0iakSrG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012371F00893;
+	Tue, 13 Oct 2026 06:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791874134;
-	bh=gj7qtohQjlYmHqI4WcP7OTioESFxMFRaeXxZMawj0U0=;
-	h=From:To:Cc:Subject:Date;
-	b=ikoTxFIIjeT4VshN+ey6woxNaWYBi/yaQ7GOtEwnM0Z4SQ4zWs5YUgvNNMSXQYF6S
-	 Y3YOsf/OlKzSTtwhFw6fX17ePmP/sx75XmK2fvGBJQhHvTzOHE6PDQR+LKhq+/aowN
-	 BB+Mz9e+mTO41wNzsR9NNKVHyrjh+RPluvBBWcj9dgHKyegzl/QFO/ACGtGYl5qKpR
-	 Kc/dStpOoXrY7kwlJGF74+HWDeI/eZHnkv3gpTZL7Grw9jFQ05+BqCVT+3Vyb+wap2
-	 jL5R9pswsrckLXSaCllF+39W59IV74we0w3YaqJKK6YqDLfTkXeQViBLMXIzj1y0az
-	 3ITfg9ZoBsgyA==
+	s=k20260515; t=1791874135;
+	bh=GPefA9kwmN3arJe2wQPaqvc8TM3BM4CI2iBv4WJzDy0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=X0iakSrGD4vpLIO44eGeZWk7DB8TW3b2ysNhqt/KUdZwJeSPeVZWRmd4pkOgYQuwB
+	 V4ix78LU1dbsgU34NM6+IsbqSlQ1EdrCq/vArYkJ+aW/Ga01T6868j1sL86q4A2XZJ
+	 JlgY/5ZHDo8Oqp0Ijzhdm5pvUJ5ZPKN5lrxaMJIF9a3fTd5VPTR6Il9pKjV7PWsejF
+	 QraU9BExwK5DR3nw/N9xY4pH8sdnLamKygMQCg4JPX48Ee90qeqfKbjux7dgGVaRiP
+	 L51NVZ8o30s34tmjgPZ1eFaEiUC+mLGa5KX9aE59PM/f9xT3qFudlEX6MhaQiXhSqR
+	 +JVsfGf65w2dQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 0/6] serial: 8250: make port operations work on struct uart_8250_port
-Date: Tue, 13 Oct 2026 08:48:45 +0200
-Message-ID: <cover.1791873876.git.jirislaby@kernel.org>
+Subject: [PATCH v2 1/6] serial: 8250: drop err label from serial8250_register_8250_port()
+Date: Tue, 13 Oct 2026 08:48:46 +0200
+Message-ID: <baf799ad88f9ef43093ae96731f48a5e88d726dd.1791873876.git.jirislaby@kernel.org>
 X-Mailer: git-send-email 2.56.0
+In-Reply-To: <cover.1791873876.git.jirislaby@kernel.org>
+References: <cover.1791873876.git.jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi,
+serial8250_register_8250_port() holds serial_mutex using guard(), but
+still uses goto-based error handling. Mixing the two is discouraged by
+the cleanup guidelines.
 
-the 8250 port operations work on line numbers.
-serial8250_register_8250_port() returns a line, and drivers pass it back
-to serial8250_unregister_port(), serial8250_suspend_port() and
-serial8250_resume_port(). Many drivers also convert it back to the port
-using serial8250_get_port() whenever they need the port itself.
+Move the part of the function which configures the found port into a
+new helper: __serial8250_register_8250_port(). It returns an int and
+uses plain returns on failures. The caller now resets uart->port.dev on
+failure at a single place, so the err label can go.
 
-The last patch switches this interface to struct uart_8250_port.
-serial8250_register_8250_port() now returns the port (or an ERR_PTR()),
-and the other operations take it. All users are converted, and
-serial8250_get_port() is no longer exported.
+While at it, simplify the mctrl_gpio_init() error handling: return
+PTR_ERR() directly and drop the else branch.
 
-The first patch is a preparatory cleanup. It splits
-serial8250_register_8250_port() into a helper, so that the function no
-longer mixes guard() with goto-based error handling -- Sashiko.
+No functional change intended.
 
-The second patch is a trivial exar cleanup.
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Assisted-by: LLM
+---
+ drivers/tty/serial/8250/8250_core.c | 98 +++++++++++++++--------------
+ 1 file changed, 52 insertions(+), 46 deletions(-)
 
-While doing the conversion, we (me, Claude and Sashiko) found three bugs
-in how drivers handle a line that is not set (yet). Patches 3-5 fix them
-separately, so that they can go to stable:
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 11424fef7c08..7ff307ce6aa8 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -743,46 +743,12 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
+ 	serial_out(up, UART_IER, up->ier);
+ }
  
- * 8250_exar: pci_xr17v35x_exit() looks up the GPIO platform device via
-   port 0, which need not exist when its registration failed. The GPIO
-   device is now stored in struct exar8250.
- * 8250_lpss: the probe error path calls ehl_serial_exit(), which clears
-   the dma pointer of serial8250_ports[0] (usually the console) when no
-   port was registered.
- * 8250_omap: the IRQ handler can run before probe stores priv->line,
-   and then it uses serial8250_get_port(-ENODEV).
-
-The conversion also fixes two latent issues: CIR ports (registration
-used to return 0, so callers operated on ttyS0) and 8250_acorn (a port
-on line 0 was never unregistered).
-
-[v2]
- * new patch 1: drop the err label from serial8250_register_8250_port()
- * new patches 2-3: exar cleanup and fix of the GPIO device lookup
-   (reported by Sashiko)
- * 8250_lpss: no declaration in the middle of a function (Ilpo)
- * conversion: include err.h (Ilpo)
-
-Link to v1: https://lore.kernel.org/all/ef47d676a44346e058f29a00c8701484db722831.1791524724.git.jirislaby@kernel.org/
-
-Jiri Slaby (SUSE) (6):
-  serial: 8250: drop err label from serial8250_register_8250_port()
-  serial: 8250_exar: remove useless void * casts
-  serial: 8250_exar: store the GPIO platform device in struct exar8250
-  serial: 8250_lpss: do not touch uninitialized line in
-    ehl_serial_exit()
-  serial: 8250_omap: set priv->line before enabling the IRQ
-  serial: 8250: make port operations work on struct uart_8250_port
-
- drivers/ptp/ptp_ocp.c                       |  36 +++---
- drivers/tty/serial/8250/8250_acorn.c        |   5 +-
- drivers/tty/serial/8250/8250_airoha.c       |  23 ++--
- drivers/tty/serial/8250/8250_aspeed_vuart.c |  13 +-
- drivers/tty/serial/8250/8250_bcm2835aux.c   |  20 +--
- drivers/tty/serial/8250/8250_bcm7271.c      |  33 +++--
- drivers/tty/serial/8250/8250_core.c         | 128 ++++++++++----------
- drivers/tty/serial/8250/8250_dfl.c          |  22 ++--
- drivers/tty/serial/8250/8250_dw.c           |  13 +-
- drivers/tty/serial/8250/8250_dwlib.h        |   2 +-
- drivers/tty/serial/8250/8250_em.c           |  26 ++--
- drivers/tty/serial/8250/8250_exar.c         |  59 +++++----
- drivers/tty/serial/8250/8250_fsl.c          |  24 ++--
- drivers/tty/serial/8250/8250_hp300.c        |  27 ++---
- drivers/tty/serial/8250/8250_ingenic.c      |  11 +-
- drivers/tty/serial/8250/8250_ioc3.c         |  26 ++--
- drivers/tty/serial/8250/8250_keba.c         |  13 +-
- drivers/tty/serial/8250/8250_loongson.c     |  20 +--
- drivers/tty/serial/8250/8250_lpc18xx.c      |  11 +-
- drivers/tty/serial/8250/8250_lpss.c         |  17 +--
- drivers/tty/serial/8250/8250_men_mcb.c      |  14 +--
- drivers/tty/serial/8250/8250_mid.c          |  13 +-
- drivers/tty/serial/8250/8250_mtk.c          |  19 +--
- drivers/tty/serial/8250/8250_mxpcie.c       |  13 +-
- drivers/tty/serial/8250/8250_ni.c           |  12 +-
- drivers/tty/serial/8250/8250_of.c           |  25 ++--
- drivers/tty/serial/8250/8250_omap.c         |  41 +++----
- drivers/tty/serial/8250/8250_parisc.c       |  14 +--
- drivers/tty/serial/8250/8250_pci.c          |  21 ++--
- drivers/tty/serial/8250/8250_pci1xxxx.c     |  41 +++----
- drivers/tty/serial/8250/8250_pericom.c      |  15 +--
- drivers/tty/serial/8250/8250_platform.c     |  23 ++--
- drivers/tty/serial/8250/8250_pnp.c          |  21 ++--
- drivers/tty/serial/8250/8250_pxa.c          |  17 +--
- drivers/tty/serial/8250/8250_tegra.c        |  20 +--
- drivers/tty/serial/8250/8250_uniphier.c     |  21 ++--
- drivers/tty/serial/8250/serial_cs.c         |  15 ++-
- include/linux/serial_8250.h                 |   8 +-
- 38 files changed, 417 insertions(+), 465 deletions(-)
-
+-/**
+- *	serial8250_register_8250_port - register a serial port
+- *	@up: serial port template
+- *
+- *	Configure the serial port specified by the request. If the
+- *	port exists and is in use, it is hung up and unregistered
+- *	first.
+- *
+- *	The port is then probed and if necessary the IRQ is autodetected
+- *	If this fails an error is returned.
+- *
+- *	On success the port is ready to use and the line number is returned.
+- */
+-int serial8250_register_8250_port(const struct uart_8250_port *up)
++static int __serial8250_register_8250_port(struct uart_8250_port *uart,
++					   const struct uart_8250_port *up)
+ {
+-	struct uart_8250_port *uart;
+ 	bool cons_flow;
+ 	int ret;
+ 
+-	if (up->port.uartclk == 0)
+-		return -EINVAL;
+-
+-	guard(mutex)(&serial_mutex);
+-
+-	uart = serial8250_find_match_or_unused(&up->port);
+-	if (!uart) {
+-		/*
+-		 * If the port is past the initial isa ports, initialize a new
+-		 * port and increment nr_uarts accordingly.
+-		 */
+-		uart = serial8250_setup_port(nr_uarts);
+-		if (!uart)
+-			return -ENOSPC;
+-		nr_uarts++;
+-	}
+-
+-	/* Check if it is CIR already. We check this below again, see there why. */
+-	if (uart->port.type == PORT_8250_CIR)
+-		return -ENODEV;
+-
+ 	/* Preserve specified console flow control. */
+ 	cons_flow = uart_cons_flow_enabled(&uart->port);
+ 
+@@ -826,7 +792,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 		uart->port.dev = up->port.dev;
+ 		ret = uart_get_rs485_mode(&uart->port);
+ 		if (ret)
+-			goto err;
++			return ret;
+ 	}
+ 
+ 	if (up->port.flags & UPF_FIXED_TYPE)
+@@ -838,12 +804,10 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 	 */
+ 	if (uart->port.dev && !has_acpi_companion(uart->port.dev)) {
+ 		struct mctrl_gpios *gpios = mctrl_gpio_init(&uart->port, 0);
+-		if (IS_ERR(gpios)) {
+-			ret = PTR_ERR(gpios);
+-			goto err;
+-		} else {
+-			uart->gpios = gpios;
+-		}
++		if (IS_ERR(gpios))
++			return PTR_ERR(gpios);
++
++		uart->gpios = gpios;
+ 	}
+ 
+ 	serial8250_set_defaults(uart);
+@@ -900,7 +864,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 		ret = uart_add_one_port(&serial8250_reg,
+ 					&uart->port);
+ 		if (ret)
+-			goto err;
++			return ret;
+ 
+ 		ret = uart->port.line;
+ 	} else {
+@@ -927,9 +891,51 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 	}
+ 
+ 	return ret;
++}
++
++/**
++ *	serial8250_register_8250_port - register a serial port
++ *	@up: serial port template
++ *
++ *	Configure the serial port specified by the request. If the
++ *	port exists and is in use, it is hung up and unregistered
++ *	first.
++ *
++ *	The port is then probed and if necessary the IRQ is autodetected
++ *	If this fails an error is returned.
++ *
++ *	On success the port is ready to use and the line number is returned.
++ */
++int serial8250_register_8250_port(const struct uart_8250_port *up)
++{
++	struct uart_8250_port *uart;
++	int ret;
++
++	if (up->port.uartclk == 0)
++		return -EINVAL;
++
++	guard(mutex)(&serial_mutex);
++
++	uart = serial8250_find_match_or_unused(&up->port);
++	if (!uart) {
++		/*
++		 * If the port is past the initial isa ports, initialize a new
++		 * port and increment nr_uarts accordingly.
++		 */
++		uart = serial8250_setup_port(nr_uarts);
++		if (!uart)
++			return -ENOSPC;
++		nr_uarts++;
++	}
++
++	/* Check if it is CIR already. We check this below again, see there why. */
++	if (uart->port.type == PORT_8250_CIR)
++		return -ENODEV;
++
++	ret = __serial8250_register_8250_port(uart, up);
++	if (ret < 0)
++		uart->port.dev = NULL;
+ 
+-err:
+-	uart->port.dev = NULL;
+ 	return ret;
+ }
+ EXPORT_SYMBOL(serial8250_register_8250_port);
 -- 
 2.56.0
 
