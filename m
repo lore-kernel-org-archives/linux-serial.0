@@ -1,159 +1,113 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BAD42C4FA
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 12:38:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924761A9FA8;
+	Tue, 13 Oct 2026 12:40:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791895108; cv=none; b=U/icXJyM4DavZb9fPHAa76U0k/3CA0JCdK3aT+XMqwPsPulCYY31TYbKaidkwd2R9VjDziZ+CJp9wcBwhQvIfpL4ZW9jQ9BPYd65xCyzEKzPyZXQxL+8Khsj6gtF/e+eq6B58dLa6V6C1NoAm53flQoeEwwuGCbKl8qWCEaYibA=
+	t=1791895243; cv=none; b=XFrEqZBlD/hwnogLlcIp2Kki+NJdfi0pH3im3QfjpPm8LJcMYIfYpd9Z0OBjpgdo0Pv0dlLHS5ACHXfG2WAClM2Ljx3GEO0ZvVbS9mcQtxdJGqGFXZ2y0XobEfLbP8dYCJ/QytZ+bYw9DBV+BPjQEWrEtyTgbq2CESdWGwz6gJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791895108; c=relaxed/simple;
-	bh=6PeKlkVlCYmFRs2IKFn/L7hn633RP5Q6pI53uWfsEgY=;
-	h=Message-ID:From:Subject:To:In-Reply-To:References:Content-Type:
-	 Date; b=G6z4FncQ+eMxwGxpGDCC7WccInTUzokiphbdynghT6qWv5SI/ijZ3obM5Br9i6R8G3QmZxgr8puN+MkWs2qikkUAdFWAZ4PsOP4lZ7muS121CE4CdWM3NdSGGvJcmDGEFDMvQZePnV24tBz1BRlPWjfFMlTT5cMjm0SYyS2ZqjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=juPywoAh; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791895243; c=relaxed/simple;
+	bh=tdCnVLQjztegDcspwnfbrGCRR3nFA79dUIYY/Ho3dO8=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=f6ndIr3PwzvJB1hNbga0jXJPZeg+c/pTmID62MCf0hmXzyQbp5qVNLF1L8vuGiQa+QMJ94wqtzKto8dueuFYJSMxpxOIv1gCyppKUT3Cyj4TVzwV5JfqHsI8cdUS264/6Q/SZvc2lAAdtJnoM1V+iaFTvOjg8UWaVg2EpSA4te4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kqof8uaj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="juPywoAh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04E601F000FF;
-	Tue, 13 Oct 2026 12:38:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kqof8uaj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E69B1F000FF;
+	Tue, 13 Oct 2026 12:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791895107;
-	bh=Yd6q9pg+2H/jA+5INzBDCwxT6l5MwC7kAEHgwTHzm/w=;
-	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=juPywoAhUfW7aItkP0IgRW9ImhfqGj58jgobUXCV4VVQxcTg/v8PNzs5haZREXQHO
-	 JEN30AmSbJNaaWI2gl1nzqr8YKOX6pzhXVSgYEC2+ZKCHeniL8wR/UHmU4rI0Vrpcp
-	 Up91ZuAoWb0uLlLucXs8PPsMBHSxVw5jwsApuu34gQwukFy+5ohlKGBuw8jj3025hz
-	 dYJbKHyNTY0izXqMk2pQIDo6MdyLJ6lEebTWBo4oDmpqM+3P4luS2nKhRdH3Xy/x97
-	 4s4f2bAu3Wojc0idYq8Q9olVs6z0Bg5Q3SZ9OdW5838Cc5jFpMatfndwxGCZEwr89J
-	 +KCxvPHyzoOvQ==
-Message-ID: <sashiko-outbox-169727@kernel.org>
+	s=k20260515; t=1791895242;
+	bh=MN3wM5z02C2EbjykjJBw8CRBl7hi08MZ0mOQsv07SVU=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=Kqof8uajGfrCV8yRYNQsXgDdXj/HTaY823cpkZzjKjTN1N3qjvehJZTJy6XhypoiC
+	 vKlmxXDk1D0TpPWbx0uzssDB1JKR5CXHFIBAwg0ssze5UEZ2YjHLBbgcWpKkMPL8Cy
+	 GAM70NPIj+y9+b26COzXPSprWGQizplf8bRRn3jEUhmKIsEE+eEfey3Fd5hQltXDDA
+	 B5/h5tLAO0A9zKGReaYIs8QkooprhA662IPhRKZpBdkO/sOtBvrBCSxeU0s+JYfsBh
+	 8UsW4vrpsd2DiHPSMB9axuWNpJDsmu8eh9QR/5E4ZgLVoYQJfA8bJJQd7717W9XCgB
+	 ZdFwIAvrTAyVA==
+Message-ID: <sashiko-outbox-169730@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 3/5] serial: mcf: dynamically allocate memory
+Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Greg Ungerer" <gerg@linux-m68k.org>, linux-serial@vger.kernel.org
-In-Reply-To: <20261013120831.1046590-4-gerg@linux-m68k.org>
+Cc: devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
+In-Reply-To: <20261013120831.1046590-5-gerg@linux-m68k.org>
 References: <20261013120831.1046590-1-gerg@linux-m68k.org>
- <20261013120831.1046590-4-gerg@linux-m68k.org>
+ <20261013120831.1046590-5-gerg@linux-m68k.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 13 Oct 2026 12:38:26 +0000
+Date: Tue, 13 Oct 2026 12:40:41 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [High] tty: mcf: Use-After-Free and double-unregister due to dangling poi=
-nters and global array loop
-- [High] tty: mcf: Premature console publication causes NULL pointer derefe=
-rence
-- [High] tty: serial: mcf: Use-After-Free on probe error and driver removal
+- [Medium] dt-bindings: $id path mismatch breaks schema cross-referencing
+- [Medium] dt-bindings: schema keyword typo allof prevents base serial sche=
+ma evaluation
 --
 
-commit cc5afe1f9a1d1092ba4a245994a51d452fb2379c
+commit c5bd98e903d69d54479e4a7058d0ad59884cfb54
 Author: Greg Ungerer <gerg@linux-m68k.org>
 
-serial: mcf: dynamically allocate memory
+dt-bindings: serial: create binding for mcf-uart
 
-Modify the ColdFire serial driver to dynamically allocate the local uart
-port structures as required at init time. Currently it uses a fixed
-size array - a little wasteful of memory on most parts with only a
-couple of UARTs.
+This commit creates documentation for a new binding to support the Freescale
+ColdFire UART hardware block. This hardware block is found on M68K derived
+Freescale ColdFire family of SoC devices.
 
-> diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-> index 3651910dff99e..7cbe43cbe3a0e 100644
-> --- a/drivers/tty/serial/mcf.c
-> +++ b/drivers/tty/serial/mcf.c
+> diff --git a/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml b=
+/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
+> new file mode 100644
+> index 0000000000000..d1dba518f67af
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
+> @@ -0,0 +1,43 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/fsl-mcf-uart.yaml#
 
-[ ... ]
+[Severity: Medium]
+Will this schema mismatch cause a regression by breaking cross referencing?
 
-> @@ -509,9 +517,9 @@ static int __init mcf_console_setup(struct console *c=
-o, char *options)
-> =20
->  	if ((co->index < 0) || (co->index >=3D MCF_MAXPORTS))
->  		co->index =3D 0;
-> -	port =3D &mcf_ports[co->index].port;
-> -	if (port->membase =3D=3D 0)
-> +	if (mcf_ports[co->index] =3D=3D NULL)
->  		return -ENODEV;
-> +	port =3D &mcf_ports[co->index]->port;
+In Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml, the file is
+named with a comma, but the id is defined with a hyphen.
 
-[Severity: High]
-Could this change lead to a NULL pointer dereference if console setup runs
-concurrently with device probe?
+The device tree bindings subsystem guidelines require that the path in the =
+id
+field exactly match the file path relative to
+Documentation/devicetree/bindings/. The dt_binding_check tooling will
+encounter this mismatch and silently skip or fail validation because the
+paths do not correspond.
 
-In mcf_probe(), the new port structure is allocated and assigned to the
-global mcf_ports[] array before port->membase is initialized via ioremap.
-Since mcf_console_setup() no longer checks if port->membase is zero, it can
-successfully complete before the mapping is done. If a printk occurs in
-this window, mcf_console_putc() will dereference the NULL membase when
-attempting to read the UART status.
-
-[ ... ]
-
-> @@ -572,10 +580,16 @@ static int mcf_probe(struct platform_device *pdev)
->  {
->  	struct uart_port *port;
->  	struct resource *res;
-> +	struct mcf_uart *mp;
-> =20
->  	if (pdev->id >=3D MCF_MAXPORTS)
->  		return -ENODEV;
-> -	port =3D &mcf_ports[pdev->id].port;
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	mp =3D devm_kzalloc(&pdev->dev, sizeof(*mp), GFP_KERNEL);
-> +	if (mp =3D=3D NULL)
-> +		return -ENOMEM;
-> +	mcf_ports[pdev->id] =3D mp;
-> +	port =3D &mp->port;
-> =20
->  	port->membase =3D devm_platform_get_and_ioremap_resource(pdev, 0, &res);
->  	if (IS_ERR(port->membase))
+> +title: Freescale ColdFire UART
+> +
+> +maintainers:
+> +  - Greg Ungerer <gerg@linux-m68k.org>
+> +
+> +allof:
+> +  - $ref: serial.yaml#
 
-[Severity: High]
-Does this leak a dangling pointer into the global mcf_ports array if probe
-fails?
+[Severity: Medium]
+Could this typo cause a regression where the base serial schema is not
+evaluated?
 
-The devm_kzalloc() pointer is assigned to mcf_ports[pdev->id] before
-devm_platform_get_and_ioremap_resource() or platform_get_irq() are called.
-If either of those functions fail, mcf_probe() returns an error, and the
-devres framework will free the memory. However, mcf_ports[pdev->id] is
-never cleared, leaving a dangling pointer that can be dereferenced later.
+JSON Schema keywords are case-sensitive. The binding uses allof instead of
+allOf, meaning the reference directive is silently ignored.=20
+
+When running dt_binding_check on device trees utilizing this compatible
+string, it will not enforce necessary properties or allow standard UART
+properties because it fails to inherit the base serial schema.
 
 [ ... ]
-
-> @@ -605,13 +619,11 @@ static int mcf_probe(struct platform_device *pdev)
-> =20
->  static void mcf_remove(struct platform_device *pdev)
->  {
-> -	struct uart_port *port;
->  	int i;
-> =20
->  	for (i =3D 0; (i < MCF_MAXPORTS); i++) {
-> -		port =3D &mcf_ports[i].port;
-> -		if (port)
-> -			uart_remove_one_port(&mcf_driver, port);
-> +		if (mcf_ports[i])
-> +			uart_remove_one_port(&mcf_driver, &mcf_ports[i]->port);
->  	}
->  }
-
-[Severity: High]
-Can this loop cause a use-after-free and improperly unregister all ports
-when a single device is removed?
-
-During mcf_remove(), the code iterates through the entire mcf_ports array
-up to MCF_MAXPORTS and calls uart_remove_one_port() on every non-NULL
-entry, rather than just the port associated with the pdev being removed.
-
-Additionally, it does not clear mcf_ports[i] back to NULL. When
-mcf_remove() finishes, devres will free the memory associated with the
-removed pdev. If another UART device is subsequently unbound, mcf_remove()
-will run again, iterate over the array, and call uart_remove_one_port()
-using the dangling pointer from the previously freed device.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261013120831.1046=
-590-1-gerg@linux-m68k.org?part=3D3
+590-1-gerg@linux-m68k.org?part=3D4
