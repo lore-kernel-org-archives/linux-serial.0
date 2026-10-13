@@ -1,91 +1,91 @@
-Received: from fout-a4-smtp.messagingengine.com (fout-a4-smtp.messagingengine.com [103.168.172.147])
+Received: from fhigh-a5-smtp.messagingengine.com (fhigh-a5-smtp.messagingengine.com [103.168.172.156])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890DB41443D
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 01:35:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DA814156C9
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 01:35:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.156
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791855352; cv=none; b=fOfXmuY8yIThMisbprcpnxVVLRps54D2hoyKizjDJ+/VltUZ4PZOxuSnmoTzUtdteB/ulmkipUNWyNUbEuvwBs9KAi8Jcv3Dk2/h//RygKFM8rjomfjBqp4Ir2FT4Mpf5Da/4j9HmxNfk7fk9LjUhO310t3Sc3jO54JGhciDyN8=
+	t=1791855355; cv=none; b=HRaPFT3CSuVv6f7C0mkPrODroA3+6MhXt2K87qt5L7GQpZ7n5t124z3CKuS90R3NufXHR9qs5xqZp0gNVoBZSu+YT2ajm3GGAfHqrKIgN9DiIn+yPw8nikOPFZgedxlwCwnsqzqO1+ReQvVVqeO44Ut3mr5H5ypOTgxZasoW0O0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791855352; c=relaxed/simple;
-	bh=IIVOJsgn1Fzp6J2UaPQgxgn6NYtZB1HT9aJu1pdQroM=;
+	s=arc-20240116; t=1791855355; c=relaxed/simple;
+	bh=sFJ72AgPE1Tu7+0QasszMAieCLJI86cGxQyysbzgmZo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=shDknkWQD5hQ8yaIgkGW61A/HfTA6d8/HJ/qz+sYEP7PyU+r/GW30EhVEifXsd6YUlPFx1m3ZX1JnRGe7NqYEcC7hlvc+vsUgIKpiAnTpXqD+52cvQj6yusrKrckOtm1B37qTIkU4aqj+4mCvmVunmUxGIR2Jrw4Eq5TjhbYkXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=timdoug.com; spf=pass smtp.mailfrom=timdoug.com; dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b=bCHEsw7v; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=KDUzT5e1; arc=none smtp.client-ip=103.168.172.147
+	 MIME-Version; b=uBuC3yVdRjedOyxPUJL4jwUkm946PZ8eKJtsINuLxhFYE9R9r3Yr5Z3qPCjsMCdH5ZvGznH/er8a8Z4mh6sBldlK/QpCgJTNd+7Jzpmn9YLPXr5i/Nvpo2G2s7qqinYUoK5Bt6P0EPbgQXSSv6fw5DTLHFOxEU/xQHIc8uSuMXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=timdoug.com; spf=pass smtp.mailfrom=timdoug.com; dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b=QRx/vrQj; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=kswQaqdR; arc=none smtp.client-ip=103.168.172.156
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=timdoug.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=timdoug.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b="bCHEsw7v";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="KDUzT5e1"
-Received: from phl-compute-12.internal (phl-compute-12.internal [10.202.2.52])
-	by mailfout.phl.internal (Postfix) with ESMTP id B2822EC0931
-	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 21:35:49 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b="QRx/vrQj";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="kswQaqdR"
+Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 32B711400114
+	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 21:35:52 -0400 (EDT)
 Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-12.internal (MEProxy); Mon, 12 Oct 2026 21:35:49 -0400
+  by phl-compute-09.internal (MEProxy); Mon, 12 Oct 2026 21:35:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=timdoug.com; h=
 	cc:cc:content-transfer-encoding:content-type:date:date:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1791855349; x=
-	1791941749; bh=ynU+Bv1nkxtpTw5yF1AgPdxSe9NKymP1ojZfCaIJGWg=; b=b
-	CHEsw7vaLLJVUH8XekA8hgEtCs3js4FQ5LZGANyllY3HVvthqV/15X4WdRZ6dd+x
-	RKZ4HptJljsj9CoknD8RJSAm4ZLK9/C/m1obuWQC7LO1Bt/HgqfF2FR8wzp4Xbg+
-	VZ/g/hXoeZ1IcAi0Pv6tFVguBJ0Znmr34HkE82sKZ/3zQaanJldVU/XnAybq4QBb
-	3oxwE8PHC0d5lwTrVFSAMyPfKhqMKTGH5B+OtJRn8F3Bl5f/k9FGZHBJGwFxR2FH
-	3oySrK3t4Lar4xmz6/MBvPGTywIFCSQdP+7PPtS9RO8pcQJXCut/Whe1kugob+XS
-	PqisVpIozH723HtHKEDgQ==
+	:reply-to:subject:subject:to:to; s=fm2; t=1791855352; x=
+	1791941752; bh=T9DPR+2n3dWm0xXe4jJx+wMjBkoYkR/+x3n7hyULjmY=; b=Q
+	Rx/vrQjGS4aIvL+6atXZ/EJgExF6J+Cpo76zfb03yrOM+60+6v7uArudhJ+H1QeJ
+	xTZtgktnMh6WvThrLqhTXso1BF7bQHcoqmFpIwfeA2EYsEuL7UeNQG8VSuHLDkFj
+	Vz13RXcyWWMIDw5qeqNVObJAl6bntLhuCADRyqXfBVKOPGF/8qa8W0lvAQ0LRAy3
+	KHVhtmpcf56SgpG/0kUQAgp0iSpM3e6gKBNpnUdNEQATnr4+MMqqTPc5yGcT00IT
+	ZXVlFVTe4vs255+MyjvnURFRbE/cIe8Yy5oxnLaROPr5Qu8WiZhI2hvEKzWHeXf5
+	ibBIaLPHlUaY4YEZms93g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm2; t=1791855349; x=1791941749; bh=y
-	nU+Bv1nkxtpTw5yF1AgPdxSe9NKymP1ojZfCaIJGWg=; b=KDUzT5e1uXPYXNSde
-	wc0+tVcQDsX/eSNSaarzG/FeMuXyRqBN1z0RHUSeFTfRfYOqxSQPpBWYqx2p6zXq
-	C1G132vPiHJ7GUwAQ8X29ISE6UbX/7ZPaWBh0WySDEECcJP+eIPJqA7JDUYb1om+
-	FyHmJtxZGq+tS9HkZR/nBZLINSZnj9N5wYiFFcsWiBQH82GZ53LnWhP+/09mn6VA
-	MyRI1eHfCwYdqrXx4S0OdhRmH7dGLCEBfN8Juiz69D0xxShjtVx8iT09IgD7u8G4
-	l9GPecWx3edDvaqd0vnX2IE+fnrcHAYect4D+yX1+iE709/4GW/LRi2zlG7HtAQM
-	b1Z3Q==
+	:x-me-sender:x-sasl-enc; s=fm2; t=1791855352; x=1791941752; bh=T
+	9DPR+2n3dWm0xXe4jJx+wMjBkoYkR/+x3n7hyULjmY=; b=kswQaqdR1CqvQNd/j
+	DH3k9yIBZLtSSbmKqpxBQHajK++XFzKM/ugzlbHMR/rA31MdaSryaFu1GiuY42TQ
+	aLBGFBMPEj+J/oFMadW+rwjaopWKzSHEAUVYcEN9kKgF6tds+hA3ze5y4sPCbb7H
+	ZQMycuW3IBD85U7Ry5D7T3qDquIhOS7MMCjngongwHztRjjvvu4vpCgOGScgUajG
+	VnZ9iATREWoQAri6WJrrsZ0PDIh2IK4ceVi9onA8KzGm1seB1UkNbRuHX5tFXxmB
+	wognCfNqhPxY4KR5klcgGYtdNEcY4Wswk3ntTpP/dLmsugCNhHeQrQ+92CeiQSpg
+	y3yrA==
 X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-06;
 	repo=github.com/dkim2wg/interop; date=2026-10-04; sw=lmtpprox;
 	action=sign d=timdoug.com a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1791855349; d=timdoug.com;
+DKIM2-Signature: i=1; m=1; t=1791855352; d=timdoug.com;
 	mf=PG1lQHRpbWRvdWcuY29tPg==;
 	rt=PGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc+;
-	s=fm2:rsa-sha256:P6Ik0SyxkcVz0EWCrBUuox/vNgxapuVVEGJZ8uC2U62YNxX
-	Gs1Pa3TwqSU+mbbfmcBtINbhN78haOsuhaARM+p3pMk9C62neola4ciyU4LTwYKE
-	gt9r9qWBRqW1f7d4XBDxhXwDzpcwRBfWvN/3CkqU74FaGbrp53ISE6vqrBUHgfS8
-	1pbkOBNQeSvuX1pMMRtkIx3vVVFx3PPNNEobeiu3eiv9iyHJnH93sbG5qq/c8xAI
-	0ZdfQgAWKtRS4j3cvbS68wwnD6W7Z/JcZi6V1QfmdOr93rPedTnCM5ysMf3tAXVn
-	hjXso+t6Vl4vrJ42GH8zbhX6Hm/hUCZoRPYkyww==;
+	s=fm2:rsa-sha256:kWAs/ZXAOcRnQiL5Ipt6r9X1b2z64tei2DGzJJBL0idliiv
+	8sdTUjlr6kPQtoNVLiwlBkDeCWo0+KBf9cdcSUejN4UReFwOMK+/urqkyGrzoQQY
+	qIlhtCx7A6KN40m4zB5f3ZahhGUfccgzMjQ2ZTgvmc3CMTIWpi7c6gCITx+fxtGw
+	+aVLPL5EG3K+vLdsM8nJf6CUoigNH7V9Ifnk5XvwSN0XT8cvWsaqUFp0Zyz9uRee
+	qGbwEviOpLPwkDImFR9OGJXAMGGNFgP/FAU+z73IEuzErdsbFP3iKQMoBNmf9FPr
+	Citu+Y1CbNbeyLtDEa2wNbK0cq+vLvFCi7MNqcw==;
 X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-06;
 	repo=github.com/dkim2wg/interop; date=2026-10-04; sw=lmtpprox;
 	action=mi-m=1; hc=11;
 	hn=cc,content-transfer-encoding,date,feedback-id,from,
 	in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:UQfw95Fz+iiaKhM4B0x3CiboQNps0uiguSgaWYaEfus=:IIVOJsgn1Fzp6J2UaPQgxgn6NYtZB1HT9aJu1pdQroM=;
-X-ME-Sender: <xms:9YrNaonMRSAxG4NW42C6VGKvOsZ_VLvCBMovkGLuqWz2FGLBu1I5eA>
-    <xme:9YrNav_9xfoBccUTdcmF998KYas9gDKCnjJf9GfpTzYcUy6KSpmrwA16yZf7x1Iia
-    m59KKsSG7JaJ5MWQ3ljI7BuMIsRTg80wLXnlR6ffxvDunKS5ur0qw>
-X-ME-Received: <xmr:9YrNamJNLbt15yvhEDa86_QL276vFiL3ayuX0I426bdA_9E2nznQlMEEu4Qq>
-X-ME-Proxy-Cause: dmFkZTEs+D062zKm0g1Z6uCgWCfkrFCAifr7RRfExPlp2j9+nb3h4r6gXg5CPa1Hy28Gb3
-    jjDLtlUgehkFGvKDjacNQVtZmY23pAF2FYbp1x1/5WsfXHbMKYRnZ+oQxz1fhwjXas6rKu
-    O3Nic0YZYD3FpXcovN1s3R7DDK+4Hj1a5uljDvBzZS+QeauDTrkmI+gPO2CmEBM6fWNjv8
-    Djeb8EpppwYC7edHx9ftnnCjzX5VJXWtrTADVNS4avcixVuC0kwn7oOy4yRPpbQ4M0xpTk
-    MmxPAM3Unja5wAJOz1sQKNPVQ6CUgMoR1EdLi6JhrBSuMn5LiWNNsi4Kz8D85j94CaW+C/
-    zfQRUKnl+FFLPQYZ0KHet3ZLw5lvm+8hadwApEPbAsd/FzVn0J9saV93O2FZ9gZR451E6I
-    nZchxAfQzUh3qnVemeWmPsiENbHKF21Eb/qfgIxiBPg8bds6sEdtE0HUmvmUaDC5wCqnxy
-    1sdDDtGv0+Qp4GNLcTSWa/KHUOFPqBBaND/STNL21IrhDAXDD4JLid5BjKwEDfGY1uTByL
-    s6zzICKIWoTuFatUM0KWEpZOgQq/fXgs92TvsQdIjjpMIwHeS+aEWmf/G5VDReVWQPROdh
-    miG9Pup4vaD8yvW1KPm+TL9SMcI1pAkQ2GZtFtQTyhCCkT7ivz81YQzeFN8A
-X-ME-Proxy: <xmx:9YrNakh9kgryqBTLfSijKIwWI-VIkZ16k7U0KC6keeKB1kKNa8OmWA>
-    <xmx:9YrNai8pPoij5JEzMsrkTeHuX7HaIvD2tJ3wYYkyWPzzEa1-mWZjFA>
-    <xmx:9YrNapNiOfpLeyXP2WOjceAY0OMWwJIkgEkAyISP9wzWRwVNUipP1Q>
-    <xmx:9YrNamAVbQtRO5jiOXzcu9Ww3Dv3xRwUdtb3ZdfkdeI7yg5qnRULXw>
-    <xmx:9YrNarPlmUz_4Gpz5l1mMHBmOA27ju6S51F9TJzRFo1AxHdEYJlzf1Ek>
+Message-Instance: m=1; h=sha256:PrJ717gr86u/8jEwEDf0Kba/XI0ZzKRLKWY3qUAP+p4=:sFJ72AgPE1Tu7+0QasszMAieCLJI86cGxQyysbzgmZo=;
+X-ME-Sender: <xms:94rNauaQUoD4JYgxey6jAGfgXwXq7ZwhbOJ7SD71hJhzS9MwxQr0Tg>
+    <xme:94rNavrb1jt46q3lHthhH0uc8hRbTYWNliNU0GYLm4Z3Y4NwVBkcG5FPBxCw0S3n6
+    ERSkWNzuV0fbDUE9wCCDS3f-6rqTKguZmjyMu2zS2p8zW9Jv34ksRY>
+X-ME-Received: <xmr:94rNaiSJ5BEQlHH_nOhrcLzEtCQn_-o1x45EfkBPZNP6iXl6cJ8_gpplsQwy>
+X-ME-Proxy-Cause: dmFkZTGNbHk6fXAkhTsvEfU2amaovOmEajQYoQOBQ1jMMVTp78asCsTJKEOp2KUEoCfFhn
+    jYQALR5baaW2Zmb2DSGiJU/TnUm2SfI3WostCaGFlcqIuQLSHsZ9RdgXfBjYku/rYSwytg
+    gG+1Aavqm07SB9Nn6UC7/pwAlSnVJ/PwqLx0Zmi8Ps17l4MBClYGyctPQiDIoTu2tkkI4I
+    +6r+oLdSUUBoLun+FPRvQnzwVjLQxo28j78W4Y4bg5ruy1wHbYTNmkWF91Y2zTMHrsLkbj
+    qi0arGzxtkYavMM9fPhINZUuIXe1wxSlfZK0MTfoZfYvKJ5SD5BpIp5OQ6fEuy6blOsuKw
+    nW3eLSjF2BND2Vjd97g59nD2DKqYZQu+JlfKwLQE9lwE88zee9wSf4CNj8n9SzXihMKcpZ
+    Zs4p6+rzdHsFXI7syolFYyNB5I91mkE9iGE9b2x16B2MmkCHxTb8By+z7HsxsTcQ9rW4x+
+    416IK9L8AYd4buUMJu6+7LDzkBydq0YrPQCwv2Vdj6Cv6beKVo5eL5egddT1MitD2oxa6L
+    6US4AknzJ8UIp+SokIdMhItMdbeJRTd9GzV0GWOvk15FOcu61RhAyrpm4kcpP48hL4X5Oo
+    FflG0RpWyZK/HpbuK0AJwUxFkUlqg5WuyC8qypY8zrSBHuFCOWKh43VBacmg
+X-ME-Proxy: <xmx:94rNajqPmY2ZSWPPxJfXqCyJ4D_fTjfL20eEeGabkwpZxUCeAInFiQ>
+    <xmx:94rNas0yU2ZDS9Gfi176s1AAZ8sPdDTqo2UdfoTW6shA7C3aRNV-jg>
+    <xmx:94rNai46Pqk-WOfb_rXbsFNnQs5-L-hxY3Lk0NqXWjSVg1pYHXFkzg>
+    <xmx:94rNagRTfUbBCTDIEh2OT5ePTQzYybdIDgD3ySg7vRHrQWaLcdjjzg>
+    <xmx:-IrNahQ6Ea3zrp06XyzDGRg_fYH7RaJg4fHN_GzfuQ9EmBgTChCaQ2yH>
 Feedback-ID: i12bc4175:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 12 Oct 2026 21:35:48 -0400 (EDT)
+ 12 Oct 2026 21:35:50 -0400 (EDT)
 From: Tim Douglas <me@timdoug.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
@@ -96,11 +96,10 @@ Cc: linux-serial@vger.kernel.org,
 	mpe@ellerman.id.au,
 	npiggin@gmail.com,
 	chleroy@kernel.org,
-	Tim Douglas <me@timdoug.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/2] serial: pmac_zilog: push received data to the port that received it
-Date: Mon, 12 Oct 2026 21:35:40 -0400
-Message-ID: <20261013013541.4535-2-me@timdoug.com>
+	Tim Douglas <me@timdoug.com>
+Subject: [PATCH 2/2] serial: pmac_zilog: report received breaks
+Date: Mon, 12 Oct 2026 21:35:41 -0400
+Message-ID: <20261013013541.4535-3-me@timdoug.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20261013013541.4535-1-me@timdoug.com>
 References: <20261013013541.4535-1-me@timdoug.com>
@@ -112,43 +111,34 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-pmz_interrupt() drains both channels but, since commit 2e124b4a390c
-("TTY: switch tty_flip_buffer_push"), pushes the flip buffer of the
-port whose handler is running rather than the port that was drained.
-With both ports open, data received on the other port can be left in
-its flip buffer until something else pushes it, so its reader may not
-see it.
+pmz_status_handle() sets PMACZILOG_FLAG_BREAK from RR0, and
+pmz_receive_chars() clears it on the null character that ends the
+break without marking that character, then tests BRK_ABRT in RR1,
+where the SCC does not set it in asynchronous mode. Breaks therefore
+arrive as plain NULs: brk is never counted and BRKINT, PARMRK and SysRq
+never see them.
 
-Fixes: 2e124b4a390c ("TTY: switch tty_flip_buffer_push")
-Cc: stable@vger.kernel.org
+Set BRK_ABRT in r1 for that character, as sunzilog does.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: LLM
 Signed-off-by: Tim Douglas <me@timdoug.com>
 ---
- drivers/tty/serial/pmac_zilog.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/pmac_zilog.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index e3a9193..f49d605 100644
+index f49d605..a612f1d 100644
 --- a/drivers/tty/serial/pmac_zilog.c
 +++ b/drivers/tty/serial/pmac_zilog.c
-@@ -444,7 +444,7 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
-  skip_a:
- 	uart_port_unlock(&uap_a->port);
- 	if (push)
--		tty_flip_buffer_push(&uap->port.state->port);
-+		tty_flip_buffer_push(&uap_a->port.state->port);
+@@ -233,6 +233,7 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
+ 		ch &= uap->parity_mask;
+ 		if (ch == 0 && uap->flags & PMACZILOG_FLAG_BREAK) {
+ 			uap->flags &= ~PMACZILOG_FLAG_BREAK;
++			r1 |= BRK_ABRT;
+ 		}
  
- 	if (!uap_b)
- 		goto out;
-@@ -469,7 +469,7 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
-  skip_b:
- 	uart_port_unlock(&uap_b->port);
- 	if (push)
--		tty_flip_buffer_push(&uap->port.state->port);
-+		tty_flip_buffer_push(&uap_b->port.state->port);
- 
-  out:
- 	return rc;
+ #if defined(CONFIG_MAGIC_SYSRQ) && defined(CONFIG_SERIAL_CORE_CONSOLE)
 -- 
 2.54.0 (Apple Git-157)
 
