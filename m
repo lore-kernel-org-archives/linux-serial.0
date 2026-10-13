@@ -1,210 +1,178 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11021080.outbound.protection.outlook.com [52.101.57.80])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0309E36606B;
-	Tue, 13 Oct 2026 13:09:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.80
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791896969; cv=fail; b=Za/edlOwQvPtYM11JBPQaNM9IBUfYg6OuH8a+1fC1Jcw2oaCJ5hD+2pugLz62ZGfgiYkmbtuRzXl4/KF0A1lkzNk3ohocQ6IqqZZ7hMTJ6P0wQD9Pfx5oQAf4guG66E/VSk7dC3vDWk/7+3ywk2p4QcRJH+RzSf0kXTYIku1JZQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791896969; c=relaxed/simple;
-	bh=l3/iIZKQhJUZsfcIVouGWdsMj6/LIwjRNevWwRsSdNI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=OZtpN821D+I0c15AjU/QJ6R2/x8diO9443sqziqiSBmGwhjVyYlPQISOq4L7anaQGLn8NvHvVVSTGsRXealH2gg52FJhOGk8Wwgk5LqmsVimFF43Jl32cbGO9zdAkfVIm9p9S0LHL0QgKbSJKveRRvT7BYZxZvuxB6TxJlXquBI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=phil.gs; spf=pass smtp.mailfrom=phil.gs; dkim=pass (1024-bit key) header.d=NETORGFT5377951.onmicrosoft.com header.i=@NETORGFT5377951.onmicrosoft.com header.b=baihjZiD; arc=fail smtp.client-ip=52.101.57.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=phil.gs
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=phil.gs
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62ACC4DDB33;
+	Tue, 13 Oct 2026 13:14:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791897270; cv=none; b=QyfPNejzQa5NzteoT0efcPcOfukxH6WZBzJTVmhqjmTCba5sfEZHKBLkmO1hzdrph5DBw8KUjs96aYEUdAr96eMtwOQx1BCB6tWaxStm/ohPsKtPoHiJW2f+UujtaFgehCTkuATLB6DdGvjL71oAfNiEno8sddIojHXgvKXLaG8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791897270; c=relaxed/simple;
+	bh=8Bp2bQHVlIW929jOM9HjkLNfhV5PdDCxGvim75qQv4Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HMY0AWSZGlVPQDpvw7ALreZZC+nGhVHlp33zMMkA31+JsH82rtBYCcIs+8OPrfa55vUK2TiOJUdO2rZGEg5ebZEwfnMfcBGDQMlDKfZpCW4rJxLuxoMX5HoJkp1SYerDi/Xvt5zVPsHDRNUXiIytCwUdyc6Ph/VovEECe0+8gbs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=mC62Rd1C; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=NETORGFT5377951.onmicrosoft.com header.i=@NETORGFT5377951.onmicrosoft.com header.b="baihjZiD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tPWx12dlUCDTgrrmZFPRKStJ00d8z6ViqQxeHLqcClv5p1TzBHzETRwx/tsvUqR6rjpp0w3er4rVynd9jiT1oH/GtAPzC/ZbHQgkZmYfITjvKvcAFjxeGSUx2HQFKAhxdjkIGxNsLg2jhfjmrM5/6iJoZFxxrSa2ZpxpN9XGEfzaPMOznBk2sn798mSJMow/DYOthDDGLKgrT9A9WJEg6kQQ8pJwqBJX3RvjjLihB/wsYXUxPtiqI7ldwurkc+KEhZrubvWHB8HJzFZ6br7wt4wuFHxW7t+dA5vs/ZoL2s1ardw1BkgsYHJjoytaO1Q7SbrxcgY6tYuGpYJ7AuQkZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l3/iIZKQhJUZsfcIVouGWdsMj6/LIwjRNevWwRsSdNI=;
- b=x5zSotoMSNYj9LgTIh70520CzX+KsSPYPst2FKPJjqs7ePaHPmOlqWelLrkwYuGe7rg3D//S3HRKGO/zyKEgxpxiquwh0oS+DPoV4KS45c8nVNQsdUkYLjPLrtmhX7ebWskt/1IYnPx8KOF2Aib+dW+n4CDMSfkqXsCVrE/1PJJRqzin5qW95umTKBiETnZwt0qYyDtt5MZ0TotW3Q803woMHX+0NQDLV5BVaDBB/FlmwL9OtVSCwMDJm4tDZYQ6hxaS4ka61vk6sPD6aqNdudab/37EfZUjH3oHeTcR3ZLht1TWDyn6nSagjGec4oHTQ7lx8Uc9HPlHCKhUZ56i5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=phil.gs; dmarc=pass action=none header.from=phil.gs; dkim=pass
- header.d=phil.gs; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=NETORGFT5377951.onmicrosoft.com;
- s=selector1-NETORGFT5377951-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l3/iIZKQhJUZsfcIVouGWdsMj6/LIwjRNevWwRsSdNI=;
- b=baihjZiDWydbUzKa7y+5xSupRt0CaeRICakaotk+wde+2hMdWVcuZMFAYtMuYTjd+8GagFai6QBUGdQT2XlTT599vXf1CJLGVwPsDOxi01LKCu3K13/ghLKVksINtJfHfasWS1UXqW0d6T8tD/+KleaNAnh/15RIc3C5lcXMTTs=
-Received: from BY5PR04MB6472.namprd04.prod.outlook.com (2603:10b6:a03:1eb::10)
- by IA0PR04MB8788.namprd04.prod.outlook.com (2603:10b6:208:490::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.23; Tue, 13 Oct
- 2026 13:09:21 +0000
-Received: from BY5PR04MB6472.namprd04.prod.outlook.com
- ([fe80::3a9:9dbc:2aeb:8827]) by BY5PR04MB6472.namprd04.prod.outlook.com
- ([fe80::3a9:9dbc:2aeb:8827%6]) with mapi id 15.21.0522.011; Tue, 13 Oct 2026
- 13:09:21 +0000
-From: Phil Rosenthal <phil@phil.gs>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: "git@gregoirelayet.com" <git@gregoirelayet.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Joel Stanley
-	<joel@jms.id.au>, Andrew Jeffery <andrew@codeconstruct.com.au>, Lee Jones
-	<lee@kernel.org>, Tan Siewert <tan.siewert@9elements.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-aspeed@lists.ozlabs.org"
-	<linux-aspeed@lists.ozlabs.org>, "mfd@lists.linux.dev" <mfd@lists.linux.dev>,
-	"andrew@lunn.ch" <andrew@lunn.ch>, "jacky_chou@aspeedtech.com"
-	<jacky_chou@aspeedtech.com>, "ninad@linux.ibm.com" <ninad@linux.ibm.com>,
-	"anirudhsriniv@gmail.com" <anirudhsriniv@gmail.com>, "andy@kernel.org"
-	<andy@kernel.org>
-Subject: Re: [PATCH v6 4/6] mfd: aspeed-pci-core: add AST2600 PCIe BMC device
- driver
-Thread-Topic: [PATCH v6 4/6] mfd: aspeed-pci-core: add AST2600 PCIe BMC device
- driver
-Thread-Index: AQHdWr+RV/FhYOPImkyusUIlzmNZa7b7AOGAgABxsQA=
-Date: Tue, 13 Oct 2026 13:09:20 +0000
-Message-ID: <6712FB36-31D0-4A38-AFFD-0C992E406CEC@phil.gs>
-References: <20260818-aspeed-driver-v6-v6-0-fd7cc0b338ea@9elements.com>
- <20260818-aspeed-driver-v6-v6-4-fd7cc0b338ea@9elements.com>
- <C5A01ECE-9A61-4BCA-88C6-83A1673AA69C@phil.gs>
- <as3OF7O5hnImaAWO@ashevche-desk.local>
-In-Reply-To: <as3OF7O5hnImaAWO@ashevche-desk.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=phil.gs;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY5PR04MB6472:EE_|IA0PR04MB8788:EE_
-x-ms-office365-filtering-correlation-id: f0374847-d510-4d27-d171-08df292b320d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|23010399003|19092799006|7416014|376014|366016|10067099003|7055299009|3023799007|261009223027099003|38070700021|5023799004|4143699003|6133799003|18002099003|56012099006|22082099003;
-x-microsoft-antispam-message-info:
- ojkqIzNt+tZeajfZNU2msjDDAKEGKAqWTQJS07xwARabqL0inkQrjmbmiGGRePWKKIdKlKe2uR1bIuumm7HDk5r8OigOqZ/oWoyOoL5wskpzStdhV2Fja/3FkSkBQWpEx/BAacEmaVBKiuKLGBf+UGHcJOxwhjvssWqwNEOV/X0/jqOhKujI/me+RtMOtcz/WNXJd+CYTBSodr/Pyj2b8iy696jvzzZVBWwRDpCeO6n6cBLIvVqi4tzViEdotST/nw6tt0zGMfjXN0dK+NZkdKqzKIpiqWajPJVsJ57vszpNcx2dNDHvWsam6GQslaLXAz8iVlZPa7ftlEDXbT1qPRaCfq6rbWmyHV4ce1PKk8bMvqaLo+iZh2hXw7kQ99K+ueL+pvBiLDdS5iNNT5NUVLVtI2M7AEvIq/8Qzsdp/pIFiXRFC5NVLqOB0pn/iaSKbDK32ACjdMzzCxyqyURRaD+qu7DUEKOFXoiGOkl6dsIWP4nwHQFA/AxLfq8W/I5EYmYWUMn/r1JQwt4YMSCZfffq/xA9Jv7wDytPVm/CkikfRZkcdrsGXDevTLIWzI3jMvRpqG+tfmb6HQgMTFJ91t7Wv5VGWA5B6fx65jJvlxLG/VVrna6TN9YRcUFSoDKu3sOkOcpeaW48knm/NFde+fbwHN73escxL1yWhT7HsdCSwoAD87JCBf/fvaVclh0T
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6472.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(19092799006)(7416014)(376014)(366016)(10067099003)(7055299009)(3023799007)(261009223027099003)(38070700021)(5023799004)(4143699003)(6133799003)(18002099003)(56012099006)(22082099003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?V9h3ZbDc5yaQbLTHzihP9T8C0EMHcKSzkajdSWcl69KZMszM8uVvBzCNFnXq?=
- =?us-ascii?Q?Qx1ThwyjyRN+/3EeA9ocy6MP5JA5nGxHdUijKdalNFIMdHHhObWNIO8vRclc?=
- =?us-ascii?Q?m8M9jdMacG9w3EdW8MxeNE3LGX93bF2wN3RZY2lzl+CxVLaZ2Oy18nCdw2vW?=
- =?us-ascii?Q?RLXrtTIGszHY7xhGE6t27onnupuv3pqWeLPJYj51ioVfgQRfDLT19kNgTfj3?=
- =?us-ascii?Q?jFg38zMx9hdWbBs7eGpDcIg67FjCCnLIhNWknW5XGqGX+LmtRuMTCRPjGbCH?=
- =?us-ascii?Q?9wXmbgIFcXCjvbbBQixYmY/99GB+ofM81JTkv4XoAtCCo/SeRTO9hPU2ZeEN?=
- =?us-ascii?Q?vXKVKIyrLE45JwlgSTAQ28WlN73OazzhgWR2Lw5RZ7SdLnYzgdg2VpR7ozot?=
- =?us-ascii?Q?gmQThGuhOfmRdFdnFLTZcCmcFcyc3tFr6C7DHVjkxSWcVpZg88KK6S2yFZT6?=
- =?us-ascii?Q?3iECbYp8b7Wl6omcqCrc/Xav2eIfOZ1aB6Oda2fONLv0MUmm0XCVIycoF8h/?=
- =?us-ascii?Q?BnGxwhey3l/xmtUUYbSovAvQ3oJEXWk6U1b5XRk/7WHEVCTqvkXrov+kUwvB?=
- =?us-ascii?Q?QF+hPLBRexU/NT3/4RTRNX61Aabs8OjF1oTIvyDYNYa+8AwjjT2o+mXZPuhA?=
- =?us-ascii?Q?6M8BVFHfhvksISSSCamQx1OUVNXaUUa8zBkSvkFTp18AZ5COQ6RMB9AuyE28?=
- =?us-ascii?Q?db9eNun84UBwEC6L9c+dKVVI0RueJ/jRIhr6W9KKI+tPWkbzBuIR0EgWz4v5?=
- =?us-ascii?Q?ZoJnCzgq16u0sL8KMvibx5yX7w91mnLypEgZeeeEN8qS73ik2caSye/6UEzh?=
- =?us-ascii?Q?t66dBIltIEc0rq40cv3aOZZejrKrXaWGCb85LODp7LJpgk3OPbZV5rkVcFJ5?=
- =?us-ascii?Q?vp9TZEOB0w7i5ewgwSE9f88ZAKwHBiMXPv1E86ra/cdCWG3Qd8BA7HQrXQu3?=
- =?us-ascii?Q?jzPevYpXw+qnmN6R0zplRdxg+DyFIzcFu73GGkvSCsVMqKZTUX9viR2BhDnZ?=
- =?us-ascii?Q?C+hR2EnKHYltbd6yCByGd3c3mrOn3aBYKKx7WpUDEdnwTb42nQN2YBu0Z9xn?=
- =?us-ascii?Q?OZgdK/svr7gMXWpv60u+4JIivEGln4MOrJ3ZVMzhF5Hff5MfNBINrfk8k6V/?=
- =?us-ascii?Q?McaJbZNT5ahK/DeL1HKwNj0QWMJO1g3T5oiRCZo5jRxNUC/y+JxKx6Nwse5D?=
- =?us-ascii?Q?EAA6/3knGzDVS8a3S/+Pg+EBh81rLKXwcBzxP6V6W4EO0dECK9MtSDo4w1nh?=
- =?us-ascii?Q?QZb5KJk7u5gmcirojT4wjZ0aSbDEK5GHUBBU2ZSlcxPCtIZmdRF1H05rc4CC?=
- =?us-ascii?Q?jn4w010kmN+M9SaRVaLnJsldDXzObHGWWRLSOB7/JIii5fGxEMhEVlz4qtMp?=
- =?us-ascii?Q?ncE3pEQj2HdyCf25YVgvPLtrTLsYHnkjXSxqaggTAHywPv0eaBC/6aOWdgtB?=
- =?us-ascii?Q?aR5Ak1sqmUn5aTeDvJms/XeiUUxkvNmiWM44cl335alLiL81P/59kr+mgzuv?=
- =?us-ascii?Q?vOYXgo9Cur7CHZQzPI+dqqe+SZWLkx2MRKswgezVORJLojn9VnMn+aIWyx9f?=
- =?us-ascii?Q?dhvPgONsdBtoPwsxznpM1ajgpleyoebgTMxuSPiQA0PmTruAJaWxcAhFkY5t?=
- =?us-ascii?Q?A2SscgU1qfCrXQvZuglScqlgeYbBVp+3yEivZ5fpITeCI67UdRlxF08qIg0q?=
- =?us-ascii?Q?s6vssVDDD6GTUIHtA+qwH+7UoF2ttIBIqGiJ3/WWfj8iaJm2?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C6161B1F9D17E147AEEEFCFA4B0C036F@namprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="mC62Rd1C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 569751F000FF;
+	Tue, 13 Oct 2026 13:14:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1791897268;
+	bh=Y31uLC14PmHEEXewkbQKXC8mc6ByfwR6mALvrM9/fAA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=mC62Rd1CgzVxNIGEmsfEhPkhWmxMPHngkYvMWAYoEOzHO0mTfO6GIIwshQyMm0E1I
+	 tyxBy+a8pBGi4Olm9poof9JLd8Yzja5jIi8J2s2aX61AnXHx2BbUeLPPI9w1vJowCp
+	 EjCCJKp3hAlQmwYWaheA9skn/Yft/C0NT6CLn7/g=
+Date: Tue, 13 Oct 2026 15:14:33 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: phil@phil.gs
+Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] serial: core: Shut down a running console port before
+ removing it
+Message-ID: <2026101302-patronize-rigid-f634@gregkh>
+References: <20261008-serial-console-remove-v1-1-288b9c315af7@phil.gs>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: phil.gs
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6472.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0374847-d510-4d27-d171-08df292b320d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Oct 2026 13:09:20.9967
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 47d4f979-ea6f-4fcb-aea9-39371d64bc6b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5zCEG2zw67Db6Iqd3ym36FUHiZnlxo7hBTwMG3IgzsOS+qbIwTICL9hoz8eL6/Xz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR04MB8788
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261008-serial-console-remove-v1-1-288b9c315af7@phil.gs>
 
-On Tue, Oct 13, 2026 at 09:22:15AM +0300, Andy Shevchenko wrote:
-> I interpret this clearly as "Let's allow vendors to continue making
-> mistakes and provide wrong DT/configuration bits." My vote is
-> definitely *no* to a such. If this needs to be done to support some
-> weird firmware in the wild it must:
-> - be a quirk that is clear sign that one has avoid such an example
-> - inform the vendor to fix their crap
->
-> Did I get it wrong?
+On Thu, Oct 08, 2026 at 12:49:18PM -0400, Phil Rosenthal via B4 Relay wrote:
+> From: Phil Rosenthal <phil@phil.gs>
+> 
+> A console port is not shut down when its last user closes it:
+> tty_port_shutdown() returns early when tty_port::console is set, so the
+> port stays initialized.  For an 8250 port this leaves its interrupt
+> requested or, for a port without an interrupt, its poll timer armed.
+> 
+> serial_core_remove_one_port() relies on tty_port_tty_vhangup() to shut
+> the port down before releasing its resources, but the hangup reaches
+> uart_hangup() -> uart_shutdown() only when a tty is attached.  For a
+> console that was opened and closed, for example a serial console whose
+> getty has been stopped, nothing shuts the port down.  The console is
+> unregistered, ->release_port() releases the registers and the core frees
+> uport->name while the port is still running.  On tty-next with 8250
+> ports:
+> 
+>  - A card bound to 8250_pci with an INTx interrupt and unbound through
+>    sysfs keeps its interrupt requested after the driver is gone.  The
+>    irqaction name points to the freed uport->name, so reading
+>    /proc/interrupts is a slab-use-after-free in irq_seq_show().
+> 
+>  - A polled (irq = 0) MMIO port with UPF_IOREMAP keeps running
+>    serial8250_timeout() after serial8250_release_port() has cleared
+>    membase, which dereferences NULL in timer softirq context about
+>    10 ms after "console [ttyS5] disabled".
+> 
+> After unregistering the console and before releasing the resources, shut
+> the port down if it is still initialized.  uart_shutdown() runs with
+> port->mutex held, as for its other callers, and with no tty, so it also
+> drops DTR and RTS.  A port that had a tty attached was already shut down
+> by the hangup and is skipped.
+> 
+> Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM sparse
+> Signed-off-by: Phil Rosenthal <phil@phil.gs>
+> ---
+> This bug was found and confirmed with AI assistance, so it is reported in
+> the open.  It is not a security issue under
+> Documentation/process/threat-model.rst ("Excess of initial privileges"):
+> triggering it needs the privileges to unbind or remove the device.
+> 
+> I hit it on real hardware.  My serial console is a polled ASPEED BMC VUART,
+> then driven by an out-of-tree module.  After I stopped its getty,
+> unloading the driver oopsed in mem32_serial_in() from serial8250_timeout().
+> 
+> History: before 761ed4a94582, uart_close() called uart_shutdown() for
+> every port, consoles included.  761ed4a94582 made console ports skip the
+> shutdown on close.  be2c92b8f164 reverted that part and 4dda864d7307
+> reinstated it, all within v4.9.  Keeping a console running after close is
+> intended, but the removal path was never updated for it.
+> 
+> Tested in a QEMU guest on tty-next 36844ea19656 with KASAN, using in-tree
+> 8250_pci and a "serial8250" platform port.  Reproducers are available on
+> request.  Without this patch:
+> 
+>   8250_pci with INTx, reading /proc/interrupts after unbind:
+>     BUG: KASAN: slab-use-after-free in string+0x3b6/0x4c0
+>      irq_seq_show+0x34d/0x810
+>     Allocated by task 1244:
+>      kasprintf+0xac/0x100
+>      serial_core_register_port+0x55f/0x1720
+>     Freed by task 1276:
+>      kfree+0x1a0/0x4a0
+>      serial_core_unregister_port+0x44d/0xa80
+>      serial8250_unregister_port+0x10d/0x6c0
+>      pciserial_detach_ports+0x92/0x160
+> 
+>   Polled MMIO port (irq 0, UPF_IOREMAP) after removal:
+>     printk: console [ttyS5] disabled
+>     BUG: kernel NULL pointer dereference, address: 0000000000000008
+>     RIP: 0010:mem32_serial_in+0x74/0xa0
+>      serial8250_timeout+0x44/0x140
+>      call_timer_fn+0x32/0x260
+> 
+> With this patch both cases are clean: the IRQ is freed on unbind,
+> rebinding restores the console, and the polled port is shut down on
+> removal.  A port held open across removal and a console that was never
+> opened did not fail before and still work.
+> 
+> I used plain mutex_lock() rather than scoped_guard() so that the patch
+> also builds on stable trees before 6.5.  It applies from v5.4 to current
+> master, and serial_core.o builds on v6.1 and v6.6.  W=1, sparse and
+> checkpatch --strict are clean.
+> 
+> Also tested on real hardware: the ASPEED BMC VUART that hit the bug
+> (polled MMIO, irq 0) as the console, now bound to 8250_pci with my
+> pending ASPEED support patch [1], on a 7.0.14 distribution kernel with
+> both patches.  After stopping the getty, opening and closing the port,
+> and unbinding the PCI device, there is no oops.  Rebinding restores the
+> console, the getty and in-band IPMI.
+> 
+> Not tested: serial drivers other than 8250.
+> 
+> [1] https://lore.kernel.org/r/20261008-aspeed-vuart-v1-1-d2be17c99cd7@phil.gs
+> 
+> AI assistance: an LLM coding assistant (Claude, model claude-opus-5-5, in
+> Claude Code) analysed the crash, wrote the reproducers and the patch, and
+> built and ran the test kernels.  Two other LLMs reviewed the result
+> (GPT-5.6 Sol via Codex, and Claude Fable 5.1 via Claude Code).  I reviewed
+> it as well.
+> ---
+>  drivers/tty/serial/serial_core.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 319a4b427f3a3727d12cb58252bd8959f9be4cd6..104a2b2eec641bbbc23e67522a7812309442de23 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -3239,6 +3239,18 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
+>  	if (uart_console(uport))
+>  		unregister_console(uport->cons);
+>  
+> +	/*
+> +	 * A console port is not shut down on last close (see
+> +	 * tty_port_shutdown()), and the hangup above only shuts down a port
+> +	 * that has a tty attached. A console that was opened and closed is
+> +	 * therefore still running here; shut it down before its resources are
+> +	 * released.
+> +	 */
+> +	mutex_lock(&port->mutex);
 
-Thanks for your review.
+scoped guard?
 
-I see it a little differently, though my wording didn't help. For the
-BMC side added by this series, I agree with you: with
-aspeed,vuart-over-pci set, vuart3 and vuart4 should always be on SIRQ
-0 and 1, the values the host's vectors 16 and 17 rely on, set in
-aspeed-g6.dtsi rather than left to each board. That's the simple fix
-for v7 of this series, with no discovery, since here the BMC and host
-sides both come from this series. That's probably the less common
-case, though: most of these boards run the firmware the board maker
-ships with them, not OpenBMC. [my assumption, I don't have data]
+LLMs don't know about "modern" kernel code.
 
-The case I had in mind is firmware outside this series: the stock BMC
-firmware on the ASUS board, which already ships. Which SIRQ a VUART
-uses is a choice on the BMC side, and nothing documents which MSI
-vector that becomes on the PCIe side or lets the host read it. From
-testing, the vector looks like 16 + SIRQ: this series uses SIRQ 0 and
-1 and gets vectors 16 and 17, and on the ASUS board the VUART is on
-vector 20, which would be SIRQ 4, the 8250_aspeed_vuart default and
-the COM1 interrupt. But that's inferred, as the host can't see the
-SIRQ the firmware chose. So there's no documented value for the vendor
-to fix to, and boards in the field keep their firmware.
+Also, is the comment really needed?
 
-Jacky, three things from ASPEED would help. First, confirming whether
-the vector is always 16 + SIRQ. Second, having the SDK put the VUARTs
-used over PCI on the same SIRQs as this series, so that firmware built
-on the SDK matches the host driver. Third, longer term, a register the
-host can read that gives the SIRQ or vector, since even a documented
-mapping doesn't tell the host which SIRQ the firmware chose. In the
-meantime, boards already in the field still need handling.
+thanks,
 
-For those I'd make it a quirk, as you say. The class code tells them
-apart: the stock firmware leaves the function at 0c0701, while this
-series' BMC side sets ff. So the vector search would run only for
-0c0701, wherever that support ends up, and never for boards using
-this series.
-
-If you'd rather not have a search at all, the quirk could instead use
-the vector seen on the ASUS board, 20, for class 0c0701. That only
-holds for firmware that picked the same SIRQ, and since stock firmware
-from any vendor would have the same class code, each board whose
-firmware picked a different SIRQ would need its own entry keyed on
-DMI. With a wrong vector the port's tty output would stall, so that case
-needs to be handled: the quirk would still check that the vector fires and
-poll if it doesn't. The search avoids both, with a single quirk entry.
-
-Would either form be acceptable to you?
-
-Whichever you prefer, it doesn't settle where the stock firmware
-support should go, in aspeed-pci-core or in the separate driver I
-proposed [1]; that's still open, and the quirk would be the same in
-either.
-
-[1] https://lore.kernel.org/r/8CD30026-4C04-4E0F-B7A3-5C107D2A8410@phil.gs
-
-Thanks,
-Phil
-
+greg k-h
