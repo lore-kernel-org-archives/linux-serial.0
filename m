@@ -1,75 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B7D23BBFD0
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 14:16:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E150C51814B;
+	Tue, 13 Oct 2026 14:26:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791901015; cv=none; b=lKDqVu5Po8neEPNXYjFME8X5LsWma5rXq7MaixL0JAtCX0N2CatKN4wyPulvJtsyU1+xrNMTSIQmbnS4upMCDIH4Zag8GLkslT0PULitzwbKrwzCh5ovhvZYC0OcwvGlDRLGHzI3R1wfhZhqGILZCOsKTQrZBkyngcOcT8vy4hg=
+	t=1791901614; cv=none; b=t/BHeGtZ3aDOn2t87hyJ1D8FjIuQMEfuesZT3qK89MRC8+vpC8dSmocowgmMuvn13zZEe1wHNrmbtCKpDzqhA6Qudyo8HhRtQo9zTVDf+77isb5XScKiSX06wTiPI2g+f9B4TtUEpS6rxw1OFXt65EQz7OP4xm4JEFV77b5Z8hY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791901015; c=relaxed/simple;
-	bh=yjzoDNyfV5ibg6LT/xKvKj15g2aeE1sCH6vT6cNWO+w=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=enTjP+h0pUSfdrYXMFcy9JAOZKc/1uVOFAIyQ5Eftu8wWUFjCxNmMQqmlsABnHVmeT3F9n/8Q55nEphqhfvEedFi5qlqxJoXS3diwery9BRQSKAfU40uNbxd+BXwi5DAEKVixPmiNaEWlktfFokV9YuuDWoj5iE32sJEDvLrfFg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XErtFwaE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791901614; c=relaxed/simple;
+	bh=XfZVuH37TjJbVLTM/jEvSNl35LQfRki5rmhJIud0Ta0=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=W22b3GDrs2wJr2fAAyV3PK9zi0blscSclNyffSYbSfJicAuhCWkTWp52+uEc6mjMJ05de6VpVybUezhfFuHxex3Tw/hzP6OhSSLFYST9J60P62Doi30CStIMEr4MXO4An9rJ5l+AlCQhxXuSl9Hp/CCveWNIV0svv5iJYSDEeXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M84dz03/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XErtFwaE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4FD41F000FF;
-	Tue, 13 Oct 2026 14:16:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M84dz03/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67CAC1F000FF;
+	Tue, 13 Oct 2026 14:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791901013;
-	bh=yEgx1cVrKyBoT+Oc9EQF0J58dMoMq2PPDu1OwjjB/Ag=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=XErtFwaEvyyu3Zqklj3k1jawLlUl7AycB+fq19tqu1ZjdQ3SmU+TR3xD8yITtrA57
-	 Q/ckI4U3cMnWi3lwxCUWlRufdaQ3EZMKqbCB9tB+qm7Q5EVTDhYWdpe1sxe6yUPm9m
-	 OUZaQzRZoMH8q62FTYsZ4NtRBgwmHtgY6+2ciIMiID5GwZiceS6bqJmjqUd04zgBAy
-	 9LC3+/LbktghgMJOj78FvzEEN6KT+g7sitPJjrtmHH6Ckzfa4WdlAXfBymfjx+9V9k
-	 /JxKAPeurH7Wh8Jj4aayI01qwh+F/ClhdC09Cf85CQY2w5hCNvcfNUzZrQ0LZ9B6xq
-	 mMcsTeYn5l0KA==
-Message-ID: <sashiko-outbox-169894@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] serial: core: Shut down a running console port
- before removing it
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Phil Rosenthal" <phil@phil.gs>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261013-serial-console-remove-v2-1-2eca1a92c10d@phil.gs>
-References: <20261013-serial-console-remove-v2-1-2eca1a92c10d@phil.gs>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 13 Oct 2026 14:16:53 +0000
+	s=k20260515; t=1791901613;
+	bh=Vu9GFTSwpA+ThnhYFOK02kJtnNFAzU/CFrFuq53MJ60=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References;
+	b=M84dz03/ue983O1uOEriK2mgDcd8I0/vK6Wc4QCEqLcvOhVeUdQBHbaY2nuLf+iK/
+	 XxomRz5py81Ziy9sUEwpXdILr5KvWnvev6t8n7wyw6HkYDK5aoD9KRd8XOOKyvX3rj
+	 GQFYmV+CPCyD+120q7nulE5M9oTcSmjPo88uleWGa83Add7aiqXDFuoeLEX3yUaA9S
+	 V+djX8SDohHXmxu8z+AnJ5ZG5HwMWSwG5XpFun/GHc15TVd3t9wsuZzZ8nS7MEADwm
+	 HOxyxVw/pZ2GfT7d272Ud9GtVDy+bRNWC3M6hvF9U06Dh/vTYKKi+J8Vj14Yq62tZS
+	 EtCRK0fPHxjPg==
+Date: Tue, 13 Oct 2026 16:25:46 +0200 (CEST)
+From: Imre Kaloz <kaloz@kernel.org>
+To: Niklas Cassel <cassel@kernel.org>
+cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+    linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, 
+    Lee Jones <lee@kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, mfd@lists.linux.dev, 
+    linux-serial@vger.kernel.org, 
+    Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+    linux-rtc@vger.kernel.org, Andrew Lunn <andrew+netdev@lunn.ch>, 
+    "David S. Miller" <davem@davemloft.net>, 
+    Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
+    Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, 
+    Damien Le Moal <dlemoal@kernel.org>, linux-ide@vger.kernel.org, 
+    Pavel Machek <pavel@kernel.org>, linux-leds@vger.kernel.org, 
+    Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, 
+    Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 00/53] MIPS: SGI-IP27: add support for the IP35 (Bedrock
+ hub) machines
+In-Reply-To: <as4zsLZvV411ooEv@ryzen>
+Message-ID: <24d821f4-63ff-aa35-a36f-a72046fe59a7@kernel.org>
+References: <cover.1791890466.git.kaloz@kernel.org> <as4zsLZvV411ooEv@ryzen>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1641235930-1791901553=:27186"
 
-> From: Phil Rosenthal <phil@phil.gs>
->=20
-> A console port is not shut down when its last user closes it:
-> tty_port_shutdown() returns early when tty_port::console is set, so the
-> port stays initialized.  For an 8250 port this leaves its interrupt
-> requested or, for a port without an interrupt, its poll timer armed.
->=20
-> serial_core_remove_one_port() relies on tty_port_tty_vhangup() to shut
-> the port down before releasing its resources, but the hangup reaches
-> uart_hangup() -> uart_shutdown() only when a tty is attached.  For a
-> console that was opened and closed, for example a serial console whose
-> getty has been stopped, nothing shuts the port down.  The console is
-> unregistered, ->release_port() releases the registers and the core frees
-> uport->name while the port is still running.  On tty-next with 8250
-> ports:
-> [ ... ]
->=20
-> Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_por=
-t_close")
-> Cc: stable@vger.kernel.org # 6.6.x
-> Assisted-by: LLM sparse
-> Signed-off-by: Phil Rosenthal <phil@phil.gs>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+--8323329-1641235930-1791901553=:27186
+Content-Type: text/plain; charset=ISO-8859-7; format=flowed
+Content-Transfer-Encoding: 8BIT
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261013-serial-con=
-sole-remove-v2-1-2eca1a92c10d@phil.gs?part=3D1
+Hello Niklas,
 
+On Tue, 13 Oct 2026, Niklas Cassel wrote:
+
+> Hello Imre,
+>
+> This series is rather large.
+>
+> I would recommend you to submit a minimal patch series
+> to get the basic support for your new board, such that
+> it can boot with a ramdisk and serial console.
+>
+> Then in the next cycle, send separate series for ata,
+> net, leds, mfc, rtc, etc.
+
+Hi Niklas,
+
+Thanks for having a look. I checked what the minimum is: 31 of the 53 
+patches (1, 6-24, 26-29, 31-36 and 39) boot a Tezro to a ramdisk with a 
+serial console. Two mfd/ioc3 patches have to be part of that, as they 
+provide the console UARTs (31 for IOC4 on the Tezro, 36 for the IOC3 on 
+the Fuel). The rest separates cleanly into follow-ups: the remaining 
+Bridge fixes (2-5), ioc3-eth (25, 38), rtc (30), the IO8 serial IRQs (37), 
+machine identification and the Odyssey widget (40-44), ata (45-47, 49), 
+the defconfig refresh (48) and the LEDs (50-53).
+
+I¢ll wait for Thomas to say whether he prefers it split that way for v3.
+
+
+Thanks,
+Imre
+--8323329-1641235930-1791901553=:27186--
