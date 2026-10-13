@@ -1,88 +1,91 @@
 Received: from fout-a4-smtp.messagingengine.com (fout-a4-smtp.messagingengine.com [103.168.172.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5FCF26F288
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 01:35:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890DB41443D
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 01:35:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791855351; cv=none; b=cyR8wVJTS43BE7cHM8AW338F6gvXYSE771dAQHEG9iPmqEvFQFx6tHfPzZK3jG45D3UcKqJdua8Kdbjtjx+kgIW7rJ8FHSYzxpY1/O1MDwu9nPVmMeN0lRAzbc0MIVBz+P/qYY4W8jTgi6HE7HUO6qT3kCoB9oB0Y8zISvCujYk=
+	t=1791855352; cv=none; b=fOfXmuY8yIThMisbprcpnxVVLRps54D2hoyKizjDJ+/VltUZ4PZOxuSnmoTzUtdteB/ulmkipUNWyNUbEuvwBs9KAi8Jcv3Dk2/h//RygKFM8rjomfjBqp4Ir2FT4Mpf5Da/4j9HmxNfk7fk9LjUhO310t3Sc3jO54JGhciDyN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791855351; c=relaxed/simple;
-	bh=TCNbQGeKRAXh2LRLq1pF3WRun0kySjQuoswn8eVi6ZY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SAWVnyEMaR98tAScNIJrjDHMdf4zyxq90BlbB68jEc6Xxb4dE/0ytcXn2B1u6XxEPldF+q4bPXoJrrMtV0b2P90x8+czISdZw99c4MR/gSS/JXII8FIulPzKlZs9e8JBVW1sTEHXnk+GQaS8bjh18L0BEXJ4PCzyfkDlUzja0ek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=timdoug.com; spf=pass smtp.mailfrom=timdoug.com; dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b=YxX9qm0h; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=L9jaAj2y; arc=none smtp.client-ip=103.168.172.147
+	s=arc-20240116; t=1791855352; c=relaxed/simple;
+	bh=IIVOJsgn1Fzp6J2UaPQgxgn6NYtZB1HT9aJu1pdQroM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=shDknkWQD5hQ8yaIgkGW61A/HfTA6d8/HJ/qz+sYEP7PyU+r/GW30EhVEifXsd6YUlPFx1m3ZX1JnRGe7NqYEcC7hlvc+vsUgIKpiAnTpXqD+52cvQj6yusrKrckOtm1B37qTIkU4aqj+4mCvmVunmUxGIR2Jrw4Eq5TjhbYkXQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=timdoug.com; spf=pass smtp.mailfrom=timdoug.com; dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b=bCHEsw7v; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=KDUzT5e1; arc=none smtp.client-ip=103.168.172.147
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=timdoug.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=timdoug.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b="YxX9qm0h";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="L9jaAj2y"
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfout.phl.internal (Postfix) with ESMTP id BF062EC08FE
-	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 21:35:46 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=timdoug.com header.i=@timdoug.com header.b="bCHEsw7v";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="KDUzT5e1"
+Received: from phl-compute-12.internal (phl-compute-12.internal [10.202.2.52])
+	by mailfout.phl.internal (Postfix) with ESMTP id B2822EC0931
+	for <linux-serial@vger.kernel.org>; Mon, 12 Oct 2026 21:35:49 -0400 (EDT)
 Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-01.internal (MEProxy); Mon, 12 Oct 2026 21:35:46 -0400
+  by phl-compute-12.internal (MEProxy); Mon, 12 Oct 2026 21:35:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=timdoug.com; h=
 	cc:cc:content-transfer-encoding:content-type:date:date:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to; s=fm2; t=1791855346; x=1791941746; bh=yocduj0ABMyh/bTv9hbcP
-	rlJvMoW1kyYLcIfo6RegkE=; b=YxX9qm0h1gyNDvweeV0CHnOxTbKTjjUtU6Foo
-	2zaHLRoh81zK/ZOaR4nCxsQjdVcpVPSyTsWBCCLPt14oqqBAsxmUIZFhie824052
-	p1ehC0AfVd8GNxjhOfaNXph23nCJ98GpfA7eHf9JzW/eTCExt8sI+nr4IuoPVoZe
-	eN7AMrU54gmxqIwYXtH6JeIzzIHBVPEPojVMrzowx/oi6uRvAbr0Dyv+UFbLDQGe
-	lXIYkWGWa77NA3i8wDDGK1q0/bYqPyvzDw2UV8Y6/b0dxrOBJAj8bnpFxDZ9dq0e
-	g8ffDLKkhYnxxOTz+Gg3HL95nsdg6MwbOPe4Ta+jZ5x639RiA==
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm2; t=1791855349; x=
+	1791941749; bh=ynU+Bv1nkxtpTw5yF1AgPdxSe9NKymP1ojZfCaIJGWg=; b=b
+	CHEsw7vaLLJVUH8XekA8hgEtCs3js4FQ5LZGANyllY3HVvthqV/15X4WdRZ6dd+x
+	RKZ4HptJljsj9CoknD8RJSAm4ZLK9/C/m1obuWQC7LO1Bt/HgqfF2FR8wzp4Xbg+
+	VZ/g/hXoeZ1IcAi0Pv6tFVguBJ0Znmr34HkE82sKZ/3zQaanJldVU/XnAybq4QBb
+	3oxwE8PHC0d5lwTrVFSAMyPfKhqMKTGH5B+OtJRn8F3Bl5f/k9FGZHBJGwFxR2FH
+	3oySrK3t4Lar4xmz6/MBvPGTywIFCSQdP+7PPtS9RO8pcQJXCut/Whe1kugob+XS
+	PqisVpIozH723HtHKEDgQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-	1791855346; x=1791941746; bh=yocduj0ABMyh/bTv9hbcPrlJvMoW1kyYLcI
-	fo6RegkE=; b=L9jaAj2y0nI0OWKSVDxKvoARZg7/bnnqa+LUOVkRqOKeAtEhXzY
-	w/Q29FbPy4wMmDFJnrTcFUpvLokkrZ/Tgt8W2h4VK35XeVGFDnFMFUNUl0rg7z/u
-	bHaKsOyqgJMMMymxpNw3e1BOkZHXwS8HzI7nfnpg26vun210at1iNa2J/rMqk7+O
-	U6sX4vpnXFJuJ9n6BJ6+neFJ9etLzM7hxKsyNgR8UcPUu8qGguLEvds8RSy2sjLe
-	n2PblY95PoJuP757NxEl9dfWbW0TvY/9kHswC6xfnjQK0VYSY20Rvnc11wrLOVwv
-	7RbhSF65FH5ghappvA6Mf+9CwqZvuvaEwqA==
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
+	:x-me-sender:x-sasl-enc; s=fm2; t=1791855349; x=1791941749; bh=y
+	nU+Bv1nkxtpTw5yF1AgPdxSe9NKymP1ojZfCaIJGWg=; b=KDUzT5e1uXPYXNSde
+	wc0+tVcQDsX/eSNSaarzG/FeMuXyRqBN1z0RHUSeFTfRfYOqxSQPpBWYqx2p6zXq
+	C1G132vPiHJ7GUwAQ8X29ISE6UbX/7ZPaWBh0WySDEECcJP+eIPJqA7JDUYb1om+
+	FyHmJtxZGq+tS9HkZR/nBZLINSZnj9N5wYiFFcsWiBQH82GZ53LnWhP+/09mn6VA
+	MyRI1eHfCwYdqrXx4S0OdhRmH7dGLCEBfN8Juiz69D0xxShjtVx8iT09IgD7u8G4
+	l9GPecWx3edDvaqd0vnX2IE+fnrcHAYect4D+yX1+iE709/4GW/LRi2zlG7HtAQM
+	b1Z3Q==
 X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-06;
 	repo=github.com/dkim2wg/interop; date=2026-10-04; sw=lmtpprox;
 	action=sign d=timdoug.com a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1791855346; d=timdoug.com;
+DKIM2-Signature: i=1; m=1; t=1791855349; d=timdoug.com;
 	mf=PG1lQHRpbWRvdWcuY29tPg==;
 	rt=PGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc+;
-	s=fm2:rsa-sha256:ZmjRo2cYraRrg39UxwubbhElDzONgjjUxoJtF+iAi7BJ0+6
-	6L+L1Yo4IPKsiTDYj0PyyTpbXchn4jSpcIybDTJRMUrUw+S5QbuAPuJMbuUMb4Ff
-	EiUVaGgz12eGEKQOLSop397FpE299uQN09QKx4fV65L31bRG40q2SOjuEhI8+Xql
-	F4bCh6GK9ZHEDjwPDNoCO8RDE8EsvZukl3YYrMwmz5JpmCHxZU7cMPwbb4Aq/Xmc
-	YwJsrw27zMrRDVtc8Eo5chzvjdAp/QSGB89Sier4RKXIXN3uPk3TTj+IXJTS9hIu
-	SnglVlpON8/Sgshq7dZmdsaBuhOUsWbDiKvr0fQ==;
+	s=fm2:rsa-sha256:P6Ik0SyxkcVz0EWCrBUuox/vNgxapuVVEGJZ8uC2U62YNxX
+	Gs1Pa3TwqSU+mbbfmcBtINbhN78haOsuhaARM+p3pMk9C62neola4ciyU4LTwYKE
+	gt9r9qWBRqW1f7d4XBDxhXwDzpcwRBfWvN/3CkqU74FaGbrp53ISE6vqrBUHgfS8
+	1pbkOBNQeSvuX1pMMRtkIx3vVVFx3PPNNEobeiu3eiv9iyHJnH93sbG5qq/c8xAI
+	0ZdfQgAWKtRS4j3cvbS68wwnD6W7Z/JcZi6V1QfmdOr93rPedTnCM5ysMf3tAXVn
+	hjXso+t6Vl4vrJ42GH8zbhX6Hm/hUCZoRPYkyww==;
 X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-06;
 	repo=github.com/dkim2wg/interop; date=2026-10-04; sw=lmtpprox;
-	action=mi-m=1; hc=9;
+	action=mi-m=1; hc=11;
 	hn=cc,content-transfer-encoding,date,feedback-id,from,
-	message-id,mime-version,subject,to;
-Message-Instance: m=1; h=sha256:8WelGVUf5dphIQ2F89IJTaWhXv1ZAojAwJqZh9CFkd0=:TCNbQGeKRAXh2LRLq1pF3WRun0kySjQuoswn8eVi6ZY=;
-X-ME-Sender: <xms:8YrNaqKIlB6MxsRKi7XpVa_XPMMVxODrdU1PvTsRyt5V2UVOWFAhlQ>
-    <xme:8YrNagY_0EuzN2WovgO-vo_lDi5cA_qI-0L9liozhIklzZ2qSM25fS5QWclGWQRme
-    zYXLx2JD676wnTojLt0hpjmYnOblZ68ISrgf90Q-0y4oiJwW4Bd8Q>
-X-ME-Received: <xmr:8YrNakB9IKVDSJeBp47CaeCrgjFFDaGvC8YeW7C6xMqDTk2rhvuCsztKPt6y>
-X-ME-Proxy-Cause: dmFkZTF67q9b7fmY2tTOoiQhmTSVWZXwqMvJEdwkUZ8DSEmFTt29UUAIFfkcFFqhCEpEXv
-    R3kqLflvBe6WUnJo1ku6LxFHkPzgFM/ILqkAHvJZ6eEux0LBThdrCGn+hFniXwQelhmL6B
-    GapF9C+LeWGzk3PB8qlmDgM3xgCF8lgeK5JOTiLCio4o4RlNQEWrIONQsWbClWvBGYfwbw
-    lpFfmrGR+yFLeFcp5UmxB6AvuOm8UKABeidGNPVWo1KZ7Q6Yxo9X1WAx0cwGgCXAfbP8EG
-    OgRLVARpMopZ64aF9Xu2aEjuM2rGfBBHLx7+k5QNwhxQrosCFvKIx9TRg/pVf0qTumS2Y2
-    +8OQw4nQX8C4bgS7V226SKYgqLCDBNISAzXMW+3Wt4MsHe4uA7yVxr+Lh0dHOdKX4GdDIm
-    ZSAh8GPIY7i3ijleSoIuDAhnGzjm/OwSCyEdJ9Kbx5qoAi+s/z8PoLRoxwIKw8xpu96YN5
-    6TQrnqgz7g07UeoDHd9sOoAMBqy+thh4g8BH+SP6Zh2PthQisXkVCwt62Gf/31+guT5c0o
-    TwPXCrSZJx8LTNIjTtpk1Zgmve63e86YTgMmlt7T5YL7PZUD1yu1AboQwBT0WDDfFiSFLi
-    TuI+PEEj1T3HV/9EEiRDD8nex5LO1twHV8yPjaPCZf27WXcZas8uidvfYdgg
-X-ME-Proxy: <xmx:8YrNaianQW1TEM1EThVf1H1E4c9wNpd2zAsNFNJbcj8p8sZQGDaWFQ>
-    <xmx:8YrNaklq81slHKomDexCgW_W2Tp9V4oCHCRpz7KyHvwIXVBlaYmGig>
-    <xmx:8YrNavpBn95l-Ttu_riva2Tii27o9ATVHEFgGY8H2pjf9UWh7DY8Ig>
-    <xmx:8YrNauDs3kUhIdPmGWucNT7hKsnEWnNBXNZANXWkU4DMJakHmP1FMA>
-    <xmx:8orNanZppZXtrKeMQ2kmdyDT0W1j2GAdZg16aNsgPRGeR7yyqLmlas7D>
+	in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:UQfw95Fz+iiaKhM4B0x3CiboQNps0uiguSgaWYaEfus=:IIVOJsgn1Fzp6J2UaPQgxgn6NYtZB1HT9aJu1pdQroM=;
+X-ME-Sender: <xms:9YrNaonMRSAxG4NW42C6VGKvOsZ_VLvCBMovkGLuqWz2FGLBu1I5eA>
+    <xme:9YrNav_9xfoBccUTdcmF998KYas9gDKCnjJf9GfpTzYcUy6KSpmrwA16yZf7x1Iia
+    m59KKsSG7JaJ5MWQ3ljI7BuMIsRTg80wLXnlR6ffxvDunKS5ur0qw>
+X-ME-Received: <xmr:9YrNamJNLbt15yvhEDa86_QL276vFiL3ayuX0I426bdA_9E2nznQlMEEu4Qq>
+X-ME-Proxy-Cause: dmFkZTEs+D062zKm0g1Z6uCgWCfkrFCAifr7RRfExPlp2j9+nb3h4r6gXg5CPa1Hy28Gb3
+    jjDLtlUgehkFGvKDjacNQVtZmY23pAF2FYbp1x1/5WsfXHbMKYRnZ+oQxz1fhwjXas6rKu
+    O3Nic0YZYD3FpXcovN1s3R7DDK+4Hj1a5uljDvBzZS+QeauDTrkmI+gPO2CmEBM6fWNjv8
+    Djeb8EpppwYC7edHx9ftnnCjzX5VJXWtrTADVNS4avcixVuC0kwn7oOy4yRPpbQ4M0xpTk
+    MmxPAM3Unja5wAJOz1sQKNPVQ6CUgMoR1EdLi6JhrBSuMn5LiWNNsi4Kz8D85j94CaW+C/
+    zfQRUKnl+FFLPQYZ0KHet3ZLw5lvm+8hadwApEPbAsd/FzVn0J9saV93O2FZ9gZR451E6I
+    nZchxAfQzUh3qnVemeWmPsiENbHKF21Eb/qfgIxiBPg8bds6sEdtE0HUmvmUaDC5wCqnxy
+    1sdDDtGv0+Qp4GNLcTSWa/KHUOFPqBBaND/STNL21IrhDAXDD4JLid5BjKwEDfGY1uTByL
+    s6zzICKIWoTuFatUM0KWEpZOgQq/fXgs92TvsQdIjjpMIwHeS+aEWmf/G5VDReVWQPROdh
+    miG9Pup4vaD8yvW1KPm+TL9SMcI1pAkQ2GZtFtQTyhCCkT7ivz81YQzeFN8A
+X-ME-Proxy: <xmx:9YrNakh9kgryqBTLfSijKIwWI-VIkZ16k7U0KC6keeKB1kKNa8OmWA>
+    <xmx:9YrNai8pPoij5JEzMsrkTeHuX7HaIvD2tJ3wYYkyWPzzEa1-mWZjFA>
+    <xmx:9YrNapNiOfpLeyXP2WOjceAY0OMWwJIkgEkAyISP9wzWRwVNUipP1Q>
+    <xmx:9YrNamAVbQtRO5jiOXzcu9Ww3Dv3xRwUdtb3ZdfkdeI7yg5qnRULXw>
+    <xmx:9YrNarPlmUz_4Gpz5l1mMHBmOA27ju6S51F9TJzRFo1AxHdEYJlzf1Ek>
 Feedback-ID: i12bc4175:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 12 Oct 2026 21:35:45 -0400 (EDT)
+ 12 Oct 2026 21:35:48 -0400 (EDT)
 From: Tim Douglas <me@timdoug.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
@@ -93,11 +96,14 @@ Cc: linux-serial@vger.kernel.org,
 	mpe@ellerman.id.au,
 	npiggin@gmail.com,
 	chleroy@kernel.org,
-	Tim Douglas <me@timdoug.com>
-Subject: [PATCH 0/2] serial: pmac_zilog: two receive fixes
-Date: Mon, 12 Oct 2026 21:35:39 -0400
-Message-ID: <20261013013541.4535-1-me@timdoug.com>
+	Tim Douglas <me@timdoug.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/2] serial: pmac_zilog: push received data to the port that received it
+Date: Mon, 12 Oct 2026 21:35:40 -0400
+Message-ID: <20261013013541.4535-2-me@timdoug.com>
 X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20261013013541.4535-1-me@timdoug.com>
+References: <20261013013541.4535-1-me@timdoug.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -106,34 +112,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-These two patches fix receive problems in pmac_zilog that I ran into
-while bringing up the serial ports on a Performa 6200CD, a NuBus Power
-Macintosh. The first stops data received on one port from being left in
-its flip buffer while the other port is open. The second makes received
-breaks visible; until now they arrived as plain NUL characters.
+pmz_interrupt() drains both channels but, since commit 2e124b4a390c
+("TTY: switch tty_flip_buffer_push"), pushes the flip buffer of the
+port whose handler is running rather than the port that was drained.
+With both ports open, data received on the other port can be left in
+its flip buffer until something else pushes it, so its reader may not
+see it.
 
-I tested both on the 6200, running 7.2.8 with an out-of-tree platform
-port and a loopback plug on the printer port. Without the series, only 3
-of 8 bytes written to ttyPZ1 came back while ttyPZ0 was open, and a
-break sent with tcsendbreak() arrived as a NUL with no break counted.
-With the series, all 8 bytes came back, the break was counted, and with
-PARMRK set it read as FF 00 00.
+Fixes: 2e124b4a390c ("TTY: switch tty_flip_buffer_push")
+Cc: stable@vger.kernel.org
+Assisted-by: LLM
+Signed-off-by: Tim Douglas <me@timdoug.com>
+---
+ drivers/tty/serial/pmac_zilog.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-The series also builds on v7.3-rc7 with pmac32_defconfig and W=1 without
-warnings. I have not tested 68k Macs or macio Power Macs.
-
-I found these bugs and wrote the patches with the help of Claude Opus
-5.5. I have reviewed both patches and run the tests on the 6200 myself.
-
-Tim Douglas (2):
-  serial: pmac_zilog: push received data to the port that received it
-  serial: pmac_zilog: report received breaks
-
- drivers/tty/serial/pmac_zilog.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-
-base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index e3a9193..f49d605 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -444,7 +444,7 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
+  skip_a:
+ 	uart_port_unlock(&uap_a->port);
+ 	if (push)
+-		tty_flip_buffer_push(&uap->port.state->port);
++		tty_flip_buffer_push(&uap_a->port.state->port);
+ 
+ 	if (!uap_b)
+ 		goto out;
+@@ -469,7 +469,7 @@ static irqreturn_t pmz_interrupt(int irq, void *dev_id)
+  skip_b:
+ 	uart_port_unlock(&uap_b->port);
+ 	if (push)
+-		tty_flip_buffer_push(&uap->port.state->port);
++		tty_flip_buffer_push(&uap_b->port.state->port);
+ 
+  out:
+ 	return rc;
 -- 
 2.54.0 (Apple Git-157)
 
