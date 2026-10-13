@@ -1,121 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2867E792;
-	Tue, 13 Oct 2026 06:22:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05F1E4B0E57
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 06:25:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791872545; cv=none; b=HunbZJFHqBwqsTI72gPye08xMgaVFk6S9KgXMHY77bTK0jsJiV7/fw6+2pAGdCafIQfwzzlxrALp1Y6SeOoOp6qD3jKDxkuwx2E7Eef+VP/wUroZw8UMcnez+c0+KzO2uspk+CLxZuIXrCU6byuDeX12LHm2JTaUfHuPvvw7Gj0=
+	t=1791872718; cv=none; b=G/2CXRl2+UdquXcsrwkdgodfDljStOobuuWbROduk1AHRCpLW5/RrnIzLsT8Som6fFldTYkd7TwZe539aUJov7x7XIN7z3cp8YGxNEk23rYOc+innYbxlCwMaA3xrCSRr4CtP6iuee7c3ofIx7/1i5LGxq59WjBbSstmo6GFoC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791872545; c=relaxed/simple;
-	bh=ZfsT/JnJx9KNk/XKB+11jQcQueyMxv3z5WgRkl62X7g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TE1bO+WowOW59/g4UeJj+o9yA/PlBgf0LF+2vJnWOlXugo1eOqE2JTfgXZPPHEd+UD0HVMT8an+emI1MPEHmmrNgBNr8oZJO6sXSs9pdJMFQCKOfGW/qwH5MUhNY+KWkt/Ta9weqsnaIgLbBAk4KzhecK5yAdcxwuFyE4ZZta88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lTvYNIP+; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791872718; c=relaxed/simple;
+	bh=ZBwDZf5/0nwKwheDogXvTURy6pHf7DA9eU+N1qGf7Cg=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=dPATmfm+8joZ+tTT2owKBNeL0dygzQGgP1JChetOkhhVwxMsv2aWa1sVVDgjVaaS5hlfJU8xvSkzkc12Kh1oPBpNdCUXtfpia+vwny8rTp7c8NIV96I+jkl5/IfFbhSVaKMQMPZzxieEkNwnkiXFC8Lc9zli68MoUh/Y1WpcxHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bfIh4WQi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lTvYNIP+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791872544; x=1823408544;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZfsT/JnJx9KNk/XKB+11jQcQueyMxv3z5WgRkl62X7g=;
-  b=lTvYNIP+Io6n5D+90GNm9htBHiMwnydDp/krJs9HR0gOmKeqH0Bs8Y+n
-   1VhRW2IMXiBihvqaR6R+zmjlcuidwJjicanYcctig77GAdk95ez4cBrmR
-   Lw7STKkic8RmlqGjmq6Q2IyKUf6fymQ6zMw0ZOR1Uhzf/LzOYaRij4PM6
-   I4Lll9kwfwEAonU9Z1gA/6f6svSecPzKBX+y2xqRteG7gSnsxfzvgmnGm
-   HO4fqTmJu/G37oVK7BQemXXAd/dZ/jWl1xjK31rDyQtfiyZzvYV4n4afG
-   H0QyE8aHA+k+SrQuTUNEbnrjIX+bcX0nAxo2pM67CDaXlCB8NTKV7o/Lk
-   g==;
-X-CSE-ConnectionGUID: kUIHDsBXTqOJyaq9gQ9QFA==
-X-CSE-MsgGUID: ta201GYmQ5etk4QkG3vgYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="488000"
-X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
-   d="scan'208";a="488000"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 23:22:23 -0700
-X-CSE-ConnectionGUID: WBV46saPQgWfz29cSZhMRA==
-X-CSE-MsgGUID: Z44VSfF9SPuWjTtafJMR7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
-   d="scan'208";a="1092067"
-Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.48])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 23:22:18 -0700
-Date: Tue, 13 Oct 2026 09:22:15 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Phil Rosenthal <phil@phil.gs>
-Cc: "git@gregoirelayet.com" <git@gregoirelayet.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Joel Stanley <joel@jms.id.au>,
-	Andrew Jeffery <andrew@codeconstruct.com.au>,
-	Lee Jones <lee@kernel.org>, Tan Siewert <tan.siewert@9elements.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-	"mfd@lists.linux.dev" <mfd@lists.linux.dev>,
-	"andrew@lunn.ch" <andrew@lunn.ch>,
-	"jacky_chou@aspeedtech.com" <jacky_chou@aspeedtech.com>,
-	"yh_chung@aspeedtech.com" <yh_chung@aspeedtech.com>,
-	"ninad@linux.ibm.com" <ninad@linux.ibm.com>,
-	"anirudhsriniv@gmail.com" <anirudhsriniv@gmail.com>,
-	"andy@kernel.org" <andy@kernel.org>
-Subject: Re: [PATCH v6 4/6] mfd: aspeed-pci-core: add AST2600 PCIe BMC device
- driver
-Message-ID: <as3OF7O5hnImaAWO@ashevche-desk.local>
-References: <20260818-aspeed-driver-v6-v6-0-fd7cc0b338ea@9elements.com>
- <20260818-aspeed-driver-v6-v6-4-fd7cc0b338ea@9elements.com>
- <C5A01ECE-9A61-4BCA-88C6-83A1673AA69C@phil.gs>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bfIh4WQi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 788171F000FF;
+	Tue, 13 Oct 2026 06:25:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791872715;
+	bh=ZBwDZf5/0nwKwheDogXvTURy6pHf7DA9eU+N1qGf7Cg=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=bfIh4WQiaG45KACLMqOLWs2Xp7jF9AXWIkGwPl2mY1IINyrhmNOoLhT90Ga+Ta2IT
+	 Zv39++K4DLNW7zgXapW67MZTBJCCqVtFtd5mBOm2hoETvhDYVJhEqEnJj2pR33ODSB
+	 mv36a0IuaIfTS/M/8MyoAU+5IR6PqBmnS6RD81EAeAjBmIw147t3PObSG2BCVTaCjO
+	 +jPK0ZXV0wt4h64zqlaNEne/8MhMSHbzpUnW8U9zrgyD19UdnfEjn8TjlpxcYcHwcs
+	 9RyXj7XZpo9DFcNAw3nA0/nKcWqbV9cW5/kyVbbVRwVxtxLY0CLss+kULu0B8ldoSF
+	 mk3pXA2360nGw==
+Message-ID: <sashiko-outbox-169081@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v6 04/10] ARM: goldengate: Add support for the CS75xx
+ SoC family
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Fil Dunsky" <filipp.dunsky@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261013-b4-cs75xx-v6-4-37e8f3969b7c@gmail.com>
+References: <20261013-b4-cs75xx-v6-0-37e8f3969b7c@gmail.com>
+ <20261013-b4-cs75xx-v6-4-37e8f3969b7c@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 13 Oct 2026 06:25:14 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <C5A01ECE-9A61-4BCA-88C6-83A1673AA69C@phil.gs>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 13, 2026 at 03:04:43AM +0000, Phil Rosenthal wrote:
+> From: Fil Dunsky <filipp.dunsky@gmail.com>
+>=20
+> The Cortina Systems CS75xx ("Goldengate G2") are network processors
+> with two Cortex-A9 cores, an SCU, GIC, the Cortex-A9 global and private
+> timers and a PL310 L2 cache controller. The family includes at least
+> the CS7522 and the CS7542; the CS7542 is used, among others, in the
+> Securifi Almond+ router.
+>=20
+> Apart from the vendor this has little in common with the Cortina
+> Systems Gemini (SL3516/CS3516) supported by mach-gemini: Gemini is a
+> single ARMv4 FA526 with Faraday peripherals (FTINTC010, FTTMR010,
+> FTGPIO010, a 16550 UART) built for ARCH_MULTI_V4, while the CS75xx is
+> an ARMv7 MPCore whose UART, GPIO, interrupt controller and NAND
+> controller are different blocks. It therefore gets its own directory,
+> named after the Goldengate codename like in the vendor kernel. The
+> [ ... ]
+> is r3p1-50rel0 (CACHE_ID 0x410000c7), select the workaround for its
+> erratum 769419 as well.
+>=20
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
-...
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-> The simplest fix would be to make aspeed,lpc-interrupts required
-> together with aspeed,vuart-over-pci in the binding, or to set SIRQ 0
-> and 1 for vuart3 and vuart4 in patch 6/6, so the BMC side always
-> matches the host's table.
-> 
-> The more robust option is to find the vectors at probe, which Tan asked
-> about in that thread. That works whatever SIRQs the BMC side uses, so a
-> board DT that leaves them out or gets them wrong still gets interrupts,
-> and if no vector can be found, the ports fall back to polling instead of
-> waiting on a vector that never fires. It would also be the basis for
-> stock firmware support if that ends up in this series.
-
-I interpret this clearly as "Let's allow vendors to continue making mistakes
-and provide wrong DT/configuration bits." My vote is definitely *no* to a such.
-If this needs to be done to support some weird firmware in the wild it must:
-- be a quirk that is clear sign that one has avoid such an example
-- inform the vendor to fix their crap
-
-Did I get it wrong?
-
-> It's the MSI counterpart of what the 8250 core's autoconfig_irq() does for
-> legacy ports with UPF_AUTO_IRQ; I described the method in [1], and it's
-> aspeed_pci8250_find_irqs() in [2]. With the DT fix above your boards
-> don't strictly need it, but I'm happy to send it as a patch for
-> aspeed-pci-core if you'd like it.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261013-b4-cs75xx-=
+v6-0-37e8f3969b7c@gmail.com?part=3D4
 
