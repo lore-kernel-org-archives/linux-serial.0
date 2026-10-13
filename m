@@ -1,113 +1,159 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924761A9FA8;
-	Tue, 13 Oct 2026 12:40:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D46854FDA60
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 12:49:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791895243; cv=none; b=XFrEqZBlD/hwnogLlcIp2Kki+NJdfi0pH3im3QfjpPm8LJcMYIfYpd9Z0OBjpgdo0Pv0dlLHS5ACHXfG2WAClM2Ljx3GEO0ZvVbS9mcQtxdJGqGFXZ2y0XobEfLbP8dYCJ/QytZ+bYw9DBV+BPjQEWrEtyTgbq2CESdWGwz6gJU=
+	t=1791895769; cv=none; b=YOOhznokVb0iF/RhAAoXiCSx1hzk7dO66WO9xNlEVmFcm8ON5H4i884saz5JsB5+R3DE9TA8QnWkUvKIoyaCaSwEbv3kMtdJrtnSi82shA1ub53DpZXNPjuBtccoTAS/eefdwavRaV38M8LvTLMExBjUw2DVoeNAN8Wm6qPAJqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791895243; c=relaxed/simple;
-	bh=tdCnVLQjztegDcspwnfbrGCRR3nFA79dUIYY/Ho3dO8=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=f6ndIr3PwzvJB1hNbga0jXJPZeg+c/pTmID62MCf0hmXzyQbp5qVNLF1L8vuGiQa+QMJ94wqtzKto8dueuFYJSMxpxOIv1gCyppKUT3Cyj4TVzwV5JfqHsI8cdUS264/6Q/SZvc2lAAdtJnoM1V+iaFTvOjg8UWaVg2EpSA4te4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kqof8uaj; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791895769; c=relaxed/simple;
+	bh=NcZMnF1qy7v8xyitl9lG3n8WuXTyz6Wodwum6AnZLAs=;
+	h=Message-ID:From:Subject:To:In-Reply-To:References:Content-Type:
+	 Date; b=e28/RVLR6iXu8Q8G59cS2zSqxJvx0oUzgHuwVwOK6DwevFbDdnJZ4V5/mjCtw7oTztNC48e21y9sYbcdFaDYoxNQFHAh9V4J9QAFNji9a8sPymuBqbrb3wcEOQuqCoJ9OV4QqpRjITmZkbHWrw6ORGjL1bMS6DZiYe5BVN4Tqq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TWCA8QFW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kqof8uaj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E69B1F000FF;
-	Tue, 13 Oct 2026 12:40:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TWCA8QFW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A0BE1F00898;
+	Tue, 13 Oct 2026 12:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791895242;
-	bh=MN3wM5z02C2EbjykjJBw8CRBl7hi08MZ0mOQsv07SVU=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Kqof8uajGfrCV8yRYNQsXgDdXj/HTaY823cpkZzjKjTN1N3qjvehJZTJy6XhypoiC
-	 vKlmxXDk1D0TpPWbx0uzssDB1JKR5CXHFIBAwg0ssze5UEZ2YjHLBbgcWpKkMPL8Cy
-	 GAM70NPIj+y9+b26COzXPSprWGQizplf8bRRn3jEUhmKIsEE+eEfey3Fd5hQltXDDA
-	 B5/h5tLAO0A9zKGReaYIs8QkooprhA662IPhRKZpBdkO/sOtBvrBCSxeU0s+JYfsBh
-	 8UsW4vrpsd2DiHPSMB9axuWNpJDsmu8eh9QR/5E4ZgLVoYQJfA8bJJQd7717W9XCgB
-	 ZdFwIAvrTAyVA==
-Message-ID: <sashiko-outbox-169730@kernel.org>
+	s=k20260515; t=1791895767;
+	bh=nat3FEhyrdrbYj9jWiOLETSix61us0ezEme79Bux9hU=;
+	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
+	b=TWCA8QFWNX8aTDaT922lW8YeMr45+oCHwyGLkdiAZHAiUFF2sI9vZbsJedogN1RMd
+	 gO46XDw5exE3iM2gT7nLWT7B8CqBkbeIL6RQezhdjoC98uDpltMNnuOw5MjGxlmurt
+	 GXTEgHNMdqG0tYeCtV96cLM6vUrHA/Gkp5BCGuK63cr3Vwq40yvKYM3jaWW9Fo0FAq
+	 JfJ/UNiZV+ErYQxb/ffNiuHgR6taAh68bVhRDl9aWmTe98Y8guNp6ZuoND9IDNlOgj
+	 4/mk3PtXjDQ/HfTD6c5byJeiW9XgdjyhWg5TWBwNBVL1f6SUS9GOQGCxHLN07ni4+Y
+	 XHmr0JKoDmVMw==
+Message-ID: <sashiko-outbox-169741@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
+Subject: Re: [PATCH 5/5] serial: mcf: add devicetree support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Greg Ungerer" <gerg@linux-m68k.org>, linux-serial@vger.kernel.org
-Cc: devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20261013120831.1046590-5-gerg@linux-m68k.org>
+In-Reply-To: <20261013120831.1046590-6-gerg@linux-m68k.org>
 References: <20261013120831.1046590-1-gerg@linux-m68k.org>
- <20261013120831.1046590-5-gerg@linux-m68k.org>
+ <20261013120831.1046590-6-gerg@linux-m68k.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 13 Oct 2026 12:40:41 +0000
+Date: Tue, 13 Oct 2026 12:49:27 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+Thank you for your contribution! Sashiko AI review found 6 potential issue(=
 s) to consider:
-- [Medium] dt-bindings: $id path mismatch breaks schema cross-referencing
-- [Medium] dt-bindings: schema keyword typo allof prevents base serial sche=
-ma evaluation
+- [High] tty: serial: mcf: ID collision due to persistent pdev->id mutation=
+ on probe deferral
+- [High] tty: serial: mcf: dangling pointer in global mcf_ports array on pr=
+obe error
+- [High] tty: serial: mcf: mcf_remove unregisters all ports system-wide ins=
+tead of unbound device
+- [High] serial: mcf: broken port numbering and API violations in mcf_probe
+- [Medium] tty: serial: mcf: missing MODULE_DEVICE_TABLE prevents module au=
+toloading
+- [Medium] tty: serial: mcf: missing error check for uart_add_one_port
 --
 
-commit c5bd98e903d69d54479e4a7058d0ad59884cfb54
+commit 61f92ee3964b5b13fd6350da88b718b7350512cd
 Author: Greg Ungerer <gerg@linux-m68k.org>
 
-dt-bindings: serial: create binding for mcf-uart
+serial: mcf: add devicetree support
+   =20
+Add basic support for probing the ColdFire UARTs via a devicetree.
 
-This commit creates documentation for a new binding to support the Freescale
-ColdFire UART hardware block. This hardware block is found on M68K derived
-Freescale ColdFire family of SoC devices.
+> diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+> index 7cbe43cbe3a0e..01b3ab6e7dba9 100644
+> --- a/drivers/tty/serial/mcf.c
+> +++ b/drivers/tty/serial/mcf.c
+> @@ -582,6 +584,8 @@ static int mcf_probe(struct platform_device *pdev)
+>  	struct resource *res;
+>  	struct mcf_uart *mp;
+> =20
+> +	if (pdev->id =3D=3D -1)
+> +		pdev->id =3D mcf_numports;
 
-> diff --git a/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml b=
-/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
-> new file mode 100644
-> index 0000000000000..d1dba518f67af
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
-> @@ -0,0 +1,43 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/fsl-mcf-uart.yaml#
+[Severity: High]
+Does modifying pdev->id persistently break deferred probe or unbind/rebind
+cycles?
 
-[Severity: Medium]
-Will this schema mismatch cause a regression by breaking cross referencing?
+If the device is unbound and rebound, or if probe defers, it will retain
+the old ID on the next probe attempt. Since mcf_numports is incremented on
+success, this can lead to ID exhaustion over multiple unbind/rebind cycles.
 
-In Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml, the file is
-named with a comma, but the id is defined with a hyphen.
+Additionally, should of_alias_get_id(pdev->dev.of_node, "serial") be used
+here to respect standard device tree aliases instead of an auto-incrementing
+counter?
 
-The device tree bindings subsystem guidelines require that the path in the =
-id
-field exactly match the file path relative to
-Documentation/devicetree/bindings/. The dt_binding_check tooling will
-encounter this mismatch and silently skip or fail validation because the
-paths do not correspond.
+[Severity: High]
+Does this code leave a dangling pointer in the global mcf_ports array if
+probe fails later?
 
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Freescale ColdFire UART
-> +
-> +maintainers:
-> +  - Greg Ungerer <gerg@linux-m68k.org>
-> +
-> +allof:
-> +  - $ref: serial.yaml#
+If a subsequent call (like devm_platform_get_and_ioremap_resource() or
+platform_get_irq()) fails, the devres subsystem will automatically free 'mp'
+allocated via devm_kzalloc(), but mcf_ports[pdev->id] is never cleared.
 
-[Severity: Medium]
-Could this typo cause a regression where the base serial schema is not
-evaluated?
-
-JSON Schema keywords are case-sensitive. The binding uses allof instead of
-allOf, meaning the reference directive is silently ignored.=20
-
-When running dt_binding_check on device trees utilizing this compatible
-string, it will not enforce necessary properties or allow standard UART
-properties because it fails to inherit the base serial schema.
+>  	if (pdev->id >=3D MCF_MAXPORTS)
+>  		return -ENODEV;
+> =20
 
 [ ... ]
 
+> @@ -612,6 +616,8 @@ static int mcf_probe(struct platform_device *pdev)
+>  	port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
+> =20
+>  	uart_add_one_port(&mcf_driver, port);
+
+[Severity: Medium]
+Is it safe to ignore the return value of uart_add_one_port() here?
+
+If registration fails (e.g., out of memory or line conflicts), mcf_numports
+is still incremented and probe falsely reports success, leaving a partially
+initialized state.
+
+> +
+> +	mcf_numports++;
+>  	return 0;
+>  }
+> =20
+
+[ ... ]
+
+> @@ -629,11 +635,17 @@ static void mcf_remove(struct platform_device *pdev)
+> =20
+>  /***********************************************************************=
+*****/
+> =20
+
+[Severity: High]
+Will mcf_remove() still unregister all ports system-wide when a single
+device is unbound?
+
+It appears that mcf_remove() unconditionally iterates over all MCF_MAXPORTS
+and removes every active port, rather than only removing the specific port
+associated with the unbound device.
+
+> +static const struct of_device_id mcf_uart_dt_ids[] =3D {
+> +	{ .compatible =3D "fsl,mcf-uart", },
+> +	{ }
+> +};
+> +
+
+[Severity: Medium]
+Does the absence of MODULE_DEVICE_TABLE(of, mcf_uart_dt_ids) prevent module
+autoloading when the hardware is present in the device tree?
+
+>  static struct platform_driver mcf_platform_driver =3D {
+>  	.probe		=3D mcf_probe,
+>  	.remove		=3D mcf_remove,
+>  	.driver		=3D {
+>  		.name	=3D "mcfuart",
+> +		.of_match_table =3D mcf_uart_dt_ids,
+>  	},
+>  };
+
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261013120831.1046=
-590-1-gerg@linux-m68k.org?part=3D4
+590-1-gerg@linux-m68k.org?part=3D5
