@@ -1,109 +1,61 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D54447FAEE;
-	Tue, 13 Oct 2026 03:46:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B277015665C
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 03:47:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791863166; cv=none; b=mgDnVn2sdNciGMgu5BYF5hQRgzjL60eAzSjCQxM3B8llJlmDUiSSvSoWqT2k0vYxaA5Im/E3bdjNBkUrjlCbY53QP8So2jUu1tpRCAEM68MEqD1+f8V6gpmSWo58Hpk1kh3r/ipiSo1bX3u1Uk6xVFf9hFip6UiM2eXs1azSP/E=
+	t=1791863255; cv=none; b=td40I0p+Ti/LpDPUqeH+oANtq5wrfJgyH1LbWjoGnRhDcbezNIA2LTbxCixnJO+vgy7LajH95FuMw073y7kF8LVr6Gs2u03YdpSviJn9S8ghvnxyjk5ObFe1968JpmL5uIwbK4MzdEvDY8FuCc0lR3anBjArEApLx86ZxVkjzN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791863166; c=relaxed/simple;
-	bh=ncEev3AGZKvWWkasRL1X0+uWOAP6NQ4Xwr+gcNBRlgg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=jcu4JEm8F/g4FoiLaz52scUWd0WPWpoQ9xe/6DfXMxikUH3ecF533Q0xK6uIcrMfpSnv+um1xOvX37XcJ2sAS9UuhXbTAND9z2LRRwRy9b5cJA+xPsp21/JTUPzePHtwwQk9Db2bfXE6hYG45tWIgZnRjprTKHb3zAsQeDHiJIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LrEfCR5H; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1791863255; c=relaxed/simple;
+	bh=PnA8mXK0f1xsTrgOB9gRluKG3kk4GXYvFYmHKcK/KrM=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=NT2tPNPs0S1+CahwZU6wsNY4zDDFLCLnEB+leXlmgSmf2mmTus5gshMYUkLrP1MylNoWGFa7QPHloqe99IicGWMyQBXVUNvX2Ap/ZuA4L8QQqQzI+uTbH33w8d5DfisHWjKJqQFcEcjqfduBliivJd9voL+84Kp2yw25ZwsG8os=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HC3pxgCN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LrEfCR5H"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2EFD3C4AF67;
-	Tue, 13 Oct 2026 03:46:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1791863166;
-	bh=ncEev3AGZKvWWkasRL1X0+uWOAP6NQ4Xwr+gcNBRlgg=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=LrEfCR5HB1Z7xMoC11LpsV97TSjKmcTp4b5trUsH5d7DK8ijhxDWKiPRaNGzTA8yK
-	 VDUGT1mCjmE5O+kXNU4E8qt0yZFw9W2ya1mf9XfM6aYcpyJvdxLjv0XeDN/xRwHCm3
-	 4tpRNYRZFTFmkB7oHYPXewSU86vMRztNROIiFzO7997yLr6kmFlShSAp6xDzMhxcjL
-	 kiW+40UXXWL4FEGPDTic4IwYLF+Y8i1FVfcuhckdvdyNQ7ZK2UK5diUZITPYsHdB+y
-	 tGSdT4/lnFjS13zrRoxxdzeUnDti95Pnbt7XKmsQUmaD5kK9NrrPD41DdjCyjDBYvy
-	 f007UqVv+/BBQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D59BCC6B0A;
-	Tue, 13 Oct 2026 03:46:06 +0000 (UTC)
-From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Date: Tue, 13 Oct 2026 06:46:12 +0300
-Subject: [PATCH v5 09/10] ARM: multi_v7_defconfig: Enable Cortina Systems
- CS75xx support
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HC3pxgCN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A64A1F000FF;
+	Tue, 13 Oct 2026 03:47:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791863254;
+	bh=PnA8mXK0f1xsTrgOB9gRluKG3kk4GXYvFYmHKcK/KrM=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=HC3pxgCN+RTGc8wmOxp3Jww7j+8ORxRsUGo988cxuUspmjlOpIu20bblCXqb7YRUI
+	 DzTmxKPAdvAGr0Ku4j+9ucNIDmEzVhWG5jG84n/GQ7NRZk57wmc1/fDMS1/HFYBcY/
+	 mNC4bh4LbgO9ozU+rgtmb/9Jm0HKPXt7u5QdiiIrRj0Ufewg1En0aIVOtj46J1IBoi
+	 L2Tvx2UYeA3RzOuQXsSA8Xc1pSJfqPMV20upuPSSEPJMxIa1maTvDZTYgXDRt/Sy6g
+	 xhSWuBcwKsAM7YwiNJajW31/3RgSbAeuy8pqt3UanAhMU673QzmtOpTlKK61JwPHiF
+	 NnntjKGrHZlRg==
+Message-ID: <sashiko-outbox-168917@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v5 01/10] dt-bindings: vendor-prefixes: Add Securifi
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Fil Dunsky" <filipp.dunsky@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261013-b4-cs75xx-v5-1-4e72aa383d39@gmail.com>
+References: <20261013-b4-cs75xx-v5-0-4e72aa383d39@gmail.com>
+ <20261013-b4-cs75xx-v5-1-4e72aa383d39@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 13 Oct 2026 03:47:33 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261013-b4-cs75xx-v5-9-4e72aa383d39@gmail.com>
-References: <20261013-b4-cs75xx-v5-0-4e72aa383d39@gmail.com>
-In-Reply-To: <20261013-b4-cs75xx-v5-0-4e72aa383d39@gmail.com>
-To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
- Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
- Alexandre Belloni <alexandre.belloni@bootlin.com>, 
- Drew Fustini <fustini@kernel.org>, 
- Lorenzo Pieralisi <lpieralisi@kernel.org>, 
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Jason Li <jason.li@cortina-access.com>, 
- Fil Dunsky <filipp.dunsky@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791863163; l=1073;
- i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=6lUn6eCTFyPOKvxFHES2Y+JrDHysCcc0CgLi4Om4C1M=;
- b=xrErsmNg7v40wqydb5oOhf5NBvKH0ywo4TFqhEq5F8X3DHsauQmJjInXLfHuRlLKhktQ8YL71
- rF1/JCfaR0AD9q8YG18DqBp77djXIaR/b8ex1ukwMt5qqxHopYTDUlZ
-X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
- pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
-X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
- auth_id=1085
-X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
-Reply-To: filipp.dunsky@gmail.com
 
-From: Fil Dunsky <filipp.dunsky@gmail.com>
+> From: Fil Dunsky <filipp.dunsky@gmail.com>
+>=20
+> Securifi Ltd. makes the Almond series of touchscreen Wi-Fi routers.
+> Add a vendor prefix for it.
+>=20
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Enable the Cortina Systems CS75xx platform and its UART driver with
-console support, as used on the Securifi Almond+ router.
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
-Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
----
- arch/arm/configs/multi_v7_defconfig | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 069d5a49f..23f144359 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -45,6 +45,7 @@ CONFIG_MACH_BERLIN_BG2CD=y
- CONFIG_MACH_BERLIN_BG2Q=y
- CONFIG_ARCH_DIGICOLOR=y
- CONFIG_ARCH_EXYNOS=y
-+CONFIG_ARCH_CORTINA_ACCESS=y
- CONFIG_ARCH_HIGHBANK=y
- CONFIG_ARCH_HISI=y
- CONFIG_ARCH_HI3xxx=y
-@@ -396,6 +397,8 @@ CONFIG_SERIAL_FSL_LPUART=y
- CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
- CONFIG_SERIAL_CONEXANT_DIGICOLOR=y
- CONFIG_SERIAL_CONEXANT_DIGICOLOR_CONSOLE=y
-+CONFIG_SERIAL_CORTINA=y
-+CONFIG_SERIAL_CORTINA_CONSOLE=y
- CONFIG_SERIAL_ST_ASC=y
- CONFIG_SERIAL_ST_ASC_CONSOLE=y
- CONFIG_SERIAL_STM32=y
-
--- 
-2.53.0
-
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261013-b4-cs75xx-=
+v5-0-4e72aa383d39@gmail.com?part=3D1
 
