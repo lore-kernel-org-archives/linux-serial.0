@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C63784EB862
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 12:24:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BAD42C4FA
+	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 12:38:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791894248; cv=none; b=KwT0oE4CY1r67FKojVMgR1dr7LMzjaeKQ22opPP1YrEgo+TQB9bH9Q+k33CFKOzAdUzGr15yY5ucfc22ZbPv3py0i5gUIA8sOv3rcvpcHcw/fUzeZUqk67BoAfoY5Dve5H1kTKMikHB8CchAH0zOp2orSc42Cx8s4AuiL3aPxPo=
+	t=1791895108; cv=none; b=U/icXJyM4DavZb9fPHAa76U0k/3CA0JCdK3aT+XMqwPsPulCYY31TYbKaidkwd2R9VjDziZ+CJp9wcBwhQvIfpL4ZW9jQ9BPYd65xCyzEKzPyZXQxL+8Khsj6gtF/e+eq6B58dLa6V6C1NoAm53flQoeEwwuGCbKl8qWCEaYibA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791894248; c=relaxed/simple;
-	bh=h1G8TEzlLiCSHn8XiE6GcB5ADaBAkUoj76uFqn3NzGc=;
+	s=arc-20240116; t=1791895108; c=relaxed/simple;
+	bh=6PeKlkVlCYmFRs2IKFn/L7hn633RP5Q6pI53uWfsEgY=;
 	h=Message-ID:From:Subject:To:In-Reply-To:References:Content-Type:
-	 Date; b=NJD2LR2+t+gzuGCCYKPuDOZfbczxho5AWcX0uT1n2qIBwyjLIdTtBNHpnnwjIQzk6+xI3Uig0NyKCWwK9myVP5HZ5epKUrw34On7mJL4r74qg0xwylak6yCn9wAQti1jiaN6pQ6EbEFGEEy5dhZ/ShdqcWQVoce91pZ9oBPopz4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZGF7r7va; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=G6z4FncQ+eMxwGxpGDCC7WccInTUzokiphbdynghT6qWv5SI/ijZ3obM5Br9i6R8G3QmZxgr8puN+MkWs2qikkUAdFWAZ4PsOP4lZ7muS121CE4CdWM3NdSGGvJcmDGEFDMvQZePnV24tBz1BRlPWjfFMlTT5cMjm0SYyS2ZqjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=juPywoAh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZGF7r7va"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 721F51F000FF;
-	Tue, 13 Oct 2026 12:24:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="juPywoAh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04E601F000FF;
+	Tue, 13 Oct 2026 12:38:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791894247;
-	bh=XTLGC7kFXwLiNZsCG7mC4+FpdOw5pJzjnDm6S57VQLg=;
+	s=k20260515; t=1791895107;
+	bh=Yd6q9pg+2H/jA+5INzBDCwxT6l5MwC7kAEHgwTHzm/w=;
 	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=ZGF7r7vaj+kZKGYMxoEeEgZJYLdo+W9gQ/NMhJxbN+7dD8/PBk+B2uO+80mXCuenW
-	 WgR0F5aiN6H+oJJPtzLz1Zziw5kBRVtzlYNK4M4ZPOLQq5/SSCohTtGzWW0fruqQXk
-	 75whCOiGttD7HgU6ts1+SVLXUQwyv5SGPEJETyqdRFmOvnLCgycB4e6hYtjO/gaOuF
-	 BX+xFgiEXYaXEaJ/INU/WQ2WM2CGMrcGfhiX1HB3OJ+wQ33GGRYMwTKyBJtBdjBZsQ
-	 gSftCOnM/A1bWScqTOtOTv/Hkc02TI1k35vFeTRd5f8I9wGk6paelGNlos5Co7SV9m
-	 wd7nRDlGgafPA==
-Message-ID: <sashiko-outbox-169702@kernel.org>
+	b=juPywoAhUfW7aItkP0IgRW9ImhfqGj58jgobUXCV4VVQxcTg/v8PNzs5haZREXQHO
+	 JEN30AmSbJNaaWI2gl1nzqr8YKOX6pzhXVSgYEC2+ZKCHeniL8wR/UHmU4rI0Vrpcp
+	 Up91ZuAoWb0uLlLucXs8PPsMBHSxVw5jwsApuu34gQwukFy+5ohlKGBuw8jj3025hz
+	 dYJbKHyNTY0izXqMk2pQIDo6MdyLJ6lEebTWBo4oDmpqM+3P4luS2nKhRdH3Xy/x97
+	 4s4f2bAu3Wojc0idYq8Q9olVs6z0Bg5Q3SZ9OdW5838Cc5jFpMatfndwxGCZEwr89J
+	 +KCxvPHyzoOvQ==
+Message-ID: <sashiko-outbox-169727@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/5] serial: mcf: convert to use proper platform
- resources
+Subject: Re: [PATCH 3/5] serial: mcf: dynamically allocate memory
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Greg Ungerer" <gerg@linux-m68k.org>, linux-serial@vger.kernel.org
-In-Reply-To: <20261013120831.1046590-3-gerg@linux-m68k.org>
+In-Reply-To: <20261013120831.1046590-4-gerg@linux-m68k.org>
 References: <20261013120831.1046590-1-gerg@linux-m68k.org>
- <20261013120831.1046590-3-gerg@linux-m68k.org>
+ <20261013120831.1046590-4-gerg@linux-m68k.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 13 Oct 2026 12:24:06 +0000
+Date: Tue, 13 Oct 2026 12:38:26 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,134 +45,115 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 Thank you for your contribution! Sashiko AI review found 3 potential issue(=
 s) to consider:
-- [High] tty: mcf: unconditional removal of all UART ports in mcf_remove()
-- [High] tty: mcf: ERR_PTR stored in membase bypasses uninitialized check
-- [Medium] tty: mcf: tautological error check on platform_get_irq()
+- [High] tty: mcf: Use-After-Free and double-unregister due to dangling poi=
+nters and global array loop
+- [High] tty: mcf: Premature console publication causes NULL pointer derefe=
+rence
+- [High] tty: serial: mcf: Use-After-Free on probe error and driver removal
 --
 
-commit c5cb7916e270b19e0758d11e193eb23c71763eca
+commit cc5afe1f9a1d1092ba4a245994a51d452fb2379c
 Author: Greg Ungerer <gerg@linux-m68k.org>
 
-serial: mcf: convert to use proper platform resources
+serial: mcf: dynamically allocate memory
 
-The ColdFire SoC device setup code supplies a non-standard array of
-hardware address information (memory address and IRQ) for initializing
-the UARTS - which it does as a single blob. The mcf serial probe
-function processes the whole set in one go from a single platform entry.
+Modify the ColdFire serial driver to dynamically allocate the local uart
+port structures as required at init time. Currently it uses a fixed
+size array - a little wasteful of memory on most parts with only a
+couple of UARTs.
 
-[ ... ]
 > diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-> index 2b862dfe39ab3..3651910dff99e 100644
+> index 3651910dff99e..7cbe43cbe3a0e 100644
 > --- a/drivers/tty/serial/mcf.c
 > +++ b/drivers/tty/serial/mcf.c
+
 [ ... ]
-> @@ -570,31 +570,34 @@ static struct uart_driver mcf_driver =3D {
+
+> @@ -509,9 +517,9 @@ static int __init mcf_console_setup(struct console *c=
+o, char *options)
 > =20
->  static int mcf_probe(struct platform_device *pdev)
->  {
-> -	struct mcf_platform_uart *platp =3D dev_get_platdata(&pdev->dev);
->  	struct uart_port *port;
-> -	int i;
-> +	struct resource *res;
-> =20
-> -	for (i =3D 0; ((i < MCF_MAXPORTS) && (platp[i].mapbase)); i++) {
-> -		port =3D &mcf_ports[i].port;
-> +	if (pdev->id >=3D MCF_MAXPORTS)
-> +		return -ENODEV;
-> +	port =3D &mcf_ports[pdev->id].port;
-> =20
-> -		port->line =3D i;
-> -		port->type =3D PORT_MCF;
-> -		port->mapbase =3D platp[i].mapbase;
-> -		port->membase =3D (platp[i].membase) ? platp[i].membase :
-> -			(unsigned char __iomem *) platp[i].mapbase;
-> -		port->dev =3D &pdev->dev;
-> -		port->iotype =3D SERIAL_IO_MEM;
-> -		port->irq =3D platp[i].irq;
-> -		port->uartclk =3D MCF_BUSCLK;
-> -		port->ops =3D &mcf_uart_ops;
-> -		port->flags =3D UPF_BOOT_AUTOCONF;
-> -		port->rs485_config =3D mcf_config_rs485;
-> -		port->rs485_supported =3D mcf_rs485_supported;
-> -		port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
-> -
-> -		uart_add_one_port(&mcf_driver, port);
-> -	}
-> +	port->membase =3D devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-> +	if (IS_ERR(port->membase))
-> +		return PTR_ERR(port->membase);
+>  	if ((co->index < 0) || (co->index >=3D MCF_MAXPORTS))
+>  		co->index =3D 0;
+> -	port =3D &mcf_ports[co->index].port;
+> -	if (port->membase =3D=3D 0)
+> +	if (mcf_ports[co->index] =3D=3D NULL)
+>  		return -ENODEV;
+> +	port =3D &mcf_ports[co->index]->port;
 
 [Severity: High]
-Since port is a pointer to the global mcf_ports array, assigning an ERR_PTR
-to port->membase leaves the error pointer in the global state if
-devm_platform_get_and_ioremap_resource() fails.
+Could this change lead to a NULL pointer dereference if console setup runs
+concurrently with device probe?
 
-Later, when the early console is initialized, mcf_console_setup() checks if
-membase is valid using:
+In mcf_probe(), the new port structure is allocated and assigned to the
+global mcf_ports[] array before port->membase is initialized via ioremap.
+Since mcf_console_setup() no longer checks if port->membase is zero, it can
+successfully complete before the mapping is done. If a printk occurs in
+this window, mcf_console_putc() will dereference the NULL membase when
+attempting to read the UART status.
 
-    if (port->membase =3D=3D 0)
-        return -ENODEV;
+[ ... ]
 
-Since an ERR_PTR is not zero, this check will pass, which could cause a
-kernel panic when mcf_console_write() dereferences the ERR_PTR during a
-printk.
-
-Could we store the mapped address in a local variable and only assign it to
-port->membase on success?
-
-> +	port->mapbase =3D res->start;
+> @@ -572,10 +580,16 @@ static int mcf_probe(struct platform_device *pdev)
+>  {
+>  	struct uart_port *port;
+>  	struct resource *res;
+> +	struct mcf_uart *mp;
+> =20
+>  	if (pdev->id >=3D MCF_MAXPORTS)
+>  		return -ENODEV;
+> -	port =3D &mcf_ports[pdev->id].port;
 > +
-> +	port->irq =3D platform_get_irq(pdev, 0);
-> +	if (port->irq < 0)
-> +		return port->irq;
+> +	mp =3D devm_kzalloc(&pdev->dev, sizeof(*mp), GFP_KERNEL);
+> +	if (mp =3D=3D NULL)
+> +		return -ENOMEM;
+> +	mcf_ports[pdev->id] =3D mp;
+> +	port =3D &mp->port;
+> =20
+>  	port->membase =3D devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+>  	if (IS_ERR(port->membase))
 
-[Severity: Medium]
-In struct uart_port, irq is defined as an unsigned int. Does the check
-(port->irq < 0) undergo unsigned comparison and become tautologically false?
+[Severity: High]
+Does this leak a dangling pointer into the global mcf_ports array if probe
+fails?
 
-If platform_get_irq() fails and returns a negative error code like -ENXIO,
-it seems this error would be swallowed, and the port would be registered
-with a bogus, very large IRQ number.
+The devm_kzalloc() pointer is assigned to mcf_ports[pdev->id] before
+devm_platform_get_and_ioremap_resource() or platform_get_irq() are called.
+If either of those functions fail, mcf_probe() returns an error, and the
+devres framework will free the memory. However, mcf_ports[pdev->id] is
+never cleared, leaving a dangling pointer that can be dereferenced later.
 
-> +	port->line =3D pdev->id;
-> +	port->type =3D PORT_MCF;
-> +	port->dev =3D &pdev->dev;
-> +	port->iotype =3D SERIAL_IO_MEM;
-> +	port->uartclk =3D MCF_BUSCLK;
-> +	port->ops =3D &mcf_uart_ops;
-> +	port->flags =3D UPF_BOOT_AUTOCONF;
-> +	port->rs485_config =3D mcf_config_rs485;
-> +	port->rs485_supported =3D mcf_rs485_supported;
-> +	port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
-> +
-> +	uart_add_one_port(&mcf_driver, port);
->  	return 0;
+[ ... ]
+
+> @@ -605,13 +619,11 @@ static int mcf_probe(struct platform_device *pdev)
+> =20
+>  static void mcf_remove(struct platform_device *pdev)
+>  {
+> -	struct uart_port *port;
+>  	int i;
+> =20
+>  	for (i =3D 0; (i < MCF_MAXPORTS); i++) {
+> -		port =3D &mcf_ports[i].port;
+> -		if (port)
+> -			uart_remove_one_port(&mcf_driver, port);
+> +		if (mcf_ports[i])
+> +			uart_remove_one_port(&mcf_driver, &mcf_ports[i]->port);
+>  	}
 >  }
 
 [Severity: High]
-With the conversion of mcf_probe() to process a single platform device per
-call instead of a single blob, does mcf_remove() also need to be updated?
+Can this loop cause a use-after-free and improperly unregister all ports
+when a single device is removed?
 
-Looking at mcf_remove() in drivers/tty/serial/mcf.c:
+During mcf_remove(), the code iterates through the entire mcf_ports array
+up to MCF_MAXPORTS and calls uart_remove_one_port() on every non-NULL
+entry, rather than just the port associated with the pdev being removed.
 
-static void mcf_remove(struct platform_device *pdev)
-{
-	struct uart_port *port;
-	int i;
-
-	for (i =3D 0; (i < MCF_MAXPORTS); i++) {
-		port =3D &mcf_ports[i].port;
-		if (port)
-			uart_remove_one_port(&mcf_driver, port);
-	}
-}
-
-It appears this loop still unconditionally unregisters all 10 ports,
-regardless of which pdev is being removed. If a single device is unbound
-via sysfs, will this disrupt other devices or lead to list corruption by
-calling uart_remove_one_port() on uninitialized structs or multiple times
-on the same port?
+Additionally, it does not clear mcf_ports[i] back to NULL. When
+mcf_remove() finishes, devres will free the memory associated with the
+removed pdev. If another UART device is subsequently unbound, mcf_remove()
+will run again, iterate over the array, and call uart_remove_one_port()
+using the dangling pointer from the previously freed device.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261013120831.1046=
-590-1-gerg@linux-m68k.org?part=3D2
+590-1-gerg@linux-m68k.org?part=3D3
