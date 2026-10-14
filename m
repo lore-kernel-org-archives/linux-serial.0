@@ -1,74 +1,80 @@
-Received: from out162-62-57-64.mail.qq.com (out162-62-57-64.mail.qq.com [162.62.57.64])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E6EC5427E1
-	for <linux-serial@vger.kernel.org>; Wed, 14 Oct 2026 14:18:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1DCE53CA6D;
+	Wed, 14 Oct 2026 14:31:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791987503; cv=none; b=hKg9h2ISHiF89OLboZS/qiGdCnoUXNa1fd8SjYQReq/ZSmRlS2/V3vEwl1WpXvvcV07BovlOnXBvgisScW0F92byVSJErzViSViZbNJVyMOmLj0DsvnOu3zx+Y3OTbBN2DeLyqIhsdw4G8l/vg605oFDPo4SPNlw3VoQPa/xE4Y=
+	t=1791988270; cv=none; b=cp2F2dh/7xO1BOQjTeh8eCb4lfBfE4Rj4EPX5znMpd3JKDjPrjRYo2z0ImAy1tJ85emEXjRfrULE7pasviFLYAq2U2m8ftYSxtwZWcyZkpJkuGdz1yyq30ioTUobqvBkS63btMnJMcNbkZheTAQB+asWidbqclM/uIoAZhGuOb0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791987503; c=relaxed/simple;
-	bh=PGAppKY5I2J6gU0GwJ7rlWI4ZFu3X+4pesJK1DNvFDs=;
-	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=EIgcLcR2M+pzuNOu9xFKBFD5ONlPCZ0rfoNfGFl7foA2VQGJXxA+FSmFMpYSW61uGnv+JZb5G+Rxwm9jkzTBEUYytGq3T/MrDi1th8HoKELo0UZeXjta//fGrQHYcxh97E4T7Ep3Wqv5NOY8uoLgzcJhsidJ1Z8OtRSbTj5JoTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=WHw9a5zK; arc=none smtp.client-ip=162.62.57.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+	s=arc-20240116; t=1791988270; c=relaxed/simple;
+	bh=hyilG20mp+XnLj/3lAEhVhlkR8b20X2hA3TZAObYtSQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cJdEs2rBvXdb/+2sQub3T460uuL7fIfL8xCGNXd+exAbVikRDibRjOiMD4tkfuu7PUtmWZPequq1eeSt/NEhSujqEEk+1ZX/bKWMzMAruUWSQ6iphlhJvXc0hXVBh04DYyp97nHUqtPRyAUirgpR3g/K7jw3HLxkwWGdRSCm2o8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nvBbCT2e; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="WHw9a5zK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1791987490; bh=PGAppKY5I2J6gU0GwJ7rlWI4ZFu3X+4pesJK1DNvFDs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=WHw9a5zKOw7KZpQQp4ZKG+HVEfuX+pr4x1kHevpdiwzgNWLABALR7Sp2ef7XFc9BA
-	 d1MPz2ICp6Txj3YVbUFPTcuhUIDMvKsvghvDMIvMO8xT4eDvK30SRQsxwn0RV6h517
-	 unxwwH1z8qV4WluwKaXGEyG8ay8ehAcv/5KZ0iBo=
-Received: from localhost.localdomain ([14.116.239.35])
-	by newxmesmtplogicsvrszb51-0.qq.com (NewEsmtp) with SMTP
-	id 488174E3; Wed, 14 Oct 2026 22:18:08 +0800
-X-QQ-mid: xmsmtpt1791987488t4crwa0j1
-Message-ID: <tencent_2353E6AB079AAE42E96384E4D9B2FA64C905@qq.com>
-X-QQ-XMAILINFO: MDbayGdXPuoeoUyWRaSeNUHq9KtmygGUN+XtYYGoDPj1g5eJ/5ph4aUmhDTG2d
-	 qbTnBhi60iXpaJQfPiMM9xZhBMyGsD3o/WSLPf6nhCY/xUNNrmEIQ507U/B432TYkzieXlvt/fD/
-	 QZsfyFNWuVfpWv1uvFDXuTpwyLwZTdGIwzKisas/wbt/xE2HtmAtzqSR8Pw/FJ2XYce6bc7fjAbO
-	 kUI7cPXrYoPcStDJgHxF62SrSOBqL9LM8nXUmGN9VFFNkb9TdrRFqfvtc4OGU9qYFHhFC19Fbrql
-	 hJjb9zy8oYdHMjcCgn4e79WXagHruN0c1GfZQ4m2yGI3LqMsCAi2Xs+ubBzO1SLu7yCS67TYT98b
-	 vMtcq0xkYJIUmqZ0O+NQ5MQbmR8dSApy07/nKux9/NgvRkgc/TgGp6LiJZ0GPeQUoPDurSgKjR/l
-	 tt0oB5LrjRKOImkqgWZ12Qm+wsWB0MC3xCS4QNrImhGEK8hSzcruVCOwcU/OLhLKf3glrh/XHStO
-	 RN1JES6cffqBJbK1g6QYB7tAPfvW9AAHsaNtROTRRHwpAHX5VawCUjiahe17DjYGb8Hz3ZQYrTlx
-	 zPvTglr4mDCdWaqiq2zPs+oeIPuA9zvRjrXF05GUglH/ljQbLCFwnqTgvqmTnz1uF/Cnttvsufcx
-	 8zF4uKePYX/81/QzS7lz4aDu0DlHsHohMvCgQcGoKGO6ZIWCvJHAt/q3b5KpglrbCfmeBt8HdFjg
-	 uJ/D8Kq3FYlYj7BtiAjIfK9Ji1Adc+R9v+82L52JjZyraiYLnB5rYixJcojGL0mWSuduiuefEio8
-	 5vAl8rE1bJDB2ITIf+pmaLqBNa7e4RB4SwZwqEd6DwILEYtOJ4MB6CTzRbJyG8S01TWHhRw6ZUnk
-	 4kk9YQ0qcQilQSA7312RH6Tsude8G3P5ANAHKVCbNrWcdZRDBGwdXGsnp9Dufp+iz7H1D6sidSZn
-	 v0ogC2kVLiRm7RkSCdEwtW2HxvHDtjLyV6ELU65kGm/m3jgJsdBPtpYRCYex8c/U6+1zB/zsQbtF
-	 00Trl76VYdtaWg16yZN3nZOaByp5ztgQXniWmVoQ==
-X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
-From: shatyuka@qq.com
-To: sashiko-bot@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	sashiko-reviews@lists.linux.dev,
-	shatyuka@qq.com
-Subject: Re: [PATCH v2] tty: hvc: dcc: Detect JTAG connection only on CPU core 0
-Date: Wed, 14 Oct 2026 22:18:07 +0800
-X-OQ-MSGID: <20261014141807.2576470-1-shatyuka@qq.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <sashiko-outbox-169978@kernel.org>
-References: <sashiko-outbox-169978@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nvBbCT2e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E78AD1F000C4;
+	Wed, 14 Oct 2026 14:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791988269;
+	bh=w+RKbY8SslnL+CJpoN7wytSAuSNSgN6XS5KDsZ/4/v8=;
+	h=From:To:Cc:Subject:Date;
+	b=nvBbCT2eSrtikZX+/vZ4QzZEkQZY+ug71dspcf7O2v6IFSPewBjSqbOqyR5IyXzyW
+	 ni6WbgdImcirxfJYziIRxklRruJCoKiAXo/X0CaVF3rPVsOuQ3H1pKpvNzMyDm9g+H
+	 zfR/3RQLsNMXGrOgLRb/I9PKCS35kS0WltifcKW0VQhdG8cMBUmTpDPtmA180cskSZ
+	 OslpSagUHwMrDowBZhFz0wNpkfkj3BKPEVYk9dYQX0eqysPdyPfBqsihrxzfNH7mOR
+	 5v5Z5C1mSKTs6KMTLeqKyknw9NUqQvzHLPR1JNBHewWqAATAzM1zHRA5nT2drgR2GU
+	 umYu6iUlEYyKQ==
+From: Thorsten Blum <blum@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Johan Hovold <johan@kernel.org>,
+	Karl Mehltretter <kmehltretter@gmail.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
+Cc: Thorsten Blum <blum@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH 1/2] serial: core: Use isdigit() in uart_parse_options()
+Date: Wed, 14 Oct 2026 16:30:32 +0200
+Message-ID: <20261014143034.104950-3-blum@kernel.org>
+X-Mailer: git-send-email 2.56.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=886; i=blum@kernel.org; h=from:subject; bh=hyilG20mp+XnLj/3lAEhVhlkR8b20X2hA3TZAObYtSQ=; b=owGbwMvMwCUWt7pQ4caZUj3G02pJDFnnJ3EHzG2I4zYr/NL6cJbZ1LnO/BNdg0Ifvfk8VUG+p jnRqN27o5SFQYyLQVZMkeXBrB8zfEtrKjeZROyEmcPKBDKEgYtTACYi1MLIMHtDS26N5lfvrYn/ t4o4Hr/ygrvCnH2raqrQUxsr81dyhYwMN+9PbyxbpX5k7UR33hkzbFQmJNopVDDymW79O6t0lko TNwA=
+X-Developer-Key: i=blum@kernel.org; a=openpgp; fpr=1D60735E8AEF3BE473B69D84733678FD8DFEEAD4
 Content-Transfer-Encoding: 8bit
 
-Thanks for the review.
+Use isdigit() to replace the open-coded implementation.
 
-> Does the commit message have the sequence reversed?
+Signed-off-by: Thorsten Blum <blum@kernel.org>
+---
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-You are right, the commit message has the sequence reversed. It's a
-typo, I'll fix it in v3.
-
-Best regards,
-Jiannan Du
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 6332ed545c89..6509f65dec36 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -14,6 +14,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/init.h>
+ #include <linux/console.h>
++#include <linux/ctype.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/kernel.h>
+ #include <linux/of.h>
+@@ -2211,7 +2212,7 @@ uart_parse_options(const char *options, int *baud, int *parity,
+ 	const char *s = options;
+ 
+ 	*baud = simple_strtoul(s, NULL, 10);
+-	while (*s >= '0' && *s <= '9')
++	while (isdigit(*s))
+ 		s++;
+ 	if (*s)
+ 		*parity = *s++;
