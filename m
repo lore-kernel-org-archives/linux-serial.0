@@ -1,117 +1,100 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 471753F44FB;
-	Wed, 14 Oct 2026 11:24:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92BD012F585;
+	Wed, 14 Oct 2026 11:25:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791977065; cv=none; b=FvZ5G4BQi2oG/74TZd5Qc5NSpqphsh+XplZX/G1zNUf6Q7G0ureYeMbsRkuEFGi3TN7VXc/RtMOuEW2zxSN3R1W9+x/cB5HUj5ZwtvVEQY/k27XRBnsgAP94+SaefyN5j6L7dhC0pTVvPtgo41lAln+xeHpAKjjucFXl78UwChU=
+	t=1791977151; cv=none; b=KEd96Qw8VTwpV7BTr7qwyBmdyQJ3WsXcmL8NyMEoA90nUodlIX5Cz8oLZa8oNpVQUBmS2drOwLhQIgcsQq5THRV2fR52hs9+9gAdiJgaFAS3TFisivX9WONZPioRbapV09SAZSxzzQFumvDzZ08Ab/x7Mv0Vuo1la6KZpPv9XJM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791977065; c=relaxed/simple;
-	bh=4DMLQRv8YY5YnC8tFxFHNadabUlme24AfC7Xnm61jC4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=byb2z0ijGM0Fti2X53qEJZruRrdym6SCqPnnp8P8BU46oO34Ak1g811mfGNxmBD/+LHV9w/SYiLVxMvQDBzmKL6mqEOZ7D57fV7zeJftfxpMZEaJm/NqhKdGmuTk1Q8oPd5pVLbveLT9/LMvXdGwN1WcSJoBaPM38LNeJYW4eJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bVB09rc3; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791977151; c=relaxed/simple;
+	bh=oOREu23JJHbA6Zu7YbD7/cWRc3qYv+PmEAH1EsrxXPI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pJifP03rtqF1hwnrt2aMmk56VAQjTGPUnFu+zGmJ3BFvlYV22ewLqG0XVhWRePijAJwCkyUvgGGTrx41K9EUfaUG1FYvW7+ttU/1KxvGV4UJrGwNDOqSkpFLEi62GCavILG+SQpu8lh3+cA2KPbEZzM7k5AjlDgl6ib9WhqCVVo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jCPkXxaf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bVB09rc3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC611F000FF;
-	Wed, 14 Oct 2026 11:24:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jCPkXxaf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 608351F000FF;
+	Wed, 14 Oct 2026 11:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791977063;
-	bh=C36N3d8xiGu4bHaEfN42Nw1iKaEqUYNj/R0CybW29Xw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=bVB09rc3jcRGTRLYcoUGkrFWU+BJvl57ycvDbu49Tf9jLM2tssdnLKemsiUB3BlGq
-	 hZuHzcMJ1wwJU8+H3qHCa/fX0Vcxtc8BenmV6rOCJVn+IJ6JpbiZA8WqBOXfgoZinE
-	 szYmpr+NqUgkDv/MZjboQPSqLUISFgLoZHlEnysffbhB+xysh2s2L3wvhg6IeATSw1
-	 f4UGpsYeHNo3gHL8mElsTxpZoaC+h/AJx2h65Gbv37O2s9do6aFDwpf5+ygzIZhOny
-	 XlgNViBgVnAPdZMtZDtjEpE0SQgj/NoA9c2uMY3j1cr0L/bor7aP6frJEADw5N/VwL
-	 4P+Mq5mJf/YCA==
-Date: Wed, 14 Oct 2026 13:24:19 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Greg Ungerer <gerg@linux-m68k.org>
-Cc: linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
-Message-ID: <20261014-expensive-shrewd-nautilus-abcab6@quoll>
-References: <20261013120831.1046590-1-gerg@linux-m68k.org>
- <20261013120831.1046590-5-gerg@linux-m68k.org>
+	s=k20260515; t=1791977150;
+	bh=8CdH2/cgXpSNGpOP+3xFwnPUW1IiBkjXh0lWbPTJ1iE=;
+	h=From:To:Cc:Subject:Date;
+	b=jCPkXxaf4AtQRbmirXUtTxsR/xUdAVFYEiYGd7xuZ+H9kyj9ktH51Dr6XC4Xdfyq4
+	 YB+V/+LEY4zqh5wVQA2bjOTULUyX92q3gbPYeLEOUuOLWNOOba8rhuWpMKSuylVgtl
+	 UmsQWzvWuy7BxEl9w1yGq6Gx3TEM6kgDH16W/9WAv3TTiBC8XD0EiKc10Iu+DX0W6d
+	 Xs1CmgXplxMdz3srKPbUvJxWz1DnxtZn6D7pvg4MMAoHsKPSEQW0WEHr7Po0r1BaIy
+	 yLk8vwrrV2OiAU1Db75isNZwDB9TWlt6pxLI15APbSWXREVQMnNn3eHx3NRa4rLi94
+	 c/vA5rAQ7V4ug==
+From: Jisheng Zhang <jszhang@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v3] dt-bindings: serial: snps-dw-apb-uart: Add Synaptics sl2610 uart
+Date: Wed, 14 Oct 2026 19:05:46 +0800
+Message-ID: <20261014110546.415-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261013120831.1046590-5-gerg@linux-m68k.org>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 13, 2026 at 10:07:02PM +1000, Greg Ungerer wrote:
-> Create documentation for a new binding to support the Freescale ColdFire
-> UART hardware block. This is found on pretty much all variants of the
-> M68K derived Freescale ColdFire family of System-on-Chip devices.
-> 
-> It is not compatible with any other known UARTs.
+Add the compatible for the UARTs of the Synaptics SL2610, which are
+compatible with the Synopsys DesignWare APB UART.
 
-You never tested this, so limited review.
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
 
-> 
-> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
-> ---
->  .../bindings/serial/fsl,mcf-uart.yaml         | 43 +++++++++++++++++++
->  1 file changed, 43 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
-> new file mode 100644
-> index 000000000000..d1dba518f67a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
-> @@ -0,0 +1,43 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/fsl-mcf-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Freescale ColdFire UART
-> +
-> +maintainers:
-> +  - Greg Ungerer <gerg@linux-m68k.org>
-> +
-> +allof:
-> +  - $ref: serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: fsl,mcf-uart
+since v2:
+ - collect Acked-by tag
+ - rebase on the latest tty-testing
 
-What is the SoC name? MCF? Compatibles must be specific (see writing
-bindings doc).
+since v1:
+ - use sl2610 instead of sl261x
+ - send as a separate patch
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    uart0: serial@fc060000 {
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Drop unused label
-
-Best regards,
-Krzysztof
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index 86dc25919311..e2ca126d58ba 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -34,7 +34,16 @@ allOf:
+       properties:
+         resets:
+           minItems: 2
+-    else:
++
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              enum:
++                - starfive,jh7110-uart
++                - syna,sl2610-uart
++    then:
+       properties:
+         resets:
+           maxItems: 1
+@@ -80,6 +89,7 @@ properties:
+               - starfive,jh7100-hsuart
+               - starfive,jh7100-uart
+               - starfive,jh7110-uart
++              - syna,sl2610-uart
+               - ti,tda54-uart
+               - ultrarisc,dp1000-uart
+           - const: snps,dw-apb-uart
+-- 
+2.53.0
 
