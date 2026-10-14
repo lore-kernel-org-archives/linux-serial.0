@@ -1,47 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E72DC4D179C;
-	Wed, 14 Oct 2026 10:48:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 471753F44FB;
+	Wed, 14 Oct 2026 11:24:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791974907; cv=none; b=V6RxTTzG/rrQzUoq6Rt0e0sMsLZw58HL36zW8via3BKbqIUOQEvs1+Kb7qbhc1uukfCEYo/bI2Qo550L/nSbzkYzYpEWBJ2SzaGjLPsbieVp9DHkK+pnPLd9tj4WAkwWNvyMnnZpoq6RGuQxDjPRj2SRdTswtDglRNkIguSGaNc=
+	t=1791977065; cv=none; b=FvZ5G4BQi2oG/74TZd5Qc5NSpqphsh+XplZX/G1zNUf6Q7G0ureYeMbsRkuEFGi3TN7VXc/RtMOuEW2zxSN3R1W9+x/cB5HUj5ZwtvVEQY/k27XRBnsgAP94+SaefyN5j6L7dhC0pTVvPtgo41lAln+xeHpAKjjucFXl78UwChU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791974907; c=relaxed/simple;
-	bh=hWAKTPLEbuKsY/6R0U0SrZvhh7j6plorTg+S+sLNz2M=;
+	s=arc-20240116; t=1791977065; c=relaxed/simple;
+	bh=4DMLQRv8YY5YnC8tFxFHNadabUlme24AfC7Xnm61jC4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X/YCUg4o5qcnswU8SNYezzxL3oUbdyDkmGUXU8SUcf1tn7fC1DQFKSPDz8qPKmWzOU2N+DFbADAUZqfR8WuwjS1tCOVsJ+kM+k7/dLkbSketcXKBwrvriz8JJkM4pXT/roUPdvOc+0nf+LBVtKed+bZIVZkrZjsn21FmC86s48Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZNHuwjdQ; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=byb2z0ijGM0Fti2X53qEJZruRrdym6SCqPnnp8P8BU46oO34Ak1g811mfGNxmBD/+LHV9w/SYiLVxMvQDBzmKL6mqEOZ7D57fV7zeJftfxpMZEaJm/NqhKdGmuTk1Q8oPd5pVLbveLT9/LMvXdGwN1WcSJoBaPM38LNeJYW4eJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bVB09rc3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZNHuwjdQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE2A1F000FF;
-	Wed, 14 Oct 2026 10:48:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bVB09rc3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC611F000FF;
+	Wed, 14 Oct 2026 11:24:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791974904;
-	bh=Dgzbxv5LgP6yrWflVEmO9CW6B2XNNqetxCLAu9JfhLQ=;
+	s=k20260515; t=1791977063;
+	bh=C36N3d8xiGu4bHaEfN42Nw1iKaEqUYNj/R0CybW29Xw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZNHuwjdQK+UqOji54CT96pYb8N/B20UgGYZr+66mT1M5+06Ah2qiIS9mK0jrKqW2R
-	 nOmtzwSF8B0TbNLKbUj+1HDMl+YyE2LchBMD+4NGiigsvf/XP2Sj3DaIZfNXULDJnM
-	 x/K9PlwyBzHnBgjlof/BOi6DFA57I2UWZCEbf3mRXZibxwUWOmJT9D+uhK1D8V5ODz
-	 fX9RBw3Iy6pLWkfGZttKsp3gjuYOWaAZFk2Qw/1lljDj4phBG0aPs+V2GX/SSZfhpR
-	 lLstCE6tJSKPhtMMyW4NiOUeLjLx2QTn6vgjblgKJ3wmQpRlPRjdCh6+zpdSlpk+sU
-	 muh6TbpB+Xw/g==
-Date: Wed, 14 Oct 2026 12:48:20 +0200
+	b=bVB09rc3jcRGTRLYcoUGkrFWU+BJvl57ycvDbu49Tf9jLM2tssdnLKemsiUB3BlGq
+	 hZuHzcMJ1wwJU8+H3qHCa/fX0Vcxtc8BenmV6rOCJVn+IJ6JpbiZA8WqBOXfgoZinE
+	 szYmpr+NqUgkDv/MZjboQPSqLUISFgLoZHlEnysffbhB+xysh2s2L3wvhg6IeATSw1
+	 f4UGpsYeHNo3gHL8mElsTxpZoaC+h/AJx2h65Gbv37O2s9do6aFDwpf5+ygzIZhOny
+	 XlgNViBgVnAPdZMtZDtjEpE0SQgj/NoA9c2uMY3j1cr0L/bor7aP6frJEADw5N/VwL
+	 4P+Mq5mJf/YCA==
+Date: Wed, 14 Oct 2026 13:24:19 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Fil Dunsky <filipp.dunsky@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Drew Fustini <fustini@kernel.org>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Jason Li <jason.li@cortina-access.com>
-Subject: Re: [PATCH v6 06/10] dt-bindings: serial: Add Cortina Systems CS7542
- UART
-Message-ID: <20261014-grumpy-ant-of-satiation-f72b39@quoll>
-References: <20261013-b4-cs75xx-v6-0-37e8f3969b7c@gmail.com>
- <20261013-b4-cs75xx-v6-6-37e8f3969b7c@gmail.com>
+To: Greg Ungerer <gerg@linux-m68k.org>
+Cc: linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
+Message-ID: <20261014-expensive-shrewd-nautilus-abcab6@quoll>
+References: <20261013120831.1046590-1-gerg@linux-m68k.org>
+ <20261013120831.1046590-5-gerg@linux-m68k.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,23 +43,74 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261013-b4-cs75xx-v6-6-37e8f3969b7c@gmail.com>
+In-Reply-To: <20261013120831.1046590-5-gerg@linux-m68k.org>
 
-On Tue, Oct 13, 2026 at 09:06:07AM +0300, Fil Dunsky wrote:
-> Add the binding for the UART found in the Cortina Systems CS75xx
-> (Goldengate G2) SoCs such as the CS7542.
+On Tue, Oct 13, 2026 at 10:07:02PM +1000, Greg Ungerer wrote:
+> Create documentation for a new binding to support the Freescale ColdFire
+> UART hardware block. This is found on pretty much all variants of the
+> M68K derived Freescale ColdFire family of System-on-Chip devices.
 > 
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
-> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+> It is not compatible with any other known UARTs.
+
+You never tested this, so limited review.
+
+> 
+> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 > ---
->  .../bindings/serial/cortina,cs7542-uart.yaml       | 52 ++++++++++++++++++++++
->  1 file changed, 52 insertions(+)
+>  .../bindings/serial/fsl,mcf-uart.yaml         | 43 +++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
+> new file mode 100644
+> index 000000000000..d1dba518f67a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
+> @@ -0,0 +1,43 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/fsl-mcf-uart.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Freescale ColdFire UART
+> +
+> +maintainers:
+> +  - Greg Ungerer <gerg@linux-m68k.org>
+> +
+> +allof:
+> +  - $ref: serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: fsl,mcf-uart
 
-This depends on the first patch, so should not be taken independently
-via serial tree.
+What is the SoC name? MCF? Compatibles must be specific (see writing
+bindings doc).
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    uart0: serial@fc060000 {
+
+Drop unused label
 
 Best regards,
 Krzysztof
