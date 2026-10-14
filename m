@@ -1,129 +1,74 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from out162-62-57-64.mail.qq.com (out162-62-57-64.mail.qq.com [162.62.57.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50CAC4EB872;
-	Wed, 14 Oct 2026 12:48:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E6EC5427E1
+	for <linux-serial@vger.kernel.org>; Wed, 14 Oct 2026 14:18:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791982144; cv=none; b=meUlnEtm37Q2lSACihBccxLnoa0QdIyO2dLs0ocR+eSADnnq8T9oH5EQJpdjpx3WyLTggDupUbn+it++Uc/EtMjatXXDB0OUFdL0lxbul497u9rJVjjsTCTpLxKwxCClDsHXdREidPPUk/tswP1YO34+HovHhVFDuYPhK2NFFPY=
+	t=1791987503; cv=none; b=hKg9h2ISHiF89OLboZS/qiGdCnoUXNa1fd8SjYQReq/ZSmRlS2/V3vEwl1WpXvvcV07BovlOnXBvgisScW0F92byVSJErzViSViZbNJVyMOmLj0DsvnOu3zx+Y3OTbBN2DeLyqIhsdw4G8l/vg605oFDPo4SPNlw3VoQPa/xE4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791982144; c=relaxed/simple;
-	bh=e/AUeCl/PknWa4Xcu7AdncR90tMDRwZQkuNr5vQYg0w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sDynjrdE/7U0ii+nR8G+m5WvFVSvAGVYoHbAH+fwfdC44qoLVly6L03nKSrWPlTsfGdeLShEl+1KZhFggPTmwSK8jJDqbAfRO4EoTbsl0G+mu122ohavbEDB/xvRRlr67VH34JHGvkORadV8efWzc6/Iyo6u42o87WZq19xqS1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BBB11F000FF;
-	Wed, 14 Oct 2026 12:48:46 +0000 (UTC)
-Message-ID: <d256f39c-6ed5-409a-a7ed-224165d00521@linux-m68k.org>
-Date: Wed, 14 Oct 2026 22:48:41 +1000
+	s=arc-20240116; t=1791987503; c=relaxed/simple;
+	bh=PGAppKY5I2J6gU0GwJ7rlWI4ZFu3X+4pesJK1DNvFDs=;
+	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
+	 MIME-Version; b=EIgcLcR2M+pzuNOu9xFKBFD5ONlPCZ0rfoNfGFl7foA2VQGJXxA+FSmFMpYSW61uGnv+JZb5G+Rxwm9jkzTBEUYytGq3T/MrDi1th8HoKELo0UZeXjta//fGrQHYcxh97E4T7Ep3Wqv5NOY8uoLgzcJhsidJ1Z8OtRSbTj5JoTg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=WHw9a5zK; arc=none smtp.client-ip=162.62.57.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="WHw9a5zK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1791987490; bh=PGAppKY5I2J6gU0GwJ7rlWI4ZFu3X+4pesJK1DNvFDs=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=WHw9a5zKOw7KZpQQp4ZKG+HVEfuX+pr4x1kHevpdiwzgNWLABALR7Sp2ef7XFc9BA
+	 d1MPz2ICp6Txj3YVbUFPTcuhUIDMvKsvghvDMIvMO8xT4eDvK30SRQsxwn0RV6h517
+	 unxwwH1z8qV4WluwKaXGEyG8ay8ehAcv/5KZ0iBo=
+Received: from localhost.localdomain ([14.116.239.35])
+	by newxmesmtplogicsvrszb51-0.qq.com (NewEsmtp) with SMTP
+	id 488174E3; Wed, 14 Oct 2026 22:18:08 +0800
+X-QQ-mid: xmsmtpt1791987488t4crwa0j1
+Message-ID: <tencent_2353E6AB079AAE42E96384E4D9B2FA64C905@qq.com>
+X-QQ-XMAILINFO: MDbayGdXPuoeoUyWRaSeNUHq9KtmygGUN+XtYYGoDPj1g5eJ/5ph4aUmhDTG2d
+	 qbTnBhi60iXpaJQfPiMM9xZhBMyGsD3o/WSLPf6nhCY/xUNNrmEIQ507U/B432TYkzieXlvt/fD/
+	 QZsfyFNWuVfpWv1uvFDXuTpwyLwZTdGIwzKisas/wbt/xE2HtmAtzqSR8Pw/FJ2XYce6bc7fjAbO
+	 kUI7cPXrYoPcStDJgHxF62SrSOBqL9LM8nXUmGN9VFFNkb9TdrRFqfvtc4OGU9qYFHhFC19Fbrql
+	 hJjb9zy8oYdHMjcCgn4e79WXagHruN0c1GfZQ4m2yGI3LqMsCAi2Xs+ubBzO1SLu7yCS67TYT98b
+	 vMtcq0xkYJIUmqZ0O+NQ5MQbmR8dSApy07/nKux9/NgvRkgc/TgGp6LiJZ0GPeQUoPDurSgKjR/l
+	 tt0oB5LrjRKOImkqgWZ12Qm+wsWB0MC3xCS4QNrImhGEK8hSzcruVCOwcU/OLhLKf3glrh/XHStO
+	 RN1JES6cffqBJbK1g6QYB7tAPfvW9AAHsaNtROTRRHwpAHX5VawCUjiahe17DjYGb8Hz3ZQYrTlx
+	 zPvTglr4mDCdWaqiq2zPs+oeIPuA9zvRjrXF05GUglH/ljQbLCFwnqTgvqmTnz1uF/Cnttvsufcx
+	 8zF4uKePYX/81/QzS7lz4aDu0DlHsHohMvCgQcGoKGO6ZIWCvJHAt/q3b5KpglrbCfmeBt8HdFjg
+	 uJ/D8Kq3FYlYj7BtiAjIfK9Ji1Adc+R9v+82L52JjZyraiYLnB5rYixJcojGL0mWSuduiuefEio8
+	 5vAl8rE1bJDB2ITIf+pmaLqBNa7e4RB4SwZwqEd6DwILEYtOJ4MB6CTzRbJyG8S01TWHhRw6ZUnk
+	 4kk9YQ0qcQilQSA7312RH6Tsude8G3P5ANAHKVCbNrWcdZRDBGwdXGsnp9Dufp+iz7H1D6sidSZn
+	 v0ogC2kVLiRm7RkSCdEwtW2HxvHDtjLyV6ELU65kGm/m3jgJsdBPtpYRCYex8c/U6+1zB/zsQbtF
+	 00Trl76VYdtaWg16yZN3nZOaByp5ztgQXniWmVoQ==
+X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
+From: shatyuka@qq.com
+To: sashiko-bot@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	sashiko-reviews@lists.linux.dev,
+	shatyuka@qq.com
+Subject: Re: [PATCH v2] tty: hvc: dcc: Detect JTAG connection only on CPU core 0
+Date: Wed, 14 Oct 2026 22:18:07 +0800
+X-OQ-MSGID: <20261014141807.2576470-1-shatyuka@qq.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <sashiko-outbox-169978@kernel.org>
+References: <sashiko-outbox-169978@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20261013120831.1046590-1-gerg@linux-m68k.org>
- <20261013120831.1046590-5-gerg@linux-m68k.org>
- <20261014-expensive-shrewd-nautilus-abcab6@quoll>
-Content-Language: en-US
-From: Greg Ungerer <gerg@linux-m68k.org>
-In-Reply-To: <20261014-expensive-shrewd-nautilus-abcab6@quoll>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-
-On 14/10/26 21:24, Krzysztof Kozlowski wrote:
-> On Tue, Oct 13, 2026 at 10:07:02PM +1000, Greg Ungerer wrote:
->> Create documentation for a new binding to support the Freescale ColdFire
->> UART hardware block. This is found on pretty much all variants of the
->> M68K derived Freescale ColdFire family of System-on-Chip devices.
->>
->> It is not compatible with any other known UARTs.
-> 
-> You never tested this, so limited review.
-
-It is tested. It is working and running on multiple ColdFire platforms.
-
-
->> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
->> ---
->>  .../bindings/serial/fsl,mcf-uart.yaml         | 43 +++++++++++++++++++
->>  1 file changed, 43 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
->> new file mode 100644
->> index 000000000000..d1dba518f67a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
->> @@ -0,0 +1,43 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/serial/fsl-mcf-uart.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Freescale ColdFire UART
->> +
->> +maintainers:
->> +  - Greg Ungerer <gerg@linux-m68k.org>
->> +
->> +allof:
->> +  - $ref: serial.yaml#
->> +
->> +properties:
->> +  compatible:
->> +    const: fsl,mcf-uart
-> 
-> What is the SoC name? MCF? Compatibles must be specific (see writing
-> bindings doc).
-
-Yes. MCF = "Motorola ColdFire". It is the SoC prefix used for naming of all
-ColdFire parts (which is dozens of variants):
-
-   MCF5206
-   MCF5208
-   MCF5307
-   MCF54415
-   etc
-
-Even when Motorola became Freescale they stuck with MCF on all ColdFire parts.
-
-
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - clocks
->> +
->> +unevaluatedProperties: false
->> +
->> +examples:
->> +  - |
->> +    uart0: serial@fc060000 {
-> 
-> Drop unused label
-
-Ok, will drop.
+Content-Transfer-Encoding: 8bit
 
 Thanks for the review.
 
-Regards
-Greg
+> Does the commit message have the sequence reversed?
 
+You are right, the commit message has the sequence reversed. It's a
+typo, I'll fix it in v3.
+
+Best regards,
+Jiannan Du
 
