@@ -1,140 +1,135 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9BF455D893
-	for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 21:49:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791928196; cv=pass; b=X5ug4NGA8DvphREeMtc0oAX2Y3x9siPhHEssJoanY3OBGvgxXTLmL8PzfXKM67tNbX45Y6ZInW8Jy+sFgYaGl6xTdhsMzBEhJe+bnOI6pKADFa1fWN7A3Xc7MZMIzwu2F4MM5odlY07hd42nCmApEOwOPIVKESXHA1Ywd7eWbls=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791928196; c=relaxed/simple;
-	bh=hioDiOlURo8xdbGjD/3syLKxQLmoLjjsZ6hoRskxKGg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NxF8HA9YDDaMdSrPhxgUrI5nROd1r5Zd2fpyeSO2OnwPfotgzeHo0Frz66QJmA/lqLQF7XpRF/jQPBwsfYFzj+YSx2bj5rzRLrbIj9+2WmLJ6yAk2yvMUgq/AalWK/EQtah6c96NUNAUA8ohuNJZrySgyMjIk5Dj4Po+XKG6mqE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j3/OjAZ2; arc=pass smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7C4C3E1233;
+	Wed, 14 Oct 2026 03:38:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.29.241.158
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791949136; cv=none; b=ia1zdMsxggXJWKa6fS1oYKxkptVnHZ4/OOEb6F4o9YhmKApfsTJjSyTMrFst55R/H3inygQRJkYwztJk1XYTPcW1sUAFC26gNuK0J2M55hA/qUCS9TKXak8abPkn/0hf3g69wLrs4jac7uyYMx53yke1N9w4JK6LElY9qxpYw34=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791949136; c=relaxed/simple;
+	bh=wWv4sUHIfZP1ItvggJvpQO6/iSgwS9YDTUDmw+IVWVY=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=B0cq4Jn3nZA7W8B+EQO7UkPAv9TRgMHrDbMOV6IBzb6yoXfwjYfOQPWma77Zela3GZL2EX1gy+PcI987jMR4AsQ/gfop0pVedQtmmBxlZyZ53CEmRGHHUFLDdxOIR8Rj5h5i2PDshsUwsFuKvZiY1KTOaLhoBXhjvNs5+L4g1Kw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au; spf=pass smtp.mailfrom=codeconstruct.com.au; dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b=k4KKl8pH; arc=none smtp.client-ip=203.29.241.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codeconstruct.com.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j3/OjAZ2"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-6b1dae0febeso444146a12.2
-        for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2026 14:49:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791928194; cv=none;
-        d=google.com; s=arc-20260327;
-        b=CkYGIwymF4fEzlS23An8Au1qZ/GJXVs1ZNWSYUpM8PvrhfIpbipgEDll1VQhlckTv+
-         12xLnIFZclxjk/Oo9Ak65IJbSI5e7ykzbUjLWfc22ZNwbC9AEHcfOeoLyRQ73bnqz91m
-         q3Om5CVSJp78jAl0XY4gnYQAYI+TLEowKRcPHLS9lzwb1HuJL/X8eEuZJP8LNilDSzE6
-         Xm/+4toReKTN0n5Bfr/ib3Dx9YzV9Hod1nmXEhTqDSEFdE0T31PV3povvvU+0dooDbOK
-         vip0WdFagG4efiUmAfnwskRBzpEqwTNKdUodyefZ+VmGW3BGKsYInhX/AMHGZEgEmPHC
-         ExIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=bZPrQT2G0Mv3qvoWmFl/L9HCd8QbTElzi8/7c9AFh2A=;
-        fh=yDB9m+AtKROdFsNjXHo66lzzCz7m8vWu+6u1gYFaN4g=;
-        b=GMZrgC+UC66xYvrfzzRRi0MC+sK6cVaS4WZksVlVAhNFQ06Poa3JKYHjFVuu+31+9A
-         XrsOwTWWAW2DJ8oBDC0I/Iy6zjzKYSxrpKxtS/pvUrZG4a2z5CWgskho4Owa5x7VPV+Z
-         ll4lcf9fS1cJdhB1/ugOLW6e/TFUgQ1dSoJBA1OirbGV8JUDaDBalbwE1NgInup6aAT0
-         2MtmsX5jdBi7kQMxNpIh7PQjRtuZ01dgyWvRINal1e1dSKZI3zBIaRtUrJKuXe2sNnCx
-         BVUTC7eFg3rfwotI+P15Sho+XJ+BjF+Kd716WhieCpv89G6ARwPn4hOGUuxoafGTB830
-         HqyQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b="k4KKl8pH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791928194; x=1792532994; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=bZPrQT2G0Mv3qvoWmFl/L9HCd8QbTElzi8/7c9AFh2A=;
-        b=j3/OjAZ2nl4PNfdvBJaIEKA+mtEOUNX8P7VSxSdCJLLB3MzVMECxJlnYgjTPI/5jG6
-         IZaVysbD+iWra/+q8m4MJes9UopmcyB5p8NSmEkiBGgC0r5HAJsVEYzHzPAOw160ZOox
-         KuUn30o/U8bghCHneid+szoLLs3o+EVMCmSRUTCfQi5t2Ah6jAwxTYGGGq5FVu7vv74j
-         j5+jiyRPRPdnC37+SzQlv+UyQYXJ1NIbebJJJeLGESeEiyqShar0gOPQMtLJBKPjH/ZP
-         F/1qKkfwpU6vRLKluukHB1ljWWwdgwJWOSSqQK6+jxSZ2lm6c49kJARPROD+wRdF/FTI
-         UB5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791928194; x=1792532994;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bZPrQT2G0Mv3qvoWmFl/L9HCd8QbTElzi8/7c9AFh2A=;
-        b=CLFvMiLzRibg8LHzMbR+iRa8HguhM8M7Of2Tacinsync3HnbQ0eBN2HbC1aKBId5Gu
-         +6rQGGyLm8v95m3ryucMppTrUSNZgSBwPW7nSD7oX2Kpmzmsq1VTm3pwD+7NA3a0M54r
-         d/USudpl2F1fXUlE/XPrJvCqQMtGOt45ZzvXKzFZKHlUf5pSIk02AaJwacBqhZ77fmnf
-         PY+QVqpKMMuhDigDMU5ARiJGcpDPvPzLC2zUqWHDKfctxtoG0FGcxKroFwceo0vGM3uy
-         1vg9868Io+nJzLBHaJBJs8zY879z50B8I9vWhX6gD5zc3qEMoj6kWgggH4VDuWKdg18o
-         C6gw==
-X-Forwarded-Encrypted: i=1; AKwUvBwoNz+8EkO6xg0u2xmiIDTYVMHkSqlCBPb43DEsLmeNMrND8/TyPhqT6z55r0iNMmxIgluqxGLLvPfGqQM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKSCtHvHEZiT8nOTzT7a1R9Qu3DkqowzpFA1ye/S/xh2kHKoU4F
-	6W9ZGLPc7wIeBOpwJJD6/DGTDlrd2mGFUnjnHblgdC2mUBCTgaAs93v4+czYkp9vqQF7L7emFcp
-	nQk/5PoI4xRDIXv70D0u6ZWhkvkLvl4o=
-X-Gm-Gg: AYBFou1EK3ZB7e1OQcIZN+cpehfNRNHpgsnKMIA4Ef+jAjEWPTUwEgfj48E9CGgxohS
-	5OBVUYTumBFimWOefKCp5Ru6UR3iwnOS15poYnT3E+04gY8/d6hLith3qvpRWA4rkkPhJAwatQB
-	41Bmwt2oegwZGXZdIuOhnDXkGOKiZfysvllnuQRLSGeIXp7C7OKD+1IaaxY/I+JnIqZ8whlZF6m
-	gVzp9kpBWbRDFYK2mpYoIWFuEcEheA9zNe6w7cDQ4KZGUyeTzKTPKS8OHiS1jJ5eC/dVs6DUgW/
-	CMepfVLrZOCWqe8yVZ6qPtdZUU/oxbwFzcSAcTJJQi1bzIrEkKe1x14nDt1lbwOHgWramMCFy5m
-	UAfi3ChBBb/lNgnjC2TklXJ6eWG8kW1lYeGPXAjfoZg==
-X-Received: by 2002:a05:6402:4006:b0:6b1:c526:afcd with SMTP id
- 4fb4d7f45d1cf-6b1c526bc10mr5749588a12.11.1791928193882; Tue, 13 Oct 2026
- 14:49:53 -0700 (PDT)
+	d=codeconstruct.com.au; s=2022a; t=1791949128;
+	bh=Xr9nv3pCAuQ1Ufx1N8P/5BzbOX8F4y0Yex+Y2BlP8fQ=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=k4KKl8pHFsg+eNdE9MoTQ1h16nqPhHKpCXWBVqVXLPW2ix4UmoIThsHCX7B5m0yz1
+	 YD4+Dp2SK2s0tl4YQFuFWE6axcJgIvHT2y2Zg9A2fOd+XN2eACiZoGBvUPrX88CBVy
+	 O1CQHTPFNjSbjQtIF556KtYdPeq6ArLQO2/JzZrY5fQWtrllS2yRvzRwx2HWMGK7WI
+	 K4tK6wLG4c0gPqybPKIbjWmNtY5ozYr63SKhMIzFc9zGB+f0bP0Uz1z/fYNLXvXh++
+	 Ly3MYuRRGsYymcj/L7Gnq07y5bYrM+nhYKw6ReTpvrtLCR3OemkUW5hyh9GBz7kNyu
+	 yksHmIU1++rcA==
+Received: from pecola.lan (unknown [159.196.93.152])
+	by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 3FD926CEE0;
+	Wed, 14 Oct 2026 11:38:46 +0800 (AWST)
+Message-ID: <c569c912141e9da7530121b8b2fc81527e0518a4.camel@codeconstruct.com.au>
+Subject: Re: [PATCH 00/11] Add NVIDIA LSTP USB adapter drivers
+From: Jeremy Kerr <jk@codeconstruct.com.au>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Adrian Ambrozewicz
+	 <aambrozewicz@nvidia.com>
+Cc: Donald Shannon <donalds@nvidia.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Linus Walleij	 <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Lee Jones	 <lee@kernel.org>, Pavel Machek
+ <pavel@kernel.org>, Andi Shyti	 <andi.shyti@kernel.org>, Mark Brown
+ <broonie@kernel.org>, Jiri Slaby	 <jirislaby@kernel.org>, Corey Minyard
+ <corey@minyard.net>, "Rafael J. Wysocki"	 <rafael@kernel.org>, Len Brown
+ <lenb@kernel.org>, Jonathan Corbet <corbet@lwn.net>,  Ilpo
+ =?ISO-8859-1?Q?J=E4rvinen?=	 <ilpo.jarvinen@linux.intel.com>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>,  Hans de Goede <hansg@kernel.org>, Lixu
+ Zhang <lixu.zhang@intel.com>, Danilo Krummrich <dakr@kernel.org>,  Johan
+ Hovold <johan@kernel.org>, Oliver Neukum <oneukum@suse.com>, Quan Nguyen
+ <quan@os.amperecomputing.com>,  Andrew Jeffery
+ <andrew@codeconstruct.com.au>, linux-usb@vger.kernel.org,
+ devicetree@vger.kernel.org, 	linux-gpio@vger.kernel.org,
+ linux-leds@vger.kernel.org, 	linux-i2c@vger.kernel.org,
+ linux-spi@vger.kernel.org, 	linux-serial@vger.kernel.org,
+ openipmi-developer@lists.sourceforge.net, 	linux-acpi@vger.kernel.org,
+ linux-doc@vger.kernel.org, 	driver-core@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Date: Wed, 14 Oct 2026 11:38:45 +0800
+In-Reply-To: <2026101310-scuttle-unison-d4c3@gregkh>
+References: <20261012-lstp-usb-adapter-v1-0-aambrozewicz@nvidia.com>
+	 <2026101310-scuttle-unison-d4c3@gregkh>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2-0+deb13u1 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261012184826.986050-1-linmag7@gmail.com> <20261012184826.986050-9-linmag7@gmail.com>
- <2026101313-plank-outlet-d3da@gregkh>
-In-Reply-To: <2026101313-plank-outlet-d3da@gregkh>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 13 Oct 2026 23:49:40 +0200
-X-Gm-Features: AclHuK9ealETNMhI5yAH6CuVcBjpteVRfkO1A49G7BEeIOYibyNYpBtxXrN7t70
-Message-ID: <CA+=Fv5TuSDvXc0kXkTVHSver1znah2pbMofgrfMFmiyCZgHfGA@mail.gmail.com>
-Subject: Re: [PATCH v3 8/8] hvc: add an M3000 firmware console backend
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: davem@davemloft.net, andreas@gaisler.com, sparclinux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, jirislaby@kernel.org, 
-	linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, krzk@kernel.org, 
-	oleg@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Hi Greg,
+Hi Adrian & Greg,
 
-On Tue, Oct 13, 2026 at 3:04=E2=80=AFPM Greg KH <gregkh@linuxfoundation.org=
-> wrote:
->
-> On Mon, Oct 12, 2026 at 08:48:09PM +0200, Magnus Lindholm wrote:
-> > Provide hvc0 through the M3000 Open Firmware pseudo-console, validating
-> > the firmware model and console endpoints before registering it. Keep
-> > firmware buffers in locked kernel mappings and serialize their use in
-> > atomic console contexts through the existing SPARC p1275 interface.
-> >
-> > Poll input while the TTY is open and synchronize close with timer
-> > rearming. Return zero on no progress so HVC retries buffered TTY output
-> > but drops stalled console chunks instead of spinning indefinitely.
-> > A firmware call that does not return remains unbounded.
-> >
-> > Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-> > ---
-> >  MAINTAINERS                 |   6 ++
-> >  drivers/tty/hvc/Kconfig     |  10 ++
-> >  drivers/tty/hvc/Makefile    |   1 +
-> >  drivers/tty/hvc/hvc_m3000.c | 202 ++++++++++++++++++++++++++++++++++++
-> >  4 files changed, 219 insertions(+)
-> >  create mode 100644 drivers/tty/hvc/hvc_m3000.c
->
-> I'm guessing this will go through the sparc tree, so:
->
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
-> thanks,
->
-> greg k-h
+> > This series adds drivers for the NVIDIA LSTP USB adapter: a USB core
+> > driver and GPIO, LED, I2C, SPI, UART and BMC-side IPMI function drivers=
+,
+> > with their device tree bindings, an ACPI description document and the
+> > sysfs ABI.
 
-Thanks for taking the time to review this patch,  I hope to
-get the full series through the sparc tree. I'll pick up your
-tag for a v4 which I'll send out asap.
+Adrian, what is the plan for this coexisting with the recently-released
+OBMF-ICP spec[1], which implements almost identical functionality (and
+apparently with less DT/ACPI description requirements)
 
-Regards
-Magnus
+... NVIDIA also being a primary contributor to OBMF-ICP.
+
+[1]: https://www.opencompute.org/wp-content/uploads/2026/10/obmf-icp-1-0-0.=
+pdf
+
+> > What LSTP is
+> > ------------
+> >=20
+> > LSTP (Low-Speed Transport Protocol or Low-Speed Tunnelling Protocol) is
+> > a vendor-specific USB interface (class 0xff, subclass 0x3f) that
+> > multiplexes several low-speed "channels" over one pair of bulk
+> > endpoints. It is implemented by NVIDIA's SMA, an MCU (0955:cf11), and
+> > by other vendors' parts: two hub/bridge chips have it built in
+> > (0424:4940, 174c:2214). Boards use it to
+> > reach SPI flash, I2C sensors, GPIOs and LEDs, a UART and a host-to-BMC
+> > IPMI path, on both BMCs and host systems.
+>=20
+> Also, if you really want to do this in a dynamic way, use greybus, as
+> that is EXPLICITLY what it was designed for, and is patent-free (i.e.
+> unencumbered, and we already support it in the kernel.)=C2=A0 Please don'=
+t
+> reinvent the wheel/spec just because no one did any prior-art
+> research...
+
+With this, we now have three similar facilities:
+
+ - greybus - I assume there are implementations about, but more on the
+   mobile side?
+ - LSTP - with an NVIDIA implementation
+ - OBMF-ICP - with a few vendors' early implementations
+
+There are differences between greybus and OBMF-ICP that may justify
+support for both (primarily: static channel support means OBMF-ICP is
+simpler to implement). I understand that OBMF-ICP also has reasonable IP
+protections for implementations. However, it's going to be difficult to
+justify both LSTP and OBMF-ICP implementations living in the kernel.
+
+Adrian: I could see LSTP being implemented as a set of divergences from
+an OBMF-ICP-standard driver, but I'm not yet across why you need static
+configuration. If we do need support for both in the kernel, I can take
+a look at how that could work.
+
+FWIW, we did raise greybus as an approach to various HW vendors; I
+assume there were reasons behind OBMF-ICP, and assume some prior-art
+assesment was involved, but I don't have specifics for those reasons.
+
+HW peeps: This would be an excellent opportunity for elaboration on the
+motivation there, either for LSTP or OBMF-OCP.
+
+Cheers,
+
+
+Jeremy
