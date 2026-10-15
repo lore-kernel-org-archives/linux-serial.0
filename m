@@ -1,160 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D93B33B6C0C;
-	Thu, 15 Oct 2026 03:30:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48F4B3E716F
+	for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 03:41:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792035001; cv=none; b=UF/gNFD9DOoz1383Q+8RQeHrnJWLgelRaZ3ZkB67mFFUtef1mIvlrkHcJsnE4Hp96epZeAaRX9TGAnaQrg8+fRcNq3nMGAZHMSioQm0GfSa4ifBdf/NKj2GHAMiNbchb3ldXfJ9zz0JGO895SFl4nZ0xmoN/hMoo+3eQxeG9eA4=
+	t=1792035670; cv=none; b=qeyDke0LIQ4jnbwkKlGx9Dl9cWGjEUIDHzBe4MyEgsf6js2HDiEs/9enyD1klh2bthy+Z4n0nZBhXaxXeYzcz8F6TFZDImiEVEukDmiVygrAiWDPvH7TuuwuXaBrpQL2YEu397KEn5Hgmu0UM8KCzfJj9S+IVWEhd2nqZ12jVq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792035001; c=relaxed/simple;
-	bh=ozodpk9r3S9tHviVJchnNu2eS5TgDFt9c8pD0zozJoA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rPieuIBQgOrjlwhWWQQMBmW5dOeHuCOSOjTn13bYjMyArvg5eipWXI3DVZlsdh27+xwxGZPUWawp5sj24GpJEXXXsevSOs0W5O/vhuOJ/Uct+dYyxdWpYagFqRNxMpqH32EflbBwBtbR6APXPUcagap06Ru/owwepdtadVWTHtw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bfmxTZ2v; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1792035670; c=relaxed/simple;
+	bh=5KMq/Qi4ri/QizCnLx/Efwx6ALnG2ufPFvD/XiLskCY=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=gXt9Zhapp+ZfNf7pm4iFc+oQe8+kferp/qNIVFVdG1osM6wHmeU8EQ525X9fO3TaAW2xwNttnTcGVhSeNkldF/3esxGiwEi2WYQJRTSfSkm6OpcqaLhJkNXibrbsInSiaLkEfNNkmTOHMLZcL3uNy55znLwkIGeKWLP0wxVozj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ovQ1eJ8/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bfmxTZ2v"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 64E9AC2BCFA;
-	Thu, 15 Oct 2026 03:30:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1792035001;
-	bh=ozodpk9r3S9tHviVJchnNu2eS5TgDFt9c8pD0zozJoA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=bfmxTZ2vM+T48i329fPKkH7Fub9zZYNZH1i2RiphJMvPxRg+BU61CIQOhw7pTWYps
-	 9XjbOlDaBSU4p4pfLNnaFCxsLxiaCaYifxZUrrzJI+Bi1FH8urLTlXHUYTdtgVRX1B
-	 2hqyzEwdr33JyDWC+pQIdrH6iwiwH4AMIPkpYIAw05ugmWiHwaXu1j+CSSF2k7mLDj
-	 nT/XzgdzdY1Ru+Zwiy6VIRhuh70LaykKxYCAM+V2vxyGLSsbMub44EHJFsOP2cfAlV
-	 ywOFVcW4IvM6H3VbNvzOWQEWZw8KJpB4p0mYu94tgRQyS0GlZwXjb1AGAZ2HlQUzNS
-	 IYLjpz1adXT2w==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F163CC6B2D;
-	Thu, 15 Oct 2026 03:30:01 +0000 (UTC)
-From: Austin Schlegel via B4 Relay <devnull+schlegelas.outlook.com@kernel.org>
-Date: Wed, 14 Oct 2026 23:30:00 -0400
-Subject: [PATCH v2 1/2] serial: tegra: fix RX DMA descriptor use-after-free
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ovQ1eJ8/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B16AA1F000C4;
+	Thu, 15 Oct 2026 03:41:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792035661;
+	bh=6ntNcrsiaoE1wy/NXizsk8nGEgSpxyHKUKH/xmbwexM=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=ovQ1eJ8/hofCjjIHaD5U9Nm4LbY+Vr3VMeM/L/V5zJLYUySVM39BYwhc7XOYErfZR
+	 LNElT3eHcGv47UkSE4QI+1gN/GAW4SLy7ED2F6YzXse2b5ZkjMKNjDO/al90FNBYyz
+	 IHKho6Ra3SZXAHWSyi+cmU+saTtQBnQuv/SZhJfYgbXYCbxw0Iqtj8uM8SZQM1Kl/R
+	 ltI0RsQOu9pN9LBARgKoHH9i9InfikIvg9j9DaJb69x65v0Pk04r4gQ420RBPe+Wkp
+	 OSrWTgnqy48KCC5efM1aUzw5JEZUVmYTCSBcKBI2+vgLklP8a0k0IrptDu1GFSX0op
+	 bE8kR3z1716Cg==
+Message-ID: <sashiko-outbox-172211@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v2 2/2] serial: tegra: fix TX DMA descriptor
+ use-after-free
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Austin Schlegel" <schlegelas@outlook.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261014-serial-tegra-dma-uaf-v2-2-b142b31b67e3@outlook.com>
+References: <20261014-serial-tegra-dma-uaf-v2-0-b142b31b67e3@outlook.com>
+ <20261014-serial-tegra-dma-uaf-v2-2-b142b31b67e3@outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 15 Oct 2026 03:41:01 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261014-serial-tegra-dma-uaf-v2-1-b142b31b67e3@outlook.com>
-References: <20261014-serial-tegra-dma-uaf-v2-0-b142b31b67e3@outlook.com>
-In-Reply-To: <20261014-serial-tegra-dma-uaf-v2-0-b142b31b67e3@outlook.com>
-To: Laxman Dewangan <ldewangan@nvidia.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Thierry Reding <thierry.reding@kernel.org>, 
- Jonathan Hunter <jonathanh@nvidia.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-tegra@vger.kernel.org, Austin Schlegel <austin.schlegel@arthrex.com>, 
- Austin Schlegel <schlegelas@outlook.com>, stable@vger.kernel.org
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792035000; l=3717;
- i=schlegelas@outlook.com; s=20261001; h=from:subject:message-id;
- bh=fYkOZsjdfbB9egxPKKzaQM+qpHDgDOAl27fV27CupX8=;
- b=IoNoP3r+ucITznuye+bvYZ3A/W7YVPQOJPLQTseNhvh5sObPgXcBtFUR0l097EDtLIFKWslBn
- omuQC/EbTDJDlvlk3ZjzEGXHNaR1c+dhehcnRNNjFpIIe0woNLU675B
-X-Developer-Key: i=schlegelas@outlook.com; a=ed25519;
- pk=ddgmH7VQaSWderjJFy4hDyq+P7hdHupPxQvwnGRBzCs=
-X-Endpoint-Received: by B4 Relay for schlegelas@outlook.com/20261001 with
- auth_id=1098
-X-Original-From: Austin Schlegel <schlegelas@outlook.com>
-Reply-To: schlegelas@outlook.com
 
-From: Austin Schlegel <schlegelas@outlook.com>
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [High] serial: tegra: UAF and double xmit advance in tx_dma_complete
+- [High] serial: tegra: UAF in tegra_uart_stop_tx() due to stale tx_in_prog=
+ress after flush
+--
 
-tegra_uart_terminate_rx_dma() calls dmaengine_terminate_all() and then
-tegra_uart_rx_buffer_push(), which calls async_tx_ack(tup->rx_dma_desc)
-on the just-terminated descriptor. With the GPC DMA driver,
-dmaengine_terminate_all() frees the active descriptor immediately, so
-the subsequent async_tx_ack() touches freed memory. dmaengine clients
-are not allowed to touch a descriptor once it has been terminated.
+commit 7f4e5d2d923132e41e93a227ae34dba2a8eda9f6
+Author: Austin Schlegel <schlegelas@outlook.com>
 
-Move the ack into the two call sites that still own a live descriptor:
-tegra_uart_rx_dma_complete() (before the completion callback hands the
-descriptor back) and tegra_uart_terminate_rx_dma() (before terminating),
-and drop it from tegra_uart_rx_buffer_push() itself, since that function
-no longer has a descriptor it's safe to ack.
+serial: tegra: fix TX DMA descriptor use-after-free
 
-The ack was originally added in commit b31245b94207 ("serial: tegra:
-ack the rx dma desc after transfer terminated") to avoid a descriptor
-leak with the Tegra20 APB DMA driver. Keep that fix intact: the ack
-still happens for every terminated RX transfer, just before the
-descriptor is freed instead of after.
+This patch moves async_tx_ack() before dmaengine_terminate_all() in
+tegra_uart_stop_tx() to prevent a use-after-free when the DMA descriptor is
+immediately freed by the termination.
 
-Found by inspection while chasing the KFENCE report below on a Jetson
-AGX Orin (Tegra234) with UART loopback:
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/seria=
+l-tegra.c
+> index a23a92cebe0df..306a38b2fb1e7 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -639,9 +639,9 @@ static void tegra_uart_stop_tx(struct uart_port *u)
+> =20
+>  	dmaengine_pause(tup->tx_dma_chan);
+>  	dmaengine_tx_status(tup->tx_dma_chan, tup->tx_cookie, &state);
+> +	async_tx_ack(tup->tx_dma_desc);
 
-BUG: KFENCE: use-after-free read in tegra_uart_rx_buffer_push+0x38/0x168
- tegra_uart_rx_buffer_push+0x38/0x168
- tegra_uart_terminate_rx_dma+0x88/0xf8
- tegra_uart_isr+0x380/0x470
+[Severity: High]
+Does this create a use-after-free if tegra_uart_flush_buffer() runs first?
 
-allocated by task 0 on cpu 0 (~9 ms earlier):
- tegra_dma_prep_slave_sg+0x134/0x3c0
- tegra_uart_start_rx_dma.isra.0+0xc4/0x138
- tegra_uart_isr+0x340/0x470
+If tegra_uart_flush_buffer() is called via the TCFLSH ioctl, it terminates
+the DMA channel and frees the descriptor:
 
-freed by task 0 on cpu 0:
- tegra_dma_desc_free+0x1c/0x30
- vchan_dma_desc_free_list+0x10c/0x160
- tegra_dma_terminate_all+0x21c/0x290
- tegra_uart_terminate_rx_dma+0x7c/0xf8
+drivers/tty/serial/serial-tegra.c:tegra_uart_flush_buffer() {
+	...
+	if (tup->tx_dma_chan)
+		dmaengine_terminate_all(tup->tx_dma_chan);
+}
 
-Soak tested on Tegra234 (Jetson AGX Orin) for 24+ hours with
-kfence.sample_interval=1 and continuous UART loopback traffic: zero
-KFENCE reports, tx/rx byte counts in /proc/tty/driver/tegra_hsuart
-remained equal throughout with no framing or break errors.
+But it fails to clear tup->tx_in_progress. If tegra_uart_stop_tx() is then
+called, it bypasses the tx_in_progress check and calls async_tx_ack() on
+the freed tx_dma_desc.
 
-Fixes: b31245b94207 ("serial: tegra: ack the rx dma desc after transfer terminated")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Austin Schlegel <schlegelas@outlook.com>
----
-v2:
- - Reworded commit: Removed inaccurate statement claiming the freed-descriptor is accessed
-   in tegra_uart_rx_dma_complete().
- - Reworded commit: Soak test ran for 24+ hours, so updated from 13 to 24.
- - Switched to personal email (v1 sent from austin.schlegel@arthrex.com)
+>  	dmaengine_terminate_all(tup->tx_dma_chan);
 
-v1: https://lore.kernel.org/all/20261001-tty-linus-v1-1-ecb8576c802d@arthrex.com/
----
- drivers/tty/serial/serial-tegra.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+[Severity: High]
+Can this termination race with tegra_uart_tx_dma_complete() and cause a UAF
+and double accounting?
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index b0fc4ae3686f..a23a92cebe0d 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -730,7 +730,6 @@ static void tegra_uart_rx_buffer_push(struct tegra_uart_port *tup,
- 	struct tty_port *port = &tup->uport.state->port;
- 	unsigned int count;
- 
--	async_tx_ack(tup->rx_dma_desc);
- 	count = tup->rx_bytes_requested - residue;
- 
- 	/* If we are here, DMA is stopped */
-@@ -761,6 +760,7 @@ static void tegra_uart_rx_dma_complete(void *args)
- 		set_rts(tup, false);
- 
- 	tup->rx_dma_active = false;
-+	async_tx_ack(tup->rx_dma_desc);
- 	tegra_uart_rx_buffer_push(tup, 0);
- 	tegra_uart_start_rx_dma(tup);
- 
-@@ -783,6 +783,7 @@ static void tegra_uart_terminate_rx_dma(struct tegra_uart_port *tup)
- 
- 	dmaengine_pause(tup->rx_dma_chan);
- 	dmaengine_tx_status(tup->rx_dma_chan, tup->rx_cookie, &state);
-+	async_tx_ack(tup->rx_dma_desc);
- 	dmaengine_terminate_all(tup->rx_dma_chan);
- 
- 	tegra_uart_rx_buffer_push(tup, state.residue);
+tegra_uart_tx_dma_complete() runs asynchronously and accesses tup->tx_dma_d=
+esc
+outside of the UART port lock:
 
--- 
-2.53.0
+drivers/tty/serial/serial-tegra.c:tegra_uart_tx_dma_complete() {
+	...
+	async_tx_ack(tup->tx_dma_desc);
+	uart_port_lock_irqsave(&tup->uport, &flags);
+	uart_xmit_advance(&tup->uport, count);
+	...
+}
 
+tegra_uart_stop_tx() runs under the port lock and terminates the DMA channe=
+l,
+which immediately frees the descriptor. If tegra_uart_stop_tx() runs
+concurrently after tegra_uart_tx_dma_complete() starts but before it acquir=
+es
+the lock, the completion callback will trigger a use-after-free on the
+descriptor.
 
+Furthermore, both functions calculate count and advance the FIFO. If they
+race, tegra_uart_tx_dma_complete() will blindly call uart_xmit_advance() a
+second time inside the lock, skipping untransmitted characters and corrupti=
+ng
+the ring buffer state.
+
+>  	count =3D tup->tx_bytes_requested - state.residue;
+> -	async_tx_ack(tup->tx_dma_desc);
+>  	uart_xmit_advance(&tup->uport, count);
+>  	tup->tx_in_progress =3D 0;
+>  }
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261014-serial-teg=
+ra-dma-uaf-v2-0-b142b31b67e3@outlook.com?part=3D2
