@@ -1,132 +1,111 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4203E2459C5
-	for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 13:09:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC5C2F9984
+	for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 13:10:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792069800; cv=none; b=DnM0O6jei6ieKc7eRCVay1TSwKxUhsFHLcXS0GyIeOSlN2yIEQhj0IFSR79B8CX9fcLarAaRy/FaHmV8JDbTexqbK/qtjKze0AQlv0db6Md7ksYsZkW9JfWHRvxKMsMb11J6ZgLGdrueJHA4h/2GIGkITLInJPOtkGg7pA0B1r8=
+	t=1792069851; cv=none; b=D8oR5OqKHfTu88FGX9ZUcyZeeJYCNMnundP9ZBDHOXrgcx+6Xk5sXbHb9+inx0tslkcRME514Dy/BeZpJk+sW61LNnvodaL2A2tPBXPb/54vpeCLCj9Hc/coZEhh8vWbR6yeZRf13aeUyH35H1b0kJhjke5rbFMDN2cndO4lJQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792069800; c=relaxed/simple;
-	bh=xypxk3WcLZZGs8FZHMzCxsKIH5f80SnavlDT4NY+vR8=;
+	s=arc-20240116; t=1792069851; c=relaxed/simple;
+	bh=DNigvX3T+h5Y4xU43wmiNRL+PNX2Tx7CTpxHkCeF/OM=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=FlKZ1mMtTTxP1OwZwpxb47PO6ZXpH+rRWZng0ivBfilRW6yCB2QdpAIeyEPAGy27nGIE+7MKeU6oXZI1wx450dvMA9OjjppqX+gQAKoMwbPzPBUYnMunxwVdWNwzmpiMjzBXOuMyPQoi4di9+xP+E3NpgFrQAHvxQELDSvnS1xg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ee0tM6u0; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=qL/4yD5V/xznVkiINch4h4m53vYt6XV/LhMaPyhg6Jv0a+Cxn7VOtcdXK3mxcQ+cbkOhDlwzwP11tVgyOxhfE5YMwsDxkV5eF4fQh8IcHdrHUyesxuFr9zGXsBcRh4WYdoO7HktABN2OFLooa/AMPolwRzaBlnGVooXyT2iPLaM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DWDXuE1S; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ee0tM6u0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCA101F000C4;
-	Thu, 15 Oct 2026 13:09:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DWDXuE1S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 594B51F000C4;
+	Thu, 15 Oct 2026 13:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792069798;
-	bh=aNaawadwwEAs5ZmFM2dY8Od5eO//wWyOJWWJVt0vSJQ=;
+	s=k20260515; t=1792069850;
+	bh=/niNXQzyZBt2VwM2dvCCmWur/5nlSswhZ/D2BF01pk0=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=ee0tM6u0PzlIFGodspTl1mWXGaErllP93VHa73z1q2nDChliEcuRjgLKIGxVqB4b+
-	 qy7C25OWgsd9paP2e938sGEonbEeJz8XfgnTeSvW6jKNE3FLPMIvbVHlqDthY3h5Ka
-	 3j2Ptgquaoe8xdylugHy4C6crxTXYBWtrDp8MVw+IdmF2nQEr1c6u3/WJg7jcHcHTe
-	 HPyluUZY2DHJqAR+TKIvArff++/4ShJ18hzo0Rx5Psjip11NKK1yNHLEtwD7dH+u0O
-	 PDYPbP1Fr30Sd1WC7lkF8R7O+s3V3qWBHtDH6WFprEFsBN4AcGtjIUauZdhHS9LsB7
-	 yD488bAtEKSzw==
-Message-ID: <sashiko-outbox-172900@kernel.org>
+	b=DWDXuE1S08QvS/kIaC6EJdYu9T9hlKiT/Xd0hizuPoR2JSpHDe7HDlXdIq4sgRlOt
+	 HZRiknKGR8nNFS5LeetiDhVfuH+ewnYg4qOAS0wd2/IHQ5AdyFirGCM+iaxZtnO60J
+	 3uGNgOt8sd/xdycVemnljsdI8eTcz5tXm4ABpLlLhzQS4rRMWN48erogB7SRn7os/C
+	 dwfydgGMk4ABhYMbKrNjeml07+FkcpD+u17AKtdnkAgBBnh11Zy+stbLADU8iaq5D+
+	 lwOJeBraUmlBVwrq5w/FmaJVzVirmD6PgMkYE4jexNyMOTkWPb9JzEk2gCS7Zikbyv
+	 pzg7WNdAoxgXA==
+Message-ID: <sashiko-outbox-172901@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 5/8] spi: qcom-geni: Use geni_se_set_rate() for
- setting source clock frequency
+Subject: Re: [PATCH v3 1/8] soc: qcom: geni-se: Populate clk_perf_tbl with
+ SE source clock frequencies from perf OPP table
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Praveen Talari" <praveen.talari@oss.qualcomm.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-5-5da1096243c9@oss.qualcomm.com>
+In-Reply-To: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-1-5da1096243c9@oss.qualcomm.com>
 References: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-0-5da1096243c9@oss.qualcomm.com>
- <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-5-5da1096243c9@oss.qualcomm.com>
+ <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-1-5da1096243c9@oss.qualcomm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 15 Oct 2026 13:09:58 +0000
+Date: Thu, 15 Oct 2026 13:10:49 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-- [High] pm: spi_geni_runtime_suspend() desynchronizes PM state if geni_se_=
-set_rate() fails
-- [Medium] pm: spi_geni_runtime_resume() leaks clock/power resources on gen=
-i_se_set_rate() error
+- [High] soc: qcom: geni-se: clk_perf_tbl populated with OPP levels instead=
+ of frequencies
 --
 
-commit 18dd7909ccc7f7c6dc80af1c7154961b4692ab24
+commit 2006551310c45129142551fa77079692b29b39f8
 Author: Praveen Talari <praveen.talari@oss.qualcomm.com>
 
-spi: qcom-geni: Use geni_se_set_rate() for setting source clock frequency
+soc: qcom: geni-se: Populate clk_perf_tbl with SE source clock frequencies =
+from perf OPP table
 
-On the SA8255P platform there is no Linux clock handler for the SE
-source clock, so the driver has no way to look up the source clock
-index and divider needed to fill the GSI CONFIG0 TRE for a requested
-transfer frequency. To work around this, firmware instead exposes the
-SE HW supported source clock frequencies as OPPs on the perf domain
-device.
+This commit aims to populate clk_perf_tbl using the OPP table exposed on
+the perf domain device. This is intended to allow protocol drivers on the
+firmware managed path to calculate required dividers and pick supported
+source clock frequencies similarly to the Linux clock managed path.
 
-> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
-> index 91e75e213f929..cbccd6d8689ab 100644
-> --- a/drivers/spi/spi-geni-qcom.c
-> +++ b/drivers/spi/spi-geni-qcom.c
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni=
+-se.c
+> index 074087c592cc3..95eeb9438a292 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
 [ ... ]
-> @@ -1248,9 +1246,14 @@ static int spi_geni_runtime_suspend(struct device =
-*dev)
->  {
->  	struct spi_controller *spi =3D dev_get_drvdata(dev);
->  	struct spi_geni_master *mas =3D spi_controller_get_devdata(spi);
-> +	int ret;
+> @@ -1170,7 +1171,12 @@ int geni_se_domain_attach(struct geni_se *se)
+[ ... ]
+> +	level =3D 0;
+> +	for (i =3D 0; i < num_opps; i++) {
+> +		opp =3D dev_pm_opp_find_level_ceil(perf_dev, &level);
+> +		if (IS_ERR(opp))
+> +			return PTR_ERR(opp);
 > +
-> +	ret =3D mas->dev_data->power_off ?
-> +	      mas->dev_data->power_off(&mas->se) : 0;
-> +	if (ret)
-> +		return ret;
-> =20
-> -	return mas->dev_data->power_off ?
-> -	       mas->dev_data->power_off(&mas->se) : 0;
-> +	return geni_se_set_rate(&mas->se, 0);
->  }
+> +		se->clk_perf_tbl[i] =3D level;
 
 [Severity: High]
-Does this desynchronize the PM state if geni_se_set_rate() fails?
+Does this populate clk_perf_tbl with abstract performance levels instead of
+actual clock frequencies?
 
-If mas->dev_data->power_off() successfully powers off the device (disabling
-clocks, interconnects, etc.), but geni_se_set_rate() subsequently fails and
-returns a negative error code, the PM core will abort the suspend transition
-and leave dev->power.runtime_status as RPM_ACTIVE.
+The commit message states clk_perf_tbl should be populated with actual sour=
+ce
+clock frequencies so protocol drivers can calculate dividers and set the ra=
+te
+via dev_pm_opp_set_rate(). However, by using dev_pm_opp_find_level_ceil()
+in geni_se_domain_attach(), it appears this loop stores the performance
+level (an abstract index like 16 or 64) rather than the frequency in Hz.
 
-Since the PM core considers the device active, will subsequent operations
-bypass the pm_runtime_get_sync() resume path and directly access hardware
-registers while the clocks are actually disabled, potentially leading to an
-unclocked access exception?
+For SCMI performance domains, this abstract level will break the divider ma=
+th
+in geni_se_clk_freq_match(), leading to massive deltas or invalid dividers.
+It will also cause dev_pm_opp_set_rate() to receive tiny abstract levels
+instead of Hz. Because dev_pm_opp_set_rate() searches the OPP table for a
+matching frequency, passing the abstract level will incorrectly match the
+lowest available frequency and likely break protocol communication.
 
-Could the error from geni_se_set_rate() be ignored or handled gracefully,
-or should geni_se_set_rate(0) be called before power_off()?
+Should this use dev_pm_opp_find_freq_ceil() and track a frequency variable
+to store the actual rates in clk_perf_tbl?
 
->  static int spi_geni_runtime_resume(struct device *dev)
-> @@ -1265,10 +1268,7 @@ static int spi_geni_runtime_resume(struct device *=
-dev)
->  			return ret;
->  	}
-> =20
-> -	if (mas->se.has_opp)
-> -		return dev_pm_opp_set_rate(mas->dev, mas->cur_sclk_hz);
-> -
-> -	return 0;
-> +	return geni_se_set_rate(&mas->se, mas->cur_sclk_hz);
->  }
-
-[Severity: Medium]
-Can this leak clock and power resources if geni_se_set_rate() fails?
-
-If power_on() successfully enables the device clocks and interconnects, but
-geni_se_set_rate() fails and returns an error, this function returns that
-error directly without first calling power_off() to unwind the state.
-
-The PM core will then mark the resume as failed and transition the device
-state back to RPM_SUSPENDED, orphaning the active hardware resources.
+> +		dev_pm_opp_put(opp);
+> +		level++;
+> +	}
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261015-derive_clk=
 _perf_tbl_from_perf_domain_opp_table-v3-0-5da1096243c9@oss.qualcomm.com?par=
-t=3D5
+t=3D1
