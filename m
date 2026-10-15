@@ -1,111 +1,108 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC5C2F9984
-	for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 13:10:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B5E525A69;
+	Thu, 15 Oct 2026 13:14:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792069851; cv=none; b=D8oR5OqKHfTu88FGX9ZUcyZeeJYCNMnundP9ZBDHOXrgcx+6Xk5sXbHb9+inx0tslkcRME514Dy/BeZpJk+sW61LNnvodaL2A2tPBXPb/54vpeCLCj9Hc/coZEhh8vWbR6yeZRf13aeUyH35H1b0kJhjke5rbFMDN2cndO4lJQI=
+	t=1792070071; cv=none; b=FD8k6F59xTT1n0NnNm1b9ePubZux/mAbf8/TB08WOguSn3FQgxNhSpy7chN6rCzAn7aeMecfOkqCNxkTJCVVMVCzM+1vBHynJNqZ4EuqJy+/HUelwmSe33iz8uox3O7i6Sh3UB9L2duBgLRH/PQYqGznaw9RvSYUFmEeHVxYTXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792069851; c=relaxed/simple;
-	bh=DNigvX3T+h5Y4xU43wmiNRL+PNX2Tx7CTpxHkCeF/OM=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=qL/4yD5V/xznVkiINch4h4m53vYt6XV/LhMaPyhg6Jv0a+Cxn7VOtcdXK3mxcQ+cbkOhDlwzwP11tVgyOxhfE5YMwsDxkV5eF4fQh8IcHdrHUyesxuFr9zGXsBcRh4WYdoO7HktABN2OFLooa/AMPolwRzaBlnGVooXyT2iPLaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DWDXuE1S; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DWDXuE1S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 594B51F000C4;
-	Thu, 15 Oct 2026 13:10:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792069850;
-	bh=/niNXQzyZBt2VwM2dvCCmWur/5nlSswhZ/D2BF01pk0=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=DWDXuE1S08QvS/kIaC6EJdYu9T9hlKiT/Xd0hizuPoR2JSpHDe7HDlXdIq4sgRlOt
-	 HZRiknKGR8nNFS5LeetiDhVfuH+ewnYg4qOAS0wd2/IHQ5AdyFirGCM+iaxZtnO60J
-	 3uGNgOt8sd/xdycVemnljsdI8eTcz5tXm4ABpLlLhzQS4rRMWN48erogB7SRn7os/C
-	 dwfydgGMk4ABhYMbKrNjeml07+FkcpD+u17AKtdnkAgBBnh11Zy+stbLADU8iaq5D+
-	 lwOJeBraUmlBVwrq5w/FmaJVzVirmD6PgMkYE4jexNyMOTkWPb9JzEk2gCS7Zikbyv
-	 pzg7WNdAoxgXA==
-Message-ID: <sashiko-outbox-172901@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 1/8] soc: qcom: geni-se: Populate clk_perf_tbl with
- SE source clock frequencies from perf OPP table
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Praveen Talari" <praveen.talari@oss.qualcomm.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-1-5da1096243c9@oss.qualcomm.com>
-References: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-0-5da1096243c9@oss.qualcomm.com>
- <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-1-5da1096243c9@oss.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 15 Oct 2026 13:10:49 +0000
+	s=arc-20240116; t=1792070071; c=relaxed/simple;
+	bh=Z7Ajd7UkvjpJE4SCW6+tEEpuAM+GxWaOjJPvp5T2YvI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qXGGmJQPg+oRSmT2Vhcb0iVAFQTp4a89UfH/ObwXxJEtXCrJIkZ8VqVvz4BMd8ayjY0JC75j0nUPWmLdd1UKddPuE8vL1O+6QPQJLwLXWPhCRoeXTrBCH3vLjDDrOYFzEVEEVV0X0ZUOvVUOgsbe6t/KmBTnwlwl+4Rq+pgQ8jo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B391F000C4;
+	Thu, 15 Oct 2026 13:14:28 +0000 (UTC)
+Message-ID: <73a8df68-17da-4275-bb9d-8a6272b754e6@linux-m68k.org>
+Date: Thu, 15 Oct 2026 23:14:26 +1000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, linux-m68k@lists.linux-m68k.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+References: <20261013120831.1046590-1-gerg@linux-m68k.org>
+ <20261013120831.1046590-5-gerg@linux-m68k.org>
+ <20261014-expensive-shrewd-nautilus-abcab6@quoll>
+ <d256f39c-6ed5-409a-a7ed-224165d00521@linux-m68k.org>
+ <CAMuHMdUcGt7RBc0d1A-8O1Dt71RL=epPgmnetj_4NGCPvCj9LA@mail.gmail.com>
+Content-Language: en-US
+From: Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAMuHMdUcGt7RBc0d1A-8O1Dt71RL=epPgmnetj_4NGCPvCj9LA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] soc: qcom: geni-se: clk_perf_tbl populated with OPP levels instead=
- of frequencies
---
+Hi Geert,
 
-commit 2006551310c45129142551fa77079692b29b39f8
-Author: Praveen Talari <praveen.talari@oss.qualcomm.com>
+On 15/10/26 19:19, Geert Uytterhoeven wrote:
+> On Wed, 14 Oct 2026 at 14:56, Greg Ungerer <gerg@linux-m68k.org> wrote:
+>> On 14/10/26 21:24, Krzysztof Kozlowski wrote:
+>>> On Tue, Oct 13, 2026 at 10:07:02PM +1000, Greg Ungerer wrote:
+>>>> Create documentation for a new binding to support the Freescale ColdFire
+>>>> UART hardware block. This is found on pretty much all variants of the
+>>>> M68K derived Freescale ColdFire family of System-on-Chip devices.
+>>>>
+>>>> It is not compatible with any other known UARTs.
+>>>
+>>> You never tested this, so limited review.
+>>
+>> It is tested. It is working and running on multiple ColdFire platforms.
+>>
+>>>> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+> 
+>>>> --- /dev/null
+>>>> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
+> 
+>>>> +properties:
+>>>> +  compatible:
+>>>> +    const: fsl,mcf-uart
+>>>
+>>> What is the SoC name? MCF? Compatibles must be specific (see writing
+>>> bindings doc).
+>>
+>> Yes. MCF = "Motorola ColdFire". It is the SoC prefix used for naming of all
+>> ColdFire parts (which is dozens of variants):
+>>
+>>    MCF5206
+>>    MCF5208
+>>    MCF5307
+>>    MCF54415
+>>    etc
+>>
+>> Even when Motorola became Freescale they stuck with MCF on all ColdFire parts.
+> 
+> I guess you want:
+> 
+>     items:
+>       - enum:
+>           - fsl,mcf5206
+>           - fsl,mcf5208
+>           - fsl,mcf5307
+>             [...]
+>       - const: fsl,mcf-uart
+> 
+> As no new (possibly incompatible) Coldfire parts will appear, a generic
+> fallback looks reasonable to me.
 
-soc: qcom: geni-se: Populate clk_perf_tbl with SE source clock frequencies =
-from perf OPP table
+It will be a long list of variants - thanks Freescale. Quite a few of the SoC
+parts have sub-parts with different single digits, for example:
 
-This commit aims to populate clk_perf_tbl using the OPP table exposed on
-the perf domain device. This is intended to allow protocol drivers on the
-firmware managed path to calculate required dividers and pick supported
-source clock frequencies similarly to the Linux clock managed path.
+    mcf54410, mcf54415, mcf54416, mcf54417, mcf54118
 
-> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni=
--se.c
-> index 074087c592cc3..95eeb9438a292 100644
-> --- a/drivers/soc/qcom/qcom-geni-se.c
-> +++ b/drivers/soc/qcom/qcom-geni-se.c
-[ ... ]
-> @@ -1170,7 +1171,12 @@ int geni_se_domain_attach(struct geni_se *se)
-[ ... ]
-> +	level =3D 0;
-> +	for (i =3D 0; i < num_opps; i++) {
-> +		opp =3D dev_pm_opp_find_level_ceil(perf_dev, &level);
-> +		if (IS_ERR(opp))
-> +			return PTR_ERR(opp);
-> +
-> +		se->clk_perf_tbl[i] =3D level;
+At a quick count I can see about 42 variants. 
+I don't mind adding the full list if that is preferred.
 
-[Severity: High]
-Does this populate clk_perf_tbl with abstract performance levels instead of
-actual clock frequencies?
 
-The commit message states clk_perf_tbl should be populated with actual sour=
-ce
-clock frequencies so protocol drivers can calculate dividers and set the ra=
-te
-via dev_pm_opp_set_rate(). However, by using dev_pm_opp_find_level_ceil()
-in geni_se_domain_attach(), it appears this loop stores the performance
-level (an abstract index like 16 or 64) rather than the frequency in Hz.
+> An "mcf" vs. "motorola" vendor prefix might still be a discussion point ;-)
 
-For SCMI performance domains, this abstract level will break the divider ma=
-th
-in geni_se_clk_freq_match(), leading to massive deltas or invalid dividers.
-It will also cause dev_pm_opp_set_rate() to receive tiny abstract levels
-instead of Hz. Because dev_pm_opp_set_rate() searches the OPP table for a
-matching frequency, passing the abstract level will incorrectly match the
-lowest available frequency and likely break protocol communication.
+At least they didn't rename the chip part numbers when they renamed the company ;-)
 
-Should this use dev_pm_opp_find_freq_ceil() and track a frequency variable
-to store the actual rates in clk_perf_tbl?
+Regards
+Greg
 
-> +		dev_pm_opp_put(opp);
-> +		level++;
-> +	}
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261015-derive_clk=
-_perf_tbl_from_perf_domain_opp_table-v3-0-5da1096243c9@oss.qualcomm.com?par=
-t=3D1
