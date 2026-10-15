@@ -1,109 +1,132 @@
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACEB551814F
-	for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 13:07:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4203E2459C5
+	for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 13:09:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792069626; cv=none; b=OtuzvLRxcsqUaHCzDZjGeECfK59y/Pn1dNkEpsaj5r9i+JBk4IxV13vn225i4jHkAYd+Cp6EQeiBQL/kDrKoNETMImV1q0IiXqtkc4jQUNsbu+17IGCDl3HL4XyLXfTl6rVyqgHq4us9SK4c1QSu0bb00vB7e0BBWOEPcNwEpaY=
+	t=1792069800; cv=none; b=DnM0O6jei6ieKc7eRCVay1TSwKxUhsFHLcXS0GyIeOSlN2yIEQhj0IFSR79B8CX9fcLarAaRy/FaHmV8JDbTexqbK/qtjKze0AQlv0db6Md7ksYsZkW9JfWHRvxKMsMb11J6ZgLGdrueJHA4h/2GIGkITLInJPOtkGg7pA0B1r8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792069626; c=relaxed/simple;
-	bh=fttiZBNkYD6sTLyS2zJ73b2MnknfJszx/6K5lwFPaaI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=o/qFL1RGDjoe6rIgDLrOzpYUYIKs4O1C540pEWrBBrH4x07n1wBpxwyWqETK806D6tlk8QAwGRiXDB3PFLTcHzGChFKp9Q10aZy6swXv2d31wS8wfgFSFQ++QWIMuR790NjTHCjufHW1eD0QgszvOxAd4ht3fyRvLtxc7ZVJ9E8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5e519c39196so1642883e0c.3
-        for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 06:07:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792069623; x=1792674423;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=CSztrjFXDe2HY45Azvb46Y0IflWP3zkhLimwwlwMXh4=;
-        b=CkxC75eNyZwwVQpudUPU1yI749rR1WJcw2p76qfFVqg1UDptoAFtjGidzTFvKnkNdT
-         GW/ZAjgMQl1gq/y4ee/IJolIM3QqBh6l/jBoBDnTQt5oc9Nlh2I7eMDDSwaAUHJO6uQz
-         vKR2Syxww6jqItt2XjoAUpBS78+L5XCBVimiefDPixtAWWet5AIkd3kLsXy06XzdZNfv
-         0ojXf/4pw0hwY3ZbaJMeZgWUMd7Jtu2fhEeQpdllpLJKotSLE8boxWysIPcojttEMqPI
-         PewxzdDIbdykrr4vuJU9DgP7WjKCrLUvXuLZOk7zeE1jypb/1bn/hb7QvyaPkXc7CoTZ
-         VGYQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwrIRTFUJzvOagIOULHaIT+iZPYjsWSmEUdn3crxs8pv1/XHW4M2RDWVOhxKej6+3PaKKXl/dp9q3+TjCo=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKEOY1kRxhPD1FUvwS7zrIH6J+RwoZQCrdCt74tm2d89YSnaPQE
-	EJJbtIkXsZAsXAU8/JeOYZ6C5CWi1xdN8IkALOjFeTksxQWgM9xKd2qerPLpRxgFuGg=
-X-Gm-Gg: AYBFou0RO5ZpjaFriE0LOUKfTeD0YUPC2Hcma5R4T8zG0a7ghMUJ52ofs/4hwUZJT3n
-	AMbFhl9dey+5ZzW8sY8q+Lc1cqCNq5OjYeNPKs4wuQ8oJGuCWGArb1H0Gg52D+lBU4P2koEv0Kh
-	MLncGjlWiHsG3ZxezWzapI1Gk0vMb9HKTSMP4xhtoZckBHCLsiOvKNMkkRfnYUlIZCZU1eBqmOY
-	EM7pQcLdxVI93EdTnI1WWUYHg0QHbfGDE5WmxHilxqP6c+Y571VLDj5TxjPyVKk1+GBikZe7QIa
-	yMJAW/fxZY4JaKiEcA0BAQRtTv+moHdvQwrP/c5yT95QBZq9Z+vNmvHxwA4F0y5ATdcanPfTiAE
-	EuoTyKdd5bRF9lqi4D2hfbpQf8XQdxOe9qf8u2cBwe4Wa+YVokfx/Fn7hcQZvaBlpjJ45ZhesJe
-	s8uYBpil0R704mgOmBvq2cXLyVdvWCsuleSMYCfNo5cZ2QEbNkUPebLHvyW229NeNAuPWDNtlo5
-	gUaQjZWf8eskpN9RGfFYp/bRjyAlL8VOQjvk1v92A==
-X-Received: by 2002:a05:6123:2e6:b0:5c9:e022:f642 with SMTP id 71dfb90a1353d-5e91efc3525mr6169116e0c.0.1792069623425;
-        Thu, 15 Oct 2026 06:07:03 -0700 (PDT)
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com. [209.85.221.181])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ea962bd243sm181367e0c.5.2026.10.15.06.07.03
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Oct 2026 06:07:03 -0700 (PDT)
-Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-5e948e56af3so1624101e0c.2
-        for <linux-serial@vger.kernel.org>; Thu, 15 Oct 2026 06:07:03 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBzkUFKFdEciII9qVR1xbF22AmgLPhLUi8Ot0Z9HkeuCePReTfeR8dSxnbqqpQojC/Q2eEfZCQsagROeAJ0=@vger.kernel.org
-X-Received: by 2002:a05:6122:218f:b0:5d9:82c1:b343 with SMTP id
- 71dfb90a1353d-5e91f250d84mr6152791e0c.1.1792069622761; Thu, 15 Oct 2026
- 06:07:02 -0700 (PDT)
+	s=arc-20240116; t=1792069800; c=relaxed/simple;
+	bh=xypxk3WcLZZGs8FZHMzCxsKIH5f80SnavlDT4NY+vR8=;
+	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
+	 Date; b=FlKZ1mMtTTxP1OwZwpxb47PO6ZXpH+rRWZng0ivBfilRW6yCB2QdpAIeyEPAGy27nGIE+7MKeU6oXZI1wx450dvMA9OjjppqX+gQAKoMwbPzPBUYnMunxwVdWNwzmpiMjzBXOuMyPQoi4di9+xP+E3NpgFrQAHvxQELDSvnS1xg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ee0tM6u0; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ee0tM6u0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCA101F000C4;
+	Thu, 15 Oct 2026 13:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792069798;
+	bh=aNaawadwwEAs5ZmFM2dY8Od5eO//wWyOJWWJVt0vSJQ=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=ee0tM6u0PzlIFGodspTl1mWXGaErllP93VHa73z1q2nDChliEcuRjgLKIGxVqB4b+
+	 qy7C25OWgsd9paP2e938sGEonbEeJz8XfgnTeSvW6jKNE3FLPMIvbVHlqDthY3h5Ka
+	 3j2Ptgquaoe8xdylugHy4C6crxTXYBWtrDp8MVw+IdmF2nQEr1c6u3/WJg7jcHcHTe
+	 HPyluUZY2DHJqAR+TKIvArff++/4ShJ18hzo0Rx5Psjip11NKK1yNHLEtwD7dH+u0O
+	 PDYPbP1Fr30Sd1WC7lkF8R7O+s3V3qWBHtDH6WFprEFsBN4AcGtjIUauZdhHS9LsB7
+	 yD488bAtEKSzw==
+Message-ID: <sashiko-outbox-172900@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v3 5/8] spi: qcom-geni: Use geni_se_set_rate() for
+ setting source clock frequency
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Praveen Talari" <praveen.talari@oss.qualcomm.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-5-5da1096243c9@oss.qualcomm.com>
+References: <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-0-5da1096243c9@oss.qualcomm.com>
+ <20261015-derive_clk_perf_tbl_from_perf_domain_opp_table-v3-5-5da1096243c9@oss.qualcomm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 15 Oct 2026 13:09:58 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20261013120831.1046590-1-gerg@linux-m68k.org> <20261013120831.1046590-5-gerg@linux-m68k.org>
- <20261014-expensive-shrewd-nautilus-abcab6@quoll> <d256f39c-6ed5-409a-a7ed-224165d00521@linux-m68k.org>
- <20261015-adamant-realistic-bettong-a24c4f@quoll> <4e9b365b-7c5a-44f4-bfaf-d24e9162fd94@linux-m68k.org>
-In-Reply-To: <4e9b365b-7c5a-44f4-bfaf-d24e9162fd94@linux-m68k.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 15 Oct 2026 15:06:51 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW84xXV=msd7Sc3BY+50e-gxFxc5dKL7anhrU893NFVaw@mail.gmail.com>
-X-Gm-Features: AclHuK-L4YrCSikdmKp4uyJvcLx1JbdRSylRALstebroE1ucg4vSZgEb4WIoJHw
-Message-ID: <CAMuHMdW84xXV=msd7Sc3BY+50e-gxFxc5dKL7anhrU893NFVaw@mail.gmail.com>
-Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
-To: Greg Ungerer <gerg@linux-m68k.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, linux-m68k@lists.linux-m68k.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 
-Hi Greg,
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [High] pm: spi_geni_runtime_suspend() desynchronizes PM state if geni_se_=
+set_rate() fails
+- [Medium] pm: spi_geni_runtime_resume() leaks clock/power resources on gen=
+i_se_set_rate() error
+--
 
-On Thu, 15 Oct 2026 at 14:53, Greg Ungerer <gerg@linux-m68k.org> wrote:
-> On 15/10/26 18:56, Krzysztof Kozlowski wrote:
-> > But as proven already on the lists, no it WAS NOT tested. You have clear
-> > a warning.
-> >
-> > Otherwise you claim that tests shown errors and then you decided to
-> > still send it with errors, so then th enext question: why do you send
-> > code which your tests tell it is wrong?
->
-> Sorry, I have no idea what you are talking about.
->
-> This series of 5 patches was tested before sending, on multiple targets
-> that use this code (obviously all m68k/ColdFire platforms).
->
-> Just in case I missed something I re-ran testing with a fresh 7.3-rc7
-> code base. All 5 patches applied cleanly, with a clean compile. My testing
-> showed no new problems in normal operation. Granted sashkio did find a
-> couple of error case checking issues that you just do not normally encounter
-> in practice (but I will of course fix those for v2).
+commit 18dd7909ccc7f7c6dc80af1c7154961b4692ab24
+Author: Praveen Talari <praveen.talari@oss.qualcomm.com>
 
-make dt_binding_check dtbs_check
+spi: qcom-geni: Use geni_se_set_rate() for setting source clock frequency
 
-Gr{oetje,eeting}s,
+On the SA8255P platform there is no Linux clock handler for the SE
+source clock, so the driver has no way to look up the source clock
+index and divider needed to fill the GSI CONFIG0 TRE for a requested
+transfer frequency. To work around this, firmware instead exposes the
+SE HW supported source clock frequencies as OPPs on the perf domain
+device.
 
-                        Geert
+> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+> index 91e75e213f929..cbccd6d8689ab 100644
+> --- a/drivers/spi/spi-geni-qcom.c
+> +++ b/drivers/spi/spi-geni-qcom.c
+[ ... ]
+> @@ -1248,9 +1246,14 @@ static int spi_geni_runtime_suspend(struct device =
+*dev)
+>  {
+>  	struct spi_controller *spi =3D dev_get_drvdata(dev);
+>  	struct spi_geni_master *mas =3D spi_controller_get_devdata(spi);
+> +	int ret;
+> +
+> +	ret =3D mas->dev_data->power_off ?
+> +	      mas->dev_data->power_off(&mas->se) : 0;
+> +	if (ret)
+> +		return ret;
+> =20
+> -	return mas->dev_data->power_off ?
+> -	       mas->dev_data->power_off(&mas->se) : 0;
+> +	return geni_se_set_rate(&mas->se, 0);
+>  }
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+[Severity: High]
+Does this desynchronize the PM state if geni_se_set_rate() fails?
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+If mas->dev_data->power_off() successfully powers off the device (disabling
+clocks, interconnects, etc.), but geni_se_set_rate() subsequently fails and
+returns a negative error code, the PM core will abort the suspend transition
+and leave dev->power.runtime_status as RPM_ACTIVE.
+
+Since the PM core considers the device active, will subsequent operations
+bypass the pm_runtime_get_sync() resume path and directly access hardware
+registers while the clocks are actually disabled, potentially leading to an
+unclocked access exception?
+
+Could the error from geni_se_set_rate() be ignored or handled gracefully,
+or should geni_se_set_rate(0) be called before power_off()?
+
+>  static int spi_geni_runtime_resume(struct device *dev)
+> @@ -1265,10 +1268,7 @@ static int spi_geni_runtime_resume(struct device *=
+dev)
+>  			return ret;
+>  	}
+> =20
+> -	if (mas->se.has_opp)
+> -		return dev_pm_opp_set_rate(mas->dev, mas->cur_sclk_hz);
+> -
+> -	return 0;
+> +	return geni_se_set_rate(&mas->se, mas->cur_sclk_hz);
+>  }
+
+[Severity: Medium]
+Can this leak clock and power resources if geni_se_set_rate() fails?
+
+If power_on() successfully enables the device clocks and interconnects, but
+geni_se_set_rate() fails and returns an error, this function returns that
+error directly without first calling power_off() to unwind the state.
+
+The PM core will then mark the resume as failed and transition the device
+state back to RPM_SUSPENDED, orphaning the active hardware resources.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261015-derive_clk=
+_perf_tbl_from_perf_domain_opp_table-v3-0-5da1096243c9@oss.qualcomm.com?par=
+t=3D5
