@@ -1,151 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B826282F34;
-	Thu, 15 Oct 2026 01:26:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D925925F7A9;
+	Thu, 15 Oct 2026 03:30:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792027569; cv=none; b=Aa+PYNgYgrwzM5n5rYPz2f4WunLmDdAYtSyIhxe0+qVUww4MF20PkMhHH8L8fFg2itaGxFb18EC5TcrtQB9a46y0qEoIbLI1HESwQO2gFHsu9ebdU2eyUmF1uH9nU8STeotkveglrly2VIdpt7XrbKYFFtQJYfhjtOBCMw5Aayo=
+	t=1792035001; cv=none; b=WvBCMCWQz/L29A4GhaG1bOp8kbWxVfT8Qq5RKXr63YS9roCcuwNF9cGNF6H4gmzTSP91YtkSojmRAVsa0no5bostGleDCLGWymxNJQsw4VEOg30M4qL1ySI1Z3TgGFrl7D0DUiEDZi9NtBet3q09pHgq8bUwUbrlL7sXwCpdhMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792027569; c=relaxed/simple;
-	bh=aARRQkKeZqCI8RoUsnyZ/pmuEQMAh/Nvzrz6WlyENj0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HXPnQIMo0tLhV4LWieolHKkRC1Co4oIzcFp2/M5yZbBFemL63+AQqnALV7S4cE3TGwBQWRv9Y4JZeftXgSJNxNJLt96AAZ1WZDgjmOlUZn6QiN4tGlRG1wbeVYwZBchMatUVtkBY66LmHAmATx7rlOOC4D33cfQjVEy+1oz7Z5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hlbsqdDY; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1792035001; c=relaxed/simple;
+	bh=5cuqXH9vat4sxF51zg+2d3wpvESFGj6F+2a/87kk/3o=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=q2tJ0TuSjS296Octd6frCHK5Ehk3DdAvXzhUpG8hPUATlFdBvJfhhkCoU0H1ynjMue2WoRPUiChDYzRrmS8PVhKwnlrF5maVJX3ECGCIU2o3V/uIeJ/4yrZJTaxkKhKRDaMEaKaGCy+7Za1dq9qGJCAU/HBHCYt9i836lgdJ5kY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GOCqWp9g; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hlbsqdDY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792027568; x=1823563568;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aARRQkKeZqCI8RoUsnyZ/pmuEQMAh/Nvzrz6WlyENj0=;
-  b=hlbsqdDYy6x7cZhKfbCt1j3NsuBGMUt1ELOALhVsYfgBT0/K2KamhtRw
-   WfB5DSn6GwwntVixs7FzIF4HnCau9H6yro8G9Cb7C+7xj+oCxkXfE/KjY
-   Dq8X1Jtd9ASXKdpgQ/0xL8j6b48JFG71xH6bGWQyhY4La91h7IYraN7hN
-   PWO2zxCpQok18zjxTHmZMjJ+Y/3tHT+zMvaHiToyLLXwhPANSI3xuBgwY
-   bvLzaBwMS46tyqbBOeE6HD3Jnv/1ATMl6wmf3Uw2ysA4V2le7WRPVWEN9
-   Ut16OO4mAMDsIiKM2gvzq06zli9dcO1e2Nv4HqarAVdv+SIxXDI4JgPXk
-   g==;
-X-CSE-ConnectionGUID: spX60e+PQnOE7UYn4BHRVw==
-X-CSE-MsgGUID: pFj3lQ1/TyWny/OH7EO5fw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11935"; a="694767"
-X-IronPort-AV: E=Sophos;i="6.27,158,1787036400"; 
-   d="scan'208";a="694767"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2026 18:26:07 -0700
-X-CSE-ConnectionGUID: sBsw+8WWRdeSx+jswklIyw==
-X-CSE-MsgGUID: 4P0rxJFlQ9qBS2jErxIH1g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,158,1787036400"; 
-   d="scan'208";a="1536954"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 14 Oct 2026 18:26:04 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xHAEL-00000000FUN-1kv7;
-	Thu, 15 Oct 2026 01:26:01 +0000
-Date: Thu, 15 Oct 2026 09:25:36 +0800
-From: kernel test robot <lkp@intel.com>
-To: Adrian Ambrozewicz <aambrozewicz@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Donald Shannon <donalds@nvidia.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Oliver Neukum <oneukum@suse.com>
-Subject: Re: [PATCH 10/11] tty: Add NVIDIA LSTP UART driver
-Message-ID: <202610150927.WhzTb6WS-lkp@intel.com>
-References: <20261012-lstp-usb-adapter-v1-10-aambrozewicz@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GOCqWp9g"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80FC0C2BCF7;
+	Thu, 15 Oct 2026 03:30:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1792035001;
+	bh=5cuqXH9vat4sxF51zg+2d3wpvESFGj6F+2a/87kk/3o=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=GOCqWp9gc/areMZc1+MzGTiQkoMJul4stATH0Oug0PPHebSsOipXWaubFqG6MfVq+
+	 pIN1nAItOh20VVMNDCEqqe4fPpKmfKrrH1hPTSOqyWKzQAxILthHbc2Z6wf4e5Dyel
+	 kBLRH6vw9XBd9yQntuIU8hSYByyxD1/+QdjpM9ANpIIIkGpPafwiFa6IQtpSRdIzzX
+	 ryrLwflEY/1OSMdLwdOU/KnG6KEhSSPqz/S8NUhfuBBQKhysJZRFbab/VvSTNUYs+m
+	 2JVVNvKSBBLP44H7DxwLT0mXTot0RY9bGoON0KEAkeph0r+VJ6rqYpBxW+N3C+qA7w
+	 mEqOlJHd9j92A==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA12CC6B2F;
+	Thu, 15 Oct 2026 03:30:01 +0000 (UTC)
+From: Austin Schlegel via B4 Relay <devnull+schlegelas.outlook.com@kernel.org>
+Date: Wed, 14 Oct 2026 23:30:01 -0400
+Subject: [PATCH v2 2/2] serial: tegra: fix TX DMA descriptor use-after-free
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261012-lstp-usb-adapter-v1-10-aambrozewicz@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261014-serial-tegra-dma-uaf-v2-2-b142b31b67e3@outlook.com>
+References: <20261014-serial-tegra-dma-uaf-v2-0-b142b31b67e3@outlook.com>
+In-Reply-To: <20261014-serial-tegra-dma-uaf-v2-0-b142b31b67e3@outlook.com>
+To: Laxman Dewangan <ldewangan@nvidia.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Thierry Reding <thierry.reding@kernel.org>, 
+ Jonathan Hunter <jonathanh@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-tegra@vger.kernel.org, Austin Schlegel <austin.schlegel@arthrex.com>, 
+ Austin Schlegel <schlegelas@outlook.com>, stable@vger.kernel.org
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792035000; l=2167;
+ i=schlegelas@outlook.com; s=20261001; h=from:subject:message-id;
+ bh=1rmzYHaRgOYHPq/n3d0+QHrr9+Anehm1RKT/x2oyhLw=;
+ b=VyrKW3991vxpqEQIG7mJvzxRJF+Hhv7+XFExLgZz8TPd9ZS2XFflhfd/9iyIWYkR3VSfWD3Zg
+ ztNHhv2PWxmDQP974e6dPfHfymcRyfsgD3gvSJ4Y0E6AewmDBb8op7G
+X-Developer-Key: i=schlegelas@outlook.com; a=ed25519;
+ pk=ddgmH7VQaSWderjJFy4hDyq+P7hdHupPxQvwnGRBzCs=
+X-Endpoint-Received: by B4 Relay for schlegelas@outlook.com/20261001 with
+ auth_id=1098
+X-Original-From: Austin Schlegel <schlegelas@outlook.com>
+Reply-To: schlegelas@outlook.com
 
-Hi Adrian,
+From: Austin Schlegel <schlegelas@outlook.com>
 
-kernel test robot noticed the following build errors:
+tegra_uart_stop_tx() calls dmaengine_terminate_all() and then
+async_tx_ack(tup->tx_dma_desc) on the descriptor that was just
+terminated. With the GPC DMA driver, dmaengine_terminate_all() frees
+the active descriptor immediately, so the ack call that follows
+touches freed memory, the same use-after-free pattern fixed for the
+RX path in tegra_uart_terminate_rx_dma() ("serial: tegra: fix RX DMA
+descriptor use-after-free"). dmaengine clients must not touch a
+descriptor once dmaengine_terminate_all() has returned.
 
-[auto build test ERROR on bbf6b99a57b2479bf51c3c8ad0946f4b8c33ed69]
+Move the ack before dmaengine_terminate_all(), while the descriptor
+is still owned by the driver. tegra_uart_tx_dma_complete() already
+acks inside the completion callback, where the descriptor is valid,
+and is unaffected.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Adrian-Ambrozewicz/dt-bindings-gpio-Add-NVIDIA-LSTP-GPIO/20261012-203559
-base:   bbf6b99a57b2479bf51c3c8ad0946f4b8c33ed69
-patch link:    https://lore.kernel.org/r/20261012-lstp-usb-adapter-v1-10-aambrozewicz%40nvidia.com
-patch subject: [PATCH 10/11] tty: Add NVIDIA LSTP UART driver
-config: sparc64-allmodconfig (https://download.01.org/0day-ci/archive/20261015/202610150927.WhzTb6WS-lkp@intel.com/config)
-compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261015/202610150927.WhzTb6WS-lkp@intel.com/reproduce)
+Found by code inspection while fixing the analogous RX bug; not
+reproduced on hardware, since triggering it requires stopping an
+in-flight TX DMA transfer at the right moment. The RX and TX
+paths share the same dmaengine_terminate_all()-then-ack structure
+and the same root cause.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610150927.WhzTb6WS-lkp@intel.com/
+Fixes: e9ea096dd225 ("serial: tegra: add serial driver")
+Assisted-by: LLM
+Cc: stable@vger.kernel.org
+Signed-off-by: Austin Schlegel <schlegelas@outlook.com>
+---
+v2:
+ - Reworded commit: Removed inaccurate flush example
+ - Switched to personal email (v1 sent from austin.schlegel@arthrex.com)
 
-All errors (new ones prefixed by >>):
+v1: https://lore.kernel.org/all/20261001-tty-linus-v1-2-ecb8576c802d@arthrex.com/
+---
+ drivers/tty/serial/serial-tegra.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->> drivers/tty/lstp_tty.c:167:60: error: use of undeclared identifier 'B2500000'
-     167 |                 { 1500000, B1500000 }, { 2000000, B2000000 }, { 2500000, B2500000 },
-         |                                                                          ^
->> drivers/tty/lstp_tty.c:168:14: error: use of undeclared identifier 'B3000000'
-     168 |                 { 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
-         |                            ^
->> drivers/tty/lstp_tty.c:168:37: error: use of undeclared identifier 'B3500000'
-     168 |                 { 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
-         |                                                   ^
->> drivers/tty/lstp_tty.c:168:60: error: use of undeclared identifier 'B4000000'
-     168 |                 { 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
-         |                                                                          ^
->> drivers/tty/lstp_tty.c:171:25: error: invalid application of 'sizeof' to an incomplete type 'const struct (unnamed struct at drivers/tty/lstp_tty.c:155:15)[]'
-     171 |         for (size_t i = 0; i < ARRAY_SIZE(map); i++)
-         |                                ^~~~~~~~~~~~~~~
-   include/linux/array_size.h:11:32: note: expanded from macro 'ARRAY_SIZE'
-      11 | #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
-         |                                ^~~~~
-   5 errors generated.
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index a23a92cebe0d..306a38b2fb1e 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -639,9 +639,9 @@ static void tegra_uart_stop_tx(struct uart_port *u)
+ 
+ 	dmaengine_pause(tup->tx_dma_chan);
+ 	dmaengine_tx_status(tup->tx_dma_chan, tup->tx_cookie, &state);
++	async_tx_ack(tup->tx_dma_desc);
+ 	dmaengine_terminate_all(tup->tx_dma_chan);
+ 	count = tup->tx_bytes_requested - state.residue;
+-	async_tx_ack(tup->tx_dma_desc);
+ 	uart_xmit_advance(&tup->uport, count);
+ 	tup->tx_in_progress = 0;
+ }
+
+-- 
+2.53.0
 
 
-vim +/B2500000 +167 drivers/tty/lstp_tty.c
-
-   151	
-   152	/* clang-format off */
-   153	static speed_t lstp_baud_to_speed(u32 baud)
-   154	{
-   155		static const struct {
-   156			u32     baud;
-   157			speed_t speed;
-   158		} map[] = {
-   159			{      50, B50      }, {      75, B75      }, {     110, B110     },
-   160			{     134, B134     }, {     150, B150     }, {     200, B200     },
-   161			{     300, B300     }, {     600, B600     }, {    1200, B1200    },
-   162			{    1800, B1800    }, {    2400, B2400    }, {    4800, B4800    },
-   163			{    9600, B9600    }, {   19200, B19200   }, {   38400, B38400   },
-   164			{   57600, B57600   }, {  115200, B115200  }, {  230400, B230400  },
-   165			{  460800, B460800  }, {  500000, B500000  }, {  576000, B576000  },
-   166			{  921600, B921600  }, { 1000000, B1000000 }, { 1152000, B1152000 },
- > 167			{ 1500000, B1500000 }, { 2000000, B2000000 }, { 2500000, B2500000 },
- > 168			{ 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
-   169		};
-   170	
- > 171		for (size_t i = 0; i < ARRAY_SIZE(map); i++)
-   172			if (map[i].baud == baud)
-   173				return map[i].speed;
-   174	
-   175		return B0;
-   176	}
-   177	
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
