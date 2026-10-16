@@ -1,41 +1,40 @@
 Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F555AA677
-	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 18:00:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65EC498E2E
+	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 18:05:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792173648; cv=none; b=tB1v2HvbHPvZwPlkPiZwt6RX83EHLhmUK8FppcTaoOx6C+Ye2L25SLLEJ9gqcGs53PXsIV/Y0XWDsLS8RwhXOadLAaoZbI79Yqp01VWvY2/zctUNPbOYO2gIkap+Nxn+IspURoSFLvDudpN+tqBbn5LTv6nwkcRUTkg3o6C4j6Y=
+	t=1792173935; cv=none; b=HlprCn0Zexb5FjpOHkuWWEku/q5gFwjLIkfnVRDBCgvNM92jCw+ymcbo7O5zEfoTXEj/TTTHqFSM8dm2JgNCYURQJiuebm65zp3Ems6ZBZ3AnpswlmORdFz5lAh1/Rt1mi9AC2NyydzFjaO0LlzTLnA2JjmggeWHo5X4/9cVovA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792173648; c=relaxed/simple;
-	bh=WQslHMs2svOlSFQafK7q53v+0G7DlzBK6lZSGEX3Nu4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rDZEGZ5EdCBUZRBwJQ+EMaPPfQwuE2PwYbXCSbv1hGd7i8ONbijE8X7O3GGNJOlGamAmhc6oUmdZUVO2kFwxDbG6YzRWGrm0hYEM7UmQG6vYxgffZRQiT2y1yOro4eYUAhUpcPBcC7XCjLc3GeEcGBsTPZRMp5fVIwqJbu5zWxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=E8mEeGbc; arc=none smtp.client-ip=185.67.36.66
+	s=arc-20240116; t=1792173935; c=relaxed/simple;
+	bh=GF3qJ28po4tzQKhOOmc1ZjYhXtmA/fVN39S6nEBHPRI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=U9/9JgeftDdEIu+F46E6AKQSy9SGwn/ItqWjbJzgJ3i8UoL4NB9a9441IjKQKT6k/pYdmcm6UCo3gUWxQNA1YfRMNSBfc9Jov2EiHG0HC2LScTY8nqiqH893HHMvWdeTFYVqeSiqY4pr4V7+xchHiygxSEGt+f02gtHRlS7fKTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=HrJrEjfj; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="E8mEeGbc"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="HrJrEjfj"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id 5BFA4240110
-	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 20:00:42 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id 4F259240103
+	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 20:05:32 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1792173642;
-	bh=v2EF/fsRX2gtP/07bUp+y+QrpNj7xZBjUZMkm63RIN4=;
+	s=1984.8680eb; t=1792173932;
+	bh=4KZfnZZWUgpacNaNvWb37H6nYeezWlIgqRQQEVtr3Zc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=E8mEeGbcsM4FZ5vU3t1xfVbT/lxJla1IYt6q102bSZeH9Oa/f9dyXaLIIeROwgziu
-	 dXFZELKXjpINwuWRgsW+rUC2IK6WfdcwUf5zs/gGbEN0Yt+epre3OLfnNu28i9naAE
-	 7pB/3H3too7dgBM9iriaTaog6pjj1+1vq/p/kTpsx8740cZeG7s04VkwfJ5sdPmawS
-	 BkrgYpV+h63/CnRsxArJdvSNFThi2kgab7YmLenOG4RC1mNls8QM8apPHeYFY+3rt8
-	 Wy+LhhGCGNEZA7LsR4RUcgpaPgFRSgifTBOwBzNh4n8NU8UXGKF5ABJqslSbGmhyZo
-	 e941oZXmfuZtA==
+	b=HrJrEjfjgivQSE0nrTovZkcjBla/eWblOihzDJU5SAUTVFj/izb1WeeXDCTQaBNDm
+	 lB8HAPBEiL9rSYaPuQ4gU+CHwpT6xOCuX69XqU46GmgqJAUB9tYdBhmeOciWlwnuWF
+	 0N5bmluq0R3ACOiGubE2zgzl8r4+oJP39TsywoYwzjlkodb+j1cHLa26F6Wmvu7Zim
+	 Bx93oreW2xC6nQiht7IxAmqGL+zQZhwwUGgoc5tK0YlxZ1nO1oeZ2c8MJabm4Dwj3j
+	 LY9rWx8KykeSRQJbCOAhiKHrJxpBnFG5XgExwi3naq0eDogNR+5+NQbpe8Ehr8Efer
+	 BmuMqQveNUOLQ==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4j5t5f2Dphz9rxF;
-	Fri, 16 Oct 2026 20:00:38 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4j5tCH13b5z9rxM;
+	Fri, 16 Oct 2026 20:05:31 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Fri, 16 Oct 2026 18:00:41 +0000
-Subject: [PATCH v4 4/4] rust: serdev: Simplify callbacks
+Date: Fri, 16 Oct 2026 18:05:31 +0000
+Subject: [PATCH RESEND v4] ACPI: SPCR: Support UART clock frequency field
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,44 +43,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261016-rust_serdev_probe_refactor-v4-4-46832e034757@posteo.de>
-References: <20261016-rust_serdev_probe_refactor-v4-0-46832e034757@posteo.de>
-In-Reply-To: <20261016-rust_serdev_probe_refactor-v4-0-46832e034757@posteo.de>
-To: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>, 
- Alex Elder <elder@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
- Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
- Danilo Krummrich <dakr@kernel.org>, 
- Daniel Almeida <daniel.almeida@collabora.com>, 
- Tamir Duberstein <tamird@kernel.org>, 
- Alexandre Courbot <acourbot@nvidia.com>, 
- =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
- Eric Biggers <ebiggers@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, 
- Lorenzo Stoakes <ljs@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
- "Liam R. Howlett" <liam@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, 
- Jiri Slaby <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org, 
- rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, 
- driver-core@lists.linux.dev, Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8348;
+Message-Id: <20261016-acpi_spcr-v4-1-f9a96fe016af@posteo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Len Brown <lenb@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-acpi@vger.kernel.org, Markus Probst <markus.probst@posteo.de>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6200;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=WQslHMs2svOlSFQafK7q53v+0G7DlzBK6lZSGEX3Nu4=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBq0mY5HjDmlBQrrLlK+gbfKefRRlMg2Q572EcLJ
- 18iEa5nDwmJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCatJmORsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9K8yRAAhqrPRMO6LvhLA1iqtztQ8QbCIxWs7Pn
- fcvnAFhQOab4F9wAi9CcT+SlmsGPZei3jJqBorgujsuiqZVjgLN0m7kLmI7pdBb7b+2vL1AeBwV
- p5OZBeZ6ex9Y7fQTsn04iJ6q+qBooGzG/7EhwjJZ9QkbfioSt2kGJUpykqlap7/3+QsdU2I+0Gb
- u7o1OozX0icofcSLNUazYyAFujABQhk1GR7N/5lMcyBtWOZ/FFes243ltDpt+PFR+c2/TEU+JtQ
- 6aQWTOttwp4q8bWRbglSKIGmPqmKQStBQSIHAMlwigu+2vuQsJD0/gavT8E5vgAv9K5WktE10R0
- jCXtqChxDilFcqoqH74FS4c/vq0KBc12nyAnsxzMND1yhPkxxZuL/Fv3A9FDqkwBZI+nqsUUONO
- s+NRUdwI+xCvWu2shWnAqDAZNoJ9ZqpiZazQ6QZ/khhtEyLZAhfmCExGlmnyL2dTZnw5+hfeIFX
- OrVxqEwOJTFkV1Zs6BeM80prVvFB8Y+l0QZ+FX0pW1+GhLFQfnHBGMcputAaXhCKApV7wWRmL+8
- A34SuwXOUignQDv+wGx7qxozvwIyy1jUCoZLEkMJL5fxBAL7eGbz61K9V5ul97+POQeaSE/eGmB
- x3VvQh6lT12Cm9Vh0+y6zVOK80UhcdlbeYS9p57xd7vKpHC7imNw=
+ bh=GF3qJ28po4tzQKhOOmc1ZjYhXtmA/fVN39S6nEBHPRI=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBq0mdqZhcEpDUIIAPU9+EHdirBiQl1T5vHCIACO
+ nFbi9oCjDuJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCatJnahsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9LvQRAAugL0uF1vopl6dbDFBgWjc44+XwB3E7P
+ l80N9Br+lLg4YO4qNcEEGbVuq/h4UJxLteAGoYKmfUyh62CnUHs/T3dsMRg6uerr/jIptCXIdAd
+ TowZtIgsmRjaKj8JYlEgnnwpvQ+u6/JtL2umSHmQmKT/zH40kFnqMsCSu7OiYaD+0I8vSwp9X9X
+ wD2teItNAZYxr2n4lTBP87ZaU7WIQuGxfKhtsg0k/RyDci8mklGM5tpjj7ZlKu016JCwbAEVxBj
+ JgsPHCyVg0frHSRiLnJ2boAAIk1LBFupvuExA66oOggM719kLQeGBYdP5XHrt+4GFW2bpukxUTB
+ ubug+p3agV17OAjvpTLFpDeRNz92tp7W/7AwpFepwGHV0maqLKUA+iduI2WIF/EeXPJg5BYZwYx
+ 33Y2aswQlOmgXnSPf5l45Ni0ExKjFL8qD/AmLY7GgGVG3Qg3i1UrFdrcS0sMoz/3JjEEhe3hqtV
+ 8aPJ91nRYMoS9gAfVHqanQiXmKp5LjD4/JuDBZNQuNlAx7jSl1nzDUZAZd4GTP9Ay69jc66Dd3W
+ uSb611FU6ojT7vRtEhAf0dCetf3eZy8Eyy3qd8tPGBqzqstVy08hCYWQ7/e3i4Bq+RsN2xkbpCL
+ +qW2NbrN4ntoM6g0YhXCks9VMO8ycpMDTZThTWYVmXIlzdBlhI3I=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -127,209 +109,156 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Initialize the driver's private data directly on `PrivateData`.
+Prior to this patch, we assume the uart clock frequency is 1843200 Hz in
+the early console. This behaviour results in garbage console output if the
+actual uart clock frequency differs.
 
-Introduce `OpenGuard` for resource cleanup.
+The UART Clock Frequency field was added in the Microsoft Serial Port
+Console Redirection (SPCR) specification revision 1.08. If present, use it
+to configure the serial port with the correct uart clock frequency.
+Fallback to old behaviour if missing.
 
+Add function `setup_earlycon_with_uartclk` to set uart clock frequency
+while still allowing to reuse the same console string with
+`add_preferred_console`.
+
+Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/serial-port-console-redirection-table
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- rust/kernel/serdev.rs | 131 ++++++++++++++++++++------------------------------
- 1 file changed, 52 insertions(+), 79 deletions(-)
+Changes in v4:
+- merge patches together
+- rewrite commit message
+- Link to v3: https://patch.msgid.link/20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de
 
-diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-index c16d6593a8d2..3f9165e16776 100644
---- a/rust/kernel/serdev.rs
-+++ b/rust/kernel/serdev.rs
-@@ -17,16 +17,12 @@
-     prelude::*,
-     sync::aref::AlwaysRefCounted,
-     time::Jiffies,
--    types::{
--        Opaque,
--        ScopeGuard, //
--    }, //
-+    types::Opaque, //
- };
- 
- use core::{
--    cell::UnsafeCell,
-     marker::PhantomData,
--    mem::{offset_of, MaybeUninit},
-+    mem::offset_of,
-     ptr::NonNull, //
- };
- 
-@@ -92,24 +88,36 @@ unsafe fn unregister(sdrv: &Opaque<Self::DriverType>) {
-     }
- }
- 
-+struct OpenGuard<'bound> {
-+    sdev: &'bound Device<device::Bound>,
-+}
-+
-+impl Drop for OpenGuard<'_> {
-+    fn drop(&mut self) {
-+        // SAFETY:
-+        // - `self.sdev.as_raw()` is guaranteed to be a pointer to a valid
-+        //   `struct serdev_device`.
-+        // - The existence of self proves that the device is open.
-+        unsafe { bindings::serdev_device_close(self.sdev.as_raw()) };
-+    }
-+}
-+
- #[doc(hidden)]
--#[pin_data(PinnedDrop)]
-+#[pin_data]
- pub struct PrivateData<'bound, T: Driver> {
--    sdev: &'bound Device<device::Bound>,
-     #[pin]
--    driver: UnsafeCell<MaybeUninit<T::Data<'bound>>>,
--    open: UnsafeCell<bool>,
-+    driver: T::Data<'bound>,
-+    open: OpenGuard<'bound>,
- }
- 
--#[pinned_drop]
--impl<T: Driver> PinnedDrop for PrivateData<'_, T> {
--    fn drop(self: Pin<&mut Self>) {
--        // SAFETY: We have exclusive access to `self.open`.
--        if unsafe { *self.open.get() } {
--            // SAFETY: `self.sdev.as_raw()` is guaranteed to be a pointer to a valid
--            // `struct serdev_device`.
--            unsafe { bindings::serdev_device_close(self.sdev.as_raw()) };
--        }
-+impl<'bound, T: Driver> PrivateData<'bound, T> {
-+    #[inline]
-+    fn driver_data(self: Pin<&Self>) -> Pin<&T::Data<'bound>> {
-+        // SAFETY: We treat the result as pinned.
-+        let inner = unsafe { Pin::into_inner_unchecked(self) };
-+
-+        // SAFETY: `self.driver` is pinned.
-+        unsafe { Pin::new_unchecked(&inner.driver) }
-     }
- }
- 
-@@ -134,46 +142,30 @@ extern "C" fn probe_callback(sdev: *mut bindings::serdev_device) -> kernel::ffi:
- 
-         from_result(|| {
-             sdev.as_ref().set_drvdata(try_pin_init!(PrivateData::<T> {
--                sdev: &**sdev,
--                driver: MaybeUninit::<T::Data<'_>>::zeroed().into(),
--                open: false.into(),
-+                open: {
-+                    // SAFETY:
-+                    // - `sdev.as_raw()` is guaranteed to be a valid pointer to
-+                    //   `serdev_device`.
-+                    // - It is safe to call before open.
-+                    unsafe { bindings::serdev_device_set_client_ops(sdev.as_raw(), Self::OPS) };
-+
-+                    // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to
-+                    // `serdev_device`.
-+                    unsafe { bindings::serdev_device_pause_rx(sdev.as_raw()) };
-+
-+                    // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to
-+                    // `serdev_device`.
-+                    to_result(unsafe { bindings::serdev_device_open(sdev.as_raw()) })?;
-+
-+                    OpenGuard { sdev }
-+                },
-+                driver <- T::probe(sdev, info),
-             }))?;
--            // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
--            let private_data = unsafe { sdev.as_ref().drvdata_borrow::<PrivateData<'_, T>>() };
--            let private_data = ScopeGuard::new_with_data(private_data, |_| {
--                // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
--                drop(unsafe { sdev.as_ref().drvdata_obtain::<PrivateData<'_, T>>() });
--            });
--            // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to `serdev_device`.
--            unsafe { bindings::serdev_device_set_client_ops(sdev.as_raw(), Self::OPS) };
- 
-             // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to `serdev_device`.
--            unsafe { bindings::serdev_device_pause_rx(sdev.as_raw()) };
--
--            // SAFETY: The serial device bus only ever calls the probe callback with a valid pointer
--            // to a `serdev_device`.
--            to_result(unsafe { bindings::serdev_device_open(sdev.as_raw()) })?;
--
--            // SAFETY: We have exclusive access to `private_data.open`.
--            unsafe { *private_data.open.get() = true };
--
--            let data = T::probe(sdev, info);
-+            unsafe { bindings::serdev_device_resume_rx(sdev.as_raw()) };
- 
--            // SAFETY: We have exclusive access to `private_data.driver`.
--            let driver = unsafe { &mut *private_data.driver.get() };
--            // SAFETY:
--            // - `driver.as_mut_ptr()` is a valid pointer to uninitialized data.
--            // - `private_data.driver` is pinned.
--            let result = unsafe { pin_init::raw_try_init(driver.as_mut_ptr(), data) };
--
--            result.map(|()| {
--                private_data.dismiss();
--
--                // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to `serdev_device`.
--                unsafe { bindings::serdev_device_resume_rx(sdev.as_raw()) };
--
--                0
--            })
-+            Ok(0)
-         })
-     }
- 
-@@ -189,21 +181,10 @@ extern "C" fn remove_callback(sdev: *mut bindings::serdev_device) {
-         // and stored a `Pin<KBox<PrivateData<'_, T>>>`.
-         let private_data = unsafe { sdev.as_ref().drvdata_borrow::<PrivateData<'_, T>>() };
- 
--        // SAFETY: No one has exclusive access to `private_data.driver`.
--        let data = unsafe { &*private_data.driver.get() };
--        // SAFETY:
--        // - `private_data.driver` is pinned.
--        // - `remove_callback` is only ever called after a successful call to `probe_callback`,
--        //   hence it's guaranteed that `private_data.driver` was initialized.
--        let data_pinned = unsafe { Pin::new_unchecked(data.assume_init_ref()) };
--
--        T::unbind(sdev, data_pinned);
-+        T::unbind(sdev, private_data.driver_data());
- 
-         // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to `serdev_device`.
-         unsafe { bindings::serdev_device_pause_rx(sdev.as_raw()) };
--
--        // SAFETY: We already established that `data` is guaranteed to be initialized.
--        unsafe { data.assume_init_drop() };
-     }
- 
-     extern "C" fn receive_buf_callback(
-@@ -211,6 +192,9 @@ extern "C" fn receive_buf_callback(
-         buf: *const u8,
-         length: usize,
-     ) -> usize {
-+        // SAFETY: `buf` is guaranteed to be non-null and has the size of `length`.
-+        let buf = unsafe { core::slice::from_raw_parts(buf, length) };
-+
-         // SAFETY: The serial device bus only ever calls the receive buf callback with a valid
-         // pointer to a `struct serdev_device`.
-         //
-@@ -222,18 +206,7 @@ extern "C" fn receive_buf_callback(
-         // and stored a `Pin<KBox<PrivateData<'_, T>>>`.
-         let private_data = unsafe { sdev.as_ref().drvdata_borrow::<PrivateData<'_, T>>() };
- 
--        // SAFETY: No one has exclusive access to `private_data.driver`.
--        let data = unsafe { &*private_data.driver.get() };
--        // SAFETY:
--        // - `private_data.driver` is pinned.
--        // - `receive_buf_callback` is only ever called after a successful call to `probe_callback`,
--        //   hence it's guaranteed that `private_data.driver` was initialized.
--        let data_pinned = unsafe { Pin::new_unchecked(data.assume_init_ref()) };
--
--        // SAFETY: `buf` is guaranteed to be non-null and has the size of `length`.
--        let buf = unsafe { core::slice::from_raw_parts(buf, length) };
--
--        T::receive(sdev, data_pinned, buf)
-+        T::receive(sdev, private_data.driver_data(), buf)
-     }
- }
- 
+Changes in v3:
+- add separate function for earlycon with uartclk
+- Link to v2: https://patch.msgid.link/20260525-acpi_spcr-v2-0-c042089d73ca@posteo.de
 
+Changes in v2:
+- fix uart_clk_freq possibly being interpreted as parity/bits/flow
+- Link to v1: https://patch.msgid.link/20260505-acpi_spcr-v1-1-fd4bc6f4eb53@posteo.de
+---
+ drivers/acpi/spcr.c           |  3 ++-
+ drivers/tty/serial/earlycon.c | 17 ++++++++++++-----
+ include/linux/serial_core.h   | 11 +++++++++--
+ 3 files changed, 23 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+index 73cb933fdc89..c79c809f49d4 100644
+--- a/drivers/acpi/spcr.c
++++ b/drivers/acpi/spcr.c
+@@ -228,7 +228,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
+ 	pr_info("console: %s\n", opts);
+ 
+ 	if (enable_earlycon)
+-		setup_earlycon(opts);
++		setup_earlycon_with_uartclk(opts,
++					    table->header.revision >= 3 ? table->uart_clk_freq : 0);
+ 
+ 	if (enable_console)
+ 		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index ab9af37f6cda..5a20fe9e3fb6 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -135,11 +135,14 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 	return 0;
+ }
+ 
+-static int __init register_earlycon(char *buf, const struct earlycon_id *match)
++static int __init register_earlycon(char *buf, unsigned int uart_clk_freq,
++				    const struct earlycon_id *match)
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
+ 
++	port->uartclk = uart_clk_freq;
++
+ 	/* On parsing error, pass the options buf to the setup function */
+ 	if (buf && !parse_options(&early_console_dev, buf))
+ 		buf = NULL;
+@@ -163,8 +166,9 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+ }
+ 
+ /**
+- *	setup_earlycon - match and register earlycon console
+- *	@buf:	earlycon param string
++ *	setup_earlycon_with_uartclk - match and register earlycon console
++ *	@buf:			      earlycon param string
++ *	@uart_clk_freq:		      uart clock frequency in Hz or 0 for BASE_BAUD*16
+  *
+  *	Registers the earlycon console matching the earlycon specified
+  *	in the param string @buf. Acceptable param strings are of the form
+@@ -177,10 +181,13 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+  *	<options> string in the 'options' parameter; all other forms set
+  *	the parameter to NULL.
+  *
++ *	If the uart clock frequency is specified in the 'options' parameter,
++ *	the value of the param @uart_clk_freq will be ignored.
++ *
+  *	Returns 0 if an attempt to register the earlycon was made,
+  *	otherwise negative error code
+  */
+-int __init setup_earlycon(char *buf)
++int __init setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq)
+ {
+ 	const struct earlycon_id *match;
+ 	bool empty_compatible = true;
+@@ -209,7 +216,7 @@ int __init setup_earlycon(char *buf)
+ 		} else
+ 			buf = NULL;
+ 
+-		return register_earlycon(buf, match);
++		return register_earlycon(buf, uart_clk_freq, match);
+ 	}
+ 
+ 	if (empty_compatible) {
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index bdc214386e4a..9b2bcd4295a9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -1099,11 +1099,18 @@ int of_setup_earlycon(const struct earlycon_id *match, unsigned long node,
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+ extern bool earlycon_acpi_spcr_enable __initdata;
+-int setup_earlycon(char *buf);
++int setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq);
+ #else
+ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
+-static inline int setup_earlycon(char *buf) { return 0; }
++static inline int setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq)
++{
++	return 0;
++}
+ #endif
++static inline int setup_earlycon(char *buf)
++{
++	return setup_earlycon_with_uartclk(buf, 0);
++}
+ 
+ /* Variant of uart_console_registered() when the console_list_lock is held. */
+ static inline bool uart_console_registered_locked(struct uart_port *port)
+
+---
+base-commit: 237a1c39e8dfd3e1c6f1f023eea37a48ec04cc63
+change-id: 20260430-acpi_spcr-61902fd923f2
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqOIQQbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSt08QALWMim65nIIS428BheYg
+aq6BqxDGGqORhlf7aCFGTtNaeNDsu1Tny7sNTe+TEXpKl+AwoFTJ+4+bxl50AYyp
+8Niod0JGjEoxkQKsU/aScvCvEvMuPXOABfUGFtzieNpfswU2n6LHjywy+RP1mTEn
+aPP1arQGGGhe5b5lvolREN0VbGvymtiLr6P+qOhs76ib/dkOegq2/njBX7UlQ7Fy
+dIQo1A/NayUn5F7VWQKUz6ZHLX9bVZYSe2gstKpl5C8Ybwfaj/HgeT1TAdMoQ2K/
+KG0HgcWwIyoIaIms+yED6WSQKJwexx4zn/t2w/Qi2eSVF6WSqNdY3rrHf3sY3luj
+g5wYs2AvNnGjQU6iNGs7DLwwasHgqwZcOwRIdTvY8z3UP5Wpj5y01a+dJJG378zR
+cZhEQUmDn21jBlJvpqSKUoNRZc1L/8uNfQLbnOMVBNOUBXIQ9Z29j2IkqGsYeTG8
+uUndjyA/2SlEU29w2G6/MnJykNiW4oMxryXabXvh8dXc+SPQkUIM71ivo4y2/HgM
+3XGz9l+cgJk61F0oAHtzie7MorsEGVLMA2n4TpibkUCLRIjK3e5QvEBDHZILWHPA
+k2b8dkF2cdu8Q4nbI3PzXUFzuq/rsBpncSvYd/zDQrEMxzhNUVmuX7B9Ws7I0P36
+VKkGQqUFJNNx7LLynD7XaJ7l
+=nupY
+-----END PGP SIGNATURE-----
 -- 
-2.55.0
+Markus Probst <markus.probst@posteo.de>
 
