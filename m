@@ -1,33 +1,33 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B20F255C1D9;
-	Fri, 16 Oct 2026 17:16:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8362D55C1B7;
+	Fri, 16 Oct 2026 17:17:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792170992; cv=none; b=ZlJsHtaG70WsbnB+TzTaQLjMAE3/RCn1fAUCRmriK5vO97btbIcktyuNcCgyW5yIT/WEenH0xkRILctctP53W4SsmOKZ5eCXnXmq4DB9xWAD+CMHtmBM1IvijxzfcVDXQnf9fRB0+IRbrAfSy9IqdkcGrFsDQWQdKBokcKSx1lM=
+	t=1792171025; cv=none; b=KmwWHuaFvQw0oNyx+x1z7FoiNnUJi6IeYtVj7wuSU0WlfWicHzh5Qu+IUVbNqAl3/rlhn0+lxQz6uU6vNeFKVgBUISaXIkWDPXw/9IMUumuNujgb8Om7ruoB6OaBXKQlKU5BR73UAO2Ee9aFX3gY3p3W0s4RBeFCZ5oYNHRT4DE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792170992; c=relaxed/simple;
-	bh=HeA/TRrIMzSLPZEJEe2gUXhaeg76MD88XR5/4eL4VzU=;
+	s=arc-20240116; t=1792171025; c=relaxed/simple;
+	bh=nNGa9TvDgrAMBdKEfvIUXfA4nRo0oRAC/z1sorIw6w0=;
 	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=WU85ejvM34KTnT2UL4Qie+gvbQbWIr67h3ML78tUIJRmU61Pc+5nqu6sGWNYwCysiL79SFORBRgWmpGky2Vy3QkmbnE+iOvD+FQrOFv4oO/I0lI7lV0h/2aIt+r4jLaK2GqND8WSIJw9tpgc5PBX4yV7irXI9kfgy5sDj9J9XrU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=lr+bokTD; arc=none smtp.client-ip=162.243.120.170
+	 Mime-Version:Content-Type; b=OzUwqtzGfEWhiC5YiLKflMAGOO/Ggb2gdYoEwPyoRohmpe3UnCuyFByPnmdEDTOdr2u/IBSUpLkuRgCsWYnYvIMHt8d521vXXg3gdDU+z1d30gu1F7a2WsF2JF9EWXSKlQEPXYTxR8MhKqqYQwE/F+xZrX574oUOGkXeGLJPjSQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=Y5jyN7+6; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="lr+bokTD"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Y5jyN7+6"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
 	To:From:Date:subject:date:message-id:reply-to;
-	bh=dKQ62B/68glF3VJQl3TwnzQ09ixoOo9aoTa47BHK5rg=; b=lr+bokTDzJ+s+ioETGpBVlCIxj
-	KWS1zr5+gCEXjzc4fwVwvQQ12wlJvQg9pX34AuWejVkS7CfuQWTNWVCyHa9Yjst5M08WNJEK3T02H
-	wqcGY7WUHkSIv1E6UGzHLtS8yj7rvUSbE9fsBRkVa64lkd//g7TEppVJ/KQJCPBpIBOk=;
+	bh=4ZUoUIhvbfC88KaoKHqYu/qRtIDZmc0/E3twtrLwIIw=; b=Y5jyN7+6fkrqvRGCCNcN/Vv9PN
+	/YKyPjNLZhH3ACLt6EV0NMevlYRKfyhgXmwj+071FePYm88/hsCj3z6hvDwiysuu27EKKu27xroek
+	WeC+SSVAzvq/W9ZPJD+AMVMNx4PyQG5hR+/WKB1L/Ox3ZVDxFkTouOOE4/KnOwAV8s0s=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1xHlXf-000000006af-2Iq4;
-	Fri, 16 Oct 2026 13:16:25 -0400
-Date: Fri, 16 Oct 2026 13:16:24 -0400
+	id 1xHlYF-000000006as-28rg;
+	Fri, 16 Oct 2026 13:17:01 -0400
+Date: Fri, 16 Oct 2026 13:17:00 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: "Arnd Bergmann" <arnd@arndb.de>
 Cc: "Arnd Bergmann" <arnd@kernel.org>, "Greg Kroah-Hartman"
@@ -38,11 +38,11 @@ Cc: "Arnd Bergmann" <arnd@kernel.org>, "Greg Kroah-Hartman"
  linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  imx@lists.linux.dev
 Subject: Re: [PATCH 1/2] tty: serial: remove hub6 multiport support
-Message-Id: <20261016131624.0fda5a185bf5c5ae67f09112@hugovil.com>
-In-Reply-To: <aace8c7a-61ab-4b54-8563-3e1ab0f99e56@app.fastmail.com>
+Message-Id: <20261016131700.b93fa4f7e31f3d2355d4a132@hugovil.com>
+In-Reply-To: <5743b352-ffa2-4d38-9abb-a06085dea56d@app.fastmail.com>
 References: <20261016130328.1037616-1-arnd@kernel.org>
-	<20261016124839.0d5564f7d7e036ee782a0486@hugovil.com>
-	<aace8c7a-61ab-4b54-8563-3e1ab0f99e56@app.fastmail.com>
+	<20261016115604.a89ef44986bb3620c327feaf@hugovil.com>
+	<5743b352-ffa2-4d38-9abb-a06085dea56d@app.fastmail.com>
 X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -55,46 +55,73 @@ Content-Transfer-Encoding: 7bit
 X-Spam_score: -2.0
 X-Spam_bar: --
 
-On Fri, 16 Oct 2026 19:12:19 +0200
+Hi Arnd,
+
+On Fri, 16 Oct 2026 18:16:20 +0200
 "Arnd Bergmann" <arnd@arndb.de> wrote:
 
-> On Fri, Oct 16, 2026, at 18:48, Hugo Villeneuve wrote:
+> On Fri, Oct 16, 2026, at 17:56, Hugo Villeneuve wrote:
 > > On Fri, 16 Oct 2026 14:59:47 +0200
 > 
-> >> -			scnprintf(buf, size, " I/O:0x%lx, offset 0x%x", port->iobase, port->hub6);
-> >> +		scnprintf(buf, size, " I/O:0x%lx", port->iobase);
-> >>  	}
+> >>  	retinfo->custom_divisor  = uport->custom_divisor;
+> >> -	retinfo->hub6	    = uport->hub6;
+> >> +	retinfo->hub6		 = 0;
 > >
-> > With this simplification, you can now remove the {} braces...
+> > Would a comment here help?
+> >
+> > 	retinfo->hub6		 = 0; /* No longer supported */
 > 
-> Done
+> Good idea, added.
 > 
-> >> diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-> >> index 4ff3e5c41dab..f43b802add12 100644
-> >> --- a/drivers/tty/serial/sunsu.c
-> >> +++ b/drivers/tty/serial/sunsu.c
-> >> @@ -106,10 +106,6 @@ static unsigned int serial_in(struct uart_sunsu_port *up, int offset)
-> >>  	offset <<= up->port.regshift;
-> >>  
-> >>  	switch (up->port.iotype) {
-> >> -	case UPIO_HUB6:
-> >> -		outb(up->port.hub6 - 1 + offset, up->port.iobase);
-> >> -		return inb(up->port.iobase + 1);
-> >> -
-> >>  	case UPIO_MEM:
-> >>  		return readb(up->port.membase + offset);
+> >> @@ -924,7 +921,6 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+> >>  	change_port = !(uport->flags & UPF_FIXED_PORT)
+> >>  		&& (new_port != uport->iobase ||
+> >>  		    (unsigned long)new_info->iomem_base != uport->mapbase ||
+> >> -		    new_info->hub6 != uport->hub6 ||
 > >
-> > Maybe change to a simple if/else?
-> >
-> > 	if (up->port.iotype == UPIO_MEM)
-> > 		return readb(up->port.membase + offset);
-> > 	else
-> > 		return inb(up->port.iobase + offset);
-> >
+> > Maybe keep this so that change_port is true if someone sets hub6 to a
+> > value other than zero (see below)?
 > 
-> I think I'd rather not change sunsu.c any more than necessary.
+> Right, this would be fairly harmless as nothing looks at the field
+> afterwards but it makes sense for consistency.
+> 
+> I've moved the hub6 check up before change_port now to behave the
+> same way for regular users and root:
 
-Ok
+Yes that works too.
+
+Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+
+
+> 
+> @@ -935,6 +935,11 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+>                 if (uartclk == 0)
+>                         return -EINVAL;
+>         }
+> +
+> +       /* hub6 is no longer supported */
+> +       if (new_info->hub6 != 0)
+> +               return -EINVAL;
+> +
+>         if (!capable(CAP_SYS_ADMIN)) {
+>                 if (change_irq || change_port ||
+>                     (new_info->baud_base != uport->uartclk / 16) ||
+> @@ -950,10 +955,6 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+>                 goto check_and_exit;
+>         }
+>  
+> -       /* hub6 is no longer supported */
+> -       if (new_info->hub6 != 0)
+> -               return -EINVAL;
+> -
+>         if (change_irq || change_port) {
+>                 retval = security_locked_down(LOCKDOWN_TIOCSSERIAL);
+>                 if (retval)
+> 
+> Thanks for taking a look!
+> 
+>      Arnd
+> 
 
 
 -- 
