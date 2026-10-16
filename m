@@ -1,147 +1,150 @@
-Received: from mail.tipi-net.de (mail.tipi-net.de [194.13.80.246])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BF941E6D9;
-	Fri, 16 Oct 2026 07:38:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.13.80.246
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89193DCDBF;
+	Fri, 16 Oct 2026 07:43:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792136343; cv=none; b=LtR0bT25ww9mzJvFjl7i/MamgKELANr8LZf9TJpd135EPxLsrgmTr+lbjQcv0JYNFURm0cmcWztHE3j2VOj5+EZRt3wMasE+X8KBZdeD8zJgehM9aKByiGgPo8LhKzsN/Z347P7N4kNvGWV281QIIUs345nwRPSis0n9l4/Jcnk=
+	t=1792136618; cv=none; b=Hluwjz0kZCxp88Nu5Btgt9SY1HRZY/NM1uMYKXgqG/Ry5gJgObAYRZSiHE0dhSrGgzr8VIRiYpaczaZHSD/KTQteov8MMo4RAkLE2YWVJJMqoaGrb+KlsbLX7VAS2MrGs2lHaMeiHSCNuuIy26MCFgshFO95GA0XhzvHZzWeOqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792136343; c=relaxed/simple;
-	bh=P1Vpz241oCnRIVsQNvELb3+qCJNFtHXP0ufKgSWVGFM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=PFuO5XDvQ0aktvGSUEVxfT6LlcQ6tp4fe9yPHCU4vELeqwq6lKPYktbsQf3jEQlWVJiust+4LSgyvspPge2QTdcYIdc6VILbhd9Wy9dYvYMc2fTnbqlvsj9G23YDP4aiD40+u5ZMQjd2vI0Nx++84eDht/shiU6WjIdFCgZQ9jo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tipi-net.de; spf=pass smtp.mailfrom=tipi-net.de; dkim=pass (2048-bit key) header.d=tipi-net.de header.i=@tipi-net.de header.b=ekNQvxVZ; arc=none smtp.client-ip=194.13.80.246
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tipi-net.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tipi-net.de
+	s=arc-20240116; t=1792136618; c=relaxed/simple;
+	bh=FGGPjqRCeeV74Cjl9VTeHKOGCZ5V86IQl1cesp1fthU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JTsfR6SE0DuIUwOdPw/CgQjYOIFVMLYdxxnSVR398dD9Zz1y5bEE2VqDojZ29vM7VmQ3Qz4QwGelDzQ+aYFTWE5hY3KIndtNUNN+WR+4ZRv5d82NtPkHlbwdId2ehH8GJgucLWyQcuO7mMevabDqQ1b+0IL5UbzkcfbIqqs4Lq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QJO4JtoY; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tipi-net.de header.i=@tipi-net.de header.b="ekNQvxVZ"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 68F7EA159C;
-	Fri, 16 Oct 2026 09:38:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tipi-net.de; s=dkim;
-	t=1792136329; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=6ORstuGpI2xwaV4htJJupzMmSZXKkEYkJCvOPYd3cFg=;
-	b=ekNQvxVZizSNYLX8aawzi23/5e7xbjGQxTkJteceg+KNbSCRvCDplNVqUkyWPsRma6/YwD
-	lqOVdXYjmFPzySL6Qn20dv5xS97798EM0J4drUxq7aUqrwmFYc48cgO6chy85wUnGMMGNY
-	LimvauuG4NICKrohQjN6Tj9AxrgT76WqdiOQ/UmVqXAs81YN3o43w1yS5SFKHZ1A0f5e1H
-	12pTHOPRM57jhw+ECUjgK+ByZ/m6MCFC24StjV/UUC7DwsaIbav+phxSv34pbl6NbKNIag
-	Gk51gWPKlIB7CkDp+B7IvSvjcDttnJFrk+/lJcrYBy58qRH8uH1sHpcfMKu2wg==
-From: Nicolai Buchwitz <nb@tipi-net.de>
-Date: Fri, 16 Oct 2026 09:38:21 +0200
-Subject: [PATCH 1/2] serial: amba-pl011: finish a transmission still
- running when RS485 is enabled
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QJO4JtoY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792136615; x=1823672615;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FGGPjqRCeeV74Cjl9VTeHKOGCZ5V86IQl1cesp1fthU=;
+  b=QJO4JtoY7fgjFxpyRsryousbtvzA8hjAOwRvMUbE8y/FYq48GJ8CXfUZ
+   Fcfxo/rcpbNXF/IkdnM3CXsd0TSyixOeXPbJsPh9CTHO5+vCnlQ183t2C
+   lxnBn/u5Mdh7Gn8ObghBPd3fky2/c7D1CSFZ2joWfgwOa7ILGj/l4B9Ku
+   CfLg1isoOdlklC9JbbtRMyP9rUjIYNm2/Ze3SPCMjvTMBGOA4cjcTevgp
+   NQ6n1GIyEu33tOrKj45L8rLsJCkO917e8L6VCXHsDPkdXa38r2d+yxNRN
+   Bb1phR5ePzrqkm0qxaKQgxNKly85b1Q2hZvcEjBArM1phuhMRFryW6LhY
+   Q==;
+X-CSE-ConnectionGUID: m/TrTbvhSkiMw0S/yLoVWw==
+X-CSE-MsgGUID: 7JFCBIuoSVelwRlLBI8UQQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="820309"
+X-IronPort-AV: E=Sophos;i="6.27,161,1787036400"; 
+   d="scan'208";a="820309"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2026 00:43:34 -0700
+X-CSE-ConnectionGUID: D+A0irt3RiKFM0rd4f0kIg==
+X-CSE-MsgGUID: aYmDwfO1QqKmpeIa8ntcJQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,161,1787036400"; 
+   d="scan'208";a="2247453"
+Received: from igk-lkp-server01.igk.intel.com (HELO d0de6c2a75a7) ([10.211.93.152])
+  by fmviesa009.fm.intel.com with ESMTP; 16 Oct 2026 00:43:31 -0700
+Received: from kbuild by d0de6c2a75a7 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xHcbA-00000000C7n-2LQc;
+	Fri, 16 Oct 2026 07:43:28 +0000
+Date: Fri, 16 Oct 2026 09:43:01 +0200
+From: kernel test robot <lkp@intel.com>
+To: Adrian Ambrozewicz <aambrozewicz@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, Donald Shannon <donalds@nvidia.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+	llvm@lists.linux.dev,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Oliver Neukum <oneukum@suse.com>
+Subject: Re: [PATCH 10/11] tty: Add NVIDIA LSTP UART driver
+Message-ID: <202610160913.yN6dyp5f-lkp@intel.com>
+References: <20261012-lstp-usb-adapter-v1-10-aambrozewicz@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261016-devel-nbuchwitz-pl011-rs485-reconfig-stall-v1-1-f07d4da714be@tipi-net.de>
-References: <20261016-devel-nbuchwitz-pl011-rs485-reconfig-stall-v1-0-f07d4da714be@tipi-net.de>
-In-Reply-To: <20261016-devel-nbuchwitz-pl011-rs485-reconfig-stall-v1-0-f07d4da714be@tipi-net.de>
-To: Russell King <linux@armlinux.org.uk>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Lino Sanfilippo <LinoSanfilippo@gmx.de>, 
- Nicolai Buchwitz <nb@tipi-net.de>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- stable@vger.kernel.org
-X-Mailer: b4 0.16.0
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261012-lstp-usb-adapter-v1-10-aambrozewicz@nvidia.com>
 
-Disabling RS485 keeps a transmission in progress running. If RS485 is
-enabled again before it ends, the state is OFF while data is still
-going out. The TX path does not stop a transmission in state OFF, so
-nothing sets the idle RTS level once the data is out and the
-transceiver keeps driving the bus.
+Hi Adrian,
 
-Hand such a transmission back to RS485 when it is enabled. Assert RTS
-and mark it as sending, so that the TX path ends it like any other.
-With only the FIFO left the TX path is already done, so drain it from
-trigger_stop_tx instead.
+kernel test robot noticed the following build errors:
 
-Fixes: 97f85204275a ("serial: amba-pl011: keep transmitter enabled when disabling RS485")
-Cc: stable@vger.kernel.org
-Signed-off-by: Nicolai Buchwitz <nb@tipi-net.de>
----
- drivers/tty/serial/amba-pl011.c | 47 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+[auto build test ERROR on bbf6b99a57b2479bf51c3c8ad0946f4b8c33ed69]
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 79776a882ae3..057bb74f3d85 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1734,6 +1734,18 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
- 							0 : TIOCSER_TEMT;
- }
- 
-+/*
-+ * Data still queued or on its way out. After RS485 was turned off and on
-+ * again during a transmission, the state is OFF while this is true.
-+ */
-+static bool pl011_tx_pending(struct uart_amba_port *uap)
-+{
-+	struct tty_port *tport = &uap->port.state->port;
-+
-+	return !kfifo_is_empty(&tport->xmit_fifo) || pl011_dma_tx_queued(uap) ||
-+	       !pl011_tx_empty(&uap->port);
-+}
-+
- static void pl011_maybe_set_bit(bool cond, unsigned int *ptr, unsigned int mask)
- {
- 	if (cond)
-@@ -2454,6 +2466,38 @@ static int pl011_verify_port(struct uart_port *port, struct serial_struct *ser)
- 	return ret;
- }
- 
-+/*
-+ * RS485 is enabled while data sent before is still going out. Finish it as
-+ * an RS485 transmission, so that its end sets the idle level.
-+ */
-+static void pl011_rs485_tx_resume(struct uart_amba_port *uap,
-+				  const struct serial_rs485 *rs485)
-+{
-+	struct tty_port *tport = &uap->port.state->port;
-+	u32 cr = pl011_read(uap, REG_CR);
-+
-+	cr |= UART011_CR_TXE;
-+	if (!(rs485->flags & SER_RS485_RX_DURING_TX))
-+		cr &= ~UART011_CR_RXE;
-+	if (rs485->flags & SER_RS485_RTS_ON_SEND)
-+		cr &= ~UART011_CR_RTS;
-+	else
-+		cr |= UART011_CR_RTS;
-+	pl011_write(cr, uap, REG_CR);
-+
-+	/*
-+	 * With only the FIFO left, the TX path does not stop the transmission.
-+	 * Drain it from the timer, which runs once the new settings are stored.
-+	 */
-+	if (kfifo_is_empty(&tport->xmit_fifo) && !pl011_dma_tx_queued(uap)) {
-+		uap->rs485_tx_state = WAIT_AFTER_SEND;
-+		hrtimer_start(&uap->trigger_stop_tx, uap->rs485_tx_drain_interval,
-+			      HRTIMER_MODE_REL);
-+	} else {
-+		uap->rs485_tx_state = SEND;
-+	}
-+}
-+
- static int pl011_rs485_config(struct uart_port *port, struct ktermios *termios,
- 			      struct serial_rs485 *rs485)
- {
-@@ -2483,6 +2527,9 @@ static int pl011_rs485_config(struct uart_port *port, struct ktermios *termios,
- 		if (tx_pending && !uart_tx_stopped(port) &&
- 		    !pl011_dma_tx_start(uap))
- 			pl011_start_tx_pio(uap);
-+	} else if ((rs485->flags & SER_RS485_ENABLED) &&
-+		   uap->rs485_tx_state == OFF && pl011_tx_pending(uap)) {
-+		pl011_rs485_tx_resume(uap, rs485);
- 	} else if (port->rs485.flags & SER_RS485_ENABLED) {
- 		pl011_rs485_tx_stop(uap);
- 	}
+url:    https://github.com/intel-lab-lkp/linux/commits/Adrian-Ambrozewicz/dt-bindings-gpio-Add-NVIDIA-LSTP-GPIO/20261012-203559
+base:   bbf6b99a57b2479bf51c3c8ad0946f4b8c33ed69
+patch link:    https://lore.kernel.org/r/20261012-lstp-usb-adapter-v1-10-aambrozewicz%40nvidia.com
+patch subject: [PATCH 10/11] tty: Add NVIDIA LSTP UART driver
+config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20261016/202610160913.yN6dyp5f-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 16.1.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261016/202610160913.yN6dyp5f-lkp@intel.com/reproduce)
 
--- 
-2.53.0
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202610160913.yN6dyp5f-lkp@intel.com/
 
+All errors (new ones prefixed by >>):
+
+   drivers/tty/lstp_tty.c: In function 'lstp_baud_to_speed':
+>> drivers/tty/lstp_tty.c:167:74: error: 'B2500000' undeclared (first use in this function); did you mean 'B1500000'?
+     167 |                 { 1500000, B1500000 }, { 2000000, B2000000 }, { 2500000, B2500000 },
+         |                                                                          ^~~~~~~~
+         |                                                                          B1500000
+   drivers/tty/lstp_tty.c:167:74: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/tty/lstp_tty.c:168:28: error: 'B3000000' undeclared (first use in this function); did you mean 'B1000000'?
+     168 |                 { 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
+         |                            ^~~~~~~~
+         |                            B1000000
+>> drivers/tty/lstp_tty.c:168:51: error: 'B3500000' undeclared (first use in this function); did you mean 'B1500000'?
+     168 |                 { 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
+         |                                                   ^~~~~~~~
+         |                                                   B1500000
+>> drivers/tty/lstp_tty.c:168:74: error: 'B4000000' undeclared (first use in this function); did you mean 'B1000000'?
+     168 |                 { 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
+         |                                                                          ^~~~~~~~
+         |                                                                          B1000000
+
+
+vim +167 drivers/tty/lstp_tty.c
+
+   151	
+   152	/* clang-format off */
+   153	static speed_t lstp_baud_to_speed(u32 baud)
+   154	{
+   155		static const struct {
+   156			u32     baud;
+   157			speed_t speed;
+   158		} map[] = {
+   159			{      50, B50      }, {      75, B75      }, {     110, B110     },
+   160			{     134, B134     }, {     150, B150     }, {     200, B200     },
+   161			{     300, B300     }, {     600, B600     }, {    1200, B1200    },
+   162			{    1800, B1800    }, {    2400, B2400    }, {    4800, B4800    },
+   163			{    9600, B9600    }, {   19200, B19200   }, {   38400, B38400   },
+   164			{   57600, B57600   }, {  115200, B115200  }, {  230400, B230400  },
+   165			{  460800, B460800  }, {  500000, B500000  }, {  576000, B576000  },
+   166			{  921600, B921600  }, { 1000000, B1000000 }, { 1152000, B1152000 },
+ > 167			{ 1500000, B1500000 }, { 2000000, B2000000 }, { 2500000, B2500000 },
+ > 168			{ 3000000, B3000000 }, { 3500000, B3500000 }, { 4000000, B4000000 },
+   169		};
+   170	
+   171		for (size_t i = 0; i < ARRAY_SIZE(map); i++)
+   172			if (map[i].baud == baud)
+   173				return map[i].speed;
+   174	
+   175		return B0;
+   176	}
+   177	
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
