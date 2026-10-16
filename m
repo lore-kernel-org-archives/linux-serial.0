@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7564718FD
-	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 10:26:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAFC3E3C53
+	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 10:38:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792146381; cv=none; b=Fu0g1k4U5Goy+RSgFOBHTgeCLuWyk9ljP88LpELslXvzgh/VxH6r7EBfwOH3jIR6Dz40Pcfiyi0g1F3lowp63UyC5LG2ejIRn40MTV74wmzwpNJfNcesg/gS+Wrt0GWEkMkzDq9D/YUuhk/QaAwojYIjTHUrwjKYahxgXE/vyH0=
+	t=1792147128; cv=none; b=XLHoTZsNPa1dlL71GUjhPf1u/F3PbFOOGch10Ai5msdMvJaCwUbBCo3xDgzfZN/ehpkhzvu/bew8SybwD3cxw7Og/ZN129YzHtpx39SjRrKXfE11Ph5y6ZWeoEOuQeSz31KvJoSGMsxM49QlQ9KTgAUqKPl9vaJY4nEN/MOEkXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792146381; c=relaxed/simple;
-	bh=ANE3eqKGt/aCEqE+dmE88RrL+2P3hh2CJlvIj0HWhmE=;
+	s=arc-20240116; t=1792147128; c=relaxed/simple;
+	bh=9x+4ahKO2AdxIZdBXD+EPtDzyenemxDjSYX3Ql5GmBo=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=e0JpAQdLsqKFCVm1Zhy0WThfd8h5pcr3LyjsHoCLM/FBhqOGXJMYBUAodvgd2/H4PZkyVuFBtt1QO8lYlLh26OChJyfSYEMAlMMM5AcUMDbc37AgR0PUIovSffQGip6ffACPaSJuJDYGUQhNWNUkT+TroIh2aWIYeQiBDvPqYi8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z/owTgg9; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=l+MOfsAOEPjw/NDfbrSNxRykWFppCBgxaVznRWcXx+iTybJhk2BuVxpIzFZ0mLBUPltTIWbwCD9+aM4UuJgep7ZprX7vzfRRcqKBrE9vegG4RELxFuRQ7Ki4Dvydpk0xrEji50rob2Fh6I0V8vj8OXBCdC0aXu/pzXrP3GDwQXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eXrEmEPu; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z/owTgg9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523881F000C5;
-	Fri, 16 Oct 2026 10:26:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eXrEmEPu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D3B1F000C4;
+	Fri, 16 Oct 2026 10:38:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792146377;
-	bh=YCtmJOcLI9NBVa/MU4O4425Tk2YsWx72QmxW6vEBUWE=;
+	s=k20260515; t=1792147119;
+	bh=6HTC1wurps4knuvJB8DU+xyNAd0SGBH7rRvKogJaZRk=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Z/owTgg9NDrQ7MIOBwsvPxFsODsKVxv+hou7kr08vsewh0AQzbBXY8BFCKgQl8y7g
-	 j8S9mjluh4n9NlDQ1vdwFwqwu7vGCyok/q1c8A84horndH3MKV5Yt/gX+BkRIPbDXN
-	 XmZTulton3W3sCZHFqRA7abYIy6GL05CP+0JcvVw4XmQV1AMH2AuIoptV331jbao/R
-	 qHD9r2y0svhkLJXm70cVBDlmnm48qw0sInrmrNqfUA8AGQASzsIlrpuIOeyEQ+5bDf
-	 dsB188FW4X0gPfU8JLiaIceCbqlkokP1Y0P19paGGLBY8wqsMFklzEuMz7S72GBUsj
-	 Rp/F8/njMNaBA==
-Message-ID: <sashiko-outbox-174167@kernel.org>
+	b=eXrEmEPucWTc/KqMUIoomD1VPrpioCG8ytmx1T91352KXVZYnYikeWOCV9uqs51TO
+	 7vubAVeaPz8b9bFAB6fdwc3BICNgaiO2Och2QBT4WibkpdYA3+o/emHa3uSWVl7lU8
+	 CFLjVNhwGAfqnzfE05/p4eOp+qGscnKRwAzgQzb0ekJLTRqhEyw4t6sSIi6Qvfvqa7
+	 nVnlic04JX3SAavagH1Z1G4c+Ha76x7hdHf0LRcVcNR5wtOCdzM+MAN60m9mifnWwJ
+	 OteFLvyLL7wopBaC/Mrm8j/L/6Gd65/jgahJYX0B+Da8Eff8EoMfzraMZD4kigq8gu
+	 fyXZe8ikCxkrg==
+Message-ID: <sashiko-outbox-174187@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 6/7] vgacon: Implement struct consw.con_unblank
+Subject: Re: [PATCH v2 7/7] vt: Remove old-style con_blank
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Thomas Zimmermann" <tzimmermann@suse.de>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261016093357.33294-7-tzimmermann@suse.de>
+In-Reply-To: <20261016093357.33294-8-tzimmermann@suse.de>
 References: <20261016093357.33294-1-tzimmermann@suse.de>
- <20261016093357.33294-7-tzimmermann@suse.de>
+ <20261016093357.33294-8-tzimmermann@suse.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 16 Oct 2026 10:26:16 +0000
+Date: Fri, 16 Oct 2026 10:38:39 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,99 +46,102 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [High] console: IRQ state leak in vgacon_unblank() during panic
-- [Medium] vgacon: failure to blank screen during graphics mode switch
+- [High] vt: loss of text mode on unblanking if VT was blanked prior to KD_=
+GRAPHICS
+- [Medium] vt: display corruption due to premature vga_is_gfx assignment
 --
 
-commit 1fe83e2b75ae124b5285efec89c3a22f914e107d
+commit 397a971ae2e535d87f46ac40e90cdd6df9d84c84
 Author: Thomas Zimmermann <tzimmermann@suse.de>
+Subject: vt: Remove old-style con_blank
 
-vgacon: Implement struct consw.con_unblank
+This commit removes the mode_switch parameter from con_blank and con_unblank
+callbacks. Consoles are now updated to detect mode switches internally from
+the console state and vc_mode.
 
-This commit implements the con_unblank callback from struct consw by
-extracting the VESA_NO_BLANKING logic from vgacon_blank() into a new
-function named vgacon_unblank(). It also updates how the global
-vga_is_gfx mode tracking is handled during console transitions.
-
-> diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgaco=
-n.c
-> index 37bd18730fe0d..761c8da10449b 100644
-> --- a/drivers/video/console/vgacon.c
-> +++ b/drivers/video/console/vgacon.c
-> @@ -800,39 +800,47 @@ static void vga_pal_blank(struct vgastate *state)
->  static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
->  			 bool mode_switch)
->  {
-> +	if (mode_switch)
-> +		vga_is_gfx =3D true;
-
-[Severity: Medium]
-Does setting vga_is_gfx to true before calling vgacon_set_origin() prevent
-the screen from blanking correctly?
-
-If mode_switch is true, vga_is_gfx is set to true immediately. Later in this
-same path under VESA_NO_BLANKING, vgacon_set_origin() is called:
-
-static bool vgacon_set_origin(struct vc_data *c)
-{
-	if (vga_is_gfx ||	/* We don't play origin tricks in graphic modes */
-	    (console_blanked && !vga_palette_blanked))	/* Nor we write to blanked =
-screens */
-		return false;
-        ...
-}
-
-Because vga_is_gfx is already set to true, vgacon_set_origin() will
-short-circuit and return false without reprogramming the hardware mem_top.
-Will this result in a visible flash of uncleared text before the graphics
-driver takes over?
-
-> +
->  	switch (blank) {
-
-[ ... ]
-
-> +static bool vgacon_unblank(struct vc_data *c)
-> +{
-> +	bool mode_switch =3D vga_is_gfx && c->vc_mode =3D=3D KD_TEXT;
-> +
-> +	if (mode_switch)
-> +		vga_is_gfx =3D false;
-> +
-> +	if (vga_vesa_blanked) {
-> +		vga_vesa_unblank(&vgastate);
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -4674,10 +4674,7 @@ void do_blank_screen(int entering_gfx)
+>  	if (console_blanked) {
+>  		if (blank_state =3D=3D blank_vesa_wait) {
+>  			blank_state =3D blank_off;
+> -			if (vc->vc_sw->con_unblank)
+> -				vc->vc_sw->con_blank(vc, vesa_blank_mode, 0);
+> -			else
+> -				vc->vc_sw->con_blank(vc, vesa_blank_mode + 1, 0);
+> +			vc->vc_sw->con_blank(vc, vesa_blank_mode);
+>  		}
+>  		return;
+>  	}
 
 [Severity: High]
-Can this call safely execute in a panic context where interrupts must
-remain disabled?
+If the console is already blanked and not in the vesa_wait state,
+do_blank_screen() returns early and skips the con_blank callback entirely.
 
-When panic() executes, it explicitly disables local interrupts via
-local_irq_disable() before calling console_unblank().
+Because this patch removes the leaving_gfx parameter from the unblank
+callback, fbcon_unblank() must now deduce the mode switch internally by
+checking if par->graphics is true.
 
-The console unblanking subsystem will invoke this new .con_unblank callback,
-which calls vga_vesa_unblank(). However, vga_vesa_unblank() uses
-raw_spin_unlock_irq():
+Since par->graphics is only set to true inside fbcon_blank(), skipping
+fbcon_blank() leaves it as false:
 
-static void vga_vesa_unblank(struct vgastate *state)
-{
-	/* restore original values of VGA controller registers */
-	raw_spin_lock_irq(&vga_lock);
-        ...
-	raw_spin_unlock_irq(&vga_lock);
-}
+do_blank_screen()
+    if (console_blanked) {
+        return; /* fbcon_blank is skipped, par->graphics remains false */
+    }
 
-This unconditionally re-enables hardware interrupts, which destroys the safe
-context set up by panic(). If a hardware interrupt fires during the remaind=
-er
-of the panic sequence, could it lead to secondary oopses or deadlocks that
-hide the panic logs from the user?
+When fbcon_unblank() is later called to switch back to KD_TEXT:
 
-Should the vga_lock acquisition use irqsave/irqrestore variants instead
-to preserve the caller's IRQ state?
+fbcon_unblank()
+    bool mode_switch =3D par->graphics && vc->vc_mode =3D=3D KD_TEXT;
+    if (mode_switch) {
+        /* restore text mode */
+    }
 
-> +		vga_vesa_blanked =3D VESA_NO_BLANKING;
+Does this cause the hardware text mode restoration to be bypassed when
+mode_switch evaluates to false, leaving the VT frozen?
+
+> --- a/drivers/video/console/vgacon.c
+> +++ b/drivers/video/console/vgacon.c
+> @@ -797,15 +797,16 @@ static void vga_pal_blank(struct vgastate *state)
 >  	}
+>  }
+> =20
+> -static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
+> -			 bool mode_switch)
+> +static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank)
+>  {
+> +	bool mode_switch =3D !vga_is_gfx && c->vc_mode =3D=3D KD_GRAPHICS;
+> +
+> +	if (mode_switch)
+> +		vga_is_gfx =3D true;
+> +
+
+[Severity: Medium]
+Does setting vga_is_gfx =3D true here cause vgacon_set_origin() to abort
+early?
+
+vgacon_set_origin() is called later in this function during normal blanking:
+
+vgacon_blank()
+    if (mode_switch)
+        vga_is_gfx =3D true;
+
+    switch (blank) {
+    case VESA_NO_BLANKING:
+        vgacon_set_origin(c);
+
+However, vgacon_set_origin() includes an early return if vga_is_gfx is true:
+
+vgacon_set_origin()
+    if (vga_is_gfx || ... )
+        return;
+
+If vgacon_set_origin() is skipped, the hardware CRTC offset won't be
+reset to vga_vram_base. Even though scr_memsetw() clears the memory
+at vga_vram_base, will the unreset CRTC offset cause the display hardware
+to continue showing old memory, resulting in display corruption?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261016093357.3329=
-4-1-tzimmermann@suse.de?part=3D6
+4-1-tzimmermann@suse.de?part=3D7
