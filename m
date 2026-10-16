@@ -1,55 +1,59 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97CD1379EE7
-	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 10:07:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E8A13FE348
+	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 10:13:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792145264; cv=none; b=Cn+aeFDxK3t7lDKyhZ9HWgOSZZsb62th4HpJhuMgxyftukh7/N72BgKLeOarqY8CfHDlCAM9k81p5db/aDbyMklt4z7XXeyxTD4dKFt+p1saGMaXo55IJ3Y+POEbVC3U15pmDN9N3+JXsbYJvc43AIqULhJcuBUO7UGAeF/T6dU=
+	t=1792145638; cv=none; b=KepUO6WsDAY1bhJHIZK46eZbrLoLEi5he4MBF0ngjNmu/MmwmYzOHV0tsIkZXQPrvEw1q+4Wr+fIqKEtIEqiC8IhRYlY41WNWAegnp2Ji6HxPUicdVnjRdwPWOva1ueuaRwN3SGSwvzH5y8tC9raQ7v3PNzOBppOsdVZEo5JHEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792145264; c=relaxed/simple;
-	bh=Hu7CxjvEpi1g4sVHjvGl4SEQsu6YffP7RhCnHZHdKow=;
+	s=arc-20240116; t=1792145638; c=relaxed/simple;
+	bh=FKApaEU80SlpQV9tUNtRxJUjzESXdRuMQXVGC0We+q0=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=nEoXW5VYX72w7BRZ3c1mCeK/Gworq9q2v4eMYAGLkxofanwligbNgNo4fTX9j/xEJuZa9otdih7OZR69WAb4y1pTK4WhRsE6mntHLazQ9TbdyAbPXvMHJoULh0lcb+BPkH45VaavBNyuOei1fwLcq0YUtcsXG90AmswSQcNRIBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aUWUltFk; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=dKzLNDFOfO/Kl5MfJBlF/6ZECYnaVRIg3OzXjeUsQwqfkUwW2dZBRNwrA+U/tMSx5rzUMAqKELoIroqwC1rjg008RwWXtSoswre76NiwEPT5EEvVmDmKPeVRWNzk93LaP7tfXy+NXBpw9cc2kyPewC8VAFEUTGoCClsEdY8klpo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z7v7/RAh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aUWUltFk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D26031F000C4;
-	Fri, 16 Oct 2026 10:07:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z7v7/RAh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28391F000C4;
+	Fri, 16 Oct 2026 10:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792145262;
-	bh=Hu7CxjvEpi1g4sVHjvGl4SEQsu6YffP7RhCnHZHdKow=;
+	s=k20260515; t=1792145637;
+	bh=FKApaEU80SlpQV9tUNtRxJUjzESXdRuMQXVGC0We+q0=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=aUWUltFkSNCIq3HYRpPuACRXwh00A1PckoR7lRY4v/VOHT4chXWvy5lG/aDBfOHjR
-	 vT7iRAzAE7xB+tx5Izw28mRCJca+f8i7tYe4LKXNH5QMpqtrbJrl+HITvg2v0UDwSY
-	 COXxlNx39Pobyzv9JZsEAm2UZ1Sf3JUCcm/LXhD+6rKqV+pt7SBfiDCKDrz1SvUdrf
-	 DsA5MbipeKvNbpANvNOsweBB3tb6lA/0Cm5jo/vEYZZgZFd0qw2p8SfFnVcRCXPDSX
-	 wkMZ/Mq0MTNwaxgqDvvFVIOKfcqUtsnOi/ewr4eSB9z+SH6U0TNJOLFygmSJAy+HY5
-	 fiuVZFOf0yu9Q==
-Message-ID: <sashiko-outbox-174123@kernel.org>
+	b=Z7v7/RAhKmkSsQimaFZcF0dx2zHfWZmWnegaJF64kOAZjqOQJkFKe3lwfH5Htv1hI
+	 Vj/iomrk+raPRzVWcL2cgOQNoatW8aDkehe/VNiZxoq2SgktexGSe6NiBRyhfM75v8
+	 BT24LDAJpGp9syyzdBMmPHaTCuChc2KvIFT+85+oY28Q3ewaYuEsgZNX3R4Fv0l3mE
+	 Q/v+/Qz3FloNdY+1naFUZsjPCmGTCTCQo3+9BCnfuAjQg7YaokKXlNXozRzkNsvMNp
+	 J8nMX3jyouyrhOi4v/mLusj06zEgUGoE9Unpx/sxYu1Kx8tbyzo+6gLrZqG+3utZ2G
+	 gO4i357IA3Yqg==
+Message-ID: <sashiko-outbox-174134@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 4/7] newport_con: Implement struct consw.con_unblank
+Subject: Re: [PATCH v2 5/7] sticon: Implement struct consw.con_unblank
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Thomas Zimmermann" <tzimmermann@suse.de>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261016093357.33294-5-tzimmermann@suse.de>
+In-Reply-To: <20261016093357.33294-6-tzimmermann@suse.de>
 References: <20261016093357.33294-1-tzimmermann@suse.de>
- <20261016093357.33294-5-tzimmermann@suse.de>
+ <20261016093357.33294-6-tzimmermann@suse.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 16 Oct 2026 10:07:41 +0000
+Date: Fri, 16 Oct 2026 10:13:56 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> Implement con_unblank from struct consw with the VESA_NO_BLANKING
-> branch from newport_blank(). Remove that code from the blank helper.
+> Implement con_unblank from struct consw. The new function is called
+> sticon_unblank(). Remove the related code from sticon_blank().
 >=20
-> Both helpers, newport_blank() and newport_unbank(), clear or set
-> a single flag in a hardware register. No further VESA DPMS blanking
-> is supported.
+> Sticon uses the global state vga_is_gfx in several places to test if
+> the console runs in text or graphics mode. Track the mode switches in
+> sticon_blank() and sticon_unblank(). As sticon_unblank() does not have
+> a mode_switch parameter, derive the value from vga_is_gfx and vc_mode.
+>=20
+> There is no display unblanking in sticon: only return true to redraw
+> the console.
 >=20
 > Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 
@@ -57,5 +61,5 @@ Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261016093357.3329=
-4-1-tzimmermann@suse.de?part=3D4
+4-1-tzimmermann@suse.de?part=3D5
 
