@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3956C48DB58
-	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 18:17:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAA2A48DB3F
+	for <linux-serial@vger.kernel.org>; Fri, 16 Oct 2026 18:17:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792174622; cv=none; b=PWxo1lBzeC2l3NIgrDLynjXoI/kaL5MTVEJjZLuxJqvCKmA61SgSkZlKlBfS8P8y8kdE5m3oTypJZnnofKQ/aPCDo2jzodlnrVaN6GS+GQto8FwnkVIb4vDGvaQztJKIcIniJML3bzHbzHG/uD/t+MRAKsqV1GjKWTJYgtbfNII=
+	t=1792174633; cv=none; b=NZlfnKPMw18fYNpdpnkeLLHqvMIz3RetHgdpjRJKSou+2kq8FpCeeUDzzhno6yNg3AhSXM5J07aPS4HQkaYCreKql6vPWbj2vXYHrevqTr/vA7nHjx8B2a1ozsWQ3F+v2aoZuKVI6Dz42+hxq73GyO7qPgGJ8P0aV1TW3U3slLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792174622; c=relaxed/simple;
-	bh=bPb241viZ5sD++FC6TXKSe1W3sOOOQ6FC32q3tPD6UI=;
+	s=arc-20240116; t=1792174633; c=relaxed/simple;
+	bh=mBg9lyEkqG+O6Y39i2vk9pNWe7ovuHgSGsrmnh1JfNI=;
 	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=a4xwU4seYoBwKGqQLnlF/GBllW99qezWKDAnX1QIO7CyDoKkmN9B/q5CawZjRgcKgsVK5ftv8aFEBnTE1XBli2dd2LlMYnRA0tDLp8jlhY/a40bHEjs4lZxnI16axELFaXKrrw7OAHWiauy7pEqglmxSaxZG2cyZMDobkYuhR6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OcN9dcGI; arc=none smtp.client-ip=100.103.45.18
+	 Date; b=b6tpja46QYoIzS1N+S/kSJ4HDpFmAGjaEgU5OtotIyIFgICUDEYzy+M5WpNEk+Ic/un/CflcpBhT5KinnUQbEM6nEnZW9QwEKZAWelbqnZcT1mB1Hzg7MqBqd2/UQHgqbbxsVRh8mFbSjS2AZKfSLO+3Dv+iaVCbIOCzLXrL7Dw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VLWzIilM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OcN9dcGI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE5701F000C4;
-	Fri, 16 Oct 2026 18:17:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VLWzIilM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A06381F000C4;
+	Fri, 16 Oct 2026 18:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792174621;
-	bh=7bhIjrcZmtcmglZ8nTz/fem7JZzNpPoQbN6LgO66dTQ=;
+	s=k20260515; t=1792174632;
+	bh=e7hEgyCQ1Hj/jXZABJTrSnS7rrrD/PiImlFN29mqZb0=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=OcN9dcGIlWFQhK1COo9wTbDYC8ZTRctFOc8Pd7PRfaV5MhRJgS7NIYM42WcaVuHmS
-	 gsokUXvaivMdyV9Vyq2ffMCsdEjGWj1A97M4YVuPOoPxsT+G1GgMNKPhL3AjXjRmXA
-	 t1Vf6wUFTjb6wREBeVLG+V+zqwAhwTZsIsl6nsOeXgCTsggC6vbsYgvLmYfU+Wjv9P
-	 /1VBarWc5aPtW0Ox5JrNChBBdpd1PLiFQYDoWMfl3mLyIdZxDqwc6T/SrOsHWSMnth
-	 FMbdaSvcDhqJjdFbwlg/4kdyQUG65O0/Qb5mn9ngTkd5pgjQC3FhwNyxR8JN0BEX7q
-	 +Il62zp0wTN5Q==
-Message-ID: <sashiko-outbox-174761@kernel.org>
+	b=VLWzIilMjIxddsOu3VbLyilczM250o3A7tAzVeXDaFjY1K0IsZCDPDitAPEUF+w5Q
+	 gje9m/rf+cVNJahlk6wyxPOPagEvbehAOL/gZh7Ap+0cmJK5L6jtxR+pJRgNExZqxR
+	 ywa7u2K4yBvp4I0yvpU014Rr3HZdjMtfn59KypuszdAVQYLw3u+/WTbKTE2He+koC9
+	 1Iu9X3Gm2Tp6mrSbqFoaBJVUznvtT5cDQsgHcvcJh2WYoIaEYJ3Qhkp3Gtq5DrwfTV
+	 3/pZFtJ9unvO59760JtxIPZaKGDK/VqXuqZJvhPawG910nDZjiCEGA0TUcyG4vqUj5
+	 RHr0LxhR1x5Pg==
+Message-ID: <sashiko-outbox-174763@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 4/4] rust: serdev: Simplify callbacks
+Subject: Re: [PATCH RESEND v4] ACPI: SPCR: Support UART clock frequency
+ field
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Markus Probst" <markus.probst@posteo.de>
-Cc: linux-serial@vger.kernel.org, ojeda@kernel.org, gary@garyguo.net
-In-Reply-To: <20261016-rust_serdev_probe_refactor-v4-4-46832e034757@posteo.de>
-References: <20261016-rust_serdev_probe_refactor-v4-0-46832e034757@posteo.de>
- <20261016-rust_serdev_probe_refactor-v4-4-46832e034757@posteo.de>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261016-acpi_spcr-v4-1-f9a96fe016af@posteo.de>
+References: <20261016-acpi_spcr-v4-1-f9a96fe016af@posteo.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 16 Oct 2026 18:17:00 +0000
+Date: Fri, 16 Oct 2026 18:17:12 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,52 +46,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-- [Low] rust: missing #[inline] on OpenGuard::drop
+- [Medium] acpi: spcr: out-of-bounds read of uart_clk_freq
 --
 
-commit 3744d6179fccd8a1197885b1019f91d6e5f289b7
+commit 4417c1e28359b400b5ff86436180ed471e8b7aca
 Author: Markus Probst <markus.probst@posteo.de>
 
-rust: serdev: Simplify callbacks
+ACPI: SPCR: Support UART clock frequency field
 
-This commit initializes the driver's private data directly on PrivateData
-and introduces OpenGuard for resource cleanup.
+This commit adds support for the UART Clock Frequency field from the Micros=
+oft
+SPCR specification revision 1.08. If present, it uses the field to configure
+the serial port with the correct uart clock frequency.
 
-> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-> index c16d6593a8d2d..3f9165e167764 100644
-> --- a/rust/kernel/serdev.rs
-> +++ b/rust/kernel/serdev.rs
-[ ... ]
-> @@ -92,24 +88,36 @@ unsafe fn unregister(sdrv: &Opaque<Self::DriverType>)=
- {
->      }
->  }
+Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/s=
+erial-port-console-redirection-table
+
+> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+> --- a/drivers/acpi/spcr.c
+> +++ b/drivers/acpi/spcr.c
+> @@ -228,7 +228,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool=
+ enable_console)
+>  	pr_info("console: %s\n", opts);
 > =20
-> +struct OpenGuard<'bound> {
-> +    sdev: &'bound Device<device::Bound>,
-> +}
-> +
-> +impl Drop for OpenGuard<'_> {
-> +    fn drop(&mut self) {
+>  	if (enable_earlycon)
+> -		setup_earlycon(opts);
+> +		setup_earlycon_with_uartclk(opts,
+> +					    table->header.revision >=3D 3 ? table->uart_clk_freq : 0);
 
-[Severity: Low]
-This isn't a bug, but should the drop method on OpenGuard be annotated with
-#[inline]?
+[Severity: Medium]
+Could this result in an out-of-bounds memory read?
 
-The Rust subsystem guidelines recommend using #[inline] on small functions =
-in
-abstractions that forward directly to a C binding call, such as the call to
-bindings::serdev_device_close() here.
+In acpi_parse_spcr(), the code accesses table->uart_clk_freq based solely on
+table->header.revision >=3D 3 without validating that the mapped table leng=
+th
+(table->header.length) actually covers the uart_clk_freq field.
 
-> +        // SAFETY:
-> +        // - `self.sdev.as_raw()` is guaranteed to be a pointer to a val=
-id
-> +        //   `struct serdev_device`.
-> +        // - The existence of self proves that the device is open.
-> +        unsafe { bindings::serdev_device_close(self.sdev.as_raw()) };
-> +    }
-> +}
+If a malformed ACPI SPCR table has a high revision but a length shorter than
+the required size (at least 80 bytes for uart_clk_freq), the access could r=
+ead
+past the bounds of the table mapped by acpi_get_table(). This could
+potentially lead to a kernel panic if it crosses an unmapped page boundary.
+
+Should this also check table->header.length before accessing uart_clk_freq?
+
+> =20
+>  	if (enable_console)
+>  		err =3D add_preferred_console(uart, 0, opts + strlen(uart) + 1);
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261016-rust_serde=
-v_probe_refactor-v4-0-46832e034757@posteo.de?part=3D4
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261016-acpi_spcr-=
+v4-1-f9a96fe016af@posteo.de?part=3D1
