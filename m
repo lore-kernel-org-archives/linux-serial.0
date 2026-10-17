@@ -1,181 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 312FD4052D7
-	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2026 06:45:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B93B342523
+	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2026 07:45:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792219519; cv=none; b=liyrFbgC04NSMHhpXBZoSTA3zGSPNDZTLTMeILzMPYmUV2EPaBq9ZtrayFGRTCZG69v0+auBYgsYtLkFsmLFFXH1ADnCDHw3p7zxc4Znu91yvTkGKRYlpLUBuyiekR6WFa7IrNKwCeouiA9/Yo2NCGDBMI5kFyNyNTdel58Hk2w=
+	t=1792223130; cv=none; b=Tq53g0AMX883g+8WCL9ZVEmCWrbGp3ffo3w9Nr57N1wAPNfvwhzsKgIrvYNrigJLVB/LXthQvmQngsfDW3e6Cc6GdDJ3I0du4nOZNnUC02kNAntzAXCvco+ILCnbt0u1Xxo3ruDIX+dyM3XXk8gjGsl7aZqWGwJTifjjrT3A5zY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792219519; c=relaxed/simple;
-	bh=grhxcWC2pNrdNBFdyX4xb+w/uc1gNulL+ZTw46aQ4tM=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=a5vJV3gkt+jxyFEyCJUegHKPwWH2q/kIyGa9KBfK2c+tkxbApO/zSa5oIxEbiP1URNps/eGcE0+//mQJqi2v+dfqRSl1i9kX282pAnSY3XhBPI0bnf3FD2GU8SBagDzj0RiZXnIZ2j1jcc2xN7umWLd4SU2O9Uijyqv6/LUvOdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nJZE4FrN; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792223130; c=relaxed/simple;
+	bh=1Nz1FSf6mDiSJ6IT0PyLTNTKdVCW73ND9TdzajrqBVI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dkJJEDNjFu7JlFSSBXOF3a7AXuogDVoZ9BDmcnTNZdIpAP9znizt1uL8LwfcNvIzFWDGdS8PKLgCXOOJ839o8Lk6lFQF7pgRgYfKi10mB/IqoE0Jtshol6wnPviqbrLLm8uTriu2KsJ/+jC2OaOuE/UoecBQbr4aafHVK1W8jIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jGkb13oO; arc=none smtp.client-ip=209.85.221.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nJZE4FrN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB611F000C4;
-	Sat, 17 Oct 2026 06:45:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792219517;
-	bh=Vle975pNLfHteVU7AoNfL6Le3kOkzpcB4apWR5qYjuA=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=nJZE4FrN//X3xapJlDq5ZG1DhnJCMAz7tYPCKCW0KFI4J3sonRPmbIynk5nFbJIxX
-	 msCnk7t2i9IIYxjSAYJLGQAkBPOExj1+oUz8MlLqWbQodFBD01W3L0G9VzTW49eY++
-	 13j2YjzcWSL19o0LK02fXhKTAzYymk8Kt3armtK6zU3pqioyVcHk3UrpPQ3vjEnkoZ
-	 LO1Wm+94XbEMJgah1yggtUOVcnivad2pDy+mRdbUodp1BVhwQ2FeF+uZrWCoS0THL3
-	 yXOcnqs6PEAIp4uesugXsQJp9Aj155CD9k5V+WvPJPn67j5VVHCccbD7XD7J/uB7F1
-	 ma+X7EYlEGGXA==
-Message-ID: <sashiko-outbox-175339@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/2] serial: amba-pl011: keep RS485 transmission
- running on reconfiguration
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Nicolai Buchwitz" <nb@tipi-net.de>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261017-devel-nbuchwitz-pl011-rs485-reconfig-stall-v2-2-6f457a1ee527@tipi-net.de>
-References: <20261017-devel-nbuchwitz-pl011-rs485-reconfig-stall-v2-0-6f457a1ee527@tipi-net.de>
- <20261017-devel-nbuchwitz-pl011-rs485-reconfig-stall-v2-2-6f457a1ee527@tipi-net.de>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 17 Oct 2026 06:45:17 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jGkb13oO"
+Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5e9239c772cso532932e0c.2
+        for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2026 00:45:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792223127; x=1792827927; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=G9gHOokB2iUNg0rcd+4gK+6dCcLdNZHPpTlIwEx+WLg=;
+        b=jGkb13oO00Yrmjutcz8cpXe0kPiPEjedSAee5t3YTFyqAsHOtd/xOBl2PBC6ivjO7E
+         C3iXEKg/08Vt7IBdc1adm8K7SNMindYfYwIYDir4oE8lbL4hNzak8fG5og1qDGTmbXB4
+         GrGnL0lCW+T31cCBW/drs/55IOfbutMmbO2o9jJlhUHTrzEcyxFjUebbk9cp4OtLsnT0
+         CN6Se4dhJgg9xP4N3dO1ptGCe4xFyfAJy0BZUQoQIkudbA0ml+lJHffDDiOsF4iOtKo+
+         1yz+E6VRzKW4r4K35M4DiQ7utUzsPl0j9pqUqszvCeKrjt+9E/BoDse1bWIwIOaW4npP
+         wu6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792223127; x=1792827927;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=G9gHOokB2iUNg0rcd+4gK+6dCcLdNZHPpTlIwEx+WLg=;
+        b=1vq+kseLJIm+Ux2fonG3c6+qJqLGesFbzVLYvbbuWlmOAf3C+y2qisEO4fkAZm07lk
+         HF9rnOmTykE8gCQIRd8IiQrF1TmWPhwvrYL5a1741cXtjhPHkukL7CFU1f6bNsEkeU/W
+         I5xPrUbeP3rGZVmhJoz80Gycizlja7QpEBuAIY1AeV7vJ7jRqpc+uK93JpubYGAd4MuL
+         KFBHMTZk246rslU8HpdCA/GV8hu+PWAHpLGM6zO28mv/C+YtAjfoN18GO7VoPHRtKv90
+         CK/b4rQJs5y+A3Eyubk/OPF8GuGev0E9RjsqlQma0OHftAQa01vWcWJDuXjFRTJoGrtw
+         9Dvg==
+X-Gm-Message-State: AFq9FYLmTRITr9Mxp4EeVQ5JyftTFTHC5ppdNyZe4hK2JekbzucT5LDd
+	ETbGTWkoA75olyuK7hrNESZjUUh1kd6Rf/lTgGu9N8d+RKd8f4uM9ySr2Spqf/Mf
+X-Gm-Gg: AYBFou0xcJqNr1o1br0xlt1XK5lAGkvVQR8YaoCXYnM05Dvdw6GRR1eon/JqOBr+m5K
+	lBOx3Yyza5oQ2pZIuwzOx+6vsjOe/V/HbtpLQ2EZi568MOFl2YRGPAdZfEFmaMbgitesUlomTEe
+	5kn169J9kLvTp1cNZqwXH+FQcHJaExTChgPiG63UkMPlawADwWGS9F9Ci/aquBw/+VGlT0e6ZUT
+	96/HM8qEcgsW8AqiE8raBrpdXG+7nJBM22F6NWkkKkeid8xVAAvPNft8bqyUgjNzpmspuHfVKoL
+	ea2ndqzVzOfUAdDwkCAjlgvTt8s9uGWpfMX/nI5RHMMzKFOOZmliPInWCOJwM/K3Wu6GChVtDep
+	Z64B20P3ep+sa1Ruv7iNDG6mgEhDXtuh+6G0q6+PqCFtpAXSGo55l7n9Gpj/Nau4kKU+H27Uw/C
+	7DNabVCtLwVl5gx5tQijBpYLYaqqOC674Kj58+o5nY4rS9+2iKKFb347ebgRtZaIQttq1AnHNvI
+	VSXjyTmEZ3G+Wfj+vcXyWH71oBHUCTNBn4OkguWg1XbCaroX2aWS7Db6ARM/gI=
+X-Received: by 2002:a05:6122:3b8b:b0:5c9:a60b:e5a5 with SMTP id 71dfb90a1353d-5eaaa8c75e7mr970007e0c.16.1792223127505;
+        Sat, 17 Oct 2026 00:45:27 -0700 (PDT)
+Received: from localhost.localdomain ([186.151.100.62])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ea9b53cfdfsm3701836e0c.15.2026.10.17.00.45.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Oct 2026 00:45:25 -0700 (PDT)
+From: Sebastian Alba Vives <sebasjosue84@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	pjw@kernel.org,
+	samuel.holland@sifive.com
+Cc: linux-serial@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Alba <sebasjosue84@estudiantec.cr>
+Subject: [PATCH 0/2] serial: sifive: fix two init ordering bugs in probe
+Date: Sat, 17 Oct 2026 01:44:51 -0600
+Message-ID: <20261017074453.62645-1-sebasjosue84@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
-- [Medium] serial: amba-pl011: use stale port->rs485 in pl011_rs485_config(=
-) when idle
-- [Medium] serial: amba-pl011: missing break state adoption in pl011_rs485_=
-tx_resume()
---
+From: Sebastian Alba <sebasjosue84@estudiantec.cr>
 
-commit 9fbf19b5c7b65c594ac562200928bbeb7a3c720b
-Author: Nicolai Buchwitz <nb@tipi-net.de>
+Hi all,
 
-serial: amba-pl011: keep RS485 transmission running on reconfiguration
+I found two ordering bugs in the SiFive UART probe path while working on my
+undergrad thesis project. The project uses a HiFive Unmatched board with an
+FU740-C000, and I spent a lot of time reading this driver to understand how
+the console comes up, which is how I ran into both of these.
 
-This commit prevents pl011_rs485_config() from stopping an ongoing RS485
-transmission when RS485 settings are updated, and preserves uap->rs485_break
-unless RS485 mode is being disabled.
+Both have the same shape. A resource gets turned on before the state it
+depends on is set up, so there is a window during probe where a callback can
+run against a half initialized port.
 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
-011.c
-> index 3b9cce435c650..036a7245f1f29 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2506,8 +2506,6 @@ static int pl011_rs485_config(struct uart_port *por=
-t, struct ktermios *termios,
->  		container_of(port, struct uart_amba_port, port);
->  	bool tx_stopped =3D uart_tx_stopped(port);
-> =20
-> -	uap->rs485_break =3D false;
-> -
->  	/*
->  	 * Output is marked stopped before stop_tx pauses DMA. Pause it now, so
->  	 * that clearing TXE below cannot strand DMA data in the FIFO. Output
-> @@ -2521,6 +2519,8 @@ static int pl011_rs485_config(struct uart_port *por=
-t, struct ktermios *termios,
->  		bool tx_pending =3D uap->rs485_tx_state =3D=3D WAIT_AFTER_RTS;
->  		u32 cr =3D pl011_read(uap, REG_CR);
-> =20
-> +		uap->rs485_break =3D false;
-> +
->  		/*
->  		 * Leaving RS485 mode, which only enables the transmitter while
->  		 * sending. Don't stop it, as that stalls a DMA transfer still
-> @@ -2543,7 +2543,9 @@ static int pl011_rs485_config(struct uart_port *por=
-t, struct ktermios *termios,
->  		   tty_port_initialized(&port->state->port) &&
->  		   pl011_tx_pending(uap, tx_stopped)) {
->  		pl011_rs485_tx_resume(uap, rs485, tx_stopped);
+Patch 1 is the one I think matters. request_irq() runs before
+uart_add_one_port(), so the handler is live while ssp->port.state is still
+NULL from devm_kzalloc(). If a byte arrives in that window, the handler walks
+into uart_insert_char() and dereferences the NULL state pointer. The patch
+moves request_irq() after uart_add_one_port(), masks the interrupt enable
+register before adding the port in case the bootloader left something on, and
+adds the missing error label so a failing request_irq() unwinds
+uart_add_one_port().
 
-[Severity: Medium]
-What happens if RS485 is enabled via TIOCSRS485 while a break is active on
-the port (or if RS485 is disabled during a break, clearing uap->rs485_break
-above while UART01x_LCRH_BRK remains set in REG_LCRH_TX, and then re-enable=
-d)?
+Patch 2 registers the clock notifier before ssp->baud_rate and
+ssp->port.uartclk are initialized, so a rate change in that window divides by
+zero. This is worse on RISC-V than on most other arches, because the ISA does
+not trap on integer division by zero. divu by zero returns all bits set, so
+DIV_ROUND_UP(12000000, 0) comes back as 0xFFFFFFFFFFFFFFFF and the udelay()
+in the notifier becomes a busy wait that never ends. Instead of a clean oops
+you get a hung core. The patch sets up the divider before registering the
+notifier and adds a cheap guard inside the notifier.
 
-While UART01x_LCRH_BRK is set, the PL011 keeps UART01x_FR_BUSY asserted in
-REG_FR, so pl011_tx_pending() returns true via !pl011_tx_empty() and enters
-pl011_rs485_tx_resume():
+I reproduced patch 1 under QEMU. The machine is qemu-system-riscv64 -M
+sifive_u, which reports itself as HiFive Unleashed A00 and models the FU540,
+not the FU740 I have on my desk, but it is the same UART IP block and the
+same driver. I added six lines of instrumentation right after the
+request_irq() block to print port.state, unmask RXWM and hold the window open
+with mdelay(), then fed bytes into the UART while it was open. With panic=-1
+the kernel reboots and retries on its own.
 
-drivers/tty/serial/amba-pl011.c:pl011_rs485_tx_resume() {
-    ...
-	if (stopped ||
-	    (kfifo_is_empty(&tport->xmit_fifo) && !pl011_dma_tx_queued(uap))) {
-		uap->rs485_tx_state =3D WAIT_AFTER_SEND;
-		hrtimer_start(&uap->trigger_stop_tx, uap->rs485_tx_drain_interval,
-			      HRTIMER_MODE_REL);
-	} else {
-		uap->rs485_tx_state =3D SEND;
-	}
-}
+Without the fix I got 318 windows and 318 NULL dereferences, so every single
+attempt crashed, and port.state printed as 0000000000000000 every time. The
+trace is always the same.
 
-Because pl011_rs485_tx_resume() does not check REG_LCRH_TX for
-UART01x_LCRH_BRK and set uap->rs485_break =3D true, uap->rs485_break stays
-false. Could this cause pl011_trigger_stop_tx() -> pl011_rs485_tx_stop() to
-bypass the uap->rs485_break check and continuously re-arm trigger_stop_tx
-every character interval in hardirq context for the entire duration of the
-break?
+  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000080
+  epc : uart_insert_char+0x66/0x154
+   ra : sifive_serial_irq+0x94/0x1f0
 
-> -	} else if (port->rs485.flags & SER_RS485_ENABLED) {
-> +	} else if ((port->rs485.flags & SER_RS485_ENABLED) &&
-> +		   uap->rs485_tx_state =3D=3D OFF) {
-> +		/* Set the idle level now, a transmission sets it when done */
->  		pl011_rs485_tx_stop(uap);
->  	}
+With the fix, same instrumentation at the same point and same input, I got 18
+windows and 0 NULL dereferences, and port.state printed as (____ptrval____)
+every time. That is what vsprintf prints for a real pointer before the RNG is
+ready, since ptr_to_id() special cases NULL and prints the literal value
+instead.
 
-[Severity: Medium]
-During TIOCSRS485, uart_ioctl() -> uart_set_rs485_config() invokes
-port->rs485_config() before storing the new configuration into port->rs485:
+One honest note on those numbers. The window counts are not equal, because
+without the fix the kernel crashes early and panic=-1 restarts it right away,
+so many short cycles fit into the same 180 seconds, while with the fix nothing
+crashes and every window burns its full mdelay. The count is not the argument.
+With a 100 percent baseline failure rate, 0 out of 18 is not luck, and the non
+NULL pointer is the cause while the crash is only the symptom.
 
-drivers/tty/serial/serial_core.c:uart_set_rs485_config() {
-    ...
-		ret =3D port->rs485_config(port, &tty->termios, &rs485);
-		if (!ret) {
-			port->rs485 =3D rs485;
-    ...
-}
+I did not reproduce patch 2 the same way. It needs a clock rate change inside
+a very narrow window and I could not drive one reliably under QEMU, so that
+one comes from reading the code. Happy to be corrected on it.
 
-And pl011_rs485_tx_stop() -> pl011_rs485_tx_stop_now() also reads
-port->rs485.flags:
+Both were pointed at during review of the off by one fix back in August, but
+as far as I can tell nobody sent patches, and both are still in master today.
 
-drivers/tty/serial/amba-pl011.c:pl011_rs485_tx_stop_now() {
-    ...
-	if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-		cr &=3D ~UART011_CR_RTS;
-	else
-		cr |=3D UART011_CR_RTS;
-    ...
-}
+This is my first series to this subsystem, so please tell me if I got the
+format or the split wrong.
 
-Because port->rs485 still holds the old settings here, can this cause two
-issues when configuring an idle port (uap->rs485_tx_state =3D=3D OFF and
-!pl011_tx_pending()) via TIOCSRS485:
+Thanks,
+Sebastian
 
-1. When enabling RS485 for the first time, port->rs485.flags & SER_RS485_EN=
-ABLED
-   is still false, so pl011_rs485_tx_stop() is skipped, leaving UART011_CR_=
-TXE
-   enabled while uap->rs485_tx_state =3D=3D OFF and leaving UART011_CR_RTS =
-at its
-   RS232 level?
 
-2. When RS485 is already enabled and TIOCSRS485 changes the RTS polarity
-   (SER_RS485_RTS_ON_SEND vs SER_RS485_RTS_AFTER_SEND),
-   pl011_rs485_tx_stop_now() programs UART011_CR_RTS using the old
-   port->rs485.flags instead of the new rs485->flags, driving the wrong RTS
-   idle level?
+Sebastian Alba (2):
+  serial: sifive: fix NULL pointer dereference in probe IRQ window
+  serial: sifive: avoid division by zero in the clock notifier
 
-Should this branch check rs485->flags & SER_RS485_ENABLED and apply the new
-rs485->flags when setting the idle state?
+ drivers/tty/serial/sifive.c | 32 +++++++++++++++++++-------------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
->
+-- 
+2.43.0
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261017-devel-nbuc=
-hwitz-pl011-rs485-reconfig-stall-v2-0-6f457a1ee527@tipi-net.de?part=3D2
