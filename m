@@ -1,75 +1,110 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24FD03B71DB
-	for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2026 07:51:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82CF41FCFFC;
+	Sat, 17 Oct 2026 07:53:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792223475; cv=none; b=TDIXtFOsVNDBcSxiwSzNRc27ub1JMijZY3JqpWxLeX8CjolFy5U7sNOz2eHwDakFQucd5SIV4w25qw6Qpg3KyIVJik3NI3ZGmaeQpunDw9UFhJ4UG+PApb/cBhNXUjbgYnj1j+Ga5xwthhRzW/YrJFeWJ/5rg5CEKPp5UAbnJDw=
+	t=1792223637; cv=none; b=dVV/OQZc3jkoJSTRvzkuBkqonpu2aQ14S2qUOpMx+jNI1qDFgNkBMXqUB6na92Px1FPw+HKfj+cKnZXSdlkBb6oA7jiLBgKcmYWd4l5d/qXL43PxYkK8nWtJ8GJpHztty1q4BYz9o3tAQ2HmxiqBTPRcLiUmSVBN1BAtL2pownc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792223475; c=relaxed/simple;
-	bh=EwWZuREwOuP8Pvfw7CiMNgeG9G4Ql6B0WBS1pFoRlIY=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=S3TqhUfaFZFzagAtcxN2uhi5KBWL8PhbXTOdYcbwpohS+C/+TyhuUi8LkMd971lIK9jDMwRil6dYP5s7veYnwA7J0r0VxXwRr152nHqNNQ6f7D57FAj/A5nj7NvReJs3aVdhVynAuNYsmKxAPK6H1YGbLuKvMTgzULvpKM1tXIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lZNTAfiw; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792223637; c=relaxed/simple;
+	bh=zlr2BEUFDbhQ4XjmrjsWL9T1nu95OyHippgy/GRORY0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O09VmkE09iW5Zy8/uQGlLW8loPtI7GtHJlOCgUN528KHuWNGlBH7EEGMq+iyzGEiyV0h4MVuxAzgEOJpmcopG1+DQgkCUhs3O0phQcfh3PnREGNd1Fyaixdk+E70Pr2dSEDWvwWaQXQQ7XTDluvJV118D+2KkqW+6SfiATKIKRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=gomFtb2s; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZNTAfiw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA92B1F000C5;
-	Sat, 17 Oct 2026 07:51:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792223473;
-	bh=wOfBR8TkNgDEQZGyRq5h7IptjhuKtfiCgDcJgkE8Go4=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=lZNTAfiwohb3qlzks+PyNyArRmVl0SqJ7Ic5LyJr/BTbKIVo4eCib311EA4HkGFVZ
-	 hGx2bdb/tTChNM0rgUoVCygxriGhwyedppb3berM3WJqsdx7JPgJ3JDOdp4e454wee
-	 uCqz9SCzFHLvnLi2guXxRi2GmdXuUCehUkHzmD1nQoZoS5PTJS7f3rv3pgt3agUAQ/
-	 vsIBxGZCVilMrY5lLW8GmlTyO2v163bWYQZ8sQZ5wakDdnxN7RJAom3Ufx2FqXDtmk
-	 SPg+sxGz0aRfFEHiWZtioJ/hi6h12w4oHw3y11qbFXqoryn+257TdkcY2FVdplNX0O
-	 v8yefCnInrbYg==
-Message-ID: <sashiko-outbox-175374@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/2] serial: sifive: fix NULL pointer dereference in
- probe IRQ window
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Sebastian Alba Vives" <sebasjosue84@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261017074453.62645-2-sebasjosue84@gmail.com>
-References: <20261017074453.62645-1-sebasjosue84@gmail.com>
- <20261017074453.62645-2-sebasjosue84@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 17 Oct 2026 07:51:13 +0000
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="gomFtb2s"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDE71F000C4;
+	Sat, 17 Oct 2026 07:53:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1792223636;
+	bh=A+Rvbj3Y0hrsl690BetdCOZ7NOyL6lYrFiPiwcsUCjQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=gomFtb2svMy2XJeZq8TKGJOHojmaqIsSID4ozs4DLKblG2lJnhk0mtebgxfikS57f
+	 V9Gzvdce9Xw+UoYdJ4OmyEQXezCCviVPSEzX1h42+MpjwGRMbaQgfDjl4cdZWwSqAP
+	 h0MdZyMszS7I010sEuMikUfyXG/TSxgVnvM9e3hc=
+Date: Sat, 17 Oct 2026 09:53:52 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
+	Alex Elder <elder@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Eric Biggers <ebiggers@kernel.org>,
+	Ard Biesheuvel <ardb@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	greybus-dev@lists.linaro.org, linux-serial@vger.kernel.org,
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev
+Subject: Re: [PATCH v4 1/4] tty: serdev: Add mutex lock
+Message-ID: <2026101758-confidant-comprised-e1c0@gregkh>
+References: <20261016-rust_serdev_probe_refactor-v4-0-46832e034757@posteo.de>
+ <20261016-rust_serdev_probe_refactor-v4-1-46832e034757@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261016-rust_serdev_probe_refactor-v4-1-46832e034757@posteo.de>
 
-> From: Sebastian Alba <sebasjosue84@estudiantec.cr>
->=20
-> sifive_serial_probe() installs the interrupt handler with request_irq()
-> before uart_add_one_port() has run.  uart_add_one_port() is what assigns
-> ssp->port.state, and ssp is allocated with devm_kzalloc(), so
-> ssp->port.state is NULL for the whole window between the two calls.
->=20
-> The handler dereferences that pointer unconditionally:
->=20
->   sifive_serial_irq()
->     __ssp_receive_chars()
->       uart_insert_char(&ssp->port, ...)        /* port->state->port */
->       tty_flip_buffer_push(&ssp->port.state->port);
->=20
-> so an RX interrupt taken inside the window oopses the kernel.
-> [ ... ]
-> left there.  Unwinding is adjusted accordingly: uart_remove_one_port()
-> now balances the added port on the request_irq() failure path.
->=20
-> Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
-> Signed-off-by: Sebastian Alba <sebasjosue84@estudiantec.cr>
+On Fri, Oct 16, 2026 at 06:00:32PM +0000, Markus Probst wrote:
+> Besides more predictable behaviour, this allows for several hardened
+> behaviour changes:
+> 
+> Return -EALREADY in `serdev_device_open` if the device is already open
+> instead of causing undefined behaviour.
+> 
+> Allow calling `serdev_device_close`, even if the device is already
+> closed instead of causing a null pointer dereference.
+> 
+> If the device is left open by the driver after remove, close it and warn
+> instead of leaving it in a invalid state.
+> 
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> ---
+>  drivers/tty/serdev/core.c           | 10 +++++---
+>  drivers/tty/serdev/serdev-ttyport.c | 46 +++++++++++++++++++++++++++++++------
+>  include/linux/serdev.h              |  2 +-
+>  3 files changed, 47 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index 7500efcdfc21..77e8e1d4d2a6 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -142,6 +142,11 @@ void serdev_device_remove(struct serdev_device *serdev)
+>  	struct serdev_controller *ctrl = serdev->ctrl;
+>  
+>  	device_unregister(&serdev->dev);
+> +
+> +	/* Warn if driver did not close the serial device. */
+> +	if (ctrl->ops->close && WARN_ON(ctrl->ops->close(ctrl)))
 
-Sashiko has reviewed this patch and found no issues.
+I understand the want to give a big "splat" if this happens, but if it
+does somehow, you just crashed the box due to panic-on-warn, which will
+result in a CVE being given :)
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261017074453.6264=
-5-1-sebasjosue84@gmail.com?part=3D1
+So, if this ever can happen, we should recover like you do:
 
+> +		pm_runtime_put(&ctrl->dev);
+
+And you can warn about it in the kernel log, but just not with WARN_ON()
+please.
+
+thanks,
+
+greg k-h
