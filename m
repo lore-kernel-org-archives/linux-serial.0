@@ -1,29 +1,29 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82CF41FCFFC;
-	Sat, 17 Oct 2026 07:53:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E493B71A1;
+	Sat, 17 Oct 2026 07:55:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792223637; cv=none; b=dVV/OQZc3jkoJSTRvzkuBkqonpu2aQ14S2qUOpMx+jNI1qDFgNkBMXqUB6na92Px1FPw+HKfj+cKnZXSdlkBb6oA7jiLBgKcmYWd4l5d/qXL43PxYkK8nWtJ8GJpHztty1q4BYz9o3tAQ2HmxiqBTPRcLiUmSVBN1BAtL2pownc=
+	t=1792223718; cv=none; b=CoKHV+EbzOAsKNeEdoZ/jMmlkuFFEU9NnRUq2doq6BZor64XBpmsaBGG227iQ4a0wI8p/cWfL3svDDFaweMHarQ/zlOasxk14EYaRjTFOLbUJfyYqB86zgWwzhJZdqQ8VeAQ1TfxiCwlMTbcgJIj4fxAEDeehaiNtnuVi7MUqrs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792223637; c=relaxed/simple;
-	bh=zlr2BEUFDbhQ4XjmrjsWL9T1nu95OyHippgy/GRORY0=;
+	s=arc-20240116; t=1792223718; c=relaxed/simple;
+	bh=Tw8hJUhyTwi8lTcx047M6CYvFWd+zJ7pVwCTxqJs4xo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O09VmkE09iW5Zy8/uQGlLW8loPtI7GtHJlOCgUN528KHuWNGlBH7EEGMq+iyzGEiyV0h4MVuxAzgEOJpmcopG1+DQgkCUhs3O0phQcfh3PnREGNd1Fyaixdk+E70Pr2dSEDWvwWaQXQQ7XTDluvJV118D+2KkqW+6SfiATKIKRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=gomFtb2s; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Io8bnB9slXJdqqZVeL7wvatsxlDxtXnTkUAkKZYgYxACp/iDMnaSMbr7s37cv8W9puFh+xzhni3TkIiaMoOHbZ91t2XpibHycaUQepcIRrmSm7HzHMJpbPluqeqj2fGG5qWEXGV0+v1td0OH+EoQDiVGNla7ITaduKsPf4I7oIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ko22WGJx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="gomFtb2s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDE71F000C4;
-	Sat, 17 Oct 2026 07:53:55 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ko22WGJx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6EB1F000C4;
+	Sat, 17 Oct 2026 07:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1792223636;
-	bh=A+Rvbj3Y0hrsl690BetdCOZ7NOyL6lYrFiPiwcsUCjQ=;
+	s=korg; t=1792223717;
+	bh=mJAFf6584RgZ4z6pPlJH3mmCU2Tv3trUdU3KklbqpMM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=gomFtb2svMy2XJeZq8TKGJOHojmaqIsSID4ozs4DLKblG2lJnhk0mtebgxfikS57f
-	 V9Gzvdce9Xw+UoYdJ4OmyEQXezCCviVPSEzX1h42+MpjwGRMbaQgfDjl4cdZWwSqAP
-	 h0MdZyMszS7I010sEuMikUfyXG/TSxgVnvM9e3hc=
-Date: Sat, 17 Oct 2026 09:53:52 +0200
+	b=ko22WGJxPzQMensaPFTS4BAdyEKEMBDuRvRBpGqvs3XCMFFX92qtbsvnPePqOo1+A
+	 177+37znf3aI/v03wVmgl2f5BGtAB0+cXmy6ZlkdQkgfqc6QGgxF6kWxEHON/UMSdm
+	 fBO4tLGrN06iM/INr6ZZtpKT3AuHyU1vlHR53paA=
+Date: Sat, 17 Oct 2026 09:55:14 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Markus Probst <markus.probst@posteo.de>
 Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
@@ -49,7 +49,7 @@ Cc: Ayush Singh <ayush@beagleboard.org>, Johan Hovold <johan@kernel.org>,
 	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
 	driver-core@lists.linux.dev
 Subject: Re: [PATCH v4 1/4] tty: serdev: Add mutex lock
-Message-ID: <2026101758-confidant-comprised-e1c0@gregkh>
+Message-ID: <2026101715-penny-headfirst-1644@gregkh>
 References: <20261016-rust_serdev_probe_refactor-v4-0-46832e034757@posteo.de>
  <20261016-rust_serdev_probe_refactor-v4-1-46832e034757@posteo.de>
 Precedence: bulk
@@ -93,17 +93,10 @@ On Fri, Oct 16, 2026 at 06:00:32PM +0000, Markus Probst wrote:
 > +
 > +	/* Warn if driver did not close the serial device. */
 > +	if (ctrl->ops->close && WARN_ON(ctrl->ops->close(ctrl)))
-
-I understand the want to give a big "splat" if this happens, but if it
-does somehow, you just crashed the box due to panic-on-warn, which will
-result in a CVE being given :)
-
-So, if this ever can happen, we should recover like you do:
-
 > +		pm_runtime_put(&ctrl->dev);
 
-And you can warn about it in the kernel log, but just not with WARN_ON()
-please.
+Wait, how can close() ever fail?  That should be something that just
+can't happen right?
 
 thanks,
 
