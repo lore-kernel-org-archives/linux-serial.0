@@ -1,64 +1,64 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBE114AE109
-	for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 13:49:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57C314AD4CE
+	for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 13:49:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792331381; cv=none; b=h6jHZNNuFwD4ex/e5gwiH+gfQRpNXP57OPjOAKjHD3LR8F+cuSryFL+x8GyL9tV1aW4qETqPceRR4CnaSOFI1NiYdklUQQLeIv0lhyFLZbrVAfuvTkgioTH+sS80jA3rkOkxuAPmE1d63768kQcQUg2SxFR4UuJDQuynIyh3xI4=
+	t=1792331384; cv=none; b=G4EBzezIBzoeEXVp4z1LDElKURMls8iq5Ki6ecdbkaywXFZWtV0xiqgFpnANRIbicoG1UEn8Ur0Vkxlwm35JWVc8DcitKTJlXAx+9lzHnwz5Xl+Lymag5K1rGl0SJ12HI3QwyXl86MC36oYes1yST4/UTRlETVoNY1a7PuK5CfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792331381; c=relaxed/simple;
-	bh=XS1hfUYBh3IHnLjqYMLanotOueCfYEigxxyKMp4yttk=;
+	s=arc-20240116; t=1792331384; c=relaxed/simple;
+	bh=7MGTJdk+4Foua3uK4fT3tosb12DKYulonOLvYMkMDW4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fxbl1VaL+U+B3kaZe0YIhtRSRnWmlqgr5tcg7p1r73/EhZWOPgWQPEG9OkwP1vTzBbgGhTE/duhFlXvsEoNmrlXbPdb6uZYWa/jHuzf5pVf/KrjRfb03Z8a4bO0yRjRC6ljZMqR6Xl5C16Aooz5lt2+GRWigqN3nlkq6NNDUIhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uj8PuAXi; arc=none smtp.client-ip=209.85.218.49
+	 MIME-Version; b=SXqM/kVVIIREepMNwAiRXpovjk5EC2OALPfMlysy7XF2FpiQPZTZGHDqGYdBQf/wNC8M6T+3EZHfRLMDceUsBbQC2OxKfk4ig9uH3oMYJIklGbUUy/7OcXgokxWV4kAey/zwZm0LuyzLRKJ/WYI8pYDAGnWD+s0d4ctINO7x1Vc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pa2FZ2+L; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uj8PuAXi"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-c2dc63f8d8aso203961066b.0
-        for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 06:49:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pa2FZ2+L"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-c43373ae89aso51006766b.3
+        for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 06:49:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792331377; x=1792936177; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792331378; x=1792936178; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=XrgtN1CfIC918YQEqPq2f1RcPZ7legyk//5piQ8+dDY=;
-        b=Uj8PuAXiQssCE/myuDDwafEFSpeV340x80XfFsgxdHrd+PxxleJDzx/TwHIqlmwp4+
-         8U4EVOrpnDpIQzUtjR8WWuzvtCRYNuGT0Onwt0GFEtMjwhJCAWZ5oDRDiEYWU94zswH9
-         eGpZyurIuSwm9/7UxN341UmN0YhqrCCxpXuqDAW8VNmxZLRybHX57+nEUInhfMYWuv0P
-         AOqgdcbaBwTi8kE0dSCna0saVPC8w/fI6Gif77TBMUZKz9PZIukq7rmtHjQP3mzfhz9X
-         Qw334Mx4BsYcPajENS3EoMN4L8CAbMkUb7El4VjE2Xc//oXymNaqMZJnj7P/rC7XfXOV
-         z8IA==
+        bh=QgyOpAgwDJcgNK32/9PGTXHO9coJXI+TEruCjzlJ5Mk=;
+        b=Pa2FZ2+L/iITeJOAk5eZ7nVtdjgLS0dBf1QrSKg19f+7gHyFMXPWwzmuUBeyqVr5Ur
+         VJ9pi10ckWgzDpWG7C9v5FJGqaJSPeSNtXrQgIiRONz8ha/z5t95QUy9zX08VJ1FmOgF
+         7E4ox0cqAhHaF58Jc8JqGln5rVHykaqijkk7QBjvySH2udGVAoJxbEno9peE1W4Ejlz/
+         U31Th+AqB4V9r5HlFRRM3fxpHW3ecFEUYr5Nx0gkcO9YBgQ4uxoUzMG0a95WKWNbxhWy
+         vkiUktCMsGw90p6Wy0jefQ95At39fqHibmzN8Y4qNwmwR2Qnv+0I7KSjWQkwBPIMZPhS
+         5QOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792331377; x=1792936177;
+        d=1e100.net; s=20260707; t=1792331378; x=1792936178;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=XrgtN1CfIC918YQEqPq2f1RcPZ7legyk//5piQ8+dDY=;
-        b=TvhsAOrcoOG1YMJGT/MgLgnQtLwXn0CIZUt4fMS8hrit14272Y7NDHHWhq5URN33VS
-         gTq0PbEPX+YeiF/1CmWXpfEKUC6WJF8woOz9PXRYi/rHFeq65A4JbkJPlbpqlz2PSpmn
-         Ak2gz+u5hUjN8WmaW5/FaDvn82dygTSm/USvp6qAl7UXFWj638O3hQtwIrgLCe8Y9yxd
-         anFe3ixrvlqdvLIo0Ju2RZrL7hSXJk/6HBtjPaJDieVMT+Mu5Um1uyywzaExCSB3lhqC
-         zb6xkJZvF3KsQCdCxzARIkYknBu04xLwUX4wPz7LHk+X4Hmb0jEbnOpSl9fvOEnUblMg
-         6ieg==
-X-Forwarded-Encrypted: i=1; AKwUvBw+ynEVz9KKKIfFoTJnKMAoi3axFjJj2seTe7L4S7ldRobjnpze0MZ/7V4r6cBWB4ITwSvrrCNsEHpGd5c=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLY501MF5XQr2aa6LJW+bydSPg557biO7buRrJB6tyIEWGoZjML
-	WNGh4McMVyMova1U201LeIlsmTy0AyMZCEBGcB1jyPuUJ8aK7Jtlz6c0
-X-Gm-Gg: AYBFou1ZlsX97IwxqeCVdYppnUqo+MskleTxEpKZpJb9/H3kMK+FN/BMgVdvIr9oxSr
-	l1TfR27xZTv2C6MRBzhF1hkH7tnjKgwxVVrutiq6T1vGwqeY1ugNe99iFrOceL7jDmHOppeh77k
-	eHdGf66cDhRGW6H9x41Wp4hEjgTSnSPrukk0AcCzmJdu8OeQlMisCYxSTC6RrL12zlBZ1zuAdci
-	6zU9Eg3NlZ/f46A38yWoQ7iMnQvJQdk4iYfNbTUjEY3qB6Er2FNR8iATHGLEVVAvh4d9jdKsfV2
-	sPEPoyMXt2fuY5rO365pldEbCg/4EkcpcgN/SiNUFGy8mP7pXjyDkR9Dy+y8mv3y2u6fCgUKfox
-	LjRVIQ+idn2ZHGVRN4xQnZX8TTfmcx/KRkbqvUrFqQNVWSGUJsi11D3rlPHmqMvQfcgZnFk9zjk
-	OooFEtK28vvFf59MOqvmt17DSQoo1MiHmS+jDM01UKa6VTIcAuWbmkCeZMATQwD5VzhMM/B3RGM
-	os5mf/blhJIUAVwK4/D58bY/DMJpSedv8boeiD4fM5XQnJtuts=
-X-Received: by 2002:a17:907:c605:10b0:c42:a326:78a9 with SMTP id a640c23a62f3a-c42a3267e26mr126187466b.42.1792331376760;
-        Sun, 18 Oct 2026 06:49:36 -0700 (PDT)
+        bh=QgyOpAgwDJcgNK32/9PGTXHO9coJXI+TEruCjzlJ5Mk=;
+        b=SOPJoZ6fpYLAqYdGrDYSrWAWW+GdA042IZAsRzxP87wyJnoAPK22D/m6gGfLDaKtUo
+         MvDGdvH3XL1D7gK6ub2gIO2dTNqHsEXAghJmXCLl9iN95dco1UT9gdza2xInPSvuqY+L
+         5DSZCX8QqtFo5G6ftpP3JcCeRa7/DuOvNCiNR6PIYN3lQUiYA8iM93xkyEzMnUNzW4Z9
+         AVPWNJLOx2BvCHiQwVxAc3qJfCJykTxCiTqSRlX9VugV/Q8+tBmRXEJOwto8IhRE16Sv
+         lhiBrq2B/1sM16mkQZa5j0C+s5qdQ2fF3fh957K3CIZZwZ0LHf3rWncVzEX+h1ginfVd
+         ZZuQ==
+X-Forwarded-Encrypted: i=1; AKwUvByY4RTh6TGlEkNe4NnxmNC9vVEFC6L8X9k4zJQCkQpubGrxAY9p8B1kxP0GuuABPcNiwjDWAJ8PjmjMoJ4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJYPE/d+zHhRDua16XNvhXR2lEEZyp1KGrwDSUORRzai8jI7FYv
+	GdlMmmIgdVOVsxXKgOlL5e4j4t0qPhMQXrbZfHJXR4t0WeElNwOdbRuS
+X-Gm-Gg: AYBFou0w1xENrYnLNrADO3XIJ0e/UqqzzrXllGtecNvEzTxPLvIfVTemZuGLVzXArct
+	v1xH86W4t5LXDbxq8NPZCguXr91YQ6KK/KGEtHS0d8nFwxFc8agnjwIFxUzGYD8YSJPy60cM84U
+	o5kXkvAxjLawrZS9ubU1U1tJfXkXOZ0BinWiD2neZjph+abgUR23DVG8W5YMQsMm1S/H2F2pdH1
+	V9azY0SnZyJ8lbVjT114IJPh2g0ww7BeJOIp9V779QE+piicpWW/nYXKPMoyxJDW0gGDXwTEDKv
+	bbgWJ+hYPWSD/Pe0Pm5ViJI7yng8oJuuAtA9uO+DfSbkOT0/k+pC8lY0FJ1g8x5tfY5R7T8D+ao
+	k/nKOX1OKWlGOX5I7CwmCUViHKAHotyBvboHOP/cM7P+8xryZ5/NbCGls/c6U1J8/F2XO1CTG88
+	twLefdX/Dog/SeUObP/0vts1pQS2Ub6VAfbVViF2ChwdtNu3F0WLXmvlNk53e14SqEvPNhPvkBn
+	H6f1jyPQpbYS6h9QR3rnpiU7nFSwh64wFsgoi3L
+X-Received: by 2002:a17:907:d86:b0:c29:f5d5:5aa4 with SMTP id a640c23a62f3a-c41a08dbe04mr331615566b.46.1792331378553;
+        Sun, 18 Oct 2026 06:49:38 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c40919c0402sm267678266b.61.2026.10.18.06.49.34
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c40919c0402sm267678266b.61.2026.10.18.06.49.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Oct 2026 06:49:35 -0700 (PDT)
+        Sun, 18 Oct 2026 06:49:37 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: davem@davemloft.net,
 	andreas@gaisler.com,
@@ -71,9 +71,9 @@ Cc: linux-kernel@vger.kernel.org,
 	krzk@kernel.org,
 	oleg@redhat.com,
 	linmag7@gmail.com
-Subject: [PATCH v4 04/10] sparc64: stop IRQ setup when descriptor allocation fails
-Date: Sun, 18 Oct 2026 15:45:06 +0200
-Message-ID: <20261018134738.1016106-5-linmag7@gmail.com>
+Subject: [PATCH v4 05/10] sparc64: validate Fire register properties before initialization
+Date: Sun, 18 Oct 2026 15:45:07 +0200
+Message-ID: <20261018134738.1016106-6-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261018134738.1016106-1-linmag7@gmail.com>
 References: <20261018134738.1016106-1-linmag7@gmail.com>
@@ -85,34 +85,73 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-irq_alloc() returns zero on failure, but build_irq() then configures
-IRQ 0, which is reserved for the timer, as a device interrupt.
+The Fire interrupt translator reads one reg entry, and PCI PBM setup
+reads two, without checking that the firmware supplied enough data.
 
-Halt before publishing the IRQ or changing its descriptor, matching the
-existing fatal handler-data allocation path. Returning zero would let
-callers continue treating the timer IRQ as a valid device interrupt.
+Check the property before allocating the translator or changing PBM
+state. Halt early translation on invalid firmware data rather than leave
+raw interrupt numbers untranslated. Return an error from PBM setup so
+probe can release its allocations.
 
-Fixes: 8047e247c899 ("[SPARC64]: Virtualize IRQ numbers.")
+Fixes: 861fe90656b8 ("[SPARC64]: SUN4U PCI-E controller support.")
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/sparc/kernel/irq_64.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/sparc/kernel/pci_fire.c      | 9 +++++++--
+ arch/sparc/kernel/prom_irqtrans.c | 8 +++++++-
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/arch/sparc/kernel/irq_64.c b/arch/sparc/kernel/irq_64.c
-index 3f55c69d5f3b..4cceeba726ab 100644
---- a/arch/sparc/kernel/irq_64.c
-+++ b/arch/sparc/kernel/irq_64.c
-@@ -619,6 +619,10 @@ unsigned int build_irq(int inofixup, unsigned long iclr, unsigned long imap)
- 	irq = bucket_get_irq(__pa(bucket));
- 	if (!irq) {
- 		irq = irq_alloc(0, ino);
-+		if (!irq) {
-+			prom_printf("IRQ: cannot allocate interrupt descriptor.\n");
-+			prom_halt();
-+		}
- 		bucket_set_irq(__pa(bucket), irq);
- 		irq_set_chip_and_handler_name(irq, &sun4u_irq,
- 					      handle_fasteoi_irq, "IVEC");
+diff --git a/arch/sparc/kernel/pci_fire.c b/arch/sparc/kernel/pci_fire.c
+index c35a8e3c1eae..db160eeb0ffe 100644
+--- a/arch/sparc/kernel/pci_fire.c
++++ b/arch/sparc/kernel/pci_fire.c
+@@ -416,7 +416,13 @@ static int pci_fire_pbm_init(struct pci_pbm_info *pbm,
+ {
+ 	const struct linux_prom64_registers *regs;
+ 	struct device_node *dp = op->dev.of_node;
+-	int err;
++	int err, len;
++
++	regs = of_get_property(dp, "reg", &len);
++	if (!regs || len < 2 * sizeof(*regs)) {
++		dev_err(&op->dev, "missing or short reg property\n");
++		return -EINVAL;
++	}
+ 
+ 	pbm->numa_node = NUMA_NO_NODE;
+ 
+@@ -429,7 +435,6 @@ static int pci_fire_pbm_init(struct pci_pbm_info *pbm,
+ 	pbm->op = op;
+ 	pbm->name = dp->full_name;
+ 
+-	regs = of_get_property(dp, "reg", NULL);
+ 	pbm->pbm_regs = regs[0].phys_addr;
+ 	pbm->controller_regs = regs[1].phys_addr - 0x410000UL;
+ 
+diff --git a/arch/sparc/kernel/prom_irqtrans.c b/arch/sparc/kernel/prom_irqtrans.c
+index 5752bfd73ac0..558ed5114664 100644
+--- a/arch/sparc/kernel/prom_irqtrans.c
++++ b/arch/sparc/kernel/prom_irqtrans.c
+@@ -544,13 +544,19 @@ static void __init fire_irq_trans_init(struct device_node *dp)
+ {
+ 	const struct linux_prom64_registers *regs;
+ 	struct fire_irq_data *irq_data;
++	int len;
++
++	regs = of_get_property(dp, "reg", &len);
++	if (!regs || len < sizeof(*regs)) {
++		prom_printf("%s: missing or short reg property.\n", dp->full_name);
++		prom_halt();
++	}
+ 
+ 	dp->irq_trans = prom_early_alloc(sizeof(struct of_irq_controller));
+ 	dp->irq_trans->irq_build = fire_irq_build;
+ 
+ 	irq_data = prom_early_alloc(sizeof(struct fire_irq_data));
+ 
+-	regs = of_get_property(dp, "reg", NULL);
+ 	dp->irq_trans->data = irq_data;
+ 
+ 	irq_data->pbm_regs = regs[0].phys_addr;
 -- 
 2.43.0
 
