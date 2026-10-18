@@ -1,64 +1,64 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA54F4C7538
-	for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 13:49:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EFF54C7538
+	for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 13:49:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792331389; cv=none; b=QUyUVNMrbClidTYJ/PLFh8HapEgJBJRSHzkKo/wTnFbJFtQxYBTtiJHueJQX/WY92RchgRTcQXL+hT8HYgGcGBk6K3QZ6DNk0QuE/hRvQpKnXGlW/ZZtQo355fSohTQRGdcZDd5eIwqCCZMDCXa4dY44BH19dgEnzAng5lQoQQQ=
+	t=1792331391; cv=none; b=ZskCf5HiiFJ72vnMesTRVPcs/3q1YCAV7JdnglUdHOTnKLqRTTQhlQc/Ayu6bZZK6j1I3u1V/QMSsOC4ODnwLGS0vi9eXpKtDq3Q2vJp/FfENXqn5HH7JpHCNw1zkYxwFybu7nfbsp87h2GaPfTMIkL3vggRK4UCDB4DQ5m3WUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792331389; c=relaxed/simple;
-	bh=/+Poo0M9ncZe9skH4jhSK0fTm72bMU8o70A587Vm6v4=;
+	s=arc-20240116; t=1792331391; c=relaxed/simple;
+	bh=ksgM4aW4RJ6BFt7624R4WNOTNQ4S1mGDEclXW8DzxFk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pCpszlTQPAORXqM51ucb/LTPrlS5W0a1PAlv0rHY9I+fED1KALtwxmz6+exf5ZVAEgwViR6Rwb8l3UGcvMBKFUOqcoCe7xHjT+9frkyIPnVUGIkrEG5n1aY6M1mX8C5BumIl8d0Uok1xhumhdWnxZXF3VpMQA1k1fR6AfmgrqDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HwpGYGDx; arc=none smtp.client-ip=209.85.218.52
+	 MIME-Version; b=TmdWLO364ueNJMnhJm3T3vNYcIPMeAhA6/QGnOexs87U1e6do1DeeAuGqAh99NQpKXBH5uDkleuSYlGP8aHmUWJNQQAzzKJwGXmnLp3JI8qI75l4/E5l+t8a1gUZJtOk+7rN7X7n5NAytBH5FXEuh7FdGBcen3YINADIZ+uXYwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IRaqQr0B; arc=none smtp.client-ip=209.85.218.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HwpGYGDx"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c40447e25e6so141805766b.1
-        for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 06:49:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IRaqQr0B"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c3f04e0e65fso177732766b.2
+        for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2026 06:49:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792331381; x=1792936181; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792331388; x=1792936188; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=vELiqmiLg0My2qE0CYP1TlLdsSmoEcWN2hANkQsUo3o=;
-        b=HwpGYGDxVBtMBKrEp1vOa0g5GC1VTfh5EnLGLev19uvIg6UBilumMUdjxbJ4QshSfI
-         N6MN++Uia0odSx8+lSKQo9cemzLgf3yzvaMJOwAo4UtRQ4CiIP053pAeHk7+YIhhufKk
-         ck2tql3rKC7OcFUwwVFaFiUJJ9tBch219tdMfIRkXDV56RqcqFUdj6iOkx6uV0YL/uwZ
-         EblnRIq4LgLzgWd6IHFxFghdaphP2Fc2uN5oAYZHu22jzxXLeZOLnZkfWdRP4IS5sbYI
-         KaKk6BtvoVVI+n+Cgoq1K9H1GB0pTlvi7IvppR8Zngi3f3vgyT5nSkknW42j+0Wvjpiq
-         j/xw==
+        bh=xf4DsDndYrdpWXL1CLcg308mCcphdBjI61Eg5LQ4nys=;
+        b=IRaqQr0BDmfhPj7fo9er2WKQZMm761INxOo/GA6O2YXEETXfMfofwrV6cz1ifCS7z+
+         /qNlkj963bxJMr3CpXXQgDHhr6+4eRUfMGcMvRWA3uE63eXgHbFEwj7XtRGflRna/4OL
+         omF5SpdJU75Zcp60q6uAw3tDrjSJfzGXGhZuBUk3QtvDMeagcGowJxKeb9Fg2PVqvY9C
+         pPu368COaHYtXUCJ7kT4Y9AF6pqjI2Wo874YA3rgc7k4Op34GLAko1xlC4IeMVHhLYDP
+         +95aL/RGZhpR+Q5zHQjhYwyMYuidXCKj3N62SzGScp9iv/+joXkgyFgQwDocC0BuyGkU
+         YZIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792331381; x=1792936181;
+        d=1e100.net; s=20260707; t=1792331388; x=1792936188;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=vELiqmiLg0My2qE0CYP1TlLdsSmoEcWN2hANkQsUo3o=;
-        b=xg9c1qYrAthRED1MYNOGiF+zJ3h/k+TQn50WKYPJxXBQsp3mtJexddU3XaDPhtodrJ
-         ZsS0HCYfjVFBatgBkaeExPhoBA1l5v53J1tGTV7XW1HIYYV/B61mMYfypDkEZaY0LBP3
-         jz8Dgwae9KtKphV2wx0LeHdE6Y/cgl0pdjqVna5BCWtwa1DE147w1N5Tap4hvIu1zmo1
-         sWJmcNyDeLUDy6ZqR2ZI2TTt/UyubjFKsAjsqpf5vlwn3mQZ/MNoK3Zv974NDLRI6yj4
-         1iv0KJYiB39FbkiUH6xxwyIOkuLSVewB/lb1kmPSynyB2OHxB7/H4zKt5gfxvngVNdbp
-         myUg==
-X-Forwarded-Encrypted: i=1; AKwUvBwBejl54xp0kNfy5d30nC3yqJtDvfLQdT9RLEGKFpr3AG7KZetdBjMh/JLmFrFm9FLmXd07zDeztfeMNOo=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIIco7XU6MZZ5cJ+ZMjEhp279ilJFRukjblNkDyVWmpFA5zUklv
-	LPfogwNPJw8GBc7iQ6TE1TehC0PIuceID40XyHU2sflv2qVO4IethmGa
-X-Gm-Gg: AYBFou12J5SM82MfJ4HuYkYFuNSeqkMtqKpnbTE2VM8Xc7iBQyPg0Xr0a0lPFa6ya+I
-	6Q/kancrtIF7F+Td9hZOh3QFArH8ivHWPjtJyg407w43sctsVKgD8RWXFKQrKYnmyDjuJRpDj+d
-	PDlis6pSO3wf1veXX+sn2LDfVlcda44XEQcIZ++r09AQu8wwdzm5UR8yVvohFccZpfFwcABd7Qu
-	mJct0qUaUfroXc8BTGrSkNouTHEdQaAQGxLVU0QM5ZLmscBj9ldL96QPWxBqxkZfeF/C5jd8SvV
-	skbCoTjqrAVK8dvVN8qkRWtVY7LOTzYdTBmaj/BzuC62sKwLx6qTMNcpfAai2JiLHic5+q51DzX
-	5ydqy3ZDnoqRUU8M7O5X99k/aZSFD5BQMbN9GSGxPIuSvGm5Bsllf2AJbmxNeycFcu81Mw02eSr
-	HM1h+NKECiwMCXJcudRHua2x0vI2c/kVNX69s3MPHdQU4/32kksvlIKDtuxs9zTqD64DGx//uZz
-	lKIFuKei1SVsTVLPwO7FJkyCF5kGXhtbi2h1+Vv
-X-Received: by 2002:a17:907:3fa0:b0:c40:c6c8:6bd8 with SMTP id a640c23a62f3a-c419e838694mr368578466b.20.1792331380945;
-        Sun, 18 Oct 2026 06:49:40 -0700 (PDT)
+        bh=xf4DsDndYrdpWXL1CLcg308mCcphdBjI61Eg5LQ4nys=;
+        b=z2ZMos46V/fe5tWCxetXi8wwm78521XMbu9DabirYr8aQwnVP+qo2UsdseN+llJ8o8
+         CZs8s+gWI7yT7cd7C0rdp3X6l62z0d6bSEjp0BKm0RjQH1kklDpVO8hju//7uK1bWCPU
+         UG1IcQgWDBKLUBCiLcw68+Xgeve3pPvL14ks5IQUjziA+oNMpp4BiRoNrufWfcMTmTIh
+         mPznpCG4RWi4JKobBDAk5z5LlAyrq5BNhhoAn3SWIuOIC/Mcmt7j3opK6MtjsSFCUXeV
+         Q4byMsyzqEm9NN5y2tn2F8p5vyu5QjBAeYSr93YccXLRPq5zSkoz+YDpZ3cTO+XlPevT
+         zNkQ==
+X-Forwarded-Encrypted: i=1; AKwUvByLo+SOvwszuYfgSIz8ooXhHnLTKpsUFIwsIvQ4ZovdRFxRWGkPlJYwrJGUO7EFcdpLbRb0an9krdC6M5w=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIzi76mLiNSPxyDQwu9CXu7xCjw+CDsZi3iuV1qLbev5iAUFabc
+	TKmyskXtUfh/hYeaDkgecvQF9VEJNH6zoJ82spkMI/DKALVtzB7dRXcd
+X-Gm-Gg: AYBFou2pbn8tawxHZoU+T2rUB0Bk2bpFt6Tp70u0rH9NKfCgXY3Aeg1YxYIac2bVuGI
+	9GUpTR/t7Shgbe/CEhab3TmicgGm9eto8YDphePo9AA2owDq/dw/t1wrvCtBuJ0RL5b8HzDYrdi
+	3vH1a6CzkMPPqY7Eh46kj+PfpwRkkUdTPmaKG6/RSHyTKrpPy8WkuTFMLtas7FrcrWICbNgUh7g
+	AySGAWonodxQ9xlR+MWf2B2jk6HzgksoYeiapDkV8NGuInmHtELFVcUAbgKDPL8X7UFmBXQjuAe
+	/4KuK+56A/Gp8Nz7kxsDtn/2tT6tIGBcPnMZ5LzE9wnHr0wBhFAv4fG88Z22BmT+1ImDUsy8E+I
+	DR7ulVm9hUDI19AKzNzUTB5GEwancB64fUIBYkltkUKUXUQKlX9NMDRCCYJyzgStzxEgXZRqxze
+	/L6WAAHX8bDKkgBY+ORUtVagTPwQv28bAeY6JU5xxAmZB/jfsoatz8IGldm4Y7N5pkgPxek0W26
+	YxF0OMTiZsZV3wIAPFWDqUsV/30ejbBVoUbcwtN
+X-Received: by 2002:a17:907:d48f:b0:c32:110d:682f with SMTP id a640c23a62f3a-c419e63cbc2mr357315666b.18.1792331387779;
+        Sun, 18 Oct 2026 06:49:47 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c40919c0402sm267678266b.61.2026.10.18.06.49.38
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c40919c0402sm267678266b.61.2026.10.18.06.49.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Oct 2026 06:49:40 -0700 (PDT)
+        Sun, 18 Oct 2026 06:49:46 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: davem@davemloft.net,
 	andreas@gaisler.com,
@@ -71,9 +71,9 @@ Cc: linux-kernel@vger.kernel.org,
 	krzk@kernel.org,
 	oleg@redhat.com,
 	linmag7@gmail.com
-Subject: [PATCH v4 06/10] sparc64: retain the DMA segment start across SG entries
-Date: Sun, 18 Oct 2026 15:45:08 +0200
-Message-ID: <20261018134738.1016106-7-linmag7@gmail.com>
+Subject: [PATCH v4 09/10] sparc64: add M3000 Oberon PCIe support
+Date: Sun, 18 Oct 2026 15:45:11 +0200
+Message-ID: <20261018134738.1016106-10-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261018134738.1016106-1-linmag7@gmail.com>
 References: <20261018134738.1016106-1-linmag7@gmail.com>
@@ -85,65 +85,382 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The SG mapping loops reset out_entry to zero for each input entry.
-When extending an output segment, the boundary check therefore tests
-entry zero instead of the segment's actual starting IOMMU entry.
-Adjacent allocations can be merged across a device segment boundary.
+Recognize Oberon from its firmware compatible property without a platform
+Kconfig option, preserving firmware link setup. Flush DVMA translations
+and changed noncoherent IOTSB cache lines, and route legacy interrupts
+using the bridge's ten-bit target ID.
 
-Keep out_entry for the lifetime of the mapping loop and update it only
-when starting an output segment, in both sun4u and sun4v.
+Cache the bridge type and share target encoding. Leave MSI queues
+uninitialized so the existing architecture path uses legacy interrupts
+even with CONFIG_PCI_MSI=y; native bridge error handling is not provided.
 
-Fixes: f08802572965 ("sparc64: add the segment boundary checking to IOMMUs while merging SG entries")
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/sparc/kernel/iommu.c     | 4 ++--
- arch/sparc/kernel/pci_sun4v.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ arch/sparc/include/asm/iommu_64.h |  1 +
+ arch/sparc/include/asm/irq_64.h   |  1 +
+ arch/sparc/kernel/iommu.c         | 44 +++++++++++++++++++++++++++
+ arch/sparc/kernel/irq_64.c        | 50 ++++++++++++++++++++++++-------
+ arch/sparc/kernel/pci_fire.c      | 26 ++++++++++++++--
+ arch/sparc/kernel/pci_impl.h      |  1 +
+ arch/sparc/kernel/prom_irqtrans.c |  5 ++++
+ 7 files changed, 115 insertions(+), 13 deletions(-)
 
+diff --git a/arch/sparc/include/asm/iommu_64.h b/arch/sparc/include/asm/iommu_64.h
+index 0ef6dedf747e..abd7bb0fa615 100644
+--- a/arch/sparc/include/asm/iommu_64.h
++++ b/arch/sparc/include/asm/iommu_64.h
+@@ -62,6 +62,7 @@ struct iommu {
+ 	unsigned long		iommu_tsbbase;
+ 	unsigned long		iommu_flush;
+ 	unsigned long		iommu_flushinv;
++	unsigned long		iommu_cache_flush; /* Oberon IOTSB cache */
+ 	unsigned long		iommu_tags;
+ 	unsigned long		iommu_ctxflush;
+ 	unsigned long		write_complete_reg;
+diff --git a/arch/sparc/include/asm/irq_64.h b/arch/sparc/include/asm/irq_64.h
+index 8c4c0c87f998..c3e88f2f8e80 100644
+--- a/arch/sparc/include/asm/irq_64.h
++++ b/arch/sparc/include/asm/irq_64.h
+@@ -45,6 +45,7 @@ void irq_install_pre_handler(int irq,
+ 			     void *arg1, void *arg2);
+ #define irq_canonicalize(irq)	(irq)
+ unsigned int build_irq(int inofixup, unsigned long iclr, unsigned long imap);
++unsigned int oberon_build_irq(int inofixup, unsigned long iclr, unsigned long imap);
+ unsigned int sun4v_build_irq(u32 devhandle, unsigned int devino);
+ unsigned int sun4v_build_virq(u32 devhandle, unsigned int devino);
+ unsigned int sun4v_build_msi(u32 devhandle, unsigned int *irq_p,
 diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
-index 7613ab0ffb89..a23105b64fb9 100644
+index 66aaafbf1621..27d269a8b52c 100644
 --- a/arch/sparc/kernel/iommu.c
 +++ b/arch/sparc/kernel/iommu.c
-@@ -451,7 +451,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
- 	int outcount, incount, i;
- 	struct strbuf *strbuf;
- 	struct iommu *iommu;
--	unsigned long base_shift;
-+	unsigned long base_shift, out_entry = 0;
+@@ -52,6 +52,8 @@ static void iommu_flushall(struct iommu_map_table *iommu_map_table)
+ 	struct iommu *iommu = container_of(iommu_map_table, struct iommu, tbl);
+ 	if (iommu->iommu_flushinv) {
+ 		iommu_write(iommu->iommu_flushinv, ~(u64)0);
++		if (iommu->iommu_cache_flush)
++			(void)iommu_read(iommu->write_complete_reg);
+ 	} else {
+ 		unsigned long tag;
+ 		int entry;
+@@ -67,6 +69,30 @@ static void iommu_flushall(struct iommu_map_table *iommu_map_table)
+ 	}
+ }
  
- 	BUG_ON(direction == DMA_NONE);
++/*
++ * Oberon's noncoherent IOTSB needs each changed 64-byte cache line flushed
++ * along with its DVMA translations. Call only for device-inactive mappings.
++ */
++static void iommu_sync_mapping(struct iommu *iommu, iopte_t *base,
++			       unsigned long npages)
++{
++	unsigned long slot, i;
++
++	if (!iommu->iommu_cache_flush || !npages)
++		return;
++	slot = base - iommu->page_table;
++	/* Publish IOPTE stores before invalidating the hardware caches. */
++	wmb();
++	for (i = 0; i < npages; i++, slot++) {
++		iommu_write(iommu->iommu_flush,
++			    iommu->tbl.table_map_base + (slot << IO_PAGE_SHIFT));
++		if ((slot & 7) == 7 || i == npages - 1)
++			iommu_write(iommu->iommu_cache_flush,
++				    __pa(iommu->page_table + slot));
++	}
++	(void)iommu_read(iommu->write_complete_reg);
++}
++
+ #define IOPTE_CONSISTENT(CTX) \
+ 	(IOPTE_VALID | IOPTE_CACHE | \
+ 	 (((CTX) << 47) & IOPTE_CONTEXT))
+@@ -240,6 +266,8 @@ static void *dma_4u_alloc_coherent(struct device *dev, size_t size,
+ 		first_page += IO_PAGE_SIZE;
+ 	}
  
-@@ -485,7 +485,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
- 	seg_boundary_size = dma_get_seg_boundary_nr_pages(dev, IO_PAGE_SHIFT);
- 	base_shift = iommu->tbl.table_map_base >> IO_PAGE_SHIFT;
- 	for_each_sg(sglist, s, nelems, i) {
--		unsigned long paddr, npages, entry, out_entry = 0, slen;
-+		unsigned long paddr, npages, entry, slen;
- 		iopte_t *base;
++	iommu_sync_mapping(iommu, iopte - (size >> IO_PAGE_SHIFT),
++			   size >> IO_PAGE_SHIFT);
+ 	return ret;
+ }
  
- 		slen = s->length;
-diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
-index 61f14b4c8f90..22584c4de973 100644
---- a/arch/sparc/kernel/pci_sun4v.c
-+++ b/arch/sparc/kernel/pci_sun4v.c
-@@ -489,7 +489,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
- 	struct atu *atu;
- 	struct iommu_map_table *tbl;
- 	u64 mask;
--	unsigned long base_shift;
-+	unsigned long base_shift, out_entry = 0;
- 	long err;
+@@ -253,6 +281,15 @@ static void dma_4u_free_coherent(struct device *dev, size_t size,
+ 	npages = IO_PAGE_ALIGN(size) >> IO_PAGE_SHIFT;
+ 	iommu = dev->archdata.iommu;
  
- 	BUG_ON(direction == DMA_NONE);
-@@ -530,7 +530,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
- 	base_shift = tbl->table_map_base >> IO_PAGE_SHIFT;
++	if (iommu->iommu_cache_flush) {
++		iopte_t *base = iommu->page_table +
++			((dvma - iommu->tbl.table_map_base) >> IO_PAGE_SHIFT);
++		unsigned long i;
++
++		for (i = 0; i < npages; i++)
++			iopte_make_dummy(iommu, base + i);
++		iommu_sync_mapping(iommu, base, npages);
++	}
+ 	iommu_tbl_range_free(&iommu->tbl, dvma, npages, IOMMU_ERROR_CODE);
  
- 	for_each_sg(sglist, s, nelems, i) {
--		unsigned long paddr, npages, entry, out_entry = 0, slen;
-+		unsigned long paddr, npages, entry, slen;
+ 	order = get_order(size);
+@@ -316,6 +353,7 @@ static dma_addr_t dma_4u_map_phys(struct device *dev, phys_addr_t phys,
  
- 		slen = s->length;
- 		/* Sanity check */
+ 	for (i = 0; i < npages; i++, base++, phys += IO_PAGE_SIZE)
+ 		iopte_val(*base) = iopte_protection | phys;
++	iommu_sync_mapping(iommu, base - npages, npages);
+ 
+ 	return ret;
+ 
+@@ -432,6 +470,7 @@ static void dma_4u_unmap_phys(struct device *dev, dma_addr_t bus_addr,
+ 	/* Step 2: Clear out TSB entries. */
+ 	for (i = 0; i < npages; i++)
+ 		iopte_make_dummy(iommu, base + i);
++	iommu_sync_mapping(iommu, base, npages);
+ 
+ 	iommu_free_ctx(iommu, ctx);
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+@@ -523,6 +562,9 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 			paddr += IO_PAGE_SIZE;
+ 		}
+ 
++		iommu_sync_mapping(iommu, iommu->page_table + entry,
++				   base - (iommu->page_table + entry));
++
+ 		/* If we are in an open segment, try merging */
+ 		if (segstart != s) {
+ 			/* We cannot merge if:
+@@ -577,6 +619,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 			for (j = 0; j < npages; j++)
+ 				iopte_make_dummy(iommu, base + j);
++			iommu_sync_mapping(iommu, base, npages);
+ 
+ 			iommu_tbl_range_free(&iommu->tbl, vaddr, npages,
+ 					     IOMMU_ERROR_CODE);
+@@ -653,6 +696,7 @@ static void dma_4u_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 		for (i = 0; i < npages; i++)
+ 			iopte_make_dummy(iommu, base + i);
++		iommu_sync_mapping(iommu, base, npages);
+ 
+ 		iommu_tbl_range_free(&iommu->tbl, dma_handle, npages,
+ 				     IOMMU_ERROR_CODE);
+diff --git a/arch/sparc/kernel/irq_64.c b/arch/sparc/kernel/irq_64.c
+index 4cceeba726ab..338f58246feb 100644
+--- a/arch/sparc/kernel/irq_64.c
++++ b/arch/sparc/kernel/irq_64.c
+@@ -206,6 +206,7 @@ struct irq_handler_data {
+ 	struct ino_bucket bucket;
+ 	unsigned long	iclr;
+ 	unsigned long	imap;
++	bool		oberon;
+ };
+ 
+ static inline unsigned int irq_data_to_handle(struct irq_data *data)
+@@ -364,6 +365,16 @@ static int irq_choose_cpu(unsigned int irq, const struct cpumask *affinity)
+ 	real_hard_smp_processor_id()
+ #endif
+ 
++/* Oberon IMAP destination is a ten-bit interrupt target ID. */
++#define OBERON_IMAP_TID_SHIFT	21
++#define OBERON_IMAP_TID_MASK	(0x3ffUL << OBERON_IMAP_TID_SHIFT)
++
++static unsigned long oberon_imap_target(unsigned long val, unsigned int cpuid)
++{
++	return (val & ~OBERON_IMAP_TID_MASK) |
++		((cpuid << OBERON_IMAP_TID_SHIFT) & OBERON_IMAP_TID_MASK);
++}
++
+ static void sun4u_irq_enable(struct irq_data *data)
+ {
+ 	struct irq_handler_data *handler_data;
+@@ -377,12 +388,16 @@ static void sun4u_irq_enable(struct irq_data *data)
+ 				       irq_data_get_affinity_mask(data));
+ 		imap = handler_data->imap;
+ 
+-		tid = sun4u_compute_tid(imap, cpuid);
+-
+ 		val = upa_readq(imap);
+-		val &= ~(IMAP_TID_UPA | IMAP_TID_JBUS |
+-			 IMAP_AID_SAFARI | IMAP_NID_SAFARI);
+-		val |= tid | IMAP_VALID;
++		if (handler_data->oberon) {
++			val = oberon_imap_target(val, cpuid);
++		} else {
++			tid = sun4u_compute_tid(imap, cpuid);
++			val &= ~(IMAP_TID_UPA | IMAP_TID_JBUS |
++				 IMAP_AID_SAFARI | IMAP_NID_SAFARI);
++			val |= tid;
++		}
++		val |= IMAP_VALID;
+ 		upa_writeq(val, imap);
+ 		upa_writeq(ICLR_IDLE, handler_data->iclr);
+ 	}
+@@ -401,12 +416,16 @@ static int sun4u_set_affinity(struct irq_data *data,
+ 		cpuid = irq_choose_cpu(data->irq, mask);
+ 		imap = handler_data->imap;
+ 
+-		tid = sun4u_compute_tid(imap, cpuid);
+-
+ 		val = upa_readq(imap);
+-		val &= ~(IMAP_TID_UPA | IMAP_TID_JBUS |
+-			 IMAP_AID_SAFARI | IMAP_NID_SAFARI);
+-		val |= tid | IMAP_VALID;
++		if (handler_data->oberon) {
++			val = oberon_imap_target(val, cpuid);
++		} else {
++			tid = sun4u_compute_tid(imap, cpuid);
++			val &= ~(IMAP_TID_UPA | IMAP_TID_JBUS |
++				 IMAP_AID_SAFARI | IMAP_NID_SAFARI);
++			val |= tid;
++		}
++		val |= IMAP_VALID;
+ 		upa_writeq(val, imap);
+ 		upa_writeq(ICLR_IDLE, handler_data->iclr);
+ 	}
+@@ -646,6 +665,17 @@ unsigned int build_irq(int inofixup, unsigned long iclr, unsigned long imap)
+ 	return irq;
+ }
+ 
++unsigned int oberon_build_irq(int inofixup, unsigned long iclr,
++			      unsigned long imap)
++{
++	unsigned int irq = build_irq(inofixup, iclr, imap);
++	struct irq_handler_data *data = irq_get_handler_data(irq);
++
++	if (data)
++		data->oberon = true;
++	return irq;
++}
++
+ static unsigned int sun4v_build_common(u32 devhandle, unsigned int devino,
+ 		void (*handler_data_init)(struct irq_handler_data *data,
+ 		u32 devhandle, unsigned int devino),
+diff --git a/arch/sparc/kernel/pci_fire.c b/arch/sparc/kernel/pci_fire.c
+index db160eeb0ffe..f2776144d1d4 100644
+--- a/arch/sparc/kernel/pci_fire.c
++++ b/arch/sparc/kernel/pci_fire.c
+@@ -46,11 +46,21 @@ static int pci_fire_pbm_iommu_init(struct pci_pbm_info *pbm)
+ 	iommu->iommu_tsbbase  = pbm->pbm_regs + FIRE_IOMMU_TSBBASE;
+ 	iommu->iommu_flush    = pbm->pbm_regs + FIRE_IOMMU_FLUSH;
+ 	iommu->iommu_flushinv = pbm->pbm_regs + FIRE_IOMMU_FLUSHINV;
++	if (pbm->is_oberon) {
++		/*
++		 * 0x40100 flushes an IOTSB cache line by physical address;
++		 * 0x40010 flushes a translated DVMA page.
++		 */
++		iommu->iommu_flush = pbm->pbm_regs + 0x40010UL;
++		iommu->iommu_cache_flush = pbm->pbm_regs + 0x40100UL;
++		iommu->write_complete_reg = iommu->iommu_control;
++	}
+ 
+ 	/* We use the main control/status register of FIRE as the write
+ 	 * completion register.
+ 	 */
+-	iommu->write_complete_reg = pbm->controller_regs + 0x410000UL;
++	if (!iommu->iommu_cache_flush)
++		iommu->write_complete_reg = pbm->controller_regs + 0x410000UL;
+ 
+ 	/*
+ 	 * Invalidate TLB Entries.
+@@ -62,6 +72,8 @@ static int pci_fire_pbm_iommu_init(struct pci_pbm_info *pbm)
+ 	if (err)
+ 		return err;
+ 
++	/* Make initialized IOPTEs visible before publishing the table base. */
++	wmb();
+ 	upa_writeq(__pa(iommu->page_table) | 0x7UL, iommu->iommu_tsbbase);
+ 
+ 	control = upa_readq(iommu->iommu_control);
+@@ -70,6 +82,10 @@ static int pci_fire_pbm_iommu_init(struct pci_pbm_info *pbm)
+ 		    0x00000002 /* Bypass enable */		|
+ 		    0x00000001 /* Translation enable */);
+ 	upa_writeq(control, iommu->iommu_control);
++	if (iommu->iommu_cache_flush) {
++		upa_writeq(~(u64)0, iommu->iommu_flushinv);
++		(void)upa_readq(iommu->iommu_control);
++	}
+ 
+ 	return 0;
+ }
+@@ -425,6 +441,7 @@ static int pci_fire_pbm_init(struct pci_pbm_info *pbm,
+ 	}
+ 
+ 	pbm->numa_node = NUMA_NO_NODE;
++	pbm->is_oberon = of_device_is_compatible(dp, "pciex108e,80f8");
+ 
+ 	pbm->pci_ops = &sun4u_pci_ops;
+ 	pbm->config_space_reg_bits = 12;
+@@ -444,13 +461,15 @@ static int pci_fire_pbm_init(struct pci_pbm_info *pbm,
+ 
+ 	pci_get_pbm_props(pbm);
+ 
+-	pci_fire_hw_init(pbm);
++	if (!pbm->is_oberon)
++		pci_fire_hw_init(pbm);
+ 
+ 	err = pci_fire_pbm_iommu_init(pbm);
+ 	if (err)
+ 		return err;
+ 
+-	pci_fire_msi_init(pbm);
++	if (!pbm->is_oberon)
++		pci_fire_msi_init(pbm);
+ 
+ 	pbm->pci_bus = pci_scan_one_pbm(pbm, &op->dev);
+ 
+@@ -510,6 +529,7 @@ static const struct of_device_id fire_match[] = {
+ 		.name = "pci",
+ 		.compatible = "pciex108e,80f0",
+ 	},
++	{ .name = "pci", .compatible = "pciex108e,80f8" },
+ 	{},
+ };
+ 
+diff --git a/arch/sparc/kernel/pci_impl.h b/arch/sparc/kernel/pci_impl.h
+index 83718876f1d4..92505fcc3cf3 100644
+--- a/arch/sparc/kernel/pci_impl.h
++++ b/arch/sparc/kernel/pci_impl.h
+@@ -117,6 +117,7 @@ struct pci_pbm_info {
+ 	/* State of 66MHz capabilities on this PBM. */
+ 	int				is_66mhz_capable;
+ 	int				all_devs_66mhz;
++	bool				is_oberon;
+ 
+ #ifdef CONFIG_PCI_MSI
+ 	/* MSI info.  */
+diff --git a/arch/sparc/kernel/prom_irqtrans.c b/arch/sparc/kernel/prom_irqtrans.c
+index 558ed5114664..58c5b4565f41 100644
+--- a/arch/sparc/kernel/prom_irqtrans.c
++++ b/arch/sparc/kernel/prom_irqtrans.c
+@@ -481,6 +481,7 @@ static void __init pci_sun4v_irq_trans_init(struct device_node *dp)
+ struct fire_irq_data {
+ 	unsigned long pbm_regs;
+ 	u32 portid;
++	bool oberon;
+ };
+ 
+ #define FIRE_IMAP_BASE	0x001000
+@@ -537,6 +538,8 @@ static unsigned int fire_irq_build(struct device_node *dp,
+ 	 */
+ 	ino |= (irq_data->portid << 6);
+ 	ino -= int_ctrlr;
++	if (irq_data->oberon)
++		return oberon_build_irq(ino, iclr, imap);
+ 	return build_irq(ino, iclr, imap);
+ }
+ 
+@@ -559,6 +562,7 @@ static void __init fire_irq_trans_init(struct device_node *dp)
+ 
+ 	dp->irq_trans->data = irq_data;
+ 
++	irq_data->oberon = of_device_is_compatible(dp, "pciex108e,80f8");
+ 	irq_data->pbm_regs = regs[0].phys_addr;
+ 	irq_data->portid = of_getintprop_default(dp, "portid", 0);
+ }
+@@ -784,6 +788,7 @@ static struct irq_trans __initdata pci_irq_trans_table[] = {
+ 	{ "pci108e,a801", tomatillo_irq_trans_init },
+ 	{ "SUNW,sun4v-pci", pci_sun4v_irq_trans_init },
+ 	{ "pciex108e,80f0", fire_irq_trans_init },
++	{ "pciex108e,80f8", fire_irq_trans_init },
+ };
+ #endif
+ 
 -- 
 2.43.0
 
