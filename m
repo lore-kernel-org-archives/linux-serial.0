@@ -1,101 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail-m127157.xmail.ntesmail.com (mail-m127157.xmail.ntesmail.com [115.236.127.157])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E04164D17A2;
-	Mon, 19 Oct 2026 13:45:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885534F85DF;
+	Mon, 19 Oct 2026 13:47:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.236.127.157
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792417549; cv=none; b=ZrBji0G/3I3QzvWlIbNI25EEyqqC4KQ0Ei3P70EX8T9xnZuPQbAtBtXNSXQ/XMAjExl9eECSRq+dHHtQR01al56MSf4PiiJRnNSNzisAJHoD1HFONGF5my6rEHoCxFO8rKK7TKQNoX1tJhgY3lIIOZfwwjfXHi1aEZtmqCB0S2U=
+	t=1792417646; cv=none; b=BPAWpbBkp+QOS0+aodZCmltbb5C0Fijm2HM+qFjJtPq+EKzNLhAYgX7NPdiXBj0wknUJShCyIYBgQMGqclJ7cKRUAF3bhpBYkBeMSzbCZiY3rPzFjvFii5MhbpmGhovb1kijCioTr9RsDeU0ckns0cPIftXJ7UUBH7yoe0F0+Y0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792417549; c=relaxed/simple;
-	bh=nGv/eGQjzo9215N9dvvxoEwehFmKMdSVZplyu5qMf6c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r2GDZpYy3312nVfqNMGyHb7UA7tRsd/ittvT9gkrrPOvh5/gJxOf5+LsSIHOcIQjtlud5zooyxpXe41wQwy5KshC0xRuf9+S+F88FWpWEbPae5cegPfuTyyzRgaq6QrprdQF49kVefxPoNv3ogpptKyTO9S+cIgwMHbKRVxYddg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=FMYnsCmE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792417646; c=relaxed/simple;
+	bh=J6NtuUtpROTJlVrKqRqylUNrQQBAVI6o3ixTqT2jp98=;
+	h=Content-Type:Message-ID:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:From:Date; b=PGXc1j1AISDfh4kJisvECCVRGEy3SPdnDcJquut3Fqvykb+QxhWwKFrMdhb2D25yabQ40T+Ez80/o8ZQ8VYa6L8INwRAiMuGjSi8GvN9PjlU+/ARtwcMFoer234GEDJYxVDHD8pKL/yoPA58ecwGBnI4MocL1J7HESwlbUWp2xU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hdu.edu.cn; spf=pass smtp.mailfrom=hdu.edu.cn; dkim=pass (1024-bit key) header.d=hdu.edu.cn header.i=@hdu.edu.cn header.b=hIWvxHdr; arc=none smtp.client-ip=115.236.127.157
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hdu.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hdu.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="FMYnsCmE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA8F1F000C4;
-	Mon, 19 Oct 2026 13:45:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1792417547;
-	bh=nS6GU5tGW1Nodnfb18uSuxnHP5yUMBytwoKlABIhNpI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=FMYnsCmEytrzPIrcWuCVvppMKbU2Ka4jahkDvMwMnfV8zq5aLkZJGuIL8p2Jc8vQe
-	 jfqO9x/Y/TdzpVdu67NfjJ+n7s1OLwc5CiOomavC2UDdC9HDPTBn6vyXpx+0yi6bLn
-	 EH6PD/oVAQVPrs5oMO1PmPuE/vxIDSw+oG+hwO3o=
-Date: Mon, 19 Oct 2026 15:45:44 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: LI xiao <lixiao0@hdu.edu.cn>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=hdu.edu.cn header.i=@hdu.edu.cn header.b="hIWvxHdr"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+Message-ID: <AMoAIAAtLCMmxKHlfyhDJarK.3.1792416715880.Hmail.252270051@hdu.edu.cn>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org, 
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: timbuart: kill tasklet after freeing IRQ
-Message-ID: <2026101926-rants-refinish-22da@gregkh>
-References: <AHQArwC2LDgmty1sqnW35KqM.1.1792408152646.Hmail.252270051@hdu.edu.cn>
- <2026101954-snarl-frenzy-da86@gregkh>
- <AMoAIAAtLCMmxKHlfyhDJarK.3.1792416715880.Hmail.252270051@hdu.edu.cn>
+Subject: =?UTF-8?B?W1BBVENIXSB0dHk6IHRpbWJ1YXJ0OiBraWxsIHRhc2tsZXQgYWZ0ZXIgZnJlZWluZyBJUlE=?=
+X-Priority: 3
+X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com web
+In-Reply-To: <2026101954-snarl-frenzy-da86@gregkh>
+References: <AHQArwC2LDgmty1sqnW35KqM.1.1792408152646.Hmail.252270051@hdu.edu.cn> <2026101954-snarl-frenzy-da86@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AMoAIAAtLCMmxKHlfyhDJarK.3.1792416715880.Hmail.252270051@hdu.edu.cn>
+Received: from 252270051@hdu.edu.cn( [183.157.177.89] ) by ajax-webmail ( [127.0.0.1] ) ; Mon, 19 Oct 2026 21:31:55 +0800 (GMT+08:00)
+From: LI xiao <lixiao0@hdu.edu.cn>
+Date: Mon, 19 Oct 2026 21:31:55 +0800 (GMT+08:00)
+X-HM-Tid: 0aa1544398c7d458kusy5b9bea15c217
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDS0lDVk1KQ01NQk5CQklIT1YVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlKQ0hVSk5MVUpMTFVDQllXWRYaDxIVHRRZQVlPS0hVSk
+	tISkxDSlVKS0tVSkJLS1kG
+DKIM-Signature: a=rsa-sha256;
+	b=hIWvxHdrmv04UUsxcSygzMB/9VH7DmKw4OV3cr5v5kqaxoc6Mb/t6fhfrZkRBilpegsjG2lWhYadN2J2GMJyQEQVf9xce721iNFsl5tcuvxtIo+f+8D+uI2OKSQ7meGxVq3jsQh3D8v7CroPFaw7eVqNW/HRac4ffqVeTHSBvhA=; s=default; c=relaxed/relaxed; d=hdu.edu.cn; v=1;
+	bh=J6NtuUtpROTJlVrKqRqylUNrQQBAVI6o3ixTqT2jp98=;
+	h=date:mime-version:subject:message-id:from;
 
-On Mon, Oct 19, 2026 at 09:31:55PM +0800, LI xiao wrote:
-> The timbuart driver calls tasklet_kill() before uart_remove_one_port().
-> An interrupt can schedule the tasklet again after tasklet_kill()
-> returns but before timbuart_shutdown() frees the IRQ. The subsequent
-> free_irq() synchronizes the IRQ handler, but does not drain a tasklet
-> that the handler has already queued.
-> 
-> Move tasklet_kill() to timbuart_shutdown(), immediately after
-> free_irq(), so that any tasklet queued by the IRQ handler is drained
-> before uart_remove_one_port() releases the port resources.
-> 
-> I tested the intended synchronization ordering with a KASAN-enabled
-> kernel in a QEMU guest using a test module. The module queued
-> the tasklet, waited for the simulated IRQ handler to exit, called
-> tasklet_kill(), and then freed the UART object. The tasklet completed
-> without a KASAN report or scheduling warning.
-> 
-> This was a controlled test of the synchronization ordering. It did
-> not exercise timbuart's actual IRQ handler or Timberdale UART hardware,
-> which is not modeled by QEMU.
-
-Ah, that might be tricky, I think you need to test this on real hardware
-as you are changing the logic here.
-
-> Signed-off-by: LI Xiao <lixiao0@hdu.edu.cn>
-
-No fixes: tag?  Cc: stable?
-
-
-> 
-> ---
->  drivers/tty/serial/timbuart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
-> index 7a0326e71..c561ca702 100644
-> --- a/drivers/tty/serial/timbuart.c
-> +++ b/drivers/tty/serial/timbuart.c
-> @@ -254,6 +254,7 @@ static void timbuart_shutdown(struct uart_port *port)
->  		container_of(port, struct timbuart_port, port);
->  	dev_dbg(port->dev, "%s\n", __func__);
->  	free_irq(port->irq, uart);
-> +	tasklet_kill(&uart->tasklet);
->  	iowrite32(0, port->membase + TIMBUART_IER);
->  
->  	timbuart_flush_buffer(port);
-
-Are you sure you can flush after the tasklet is killed?  Nothing
-requires it to still be running at this point in time?
-
-And why not stop it before the irq is freed as that's what it is
-handling?  Note, I could be totally wrong, I'm just guessing here...
-
-thanks,
-
-greg k-h
+VGhlIHRpbWJ1YXJ0IGRyaXZlciBjYWxscyB0YXNrbGV0X2tpbGwoKSBiZWZvcmUgdWFydF9yZW1v
+dmVfb25lX3BvcnQoKS4KQW4gaW50ZXJydXB0IGNhbiBzY2hlZHVsZSB0aGUgdGFza2xldCBhZ2Fp
+biBhZnRlciB0YXNrbGV0X2tpbGwoKQpyZXR1cm5zIGJ1dCBiZWZvcmUgdGltYnVhcnRfc2h1dGRv
+d24oKSBmcmVlcyB0aGUgSVJRLiBUaGUgc3Vic2VxdWVudApmcmVlX2lycSgpIHN5bmNocm9uaXpl
+cyB0aGUgSVJRIGhhbmRsZXIsIGJ1dCBkb2VzIG5vdCBkcmFpbiBhIHRhc2tsZXQKdGhhdCB0aGUg
+aGFuZGxlciBoYXMgYWxyZWFkeSBxdWV1ZWQuCgpNb3ZlIHRhc2tsZXRfa2lsbCgpIHRvIHRpbWJ1
+YXJ0X3NodXRkb3duKCksIGltbWVkaWF0ZWx5IGFmdGVyCmZyZWVfaXJxKCksIHNvIHRoYXQgYW55
+IHRhc2tsZXQgcXVldWVkIGJ5IHRoZSBJUlEgaGFuZGxlciBpcyBkcmFpbmVkCmJlZm9yZSB1YXJ0
+X3JlbW92ZV9vbmVfcG9ydCgpIHJlbGVhc2VzIHRoZSBwb3J0IHJlc291cmNlcy4KCkkgdGVzdGVk
+IHRoZSBpbnRlbmRlZCBzeW5jaHJvbml6YXRpb24gb3JkZXJpbmcgd2l0aCBhIEtBU0FOLWVuYWJs
+ZWQKa2VybmVsIGluIGEgUUVNVSBndWVzdCB1c2luZyBhIHRlc3QgbW9kdWxlLiBUaGUgbW9kdWxl
+IHF1ZXVlZAp0aGUgdGFza2xldCwgd2FpdGVkIGZvciB0aGUgc2ltdWxhdGVkIElSUSBoYW5kbGVy
+IHRvIGV4aXQsIGNhbGxlZAp0YXNrbGV0X2tpbGwoKSwgYW5kIHRoZW4gZnJlZWQgdGhlIFVBUlQg
+b2JqZWN0LiBUaGUgdGFza2xldCBjb21wbGV0ZWQKd2l0aG91dCBhIEtBU0FOIHJlcG9ydCBvciBz
+Y2hlZHVsaW5nIHdhcm5pbmcuCgpUaGlzIHdhcyBhIGNvbnRyb2xsZWQgdGVzdCBvZiB0aGUgc3lu
+Y2hyb25pemF0aW9uIG9yZGVyaW5nLiBJdCBkaWQKbm90IGV4ZXJjaXNlIHRpbWJ1YXJ0J3MgYWN0
+dWFsIElSUSBoYW5kbGVyIG9yIFRpbWJlcmRhbGUgVUFSVCBoYXJkd2FyZSwKd2hpY2ggaXMgbm90
+IG1vZGVsZWQgYnkgUUVNVS4KCgpTaWduZWQtb2ZmLWJ5OiBMSSBYaWFvIDxsaXhpYW8wQGhkdS5l
+ZHUuY24+CgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC90aW1idWFydC5jIHwgMiArLQogMSBmaWxl
+IGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
+dmVycy90dHkvc2VyaWFsL3RpbWJ1YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvdGltYnVhcnQu
+YwppbmRleCA3YTAzMjZlNzEuLmM1NjFjYTcwMiAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2Vy
+aWFsL3RpbWJ1YXJ0LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL3RpbWJ1YXJ0LmMKQEAgLTI1
+NCw2ICsyNTQsNyBAQCBzdGF0aWMgdm9pZCB0aW1idWFydF9zaHV0ZG93bihzdHJ1Y3QgdWFydF9w
+b3J0ICpwb3J0KQogCQljb250YWluZXJfb2YocG9ydCwgc3RydWN0IHRpbWJ1YXJ0X3BvcnQsIHBv
+cnQpOwogCWRldl9kYmcocG9ydC0+ZGV2LCAiJXNcbiIsIF9fZnVuY19fKTsKIAlmcmVlX2lycShw
+b3J0LT5pcnEsIHVhcnQpOworCXRhc2tsZXRfa2lsbCgmdWFydC0+dGFza2xldCk7CiAJaW93cml0
+ZTMyKDAsIHBvcnQtPm1lbWJhc2UgKyBUSU1CVUFSVF9JRVIpOwogCiAJdGltYnVhcnRfZmx1c2hf
+YnVmZmVyKHBvcnQpOwpAQCAtNDc0LDcgKzQ3NSw2IEBAIHN0YXRpYyB2b2lkIHRpbWJ1YXJ0X3Jl
+bW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpkZXYpCiB7CiAJc3RydWN0IHRpbWJ1YXJ0X3Bv
+cnQgKnVhcnQgPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShkZXYpOwogCi0JdGFza2xldF9raWxsKCZ1
+YXJ0LT50YXNrbGV0KTsKIAl1YXJ0X3JlbW92ZV9vbmVfcG9ydCgmdGltYnVhcnRfZHJpdmVyLCAm
+dWFydC0+cG9ydCk7CiAJdWFydF91bnJlZ2lzdGVyX2RyaXZlcigmdGltYnVhcnRfZHJpdmVyKTsK
+IAlrZnJlZSh1YXJ0KTsKLS0gCjIuMzQuMQoKCgoKCkZyb206IEdyZWcgS0ggPGdyZWdraEBsaW51
+eGZvdW5kYXRpb24ub3JnPgpEYXRlOiAyMDI2LTEwLTE5IDE5OjQ2OjQwClRvOiAgTEkgeGlhbyA8
+bGl4aWFvMEBoZHUuZWR1LmNuPgpDYzogIGppcmlzbGFieUBrZXJuZWwub3JnLGxpbnV4LWtlcm5l
+bEB2Z2VyLmtlcm5lbC5vcmcsbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZwpTdWJqZWN0OiBS
+ZTogdHR5OiB0aW1idWFydDogdGFza2xldCBtYXkgdHJpZ2dlciBVQUYgZHVyaW5nIHJlbW92ZT5P
+biBNb24sIE9jdCAxOSwgMjAyNiBhdCAwNzowOToxMlBNICswODAwLCBMSSB4aWFvIHdyb3RlOgo+
+PiBIZWxsbywKPj4gSSBzdXNwZWN0IGEgdGFza2xldCBsaWZldGltZSByYWNlIGluIHRoZSB0aW1i
+dWFydCBkcml2ZXIuCj4KPjxzbmlwPgo+Cj5HcmVhdCEgIENhbiB5b3UgcGxlYXNlIHByb3ZpZGUg
+YSB3b3JraW5nIHBhdGNoIGZvciB0aGlzIGlzc3VlIGFzIHlvdQo+aGF2ZSBhIHJlcHJvZHVjZXIg
+Zm9yIGl0Pwo+Cj5BbHNvLCBodG1sIGVtYWlscyBhcmUgcmVqZWN0ZWQgYnkgdGhlIG1haWxpbmcg
+bGlzdHMsIGFzIHlvdSBoYXZlIHNlZW4uCj5QbGVhc2UgcmVhZCB0aGUga2VybmVsIGRvY3VtZW50
+YXRpb24gZm9yIGhvdyB0byBmaXggdXAgeW91ciBlbWFpbCBjbGllbnQKPnRvIHdvcmsgcHJvcGVy
+bHkuCj4KPnRoYW5rcywKPgo+Z3JlZyBrLWgKPgo=
