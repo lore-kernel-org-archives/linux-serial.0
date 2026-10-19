@@ -1,56 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792441443;
-	b=ep5jF0MHO1PjhWAdl3z2BNcJG+juGHSHQtoJm9Ql1xxeJCpdaeJ0SlAn24immAG0cSwM
-	 EzPKGw1tFnSWfSOQ8W6+qGojPXQTtyfmbfcPD1LNM1yMz76ZF5IEm1sFPe0i84c3doeag
-	 l3mH15r3Mp5jIVqjeX9/kPM1iEZeV8tRtaijMstJJNlxM+p1chTrF3w4cG+h2So/5XvSQ
-	 TUgz7wIGKgWMttrARZwfNfzGXmVxWNSQi3F6Z1RiTBYf+Z0iEXRXikLOESxWGplo7lOLh
-	 2BCBFGfNK+A3O9zcRYq36Eb1s7ekSe2FW//ZoySEGumrLUNAIdr53bkr76k2FzgptIg==
+	t=1792441458;
+	b=XKSv7A6Lcz9Q0G/rHwt7HWXMaPIHqAN70FKOLcUPP92Ms/cdviajCOiqRFt9SnRWm1Gm
+	 zwbpwSd9+7FdM0nJ/wKuWZ7N3fzAGZYz5c3c0T8/SCueZ09tJVkWH1DCf/Jzn6WsIXP2L
+	 Bw1e9upo/pw8UEFrr5PB1xlMcSj6kIiECeUPPTfqfp0sYkewKBLKDDa6NtmOUxusaNe8c
+	 rYghQU35aN0NzlMav799kU21lOHI/xmO/inRoPuj7ppOH77ZSu20bXjuTPEH/UlzON2oy
+	 3/pugnnRPZG54KZRzmIEg3SLGUPu1j8ZGm9WWPtdHGGd1pzJfS/VDRfOBFtuBpFFGGg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792441443;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792441458;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=lIneOBDtncMD2L3DdpI2+HWh3+meTv4eoOkzM1LtAec=;
-	b=VDG1o3FZ18GMi7jJbNFczgKMBxOL8Gmm30daORd5Bz3vtU5nCRnEhqOpMuXt0jW4mlTb
-	 xgMX3IV1X/n7C1aI3yhYu2iwqo+hprIdIS89x6Hrpak2WxbRe5Bwh3pHik0ohj4J+ZHUL
-	 EvESkmkSJ8eLMPVsHIHO87WDk42+pwHEHTbRymqESbvs+Nrft3KRco7kyP231Wdr/0LZH
-	 HhIB9ErhUgjqA2dw0StwbNnPDP9nrLNWYNuwLaIORla6RQOhxl6t/Fr2/uZ0oNPigMYEK
-	 YfPg+oiS27Fw1ncYRCZ3SyE80xLovsYhtDpo9Kh7F0qrqcY+o46XeGgTad6II1uoGwg==
+	bh=K4TKjF+R8nLYT6oz3Wmq6uGunOANwnhooYB+hHoGUJc=;
+	b=VGre0GnGwLj5Vz5KpE+ESuyGa4iomjZh2SkDrQPfc0sItlu/M0ZsvUnFyprd8uILjBQJ
+	 +R4kUYwVd18XnGTNLR1VvFLeJZwfwop6SRftjn4nRiUz0nVruTGGPnxp431QM9kD+TJIW
+	 UHBy+daQWNEoX9AQ0u61tenZjDnLOnyM5TIdKhVFfTYFC/sWir7QW7dubYkSHV5cyHnI/
+	 daTC/Q9MifPXq6gP3aqYIWipifUyehhNtjIBOqw0eNpd95ZExMex4AszIPxIJuSKWNE7M
+	 nITBWqqbIfMqudSDtPnTW+9csvs3pxMC78CNifvnOvYKdGWR67KE019PUn3o3ENT/uQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HzL88zIS;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hiv52Dec;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEDFE606A31A
-	for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 20:24:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C879606A31E
+	for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 20:24:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HzL88zIS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2631A1F000C5;
-	Mon, 19 Oct 2026 20:24:02 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hiv52Dec
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE3241F000C4;
+	Mon, 19 Oct 2026 20:24:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792441442;
-	bh=lIneOBDtncMD2L3DdpI2+HWh3+meTv4eoOkzM1LtAec=;
+	s=k20260515; t=1792441458;
+	bh=K4TKjF+R8nLYT6oz3Wmq6uGunOANwnhooYB+hHoGUJc=;
 	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=HzL88zISk6b5mEK1fcRzFGqkvoQqWV1slAXNLc+jxzqsdIee9U2sXe4LXzcBSYpqX
-	 uNjcN97RK1ubDw+bJXIjIkK0VvtJWV9NpfjefDiJDqp5LRVm1aLoMCG2m/OpFq6j09
-	 n6MBhlJAJtupsolGcCs7qwmI9Fuk39PlbEMIF104MKPPzxuR9hj2AHejBLXzj0aueO
-	 uZYFk8q26GifToOVMJM/6DDTqsA4x0Fcciuf7bN2tik4nE1GmHkG//RXgs6qEf5/Ox
-	 vNb4Cn8TOEIYt9Dg1YrKpm4kwd162h4Y1M7T7+HgeBOKRwmJb24bSFd9c9tSDaMYxk
-	 dJYVKIJh8WHZA==
-Message-ID: <sashiko-outbox-178166@kernel.org>
+	b=hiv52Decl6Mkto2FHNRGCAEvZWsAo2t3zmKFy6ZBwJarLxviaqL9iklD2GlkasRev
+	 knsSXCObsMni4Ek96NYoHS4/i+B5JM9SSlz+bVR5vRTYq71P5zMkJ00puZAhMrguNY
+	 cBnQCB5CpzlJvf1+Xssdw6YOVe5sUOGKrL16NdOoI+YoClnqhFdQnHcu4usAzKWO+S
+	 fPvVsFeITxq0aRj9M3ukP/Ks3/r90DdvS3w7YYFx9oIbIY5l+7G7378F4I0106fbMV
+	 p/xzxB7u2M6igtKMaH5pAulWYZFStS3aHynJNp1VcwSkW4pQTC9422u2Me1ooWudZ5
+	 0yNQu10vesluw==
+Message-ID: <sashiko-outbox-178167@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/4] serial: 8250_dw: Only accept a contiguous DLF
- readback
+Subject: Re: [PATCH v2 4/4] serial: 8250_dw: Add Allwinner A733 UART
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Vinicius Pedrosa" <vinicius.eduardo.pedrosa@gmail.com>, linux-serial@vger.kernel.org
-In-Reply-To: <a79114e72d029732db6764935dde12aa5d497706.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+In-Reply-To: <a3505ad8e74a08faa270881f0efbfe0d0d82d6e0.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
 References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
- <a79114e72d029732db6764935dde12aa5d497706.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+ <a3505ad8e74a08faa270881f0efbfe0d0d82d6e0.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 19 Oct 2026 20:24:01 +0000
+Date: Mon, 19 Oct 2026 20:24:17 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,32 +59,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> dw8250_setup_port() writes all ones to offset 0xc0 and treats any
-> nonzero readback as the DLF register. DLF is a bit field starting at
-> bit 0, so a real one reads back as a contiguous 2^n - 1 mask. On some
-> Allwinner SoCs offset 0xc0 is the RS485 control register instead
-> (UART_485_CTL in the A733 User Manual), whose implemented bits are not
-> contiguous. The probe still takes its readback for a DLF of fls(readback)
-> bits, and every later divisor change writes the fractional divisor into
-> the RS485 control register.
+> On the A733, dw8250_set_termios() stops the UART clock around
+> clk_set_rate() on every termios change that reaches the driver. If TX is
+> active at that moment, the character being shifted out is corrupted.
 >=20
-> Only accept a readback of the form 2^n - 1.
+> No baud rate change is required to trigger the problem. Toggling only
+> CLOCAL or CSTOPB 300 times during continuous console output corrupted
+> bytes in every run without the quirk and in none with it.
 >=20
-> The probe itself is unchanged: it still writes all ones to offset 0xc0
-> and then restores the old value, so this only changes how the readback
-> is interpreted.
+> Use the existing SKIP_SET_RATE quirk, as the JH7100 and SG2044 UARTs do.
 >=20
-> The A733 reads back 0x19f, and Andre Przywara observed 0x9f on the
-> A523. Without this check the A733 RS485 control register reads 0xb after
-> boot; with it, the register stays 0 across 300 termios toggle and
-> restore cycles.
->=20
-> Suggested-by: Andre Przywara <andre.przywara@arm.com>
 > Signed-off-by: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1792439398.gi=
-t.vinicius.eduardo.pedrosa@gmail.com?part=3D2
+t.vinicius.eduardo.pedrosa@gmail.com?part=3D4
 
