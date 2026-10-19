@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792422516;
-	b=RtM0VrplMYxhq56PyDqWr3WhFeSDmrFmzCwnOgk8ROT5smrXm2/DmqlnyZ1ncfRmn7LX
-	 /6zaTpFhWHaL8HBTQu3rN7+TzzhW64nQzTK9hgROaF3mSgRzR4EAZ2fK/iKLu9ZMR+bU0
-	 ffhldwCwkjwHBNbiU/eMYn6Ko9aAZJsYETUlOmpxOFakW8AycoTFBDnwkR5R2HS6voH7d
-	 XIwe/FMaVTp/FONjXjFrC2DjLlgcUUPoo01M5SKTaIMPfacZKYEUQNqLcgQ4MC3qJevek
-	 Yy/A5F5ouPHWBg+j0MJzaPMkcSPTyMORloEjZ5zAaAYCF2JERY6SXh7hjZpepLjMspQ==
+	t=1792422386;
+	b=Q7ubD+pw9jnDbygkls6nhQRXHPie2mrqhmZ/9qPa7fd5OCNIUyneQMJUHiJp1E55Q11g
+	 KEexAAOQ7Cu7RTjDs9ycaQHK+Y2ZJTMV4MkOt58C02HHcgERyevkiW8voUeiDIiH3MNVE
+	 izaWC9MCSFBcnmvKsGjILnmQ7MfmtTx/1d9ZwHUF4+ofo+w/IF7+4aRPEt7atQk5Dp+61
+	 C/EmORpPgcr5JFUw53StUgg2nYeyPNPIfqwC9TRSwU4yEPh5DaT+vMwEgmAA0xu+OKPek
+	 qX9vsMY7m5DD6cKD6U5iVwZTOq8XKqyCCma0BCkjXQBONF+guWDxE+xLxd161aOKP0A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792422516;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792422386;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=xpPb6mnMdduZ7iukVN3sr85YVbp9eiPGHpgCYF0Lydw=;
-	b=aOz9ajiHaWcmew20jPa6rhq1lfwb2bxyafIUfjuOTN9AjqcDwXW+f3b7P7IZ+BvKlWSB
-	 SMgVxSFnPU9CrCEgQ+uPhXsM2UYb+hlbRcPvCfqIew+R4pw/vgKd7MNIxCm+EFjLUT/8/
-	 88Zd2gUF69mKeJnpPdK6Xa1xYwk38W2SrGSPRsMxoKElIIpjaJymJszVD0F/HwwtLpIFs
-	 RFIpi6YDr6xeFGmhkGrRjriED1RGfHwJZxbx/SiblANLvLGFfPzz3gRg1B4KWeX5R13o/
-	 uz2mWP4KiFwj18OYITvzEDDIi38syy8aYi95cJ691Lw5rU4aAfcISF8n/NCFR6PjSsQ==
+	bh=YO8KqmgxaCD3TmIbX4cYdGIuCEfbIhOaI+JczxaaXSo=;
+	b=mT+rO7R7a+HvxcHbFOX6Hi4lWQJbjxHLvjIrtCXMJIZw2Dk1bFBHD6Ua037OzBlWnSfd
+	 AEA4iwmMGdAV8hYONUpehoqu9QN2jSaZaSkkpKz9mg+XmoFHFUBPhSZxUDfu+Q3l+1/op
+	 JVAOY0Ij1hjtjBnjpa/klo2+28y6GI/AJxC3O+5PO9ucZq0kHRDQ/AXgeJcHuRzl+Gb5N
+	 sMxINg0+lR5SN0A5kXh69DCiu1ub5HDixYwuWTr9TWyub1hNm0A56kgAnLw7pMs/qJRhI
+	 U0YX9Jd817eSryWSLkL2M6wxNACN3QZziBCcEJplOV9AR1XT/eo8NG1iTW8zVoIEFww==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K6JHher4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oVPiojde;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB554608604C;
-	Mon, 19 Oct 2026 15:08:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A30960820DD;
+	Mon, 19 Oct 2026 15:06:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K6JHher4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65301F000C4;
-	Mon, 19 Oct 2026 15:08:33 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oVPiojde
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648721F000C4;
+	Mon, 19 Oct 2026 15:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792422515;
-	bh=xpPb6mnMdduZ7iukVN3sr85YVbp9eiPGHpgCYF0Lydw=;
+	s=k20260515; t=1792422385;
+	bh=YO8KqmgxaCD3TmIbX4cYdGIuCEfbIhOaI+JczxaaXSo=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=K6JHher4BIr6JZ8LgC3G9U9+/h8JAMomo7RFo9lYtEIRbOjFlhHn5KoXPvQglL1CM
-	 weJcqk57Mr69ssi3AUNVe6NxMlu/J7LH4gquDQaFYJpoTPjbRh0VcfJfffu0YhSow1
-	 JGr0Y6DGYbljPiGscgdQ+cJcrMH3Q0O0HwK/DfRTim4UXbi/nH+QTAMeRvXQXJsjMc
-	 2ovgr5IZA5g2ojj4mMAjfrqgdEQO9JveQMX6Phw+429RSVERXIcSojRfBbIQiFt+Xf
-	 9YR/C4JyoXd4o9BCWIIVpVCztZVDgMXdNN1NLVVShUkZpGh3wd43Tff5CAIfgOiOe5
-	 Ux1DVUhkzvSEA==
-Message-ID: <8cf7857b-bd48-410e-be22-5655df0ec193@kernel.org>
-Date: Mon, 19 Oct 2026 17:08:32 +0200
+	b=oVPiojdeHtcoC7V623YdPgcc12tJyiBtIi3r/06tYcoItdwfVrZ/7HEYZPNq5HMbc
+	 Y01CnzRrIMMXaTUgGQGlfBTGFZL+m9ntyWDf3wKSo9lM/ykCKtE9vXVo6u0L0B0EJf
+	 XhuzySPzglxiLDCIxSkmzgyHgL7CcoV4c/ODvNRykdtE05oXVV6R3MYxU3WGAEH89R
+	 XFXMS0Q1kyfPShub4mPlEVmMAu0W+NNngrvwAX35VvNpnXzJWItKxW6eXPvgGWvhfU
+	 F4GHqQPjbEdVfCEjxrSUv2plbCkEeUpbuxKO6CrKF5o6loVt8ELf1UQKmbmqJju8/k
+	 UQai2DEDoxm0g==
+Message-ID: <d019393d-9c24-4bc5-af4d-10bbb5d9fe90@kernel.org>
+Date: Mon, 19 Oct 2026 17:06:21 +0200
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -52,16 +52,17 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] [v3] serial: 8250: remove hub6 multiport support
+Subject: Re: [PATCH] [v3] serial: 8250: remove obsolete and broken PORT_RSA
+ support
 To: Arnd Bergmann <arnd@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
- <u.kleine-koenig@baylibre.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>,
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Frank Li <Frank.Li@nxp.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20261019090323.583178-1-arnd@kernel.org>
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
+ <u.kleine-koenig@baylibre.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20261019090017.430425-1-arnd@kernel.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -106,44 +107,37 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20261019090323.583178-1-arnd@kernel.org>
+In-Reply-To: <20261019090017.430425-1-arnd@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 19. 10. 26, 11:00, Arnd Bergmann wrote:
+On 19. 10. 26, 10:56, Arnd Bergmann wrote:
 > From: Arnd Bergmann <arnd@arndb.de>
 > 
-> hub6 support was added in linux-0.99 and the hardware was already old at
-> the time, being discontinued in 1990. The code for it has always been a
-> mess since it adds another dimension to the I/O addressing in the driver
-> that has leaked into many individual files.
+> For all I can tell, the RSA support in the 8250 driver is not functional
+> and has not been for a long time.
 > 
-> Hugo and Uwe have attempted several times this year alone to isolate
-> the hub6 handling into the 8250_hub6.c file, but I feel that none of
-> this has been a real improvement over the original standalone loadable
-> module support.
+> The RSA-DV II/S ISA card[1] was sold by IODATA in the 1990s as a faster
+> alternative to regular ISA serial ports, and it was discontinued in
+> 2002. Linux support was added by Kiyokazu SUTO in 2000.
 > 
-> Any machine that would have used this ISA card in practice is likely
-> 30 to 40 years old, and with i486 support now removed, it is clearly
-> safe to just kill this all off. The only bit that has to remain
-> is the ioctl interface, to ensure the serial_struct field is always
-> zero.
+> The driver defines an I/O port base address of -8 (negative eight),
+> which should always get refused by request_region on all architectures
+> for being outside of the valid resource range.
 > 
-> Link: https://mirrors.nycbug.org/pub/The_Unix_Archive/Unix_Usenet/comp.unix.sysv386/1990-December/007174.html
-> Fixes: a300273c458c ("serial: 8250: hub6: Add cleanup code")
-> Fixes: c526404a4a92 ("serial: 8250: Fix corner case for port matching")
-> Fixes: 7ab80d1e7243 ("serial: 8250: fix compile error with hub6_match_port() when compiled as a module")
-> Fixes: da7b5fd4e17f ("serial: 8250_hub6: add missing include for hub6_match_port()")
-> Fixes: 3d406299d882 ("serial: 8250_hub6: add hub6_match_port()")
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
-> Acked-by: Frank Li <Frank.Li@nxp.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> Further, it seems that a patch to setserial would be required in order
+> to set PORT_RSA when not using autoconfiguration.
+> 
+> This patch removes all code related to the RSA support, with the exception
+> of the user-visible PORT_RSA definition.
+> 
+> Link: http://translate.google.com/translate?hl=en&sl=ja&u=http://www.iodata.jp/products/network/rsadv2s.htm
+> Link: https://lore.kernel.org/all/1309211120-2803-6-git-send-email-arnd@arndb.de/
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
 Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
-thanks,
+
 -- 
 js
 suse labs
