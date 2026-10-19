@@ -1,83 +1,105 @@
-Received: from mail-m15598.qiye.163.com (mail-m15598.qiye.163.com [101.71.155.98])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D849240B6F4;
-	Mon, 19 Oct 2026 10:11:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A933E3D98;
+	Mon, 19 Oct 2026 10:23:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792404675; cv=none; b=ch+7w+SRvmvPsL+eBG+7hAAMkzLloJ6Emqa93AmhDARZxhewB0wx9lTfbOES7SWCG6NPFu5FGIoboIGihCaEXpFfzm5gduny1j42XJMeYq+j9pm3Bh4vIJN6jfZ+U+bxoKVz3dmRoCHdlL+DotLEZTnaeIjP3WOlutp5wAE+Gm8=
+	t=1792405434; cv=none; b=tWf/D5c8Wqw8mI1C3nMiC65AYRJpQAmHyokzyRaDUdjct3u6j0VzTcFpUuiAdVQ9QIQlF56Qpn2GKbO70A4u1uX3jZJS4ZynjoXplT8fkSR6C+TzEkXkUlLOArVr3slFJI8unYt31yARetB7CBPUH6R8PgyYX1QtdpAB0fhK+go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792404675; c=relaxed/simple;
-	bh=P5ZOGYNyg8L4aWfSSNCbwWmwvGqHOzjsLvZxi1qWtsQ=;
-	h=Content-Type:Message-ID:To:Cc:Subject:MIME-Version:From:Date; b=MCrCA6x7wzUHNQ4Fha7ctnG/tSON0qTE9eVz8lmk2t3Ucpzq8sevVIuMRjjXUpOGpdQkBSWpkPpMXvAFUDC+2TP2y2kMWpV86N5tIvIxVHX9yEUyz/xBDUvDMVzKHgo4I/sDU/dU8KG+rYJgh19RuJDh/eyHDlGPncqWU52Qg4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hdu.edu.cn; spf=pass smtp.mailfrom=hdu.edu.cn; dkim=pass (1024-bit key) header.d=hdu.edu.cn header.i=@hdu.edu.cn header.b=k0Qyk3oV; arc=none smtp.client-ip=101.71.155.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hdu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hdu.edu.cn
+	s=arc-20240116; t=1792405434; c=relaxed/simple;
+	bh=9VzqnfsKgVI4xeMFnPXxt+ZOkbS48oKRvMkL140eyeo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O86zN4PYYG33oOlrH20gGpi9GITQ+PorwHsKgiv1WnzrBv1pWFGkam+TUMaTuoRYfrp9K/6+eoQ4JBEztzMIhkKXAUc2pgmlr4pbg+ZfXAlUeKaYi3UTExwVrKB4JsA1gqCKQUkfUGPqkKT9Xm/POWH3N8oi9E+cxWwf1GUQcKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IHasDC4v; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hdu.edu.cn header.i=@hdu.edu.cn header.b="k0Qyk3oV"
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Message-ID: <AEMA9QCuLOMl3el2RGWf44oE.1.1792404355168.Hmail.252270051@hdu.edu.cn>
-To: linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Cc: jirislaby@kernel.org, gregkh@linuxfoundation.org, 
-	linux-kernel@vger.kernel.org
-Subject: =?UTF-8?B?dHR5OiBodmM6IHBvc3NpYmxlIHVzZS1hZnRlci1mcmVlIGluIHJlc2l6ZSB3b3JrIGR1cmluZyBodmNfcmVtb3ZlKCk=?=
-X-Priority: 3
-X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com web
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IHasDC4v"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792405433; x=1823941433;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9VzqnfsKgVI4xeMFnPXxt+ZOkbS48oKRvMkL140eyeo=;
+  b=IHasDC4vKzP9C9a87LL+E9CbgJnioxXUswkYtNgzAvNAsnRjgoeOq5lh
+   zWmtYQLrlX5HshfCxuTRyQODPfD/dSfdCL0lFxdgAug9l26458f3sypb+
+   yiPMvN3mcFKjgKPaz3M2DEK6f5fX4fliDKJJMZ5CiacrqpcyhuK2wdHNR
+   AsYRXpBzwV6OZKm+8TLfOWp8EeoVXxFWyOlox7u8jwlf4fEPOb9wA2bg7
+   SSZZVzaNB1eBNduu87vwMOsck3iAYnLt7JGEa2G/i3e+t2tAUDYpnUhRp
+   8hQnJc/W4UrTq8DRaqgtVgQCpfDlSLSbrW8i91mLSCjDfk9AXhrdlp4ni
+   g==;
+X-CSE-ConnectionGUID: vfJvOX5zQqWHpMZbRK+CwQ==
+X-CSE-MsgGUID: g+RdlvUkR/y64QNK8PTKSQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="967833"
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="967833"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 03:23:52 -0700
+X-CSE-ConnectionGUID: 8fzqUgtpR5SeoJwRSL+ojg==
+X-CSE-MsgGUID: OIbKtny1TMKwGPZshtf9gQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="4344007"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 03:23:49 -0700
+Date: Mon, 19 Oct 2026 13:23:47 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] [v3] serial: 8250: remove obsolete and broken PORT_RSA
+ support
+Message-ID: <atXvsxjAXcOmsCAV@ashevche-desk.local>
+References: <20261019090017.430425-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Received: from 252270051@hdu.edu.cn( [183.157.177.89] ) by ajax-webmail ( [127.0.0.1] ) ; Mon, 19 Oct 2026 18:05:55 +0800 (GMT+08:00)
-From: LI xiao <lixiao0@hdu.edu.cn>
-Date: Mon, 19 Oct 2026 18:05:55 +0800 (GMT+08:00)
-X-HM-Tid: 0aa153977f1fd458kusy54270f56bd31
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaGUseVk1DGUNKQ08fHk0ZH1YVFA
-	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlKQ0hVSk5MVUpMTFVDQllXWRYaDxIVHRRZQVlLVUtVS1
-	VLWQY+
-DKIM-Signature: a=rsa-sha256;
-	b=k0Qyk3oVsTrpeNVuKRQr2fS4IJnAzD50uPkztkH0qmMGQP1VEmw6oY6yfNmzOUtxYS8IIOJVQM86Yzw0UFr4Y40vqi5HnhJoEpDwNhGU401hC8HUHFnaWZ0KgnLqAg59V7LGQZXoh5+vrcGdMxXQfiFQbBO0y55q2XXpee1S0NU=; s=default; c=relaxed/relaxed; d=hdu.edu.cn; v=1;
-	bh=P5ZOGYNyg8L4aWfSSNCbwWmwvGqHOzjsLvZxi1qWtsQ=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261019090017.430425-1-arnd@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-SGksCgpJIGZvdW5kIGEgcG9zc2libGUgdXNlLWFmdGVyLWZyZWUgaW52b2x2aW5nIHRoZSBIVkMg
-cmVzaXplIHdvcmsuCgpBIHF1ZXVlZCBodmNfc2V0X3dpbnN6KCkgY2FuIGFjY2VzcyBocCBhZnRl
-ciBodmNfcmVtb3ZlKCkgZHJvcHMgdGhlIGZpbmFsIHR0eV9wb3J0IHJlZmVyZW5jZSBhbmQgaHZj
-X3BvcnRfZGVzdHJ1Y3QoKSBmcmVlcyB0aGUgY29udGFpbmluZyBodmNfc3RydWN0LgoKSSByZXBy
-b2R1Y2VkIHRoaXMgb24gTGludXggbWFpbmxpbmUgY29tbWl0IGMwM2MxYTE0NTA3ZGZhZjhiODU2
-YzI2MDhmOWFjMjE2MDIxZmMyMjIsIHVzaW5nIGEgS0FTQU4tZW5hYmxlZCB4ODZfNjQga2VybmVs
-IGluIGEgMi12Q1BVIFFFTVUgZ3Vlc3QuCgpUaGUgcmVwcm9kdWNlciBpcyBhbiBvdXQtb2YtdHJl
-ZSB0ZXN0IG1vZHVsZSB3aG9zZSByZW1vdmFsIHRocmVhZCBjYWxscyBodmNfcmVtb3ZlKCkgY29u
-Y3VycmVudGx5IHdpdGggYSBxdWV1ZWQgaHZjX3Jlc2l6ZSgpIG9wZXJhdGlvbi4gS0FTQU4gcmVw
-b3J0cyB0aGF0IHRoZSBxdWV1ZWQgaHZjX3NldF93aW5zeigpIHdvcmsgYWNjZXNzZXMgdGhlIGZy
-ZWVkIEhWQyBvYmplY3QuIFRoaXMgcmVwcm9kdWNlcyB0aGUgSFZDIEFQSS1sZXZlbCBsaWZldGlt
-ZSBpc3N1ZSwgYnV0IGRvZXMgbm90IHlldCBleGVyY2lzZSB0aGUgZnVsbCB2aXJ0aW8tY29uc29s
-ZSBob3QtdW5wbHVnIHBhdGguCgpSZWxldmFudCBLQVNBTiByZXBvcnQ6CgpCVUc6IEtBU0FOOiBz
-bGFiLXVzZS1hZnRlci1mcmVlIGluIHR0eV9wb3J0X3R0eV9nZXQrMHhhOC8weGIwClJlYWQgb2Yg
-c2l6ZSA4IGF0IGFkZHIgZmYxMTAwMDAwYTU1YTQ4OCBieSB0YXNrIGt3b3JrZXIvMDowLzkKV29y
-a3F1ZXVlOiBldmVudHMgaHZjX3NldF93aW5zegpDYWxsIFRyYWNlOgp0dHlfcG9ydF90dHlfZ2V0
-KzB4YTgvMHhiMApodmNfc2V0X3dpbnN6KzB4NmUvMHgxMTAKcHJvY2Vzc19vbmVfd29yaysweDY4
-Yy8weDExODAKd29ya2VyX3RocmVhZCsweDRiNy8weGIzMAoKQWxsb2NhdGVkIGJ5IHRhc2sgNjQ6
-Cl9fa21hbGxvY19ub3Byb2YrMHgxY2QvMHg0YTAKaHZjX2FsbG9jKzB4MmUxLzB4YTIwCmh2Y19s
-aWZldGltZV9yZXByb19pbml0KzB4NjAvMHhmZjAgW2h2Y19saWZldGltZV9yZXByb10KCkZyZWVk
-IGJ5IHRhc2sgNjY6CmtmcmVlKzB4MTI3LzB4M2IwCmh2Y19yZW1vdmUrMHhlYS8weDE1MApyZW1v
-dmVfaHZjX3BvcnQrMHgxYy8weDQwIFtodmNfbGlmZXRpbWVfcmVwcm9dCgpUaGUgcmVwcm9kdWNl
-ciBhbHNvIGNhcHR1cmVkIHRoZSBmb2xsb3dpbmcgd29yay1xdWV1ZWluZyBzdGFjazoKCl9fcXVl
-dWVfd29yaysweDcwZC8weDExZjAKcXVldWVfd29ya19vbisweDU5LzB4NjAKaHZjX2xpZmV0aW1l
-X3JlcHJvX2luaXQrMHgxMGQvMHhmZjAgW2h2Y19saWZldGltZV9yZXByb10KCktBU0FOIGFsc28g
-cmVwb3J0ZWQgYSB3cml0ZSB0byB0aGUgc2FtZSBmcmVlZCBvYmplY3Qgd2hpbGUgdGhlIGNhbGxi
-YWNrIHdhcyBleGVjdXRpbmc6CgpCVUc6IEtBU0FOOiBzbGFiLXVzZS1hZnRlci1mcmVlIGluCl9y
-YXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSsweDY2LzB4ODAKV3JpdGUgb2Ygc2l6ZSAxIGF0IGFk
-ZHIgZmYxMTAwMDAwYTU1YTRhOCBieSB0YXNrIGt3b3JrZXIvMDowLzkKV29ya3F1ZXVlOiBldmVu
-dHMgaHZjX3NldF93aW5zegpDYWxsIFRyYWNlOgpfcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUr
-MHg2Ni8weDgwCnR0eV9wb3J0X3R0eV9nZXQrMHg3Ny8weGIwCmh2Y19zZXRfd2luc3orMHg2ZS8w
-eDExMApwcm9jZXNzX29uZV93b3JrKzB4NjhjLzB4MTE4MAp3b3JrZXJfdGhyZWFkKzB4NGI3LzB4
-YjMwCgpUaGUgb2JqZWN0IHdhcyBhbGxvY2F0ZWQgZnJvbSBrbWFsbG9jLTUxMiwgYW5kIHRoZSBy
-ZXBvcnRlZCByZWFkIHdhcyAxMzYgYnl0ZXMgaW50byB0aGUgZnJlZWQgNTEyLWJ5dGUgcmVnaW9u
-LgoKVGhlIHJlcHJvZHVjZXIgcmVxdWlyZXMgcm9vdCBwcml2aWxlZ2VzIHRvIGxvYWQgaXRzIG91
-dC1vZi10cmVlIG1vZHVsZSwgd2hpY2ggdGFpbnRzIHRoZSBrZXJuZWwuCgpDb3VsZCB5b3UgY29u
-ZmlybSB3aGV0aGVyIHRoaXMgaXMgYSB2YWxpZCBidWc/CgpUaGFua3MsCkxJIFhpYW8=
+On Mon, Oct 19, 2026 at 10:56:55AM +0200, Arnd Bergmann wrote:
+
+> For all I can tell, the RSA support in the 8250 driver is not functional
+> and has not been for a long time.
+> 
+> The RSA-DV II/S ISA card[1] was sold by IODATA in the 1990s as a faster
+> alternative to regular ISA serial ports, and it was discontinued in
+> 2002. Linux support was added by Kiyokazu SUTO in 2000.
+> 
+> The driver defines an I/O port base address of -8 (negative eight),
+> which should always get refused by request_region on all architectures
+> for being outside of the valid resource range.
+> 
+> Further, it seems that a patch to setserial would be required in order
+> to set PORT_RSA when not using autoconfiguration.
+> 
+> This patch removes all code related to the RSA support, with the exception
+> of the user-visible PORT_RSA definition.
+
+> Link: http://translate.google.com/translate?hl=en&sl=ja&u=http://www.iodata.jp/products/network/rsadv2s.htm
+
+Can we get this without translate? As it adds an unneeded layer.
+
+> Link: https://lore.kernel.org/all/1309211120-2803-6-git-send-email-arnd@arndb.de/
+
+Also would be nice to add references to the Link tags like [1] and [2] and
+mention them in the commit message where appropriate.
+
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
