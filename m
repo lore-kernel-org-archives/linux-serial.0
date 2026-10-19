@@ -1,56 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792430369;
-	b=LK/v1X9O5OOVmwc6p2FMe3Zxs9K9yOVVm+tZX7PRiY8E3TrEB2C76D7ABLHjxbMOtW0X
-	 Ct85SrmRW42LE8Gt0hD6u/GAApQNv0EvZm2oMhrxZITVOEHi9v5L43WTwHZV/ucGi2rPO
-	 DgJjVOPb5dAZUskZr7vxPdIiuoEV4yuGR8kAIZ8sATSEkYbJVXFQDTKG1CsxwbM3lVcmK
-	 Zn7q3Lr29MZ77o03ccf5qu170pNoJzZOCEVdQ8SCI82B5LRfSCw9D0lJvKEntLMOr/Iz3
-	 uN5pi3Dm4sWheSznSLOg8oJNjjd6vUJqbk5wClXFsUzqgkE/E4NZ7vznaAQ1QTs/yrQ==
+	t=1792440405;
+	b=kMWBF+Ubqb+NOmVXENYS8nCrmNM1rXyGB+SqGLJAUt9meytyE1fe6xbHW7Ise6+4ciFS
+	 Op7Ecye47M77L5yFxqqdkqeLbo1DOD4D2UQ1+Twbt3cjrC/OYSwSOXVorTORhvCzvdI4Y
+	 1XaJM4ARs5LbaHA1WkGDrzlJJShkofS0Z24mTFvCTCDFIKtAp95U4Sf82+NYqL8jt9WYQ
+	 Blh9Mj0Sy3vp3azA1adX/R066pnCTObWhQVVwimBg1cXeQCZf71ruyTzLIm8NI2G1cmLg
+	 whookx67ioBOCvdQKcsY62KA2c57ZBxeAzFao0dK0UlcnIeoz/vQp2f5QKE2uEfRpaQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792430369;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=6lOMYk4POAG+Z5ZG50C62CD1oMCjH0i85uU/EZzqWXQ=;
-	b=m1iUYAhcU2+KZF6cK0ZeqjfWEEUsZ9l1huz2eYSUOgeIZ/zaP8EZSp9rvYkzj1H5F+m7
-	 +oiWgcTwPH/rusHds3boCM7GpEGeQ+9hyVkHveeXqdS4HwAdO1D7ec+PSWYmd3M36IQox
-	 hVCV9FEQ1ORRdLuiM0l1pzjTWv0n1ParT9G/WcLnosO4NWCGR4zTQGp3or4kPStrrK2Yy
-	 3DJWkiILsp/rICyiSWSfHqlCouY/yzaTAe4a/4c/oAkOVor5UybYZH5mITN703vlDfFB2
-	 uvtpMatRq+yNJCYopE4hZ3SD8XEzqbhfOzNEemm1OVubgQG+cBpV2kez0xDjzKrvU2w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792440405;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=frV23sLLMWKOP7RPngYOwxGFd6AYAuODJoFiW6amCkw=;
+	b=SVF6suihvZEXTSbWSAGPsxFPWqKhv6DrCJE3ERXrlrSRLZ2iiMNnyQBZjHxcFCRoA03B
+	 yi+Q3/55vXmlZUGLENKTSaMjh7T9KSyJq75yDhLCBYL7CfBhwPWCL46uYF7JzQwHSPSXr
+	 P7F0vlvEnTGoPmXIsn16TVQDeIQv7vTnZgUlkZM7FiDKF5wfpVl+PFPm7z436IbPJz6sI
+	 HpMOIGi7zFNs/OnF6B0z2B5b99iFTpATZ9kZ/1jbk9jINuFQ+XgjyhpcYfz5RDZnafylF
+	 8Z7vXnoOw8CmjTh+YtA0oeKgU6YzhKrZrjaoa/f2LZjmYo0eAKEFcV8BKpjgRJMsUvg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EL9sStip;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=PBaHncv2;
+	arc=none smtp.remote-ip=209.85.221.170
+Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E987A606A31A
-	for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 17:19:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E120C606A319
+	for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 20:06:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E120C606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EL9sStip
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C76C1F000C4;
-	Mon, 19 Oct 2026 17:19:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792430368;
-	bh=6lOMYk4POAG+Z5ZG50C62CD1oMCjH0i85uU/EZzqWXQ=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=EL9sStippNEdUIX40nDuc//2LyiFuzGe0NW9Cix8EqUwveYnzllThT4Yl2wq6py8d
-	 Xc4BQjSY8redpnI7fbKxfPFQ+495vl64+0GZ5iQmaa5TcushefXOcVpjZqyB9oXe8o
-	 BjaUz9VqwpWVMQmMAfcoaWC6L4TxTo0KG8L86066rlQVjUqkCKah0FHLW/2SdjP+RN
-	 wMT5Mcdqb8iB0egrtk+8tjCeW3syG4rsrYFtpOMRpMlCI26ije4OQ4yILZqCgc1wbv
-	 56OW/snDKS/6KDbECzJ8nifpmsy21timzHevid73wNHWBLZYGL5NEjYg0KbIOHT6bU
-	 CN3KYn0xOUSHg==
-Message-ID: <sashiko-outbox-178011@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 3/4] serial: sh-sci: Skip TDxE status clear for PORT_SCI
-Reply-To: sashiko-reviews@lists.linux.dev
-To: Biju <biju.das.au@gmail.com>
-Cc: linux-serial@vger.kernel.org, wsa+renesas@sang-engineering.com
-In-Reply-To: <20261019170139.473808-4-biju.das.jz@bp.renesas.com>
-References: <20261019170139.473808-1-biju.das.jz@bp.renesas.com>
- <20261019170139.473808-4-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 19 Oct 2026 17:19:28 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=PBaHncv2
+Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-5e6b5794d26so33087e0c.1
+        for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 13:06:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792440404; x=1793045204; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=frV23sLLMWKOP7RPngYOwxGFd6AYAuODJoFiW6amCkw=;
+        b=PBaHncv2C/SQ69nWsr/zLDVNh2lK7XdICLF19nDfb8YMaBogX/aWKO6bRkOGm3yhKi
+         dvmTVqoMJCV2PiYdJ6FjgJ92EwklarYmNbQk7bf9v0zLMuWs+iDY2rs6f23qhYkse5W1
+         6juCkIIhUkFnbA++Se09SNCDag/5VqCsnQiWfjwvGb6RnpbsqkX4ZKdQBlcBYJFGv5u6
+         l//nCG2acpj1EMI3UmNz8IJadekxE2EJOPXTzSOA4lFQRFOYmWdXbTbmXSYBy3Z1M27j
+         9RmT1jR698t8jFqII4Uc+wLDHX5suF3hP/eXcIexOTR11DDOFyBS/pnnvnKgXqDR5Ivt
+         3FAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792440404; x=1793045204;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=frV23sLLMWKOP7RPngYOwxGFd6AYAuODJoFiW6amCkw=;
+        b=SuNwfB/kP9A3py6zSswzM6gXkYSDFJ9lkwjGRzPf/HYFx9PqjlXraC9BKeKiH8nlJ/
+         G7bQLQkqT0zKZ9UGRdZKMAOI7O8CrmY26XlvkIPpOuoTv9zDtPYS/sbq1Fva41VG801/
+         IifMYM8W5Lih59jP+VwWQAU/T5j06EelgNZYXQQxdgDG8XK/K91P6cyTIlTIJFP/RWwV
+         l11ZsXk6UE2fFdY9cVHTMfMFVrDtmPBTlb5U1sZ64bkG1owjS+tiUQMhTe0vpqQB6I67
+         VnD7O6wn2XzO7V6O/J89UduBrpVa9fRtHpHSOC6n2ex4pgL2SfbdqOfK/iXfop8GAdk8
+         fUCw==
+X-Gm-Message-State: AFq9FYIB7eaROrPybEYVJUXqrcGuegQ9XujFfBZEvx4iaWOCwjFeO8VB
+	HL0mZJa4d11hQ3LN+IIVfqaJkEf7CQfQuovoPdBJ+1zxCDPxnFDB7772OYe9YhqLfryMRQ==
+X-Gm-Gg: AYBFou2odLQS5ART6OAVksbPsm5SFh+nvxU2yEqVM8d5YdM6ILWuyOZUWLDMJJD3BM+
+	iWweBTkJvDihv+XKscHPxp+CatxGbm1N64jrs6oXA/Mhb2VKbmDV+DguIa1FnMPtF8ctn9eWwWR
+	s3c6xTTvgsLKvZ7RTlRCxvBquT7X4g4HLc8pgmT9Xv8V1S+ly+HHy72LXEHXdYbsnJGTDtaszLM
+	W1fc3IhfmITrROBZj1V2t5vtSZIxmr5f3Nu9azuXIUrJ5rx6u36qkJTHWHI67HmrNyj3G3WSgc8
+	wwZ+KvD7QVbMbgMHhed+0EPRXM/Mv3Z8xOc9NXR1CBNSHPiRqQ2dDdvu/kY4CdpAwJ6psYwLblf
+	Mi85tie4X7FEa3ZbQEwvrl2bgN+u+UtJZg4oEqhJuAeGSEd5HHKN90WON8M4BPBaTU7TyoTpb5a
+	CVx+ePCVhBeLpfq7n4YGhBeAJ5I3FOYEMuWehgwZFu6gbJuHVnVwuRzJ9xovffHnYKvWV7gt5/R
+	TWlZbodeEJyLgG5faFcWGnBap9MoANQxx62txnjLxo84y10Buhy48KXL6HE8fAGndVr7izd6Str
+	VhO6O9w=
+X-Received: by 2002:a05:6122:1297:b0:5ea:d2d7:37e4 with SMTP id 71dfb90a1353d-5eadcbbef0emr35405e0c.5.1792440403756;
+        Mon, 19 Oct 2026 13:06:43 -0700 (PDT)
+Received: from MaquinaLab.. ([179.179.244.163])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ea9b4776b5sm10451611e0c.3.2026.10.19.13.06.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 13:06:43 -0700 (PDT)
+From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	andriy.shevchenko@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	Andre Przywara <andre.przywara@arm.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Enzo Adriano <enzo.adriano.code@gmail.com>
+Subject: [PATCH v2 0/4] serial: 8250_dw: Allwinner A733 UART support
+Date: Mon, 19 Oct 2026 17:06:09 -0300
+Message-ID: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,148 +104,73 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
-- [High] serial: sh-sci: broken TX on SuperH PORT_SCI from skipping clear_S=
-CxSR()
-- [Medium] serial: sh-sci: unlocked control register RMW in sci_tx_end_inte=
-rrupt()
---
+While testing the A733 UART, the console stopped taking interrupts at
+the first termios change from userspace. Termios changes during console
+output could also corrupt characters even when the baud rate did not
+change.
 
-commit c9eeab42d1c45b13adb330fd8baab03f6ddbfeb6
-Author: Au Dang <au.dang.jx@renesas.com>
+Patch 1 is an independent fix for the DesignWare 8250 divisor path.
+When DLF is detected, dw8250_setup_port() can replace the BUSY-safe
+divisor hook with one that does not provide that protection. If the LCR
+write is then dropped while the UART is busy, the retry path can try to
+restore IER while DLAB is still selected, causing the value to be
+written to DLH instead of IER.
 
-serial: sh-sci: Skip TDxE status clear for PORT_SCI
+Patch 2 takes Andre's suggestion to only accept a DLF readback when it
+is a contiguous 2^n - 1 mask. On the A733, offset 0xc0 is the RS485
+control register and reads back 0x19f; Andre observed 0x9f on the A523.
 
-This commit skips calling clear_SCxSR() to clear the TDxE status bit for
-PORT_SCI in sci_poll_put_char() and sci_transmit_chars(), relying on hardwa=
-re
-to automatically clear the bit when data is written to TDR.
+Patches 3 and 4 add the A733 compatible and select SKIP_SET_RATE for
+it. Stopping the UART clock from set_termios while TX is active corrupts
+output on this board. Skipping redundant reclocking in general was tried
+in e5d6bd25f93d and reverted by 7dfae6cbadc1 after regressions on Bay
+Trail and Cherry Trail, so the change stays specific to the A733.
 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index d577f9de62595..e4c7a3e146884 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -913,7 +913,8 @@ static void sci_poll_put_char(struct uart_port *port,=
- unsigned char c)
->  	} while (!(status & SCxSR_TDxE(port)));
-> =20
->  	sci_serial_out(port, SCxTDR, c);
-> -	s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
-> +	if (s->type !=3D PORT_SCI)
-> +		s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
->  }
->  #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
->  	  CONFIG_SERIAL_SH_SCI_EARLYCON */
+Tested on a Radxa Cubie A7Z (PCB V1.11, 1 GiB) on top of tty-next
+1184f87e2790e8af9be3116f608d2e86b4792d7d, using local A733 DT and
+clock changes that are not part of this series.
 
-[Severity: High]
-Will skipping clear_SCxSR() for all PORT_SCI ports break transmission on
-classic SuperH SCI hardware?
+With patch 1 alone and the generic fallback, repeated termios changes
+no longer stalled the console and hardware IER remained equal to
+up->ier, while the false DLF was still detected (dlf_size=9).
 
-In drivers/tty/serial/sh-sci.c, PORT_SCI is shared between DT-based Renesas
-RZ/G2L SCIg ports (such as renesas,r9a07g044-sci matching renesas,sci) and
-classic non-DT SuperH SCI ports (SH770x, SH7750, and SH7760 registered via
-plat_sci_port with .type =3D PORT_SCI).
+With the complete series and the A733 compatible, three clean runs of
+both the CLOCAL and CSTOPB stress tests completed without corrupted
+output. dlf_size remained 0 and offset 0xc0 remained 0 after the tests.
+dlf_size and up->ier were read through a temporary debugfs test patch
+which is not part of this series.
 
-While RZ/G2L SCIg hardware automatically clears SSR.TDRE when transmit data=
- is
-written to TDR, classic SuperH SCI hardware does not clear SCSSR.TDRE (or
-TEND) on CPU writes to SCTDR. On classic SuperH SCI, software must read SCS=
-SR
-with TDRE =3D=3D 1, write the byte to SCTDR, and then explicitly clear TDRE=
- to 0
-via clear_SCxSR() before the hardware transfers SCTDR to the transmit shift
-register (SCTSR) and begins shifting.
+I do not have hardware with a real DLF, or Bay Trail/Cherry Trail, to
+test those paths.
 
-With this check in both sci_poll_put_char() and sci_transmit_chars(),
-SCSSR.TDRE is never cleared on classic SuperH PORT_SCI systems, preventing
-SCTDR from transferring to SCTSR in interrupt-driven transmission and causi=
-ng
-sci_poll_put_char() to see TDRE remain 1 and overwrite SCTDR without shifti=
-ng
-characters out.
+Changes in v2:
+- rework patch 1 around a dwlib divisor helper and preserve an existing
+  set_divisor hook, following Ilpo's review
+- add a separate check for contiguous DLF readback, following Andre's
+  suggestion
+- drop the A733-specific NO_DLF quirk
+- keep the generic DT fallback
+- keep only SKIP_SET_RATE in the A733 platform data
+- retain Conor's Acked-by on the binding
+- rebase and retest on tty-next 1184f87e2790
 
-Notice also that sci_poll_put_char() and sci_transmit_chars() are the only
-callers of SCxSR_TDxE_CLEAR(port):
+Link to v1:
+https://lore.kernel.org/all/20261005172538.398522-1-vinicius.eduardo.pedrosa@gmail.com/
 
-#define SCxSR_TDxE_CLEAR(port) \
-	(((port)->type =3D=3D PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR)
+Vinicius Pedrosa (4):
+  serial: 8250_dw: Keep the BUSY-safe divisor hook when DLF is present
+  serial: 8250_dw: Only accept a contiguous DLF readback
+  dt-bindings: serial: snps-dw-apb-uart: Add Allwinner A733
+  serial: 8250_dw: Add Allwinner A733 UART
 
-Skipping both calls when s->type =3D=3D PORT_SCI leaves SCI_TDxE_CLEAR and =
-the
-PORT_SCI branch in SCxSR_TDxE_CLEAR() completely unreachable.
+ .../bindings/serial/snps-dw-apb-uart.yaml     |  1 +
+ drivers/tty/serial/8250/8250_dw.c             |  3 +++
+ drivers/tty/serial/8250/8250_dwlib.c          | 22 ++++++++++++++++---
+ drivers/tty/serial/8250/8250_dwlib.h          |  1 +
+ 4 files changed, 24 insertions(+), 3 deletions(-)
 
-> @@ -1049,7 +1050,8 @@ static void sci_transmit_chars(struct uart_port *po=
-rt)
->  		port->icount.tx++;
->  	} while (--count > 0);
-> =20
-> -	s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
-> +	if (s->type !=3D PORT_SCI)
-> +		s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
-> =20
->  	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
->  		uart_write_wakeup(port);
 
-[Severity: Medium]
-Now that PORT_SCI avoids the extra TXI interrupt and transitions directly to
-TEIE-driven completion when xmit_fifo becomes empty in sci_transmit_chars():
-
-	if (kfifo_is_empty(&tport->xmit_fifo)) {
-		if (s->type =3D=3D PORT_SCI) {
-			ctrl =3D sci_serial_in(port, SCSCR);
-			ctrl &=3D ~SCSCR_TIE;
-			ctrl |=3D SCSCR_TEIE;
-			sci_serial_out(port, SCSCR, ctrl);
-		}
-
-		sci_stop_tx(port);
-	}
-
-can the unlocked control register read in sci_tx_end_interrupt() race with a
-concurrent sci_start_tx() and stall transmission?
-
-In drivers/tty/serial/sh-sci.c:sci_tx_end_interrupt(), the control register
-and xmit_fifo are read before acquiring port->lock:
-
-	ctrl =3D s->ops->read_reg(port, regs->control);
-	if (!kfifo_is_empty(&tport->xmit_fifo)) {
-		uart_port_lock_irqsave(port, &flags);
-		ctrl &=3D ~(s->params->param_bits->teie);
-		ctrl |=3D s->params->param_bits->tie;
-		s->ops->write_reg(port, regs->control, ctrl);
-		uart_port_unlock_irqrestore(port, flags);
-		return sci_tx_interrupt(irq, ptr);
-	}
-
-	uart_port_lock_irqsave(port, &flags);
-	ctrl &=3D ~(s->params->param_bits->te_clear);
-	s->ops->write_reg(port, regs->control, ctrl);
-	uart_port_unlock_irqrestore(port, flags);
-
-If CPU A enters sci_tx_end_interrupt(), reads regs->control (with TIE =3D=
-=3D 0),
-and sees kfifo_is_empty(&tport->xmit_fifo) =3D=3D true before acquiring
-port->lock, CPU B can concurrently run uart_write() -> __uart_start() ->
-sci_start_tx() under port->lock, queueing new bytes into xmit_fifo and sett=
-ing
-SCSCR_TE | SCSCR_TIE in regs->control.
-
-When CPU A then acquires port->lock and writes back its stale ctrl value wi=
-th
-te_clear masked off, it overwrites the TIE and TE bits just enabled by
-sci_start_tx(), leaving the newly queued bytes stuck in xmit_fifo. Similarl=
-y,
-if kfifo_is_empty() is false, reading ctrl outside port->lock can clobber
-concurrent control register updates made under port->lock by sci_start_rx()=
- or
-sci_stop_rx().
-
-Should sci_tx_end_interrupt() acquire port->lock before reading regs->contr=
-ol
-and checking kfifo_is_empty(&tport->xmit_fifo)?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261019170139.4738=
-08-1-biju.das.jz@bp.renesas.com?part=3D3
+base-commit: 1184f87e2790e8af9be3116f608d2e86b4792d7d
