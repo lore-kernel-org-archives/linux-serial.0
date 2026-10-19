@@ -1,54 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail-m32123.qiye.163.com (mail-m32123.qiye.163.com [220.197.32.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736984DAF89;
-	Mon, 19 Oct 2026 11:48:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F6D24BEE5A;
+	Mon, 19 Oct 2026 12:10:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.32.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792410490; cv=none; b=MutPdbo8fuVPYQ3++vBD4+PvbSKZLc3LePotvLBQYobxeBLQNK5ScIVeXVmC3weK7YLEU149nHhw1YPrhcMkWsfwIBDAS1W+VMHRYmjiW9QQDFcWofQQX105Ziv4JNxAJs8A4d0Hx2Nl/JdZHEnvfsl/780mBLxl30VO8iWGD+I=
+	t=1792411843; cv=none; b=V+kE6hFjVKKqEM8ZWFv9JKn8Cz9tuKj/wzTYgskX64IjtywU7sFCs2E8CTrtUBtNtqd4zZPRUYMRTANgU+Lj234+WGt1Z6q7Fr/ErCJ5UH7iMaGGPZPu4L52UciIad8+2txAlpAaBr+pMIJVkY/UXLjhfFnQBt5dw9qvX+UMsaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792410490; c=relaxed/simple;
-	bh=0YgUrRVF2KHISF+RhcWQ71dH+nvktOQ9aVvLn+JGyz0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mSl14Zrz3vu6/0JS1LbeNe/OuCX0KTgndBqnEjDv6+MtemY79/Az6IzKvdM0dTHexliY9JIt/wYPU53hc3N2E98VqEaVHChLHU6EDyMGcGhhxmOwE7wAcfcH9V3UXKLY+Wg0feQFPVQYn5pUo6K0lgcg41OEdtD869Wm9j0muyA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=e2Jr2iJC; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792411843; c=relaxed/simple;
+	bh=UUeDj5h5QQh/s0lIHFNzTHonVGvliLTSvK6HvKD+/l8=;
+	h=Content-Type:Message-ID:To:Cc:Subject:MIME-Version:From:Date; b=p5vsQgtY1H3OhvMhKLOeIXlueqs6Vb3Nk6NIshWGsOvC7gr/tH+y+2Q9kv2OKj1hNwC61BWjW9t4sIKQkIvB9k0bY0ZEsK9t1ZcgOMfVBAdRs1z8adpy9C8a2ucJRw8JW4g+Q/rwEtiGuNE97SElzRwA/mLkZk20jkFZzg+I8N4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hdu.edu.cn; spf=pass smtp.mailfrom=hdu.edu.cn; dkim=pass (1024-bit key) header.d=hdu.edu.cn header.i=@hdu.edu.cn header.b=UcMbujE6; arc=none smtp.client-ip=220.197.32.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hdu.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hdu.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="e2Jr2iJC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57CB51F000C5;
-	Mon, 19 Oct 2026 11:48:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1792410489;
-	bh=l+7MC/WJtcQGt7FYzoTw7UHAKcfCqPEBqJ9fydFNENQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=e2Jr2iJCVJoiMKgFnYwEt1Aw+VgMNlX2hZ9chnJMEsffW06mfhR4G5+jbi5ERDDha
-	 60MSjcKFC7Iq1m4qhemfqEAapxF58QvIyp7Ph3SZGG/YPvNy8WhfS7Q+IvbDc0OmZv
-	 rp0a+LTOdhvQ9TLAcghamHUDmsTK6dsXH9AJFIc4=
-Date: Mon, 19 Oct 2026 13:48:02 +0200
-From: gregkh <gregkh@linuxfoundation.org>
-To: LI xiao <lixiao0@hdu.edu.cn>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: serial: pch_uart: possible TX DMA use-after-free race
-Message-ID: <2026101932-nibble-release-d627@gregkh>
-References: <AGIADwBDLFAmWi-eqY4iK4oL.1.1792407296160.Hmail.252270051@hdu.edu.cn>
+	dkim=pass (1024-bit key) header.d=hdu.edu.cn header.i=@hdu.edu.cn header.b="UcMbujE6"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+Message-ID: <AGIADwBDLFAmWi-eqY4iK4oL.1.1792407296160.Hmail.252270051@hdu.edu.cn>
+To: jirislaby@kernel.org, gregkh <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: =?UTF-8?B?c2VyaWFsOiBwY2hfdWFydDogcG9zc2libGUgVFggRE1BIHVzZS1hZnRlci1mcmVlIHJhY2U=?=
+X-Priority: 3
+X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com web
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AGIADwBDLFAmWi-eqY4iK4oL.1.1792407296160.Hmail.252270051@hdu.edu.cn>
+Received: from 252270051@hdu.edu.cn( [183.157.177.89] ) by ajax-webmail ( [127.0.0.1] ) ; Mon, 19 Oct 2026 18:54:56 +0800 (GMT+08:00)
+From: LI xiao <lixiao0@hdu.edu.cn>
+Date: Mon, 19 Oct 2026 18:54:56 +0800 (GMT+08:00)
+X-HM-Tid: 0aa153c02d16d458kusy0d917319beb8
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkZTk5OVkxISB9ISxpLQhkfQ1YVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlKQ0hVSk5MVUpMTFVDQllXWRYaDxIVHRRZQVlPS0hVSk
+	tISkxDSlVKS0tVSkJLS1kG
+DKIM-Signature: a=rsa-sha256;
+	b=UcMbujE6NXFJuMWhZcFaYNeLPq21g20RPYsLNyBTjO4NJBowCnbSonlHpONqVhHE03EEQuSrjniSX8s8lSnywX/TRPipcAd/aP0J+q6OkoFs5D4bh8Ple2bIv0NvkrQFs3scb3tDXFFAgT9BTF4m+EeNkii6dENv27Clg6u6D9c=; s=default; c=relaxed/relaxed; d=hdu.edu.cn; v=1;
+	bh=UUeDj5h5QQh/s0lIHFNzTHonVGvliLTSvK6HvKD+/l8=;
+	h=date:mime-version:subject:message-id:from;
 
-On Mon, Oct 19, 2026 at 06:54:56PM +0800, LI xiao wrote:
-> Hello,
-> 
-> I would like to report a possible race in the PCH UART TX DMA path that may lead to a use-after-free.
-
-Great!  Can you please provide a patch to resolve this issue, as you
-have a way to test it.
-
-thanks,
-
-greg k-h
+SGVsbG8sCgpJIHdvdWxkIGxpa2UgdG8gcmVwb3J0IGEgcG9zc2libGUgcmFjZSBpbiB0aGUgUENI
+IFVBUlQgVFggRE1BIHBhdGggdGhhdCBtYXkgbGVhZCB0byBhIHVzZS1hZnRlci1mcmVlLgoKSSBy
+ZXZpZXdlZCB0aGUgY29kZSBpbiBMaW51eCB2Ny4zIChjb21taXQgYzAzYzFhMTQ1MDdkZmFmOGI4
+NTZjMjYwOGY5YWMyMTYwMjFmYzIyMikuCgpUaGUgcmVsZXZhbnQgY29kZSBwYXRocyBhcmUgYXMg
+Zm9sbG93cy4KCnBjaF91YXJ0X2ludGVycnVwdCgpIHRha2VzIHRoZSBVQVJUIHBvcnQgbG9jayBh
+bmQgY2FsbHMgZG1hX2hhbmRsZV90eCgpIGZvciBhIHRyYW5zbWl0dGVyLWhvbGRpbmctcmVnaXN0
+ZXItZW1wdHkgaW50ZXJydXB0IGluIGRyaXZlcnMvdHR5L3NlcmlhbC9wY2hfdWFydC5jLgoKZG1h
+X2hhbmRsZV90eCgpIGNoZWNrcyB0eF9kbWFfdXNlIGFuZCwgaWYgbm8gdHJhbnNmZXIgaXMgaW4g
+cHJvZ3Jlc3MsIHNldHMgaXQgdG8gMSwgYWxsb2NhdGVzIGFuZCBwcmVwYXJlcyBwcml2LT5zZ190
+eF9wLCBtYXBzIHRoZSBzY2F0dGVybGlzdCwgYW5kIGNhbGxzIGRtYWVuZ2luZV9wcmVwX3NsYXZl
+X3NnKCkgdG8gcHJlcGFyZSBhIG5ldyBETUEgdHJhbnNmZXIuCgpwY2hfZG1hX3R4X2NvbXBsZXRl
+KCkgdW5tYXBzIHRoZSBjb21wbGV0ZWQgdHJhbnNmZXIsIHNldHMgdHhfZG1hX3VzZSB0byAwLCBj
+bGVhcnMgbmVudCBhbmQgb3JpZ19uZW50LCBmcmVlcyBwcml2LT5zZ190eF9wLCBhbmQgcmUtZW5h
+YmxlcyB0aGUgVUFSVCBUWCBpbnRlcnJ1cHQuCgpUaGUgVUFSVCBpbnRlcnJ1cHQgaGFuZGxlciB0
+YWtlcyB1YXJ0X3BvcnRfbG9jaygpLCBidXQgcGNoX2RtYV90eF9jb21wbGV0ZSgpIGRvZXMgbm90
+IGFwcGVhciB0byB0YWtlIHRoZSBzYW1lIGxvY2suCgpJIGFsc28gbm90aWNlZCB0aGF0IHRoZSBQ
+Q0ggRE1BIGRyaXZlciBpbnZva2VzIHRoZSBjb21wbGV0aW9uIGNhbGxiYWNrIGZyb20gaXRzIHRh
+c2tsZXQgcHJvY2Vzc2luZyBwYXRoIHdoaWxlIGhvbGRpbmcgdGhlIERNQSBjaGFubmVsIGxvY2su
+IFRoZSBwcmVwYXJhdGlvbiBwYXRoIGluIHBkX3ByZXBfc2xhdmVfc2coKSBjYWxscyBwZGNfZGVz
+Y19nZXQoKSwgd2hpY2ggYWxzbyBhY3F1aXJlcyB0aGF0IGxvY2suCgpBIHBvc3NpYmxlIGludGVy
+bGVhdmluZyBpcyBhcyBmb2xsb3dzLgoKMS4gVGhlIGNvbXBsZXRpb24gY2FsbGJhY2sgZmluaXNo
+ZXMgdW5tYXBwaW5nIHRoZSBvbGQgdHJhbnNmZXIgYW5kIHNldHMgdHhfZG1hX3VzZSB0byAwLCBi
+dXQgaGFzIG5vdCB5ZXQgY2xlYXJlZCB0aGUgcmVtYWluaW5nIHN0YXRlIG9yIGZyZWVkIHByaXYt
+PnNnX3R4X3AuCgoyLiBBIFVBUlQgVFggaW50ZXJydXB0IHJ1bnMgb24gYW5vdGhlciBDUFUgYW5k
+IG9ic2VydmVzIHR4X2RtYV91c2UgPT0gMC4gSWYgaXQgcHJvY2VlZHMgZmFyIGVub3VnaCB0byBh
+bGxvY2F0ZSBhIG5ldyBzY2F0dGVybGlzdCBhbmQgdXBkYXRlIHByaXYtPnNnX3R4X3AgYmVmb3Jl
+IHRoZSBvbGQgY2FsbGJhY2sgcmVhY2hlcyBpdHMga2ZyZWUoKSBjYWxsLCB0aGUgc2hhcmVkIHBv
+aW50ZXIgd2lsbCByZWZlciB0byB0aGUgbmV3IHRyYW5zZmVyJ3Mgc2NhdHRlcmxpc3QuCgozLiBU
+aGUgb2xkIGNvbXBsZXRpb24gY2FsbGJhY2sgdGhlbiBjbGVhcnMgbmVudCBhbmQgb3JpZ19uZW50
+IGFuZCBjYWxscyBrZnJlZShwcml2LT5zZ190eF9wKS4gSWYgdGhlIHNoYXJlZCBwb2ludGVyIGhh
+cyBiZWVuIG92ZXJ3cml0dGVuIGFzIGRlc2NyaWJlZCBhYm92ZSwgdGhpcyBjb3VsZCBmcmVlIHRo
+ZSBuZXcgdHJhbnNmZXIncyBzY2F0dGVybGlzdCByYXRoZXIgdGhhbiB0aGUgc2NhdHRlcmxpc3Qg
+YXNzb2NpYXRlZCB3aXRoIHRoZSBjb21wbGV0ZWQgdHJhbnNmZXIuCgo0LiBUaGUgbmV3IHRyYW5z
+ZmVyIHN1YnNlcXVlbnRseSBlbnRlcnMgcGRfcHJlcF9zbGF2ZV9zZygpIHRocm91Z2ggZG1hZW5n
+aW5lX3ByZXBfc2xhdmVfc2coKS4gSXRzIGNhbGwgdG8gcGRjX2Rlc2NfZ2V0KCkgbWF5IGhhdmUg
+dG8gd2FpdCBmb3IgdGhlIERNQSBjaGFubmVsIGxvY2sgaGVsZCBieSB0aGUgY29tcGxldGlvbiBj
+YWxsYmFjay4gQWZ0ZXIgdGhlIGNhbGxiYWNrIGZyZWVzIHRoZSBzY2F0dGVybGlzdCBhbmQgcmVs
+ZWFzZXMgdGhlIGxvY2ssIHRoZSBwcmVwYXJhdGlvbiBwYXRoIGNvdWxkIGNvbnRpbnVlIGFuZCBh
+Y2Nlc3MgdGhlIGZyZWVkIHNjYXR0ZXJsaXN0LCBmb3IgZXhhbXBsZSB3aGVuIHJlYWRpbmcgc2df
+ZG1hX2FkZHJlc3MoKSBvciBzZ19kbWFfbGVuKCkuIFRoaXMgd291bGQgY29uc3RpdHV0ZSBhIHBv
+dGVudGlhbCB1c2UtYWZ0ZXItZnJlZS4KClRoZSBzYW1lIGludGVybGVhdmluZyBjb3VsZCBhbHNv
+IGNhdXNlIHRoZSBvbGQgY2FsbGJhY2sgdG8gb3ZlcndyaXRlIHRoZSBuZXcgdHJhbnNmZXIncyBu
+ZW50IGFuZCBvcmlnX25lbnQgdmFsdWVzLgoKVGhpcyBzY2VuYXJpbyBkZXBlbmRzIG9uIHRoZSBu
+ZXcgdHJhbnNmZXIgdXBkYXRpbmcgdGhlIHNoYXJlZCBzY2F0dGVybGlzdCBwb2ludGVyIGJlZm9y
+ZSB0aGUgb2xkIGNhbGxiYWNrIGZyZWVzIGl0LiBJIGhhdmUgbm90IGVzdGFibGlzaGVkIHdoZXRo
+ZXIgdGhlIHJlcXVpcmVkIHRpbWluZyBpcyByZWFjaGFibGUgb24gdGhlIGFjdHVhbCBoYXJkd2Fy
+ZSwgYW5kIEkgaGF2ZSBub3QgcmVwcm9kdWNlZCB0aGlzIGlzc3VlIGF0IHJ1bnRpbWUuIFRoZSBh
+dmFpbGFibGUgUUVNVSBzZXR1cCBkb2VzIG5vdCBlbXVsYXRlIHRoZSBFRzIwVCBQQ0ggVUFSVC9E
+TUEgZGV2aWNlLCBhbmQgSSBkbyBub3QgaGF2ZSBhY2Nlc3MgdG8gbWF0Y2hpbmcgaGFyZHdhcmUu
+IEluIHBhcnRpY3VsYXIsIEkgaGF2ZSBub3QgdmVyaWZpZWQgd2hldGhlciB0aGUgVUFSVCBpbnRl
+cnJ1cHQgc3RhdGUgYW5kIGhhcmR3YXJlIHRpbWluZyBwZXJtaXQgYSBuZXcgVFggaW50ZXJydXB0
+IHRvIGVudGVyIGFuZCBwcm9ncmVzcyBmYXIgZW5vdWdoIGR1cmluZyB0aGUgY2xlYW51cCB3aW5k
+b3cuCgpDb3VsZCB5b3UgcGxlYXNlIGFkdmlzZSB3aGV0aGVyIHRoaXMgaW50ZXJsZWF2aW5nIGlz
+IHBvc3NpYmxlIGFuZCB3aGV0aGVyIHRoZSBUWCBzdGF0ZSByZXF1aXJlcyBhZGRpdGlvbmFsIHN5
+bmNocm9uaXphdGlvbiBvciBhIGRpZmZlcmVudCBvcmRlcmluZyBvZiB0aGUgY29tcGxldGlvbiBj
+bGVhbnVwPwoKVGhhbmsgeW91LApMSSBYaWFv
