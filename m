@@ -1,77 +1,91 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F089496D2C
-	for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 09:15:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A31AC488D95;
+	Mon, 19 Oct 2026 09:39:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792401318; cv=none; b=YJZlXLhU52gwr5bLvszhWD+5ZwLGoIF5Vo85GdaObyi4WGrW+GmaeUt4OhH0lFHguX1V5S/VdIs1Ggto+tF8anU3RIZtSrnvcGWhiCp2Zb0KlRSCZhOjfYHEVAUh70lHpDf6aMrxcmVQtg72AwoXrxZuNpXcJChUq5oMTy/JGKM=
+	t=1792402764; cv=none; b=nCBcjUSXcKZlGN7nDTa4HfrsnKlyLGzvLkscXCEiGxaqP7/K41doPTaXmrmwjFJpzgXiDCYr4ZHFnpidKxcPiv2oYxabe3ppsonCxSUHHruhy0h7nX37lctEdkXTxpcDbECBplZ++M+2YldzPVv6g8IAgtht3SIJkDIe2S9afZ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792401318; c=relaxed/simple;
-	bh=ouuw5IdFiWVhrShuN0CWfrbL6TGotUOqfLpyo1Zwwho=;
-	h=Message-ID:From:Subject:To:Cc:In-Reply-To:References:Content-Type:
-	 Date; b=cSZiFXzqUhObk9OBfHUIQ6bAxJGGm+tkarZ9kshHs4KMDQORv/C2/OZJ4+8H4kRBoz7rWtmeqblBL8CFt5pZjWge5RF428b4LFs+58yOeafTK1mQc0oXaC7PkWVl1nx1MGnT7WxyZ5mw02CcgnE0IvieE9+4sa/fVdmUDZeFeSE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pl34QSCf; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792402764; c=relaxed/simple;
+	bh=mQCkmSSJkUL3FJbfj3RjGn270uscEvDqWebTGDYSHrg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WPHJhnC/KrLPVxihC7L2voAoytCL0oShqyhmE3xCo91llTGB8unQcb3RA2GgvUuvTUh22yg7bxRHZNQ44vgrLViBiZgPXEnte/Lqz9WavOcKnbMjnxFyL7crQjRC6tZqL1KJlh5USo/LrR1xoq1iePCf+9UOs/ztv/tcQb3DWNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=IsFtIxyM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pl34QSCf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE88A1F000C5;
-	Mon, 19 Oct 2026 09:15:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792401316;
-	bh=ouuw5IdFiWVhrShuN0CWfrbL6TGotUOqfLpyo1Zwwho=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Pl34QSCfvBlvGGRsixs68m1Px5dODRPL8GNl/tloy1lmLiDqP/k4fsfKcVLBDNRoM
-	 ub0Hiz+xwPWFX37Jaom5BdHBQgWEBoffH5ziGisFSQ1sbH489j19q7hz0ZabFrA06d
-	 MousO//8ogwbWTQyrh5S/0/Bgm/GE79COpt9eNoCR5WA5kCRoQ46bZ0B0AF1KreADf
-	 mtN8yG6RKg0w0IkNuH8SdG1kTHwkUHSIqHlpGBKspZ1UhQOSUXN9YhNI16eMiqEvbE
-	 CJJiEl4k0W3pqpOfkb4hb8tEuZOCAyVGL4nKMTe65gfpqZwUDUtjGkS3McDHc3Fus6
-	 lnRIjaeQpU8eg==
-Message-ID: <sashiko-outbox-176882@kernel.org>
-From: sashiko-bot@kernel.org
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="IsFtIxyM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B03211F000C4;
+	Mon, 19 Oct 2026 09:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1792402763;
+	bh=+G081mjw92pLC8lCLOXqTG061tR6XF7QBjZhnsnh4xc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=IsFtIxyMSQudGwESLIIjlsHuUuC53CKLBetywjuV6FrTHxUCUO4ma8QLIXTQCXL5E
+	 7t/64zuETUqvP2AxqtdgCWK4Xpe8fx0cjbJEkE0PGeHmy2i+Hq7fsNykl0f5/s96DF
+	 mFS86gdTb+td2vRa25M6zZN+vBWoXGekry+unIIw=
+Date: Mon, 19 Oct 2026 11:39:20 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] [v3] serial: 8250: remove obsolete and broken PORT_RSA
  support
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Arnd Bergmann" <arnd@kernel.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261019090017.430425-1-arnd@kernel.org>
+Message-ID: <2026101952-wham-earthly-c149@gregkh>
 References: <20261019090017.430425-1-arnd@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 19 Oct 2026 09:15:16 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261019090017.430425-1-arnd@kernel.org>
 
+On Mon, Oct 19, 2026 at 10:56:55AM +0200, Arnd Bergmann wrote:
 > From: Arnd Bergmann <arnd@arndb.de>
->=20
+> 
 > For all I can tell, the RSA support in the 8250 driver is not functional
 > and has not been for a long time.
->=20
+> 
 > The RSA-DV II/S ISA card[1] was sold by IODATA in the 1990s as a faster
 > alternative to regular ISA serial ports, and it was discontinued in
 > 2002. Linux support was added by Kiyokazu SUTO in 2000.
->=20
+> 
 > The driver defines an I/O port base address of -8 (negative eight),
 > which should always get refused by request_region on all architectures
 > for being outside of the valid resource range.
->=20
+> 
 > Further, it seems that a patch to setserial would be required in order
 > to set PORT_RSA when not using autoconfiguration.
->=20
+> 
 > This patch removes all code related to the RSA support, with the exception
 > of the user-visible PORT_RSA definition.
->=20
-> Link: http://translate.google.com/translate?hl=3Den&sl=3Dja&u=3Dhttp://ww=
-w.iodata.jp/products/network/rsadv2s.htm
-> Link: https://lore.kernel.org/all/1309211120-2803-6-git-send-email-arnd@a=
-rndb.de/
+> 
+> Link: http://translate.google.com/translate?hl=en&sl=ja&u=http://www.iodata.jp/products/network/rsadv2s.htm
+> Link: https://lore.kernel.org/all/1309211120-2803-6-git-send-email-arnd@arndb.de/
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> v2: rebased my own patch after 15 years
+> v3: fix up Makefile and sunsu.c file
+> ---
+>  drivers/tty/serial/8250/8250.h          |  17 --
+>  drivers/tty/serial/8250/8250_core.c     |   6 -
+>  drivers/tty/serial/8250/8250_platform.c |   4 -
+>  drivers/tty/serial/8250/8250_port.c     |   8 -
+>  drivers/tty/serial/8250/8250_rsa.c      | 209 ------------------------
+>  drivers/tty/serial/8250/Kconfig         |  11 --
+>  drivers/tty/serial/8250/Makefile        |   1 -
+>  drivers/tty/serial/sunsu.c              |  92 -----------
+>  include/uapi/linux/serial_reg.h         |  51 ------
+>  9 files changed, 399 deletions(-)
+>  delete mode 100644 drivers/tty/serial/8250/8250_rsa.c
 
-Sashiko has reviewed this patch and found no issues.
+Any objection for me to sneak this into 7.4-rc1?
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261019090017.4304=
-25-1-arnd@kernel.org?part=3D1
+thanks,
 
+greg k-h
