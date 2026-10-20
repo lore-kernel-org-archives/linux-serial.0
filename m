@@ -1,59 +1,68 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792530540;
-	b=lg88bf9rQV9vmDbAF++EsW4Bt7QjcfeIhJyBKCgQJoTfyOhxvX1TuM+HKPY6WRJhFPth
-	 RKN/bJODw1p7g56npgZK4rrgb7jOrYOz0sus2BwTRjpX2cUYO2UEBBfSvnukCtfbqoO5r
-	 JJfEB/KLLpHizbn8e1cKAdazgjBprdNvAwjTspV906YYPw3TH+4skhaE+M5Emi/13e9Br
-	 LdAYjGbba+WHIR0HWR9d3zHKk0rlMbExA+brpzq6ZH3oNdgwTa1qDWO7bb0oHxS0ib0/n
-	 8yKQrMFjq0xjT9T1odeqkYTZ3ndVRUx2UoIJfmyybwWIft7hJ71RxZqLFIWG60A2JGA==
+	t=1792533373;
+	b=CDhK9dOLHAOAqUzeUOtSfOwE6joSiBofnE8gxrjCBbteeeJq/Giddszio4YQgJrvevsI
+	 CuE0X+Ff/5AuzNZQYOWifJ4Pzl1go/tDJAqy9hEfI3GhatfnZnBZ3Hss/mU9m1A5Rrngo
+	 4XbIwt+cHyXV64gaUPvDq4ZbwVtoH1CVRik+JgIuTrff3TR2jNF7ZbFWn28WlsXXVn6l9
+	 YfDeUd4/yR3ocfhPB14RYwuy3OARYJtb/2tIsi4ArwGfjId+p0Q12Hz7BFYfte22qdbps
+	 u4BrdjSgbCob3/tzsiQ9vH8lViFS6P6GWLb4XoJvMVlw6PrYLpSJnCtX/mmeZzlwJ9w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792530540;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=FWlmaieVF3G5nqJkpjCWlEpztN0OshGDCOqC4t4ddFQ=;
-	b=hU5BZXIRJEw3tpb0DaB6e8ev/me7h0NELqGQ9tNHnl6rqqniek/ZQDu0fJVjZtPgNfPe
-	 TL5Jo0cexGki9ct5PXZk83yq9z9vvrzF3DDgP5HXC1yWg8vDHlCdioKU2v2sjiL5+3ZUx
-	 Y7q8OJbOzfdRxVoynsAZOdtHvH+MJQktfATRYUrQC780nHdKAQQytdFMauYd401s00wUP
-	 Vty8TnWiKR8EQ2fVfmjdo/onOncDir0sw071YjLZFO+YBPWsuKIW9rxJEtirL8K0/mYTV
-	 xXS4EszOFpdKgsOnwYMvqDZx6m9UcDxreZHYc0SSHpgt2jo2WdUCNpKmBqL8jB1uVXg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792533373;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=RC3iU6EQa1/dBaJxMKqA5Cnd4YmN92OAMtq0Pq+n7O8=;
+	b=jSKaiObb3NAmzBEa2MOm6ZpAuK5qMy8pxLOqGoXkXavSAO5wgOTVEs/PvX9y2m+tCEsW
+	 5OT7DIknQaE7xqH7ZC0yaKH03dPBYOfMhYwehVnBj9H8nwAg0gcM3yP1hj0tWn/lkwmYl
+	 +Qh8B0onsvg8ZBJT34oqT8lrn2M8ZoKPPAoLI0zjIMlxgztnT0GzhhgO2UWq5CMopv0HN
+	 F+3kQs5PZD+tzR4cWDHG3fP3JMIUwf6kbYfQarCU4r2+8pX9CNXfL79M/8fuiy1kLUrFJ
+	 JNqND/QiQeEkz9WhlCFPLzsXNleO62jGBrWRUYmzPUdWWxzas5YWZ66fRsPvivP8lig==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="OxP9/a2+";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DuUrn674;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAF34606A319;
-	Tue, 20 Oct 2026 21:08:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B4B606A319;
+	Tue, 20 Oct 2026 21:56:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OxP9/a2+
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 641271F000CB;
-	Tue, 20 Oct 2026 21:08:56 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DuUrn674
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D229A1F000C9;
+	Tue, 20 Oct 2026 21:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792530538;
-	bh=FWlmaieVF3G5nqJkpjCWlEpztN0OshGDCOqC4t4ddFQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=OxP9/a2+ATby/nWvWsklJEXB+YxJyzUyrH3x45stE0us9xPlS37nBoJvZjIFfebYT
-	 SXWgapf5vSZ1Ji8rh8PBAl8HTD8j8xpuSjTlSmCt6Qb1V2E8Wnp4Wf1MZEKo4D+lLG
-	 i/45LJT9p3FoFTWPQndcVrKBPNgHIBq5FaqBLCU7gPvUAxdncUkb5tL9AFuNLVfpkg
-	 P3w2vpfbfQ1zMvt7MGzq2gNaphtQV+pmcHFkoltznYV1UaIwKnj5NngiNGsqUfsdyu
-	 noK6PYFAMlfPW3XVPW3fyq96knkfQfmd2f7Foo7AMKhIBbakkBAQ9WFk7ZhWWzQEJd
-	 B7t7JrgUgET+w==
-From: Imre Kaloz <kaloz@kernel.org>
-To: Lee Jones <lee@kernel.org>
+	s=k20260515; t=1792533372;
+	bh=RC3iU6EQa1/dBaJxMKqA5Cnd4YmN92OAMtq0Pq+n7O8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=DuUrn674JMfXslg2ZVIwkEZJtPfpC7JU+qX2L2K8Oh2/xjnofe6PrmmX8ZxFxsTVl
+	 CJOnJDtdnjIXlGFq9CBRrcq2ueUjWplnyH5AncNdRDpLNGHRWpzIGomydnzupqLOlw
+	 FbTBqEUAveMFam6YnOpQTQ2/COE0/VT3wzF286C/7ye0i4M/CdCChU9ZLOk2i9EXSv
+	 Q+lY65xyMmC5+k2HSifJ14S7zMp6VcSauQcNjY3AHqv32NC+zsFhfpkmQnPH+Ey97p
+	 I/wIrP0EUbChYnjCb7+tAIweHRJRGK6ruc5DheKNK5rKsZGenGsEL9OuNluLdwEQoQ
+	 W3xcV/fHxt1jA==
+Date: Tue, 20 Oct 2026 14:56:11 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Imre Kaloz <kaloz@kernel.org>
 Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	mfd@lists.linux.dev,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 31/53] mfd: ioc3: Add support for IOC4
-Date: Tue, 20 Oct 2026 23:07:47 +0200
-Message-ID: <20261020210749.11045-1-kaloz@kernel.org>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <179198346971.839288.6829273567060577383@kernel.org>
-References: <cover.1791890466.git.kaloz@kernel.org> <2e8b812274f3049c687c37d1b7c3b3a4ee22d008.1791890466.git.kaloz@kernel.org> <179198346971.839288.6829273567060577383@kernel.org>
+ linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, Lee Jones
+ <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
+ Slaby <jirislaby@kernel.org>, mfd@lists.linux.dev,
+ linux-serial@vger.kernel.org, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, linux-rtc@vger.kernel.org, Andrew Lunn
+ <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ netdev@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel
+ <cassel@kernel.org>, linux-ide@vger.kernel.org, Pavel Machek
+ <pavel@kernel.org>, linux-leds@vger.kernel.org, Bjorn Helgaas
+ <bhelgaas@google.com>, linux-pci@vger.kernel.org, Christoph Hellwig
+ <hch@lst.de>
+Subject: Re: [PATCH v2 00/53] MIPS: SGI-IP27: add support for the IP35
+ (Bedrock hub) machines
+Message-ID: <20261020145611.4e277615@kernel.org>
+In-Reply-To: <20261020204214.28625-1-kaloz@kernel.org>
+References: <cover.1791890466.git.kaloz@kernel.org>
+	<20261020110619.12774a1c@kernel.org>
+	<20261020204214.28625-1-kaloz@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,49 +72,36 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Tue, 20 Oct 2026 22:42:13 +0200 Imre Kaloz wrote:
+> On Tue, 20 Oct 2026 11:06:19 -0700 Jakub Kicinski wrote:
+> > Why do we need support for machines discontinued 20+ years ago?  
+> 
+> For netdev the question is smaller than the series: patches 25 and 38,
+> 44 lines in ioc3-eth, a driver that is already in tree for the same
+> part on IP27 and IP30. Patch 25 is a no-op on both of those (the bit it
+> tests is always set behind a classic Bridge); patch 38 is a MAC-address
+> fallback. I should have said in the cover that the series is meant to go
+> through the MIPS tree and that I'm only after an Ack for those two --
+> sorry for the noise on your queue.
+> 
+> As for why at all: same reason IP27, IP30 and IP32 are in tree. The
+> hardware is in use, Thomas maintains the platform, and people run and
+> test it; "discontinued" has never been the removal criterion, lack of
+> maintainers has. IP35 is IP27's direct successor on the same
+> Hub/XTalk/Bridge architecture with the same IOC3, plus its successor
+> IOC4, so most of the series is teaching existing code about one more
+> hub generation. And these boxes still earn their keep as a stress case
+> for arch and core code -- e.g. the kmem_cache_destroy() race that just
+> turned up on my Ultra 45:
+> https://lore.kernel.org/all/atDCYwNfKW3m6YXh@thinkstation/
 
-On Tue, 20 Oct 2026, Lee Jones wrote:
+I don't think you answered my question, or at least I'm too daft 
+to catch what you mean. IP35 was not supported so nobody is using
+it with Linux today. You're adding the support, and since it's 
+a platform discontinued 20 years ago there's 0 chance of real users 
+of any of this code.
 
-> >  5 files changed, 438 insertions(+), 46 deletions(-)
->
-> Do we really need to bundle all of these changes into this commit?
->
-> This is going to be a nightmare to review!
-
-Fair point, and sorry about that. It grew in one piece while I was
-bringing the hardware up, and I should have cut it up before posting.
-
-For v3 I'll split it into five patches:
-
- 1. mfd: ioc3: Add per-variant interrupt banks
-    The irq_chip, domain map and chained handler move to a bank table,
-    and ioc3_priv_data gets a variant pointer and a generic __iomem
-    base. Only the IOC3 variant exists at this point.
-
- 2. MIPS: SGI-IP27: Add IOC4 register definitions
-    arch/mips/include/asm/sn/ioc4.h on its own.
-
- 3. serial: 8250_ioc3: Take the UART clock from platform data
-    include/linux/platform_data/sgi-ioc3-serial.h and the one-line
-    change in 8250_ioc3.c, with the MAINTAINERS entry for the header.
-
- 4. mfd: ioc3: Add support for IOC4
-    The IOC4 variant, its two interrupt banks, ioc4_setup() and the
-    non-serial cells (kbd, RTC and, from patch 46, ATA).
-
- 5. mfd: ioc3: Add IOC4 serial cells
-    ioc4_serial_setup(), the firmware revision check and the four
-    UART cells.
-
-Each one builds on its own, and 1 and 3 leave IOC3 boards behaving
-exactly as before, so they should be easy to check in isolation.
-
-The overall shape of v3 still depends on what Thomas prefers for the
-series, so it will follow once he has had a chance to look.
-
-
-Thanks for taking the time to go through it,
-
-Imre
+What am I missing?
