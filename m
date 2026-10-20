@@ -1,65 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792521807;
-	b=ISzT+rF206d6LxjEIhEioK2oevdPU00DC92wX9M4dyK4AqoJUpVgPR1WSlVcc53CGWGq
-	 6BZ5abGUsBvL6UEqsIz8BUidecwYy5mIK/R8vNnNLOhWwzB/UkGraSUjBoLeqhQf66G2O
-	 jvWcA57QYaRQtuWGsMtH5R9T0DnOZCHYik5kIi23csAgocDYo8/rGZSgKKHWzZxjm94on
-	 gLkEqqSC7BY50F/W4XoDNdUeS/ZckXoN+h0r8OtDaB1NCzMsy545o2DTFwAJmUhzV8J5e
-	 P/hCK571AWSjG4pdRf/UbmmDs+ZdHQYz2TLDbBicKN0D/nPTTd/utVt0upnNaJH71uQ==
+	t=1792521943;
+	b=hw7TXvCv+DRhJMDTn45HQ/gI+UvHQMM6WPegQlKb6Wge+4br2QRdFXrjnyg3+O9C5WnT
+	 T0MVscTR8u1yOjcS2JJn3NE5g0dTftvU1QuIwXMfRkGnmJG1G+JY4/S91xdVsTEygQSzD
+	 GIgVFJ43gXGTK7Op9Q6LYaQ6+lxIQDxHRRx9uK1Hos5e/t4IToo/85hGENyHiwxdL7Q2O
+	 V1Lo+zYuw5QY1MTnyZoQVDalKhWjdhY608o29jS441rWyRwhq1uewfRoUohmnSoZZihZo
+	 85p0xwU0YDkBT0IHuJKajCqEDAZ6HcHduoNbzLX06PZ3o4bE3QQHduzRchvGVD3TqYQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792521807;
-	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:X-Spam_score:X-Spam_bar;
-	bh=pjpTkpXFtMJ8XMFAsz77PGDQoy96e3X6maQLEfjyEGc=;
-	b=4YJ4Al26W44sZ0QxIWmUH2Hv5eQs5AevOb5+73rh/Rb6w0VGYYaO97qtNcMhfPCXEn6D
-	 VzH41bJ+LLjerErlz7+W+d2KEgRG5RFvdBXa6liEi8fUASPfRQh6Ns8oyPOSx5cdW5u5O
-	 WzpqQpWRmLP5CEd8VTw/O8WAbVVXK+taOVaOxNfucOQYrQhQJm/6mI9u9qQjlbTKdlta4
-	 +/u9qow/goQrfZNaPf3mp1deYI9S+7XmebYsCrr94yQnZi82VgEElXSSbekCRbyRpkK1p
-	 6BSs3PIhLRlOrL3TcM3YKS2GLB27GU8MOAbLqwGGyF6cHPGo94oluLuiWak1IrI5pRQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792521943;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=NPdr2LZ/e5M+KiB37Boxf3PvCLDmvBKVALzcODoNjCA=;
+	b=sol8FBwo0Ix0QWA+3p4WJesK3KqYB+e2WwMCLq92+HnaEqeXCfNrHXc5thjyDs7Pikqg
+	 b/ZXiIDvIY2yNAuYNeUeHTwSwUI4g/qAYXLLuelIeoGWrkC5u4nicJFxomZmYmyfgJ5Ge
+	 I6qI/ljKkRBNtii7nsftw5+gdpvaTGKCxFH5+PIdNLoDo5ausv1+oPSt1D70HdlXjZelG
+	 jFOj+WJbKLAtlGjAkKq8NYlakzUBXfiS01iLSoYTkxiqsQhBaSjh81RoXLgDcZIL5UFRK
+	 NpCmQBmdKE1Ru/VzSUH4FYjgRJytPHLIwLK6ntXMl8SfIeZEVAYkTCftx6PDXXUzgQA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=hugovil.com;
-	spf=pass smtp.mailfrom=hugovil.com;
-	dkim=pass header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=pfCXXEos;
-	arc=none smtp.remote-ip=162.243.120.170
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k1fhN8MM;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D2EB606A321;
-	Tue, 20 Oct 2026 18:43:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7D2EB606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6655606A319
+	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 18:45:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=pfCXXEos
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
-	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=pjpTkpXFtMJ8XMFAsz77PGDQoy96e3X6maQLEfjyEGc=; b=pfCXXEosiJ57L8752A8WWt7Iiz
-	Ft3j3oNemKc74FQTEv01TBCDIDwElWSapJaRzXaKo1D7Be3Ipy0pqHFiTEziXNPyw4liuN7htFaoR
-	Zxopc+FAZn+pnvXzDNC1TFDTt368UTFy5khLsM3DbfOBf8agiPhxI3jVqCNhOiMdFy6o=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1xJEo2-000000000nG-1mq9;
-	Tue, 20 Oct 2026 14:43:24 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	alan@linux.intel.com
-Cc: hugo@hugovil.com,
-	gregkh@suse.de,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: [PATCH 3/5] serial: core: always return in-range baud rate even in case of failure
-Date: Tue, 20 Oct 2026 14:41:19 -0400
-Message-ID: <20261020184131.2893575-4-hugo@hugovil.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20261020184131.2893575-1-hugo@hugovil.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k1fhN8MM
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2273C1F000C9;
+	Tue, 20 Oct 2026 18:45:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792521942;
+	bh=NPdr2LZ/e5M+KiB37Boxf3PvCLDmvBKVALzcODoNjCA=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=k1fhN8MM8sqcYuMAJqPL2/8rwx9s3yw9nhuEPN7Z4tYy5DjqQ71p6M8BFukEBwnbE
+	 6QremTgsU5zuKRNNZTY0L5DDn3owIxvv6emNsNXpNKKCVjWSMc83qjs2XbzH9vn7AK
+	 MLPTNu/iuvAK+eu0iwFkbAQzP0SXRiJptenayB0kzCn+3QHp+PUGaJvKJ7x2qnla+A
+	 qvDKRi78Xk6r93TWDZ2h26PVUKaN4W7PggdgFiM/hseQ6zJ0sdfROWw6Omp0s+8Qs3
+	 kDJzjVT5hO1YQT1UvAO4vfRlo9ZqC3Rcg0YpQqtFbj3WAGmYhVITa/EewPk5YWhWkz
+	 MaF8iindVR+eg==
+Message-ID: <sashiko-outbox-179493@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH 4/5] serial: core: avoid redundant baud assignment
+ without any UPF_SPD_* flags
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Hugo Villeneuve" <hugo@hugovil.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261020184131.2893575-5-hugo@hugovil.com>
 References: <20261020184131.2893575-1-hugo@hugovil.com>
+ <20261020184131.2893575-5-hugo@hugovil.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 20 Oct 2026 18:45:41 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -68,38 +60,19 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam_score: -1.0
-X-Spam_bar: -
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>=20
+> If no UPF_SPD_* flags are set, the spd_* flags kludge is not necessary, so
+> avoid redundant and confusing "baud =3D altbaud" assignment.
+>=20
+> No functional change intended.
+>=20
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Returning a zero baud rate from uart_get_baud_rate() can trigger a division
-by zero fault. To prevent this, always make sure to return non-zero baud
-rate if the loop exits without a valid baud rate.
+Sashiko has reviewed this patch and found no issues.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/serial_core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0498a8524c6da..d9ed7db53e68d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -542,8 +542,9 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
- 	}
- 
- 	/* Should never happen */
--	WARN_ON(1);
--	return 0;
-+	dev_warn_ratelimited(port->dev, "%s (%u): unable to find fallback baud rate\n",
-+			     port->name, port->line);
-+	return baud;
- }
- EXPORT_SYMBOL(uart_get_baud_rate);
- 
--- 
-2.47.3
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261020184131.2893=
+575-1-hugo@hugovil.com?part=3D4
 
