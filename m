@@ -1,66 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.120.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792519581;
-	b=yRxVG1cn2VDemaZX9X34VXm+aBqqsT38soHCB7l6vr+e0rdZ84YSBiLJAVplL0PUubQA
-	 pBalpFyoaEZLUH7rI/zB5wIfGLAIXbguXr4gTJ5/pm+1ctz5wW/FVcvOOGsngoqZaeQe1
-	 4VjLk71lzchdy1Bvb8/gTfF8nagOVDHbeq1omLtUBrZ9eR4OyUzIMZ6FwvAGQALNXtNC+
-	 sBR4ZC4pNbgl7puDHECxYy11fs3S7sbC5AkFsmp3+KfA3DGeAUilDxQAgzwT+I3l3dz3l
-	 fmvAuNdXY9Ogk9OSLzeII/7fN2ijoxQ5Te8mqrJveaJheZsU4lkuNz76Yy1rgi79F8g==
+	t=1792521808;
+	b=kbX7SV9VxatTLBEZqG6ZSc9URO9biwP8flbRaakgorIDSUP929YqshvsNwpMSJPOrbG8
+	 XJgyHsnMsbVlDvN3VGTCfwHydjDgpKVCpx38lSb5FzfAVqoFaBAiwENNoPMVDxl1z3r9K
+	 DvGfRO5frQ5SFrZiIL58oFPOMCkvbxxWFgaJKrkPGlYKIvaXA7x7SnE87cOTZFJe7xmZs
+	 tXSOblh+dY+QPMDZzZLTicZishMiHlF2QgP0l1cZUh281rHMWpOLc1uEToyz5yA24dWpd
+	 zvzvCut3QlJppsEPEl94htKi/W24NRgP4qCScVQQ+CARrB5UyRxWA/dQL0TAltVY8Ow==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792519581;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=HVb+cZJd/B0SyswVrB5yNoiyhOraxVQrSwREAf5tTOE=;
-	b=teARR8Ol0RpM2q/I6oKAzG3P94nRztZZo0rStM9vgYTYSgh/5gM6i6ceD2/aPv8M43b7
-	 i/wb3vejoioWbSQ5dIYmRMdis7SutRBdRjkubh201pBm0T7BiOPP/T7ErhFf/+F/iDfDd
-	 CsbNt37bunaDxroi4eBnWVDBpirU9ExHDnXK4BR0zD7Pkq4/VNLpm+9rextk8vELFQuxp
-	 1PuYJyg3TxhYaQSRJU5Yxj3qEuEtuUS9xXWprEAyf1Qhan2bcVe6ICLpHGAyae17tZOFA
-	 pZ1Gkr901ji1Or1c/nGHaMBkp+tWMZrTnyZWE0GIHLmL/S47zTiBpRJwEv+THm6gVZA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792521808;
+	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:X-Spam_score:X-Spam_bar;
+	bh=Gxgg5VeXayw266nUh/HtSJVl1YD2GuN5qO40kUlAA8g=;
+	b=u/pfL5d4hdstmgHWsS3Xs6Urc2lpF/GSbJaUfe9CPvypUVjj38jCpvzYToaObjueKBHU
+	 qS9AEssDDL8RaDciQ/UJulMmY/G06wKNSoxpeehWpm9wgstqGiZJzHyyUyP58+zT7rNsO
+	 Qr3kJtzGuXkntxirm/LCU+Qgm493srqZclQKxNkKuInwM+1Cskg2BZraKHw4K/XtKOkwo
+	 JRjMnqFX4Sh7i8+PfoXiDVrHl57chwvzYPun/nbacq4XjfoGZac1vclA+umPNf6GhgQEH
+	 WwezcHu875lLxWRcbuUHgxKG6P1CkIyCVXQDqAP3ywK5s+nICgUmitQJC2vHcRDyF/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VOSCLcav;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=hugovil.com;
+	spf=pass smtp.mailfrom=hugovil.com;
+	dkim=pass header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=C6uETg4Z;
+	arc=none smtp.remote-ip=162.243.120.170
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CAFA606A323;
-	Tue, 20 Oct 2026 18:06:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7208606A326;
+	Tue, 20 Oct 2026 18:43:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7208606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VOSCLcav
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F9B1F000C9;
-	Tue, 20 Oct 2026 18:06:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792519581;
-	bh=HVb+cZJd/B0SyswVrB5yNoiyhOraxVQrSwREAf5tTOE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VOSCLcav+2Q4vNjUNvhkr6i5DNiI17LtAqaaIRzCzrM8wZyC5l4KcdrlFDpvx5311
-	 SEo6MM2zhzIGkyPZXOnlvwBXy6MFWr3/RnJaISTv+py52eDkP3e4GcI070pM172tyA
-	 aN9qceol4RnuUJReHmdm/O+2skabYnJSxsPSNRHdhamkukSo5wMIWfncUJIpwQm6A1
-	 iZu/hz1oyXwCkgHMK8aqynuQK/TsdwJQ5k636/lNnJ3/8qBYlWEZ0bsE2odhTVdnJU
-	 /Os3eb+hvwQdYrZMQNU7V5fqPT3awKe8qb+OD5vIErPd7bWxHq17+Xs4tg8sbSyrMe
-	 zj9J8181KItxQ==
-Date: Tue, 20 Oct 2026 11:06:19 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Imre Kaloz <kaloz@kernel.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, Lee Jones
- <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
- Slaby <jirislaby@kernel.org>, mfd@lists.linux.dev,
- linux-serial@vger.kernel.org, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, linux-rtc@vger.kernel.org, Andrew Lunn
- <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- netdev@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel
- <cassel@kernel.org>, linux-ide@vger.kernel.org, Pavel Machek
- <pavel@kernel.org>, linux-leds@vger.kernel.org, Bjorn Helgaas
- <bhelgaas@google.com>, linux-pci@vger.kernel.org, Christoph Hellwig
- <hch@lst.de>
-Subject: Re: [PATCH v2 00/53] MIPS: SGI-IP27: add support for the IP35
- (Bedrock hub) machines
-Message-ID: <20261020110619.12774a1c@kernel.org>
-In-Reply-To: <cover.1791890466.git.kaloz@kernel.org>
-References: <cover.1791890466.git.kaloz@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=C6uETg4Z
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
+	:Cc:To:From:subject:date:message-id:reply-to;
+	bh=Gxgg5VeXayw266nUh/HtSJVl1YD2GuN5qO40kUlAA8g=; b=C6uETg4ZADEBhX6oqpg7CxZ0UC
+	x2vsvs2kHmUwuKlPiO+tHuYsfOBVbo+JJTVj4hNd6Ej5BxgQOE57rQ7KXWF2CbcSMxKQf+SJPZTqr
+	Y9xihqm/lOYkuCcA68SmevGI2UlWFQxR8i9YUpE2uuzMsu05+gNIT6klGYslRFEyCFkQ=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1xJEo3-000000000nG-2QO7;
+	Tue, 20 Oct 2026 14:43:25 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	alan@linux.intel.com
+Cc: hugo@hugovil.com,
+	gregkh@suse.de,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: [PATCH 4/5] serial: core: avoid redundant baud assignment without any UPF_SPD_* flags
+Date: Tue, 20 Oct 2026 14:41:20 -0400
+Message-ID: <20261020184131.2893575-5-hugo@hugovil.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20261020184131.2893575-1-hugo@hugovil.com>
+References: <20261020184131.2893575-1-hugo@hugovil.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,11 +69,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam_score: -1.0
+X-Spam_bar: -
 
-On Tue, 13 Oct 2026 15:16:20 +0200 Imre Kaloz wrote:
-> This series adds support for the SGI machines built around the Bedrock
-> hub (IP35), such as Fuel and Tezro, to the IP27 platform code.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Why do we need support for machines discontinued 20+ years ago?
+If no UPF_SPD_* flags are set, the spd_* flags kludge is not necessary, so
+avoid redundant and confusing "baud = altbaud" assignment.
+
+No functional change intended.
+
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/serial_core.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d9ed7db53e68d..08a6afa75af07 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -494,7 +494,7 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 		altbaud = 460800;
+ 		break;
+ 	default:
+-		altbaud = 38400;
++		altbaud = 0;
+ 		break;
+ 	}
+ 
+@@ -505,7 +505,7 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 		 * The spd_hi, spd_vhi, spd_shi, spd_warp kludge...
+ 		 * Die! Die! Die!
+ 		 */
+-		if (try == 0 && baud == 38400)
++		if (altbaud && baud == 38400)
+ 			baud = altbaud;
+ 
+ 		/*
+@@ -517,6 +517,8 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 		if (baud >= min && baud <= max)
+ 			return baud;
+ 
++		altbaud = 0; /* No more spd_* kludge for next iterations. */
++
+ 		/*
+ 		 * If the range cannot be met then try again with
+ 		 * the old baud rate if possible.
+-- 
+2.47.3
+
