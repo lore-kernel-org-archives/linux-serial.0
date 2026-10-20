@@ -1,75 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.217.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=124.126.103.232
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792485396;
-	b=rvfj4COpDvcZFFfyS8H54MenfJE9wkKAto9fTp+GWGfwpT11L20TUyluSOSlrFnbSIEu
-	 zKyBr/WQi6+uOvTTZE/wWeVKvVtyK3QorA9HpLMFALo9M8NAI8lUBymvWemZgPrQJ5I8f
-	 PAbetnvjB7MzLnLvX7VkiO1esI++C4xyM9iirDNf4lrFiQ2R+1aJVAlQBzghd73vmeIBd
-	 pOYeqqGsKliu93O5QDZTUNl21Dqfs6xtDtxV4+TQnC3sKrahsW0ipf+ivhHlc+G+ABLEa
-	 5nJbN8+qySycH/pLgGbI6S/dwTx1goD6HFtc/LT/xvPvi98B6/wyA4jakgmkWJomL1A==
+	t=1792485694;
+	b=GUzFlwXZ8UTRxGJzdbM3yvPyvtgOP0E4kPV5tQZ1aIb3ff0KfELoGH3PKX7mwwsys8Ap
+	 kmdFxgJ7VpaeDbd4NslThaBFsH94OTm9JsjWwG9arFpQJoxv46/xyFUpDxERbpmocUWPb
+	 7kBxxA/9D9Gzn13gx+q6affM5WJPQRPq8JXbyRSGp7R7Sg1+6FEmzC9JYJ0OICWcq58HK
+	 pSJZ3ExVpAOhmFwLZ/hDHKrfsXGIC/vE3j3WpJdZOR+nxZDugaGKKI6jO8d3FeXdT1VRj
+	 MC3TgQzDl7FhLcPWeEG+F1vJid8JSjnUM8E650EMRIQGUtwqwePfcvSXB+5ywjaKfYA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792485396;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
-	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type;
-	bh=22y+5juPWrN/VuUPPX8ILqIV9NFhSiiV1mnmbGgPo50=;
-	b=n3bIjIdneBlcg/wRhdIIT7SGCoR9fy4YomKgZOfi5X19Y/J3grWNFud78Ed1u06j+dcu
-	 193Jd1fhbSIOavQgaNoxBYi+LUMd2zgGhGiyZNGBxBrkbIgzxogQCP9UvjPu6m2PmgC2M
-	 WIoyUhlWPmFkTi/zH9HVkyY0UG3lpUAaPteRItEpDDlv8E3bk1UXLNIiR7u72/7D3XXgC
-	 TR8UY3p40LRcqs4GPQ77DcexlFyR0TvtaxAOSjTAcvbOwR40ILorNmegSV1ze+TR6qbK0
-	 vKKt8rtj3CC9mY19bWHZYlPu2RVfsDqwBlLH9F8dcVyW7uvYblQeOKqAhKYXKAuEJgQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792485694;
+	h=DMARC-Filter:X-UUID:X-CID-P-RULE:X-CID-O-INFO:X-CID-META:X-CID-BVR:
+	 X-CID-BAS:X-CID-FACTOR:X-CID-RHF:X-UUID:X-User:Received:From:To:
+	 Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=l2Mj1yHq7UQOwdtNCSDgWI1tkPpgnieguVw9hneq0Lk=;
+	b=iGYn+GEKeHP+ddEn6r+hZ4uB75Ey+jyFL4RWFHoQSMeA+8KJgmXpIPmmAl/L5/9qj7TG
+	 IFwUNA/IbF0p75QyebHC94FnEufxWYwv/Ypv3NjTb241yos8CRyRLVf5QImSfFC15JYJj
+	 Ez4BNoLwvGcEYvMaIIH/ufyRDx3/n2lG0Pj07OeI3oYMLkhgRseT2aDUY6q+hrlg0xJnN
+	 bg2cOq+16/ZxM1HeDZgX5zrL0bs2y0gitn3fE/aZ3Dzi81KX6ULTORpYZ+MEAOvobJvNg
+	 L34QNA5Y/pkSREpt1YApYEQc7dBsynR9vlUF+xqmlW2NHKW589yaGdWAhHthFw/dJHg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=linux-m68k.org;
-	spf=pass smtp.mailfrom=gmail.com;
-	arc=none smtp.remote-ip=209.85.217.50
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=none header.from=kylinos.cn;
+	spf=pass smtp.mailfrom=kylinos.cn;
+	arc=none smtp.remote-ip=124.126.103.232
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9144606A31B
-	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 08:36:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B9144606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-7c33cc572e6so343996137.1
-        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 01:36:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792485395; x=1793090195;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=22y+5juPWrN/VuUPPX8ILqIV9NFhSiiV1mnmbGgPo50=;
-        b=eu+dNsWKJWD9gs0qrTKJhDsTwb1AZpUGc5AUw9vDPjU8IioLAh1sXuKCFuaUe6ARZR
-         gnsBA6ATKQCPkMYrXC5aqupRN7gj06CmGCEhGqL0gDj9d61CU/f1ie3tUJUOPmqq3t6n
-         s3nYPZOiCKSXjNw93YnbAVwkmOrhchrlPA0jTorMIDi3cHg3o2VDEDz6B4zx4RtpiIJ2
-         ktQB/F98NxBOgAXPq9dQyYtQFBbxsb35sMhxyLmh3Habw+ALDJKJbBPXPpl6kgYHMK+L
-         jsIMqezIXhqGWbxANxYOH6kUWt+QY3v/UbRMK30Sm4OGy7NuKhCPlXmKuc8lSv4OI2/J
-         X52w==
-X-Forwarded-Encrypted: i=1; AKwUvBxjnLXoq2daxYX5789fgPHGAguHE8eex+HZfDmvme8+6UTtQQi9fHmXomSYNA2dTB9rIDo6ztgLcsMmye8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJ5kFEids5nIVRN/Fa1gqiHEqG2LHy2X+X091bCcXYxaEGcL3zK
-	HEdVYdU88j0PJz1tHGxxyBAs50Vhrxc2wKaTmjUKO6pa/i9QA1w2JUXOTVchBGDX69k=
-X-Gm-Gg: AYBFou0fFbUEh5qHYSHWRcHvyBufvmMbgW7RrfnpL+kOfzWKs6/wnmIG8Quuy9ovSwh
-	QAKk1PFdWHNTgHDYI15ZqPbdvU7HOVs3ioZ4lOBW4iSAfSxvrH4RLpbX648TVDSN3g0/OOCd4I1
-	jFFjIBy1RHrlGoHtijkpnEDqazbRuHKEzjvXxmLY2sf+Xi+lv+Ll/fPXPnYDsJz+nGOqJALfVXR
-	keogYdH2Ox7SNc+7l/h7hAy5jP03jWYJaBXDSaeBwL1RgTqdBtgdVunYYCORdWD/usCgmrtb5FJ
-	D2S/CPq4AmO9k9U0ZmAgepVHJ4lVsVFwWc1cj2YZWdAgXukGZ5TIi6OZRIfm5Mm6JYH6eqWZwea
-	8FBDCDFYK6ZSvl8obM+wo1JBS5LwyFYmV7dpTp9OLegNYoZNmOM87EzpefRY0iqqhGDo/nk37nR
-	a5BhECdWuCXT8ZxhCLm28eRprtNFkxo+vNUzmk+T+WNaPyFJX17w+LADO58ra+oCsuAn9ub4vxj
-	esvtOf0VhfDG0ABG+d4rnc/EEVrxFBrLwTKoLY/Csl3ygqQkFo=
-X-Received: by 2002:a67:f581:0:b0:7cc:373d:8f9d with SMTP id ada2fe7eead31-7cc7bcda30bmr272346137.31.1792485394746;
-        Tue, 20 Oct 2026 01:36:34 -0700 (PDT)
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com. [209.85.221.169])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-990bb25e8c8sm2413251241.2.2026.10.20.01.36.32
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Oct 2026 01:36:33 -0700 (PDT)
-Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-5eadea8f0edso187780e0c.1
-        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 01:36:32 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBw37LugFIP6/Fi9iBypjHeup6RtG2fybIXJi/zzTPvZNhACiYezN/zLLf1cOljk8RuBiZLAVeJKOJPC4cY=@vger.kernel.org
-X-Received: by 2002:a05:6122:8019:20b0:5ea:a09b:39cc with SMTP id
- 71dfb90a1353d-5eadccde839mr253998e0c.19.1792485392657; Tue, 20 Oct 2026
- 01:36:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B24606A32E
+	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 08:41:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 01B24606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 0a2fa6bccc6211f19a56ed5b684f684d-20261020
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:f119b193-1cff-4245-a857-a4af38f2d6d1,IP:0,U
+	RL:0,TC:0,Content:-25,EDM:-25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACT
+	ION:release,TS:-50
+X-CID-META: VersionHash:7db8b62,CLOUDID:47ad41c54335af75f5a802b6634ee235,BulkI
+	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50|99,EDM:2,IP
+	:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,
+	LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 0a2fa6bccc6211f19a56ed5b684f684d-20261020
+X-User: lijun01@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lijun01@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 883738334; Tue, 20 Oct 2026 16:41:27 +0800
+From: Li Jun <lijun01@kylinos.cn>
+To: lijun01@kylinos.cn,
+	richard.genoud@bootlin.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com,
+	claudiu.beznea@tuxon.dev,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS
+Date: Tue, 20 Oct 2026 16:41:13 +0800
+Message-Id: <20261020084113.853878-1-lijun01@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -79,78 +72,62 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261019170139.473808-1-biju.das.jz@bp.renesas.com> <20261019170139.473808-4-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20261019170139.473808-4-biju.das.jz@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 20 Oct 2026 10:36:20 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVJAYL7L8q0ShxF8vJ-nhmyCiTgTNLJxLv9wLcshLfLGQ@mail.gmail.com>
-X-Gm-Features: AclHuK-f5PxeHKGz-JsdxG5WRVgKsmMVDA3pua2BFWop-pdvR8thY-1maktQwAQ
-Message-ID: <CAMuHMdVJAYL7L8q0ShxF8vJ-nhmyCiTgTNLJxLv9wLcshLfLGQ@mail.gmail.com>
-Subject: Re: [PATCH 3/4] serial: sh-sci: Skip TDxE status clear for PORT_SCI
-To: Biju <biju.das.au@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Au Dang <au.dang.jx@renesas.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, Frank Li <Frank.Li@nxp.com>, 
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Biju,
+Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
+This also drops the __maybe_unused annotations on the suspend/resume
+callbacks, since pm_sleep_ptr() inside the new macro already handles
+the case where CONFIG_PM_SLEEP is disabled.
+When CONFIG_PM=y but CONFIG_PM_SLEEP=n (a valid configuration that
+enables runtime PM but disables system suspend/hibernation), this
+keeps a completely empty dev_pm_ops structure -- all callbacks are
+NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
 
-On Mon, 19 Oct 2026 at 19:01, Biju <biju.das.au@gmail.com> wrote:
-> From: Au Dang <au.dang.jx@renesas.com>
->
-> On PORT_SCI, the TDxE (Transmit Data Empty) flag in SCxSR is cleared
-> automatically by hardware when data is written to TDR. Clearing it
-> again from software via clear_SCxSR() generates a spurious TXI
-> interrupt, which causes the last character to be transmitted twice.
->
-> Skip the clear_SCxSR() call for PORT_SCI in sci_transmit_chars() and
-> sci_poll_put_char(), as the hardware already handles it after each TDR
-> write.
->
-> Signed-off-by: Au Dang <au.dang.jx@renesas.com>
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Li Jun <lijun01@kylinos.cn>
+---
+ drivers/tty/serial/atmel_serial.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Thanks for your patch!
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -913,7 +913,8 @@ static void sci_poll_put_char(struct uart_port *port, unsigned char c)
->         } while (!(status & SCxSR_TDxE(port)));
->
->         sci_serial_out(port, SCxTDR, c);
-> -       s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
-> +       if (s->type != PORT_SCI)
-> +               s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
-
-Is this issue present on both classic SCI and RZ RSCI?
-s->ops->clear_SCxSR() points to either sci_clear_SCxSR() or
-rsci_clear_CFC(). The former already has an internal check for
-PORT_SCI, the latter has not. So probably it should be handled there.
-
->  }
->  #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
->           CONFIG_SERIAL_SH_SCI_EARLYCON */
-> @@ -1049,7 +1050,8 @@ static void sci_transmit_chars(struct uart_port *port)
->                 port->icount.tx++;
->         } while (--count > 0);
->
-> -       s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
-> +       if (s->type != PORT_SCI)
-> +               s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
->
->         if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
->                 uart_write_wakeup(port);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 5d8c1cfc1c60..c3880259e3bc 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2723,7 +2723,7 @@ static bool atmel_serial_clk_will_stop(void)
+ #endif
+ }
+ 
+-static int __maybe_unused atmel_serial_suspend(struct device *dev)
++static int atmel_serial_suspend(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+@@ -2765,7 +2765,7 @@ static int __maybe_unused atmel_serial_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused atmel_serial_resume(struct device *dev)
++static int atmel_serial_resume(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+@@ -2996,7 +2996,7 @@ static void atmel_serial_remove(struct platform_device *pdev)
+ 	pdev->dev.of_node = NULL;
+ }
+ 
+-static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
++static DEFINE_SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
+ 			 atmel_serial_resume);
+ 
+ static struct platform_driver atmel_serial_driver = {
+@@ -3005,7 +3005,7 @@ static struct platform_driver atmel_serial_driver = {
+ 	.driver		= {
+ 		.name			= "atmel_usart_serial",
+ 		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+-		.pm			= pm_ptr(&atmel_serial_pm_ops),
++		.pm			= pm_sleep_ptr(&atmel_serial_pm_ops),
+ 	},
+ };
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
