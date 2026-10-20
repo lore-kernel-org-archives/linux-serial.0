@@ -1,83 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792497067;
-	b=A3HEUo7Qyqjb5nh3JnocZ1jMH4hOLqD6IKjXLI/xruL4hIMGKe1qtllbUS01M+uG7GxK
-	 AosCFcpPaCRagWJemDdSfSbfT1Dq4GVuXPgaHOIC9gQg7dyaN8AhfyL7YkgqJJUNMQshU
-	 1d9JaM+7BKWNFEIXy7QJtgookDLZlJfkTI9qISR3rhCPplvDRxwZw50X/7lj/EWVVnurs
-	 ovos+4SrYUdGYu2bdXC4sPioJy4JCft2C2ChO9CZ0+frrAEspqTs7VAZOerA7t+0VSDx6
-	 s+4ECicc6lvLStYmWbu32jlJSWhLZj10dIhlNW3Lebn8PTGDvLqryVXhYoaNBxZWpsw==
+	t=1792497774;
+	b=Ij3bku+KBWZngvBqGN5ETncyUAe6Jegn6lhYB8UxQokzKu+BcpNIDSHoFaU5kfihJGzg
+	 l7MrIVdhCyCAsDgq/eZPfD8zl6+gaK/tyCsMsjxyLgUcrf3u7BVYwnbQT6PIm7h2SSu3y
+	 zIKvSphqkLf41+cI6S+xHSU8/YcbxmaiNmX9CXGSco5/K3DMTNEM4nkAuiHmHpLZLWLEJ
+	 +JvF7xrEbiqapH12OXfMEd7s7spxHRb1I9mSE9Onyzo07EbT0mPrg1vTVrQfyjjn7zXjs
+	 49mKDkfAq0HN9I5WYm0r3AiyKZySZR5RGQx3VimlBi1CvmbV67KzEewF5ecBvWD3mOA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792497067;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:Date:To:cc:
-	 Subject:In-Reply-To:Message-ID:References:MIME-Version:Content-Type;
-	bh=kjIus0/Z7THMqH+fmdFt+9x90O1BbsB0s2G1vUB5BlU=;
-	b=4Ogf2OGx2fOpqiiZ/eIaaeHARC4cI6ofnmT3kOZEKKKN9L9/qLC9aEhj9cYPCM0ShahH
-	 2lyxiAMvSaIuqyTamETZpFD+ShlySidmx9p+0QGxC45zHtymcIEju0VyXCOVP5NaXOpCR
-	 jXr7Fq+Uierfv8ELRZG75qi/vEMfrXnbFCnQOaRx/BrZVd+sj+QELYho3wEhYNAeX1hiI
-	 /6lIO9UAL8EMz1JfE1GkgYEz5eYyG71SUVdXcWz4Ry0A/69lZY6j+SbhyXA7sx+/wOYGz
-	 /mlCkvvrxO0skeimWQ+xwKptiPTSr7ZGH3KiPmHQEzTOnZZE7GSgPVVGCOghKY942EQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792497774;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-AI-Review-Draft;
+	bh=Y2DFF4RD/jpeoGAQOUaJaBLkOA2GdM6dme7+WS01fbA=;
+	b=y11ki587H+59Wi16VPbWv/os5ACEcMhRotZNymBaOf4/he8itDr1k93OQWOs0rc92IKg
+	 lV+KBZic/PNFk3ac68phlb8xxprqZC9zPZzZcY26gsndUynaXXrED1XyvU27JQmuNQIYn
+	 afF6jEgecnsjzvXgvqW5eKr3l9OjzBmxySWSxrH+/XWu7kbz4An944lbXE6u2HvPpop1u
+	 R7Dd9eWcT20FgAndcGbCIUz2IHlXApK5gRNGdz4sNXEF7htdSNlfKvc7D/3QNsdrDiCo0
+	 yJrjdrJMBN2fLNhyZDLkjjm5RHX3+S6QGtYtOEix9XaRuUO9ld2AtQK1RSK/89Czfsw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lUwWStw7;
-	arc=none smtp.remote-ip=192.198.163.11
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="RZ7nwwD/";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41D74606A319;
-	Tue, 20 Oct 2026 11:51:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 41D74606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55157606A320;
+	Tue, 20 Oct 2026 12:02:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lUwWStw7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792497068; x=1824033068;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=vZOZVuw0ZwLdXOpr1UleOlDXx5oOWBvkj4gsvs1vsuA=;
-  b=lUwWStw708zBGMj1ZE8dkplhKeQnBnmoQ2vo6Nfp7SIFI5PaFv2h+gEC
-   dtWslWb7whElHx8vp6K6NKc4TcnpelkICvInopLNbTtXp+2AynHM3NSQL
-   AKps9D8L6YbUPWx7SVa8DaFhzGCazOpWH/i5SYibaqov44RK0PcIjGwNJ
-   bnlm94NuvGmc6N6i2xuKJnf0mU3KmspHi4JjWYywJ1zKoy9LTx/KKuasS
-   hmnBeIkbyphq0K1olPNe4SuJeMq2PVSXvA8BFjsCd9QNlM7df5hFCyfMs
-   vhANBfB4sXBQGpMjAx7QukPIVLaxTtxq3f/ZPjDcPngc88+Qk5Go5SLMa
-   w==;
-X-CSE-ConnectionGUID: 6wJtUXUrRLqCaGuzqKg1Qw==
-X-CSE-MsgGUID: U1Xu49YHSJqkHI+5RS94cg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1098546"
-X-IronPort-AV: E=Sophos;i="6.27,168,1787036400"; 
-   d="scan'208";a="1098546"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 04:51:07 -0700
-X-CSE-ConnectionGUID: Rgz5036KQxSUgIH5S/JUhg==
-X-CSE-MsgGUID: lWP5tft+RLebTMNLYPQWxA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,168,1787036400"; 
-   d="scan'208";a="2852905"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.181])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 04:50:59 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 20 Oct 2026 14:50:53 +0300 (EEST)
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Jiri Slaby <jirislaby@kernel.org>, 
-    Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, robh@kernel.org, 
-    krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, 
-    LKML <linux-kernel@vger.kernel.org>, linux-sunxi@lists.linux.dev, 
-    Andre Przywara <andre.przywara@arm.com>, Chen-Yu Tsai <wens@kernel.org>, 
-    Jernej Skrabec <jernej.skrabec@gmail.com>, 
-    Samuel Holland <samuel@sholland.org>, 
-    Enzo Adriano <enzo.adriano.code@gmail.com>
-Subject: Re: [PATCH v2 2/4] serial: 8250_dw: Only accept a contiguous DLF
- readback
-In-Reply-To: <atcm2zqDs1P_EDr0@ashevche-desk.local>
-Message-ID: <09812a6a-dd0d-9c47-e1ad-5220f1954648@linux.intel.com>
-References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <a79114e72d029732db6764935dde12aa5d497706.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <d992e18d-31ab-4937-8780-9c9dc423082a@kernel.org> <atcm2zqDs1P_EDr0@ashevche-desk.local>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RZ7nwwD/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E96F21F000C8;
+	Tue, 20 Oct 2026 12:02:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792497774;
+	bh=Y2DFF4RD/jpeoGAQOUaJaBLkOA2GdM6dme7+WS01fbA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=RZ7nwwD/kK42buUjMB+42iUvu0ezt90YjX9ThQlTajBVSuiNGSiIlOJd8hqIoaBXH
+	 0vHRuNChHrLsty+JHf5kfLn7qoheh17/56QxjSlGtvZRWSi7+DMFL80AMjTHpXF2wq
+	 0Uoku9c+GfFUI5+Z3NGbhYe0XOIpHzKly7S50suMvkiQwb+eQVaw0FjBZLnapDchgv
+	 iLuT9J/nHkxT12XhoYXxSn9yXQQz0FpZ963EkUrpAltSDEvanKLnwLndK7qO7yWFcj
+	 8ggTzPsKA5xo8AfZdwl20B1QYwytpifRhL0NeIwhVCTcplbdxPd15Ey1rzxobO0rqz
+	 pgMYh1PRVrDjQ==
+Date: Tue, 20 Oct 2026 13:02:49 +0100
+From: Lee Jones <lee@kernel.org>
+To: Imre Kaloz <kaloz@kernel.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, mfd@lists.linux.dev,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 31/53] mfd: ioc3: Add support for IOC4
+Message-ID: <179198346971.839288.6829273567060577383@kernel.org>
+References: <cover.1791890466.git.kaloz@kernel.org>
+ <2e8b812274f3049c687c37d1b7c3b3a4ee22d008.1791890466.git.kaloz@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -87,35 +61,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2e8b812274f3049c687c37d1b7c3b3a4ee22d008.1791890466.git.kaloz@kernel.org>
+X-AI-Review-Draft: <2e8b812274f3049c687c37d1b7c3b3a4ee22d008.1791890466.git.kaloz@kernel.org>
 
-On Tue, 20 Oct 2026, Andy Shevchenko wrote:
+--- checkpatch.pl: clean (0 issues) ---
 
-> On Tue, Oct 20, 2026 at 08:11:06AM +0200, Jiri Slaby wrote:
-> > On 19. 10. 26, 22:06, Vinicius Pedrosa wrote:
-> 
-> ...
-> 
-> > > -	if (reg) {
-> > > +	/*
-> > > +	 * DLF is a bit field starting at bit 0, so a real one reads back as
-> > > +	 * 2^n - 1. Any other value means this offset is something else.
-> > > +	 */
-> > > +	if (reg && !(reg & (reg + 1))) {
-> > 
-> > Do I understand correctly, that this equivalent to:
-> >   if (is_power_of_2(reg + 1))
-> > ?
-> 
-> Yes, and since we check for reg to be "not zero", this will work the rest.
+On Tue, 13 Oct 2026, Imre Kaloz wrote:
 
-For is_power_of_2(), 0 is not a power of two. And it also wouldn't make 
-sense to have zero bits in the bit field as it's same as no bit field so 
-using just is_power_of_2() should be enough.
+> IOC4 is IOC3's successor on IP35 Origin 350-class boards. Its serial and
+> PS/2 cores reuse IOC3's drivers and its interrupt status splits into two
+> banks. The serial ports need IOC4 firmware revision 62 or later and are
+> not registered on older firmware.
+>
+> The serial, interrupt and GPIO register definitions in asm/sn/ioc4.h
+> follow include/linux/ioc4.h and drivers/tty/serial/ioc4_serial.c, removed
+> by commit f7bc6e42bf12 ("drivers: remove the SGI SN2 IOC4 base support")
+> and commit a017ef17cfd8 ("tty/serial: remove the ioc4_serial driver").
+>
+> Signed-off-by: Imre Kaloz <kaloz@kernel.org>
+> ---
+>  MAINTAINERS                                   |   1 +
+>  arch/mips/include/asm/sn/ioc4.h               | 142 ++++++++
+>  drivers/mfd/ioc3.c                            | 323 +++++++++++++++---
+>  drivers/tty/serial/8250/8250_ioc3.c           |   5 +-
+>  include/linux/platform_data/sgi-ioc3-serial.h |  13 +
+>  5 files changed, 438 insertions(+), 46 deletions(-)
 
-It could be that's what Andy meant, but the wording left too much room 
-for interpretation.
+Do we really need to bundle all of these changes into this commit?
+
+This is going to be a nightmare to review!
+
+>  create mode 100644 arch/mips/include/asm/sn/ioc4.h
+>  create mode 100644 include/linux/platform_data/sgi-ioc3-serial.h
 
 -- 
- i.
-
+Lee Jones
