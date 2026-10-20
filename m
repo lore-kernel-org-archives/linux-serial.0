@@ -1,99 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.174
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792509810;
-	b=o1XrZ5UzNo53JeU0rR5Dv+botRHQJTNGakakE8O40HqIW6b7W28R/+IEHsz2+UinghLT
-	 zx6+FaLjOQXB0jVUyL33LRAMYNfydXFgmh5qK4gq+VcKzNh5GJBcaQ7k9Q6pnU1Ylx4eq
-	 4LSx6U4jJVb69zkO27A0nmE01dPCRsFzbEIg3upFKJJb6uzf1SRS0Z4MvhZRLLMWlZ93Z
-	 tDPXAlaLea1Q841POqDJXvuqhqnhMbaKkv8Qek4r1/LzRri7+Llc3Iwg2/7v36JwHIiHe
-	 TO0yzZAFm8Z8Dptsj47Kmnw9iuuqZxgl+Y0ER9kNnS6JUn9RryjYcccGQx9+7U4mXUA==
+	t=1792510145;
+	b=fBK9ymGkzmJ9qDEb63shFC7sKaO/JFC/xBGOu0l779OxAF5z1UTkpWXtK4TQmkG+f+4S
+	 NiPekYRLtpnZkP1ABfYtQk0pb0h6wZNG2hVwdd+zXU99gdrKTbXcud5deSPAnSQw76YAO
+	 o+8NOHsom+Hm/OF2k3iaVUjdUDlvXOF5Ati7vRu7r6A5oGEG1IjrVQO1uBPjCBPkR/b4f
+	 AopSxEBUVKBTTMbpCdJUbdtJcTr28vZNDIBWDh6mSL9aUx2OWJozDHkHKPbTRMhQv01e1
+	 8xt3+D+h9Xkc8kn2RD5O95R74A4OHRnKPZAy0DOzwU8LVbWKZaAcrH2XW/i0MPw8Htw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792509810;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792510145;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
 	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=2TMQEKRinvD4BgkADzQKnpKRCxg8EJd5D0iYYgMwZ0s=;
-	b=gzcBsd1m2LU/CiH8lX7/PZKgmdHex7Q9aQsYA9iYvxbvBV/2nd/SMHGG0TX3C9fM2ysV
-	 hrad0rOPpCoQ4BLgJRt8J7pAIzdrA9Rh8LZAE6SFbO4ee/KjdcYHaTVTmjKDXHt2is4UM
-	 s6jO065aJo6/OnirW92CqSqnClWYWM4PHt8pN2Ew1xO5Y37RymhirqOGBEn8AC2an+8wj
-	 K6JowUMh4XbUbuA/8+UMDq+BQxf0DwYsx4Va2rDVlwkDQRh2hVMmqwtxdaYoF5AR5HJJP
-	 vk7IaYFecAeR2t5F2XuCrsfXXKvXt/z3Nd+EUJlzblgQHjl8Adf21gnzFCDI7pBYXcA==
+	bh=ZyskLn72jxh0oFiWRj2z6aqvChztPyoLb2e2jTxBCSE=;
+	b=WcbB5fl2bkg3w1uDizEebfdYXQXtemU2zCyJlY4PDDl/4JRl4P/4tQFMh8sBvCiVfI85
+	 z2bkmc5uyN9eoXl3oME5ij5QrAfCnLmWCUqw5sMTF0sewYr5UAtCMJunfCuJsp36Aq7u/
+	 yTNwr80rnR8LszTraPgnA2LW1Z26r152tk8ZQSyeY0i7Y5AVLiWPWW5rSF4OaD3ZrpZok
+	 whwZmlzGrrFox9iAKs3d28VacRx2/cyWogJaQCWGEZF9lnhQm7wo+kOczGs4jd8ggATVp
+	 te99obBNPv0XWpJYsNestR6O1WeDe9IREURq1zwMgAznZMXBCxTz95mvsni9EAQ2gXg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=dyGEh6VC;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.169
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ZKVLSTfe;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.174
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7FC606A33B
-	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 15:23:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC7FC606A33B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A416860A3802
+	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 15:29:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A416860A3802
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=dyGEh6VC
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-53512cd2f85so37920031cf.1
-        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 08:23:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792509809; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ZKVLSTfe
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-93f1cf92c9eso335589585a.0
+        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 08:29:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792510143; cv=none;
         d=google.com; s=arc-20260327;
-        b=lPcPVYcxNsIquVPguZBF6afIIrhx8lgOrKmeQiGUEqKK8tYN3HgaOWT4CtfpKf0kGE
-         4AVTfR62SYeCR9Ve+XlIIZ/Rg7XxrfugCnJl0wzGzmUEuBLH9IHRWqyjnnL+P1s8jtfi
-         CMtmp2FCwvwVUZ9PalBz2mIaP9acuXWeK+yO2QsMi7WtspIzRzuCaEWgsIWo0XJBGI0V
-         96j3pMumP5heGZWCJa02nOZuaK41MshggSGPrGYon2MTz/vmX/iR4ut0XJ7r67wUdZi8
-         jr/eR8mCTe+zHslbDgWAoEtOt2PRCDbcG1L0fiqQ132/etvBm8KWGDQnhTX8OhwQ4guy
-         et5Q==
+        b=n7wlYePQy5Kl+dWDiQ+sJRRa678zS17Lmec9VaqxiVDBE4FFGx1e+FgqMUiUOl3GaT
+         7acOb5dSajJSU3iPogTSojmmQozw+TWv24Ge46Sqs47EM+1zsJ3yYNtTppZUp9wh82yi
+         ybxK6eSQukEMNhYz4NDyybfmYYz3FvGJj2gxhBgcZfx2coDn5O9eGj3FaRQpvYGQDF6G
+         tzTCdL/lJ73Q9jhun7MRZSRh9H/cJyd8y/5RY1jFKVa4CMGDH2UG/05iOkk3Y8F/1290
+         8d7Pm3FAfI9O9277+2pdmJgj9qmABJ6fX4QXNsELYvu4ybSQvEdX0Fz6voBFXSGu5ieV
+         dowA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=2TMQEKRinvD4BgkADzQKnpKRCxg8EJd5D0iYYgMwZ0s=;
+        bh=ZyskLn72jxh0oFiWRj2z6aqvChztPyoLb2e2jTxBCSE=;
         fh=K09mVAA5iDE1tu8qBsamFJCsxPTUs6BoV/KXWdgAULA=;
-        b=NTQd0LK3gWnzsy7DT6DAxvmJMpRi6622xuCCQCnIaK3t2TkQb258DD5s/3QyB8lNw1
-         k8ENgVQ2suxdk0ivRDsWeVhQcKkc0K3Y/1GimpYr4mBhqVaXZy2H6AJCd/5U5Vonl+Rt
-         Oso28hcywLbYPUoMICK7kTGpGpwnKqU8IuvqZlkr2M0ItIz6+8wF1r9jPMRWzVP23Cpe
-         xQ6kgYakMRKm2EB33IPu0YoaKPD6v7GlNY8CDYpNfF+9nL/hyOJvzB1KN+03T6ZSYugd
-         HYKTZZnY5WszkIDa/7LWsWc/DiTq/Efraz0ufncAcGp8eCfBGkNUzTX+VaR9dn5rKvl6
-         kQEw==;
+        b=V7lqTVCRVctwRVsGbW2YoLtSpfxJojKXeMpV2IuhN9roL0yRq9JjFhdtRdvGy2l2xk
+         T4FPLXrbWHdurPdSQK/TfCO496yW2uHMhwuBgF7JyKRvPxqkDVF1HE4taG6BA0LvIV9x
+         A3nY5usohhvOI/53OcBTVy7G4a0NelYX0HNLp1mBW2i1tOBYLaJpwaY+YOdCh8Y1dMiz
+         QUxWT4qTJnoodn8JhvqzRkmQhqLc/8G9EZXk1ix4U6/5jHd7ihPTPerOXS0Zi7WMp5kn
+         mhGyAQ7/y9HLRWrk9u9nhqz9SVtS9qePQC0a4V3YTeho8rdszQTaRvlTvwleq6x70o5J
+         8FCg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792509809; x=1793114609; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792510143; x=1793114943; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=2TMQEKRinvD4BgkADzQKnpKRCxg8EJd5D0iYYgMwZ0s=;
-        b=dyGEh6VCJFk+HsGLTxQl7EXSbIioSPwRIlFy6rgU7vOPMpwZEWZQPAHj/NtACudUJY
-         b6HhWehdvSzrfT8laJ95BuWzJ/l3mWtRH9H3Y0Di+8WqprzzaRwkAAtJwHqOe5QwdQgM
-         FUk6ChDSP7o5iZkGQCrquBuYfbVwOEx1TIegoD5X+gMhSCkZx7SDWjUEKqwBkrGG0oKa
-         q8DrGIEaizuxz9tBMPYbXr7ERKLZAkor3nfRDvuIFpRUb83kVkpZI2tLm5AgQdBKRULW
-         Ajn2y2ll/iVCqioGwt6C4X/zXK8qKsy29SEvJ1kA8K+6izDf5KOw3vSajegQDbSXB4eg
-         2biw==
+        bh=ZyskLn72jxh0oFiWRj2z6aqvChztPyoLb2e2jTxBCSE=;
+        b=ZKVLSTferKQ7DgS60tdcrV8WmCTxGoR2AYT/pKqRSfxJzU9IIac5FuK5TyvO7N5Pas
+         x6U/YxcSI400Y80lKkwC764lKCIxGJzFCVQiObLaXlY8W1sxBNcokRu2MRyYyRSrVqTz
+         XzQYD2hVO0splMY8SZ0qG1OSLc02pfR54KWrf2yvkgtw53RfEZXWTooCYlXn9OWYXR7E
+         Ns12lbK5X3KLO/OempjaG/uM4MStPQkTW53kBe+r2fj5a2VQRQ1NZz7uVYuzpT7+vz6i
+         0hNRQrFVkZVWxnHdip3vyxYCjuae9uxG9qOS5c4bIyQm1hrIVWxLKQxqQBVaI36hZhOE
+         jIpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792509809; x=1793114609;
+        d=1e100.net; s=20260707; t=1792510143; x=1793114943;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=2TMQEKRinvD4BgkADzQKnpKRCxg8EJd5D0iYYgMwZ0s=;
-        b=MVTd9MgDUV8hn3/wfswhKSpiOafedm1ARjmaqHSURSrnQRzlP5EevCw4WtukzdvS30
-         krnU377FowktVmHCEkWsgwfx33u9RwzpsFep3OdCVdc1Y3A3WfcSPjPQEDsKrOxG+FV1
-         XlSbzTA/UdrKZ8bsUcbgx2qXNXFKuzopIPf45erogNgpa2aNJdceG6+3efvGM3EzUFt+
-         jSfLmCdg0WZgbYnJFmCTpIoKxoKhxmbCVghtFZE+4ItelspTkQjwyg/bvdRvZ/l0MBL7
-         QqchcaFqUWi3dKm/prIWkV4if79plhjEcCYFNUDLmwIWnnHhX3Kni0R2g02awxUAHu99
-         z/sw==
-X-Gm-Message-State: AFq9FYLSSvDoKR+7D6JswpXxP873kfk5LERJTY4C+ZPLgWX9cQsy599e
-	xY+qG1AJ+2Y6wwqoTdkO7mnbcxxhTqH+0p5BHMZMbRlTeaAL/IWyVpU3IR1QKWy5M437c/4Qbt6
-	eOq6dDv/6FiYZndUdiJPzZt94djWFuK2gKY5e
-X-Gm-Gg: AYBFou25p+nNezbDc0XAoM1bIN6C/cdZi6OaXeGHoiCcLwaqBLlWrSs8K+955iEEsVX
-	ep6qa6cR7l5Re8AOfJB+Gub0x6RHJhoqnAUeSEAeQYGddYXf6uMOKggnCvmI2w68k+ulTvpLX3U
-	yYaSwh3PUSOSyBiwPjRPoFweRqbQKi5gwDZuDphSw9rA3lT92mVdqQqBEICUkaZTh6yx8ivo0PJ
-	aQkvvaFcL2okdGmBd/v+QO6c34+2sU3nNdAyI5duOV26cdB+OleDmfWtLi+/3tI7mZBWUMEr25a
-	ePcrIZiKzrf+SWKhZCQYF5aRnYfI14en93Fygs2FC0GltjuLOZ4GLbWstsIfR5+Wtc+WVfApaPE
-	ny5CQMtAW4UktPg==
-X-Received: by 2002:a05:622a:612:b0:536:8ff4:2c2b with SMTP id
- d75a77b69052e-536934ef26fmr17840221cf.57.1792509808675; Tue, 20 Oct 2026
- 08:23:28 -0700 (PDT)
+        bh=ZyskLn72jxh0oFiWRj2z6aqvChztPyoLb2e2jTxBCSE=;
+        b=wJ7OVUhRxgrTxipsmFqnua93mRsJodx8BIK+3R3Az3CQPPSt9reZSb8UwCCD2/e12K
+         xe9qcFv/RDY5p56oITkQXY5abw2QNkeUFqxlv9p5iCP8XKU+IMcYuGv0eFUX9MVxEILn
+         Y3xjZVBK1yB+HZ2nEBss8p8l3xFb6NE+K2A1qdrMm0+ctdWB4GzZ7ENi4d2xWN/Vd1Y6
+         YQovJ0giKKyHY7PFwH9bhvFBeZ8C9BIBqXQYgTrCu1yGKhqJSrxAkNXPKZyw9P03QRMr
+         QVQ3KeogU18nxPfr0Y7wTxsXdauuICrX146oP62MR2v1IWXZBtaqc4s1XC2M+HUXnba3
+         2Wsg==
+X-Gm-Message-State: AFq9FYLcKlVB8T1iFHu9j2Wi8q2efEGGANv/pur1uevI/uNl/pLPqmKz
+	PCu3m7X2QE+dej3KJEOaz4D8ACHAM/DPVou+XyxauSReu94A8aHhjFpaOMq8LJcyH46JKh87dAR
+	H4eVWgzo0I5jXOjfH+NLwTGnYGJv3qUHAzFjj
+X-Gm-Gg: AYBFou1o280/JbwIMfoAcyVu+vU0PMTlaNj/naTsYV+hYfx2wDT0te/sKF05ARQncRr
+	0y2BkqLpftRUECvK/lxVjdVw0Sb4zDJo/9Y+ndsBSLPwjn20fbMrgML0f7W2ccaZ2Z70IiWIdn9
+	o4N+TjTdgW+7sxt2RaSdQLAC0W22RmMbyQvlYgu5VnCQMXeS8jPV8scDS7auKAcN5W1yiZhfQTy
+	kEOar5HtOnxnBh/2ZZufwEytjn4DS5S0HuZPviL2W4uZDmg6qRmZ5KBpb3yzFVjWnECgLblPx5Z
+	u3KrVEd2m5GOEUUvAeB56/7mk/irgggpgyXWRBFi8BwXQbT+xHBkDI7jIpPG28AGobXr2prtL1R
+	l/+u/NrJDJ//q5uOXc1YTjbUKug==
+X-Received: by 2002:a05:620a:2a16:b0:93e:920c:c00e with SMTP id
+ af79cd13be357-93f29ceecb2mr1897331885a.21.1792510143334; Tue, 20 Oct 2026
+ 08:29:03 -0700 (PDT)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -104,187 +104,81 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 References: <20261019170139.473808-1-biju.das.jz@bp.renesas.com>
- <20261019170139.473808-3-biju.das.jz@bp.renesas.com> <sashiko-outbox-178003@kernel.org>
-In-Reply-To: <sashiko-outbox-178003@kernel.org>
+ <20261019170139.473808-4-biju.das.jz@bp.renesas.com> <sashiko-outbox-178011@kernel.org>
+In-Reply-To: <sashiko-outbox-178011@kernel.org>
 From: Biju Das <biju.das.au@gmail.com>
-Date: Tue, 20 Oct 2026 16:23:17 +0100
-X-Gm-Features: AclHuK-08MCveBmgHFgwb756o8UH5wjdRHYCUP4_tJ97eovoqUfsB4H9A5wNi-8
-Message-ID: <CADT+UeCK0n8cxm-fuJt_fGPnH4mbnZQ1PWmwjMu6_vJcQkPnzA@mail.gmail.com>
-Subject: =?UTF-8?Q?Re=3A_=5BPATCH_2=2F4=5D_serial=3A_sh=2Dsci=3A_Don=E2=80=99t_disable_TX_o?=
-	=?UTF-8?Q?n_TEI_while_the_xmit_kfifo_still_holds_data?=
+Date: Tue, 20 Oct 2026 16:28:52 +0100
+X-Gm-Features: AclHuK8LDeYH5plS4ObWqQu99C_hUhcvhaaMFjueV1TDvngZn9eDNEhrMl-PxcY
+Message-ID: <CADT+UeB520ehCMt4Yv6Q9aWNsE+v-aUKyjbuzCxLNiwKwC+jfA@mail.gmail.com>
+Subject: Re: [PATCH 3/4] serial: sh-sci: Skip TDxE status clear for PORT_SCI
 To: sashiko-reviews@lists.linux.dev
 Cc: linux-serial@vger.kernel.org, wsa+renesas@sang-engineering.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 19, 2026 at 6:17=E2=80=AFPM <sashiko-bot@kernel.org> wrote:
+On Mon, Oct 19, 2026 at 6:19=E2=80=AFPM <sashiko-bot@kernel.org> wrote:
 >
 > Thank you for your contribution! Sashiko AI review found 2 potential issu=
 e(s) to consider:
-> - [High] serial: sh-sci: race on control reg and xmit_fifo in sci_tx_end_=
-interrupt()
-> - [Medium] serial: sh-sci: sci_tx_end_interrupt() ignores x_char and uart=
-_tx_stopped()
+> - [High] serial: sh-sci: broken TX on SuperH PORT_SCI from skipping clear=
+_SCxSR()
+> - [Medium] serial: sh-sci: unlocked control register RMW in sci_tx_end_in=
+terrupt()
 > --
 >
-> commit c11148ecd71f7b39ea459c7c652a2f9e70cefdac
-> Author: Biju Das <biju.das.jz@bp.renesas.com>
+> commit c9eeab42d1c45b13adb330fd8baab03f6ddbfeb6
+> Author: Au Dang <au.dang.jx@renesas.com>
 >
-> serial: sh-sci: Don=E2=80=99t disable TX on TEI while the xmit kfifo stil=
-l holds data
+> serial: sh-sci: Skip TDxE status clear for PORT_SCI
 >
-> This commit checks whether the transmit kfifo is empty in
-> sci_tx_end_interrupt() before clearing TE and TEIE on SCI and RSCI ports.=
- If
-> data remains queued, it clears TEIE, sets TIE, and hands over to
-> sci_tx_interrupt() so transmission can continue.
+> This commit skips calling clear_SCxSR() to clear the TDxE status bit for
+> PORT_SCI in sci_poll_put_char() and sci_transmit_chars(), relying on hard=
+ware
+> to automatically clear the bit when data is written to TDR.
 >
 > > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > index 9eb297dbc9010..d577f9de62595 100644
+> > index d577f9de62595..e4c7a3e146884 100644
 > > --- a/drivers/tty/serial/sh-sci.c
 > > +++ b/drivers/tty/serial/sh-sci.c
->
-> [ ... ]
->
-> > @@ -2012,6 +2016,7 @@ static irqreturn_t sci_tx_end_interrupt(int irq, =
-void *ptr)
-> >  {
-> >       struct uart_port *port =3D ptr;
-> >       struct sci_port *s =3D to_sci_port(port);
-> > +     struct tty_port *tport =3D &port->state->port;
-> >       const struct sci_common_regs *regs =3D s->params->common_regs;
-> >       unsigned long flags;
-> >       u32 ctrl;
-> > @@ -2019,9 +2024,18 @@ static irqreturn_t sci_tx_end_interrupt(int irq,=
- void *ptr)
-> >       if (s->type !=3D PORT_SCI && !sci_is_rsci_type(s->type))
-> >               return sci_tx_interrupt(irq, ptr);
+> > @@ -913,7 +913,8 @@ static void sci_poll_put_char(struct uart_port *por=
+t, unsigned char c)
+> >       } while (!(status & SCxSR_TDxE(port)));
 > >
-> > +     ctrl =3D s->ops->read_reg(port, regs->control);
-> > +     if (!kfifo_is_empty(&tport->xmit_fifo)) {
->
-> [Severity: Medium]
-> What happens if transmission is stopped via flow control or if a high-pri=
-ority
-> XON/XOFF character is pending in port->x_char when sci_tx_end_interrupt()
-> runs?
->
-> In sci_transmit_chars() and rsci_transmit_chars(), the transmit loop chec=
-ks
-> both port->x_char and uart_tx_stopped(port):
->
->         if (port->x_char) {
->                 c =3D port->x_char;
->                 port->x_char =3D 0;
->         } else if (stopped || !kfifo_get(&tport->xmit_fifo, &c)) {
->                 break;
->         }
->
-> If uart_tx_stopped(port) is true while tport->xmit_fifo is non-empty,
-> sci_tx_end_interrupt() will clear TEIE, set TIE (leaving TE set), and cal=
-l
-> sci_tx_interrupt() -> transmit_chars(). Because stopped is true,
-> transmit_chars() breaks out of the loop without writing to the transmit d=
-ata
-> register and without clearing TE or re-enabling TEIE.
->
-> On SCI and RSCI, starting transmission from an idle state requires a 0-to=
--1
-> transition on TE alongside TIE. Leaving the transmitter idle with TE and =
-TIE
-> already set means a later uart_start() -> sci_start_tx() or rsci_start_tx=
-()
-> sees TE already set and cannot trigger a TXI interrupt, wedging transmiss=
-ion.
->
-> Conversely, if tport->xmit_fifo is empty but port->x_char is non-zero (qu=
-eued
-> via uart_send_xchar()), checking only !kfifo_is_empty(&tport->xmit_fifo) =
-will
-> shut down TE and TEIE without transmitting port->x_char.
->
-> Should sci_tx_end_interrupt() check port->x_char ||
-> (!kfifo_is_empty(&tport->xmit_fifo) && !uart_tx_stopped(port)) while hold=
-ing
-> the port lock?
->
-> > +             uart_port_lock_irqsave(port, &flags);
-> > +             ctrl &=3D ~(s->params->param_bits->teie);
-> > +             ctrl |=3D s->params->param_bits->tie;
-> > +             s->ops->write_reg(port, regs->control, ctrl);
-> > +             uart_port_unlock_irqrestore(port, flags);
-> > +             return sci_tx_interrupt(irq, ptr);
-> > +     }
-> > +
-> >       uart_port_lock_irqsave(port, &flags);
-> > -     ctrl =3D s->ops->read_reg(port, regs->control) &
-> > -             ~(s->params->param_bits->te_clear);
-> > +     ctrl &=3D ~(s->params->param_bits->te_clear);
-> >       s->ops->write_reg(port, regs->control, ctrl);
-> >       uart_port_unlock_irqrestore(port, flags);
+> >       sci_serial_out(port, SCxTDR, c);
+> > -     s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(po=
+rt));
+> > +     if (s->type !=3D PORT_SCI)
+> > +             s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR=
+_TEND(port));
+> >  }
+> >  #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
+> >         CONFIG_SERIAL_SH_SCI_EARLYCON */
 >
 > [Severity: High]
-> Can reading regs->control and checking kfifo_is_empty(&tport->xmit_fifo)
-> before acquiring port->lock race with concurrent updates to the control
-> register and xmit_fifo?
+> Will skipping clear_SCxSR() for all PORT_SCI ports break transmission on
+> classic SuperH SCI hardware?
 >
-> In the serial core, uart_write() holds port->lock while queuing data into
-> tport->xmit_fifo and calling __uart_start() -> sci_start_tx() or
-> rsci_start_tx():
->
-> drivers/tty/serial/sh-sci.c:sci_start_tx()
->         ctrl =3D sci_serial_in(port, SCSCR);
->         if (s->type =3D=3D PORT_SCI)
->                 ctrl |=3D SCSCR_TE;
->         sci_serial_out(port, SCSCR, ctrl | SCSCR_TIE);
->
-> drivers/tty/serial/rsci.c:rsci_start_tx()
->         ctrl =3D rsci_serial_in(port, CCR0);
->         ctrl |=3D CCR0_TIE | CCR0_TE;
->         rsci_serial_out(port, CCR0, ctrl);
->
-> If sci_tx_end_interrupt() on CPU 0 reads regs->control (with TE=3D1, TEIE=
-=3D1,
-> TIE=3D0) and sees kfifo_is_empty(&tport->xmit_fifo) as true before acquir=
-ing
-> port->lock, CPU 1 can concurrently run uart_write(), enqueue bytes into
-> tport->xmit_fifo, and call start_tx() to set TE and TIE in regs->control.=
- When
-> CPU 0 then acquires port->lock and writes back its stale ctrl & ~te_clear=
-, it
-> overwrites the TIE and TE bits set by CPU 1 and disables the transmitter =
-while
-> newly queued data remains in tport->xmit_fifo.
->
-> Similarly, any other concurrent modification to regs->control under port-=
->lock
-> (such as sci_stop_tx(), rsci_stop_tx(), sci_start_rx(), sci_stop_rx(),
-> rsci_stop_rx(), sci_break_ctl(), or rsci_break_ctl()) between the unlocke=
+> In drivers/tty/serial/sh-sci.c, PORT_SCI is shared between DT-based Renes=
+as
+> RZ/G2L SCIg ports (such as renesas,r9a07g044-sci matching renesas,sci) an=
 d
-> read_reg() and write_reg() will be clobbered by the stale ctrl value.
+> classic non-DT SuperH SCI ports (SH770x, SH7750, and SH7760 registered vi=
+a
+> plat_sci_port with .type =3D PORT_SCI).
 >
-> In addition, in the !kfifo_is_empty() branch, port->lock is dropped befor=
-e
-> calling sci_tx_interrupt(), which immediately re-acquires port->lock to c=
-all
-> s->ops->transmit_chars(port). Should port->lock be held across the entire
-> read_reg(), fifo check, write_reg(), and s->ops->transmit_chars(port) seq=
-uence?
+> While RZ/G2L SCIg hardware automatically clears SSR.TDRE when transmit da=
+ta is
+> written to TDR, classic SuperH SCI hardware does not clear SCSSR.TDRE (or
+> TEND) on CPU writes to SCTDR. On classic SuperH SCI, software must read S=
+CSSR
+> with TDRE =3D=3D 1, write the byte to SCTDR, and then explicitly clear TD=
+RE to 0
+> via clear_SCxSR() before the hardware transfers SCTDR to the transmit shi=
+ft
+> register (SCTSR) and begins shifting.
 
-Ok, will fix the code as
+I will introduce tdxe_autoclear to handle this for RZ/G2UL based SCI IPs
 
-uart_port_lock_irqsave(port, &flags);
-ctrl =3D s->ops->read_reg(port, regs->control);
-if (port->x_char || (!kfifo_is_empty(&tport->xmit_fifo) &&
-!uart_tx_stopped(port))) {
-.....
-uart_port_unlock_irqrestore(port, flags);
- return IRQ_HANDLED;
- }
-....
- uart_port_unlock_irqrestore(port, flags);
-return IRQ_HANDLED;
-}
 
 Cheers,
 Biju
