@@ -1,50 +1,50 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.120.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1792521807;
-	b=J2C7XH9j2ONh78gXI6YjPQFhbcxAV1A/4n5txL5naPo8dS1rsTKqydr2desjhX6TKxV+
-	 GJd6dKPl2zaaxAVToJUJORBYBx0XiL03zyjsUrG5D5yAwy6pxjYtp2F8A6vdGPKTLUavz
-	 NONG7nu0nNrugOb1MKx53uL8sldV5WjWTMyw+LSZ7QJMXUTXqF/wwf+2RoYV5ZXy7ogYW
-	 NyLQn7bXOLSpGQuFL4vzny9ZFV0cAPNCbFUHfemUKW3uA5GDVkBod+Rx1m4nsksq1SkgI
-	 44Tlol6uDJ7GeBd1FLykeCUxf16TQ4rVa0bBC4wRQ4dxZxNmJ/kPUFxk0GHMtoIDjTA==
+	b=OUp66bA86ACCTFq4rMoNDdaqrsc26uSh3yh5W3iQlmMbNCw+xczHfFxqFIfsf7WmT8+H
+	 Qe4Cdr/Xm6uVdcOxcbCBjr7Ldfqs8rWXHwUwDjs3RCLPn13XkcXEqsxZZAEkmIYShICoQ
+	 uT9TF3UsXBOSIAkeevF1bvU7ViSC6e3Kl6G8E1NOD2yg2YNNUVvFyzpN6UpLDZbUzlKjp
+	 ZvejQR8e9iuG4I+M9jc8qVem4gtaTt2c66mqC1n9xiJzIEjt78OZUC6Uq7LJIG1rDzvFl
+	 /ELS6BhJs55KnRXw8MDJG9GAWjScL8e2DIPJFTY6ciihyONyzrg2jtNPLEJI93E0p6A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1792521807;
 	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding:
-	 X-Spam_score:X-Spam_bar;
-	bh=cEn1babex7vsPIR//sAAYZvUTJJgy5z5f00WEVTHUFI=;
-	b=mFjJRzCSR3v/OxLlCMnbc2xH/x01UzpgDAH2QqGC8tsCIAYlmyaUbpacCMvocLBZHOTX
-	 WVzSDVwwaghU9JfnqlhZlIWnnc6LUWN5sPbDIMf/PTMqZgvZlbyZxbxvjvvMSZmPA2jCE
-	 AD/Iu09ZbTB4ZgYgylLjmfU7wa815TG9QAY30CwCIfA/hOIb1Lf5fPNWWBhoHWYxWKulf
-	 J0yH6jPf3Xtq0n/6bMaJrpA5GiMpgq55MQKy7As7AyKAjg8FLtZgwCb+pmjdpPpGoLLvv
-	 9qQKYnwBKnFByqP+LfbmtKjEQdm9u3aFM7ZNQxpvEeB93eC6d9rEAbn/8EsS5RZLPCA==
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:X-Spam_score:X-Spam_bar;
+	bh=WZwvj7ut+USYDUgtwVCO9P11ZllQcMYIU3Z0c/E/KP4=;
+	b=g4R9LAKrFf23gfUySUCGTnKiDcX4ehnh/utQwDrwrSA1zZa2N7f7YCVqSyTrexPMWaBI
+	 WSbW/bXK8Y2JkGCGFJf/UOpIcE48OIKvXmaJhtaMH86z26J4bUDNqYP8YIDnngspcK8W+
+	 oF7sEOMkR8rvRTDs8dvWBUfsK3sJhADPaZuSTTN4jGShAtnIFSMXX/VR+MwvXMt1XU6Cn
+	 0OurExRFNnFcR7XnJ6LLOVabpxPfBX5Z0q1d52UgiI5fCMsG+uJpyl7wMOJ8zOlgtwTic
+	 tKUprvZQyu3hczaAN5vKRd9OnI7w6vj7Pxb6m7yV0YDQ4bdQx6jq+opgiofgnzdAsaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=hugovil.com;
 	spf=pass smtp.mailfrom=hugovil.com;
-	dkim=pass header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=QhoSSkTG;
+	dkim=pass header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=cjuQnMjf;
 	arc=none smtp.remote-ip=162.243.120.170
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EB31606A31F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EBC5606A320;
 	Tue, 20 Oct 2026 18:43:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5EB31606A31F
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5EBC5606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=QhoSSkTG
+	dkim=pass (1024-bit key, unprotected) header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=cjuQnMjf
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
 	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=cEn1babex7vsPIR//sAAYZvUTJJgy5z5f00WEVTHUFI=; b=QhoSSkTGY+yTUEj51GwsJxb8dJ
-	eKrdg88VSi52mh58P9Im7Gcs1m2h8WSWWhxtUQN5Ba+I/ITscb7z+mF+BzGlKHsuJtyWsoVa98mLf
-	j6beOb213/BDC6SCOY5TqrRrRoozwQMC4uxNICv18we4+sazs4d4Mpo2UxbDw94s5lwE=;
+	bh=WZwvj7ut+USYDUgtwVCO9P11ZllQcMYIU3Z0c/E/KP4=; b=cjuQnMjfS8juJ1uDt8dtjyCHoi
+	v2vk6aBnmafw7NW0a8zGCSQl2e0CBXOGGx+WSFZ4xurZd/EtIM5lVgjDq4m4QzQ1N2fjCusoPIOJ6
+	maamZ3dQJbfNnN34JId/Adaa8tvlloXg1anQ1K2EuMTY+BpAcrHTJYdmvwxg/hoU3yok=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
 	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1xJEnw-000000000nG-1pMy;
-	Tue, 20 Oct 2026 14:43:18 -0400
+	id 1xJEo0-000000000nG-1lhU;
+	Tue, 20 Oct 2026 14:43:22 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -53,11 +53,15 @@ Cc: hugo@hugovil.com,
 	gregkh@suse.de,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: [PATCH 0/5] serial: core: fixes and improvements to uart_get_baud_rate()
-Date: Tue, 20 Oct 2026 14:41:16 -0400
-Message-ID: <20261020184131.2893575-1-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	stable@vger.kernel.org,
+	Hui Peng <benquike@gmail.com>
+Subject: [PATCH 1/5] serial: core: fix division by zero if old termios is present but has invalid rate
+Date: Tue, 20 Oct 2026 14:41:17 -0400
+Message-ID: <20261020184131.2893575-2-hugo@hugovil.com>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20261020184131.2893575-1-hugo@hugovil.com>
+References: <20261020184131.2893575-1-hugo@hugovil.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -73,60 +77,83 @@ X-Spam_bar: -
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-serial: core: fixes and improvements to uart_get_baud_rate()
+If the old baud rate termios is present, it is implicitely assumed to be
+valid. However, if base_baud is lowered via TIOCSSERIAL, and the new
+max value is lower than the old baud rate, the later will become invalid,
+and uart_get_baud_rate() loop will exit, and return a baud rate of zero,
+causing this:
 
-Hello,
-this patch series brings fixes and improvements to uart_get_baud_rate()
+  WARNING: drivers/tty/serial/serial_core.c:547 at
+    uart_get_baud_rate+0x104/0x180, CPU#0: uart_baud_test/782
+  ...
+  Division by zero in kernel.
+  CPU: 0 UID: 0 PID: 782 Comm: uart_baud_test Tainted... 7.3.0-rc6-...
+  Tainted: [W]=WARN
+  Hardware name: Freescale i.MX6 Ultralite (Device Tree)
+  Call trace:
+   unwind_backtrace from show_stack+0x10/0x14
+   show_stack from dump_stack_lvl+0x50/0x64
+   dump_stack_lvl from Ldiv0_64+0x8/0x18
+   Ldiv0_64 from div64_u64+0xb0/0xd4
+   div64_u64 from uart_update_timeout+0x3c/0x44
+   uart_update_timeout from sc16is7xx_set_termios+0x308/0x428 [sc16is7xx]
+   sc16is7xx_set_termios [sc16is7xx] from uart_change_line_settings+0x34/0x1a8
+   uart_change_line_settings from uart_set_termios+0x98/0x13c
+   uart_set_termios from tty_set_termios+0x154/0x208
+   ...
 
-This is in part based on discussions following Hui patches submission [1]
-to fix a divide by zero fault originating from uart_get_baud_rate().
+Reproducing scenario:
+  set serial port speed to B115200
+  set baud_base to 9600 via TIOCSSERIAL:
+    this will lower maximum allowed baud rate to 9600
+  call tcsetattr() with B57600 (old = B115200)
+    uart_get_baud_rate() will return 0
 
-Patch 1 is the fix for the above mentioned bug, as suggested by Hui
-but with much improved comments, bug report and reproduce steps so that is is
-easier to follow and understand. In original discussion, it was suggested by
-Ilpo and me that when rate gets lowered, it should alter the termios to prevent
-what is here seem as "old" having an invalid value. This is not handled by this
-series at the moment, as this may be more complex than anticipated.
+Fix by running the loop an additional iteration, so to always make sure to
+return a valid (clipped) baud rate if old is present but invalid.
 
-Patch 2 is another fix for a potential divide by zero scenario.
+Update confusing comments about @termios structure update: it will be
+updated only if the desired baud rate is invalid, and also if @old
+contained B0.
 
-Patch 3 removes any possibility for the function to return zero baud rate
-if the loop exits without a valid baud rate. History has shown that for
-this function, there was often unforeseen or unanticipated conditions
-that made the loop exit unexpectedly with a zero baud rate.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org
+Reported-by: Hui Peng <benquike@gmail.com>
+Link: https://lore.kernel.org/all/20260930125901.778868-1-benquike@gmail.com/
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/serial_core.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-Patch 4 is a small improvement in readability to avoid a redundant baud
-assignment without any UPF_SPD_* flags. It could be merged with the refactor
-patch if deemed appropriate.
-
-Patch 5 is a refactoring of uart_get_baud_rate() to make it easier to
-understand and analyze, and more linear, as with the current loop is is
-sometimes not easy to fully grasp what is happening. But in the end, I
-am not sure it is worth it as the loop makes things more efficient and
-simpler. I include the patch for discussion, but it may be removed from
-this series.
-
-Tested the changes on a custom board with imx uart and two SC16IS752 DUART
-over a SPI interface using a Variscite IMX6 SOM.
-
-Link: https://lore.kernel.org/all/20260930125901.778868-1-benquike@gmail.com/ [1]
-
-Thank you.
-
-Hugo Villeneuve (5):
-  serial: core: fix division by zero if old termios is present but has
-    invalid rate
-  serial: core: clip out-of-range baud rate to min/max, not min+1/max-1
-  serial: core: always return in-range baud rate even in case of failure
-  serial: core: avoid redundant baud assignment without any UPF_SPD_*
-    flags
-  serial: core: refactor uart_get_baud_rate() for readability
-
- drivers/tty/serial/serial_core.c | 113 ++++++++++++++++++-------------
- 1 file changed, 65 insertions(+), 48 deletions(-)
-
-
-base-commit: 1184f87e2790e8af9be3116f608d2e86b4792d7d
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index c0deec0e6af41..c3c1a1d76405d 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -465,12 +465,9 @@ EXPORT_SYMBOL(uart_update_timeout);
+  * magic 38400 baud rate (with spd_* flags), and mapping the %B0 rate to 9600
+  * baud or min argument, whichever is greater.
+  *
+- * If the new baud rate is invalid, try the @old termios setting. If it's still
+- * invalid, clip to the nearest chip supported rate.
+- *
+- * The @termios structure is updated to reflect the baud rate we're actually
+- * going to be using. Don't do this for the case where B0 is requested ("hang
+- * up").
++ * If the desired baud rate is invalid, try the @old termios setting. If @old
++ * termios is absent or if it's still invalid, clip to the nearest chip
++ * supported rate. For these cases, @termios is updated with the fallback rate.
+  *
+  * Locking: caller dependent
+  */
+@@ -501,7 +498,7 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 		break;
+ 	}
+ 
+-	for (try = 0; try < 2; try++) {
++	for (try = 0; try < 3; try++) {
+ 		baud = tty_termios_baud_rate(termios);
+ 
+ 		/*
 -- 
 2.47.3
 
