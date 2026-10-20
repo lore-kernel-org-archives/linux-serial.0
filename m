@@ -1,57 +1,71 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792445009;
-	b=LY4p5G9TYomh+I4UKmTJvk3wkZFWlqQrVkibp2oYvI22AtLlyCQ3C+iaN2CRLFh4xz/c
-	 hcnfH2ZMPbQG3Ho1jSeHTuxRld9rrO/7smWLwOokOSRzzSsGfkPqltTmko4BvHE3gcak4
-	 a0M5kas4OYP9WVQQmZ5wcpcknApTuHzzEr6z7OC8jKkGVfVgU6oOaU/J2TWq6kTEnhZx+
-	 ZgdKGhuR2tPdgCA5gYIgMJUXGHeYWGKWGl62peCYmcUy6JAKzfxTo9mJKIRWaBT+yu92m
-	 Bc5fQ0fwoxs0+vT3n80yr5puBrIXIP6cDdH8nl1DG3nbftAUe6ni0ytjr+XDU0I4lYQ==
+	t=1792459324;
+	b=hS2nGNmqm2bwwUwfuwqvjVeKsxlW0e7Nm0cytpHNb0+la1eugEQ9oRwNZXhJhghfqB7G
+	 NvGfoR/DVNr68jSTdRBZipzQF0jkSiIqaBCR/xd91aoh6EHxiJzWJy+JGFH57W20SoU4w
+	 8WOroa1Tf7gfgmeXFGllYBAk29WquHcIBtnmQwS50uWO/6h06YolG8707lOWNLQbAolF9
+	 svB7w3tHQcrMlITiUDhP+qXzqyjV+MknQAYeC1koS7w3yu5yHaLp2GovXMdBn/RAcKxGc
+	 d9VPZWtksAC7Lmlin/ilc/X3D2j1pBhDKIJo8bmIii6k7Xu4rDCG7pwf1wVeG75dfoQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792445009;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=ZZo7inmSxN+chCblHVLN1RZupufBZslF6Tl9KY2WSp0=;
-	b=Ar1RDNc2kQhNhL4t0cRQvVSH/rSSVPsMUZEIZfjXEqLFmO1dnNMu+nIc/G3Of+IiNaUp
-	 174+aHxxgW31nQEMczXwrI0Cq/0dLaJqcE3EiXPgqWNrBlrDqSB+Kl489y1RPFnEFmGeO
-	 DOqd6f6TIyo0zjdqbfyfcWDdEQpJKTidWBLTQ/u9U6s1AN2BtIgT4QZ+2hTH0Pn2LZogH
-	 Q2iEQ3totcb7WIrhmwvByn9AVuVVah97jC6PvuNz+mxNizQ8AwM6Dkk3wRGvPYlMIgF5j
-	 C/jEXIJRsQ579dLxN5A/XV2nhe7diNtAIKHjNtXStOUPvsjsoLT9gcPdnT7WJEdmzWA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792459324;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=Y5PuInUz/jG/sVc55vzwpQmtUc4DneWfMKEBS2B1HkA=;
+	b=h6Y+7FKdNjawAO5qvyB2A3c7KgTThQ8g3xx0t1rip0eiluFKzdf9mQ2/lh/SwP4vkHiw
+	 e7JWDmZbEUGJ/mKeFKtMg9pgHjLrqfHIN2I+feKE/ZLvtCWByqzo4OJC2coejqLG2uM7B
+	 XLRBA2jlOutMRi16yMo9OK916nL7zLZTnz1JaOjdZP8zO80ZaaYapysa4xDnzWujh+bFB
+	 0xtk852+JG3U2dlck5uOy3LAuyDdL0KsOnAdmRFp1BXwsXPTTq3Kkb969Q61TlKb3qVvp
+	 vxp6onemapaoG2ZNn50mW0gPLRd50+jH6I8zZ8jm4v6Ss6S0pLRMQsP/ktBUPvJXaQA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e0+jXEOq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Ij/ZTfSV";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4AB5606A319
-	for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2026 21:23:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 552BA606A319;
+	Tue, 20 Oct 2026 01:22:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e0+jXEOq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEC11F000C4;
-	Mon, 19 Oct 2026 21:23:28 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ij/ZTfSV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36EE11F000C4;
+	Tue, 20 Oct 2026 01:21:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792445008;
-	bh=ZZo7inmSxN+chCblHVLN1RZupufBZslF6Tl9KY2WSp0=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=e0+jXEOqJmX+5PxGp19XgyYehPWHpRjwuMtEgm88KUsmWbhs2LMuhHZT+57ZG49Id
-	 GyhyTO3lVR/MZRUM9ZchVBSBQcVX/TXPgY9M3E5Wl07Z/ERdxcYrGIVy7v2jJ68J4l
-	 UO9kXF3+jbb9TsTJ2bSpRTSdcXCcCXeK1Rus4x59XLub+NKSTm2b4ZCpx4py6CwiMu
-	 YkNn9iNZo89Sf22adsoyF2MSDiTaJ9Zh07yFt90RuwJEbl6cyS5793k0Prr2D74eiU
-	 TQ+JgonJrTbBbL/4jw2wc1GH7x04nViSAHzYLerK+Gtfktw71w0pYD8W+QAhjMDYty
-	 PTO03dhYRp8Tg==
-Message-ID: <sashiko-outbox-178251@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/3] vt: don't make VS16 widening depend on earlier
- screen contents
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Nicolas Pitre" <nico@fluxnic.net>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <b777616c7a63920f36dd34a1ab96e95073d0b013.1792443833.git.npitre@baylibre.com>
-References: <cover.1792443833.git.npitre@baylibre.com>
- <b777616c7a63920f36dd34a1ab96e95073d0b013.1792443833.git.npitre@baylibre.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 19 Oct 2026 21:23:27 +0000
+	s=k20260515; t=1792459323;
+	bh=Y5PuInUz/jG/sVc55vzwpQmtUc4DneWfMKEBS2B1HkA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Ij/ZTfSVf2swDQKjpQY+M1H2I5MkLeX5CF4dH4/9XKE165jBsDdvEwhW81eUmMMjb
+	 Qa7Npvl6yBb17a13UvFrx+F558g8qtjW3Jx8HQ2wmPfgDecd4FVrr176Pvye0m7huB
+	 b8gB3PVWN+ieA2OWvMaqKqc1pFccggf6hGdppcfcNIIzPb4SLFLMiOICvTaBe8MAMo
+	 ccYqYzmJWOF0vh9T+5mTGwhv1K8ArNjqo22DC2bm6gpAiLDfN6Zb7V8wILCD7w7hbg
+	 OGRinhBbeU5+ZdzL+gEGhTHiNXTwxiIjthvTzVDhkDx0SgvL4YvUPNJZZ9WRLDx3D2
+	 G3K1Ev46o1B/g==
+Date: Tue, 20 Oct 2026 09:01:50 +0800
+From: Jisheng Zhang <jszhang@kernel.org>
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+	Brian Masney <bmasney+clk@redhat.com>,
+	Jerome Brunet <jbrunet+clk@baylibre.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Frank Li <Frank.Li@nxp.com>, Lee Jones <lee@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-i3c@lists.infradead.org, mfd@lists.linux.dev,
+	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 05/20] i3c: dw: switch to array-based exclusive reset
+ control
+Message-ID: <ata9fqjAm09xnBQM@xhacker>
+References: <20260929061417.20733-1-jszhang@kernel.org>
+ <20260929061417.20733-6-jszhang@kernel.org>
+ <62860351b9ae360c174d36dd54d4110417f395ad.camel@pengutronix.de>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,30 +74,76 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <62860351b9ae360c174d36dd54d4110417f395ad.camel@pengutronix.de>
 
-> From: Nicolas Pitre <npitre@baylibre.com>
->=20
-> VS16 (U+FE0F) widens the preceding character only when that character
-> can be found in the Unicode screen memory. But that memory is allocated
-> on demand, when the first double-width character is displayed. Until
-> then vc_uniscr_getc() returns 0 and the VS16 is ignored.
->=20
-> The same sequence, e.g. U+203C U+FE0F, therefore takes one column on a
-> console that hasn't displayed any double-width character yet, and two
-> columns afterwards.
->=20
-> Allocate the Unicode screen memory when a VS16 shows up so the
-> preceding character is always available. vc_uniscr_check() populates
-> it from the current screen content, which includes that character.
->=20
-> Fixes: 95b05de0a566 ("vt: properly support zero-width Unicode code points=
-")
-> Assisted-by: LLM
-> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+On Mon, Oct 19, 2026 at 02:55:21PM +0200, Philipp Zabel wrote:
+> On Di, 2026-09-29 at 14:14 +0800, Jisheng Zhang wrote:
+> > The Synopsys DesignWare I3C master controller can have multiple reset
+> > lines, such as a core reset and APB reset.
+> > 
+> > Refactor the driver to use devm_reset_control_array_get_exclusive()
+> > instead of a single named reset handle. This automatically manages all
+> > resets allocated to the device node sequentially.
+> 
+> Note that this does not guarantee any particular order. Are you sure
+> that this is good enough for all implementations of the DW I3C core?
 
-Sashiko has reviewed this patch and found no issues.
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1792443833.gi=
-t.npitre@baylibre.com?part=3D1
-
+Per my understanding of the doc, it only requires the resets are
+asserted and de-asserted, didn't mention the order. And per my tests
+on syna SL2610 platforms, the DW I3C works perfectly no matter I
+reset apb reset or core reset firstly.
+> 
+> Otherwise it may be wise to at least specify the names in binding, to
+> be able to switch to the bulk API or individual control later, if
+> needed.
+> 
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> >  drivers/i3c/master/dw-i3c-master.c | 24 ++++++++++++++++++------
+> >  drivers/i3c/master/dw-i3c-master.h |  2 +-
+> >  2 files changed, 19 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/i3c/master/dw-i3c-master.c b/drivers/i3c/master/dw-i3c-master.c
+> > index 4563d8761ba0..1c6c870f5bb3 100644
+> > --- a/drivers/i3c/master/dw-i3c-master.c
+> > +++ b/drivers/i3c/master/dw-i3c-master.c
+> > @@ -1657,6 +1657,11 @@ static const struct dw_i3c_platform_ops dw_i3c_platform_ops_default = {
+> >  	.set_dat_ibi = dw_i3c_platform_set_dat_ibi_nop,
+> >  };
+> >  
+> > +static void dw_i3c_resets_assert(void *data)
+> > +{
+> > +	reset_control_assert(data);
+> > +}
+> > +
+> >  int dw_i3c_common_probe(struct dw_i3c_master *master,
+> >  			struct platform_device *pdev)
+> >  {
+> > @@ -1696,10 +1701,17 @@ int dw_i3c_common_probe(struct dw_i3c_master *master,
+> >  	if (IS_ERR(master->pclk))
+> >  		return PTR_ERR(master->pclk);
+> >  
+> > -	master->core_rst = devm_reset_control_get_optional_exclusive_deasserted(&pdev->dev,
+> > -										NULL);
+> > -	if (IS_ERR(master->core_rst))
+> > -		return PTR_ERR(master->core_rst);
+> > +	master->resets = devm_reset_control_array_get_optional_exclusive(&pdev->dev);
+> > +	if (IS_ERR(master->resets))
+> > +		return PTR_ERR(master->resets);
+> > +
+> > +	ret = reset_control_deassert(master->resets);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = devm_add_action_or_reset(&pdev->dev, dw_i3c_resets_assert, master->resets);
+> > +	if (ret)
+> > +		return ret;
+> 
+> This looks like we are missing
+> devm_reset_control_array_get_optional_exclusive_deasserted().
+> 
+> regards
+> Philipp
