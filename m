@@ -1,58 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792486066;
-	b=OcHvZnvBGfURp09iELsBxU7p+F+/6/7QQqKYozU8c+YIvOcffabnjYU0g+vejhtIVzTW
-	 E31FY3MC3nva2ZhHL9XsSUPZRC1VSj4DGW3JmTKJnMEe5w7pMEMRMxzgn+6vBhQpUhZeE
-	 Ylk8MOokGmuQycI1UsUim+kkfSLn6/irNR+/FkuaQeLeiZbCetmesyx5SzNvo1aS/lrzm
-	 0ojMyPL8qiM2V8ZXHNIwAE9rpTCSpagZn/zHnO+0yXQT21EuEn9rqKXShjaL3WSZuEa4+
-	 pbHRsqFxzNg0HO283efVzVh50GEuN3f+RpoeDRX+88gCJ02XxGXAGYFHWW58IEwXRlg==
+	t=1792486316;
+	b=a3FAwOB6LWMPpdvUf2sXkyexIOnfTGn1QeIy4L+G+1q0dGSGJW+L8TLa5d8rz4rzWN9N
+	 POSpzxtb9omKNk8LYk4aGYNfR4XEah2eWndi210dJ1imtmDYK9DFTLcDLytplg2PIfgeV
+	 OZEZT9n3H3uESSpXGbDlsnzCXB6834LJUKFaSnslcr3h8le0dNe/cdsZoIblifEPEgD8W
+	 fJZceoXPAAGyMmRQ20URr6124CMojoo2UULJCjE46PLmwMcxiwCV2USeN0IHruBYpkbE4
+	 trdc2Iy4704DD2xb2Xi8dyT4di9NYW13+wq7j/O4PikzfXwS9f+MXx/ezgQouK//Rjw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792486066;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:References:From:
-	 Content-Language:Organization:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-Last-TLS-Session-Version;
-	bh=IB8GwhzcGxUoXiq+8nwTsLkT0LxHk6EGeaIdo3q2Cok=;
-	b=b4qBLWEnz6FqlRbboNmrCKy7NVFIBR9a3q0lWngKtYVRSs98BTq3vG2SD5w/rsbwfQyA
-	 QvDTAT0+wC2VYvhAVvZL1/IT4VJKniG2IMXt/3PfRgLL6j6zCbUDYNQe2zjdE88Je+leA
-	 DbD1siPNOUeV8qWHFJbQEYhd4qfXYCQXcviRdV6NTw8SvyBW3FMUWkyjs+2u2BoiUKvIZ
-	 Jffqd1XVgHuFh43a06tFI/vA0jK0c11XVo5eYyQZj7iX2qcvDVTkrQ+YgzNkEBpmem27G
-	 rZQT5i/mWh0VCpAksD7ySktpMVkwhts6LW44WxG33yNBPhZiu8qjqRCujyqquvuwRfQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792486316;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=K5zPCjhtiYgbSzoQkdk7jJnCY7I6uAqcp7kPNPB6WFM=;
+	b=eTmsshhlTgBpyl3qCsgS991kqQtda5k3lHgWDUcGgA7HY5pHKuJR5tBKP77jCiD/mkTR
+	 gaKWoqXLgd26g6e1k/ZRgn47W6TlfYz+qdFbTehcFtpGe6XenUDuScX8GA9lltGSMSBP4
+	 Vtan5i2sjb3pIbNDJ865EBk9mFP2relQGjwSSnFqVsDF6QdqIVveagYue7SGKJ4Z1uE41
+	 5RIHN03Phpssro4aDvnnZVzUJSqS4lk9vHmRx16pDSJ+xZYulO5oBA+sqd/ZPuiI2CRwO
+	 spm+8Cfj6InaPa7W91hO2Ol63R7jHXd6c3d5yok1inGf9NIjZaf/8fL9IIZei1rC27A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bootlin.com;
-	spf=pass smtp.mailfrom=bootlin.com;
-	dkim=pass header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=TEy4gGD+;
-	arc=none smtp.remote-ip=185.246.84.56
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mXBQFzVy;
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC3160A2612
-	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 08:47:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5BC3160A2612
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460CA606A31A;
+	Tue, 20 Oct 2026 08:51:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 460CA606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=TEy4gGD+
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id C9EBE1A12A4
-	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 08:47:43 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 96E3960393;
-	Tue, 20 Oct 2026 08:47:43 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id DE8FC1032840C;
-	Tue, 20 Oct 2026 10:47:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1792486062; h=from:subject:date:message-id:to:mime-version:content-type:
-	 content-transfer-encoding:content-language:in-reply-to:references;
-	bh=IB8GwhzcGxUoXiq+8nwTsLkT0LxHk6EGeaIdo3q2Cok=;
-	b=TEy4gGD+QEEA9bz7AXwtA2dWHkOJqZC9HG5kxjTy3ags1owStIkSzusGtkMXN5irtwtDYe
-	FHVfHQ7fYe8rRshS8txW8vsyk0KAwPBnkvquDMp1+30c43+Ej4gTCQuypxgQ4TYwjvidJ2
-	bqPHo4lRMuw7VSNjLr6DA9mvn9MrB7QIUWf71Q7rL/kUetoXnpjQTwxdqMoL9Qe17gwPo3
-	RJO818U6aOYXuylW6r9UUQzHWjRTWHYC1Jr07GGLu/DISoeOQQjRh/0Byzh584aMG7xtvn
-	ddCu4px0OeBf2uTm8C2Y672UCliZ0tCSsooazujFxz8l3Vzb1sHH0FE989PvdQ==
-Message-ID: <745706ca-58cc-48cb-8ef1-69a69aa34ac2@bootlin.com>
-Date: Tue, 20 Oct 2026 10:47:40 +0200
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mXBQFzVy
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792486316; x=1824022316;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eKzxlT0yG5FunvgfNGhCleVugyVb5jhMClq+OxxbpME=;
+  b=mXBQFzVyzSEwwjARMT64iotOnCydBoSQKrHu4iiIVfelQh2qT90rIsn4
+   qzqLC6Wm2M12DevI5aJKBBye/+cmKbut+b3IbxsdO+izjTzaL7PDFZ8Q2
+   bOouABCrBF+yvJcG9KB7sZ7NcIXGFMgyis4UfIrS1s1JtPghehOvyQvHf
+   4UtOulHcPWIHd/cfEUHApwB7D+yTSGw2uRBLlLyBVwTnKwam1wGacqR16
+   e4lxZ89rMNuXN4IOnn76XFCFz/aTQwUpRxaoXXDWJb1iyQ/1CbrOo+pak
+   7dDsETqWOiOiCHooCNAwynjwZmDz1MKmHhP8WAel5oDPOILuiVqpO/aeI
+   A==;
+X-CSE-ConnectionGUID: NR250AvBSNKSHjiLE/Jo1Q==
+X-CSE-MsgGUID: W5HexXIOQ2O9GFn5Dewqog==
+X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1285019"
+X-IronPort-AV: E=Sophos;i="6.27,168,1787036400"; 
+   d="scan'208";a="1285019"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 01:51:56 -0700
+X-CSE-ConnectionGUID: FJ6CBaMOQmSasr/frxTWmA==
+X-CSE-MsgGUID: G7Vb0dqQQGu/0Txavvu7Ww==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,168,1787036400"; 
+   d="scan'208";a="2823950"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.72])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 01:51:53 -0700
+Date: Tue, 20 Oct 2026 11:51:49 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, ilpo.jarvinen@linux.intel.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	Andre Przywara <andre.przywara@arm.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Enzo Adriano <enzo.adriano.code@gmail.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook
+ when DLF is present
+Message-ID: <atcrpTI_R4kRM8pb@ashevche-desk.local>
+References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+ <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -62,85 +88,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with
- DEFINE_SIMPLE_DEV_PM_OPS
-To: Li Jun <lijun01@kylinos.cn>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, nicolas.ferre@microchip.com,
- alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
- linux-serial@vger.kernel.org
-References: <20261020084113.853878-1-lijun01@kylinos.cn>
-From: Richard GENOUD <richard.genoud@bootlin.com>
-Content-Language: en-US, fr
-Organization: Bootlin
-In-Reply-To: <20261020084113.853878-1-lijun01@kylinos.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Le 20/10/2026 à 10:41, Li Jun a écrit :
-> Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
-> This also drops the __maybe_unused annotations on the suspend/resume
-> callbacks, since pm_sleep_ptr() inside the new macro already handles
-> the case where CONFIG_PM_SLEEP is disabled.
-> When CONFIG_PM=y but CONFIG_PM_SLEEP=n (a valid configuration that
-> enables runtime PM but disables system suspend/hibernation), this
-> keeps a completely empty dev_pm_ops structure -- all callbacks are
-> NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
-> 
-Re-addind my acked-by, since it wasn't gather
-(For next time, when you resend a patch, you may add [PATCH RESEND] in 
-the subject)
+On Mon, Oct 19, 2026 at 05:06:10PM -0300, Vinicius Pedrosa wrote:
 
-Acked-by: Richard Genoud <richard.genoud@bootlin.com>
-> Signed-off-by: Li Jun <lijun01@kylinos.cn>
-> ---
->   drivers/tty/serial/atmel_serial.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 5d8c1cfc1c60..c3880259e3bc 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2723,7 +2723,7 @@ static bool atmel_serial_clk_will_stop(void)
->   #endif
->   }
->   
-> -static int __maybe_unused atmel_serial_suspend(struct device *dev)
-> +static int atmel_serial_suspend(struct device *dev)
->   {
->   	struct uart_port *port = dev_get_drvdata(dev);
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> @@ -2765,7 +2765,7 @@ static int __maybe_unused atmel_serial_suspend(struct device *dev)
->   	return 0;
->   }
->   
-> -static int __maybe_unused atmel_serial_resume(struct device *dev)
-> +static int atmel_serial_resume(struct device *dev)
->   {
->   	struct uart_port *port = dev_get_drvdata(dev);
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> @@ -2996,7 +2996,7 @@ static void atmel_serial_remove(struct platform_device *pdev)
->   	pdev->dev.of_node = NULL;
->   }
->   
-> -static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
-> +static DEFINE_SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
->   			 atmel_serial_resume);
->   
->   static struct platform_driver atmel_serial_driver = {
-> @@ -3005,7 +3005,7 @@ static struct platform_driver atmel_serial_driver = {
->   	.driver		= {
->   		.name			= "atmel_usart_serial",
->   		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
-> -		.pm			= pm_ptr(&atmel_serial_pm_ops),
-> +		.pm			= pm_sleep_ptr(&atmel_serial_pm_ops),
->   	},
->   };
->   
+...
 
+> @@ -218,7 +228,9 @@ void dw8250_setup_port(struct uart_port *p)
+>  	if (reg) {
+>  		pd->dlf_size = fls(reg);
+>  		p->get_divisor = dw8250_get_divisor;
+
+In the case of existing _set_divisor, do we want to keep the possible set
+_get_divisor as well? Shouldn't we introduce a respective _get_divisor in 8250_dw.c?
+
+> -		p->set_divisor = dw8250_set_divisor;
+> +		/* Keep a hook the driver has already installed */
+> +		if (!p->set_divisor)
+> +			p->set_divisor = dw8250_set_divisor;
+>  	}
+
+On top of my previous reply, why is this hunk needed?
+
+...
+
+But now I see that we have same function name in two files. Can we rename those
+in dwlib to, for example,
+dw8250_get_divisor --> dw8250_get_dfl_divisor
+dw8250_set_divisor --> dw8250_set_dfl_divisor
+
+?
 
 -- 
-Richard Genoud, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+With Best Regards,
+Andy Shevchenko
+
+
