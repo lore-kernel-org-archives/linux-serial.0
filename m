@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792522146;
-	b=orGfyCx/TGtFdb4Wt1CP+5RsF6fiPUcIvAMpk2UcLHx1n059cdIzZ8FA88oREK9uN2P8
-	 wDTDu5QZH7UY/nR05WkRP7Ig66gwwM62XNIukEzEVYRDWV+ABv/MW8BnsGVKAZNq/rQFT
-	 ZueNql9wYnpjV01o2h7CIGPU5UX3AdE1wthQ2n7ViO/7MwwvwgRnZtZM7tbqaGV1uHveh
-	 sl7FaSsfH5m96pmqqtD/W4nCrB4B7K5iDy7L/umTDKjMA+O6ocBEvewSFhdHnHeNtrAeT
-	 4EMJR7L69320keTFFqJFvmZrD4DJ/nI1gZ+TK/lZVIza9ZRHc3yFQLtF/Z89IAORqKA==
+	t=1792522279;
+	b=FYky9zd35WqaRnktUJpfFdm6l8I0iXuO9ctRcqPh/d647FYLUTUp5ChyrNCJqBZuB4QL
+	 /N0F6cVtegsio0xgH+MQk+5Y2/xZixBe62aEQJiTTXmqHLdXyiuc5oESsRZCwzP7R0vSa
+	 dFIncFZuKyT42VYdXFIRptILyMdc87LaPmaCvCTkEjO6Y4yHuMKeHHcEcFjPx3PoQhI1Q
+	 s5KPXlF9/xRGJZIyojmy655G7L3wp23Gr00RL79Iu/BjcuSknE3Tp621MpXBajEjxfwpY
+	 OKJfzu9PXFaMRkQ2nmzjcxpGVaBhQgcP65d+K6yiFjHKokSw0cB60qUB8t7/oj3KpdQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792522146;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792522279;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=LHF+fQP22v4n95DcJS3E1mVFCGbWT5xp0P+9DmGc53E=;
-	b=Vho3Q6s4xUG7vVDuu1GFpY9ce3mDQhpamjtTqbmVZ1DuLSotpNxgbi88Jpi0k7S6WIqO
-	 mDR79XUZhgkSsBYThl9YOgFkwGMAdtaIFl8ud2/COO/tipMsVq296Es2P5agoE3LXpWwi
-	 ngFQkkJiPpmox0a+o8VF+xDP4P60dt2Q5Cn3WpmqV1g0XTsvYXqdOjTndqiqRiYDmw61z
-	 fnevbfoER8hpsAfO6F4jqWoEGyyJQ8fPX3DUolm5pzj0Pg12HBjvfyYLG7V9TksO1XAWH
-	 D4mlvorA0NlkbaXKJm6KZfipOHNzc2QPLYTCcCFjkqYvkykwydl+SY1dnLVgNUdqp0A==
+	bh=zzvEzY2mXOGL2cSZAHKs9wxyfDXmtfpvyOhSYTe9x1A=;
+	b=W17XT6ENMdAV/HmyGyULSx9LcJjt55R52tY/8P49jorj03Czik4ShvUbytD21qkcc9k0
+	 IpIS/8+JlO0IkhFH0x8guCV+ukHVLNvN2rIAu+jFfbmqiLJsbG+LH2ov6I6qG9tuIIfzd
+	 xIm0pzIZKn+cqxXzc6uF3mFdX1PsswffZi+Ldep2P3lExzZIbARzRdb2AtA9BxoB47vJp
+	 P93auLUPwYB6KE/bISO5wwX53FMGt7emsBgRKqyDHj6TlDIveLQ67xBUAha79u6GgJTjg
+	 NvwsmE7TKFpzMTtyvvwjn7w1LWYKyHNbezPWfhkYvVlBBv9C2cdnUtVm63J9KbyHBpA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AYd0Ztdk;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RZMSoQsh;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6A1606A31D
-	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 18:49:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60F3606A319
+	for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 18:51:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AYd0Ztdk
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 586141F000CF;
-	Tue, 20 Oct 2026 18:49:05 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RZMSoQsh
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC7B1F000C9;
+	Tue, 20 Oct 2026 18:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792522145;
-	bh=LHF+fQP22v4n95DcJS3E1mVFCGbWT5xp0P+9DmGc53E=;
+	s=k20260515; t=1792522279;
+	bh=zzvEzY2mXOGL2cSZAHKs9wxyfDXmtfpvyOhSYTe9x1A=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=AYd0ZtdkBZmgwOiuDLw+LEDaQ+B/Fg/FGxvu7g7OWO5nSv4INR1FR7YVyxPvWcXBF
-	 cAyqnDCK5kayCWnXeQDt4Olw8joe/R39x1uqKA4VwHTHhgZ2Hu/7x4DL/tKIzEWq4P
-	 +JLLWmMtS46l3ZbByvhmSfDe2KCU5BDoc844zDnTm4VKDfBDbvdT/GBfLb+deJKSIc
-	 a3K5t8B3qVhODwAVjXiUzEMo6IMZejQVWP2ojon6MF8W9+xex7s5LsVbYfT4wbxg06
-	 hV9/zZz8MwtousC5POlHM7o7XkVc4vtATZmlLNbLt4gPp1GgYPBO5Zz/CATNdyK4vK
-	 5w5hRZ570iHdg==
-Message-ID: <sashiko-outbox-179494@kernel.org>
+	b=RZMSoQsh00J1aOkr4VuM1+T+FDuz9qqTHeCRvVZfW/11ya5zegiCwNyP5Dj3Wehey
+	 rx/UfzS00dDnufmHlAWM9/epSq3NAVz2QMqxkHvVSdWlEOIbgz+QjzJk/qlm8H64OB
+	 bd4N5AeRpMXFrFDZLnrLuOZR/jKKaxgMmI0HeJ2mvfvwCI3fXrZG3gXep9u7BvtCYN
+	 JJQa+ygGROwR3KN4viLDN/l+bF9FFXCOsx5fafgsJeQHtQwDKE1bWHDjAjT+9FuFG4
+	 L3+69HZl2jZtQlIlT2tijhMo4wJNhh+yvCckWHnBOlVMVHoDqLdE5lRbjdLlF1BPVY
+	 4tC+6HweHk82A==
+Message-ID: <sashiko-outbox-179495@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/5] serial: core: clip out-of-range baud rate to
- min/max, not min+1/max-1
+Subject: Re: [PATCH 5/5] serial: core: refactor uart_get_baud_rate() for
+ readability
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Hugo Villeneuve" <hugo@hugovil.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261020184131.2893575-3-hugo@hugovil.com>
+In-Reply-To: <20261020184131.2893575-6-hugo@hugovil.com>
 References: <20261020184131.2893575-1-hugo@hugovil.com>
- <20261020184131.2893575-3-hugo@hugovil.com>
+ <20261020184131.2893575-6-hugo@hugovil.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 20 Oct 2026 18:49:04 +0000
+Date: Tue, 20 Oct 2026 18:51:18 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,31 +63,15 @@ Precedence: list
 
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 >=20
-> min and max values are valid baud rates, as the existing code in
-> uart_get_baud_rate() already checks:
+> The current loop makes it hard to properly understand the code flow,
+> so replace it with more linear code using a validation function to
+> improve readability.
 >=20
->     if (baud >=3D min && baud <=3D max)
->         return baud;
->=20
-> I couldn't find any explanation in commit 16ae2a877bf4 ("serial: Fix crash
-> if the minimum rate of the device is > 9600 baud") as to why this is
-> clipped to min+1/max-1.
->=20
-> Also, Sashiko identified a potential problem where clipping to min+1/max-1
-> will be out of range when min =3D=3D max. This would result in the loop e=
-xiting
-> and returning a zero baud rate, triggering a Division by zero fault.
->=20
-> Fix by clipping to min/max.
->=20
-> Fixes: 16ae2a877bf4 ("serial: Fix crash if the minimum rate of the device=
- is > 9600 baud")
-> Cc: stable@vger.kernel.org
 > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261020184131.2893=
-575-1-hugo@hugovil.com?part=3D2
+575-1-hugo@hugovil.com?part=3D5
 
