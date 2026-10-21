@@ -1,95 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=156.67.10.101
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792602909;
-	b=UhbwxaRz0nXBmdFss7sVKxgMaHYCR30TvoGXjabcosVEapbSBCIEzpKNnfXpyu+scdpE
-	 AeQMqZvZ+UheK0va51vdafeM1upws+ZdVvUHSIc0cZuXJ5cenfFtTpC45dDLdMRu+6SJ3
-	 T+0KcWuYlxOT3tRMU+1Rhoeb2gMEvcRcq9aRMybkAkINZpspivBvf4hMQj9mjP8vGidHA
-	 f0XIeSGKoFKQJ+53CTCf83lv1gGq6mu9MjI54NEke3W3XFMg3fOwawUIuAyHhRFei0wXq
-	 bKEtJ8I3Dzp+4d8EYZE+54hbIiW1Irh1NGeyxW1cWxWjLoyUUMD+M6TJtVgVxcc+Jcg==
+	t=1792603280;
+	b=ho6MZH2dXqi+I2nYjtqMp3lpe75ltzDs0J40aJpo5AHKbeoZJ1k/buJhcdzrBfyyCIdR
+	 v9dqRnUxaUkxqYj6mOEIQxGJZd840YL1PXBasJtO7RxhRqHxs9mKRWfFGD/pHv8qlK3Bz
+	 jEV+pIV5WIZT5th68w50auLZb5r8gaP497K+eFBacy73ve7PjhISxe2ZYgxNKJLaMgah+
+	 B2+oBDlIeqnlAgI2kB4iUknR4DK1RvZkKxCPCblXu3bdy9Yg7I0cRpH7xea9Z17tIYWdb
+	 E+KDUc+9dGOsdF/4dKdfJLqCGM7iu/BkoyfFUzBdq086DbkenVZA9OJMMAPm7jwxlhA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792602909;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=Fp5SMzjGwR8UTbVROtVUKvftRt8E5iWuXvuIAwCI39M=;
-	b=zRTnmi1sk8RDSo5vHWEK6/Kr6MRuhmwtxKU/71Qd7gJh4z+UastSljLW8lAft3iPFgcQ
-	 LScscMWwb4xMnduNAImQCFwgajqjpZQw6DLVWDMSPgY9TmpGIPtVjiPXaOjOU96DXdlbx
-	 tGTklakM+yrHod6loFRYquOrkoZSpot/F0rKyQ4HJyA7JD4MRI8WcUmbfYpurBEp6gVQZ
-	 BMZVLHLk/S3P+hND8R3IkxGyIGjov2WbGTWlE58wfi3vX3hgwC6xEZunWDczYzLyzREuS
-	 0BEQClduXsSRYwgUtoiquwbZtAMY+Z86+JDg37el1Wz5ObT1MQOsPUoJj/OhW3w/ARw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792603280;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=aYnP9EzvQu5c7OzWw3Xivytyue2e+5YkT93F7KbL5/Q=;
+	b=1fdQbJVgGIDSvuMDjQiAeRDAYiDDCnKYcdeSvVtmTyroM3/+lF6su6mz+S1tnMvrkYT9
+	 vPBAAufuo9oA7HJp/nHkGoBvv4Q+R2Xa5H0PBUO7+WhHOxTUr+l5yrDzrLoz2CZMlAyP0
+	 5TK50eyoyz8Xbml06M3A0g9q0OsArih+Gx9d7dLL2piyXZ8QBbcZ7FJwTeIhYhnFpPELr
+	 U+ZnnAZ3js7/+xI1joKAoL+SuVhqOH4yYBWbdune//G8vAPxhxZjS7iR7HzjE/ZWA6l+p
+	 e0B4CjKW8GSnEai9e8RHfbDYqVyc3Z0LbAdlPxPc2tPpsUzFXwREnNplWNvYg9Oz9tw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=lunn.ch;
-	spf=pass smtp.mailfrom=lunn.ch;
-	dkim=pass header.d=lunn.ch header.i=@lunn.ch header.a=rsa-sha256 header.s=20171124 header.b=pB0gOMT+;
-	arc=none smtp.remote-ip=156.67.10.101
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=D2LCNvwu;
+	arc=none smtp.remote-ip=198.175.65.20
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB6C7606A32F;
-	Wed, 21 Oct 2026 17:15:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB6C7606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D300606A31D;
+	Wed, 21 Oct 2026 17:21:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3D300606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lunn.ch header.i=@lunn.ch header.a=rsa-sha256 header.s=20171124 header.b=pB0gOMT+
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=Fp5SMzjGwR8UTbVROtVUKvftRt8E5iWuXvuIAwCI39M=; b=pB0gOMT+fyr6rtWEChBRV7r7IT
-	jKdlJAhyeHmefQZV1x+Z3xhu/kaR+8JuTGSXi53eInrvAAJE/6KGlf9cZ6sid/bPGmBeJyuiV2G63
-	+baotz7vL9WSkRAtWN4z2lJE8tnFheyeJnkUbqlG/v0qp67qEW6kXutLT+keqS4mDvkU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1xJZtj-00C8Oq-Fd; Wed, 21 Oct 2026 19:14:43 +0200
-Date: Wed, 21 Oct 2026 19:14:43 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: 1579567540@qq.com
-Cc: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
-	Jerome Brunet <jbrunet+clk@baylibre.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Ulf Hansson <ulfh@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jisheng Zhang <jszhang@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	David Wu <david.wu@rock-chips.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Maxime Chevallier <maxime.chevallier@bootlin.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-	Jaehoon Chung <jh80.chung@samsung.com>,
-	Shawn Lin <shawn.lin@rock-chips.com>, linux-clk@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	mfd@lists.linux.dev, linux-gpio@vger.kernel.org,
-	netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-	linux-phy@lists.infradead.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 14/27] dt-bindings: net: rockchip-dwmac: Add RK3572
-Message-ID: <09c223e6-6872-4bb6-a915-870c3ee614cb@lunn.ch>
-References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
- <20261022-add-board-ok3572-c-v1-14-0b0fd85a31ee@qq.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=D2LCNvwu
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792603281; x=1824139281;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=v7fSLTfyM6AlbgewY7IYOSHnM8YIN5meuZi9253LlHg=;
+  b=D2LCNvwuOlF+wzPz9LdAodIh78N8/jFbepQ+fAC0lfzCLwzAGipagTcq
+   BSPhFrG61TC0ojpij0RyeIKEjOScnuoUci7XDV33+UtrhqYcndU4U/hXC
+   PQliKTkqcXz4S7cWuYHxHROfP5tn85t2yx1IL/pj9dlQqii3LLOqnrrz0
+   B/svgvtFgYRJxh0InT1qV5lBm7+/B7M08KtrG/196QBCOzrHGM9LovJGA
+   4qGWKeHkNLFRkhedkocROkOiMaEGaSbmXYTG+Crwx1/CMmg9oGUyCBjmm
+   ct52SQmNSLMPtx8QaYBOOlNE7q8zXmceIQI4uC9vDSwinsum+U2ZXEozX
+   w==;
+X-CSE-ConnectionGUID: nWhcBqz/Ql6WIkni4RXEXQ==
+X-CSE-MsgGUID: 9e/hdHWyQBK5JDYM38KQYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1344986"
+X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
+   d="scan'208";a="1344986"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 10:21:20 -0700
+X-CSE-ConnectionGUID: Z0kXF4sbQEeShgBC25pcTQ==
+X-CSE-MsgGUID: ooYRJCglToWIM3GUM965iw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
+   d="scan'208";a="4939386"
+Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 10:21:16 -0700
+Date: Wed, 21 Oct 2026 20:21:13 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, ilpo.jarvinen@linux.intel.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	Andre Przywara <andre.przywara@arm.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Enzo Adriano <enzo.adriano.code@gmail.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook
+ when DLF is present
+Message-ID: <atj0iRFTxHKmhxVG@ashevche-desk.local>
+References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+ <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+ <20261020104753.28703-1-vinicius.eduardo.pedrosa@gmail.com>
+ <athe0QikG2mzCAtd@ashevche-desk.local>
+ <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com>
+ <atjB-BnXclL3FcUm@ashevche-desk.local>
+ <20261021153732.1978410-1-vinicius.eduardo.pedrosa@gmail.com>
+ <atjqZPuAbHDdaexv@ashevche-desk.local>
+ <20261021170403.2052449-1-vinicius.eduardo.pedrosa@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -101,19 +97,41 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261022-add-board-ok3572-c-v1-14-0b0fd85a31ee@qq.com>
+In-Reply-To: <20261021170403.2052449-1-vinicius.eduardo.pedrosa@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Oct 22, 2026 at 12:11:11AM +0800, Cunhao Lu via B4 Relay wrote:
-> From: Cunhao Lu <1579567540@qq.com>
+On Wed, Oct 21, 2026 at 02:04:03PM -0300, Vinicius Pedrosa wrote:
+> On Wed, 21 Oct 2026, Andy Shevchenko wrote:
+
+...
+
+> > I dunno, I prefer just a longer solution, but I don't know how big this issue
+> > is that we need to backport in that way (and not taking the whole series as a
+> > fix).
 > 
-> Add the RK3572 GMAC compatible using the snps,dwmac-4.20a fallback.
+> On the severity: the IER restore comes from a7b9ce39fbe4. On the A733 I
+> saw hardware IER left at 0 and the console stop taking TX/RX
+> interrupts. I haven't tested this on hardware with a real DLF.
 
-Since this is a new device, please don't allow tx_delay and rx_delay,
-which should be considered deprecated, replaced by
-rx-internal-delay-ps and tx-internal-delay-ps.
+Yes. but is it only a single device/platform affected or a big class of the
+devices? I assume only narrow part of them which unfortunately use DFL register
+offset for something else in their RTL.
 
-We have to keep tx_delay and rx_delay for older devices because of
-backwards compatibility, but there is no reason new devices should use
-them.
+> Given that, how about keeping the small fix as patch 1 with the stable
+> tag, and putting the refactoring after it in the same series? That would
+> keep the fix independently backportable if needed, while mainline would
+> still end up with the structure you proposed.
 
-	Andrew
+It all depends on the outcome of the above discussion. Maybe others can share
+their opinions, but I lean towards a series-as-a-fix rather than a bit ugly fix
++ proper refactoring on top.
+
+The whole approach doesn't seem to me like a pile of changes. The deduplication
+patch can be deferred for later actually.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
