@@ -1,54 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792571065;
-	b=bFtxrRBLh+QmV008dJmJaBYtCdM3BRx+Pfz9dkfuD8D6CZmD5aU9+8O0fyyfEAuDu6dZ
-	 trgxzqYZ6ETm1fvsJLnXKUl4A3Vf8OjxWZktBTbkI2UiIzGIbXCIAILzBIszk6YBZuEet
-	 yI3cOa/Ht1bvlTjEn80zw4BDgPrvURRtMf2385gdPJNqJ9lSk/mctwdpUwhnzObCHhSw+
-	 EH7m79g86h9veba5vZEoRPo/x/FL9pSZCPkWLsVKo2aBN/DZbnTDj+2BGDnmv+wo5V78+
-	 hQ7/PiGER6jnalr/bq3CMWIunPDDuOXsv+W+EwOHVDQsUijTQWZThUAqeyDyhERv6eg==
+	t=1792571257;
+	b=hbVhM76ZmmGN2mmaEJuJFPGIWuuF1evKKwFW2T0NnrgOylg4NdCQBTNgRlZBzIYqWaMm
+	 TEliBr3h7Ur0kKTA+hsAQYN/PRWoY/1serAk7/IiWQcH21X+lStUTSzRre8XrrInWc6WV
+	 2eEWYxKc/EoP7Ds1f8Upgty6ooxLF4yxHngbAGozQyfehRmOMu7yvqqxZisKJoEmwA/l3
+	 7KCrO1T2UAWmKT+rTgqB0YJOniKHMFvimD6wtrzxYrlzFVbHj0gj+OPXegzzYlTumCF7R
+	 9nEDcTKTGOySZcR2Ab9HA48pzD+n1dXk1af5a7Q4IpQHfy7bW6vq9GJBRzepSk/ZDhg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792571065;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792571257;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=o+587Yi6rOQvVsQfNzIonVmDY+myE3lKJJHYGCxOym8=;
-	b=RtTLBN4SE3u7ogW61w6x5C3YrGa9a5ughb5xns+FuSXGX2qYDNCDAndSq+j4rzODf9yA
-	 0o/dXuMatG1zQ86eYl0RZWq66SVbnpKtRZma0PjvOZgUtRa0wt5Q86YiU/KgLKE7p/wHy
-	 2Eo42SJieT6Rc5qJazpFMbP2tz37b1UMLQTcuH/8Ar0XOb8p84Jdjr2XdYQB0DcZzhvua
-	 nqJ0WUDJHN33EP+hK2fiEaWJBNjE3kUK8Gp/fFH3ax38wa3euIQzDO+wYR8toQLKBuzuz
-	 I6eTRRl9QnNMT9cvyiyFUUkrK8qkR2VpPxCOB+S1M49ch9AG5LwRREYfXDeehiJOIDg==
+	bh=kF6hKEGSQiTPw5VAvXCmaOof7X+cDZOiW22O52zNOW8=;
+	b=0uVIZW2268je0D593Yoq7PRkL98Ewo6Ge9N8dOKEp//TM/X1WwsVDm02VE18+Bs2jbUF
+	 nzkrpUxa26Q+oTwwLB7WDbcN8CFqAo1l0UbesImYkUWoXing4eA6zAZR4qgtrSkipUrFU
+	 QwkZdgfiRocdOyw8xB8iqDV3reCrj4HLJqLHNs9x6XxwUuh5ivnV/euDTCI0L95sLxT+f
+	 e6JDRH8rcMUzWXfS36YUavydz/YiQo+PH3P64n+ZAmh0bV1ukLoWGYoTi7b03+pcggLpD
+	 xPfcxLj+sGf3THF3axTcD0RCOoMlH08levaXVNOquW+zpsUqBFMnIaA1nfYEg1niiCw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n6bCvT07;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dVQNwij8;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFD5C606A321
-	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 08:24:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13704606A319
+	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 08:27:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n6bCvT07
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BFAE1F000C9;
-	Wed, 21 Oct 2026 08:24:24 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dVQNwij8
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BDA81F000C9;
+	Wed, 21 Oct 2026 08:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792571064;
-	bh=o+587Yi6rOQvVsQfNzIonVmDY+myE3lKJJHYGCxOym8=;
+	s=k20260515; t=1792571256;
+	bh=kF6hKEGSQiTPw5VAvXCmaOof7X+cDZOiW22O52zNOW8=;
 	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=n6bCvT07cjIKqlKS7sVZkUeD3R9jma/YnlXIAESvsUTn6MCKc+b4OyTW994fMP+c1
-	 ClHvy0IFkylFT5uod/YMcM1MsIEbXr2cjcp/qUI6qSzn2Z+yoapn/uFm5QZM6eGHXJ
-	 vVwRtecf6oZWepTIT3zirhG/2Kb6dQBwS6EPzHudtyJiSWPQNU5ut9JCIPB+grEG1C
-	 Grd86kHdGTtY3nsnKmBPAnBzWQ/RZc0W44H469C+bLRX4+xs3/AU2jBFsN3opY5UzN
-	 vxUIlYG3byEUZr7pWjKEzwv3MiupSzUzAMS2YQzgFPvjWWcjbzbLmvNMzoSnLCisjb
-	 hzwqje1/KuYjA==
-Message-ID: <sashiko-outbox-179961@kernel.org>
+	b=dVQNwij8BBM5gJYRFe2HGCDgz1pZJ0GgaJZ0Ow0Rnh76A7vbKlOHR+3p6dBQ6V76X
+	 mIduUoS0tibne43zEDrE5VnS/hsX4gOXPTqsJL9I3YloEzpsuSccf9fMEP5LOGazk3
+	 OcpY+Em+mScq1Aop7W+Mf3nVvwozbKAAPTpOsp2r3yZQ61Y8Vd4Wp94J1J7GQUXRP6
+	 aW20Y2ttnGm3gQXT3lLYxLBgBjDRZASnrjaKxMqwfkkVc01p6YUpKIKMMcDflqsGTI
+	 D2te86Up7rUSq55WKMSi0s83GEjCaEWLNos+F5oNCOvRX0RKxmjwigUVDIDVHFtKxR
+	 0ShR9txQQY1bw==
+Message-ID: <sashiko-outbox-179965@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/2] [v4] serial: 8250: remove obsolete PORT_RSA support
+Subject: Re: [PATCH 2/2] [v4] serial: 8250: remove hub6 multiport support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Arnd Bergmann" <arnd@kernel.org>, linux-serial@vger.kernel.org
-In-Reply-To: <20261021081746.3278002-1-arnd@kernel.org>
+In-Reply-To: <20261021081746.3278002-2-arnd@kernel.org>
 References: <20261021081746.3278002-1-arnd@kernel.org>
+ <20261021081746.3278002-2-arnd@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 21 Oct 2026 08:24:23 +0000
+Date: Wed, 21 Oct 2026 08:27:35 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,34 +61,40 @@ Precedence: list
 
 > From: Arnd Bergmann <arnd@arndb.de>
 >=20
-> For all I can tell, the RSA support in the 8250 driver is not functional
-> and has not been for a long time.
+> hub6 support was added in linux-0.99 and the hardware was already old at
+> the time, being discontinued in 1990. The code for it has always been a
+> mess since it adds another dimension to the I/O addressing in the driver
+> that has leaked into many individual files.
 >=20
-> The RSA-DV II/S ISA card[1] was sold by IODATA in the 1990s as a faster
-> alternative to regular ISA serial ports, and it was discontinued in
-> 2002. Linux support was added by Kiyokazu SUTO in 2000[2]. The company
-> also made PCI versions of this device, but Linux never supported those.
+> Hugo and Uwe have attempted several times this year alone to isolate
+> the hub6 handling into the 8250_hub6.c file, but I feel that none of
+> this has been a real improvement over the original standalone loadable
+> module support.
 >=20
-> It seems that a patch to setserial would be required in order to set
-> PORT_RSA when not using autoconfiguration, and this was never merged.
-> Autotoconfiguration in turn requires passing probe_rsa=3DIOPORT arguments
-> at boot or module load time, which is not how any other uart drivers
-> work any more since linux-2.4.
+> Any machine that would have used this ISA card in practice is likely
+> 30 to 40 years old, and with i486 support now removed, it is clearly
+> safe to just kill this all off. The only bit that has to remain
+> is the ioctl interface, to ensure the serial_struct field is always
+> zero.
 >=20
-> This patch removes all code related to the RSA support, with the exception
-> of the user-visible PORT_RSA definition. I had originall sent this in
-> 2011 [3], but did not follow up at the time.
->=20
-> Link: http://www.iodata.jp/products/network/rsadv2s.htm [1]
-> Link: https://pub.ks-and-ks.ne.jp/prog/linux/rsa.en.shtml [2]
-> Link: https://lore.kernel.org/all/1309211120-2803-6-git-send-email-arnd@a=
-rndb.de/ [3]
-> Cc: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+> Link: https://mirrors.nycbug.org/pub/The_Unix_Archive/Unix_Usenet/comp.un=
+ix.sysv386/1990-December/007174.html
+> Fixes: a300273c458c ("serial: 8250: hub6: Add cleanup code")
+> Fixes: c526404a4a92 ("serial: 8250: Fix corner case for port matching")
+> Fixes: 7ab80d1e7243 ("serial: 8250: fix compile error with hub6_match_por=
+t() when compiled as a module")
+> Fixes: da7b5fd4e17f ("serial: 8250_hub6: add missing include for hub6_mat=
+ch_port()")
+> Fixes: 3d406299d882 ("serial: 8250_hub6: add hub6_match_port()")
+> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
+> Acked-by: Frank Li <Frank.Li@nxp.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261021081746.3278=
-002-1-arnd@kernel.org?part=3D1
+002-1-arnd@kernel.org?part=3D2
 
