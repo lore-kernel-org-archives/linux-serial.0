@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1792599158;
-	b=jvlRWcqdtQ9MxmLthslOqufvwLqugOZOjfO9tbT3dW889PsbdtVt8CtKx7zUyN19Py7n
-	 L7fvj2TVbQkx+VVJn4uUCKgx1Gt5WCSq3F5QdhsC3TEgTp277WW4wKWJRx7/lPIXnJlGa
-	 2ueMPUvV9P9r8u+J1KuejHuQEXOfzWNfDZQvymt93D3QT+vtj7KXcORIf3eJMz4UfIVW0
-	 56v1+h0IraUnCv/VYtuFnLh1cetdLi70+oDRFTUpLimTSpdVcxqxc9sUcH1MCqQ/x76z7
-	 1TjUaJ+nL+LHmgl436BjmczjsBnthuoYpYkY9aQjtd0r9nbFtPv7GMhP7bO/ZxKX5GA==
+	b=kD9B7h0JFKNi3nquUhVtb4ZXkZtu0DwYRJvGWpaXfTL/Wn/bYQs/FkKt0+ctHF0U7FUW
+	 +9/zZaRhwzGZs3OgUb9JLvWofbg7dhtMwlFmL5lk3gGfYfUH+JrBUIxVhfGZEK6oZQqm0
+	 AXKwuNIiSZsQprd2Dl77Apr3IyTa60dsDvvXNb5Mc1e/DouEgkr1VwUeCljnADGNzHmio
+	 KtogHJ9c1COjQpH/2Plfjz/OLEK5Dbx0XQtWOHAqBPRzABkDU56cKOCyC6fOlsuRDnJiE
+	 Y++PtSyqlu6VBuxIrkUTH/g6H90K+kBM4qygnrfULfzKvDyzHWNIw9QaB98Vt9/VUkg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1792599158;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=D63JyXDgTGNTbvLi/zmtD0wjaA0Xmn/U98+mxFyxUjE=;
-	b=k8KjjXfLdXnsljc2Bl1HaVHCcANLyRu0mX2dDNRSHev74cpy0Bu2uLuB+TLsY2c+tOSI
-	 lbKvnLoYAQBKt3OolOOMzf1zlg16KSXxSDjdsSpbo6vpcI1At9k1Ip+KYFKPFFefERZ/o
-	 muCZLfe44N947mgL71+QviCIuAXlfuXP7egR/1Zw9n2/mgYr0i53MTd143XxJ4Yp8guUc
-	 Dxewt9W8/W9lkG7TJOxcNpuWsu27bWfifQhX4IIPONa/bOfS3Jm0LqhcQ1g9koDEJ51a5
-	 zk/9Ngt4cD2nUHZRfVunyfEOQOVHzxj5EmE9GWMDHqvT9q9P7QQpvtMK1GvzUYlp3dA==
+	bh=7wLxM6Jx2TxijdJOdPWYIEJcNEz65qnh7+8neQqm6rA=;
+	b=f7rtq5CNOdtlPF4gu1zjEtDwnvHUJ3Ks66XXXmswhUWkRGOhHXQ+6Kw3Du3VhZtM4E9a
+	 aOOo68xNY2rGuYI5sDaObx2At4L859cNdq01EOkiVvGMr1BYnxPO+4WKLiwsKuBCueDT5
+	 rRWgojfREYMN29MljD3/6DGn2Ydoxutipcfh4u0r9r1Nni8J7l0Tur11CKtI8E9sFl2ie
+	 fpnRK864FFZr4r6HOL7Z/SizJb5L6PwE5DQ7HZu+dv61uZjDivUam227XyAwmgWKD7LOb
+	 MwwWEQPsFjmvZbg3JdkKxfgHI0/CI+IrqAo3aO8TaHyeeghMya5zJhOSS9wmLmdIT2Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BbM5uk+a;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TIjuhUnG;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B817A60A5BE2;
-	Wed, 21 Oct 2026 16:12:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831F060A4AFC;
+	Wed, 21 Oct 2026 16:12:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BbM5uk+a
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TIjuhUnG
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792599157;
-	b=P+w48LE3repW1OwR4jNsz98kWxkkcktQh6vCurQ/M4UKWbFwflDqye8PltZCWVSABzkD
-	 ZTV3irc7ZEJMPedVtb/z9QMVl4mvnwhXfCnTHFy9ho++FrZEGooWuDChyuZhZ+XiKKjVy
-	 tQFmABnSfVzzkRW7Zay/SZl0jgxPswsW98KVB8cE9JRGqD/He6djvz8NyV5GJb+a7fwwj
-	 kyVqlJww2Bn9YlPIjnaDXnsK97sU7HKX1MWhHRH/w6lmQXCc/7n41zS3goOz2bv79yzky
-	 YPOdtvFnvMtLzuNnclzUr0FD9xdSX/JAD9WMuNOYPss4vF/IoorkGa2j3M0ZIOc0kNw==
+	t=1792599158;
+	b=RWuJ76wNARF1uCC9ZXpUdVbeNc8+5x2JWJ44GnGdEFXpO8usPcQq4DUuppNM3CKU6RGB
+	 1IU4y88MJiyRETEhtFB7D2tmQQhUMLMPiaPxPIxkKAIa8wTqIZoX7aJXVnwv1fQRHpEYn
+	 UY40hRVvM5/AQcsjtQuax6+Hw3yR39UiJie/bIBnWZpOUAv0xxYNgDYiuBeOkut5Jy1z1
+	 4Hy/qL8JV4LkeuBj0EbodtSRsHnEzf73VaqALT4UgEPXIavviM3zJDkEV5kRp8mHMc4K8
+	 4GYHxHqUP7jn3z2IGknoezdap6XIQiyzQCAA2aH7dFB/xtD7pCOZjeAlLgEv9KgW3gw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792599157;
+	c=relaxed/relaxed; t=1792599158;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=D63JyXDgTGNTbvLi/zmtD0wjaA0Xmn/U98+mxFyxUjE=;
-	b=wRgi9NIFMDXEGjnWeL/c3YKnQr9+jhNgm2VsmemqKkLWVp5aGBCxVfADumX9H1XkJlOU
-	 5Ccg/+wBQFW8NmUorcXQDdgEzIBC2mbGCF7+Cm6iruSgYxAUh+pEF1KS9ig2ZDJAJgqcA
-	 9t1Q4Htyj80LjntsiEYp4/uJG4Dow7gYgoXrMWAp1lMIjl80AcXPFMMDCC/AiHBCGYxEh
-	 bSudc6o5lC0jN/zJvxfBUE1LZGau1HCkfGLHKu8DhNlkJaZJnhETBiYoj5s8fbdGUYybJ
-	 dUpS1ry8IPnRvBmv7EX8ozHH2Jxjr/nl15/RmH7OmxNrYWjmtXF7X8QNMYUgRE9MtLg==
+	bh=7wLxM6Jx2TxijdJOdPWYIEJcNEz65qnh7+8neQqm6rA=;
+	b=zRfL2kdux9ES4AtZ/Ikm8Wm7A0F4ejrq2DPRfCdJ/USuuG3its+jr6CMJi5ECtRZFYAu
+	 Ty4fbjTiJXkTAON5qj2oJlJtHk7zbtuKJXVj+4wHGwVN01ZY6cU0xYOT2rr/gQoMSZRHk
+	 SzZzUjxCfkzX2RtDSDOsRrzvF+sluz92QaT8OV3c8+D6NysgSxVekB0oPeg2WhGTPjzqY
+	 5zJ3MsmNDJuJICt4qs5OT0MZYdNRnvhcBr2+zZoPUzJ6UVpbgTqaw8JWJezexssJ8QLFj
+	 xgqqLx/LrDQRIGQbkhpUYVzm1b+8WFZhLoqU7JFmZNXruE3iIP3LQdVf/vt2AFu6lwQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id BAE6D1F01573;
-	Wed, 21 Oct 2026 16:12:29 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 4160A1F000CF;
+	Wed, 21 Oct 2026 16:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792599157;
-	bh=D63JyXDgTGNTbvLi/zmtD0wjaA0Xmn/U98+mxFyxUjE=;
+	s=k20260515; t=1792599158;
+	bh=7wLxM6Jx2TxijdJOdPWYIEJcNEz65qnh7+8neQqm6rA=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=BbM5uk+aPG3FWPy7/lgh13wK97AX/7a5wrC/fXUeMNrKtR5IBFh2oK+QnLHVseQBJ
-	 NwozKyWuGPlwnT26f6HSUbGIlas5rujZVN3hFfZ5qXzs2Z9ykxzXDS6ozK2/cX0QlX
-	 85kn68/Fd4ERipNsmxmaM715xKRgexojIE0tSzdS5D/l97tZDMI/Jd1Xc1p190HFR5
-	 lDsxwCtJEAsM4asWNjIBLm39XX9jF/oX5dR45aOLK0LOPxG8MXb+v4sB0GHnShgKzo
-	 ow4VuALVTOqZywk5Ww/44LqIA7pf77oegg3UgBRDwaMRF1BwrXAiFbPdMk2Pwenho2
-	 VRPHu5Xo8vcoQ==
+	b=TIjuhUnGJu7KSPXf4GoOkJRfMik9vzokF89dsKGahYFRxeE9UHMKMSHZz1lIFa4R+
+	 Pa9ST5n3a2IKjXPzAOV4RmnUumUbzr/uQSRimKM/sx6mePY7VBHLB6qCpgPcipj+GS
+	 bn5GOq0EjlRlXsNvwyKnfkqw6vHntA6OZmGxTmljceWDxwzYj2WWBGCKACX0H7hIRS
+	 bXJuA3Zq0TNn55PFD1Pg6ogxPQ7Vq26w1fPfWlEVkzQYrdMB65CGhavTM2sSvAIjNQ
+	 d7TFuJcPtfdnTV6zxB9fnEw6qBELlg1c/xMAK6/WsWv577fofri1YphAyw+yQKSBQI
+	 S43qxhnnNKnlQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 41A7D433BD;
+	by lkml.kernel.org (Postfix) with ESMTP id 1CB9E433AB;
 	Wed, 21 Oct 2026 16:12:23 +0000 (UTC)
 From: Cunhao Lu via B4 Relay <devnull+1579567540.qq.com@kernel.org>
-Date: Thu, 22 Oct 2026 00:11:05 +0800
-Subject: [PATCH 08/27] pinctrl: rockchip: Add RK3572 support
+Date: Thu, 22 Oct 2026 00:11:01 +0800
+Subject: [PATCH 04/27] dt-bindings: mfd: syscon: Add RK3572 QoS register
+ compatible
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,7 +84,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261022-add-board-ok3572-c-v1-8-0b0fd85a31ee@qq.com>
+Message-Id: <20261022-add-board-ok3572-c-v1-4-0b0fd85a31ee@qq.com>
 References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
 In-Reply-To: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
 To: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
@@ -120,11 +121,11 @@ Cc: Cunhao Lu <1579567540@qq.com>, linux-clk@vger.kernel.org,
  linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
  linux-usb@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792599138; l=10910;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792599138; l=787;
  i=1579567540@qq.com; s=20261015; h=from:subject:message-id;
- bh=llpd4hSoeAxFlyw37M/TwbFtigFBA0OxKUA2lzfGh7w=;
- b=bdUGoMBhDQqFxE/R6weMwkERu0HSLXV2BlCdCZB+1QyUn+h7uK0dV+sx9N6XrRy+f+4zWFlrV
- +VSV6vGWdWYCqMwAcyCZLuglSPQRVbIUhiDEd2Is/HtwYPla1uP06Mj
+ bh=uFfiJe79UHoJUmZUfddULOE/yY4AM8aRwf1OA9QQsAw=;
+ b=PQlvImamcct9qYzOV3A6Za7RjEIj1sPanPiyKUAgVT8qOcZLZshqI9eYCroTYs9FppadblViO
+ vNmeEdVoB8IAPJdBQj2d2OT1inwdeWPYAeSge7dK06aGkCZlOaxcUEQ
 X-Developer-Key: i=1579567540@qq.com; a=ed25519;
  pk=sUTWrzlIwT4C7ctjNfVZAzzg0G7QUn2XxRGpYsw4RtM=
 X-Endpoint-Received: by B4 Relay for 1579567540@qq.com/20261015 with
@@ -135,353 +136,25 @@ Content-Transfer-Encoding: 7bit
 
 From: Cunhao Lu <1579567540@qq.com>
 
-Support RK3572 pinmux, bias, drive-strength, and Schmitt controls.
-Enable input buffers during mux changes for the RGMII receive clocks.
+Add rockchip,rk3572-qos to the syscon compatible list.
 
 Signed-off-by: Cunhao Lu <1579567540@qq.com>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 230 ++++++++++++++++++++++++++++++++++++-
- drivers/pinctrl/pinctrl-rockchip.h |   1 +
- 2 files changed, 230 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/mfd/syscon.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index ba47b6f323cc..6d9a6510b343 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -1363,6 +1363,10 @@ static int rockchip_get_mux(struct rockchip_pin_bank *bank, int pin)
- 	if (bank->recalced_mask & BIT(pin))
- 		rockchip_get_recalced_mux(bank, pin, &reg, &bit, &mask);
- 
-+	if (ctrl->type == RK3572 && bank->bank_num == 0 &&
-+	    pin >= RK_PB4 && pin <= RK_PB7)
-+		reg += 0x2000;
-+
- 	if (ctrl->type == RK3576) {
- 		if ((bank->bank_num == 0) && (pin >= RK_PB4) && (pin <= RK_PB7))
- 			reg += 0x1ff4; /* GPIO0_IOC_GPIO0B_IOMUX_SEL_H */
-@@ -1421,6 +1425,24 @@ static int rockchip_verify_mux(struct rockchip_pin_bank *bank,
- 	return 0;
- }
- 
-+static int rk3572_enable_input(struct rockchip_pin_bank *bank, int pin)
-+{
-+	static const u32 offsets[] = { 0x300, 0x10310, 0x12320, 0x14330, 0x14340 };
-+	struct rockchip_pinctrl *info = bank->drvdata;
-+	u32 reg, bit = pin % 8;
-+
-+	if (bank->bank_num >= ARRAY_SIZE(offsets))
-+		return -EINVAL;
-+
-+	reg = offsets[bank->bank_num] + pin / 8 * 4;
-+	if (bank->bank_num == 0 && pin >= RK_PB4)
-+		reg += 0x2000;
-+	else if (bank->bank_num == 4 && pin >= RK_PC0)
-+		reg -= 0x10000;
-+
-+	return regmap_write(info->regmap_base, reg, BIT(bit + 16) | BIT(bit));
-+}
-+
- /*
-  * Set a new mux function for a pin.
-  *
-@@ -1498,6 +1520,10 @@ static int rockchip_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
- 	if (bank->recalced_mask & BIT(pin))
- 		rockchip_get_recalced_mux(bank, pin, &reg, &bit, &mask);
- 
-+	if (ctrl->type == RK3572 && bank->bank_num == 0 &&
-+	    pin >= RK_PB4 && pin <= RK_PB7)
-+		reg += 0x2000;
-+
- 	if (ctrl->type == RK3576) {
- 		if ((bank->bank_num == 0) && (pin >= RK_PB4) && (pin <= RK_PB7))
- 			reg += 0x1ff4; /* GPIO0_IOC_GPIO0B_IOMUX_SEL_H */
-@@ -1568,8 +1594,13 @@ static int rockchip_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
- 	rmask = data | (data >> 16);
- 	data |= (mux & mask) << bit;
- 	ret = regmap_update_bits(regmap, reg, rmask, data);
-+	if (ret)
-+		return ret;
- 
--	return ret;
-+	if (ctrl->type == RK3572)
-+		return rk3572_enable_input(bank, pin);
-+
-+	return 0;
- }
- 
- #define PX30_PULL_PMU_OFFSET		0x10
-@@ -3097,6 +3128,151 @@ static int rk3568_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
- 	return 0;
- }
- 
-+#define RK3572_DRV_BITS_PER_PIN		4
-+#define RK3572_DRV_PINS_PER_REG		4
-+#define RK3572_DRV_GPIO0_OFFSET		0x100
-+#define RK3572_DRV_GPIO1_OFFSET		0x10120
-+#define RK3572_DRV_GPIO2_OFFSET		0x12140
-+#define RK3572_DRV_GPIO3_OFFSET		0x14160
-+#define RK3572_DRV_GPIO4_OFFSET		0x14180
-+
-+static int rk3572_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-+				       int pin_num, struct regmap **regmap,
-+				       int *reg, u8 *bit)
-+{
-+	struct rockchip_pinctrl *info = bank->drvdata;
-+
-+	*regmap = info->regmap_base;
-+
-+	switch (bank->bank_num) {
-+	case 0:
-+		*reg = RK3572_DRV_GPIO0_OFFSET;
-+		if (pin_num >= 12)
-+			*reg += 0x2000;
-+		break;
-+	case 1:
-+		*reg = RK3572_DRV_GPIO1_OFFSET;
-+		break;
-+	case 2:
-+		*reg = RK3572_DRV_GPIO2_OFFSET;
-+		break;
-+	case 3:
-+		*reg = RK3572_DRV_GPIO3_OFFSET;
-+		break;
-+	case 4:
-+		*reg = RK3572_DRV_GPIO4_OFFSET;
-+		if (pin_num >= 16)
-+			*reg -= 0x10000;
-+		break;
-+	default:
-+		dev_err(info->dev, "unsupported bank_num %d\n", bank->bank_num);
-+		return -EINVAL;
-+	}
-+
-+	*reg += ((pin_num / RK3572_DRV_PINS_PER_REG) * 4);
-+	*bit = pin_num % RK3572_DRV_PINS_PER_REG;
-+	*bit *= RK3572_DRV_BITS_PER_PIN;
-+
-+	return 0;
-+}
-+
-+#define RK3572_PULL_BITS_PER_PIN	2
-+#define RK3572_PULL_PINS_PER_REG	8
-+#define RK3572_PULL_GPIO0_OFFSET	0x200
-+#define RK3572_PULL_GPIO1_OFFSET	0x10210
-+#define RK3572_PULL_GPIO2_OFFSET	0x12220
-+#define RK3572_PULL_GPIO3_OFFSET	0x14230
-+#define RK3572_PULL_GPIO4_OFFSET	0x14240
-+
-+static int rk3572_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-+					int pin_num, struct regmap **regmap,
-+					int *reg, u8 *bit)
-+{
-+	struct rockchip_pinctrl *info = bank->drvdata;
-+
-+	*regmap = info->regmap_base;
-+
-+	switch (bank->bank_num) {
-+	case 0:
-+		*reg = RK3572_PULL_GPIO0_OFFSET;
-+		if (pin_num >= 12)
-+			*reg += 0x2000;
-+		break;
-+	case 1:
-+		*reg = RK3572_PULL_GPIO1_OFFSET;
-+		break;
-+	case 2:
-+		*reg = RK3572_PULL_GPIO2_OFFSET;
-+		break;
-+	case 3:
-+		*reg = RK3572_PULL_GPIO3_OFFSET;
-+		break;
-+	case 4:
-+		*reg = RK3572_PULL_GPIO4_OFFSET;
-+		if (pin_num >= 16)
-+			*reg -= 0x10000;
-+		break;
-+	default:
-+		dev_err(info->dev, "unsupported bank_num %d\n", bank->bank_num);
-+		return -EINVAL;
-+	}
-+
-+	*reg += ((pin_num / RK3572_PULL_PINS_PER_REG) * 4);
-+	*bit = pin_num % RK3572_PULL_PINS_PER_REG;
-+	*bit *= RK3572_PULL_BITS_PER_PIN;
-+
-+	return 0;
-+}
-+
-+#define RK3572_SMT_BITS_PER_PIN		1
-+#define RK3572_SMT_PINS_PER_REG		8
-+#define RK3572_SMT_GPIO0_OFFSET		0x400
-+#define RK3572_SMT_GPIO1_OFFSET		0x10410
-+#define RK3572_SMT_GPIO2_OFFSET		0x12420
-+#define RK3572_SMT_GPIO3_OFFSET		0x14430
-+#define RK3572_SMT_GPIO4_OFFSET		0x14440
-+
-+static int rk3572_calc_schmitt_reg_and_bit(struct rockchip_pin_bank *bank,
-+					   int pin_num,
-+					   struct regmap **regmap,
-+					   int *reg, u8 *bit)
-+{
-+	struct rockchip_pinctrl *info = bank->drvdata;
-+
-+	*regmap = info->regmap_base;
-+
-+	switch (bank->bank_num) {
-+	case 0:
-+		*reg = RK3572_SMT_GPIO0_OFFSET;
-+		if (pin_num >= 12)
-+			*reg += 0x2000;
-+		break;
-+	case 1:
-+		*reg = RK3572_SMT_GPIO1_OFFSET;
-+		break;
-+	case 2:
-+		*reg = RK3572_SMT_GPIO2_OFFSET;
-+		break;
-+	case 3:
-+		*reg = RK3572_SMT_GPIO3_OFFSET;
-+		break;
-+	case 4:
-+		*reg = RK3572_SMT_GPIO4_OFFSET;
-+		if (pin_num >= 16)
-+			*reg -= 0x10000;
-+		break;
-+	default:
-+		dev_err(info->dev, "unsupported bank_num %d\n", bank->bank_num);
-+		return -EINVAL;
-+	}
-+
-+	*reg += ((pin_num / RK3572_SMT_PINS_PER_REG) * 4);
-+	*bit = pin_num % RK3572_SMT_PINS_PER_REG;
-+	*bit *= RK3572_SMT_BITS_PER_PIN;
-+
-+	return 0;
-+}
-+
- #define RK3576_DRV_BITS_PER_PIN		4
- #define RK3576_DRV_PINS_PER_REG		4
- #define RK3576_DRV_GPIO0_AL_OFFSET	0x10
-@@ -3441,6 +3617,18 @@ static int rockchip_get_drive_perpin(struct rockchip_pin_bank *bank,
- 	if (ret)
- 		return ret;
- 
-+	if (ctrl->type == RK3572) {
-+		ret = regmap_read(regmap, reg, &data);
-+		if (ret)
-+			return ret;
-+		data >>= bit;
-+		if ((bank->bank_num == 0 && pin_num < 12) ||
-+		    (bank->bank_num == 4 && (pin_num == 24 || pin_num == 25)))
-+			return ((data & BIT(1)) >> 1) | ((data & BIT(0)) << 1);
-+		return ((data & BIT(2)) >> 2) | ((data & BIT(0)) << 2) |
-+		       (data & BIT(1));
-+	}
-+
- 	switch (drv_type) {
- 	case DRV_TYPE_IO_1V8_3V0_AUTO:
- 	case DRV_TYPE_IO_3V3_ONLY:
-@@ -3559,6 +3747,22 @@ static int rockchip_set_drive_perpin(struct rockchip_pin_bank *bank,
- 		rmask_bits = RK3568_DRV_BITS_PER_PIN;
- 		ret = (1 << (strength + 1)) - 1;
- 		goto config;
-+	} else if (ctrl->type == RK3572) {
-+		if (strength < 0 || strength > 7)
-+			return -EINVAL;
-+		rmask_bits = RK3572_DRV_BITS_PER_PIN;
-+		if ((bank->bank_num == 0 && pin_num < 12) ||
-+		    (bank->bank_num == 4 && (pin_num == 24 || pin_num == 25))) {
-+			/* Only four drive-strength levels are supported. */
-+			if (strength > 3)
-+				return -EINVAL;
-+			ret = ((strength & BIT(1)) >> 1) | ((strength & BIT(0)) << 1);
-+		} else {
-+			ret = ((strength & BIT(2)) >> 2) |
-+			      ((strength & BIT(0)) << 2) |
-+			      (strength & BIT(1));
-+		}
-+		goto config;
- 	} else if (ctrl->type == RK3576) {
- 		rmask_bits = RK3576_DRV_BITS_PER_PIN;
- 		ret = ((strength & BIT(2)) >> 2) | ((strength & BIT(0)) << 2) | (strength & BIT(1));
-@@ -3717,6 +3921,7 @@ static int rockchip_get_pull(struct rockchip_pin_bank *bank, int pin_num)
- 	case RK3528:
- 	case RK3562:
- 	case RK3568:
-+	case RK3572:
- 	case RK3576:
- 	case RK3588:
- 		pull_type = bank->pull_type[pin_num / 8];
-@@ -3786,6 +3991,7 @@ static int rockchip_set_pull(struct rockchip_pin_bank *bank,
- 	case RK3528:
- 	case RK3562:
- 	case RK3568:
-+	case RK3572:
- 	case RK3576:
- 	case RK3588:
- 		pull_type = bank->pull_type[pin_num / 8];
-@@ -4084,6 +4290,7 @@ static bool rockchip_pinconf_pull_valid(struct rockchip_pin_ctrl *ctrl,
- 	case RK3528:
- 	case RK3562:
- 	case RK3568:
-+	case RK3572:
- 	case RK3576:
- 	case RK3588:
- 		return (pull != PIN_CONFIG_BIAS_PULL_PIN_DEFAULT);
-@@ -4296,6 +4503,7 @@ static const struct pinconf_ops rockchip_pinconf_ops = {
- 
- static const struct of_device_id rockchip_bank_match[] = {
- 	{ .compatible = "rockchip,gpio-bank" },
-+	{ .compatible = "rockchip,rk3572-gpio-bank" },
- 	{ .compatible = "rockchip,rk3188-gpio-bank0" },
- 	{},
- };
-@@ -5643,6 +5851,24 @@ static struct rockchip_pin_ctrl rk3568_pin_ctrl = {
- 					       PULL_TYPE_IO_1V8_ONLY,	\
- 					       PULL_TYPE_IO_1V8_ONLY)
- 
-+static struct rockchip_pin_bank rk3572_pin_banks[] = {
-+	RK3576_PIN_BANK(0, "gpio0", 0, 0x8, 0x2010, 0x2018),
-+	RK3576_PIN_BANK(1, "gpio1", 0x10020, 0x10028, 0x10030, 0x10038),
-+	RK3576_PIN_BANK(2, "gpio2", 0x12040, 0x12048, 0x12050, 0x12058),
-+	RK3576_PIN_BANK(3, "gpio3", 0x14060, 0x14068, 0x14070, 0x14078),
-+	RK3576_PIN_BANK(4, "gpio4", 0x14080, 0x14088, 0x4090, 0x4098),
-+};
-+
-+static struct rockchip_pin_ctrl rk3572_pin_ctrl __maybe_unused = {
-+	.pin_banks		= rk3572_pin_banks,
-+	.nr_banks		= ARRAY_SIZE(rk3572_pin_banks),
-+	.label			= "RK3572-GPIO",
-+	.type			= RK3572,
-+	.pull_calc_reg		= rk3572_calc_pull_reg_and_bit,
-+	.drv_calc_reg		= rk3572_calc_drv_reg_and_bit,
-+	.schmitt_calc_reg	= rk3572_calc_schmitt_reg_and_bit,
-+};
-+
- static struct rockchip_pin_bank rk3576_pin_banks[] = {
- 	RK3576_PIN_BANK(0, "gpio0", 0, 0x8, 0x2004, 0x200C),
- 	RK3576_PIN_BANK(1, "gpio1", 0x4020, 0x4028, 0x4030, 0x4038),
-@@ -5727,6 +5953,8 @@ static const struct of_device_id rockchip_pinctrl_dt_match[] = {
- 		.data = &rk3562_pin_ctrl },
- 	{ .compatible = "rockchip,rk3568-pinctrl",
- 		.data = &rk3568_pin_ctrl },
-+	{ .compatible = "rockchip,rk3572-pinctrl",
-+		.data = &rk3572_pin_ctrl },
- 	{ .compatible = "rockchip,rk3576-pinctrl",
- 		.data = &rk3576_pin_ctrl },
- 	{ .compatible = "rockchip,rk3588-pinctrl",
-diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-index 950097699643..553197f6dc69 100644
---- a/drivers/pinctrl/pinctrl-rockchip.h
-+++ b/drivers/pinctrl/pinctrl-rockchip.h
-@@ -203,6 +203,7 @@ enum rockchip_pinctrl_type {
- 	RK3528,
- 	RK3562,
- 	RK3568,
-+	RK3572,
- 	RK3576,
- 	RK3588,
- };
+diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
+index 945a168b613d..b3c96e1de74f 100644
+--- a/Documentation/devicetree/bindings/mfd/syscon.yaml
++++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
+@@ -118,6 +118,7 @@ properties:
+               - rockchip,rk3528-qos
+               - rockchip,rk3562-qos
+               - rockchip,rk3568-qos
++              - rockchip,rk3572-qos
+               - rockchip,rk3576-qos
+               - rockchip,rk3588-qos
+               - rockchip,rv1126-qos
 
 -- 
 2.34.1
