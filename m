@@ -1,107 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=194.13.80.246
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792576878;
-	b=HRQWiE4P6jyWj1osMsu8Hp2mOg5KcO5fSuo/NQMgrYlq5L2aXEZWob7Vh1MdZop9IoBo
-	 JyuPW+mRCCDPuh3OCnsP0AH4UGBtrFxgSsdP3z+tKccUsypsHZlY/JoyMAjxTq4iBzeF6
-	 jPdf1nxeSkOIiPcYRxZaSJ9X0U3quPP6lGeogOGguD5Ily/FMOhPmgey3odrLUp5Rj6L7
-	 mZn7yR8Wnv1IhtTul3tuH3lrxHYdIDueUm9WmTi5OLJbqjFfoagAgAp23tDvpt8mUV9rE
-	 0pYG3ah7/HnSOCzYlmcHjJEUuLa2iSYhX+2NWza6rJq18+vWz+MbIKWt5viUZSkNdNw==
+	t=1792583134;
+	b=qesGlIRIGTxoPD6BSXs6WgY5sBr5991VtIU+EmXuuIXFwFyFrsSZo2Z+WYtAdbDNzhE9
+	 QIbFAWS35vFbhjFeE5UGnPYU55++m0fgekAjeVNKivlAyKM4u8HHXHSBsobdSSnOX3dlc
+	 /pOTufdW7arsOK2uP3VL9kpCFLzlEG/4KrKEuNzd1mUUE5otxDQPTYaBwh/WI+cU+43PF
+	 DItf6aeA9tTN/fyd+fH/oL86vgIQsJaaGmtqO0P6VjXzA5Y9bkMaEI5q6bIsXmrSDtC46
+	 HD9WPV7/wm3NcdbatL2TZZQ+np0i+NKFcmr0yG6l3b1HxfD3L3tT7Fgw7C4q/3lE43Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792576878;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=RVJTwN159znt8hJRBq+zKCr4Hg7h2qirYM0EqJu+lc4=;
-	b=pg+VIUfVT6YQnMbpfiLO7Jh/QUNDNNUElw3EDYDlGA0NnnMWV7gCk/TiccYl/9oSjjq1
-	 aw0ENIrNckDofjVxpS8vDsVD0m2e7s2UbhnLtDUB83aR6qJ0ehhjsCjsb74KlFlhsu+jF
-	 MSe3gRARE94nBA+8ctQAmMAcUCb9SaU8WGc8IRREpnk1cR+WZEEw64ysCW6n7275l5SdJ
-	 tbT3NnazrvScz1cevTgseADVc/koITCoivatF8/99d871vCkCv6TkmWMe294dSocYCEar
-	 dBD2AT1NSi8dWsrgyzWObXBzjLfY+Ll57V8ak5orw8p29qxRmDGD+7Lt1uRn9PCJnYw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792583134;
+	h=DMARC-Filter:Received:DKIM-Signature:From:Date:Subject:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
+	 In-Reply-To:To:Cc:X-Mailer:X-Last-TLS-Session-Version;
+	bh=YXumx7zTrHr94qWuIde28XemX3sHJ1fMcOG+i6oYMSA=;
+	b=LROSmcamWfrWHVh9cnKlooJhwF9F9E7tscCTOIKOewygEYlvAqRAothGJk7z7zDrqxAW
+	 yI9STwej7pFvNnl5XW0VlzTMwXtdR/LOdTT9LJSKY9hiysrlXkJ/l3mkAml6/KmZIzVJf
+	 7qXYyf1T7X/JHKCwpFpsO5Dx0TJWKQNeawM3giiGT02eUyrtLY+euCYOzgUpu6CyriOoF
+	 Y5GdXcRqPrmZdKVWdoKgYBUu7hivFR892Y4eiucv364AUzAcLPM6o8CKW4vIeFUFGR0/3
+	 HtGmF++1XhoQBUwfhMJZEjLqgr+DDCU/dqrUFEFjsL203B/FzQN4pCkAel/rS8mofHw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Md4AJRPq;
-	arc=none smtp.remote-ip=209.85.222.47
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=none header.from=tipi-net.de;
+	spf=pass smtp.mailfrom=tipi-net.de;
+	dkim=pass header.d=tipi-net.de header.i=@tipi-net.de header.a=rsa-sha256 header.s=dkim header.b=gkJLLH9M;
+	arc=none smtp.remote-ip=194.13.80.246
+Received: from mail.tipi-net.de (mail.tipi-net.de [194.13.80.246])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54866606A31D
-	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 10:01:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 54866606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B63F1606A321;
+	Wed, 21 Oct 2026 11:45:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B63F1606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tipi-net.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tipi-net.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Md4AJRPq
-Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-99061e2171cso163543241.2
-        for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 03:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792576877; x=1793181677; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=RVJTwN159znt8hJRBq+zKCr4Hg7h2qirYM0EqJu+lc4=;
-        b=Md4AJRPqTd6XcyhcJr0pjgBw3QByVzkZMaaXLEPVkqMKkphH/Oj9O3NJ63bJBVmpo/
-         qJRSZEaID43R45Hdf4XmuYpAMYDJyyHWnspl0iDU2+gmgsn2rDOrjfwpMTYXt35dyxsO
-         nxhdY7dWusvN7DYJS31pRMSVD/wdEY9PooJyKK3mbgniTD+liPMz7cIqZfrWRZKKVXoP
-         9yl1oKHb5UCCJP7oNistdgdGWN3RQrmEE8HCVHJILFjwBn+1rrTSBX1haazi8cPI0VaF
-         M43WpJVIYk1LHGfTUFBWuxEHtB9U9CUyq4OYukx31lPRUYLTu7qv4n6TF4qpN5rLmiG9
-         //IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792576877; x=1793181677;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=RVJTwN159znt8hJRBq+zKCr4Hg7h2qirYM0EqJu+lc4=;
-        b=DWXpJjbZaB0hxM9eIrWpFv4n7F2CbZ7ZdWWtUz74qfdaEnD2TM+lOHdiyj4X7udwuS
-         ZGEB89kksjsKL5KhqhQ1dBay4wP3tDHRe9Vi1CR0vi0CgfXKNfSN+pHM/PMnPRMOx/TO
-         thh6wRUdlMw+aQGJvV3O6A7NwWtzx5oKczUhKsGu8BSeCLwlUxzGd7o9US2j4XUB6cjJ
-         VeyjBXpFLOaqxaEWrEwup0QC8lAGk9KEbTVx5t+Z65Qr3xCx88bNggcf2ONZj9TzKCJX
-         brKVhU6vLWazcnf/k30uaDOlkxXBpeBENE1YDOYOJ9vvu//4uJifaRtrD6D/hT1PpI12
-         vtrA==
-X-Gm-Message-State: AFq9FYIspCx4fjHz9pYMxZnk1A4hclSHK9Z7MWl3ZaTT66r25KLr1vhN
-	0yMVL0zb2YDoI4eHcc7T8q8TuNIpH22u2uK5ZG6CwpJ1BFcQO7fWja5h
-X-Gm-Gg: AYBFou1possQslXbfrbgI3/KXt+8FWF7uvs0ipy1qP5FWHzu4NYFFsrIXHqd6gzh2Ky
-	vshwXaIW0rOQgtwgAokEYHa6RlW7TXUmVUybbN9mUu8IbxXVX22idRIrDqpgYdXL9EWR89z6FCV
-	/U8H0dBqwpXbUK90fCWELpTJstG9PBE84H33ZbHIDUZBywi718FoQn5qtGjSaAm4kFvdgaodT0/
-	VZtgV+HOVrjX7TIrnrSGy03K87uefPxWrNQxhQyA2f700azBQZiq3CJnKwVwo6LoJOs3eXs3YTT
-	9z+dDW1mImGQg/z/SVz9mBKUWfiXyANP4lGomzeJ72yjzhDjSwApm1ITjbuML5rTnjThtOrntm9
-	jFg1g5a5US5ZD9vRA7tBUNeF8Pk+Gl5VmYmqYGiyJQCJFoUZj7DFlz4IaU2sBER6xZ8uPSEikjE
-	zf1vhBa9bHkjGPzCJpzhVG4U6RDtcifC0thRRvPw+VuSkOFUAd3aFC8FLVMd2lUtRRattwtzcgk
-	FgokWu+qHI5YJF/dl3fqRIFYa6l/LTgK32KRejFeXxJuaGWtbNbJpMdv1C9n/zKHT2KNlwprSSP
-	vkQCbKlVXlvGglmkGDWWAkeA1Gl4LUlqmCYk/nHQtlMD+hb3FYsbHUa30RyPZ3o=
-X-Received: by 2002:a05:6102:4187:b0:7cc:776:6c41 with SMTP id ada2fe7eead31-7cc9273dca8mr461720137.22.1792576872539;
-        Wed, 21 Oct 2026 03:01:12 -0700 (PDT)
-Received: from MaquinaLab.. ([179.179.238.247])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-990d118d522sm2526812241.10.2026.10.21.03.01.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2026 03:01:11 -0700 (PDT)
-From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	ilpo.jarvinen@linux.intel.com,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	Andre Przywara <andre.przywara@arm.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Enzo Adriano <enzo.adriano.code@gmail.com>,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook when DLF is present
-Date: Wed, 21 Oct 2026 07:00:49 -0300
-Message-ID: <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <athe0QikG2mzCAtd@ashevche-desk.local>
-References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <20261020104753.28703-1-vinicius.eduardo.pedrosa@gmail.com> <athe0QikG2mzCAtd@ashevche-desk.local>
+	dkim=pass (2048-bit key, unprotected) header.d=tipi-net.de header.i=@tipi-net.de header.a=rsa-sha256 header.s=dkim header.b=gkJLLH9M
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id ABB19A1626;
+	Wed, 21 Oct 2026 13:45:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tipi-net.de; s=dkim;
+	t=1792583130; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=YXumx7zTrHr94qWuIde28XemX3sHJ1fMcOG+i6oYMSA=;
+	b=gkJLLH9MgMRr6QtFERcHA97HdEJs7eubvmK2oH9Qz4QvlVnvYNHBiiUFVQab9BjcSroBw8
+	PxjcP1YWvCZQ5UIgv1aCoVBL2JO4cM4ymKvarwm4ZQoljqPGavb/nmE4rokl8Scw+2sQU/
+	3pO1Icz26tXFw7UlhkGXLfBxxpEx6UQlBRRSE1D/ryIhNIxTGSLYSo9hDaB23Lvdm6WOad
+	nirXl1EgASxdSyURt7i8gIt9Eg39teu3OR+ecC4TlNsV/2sfAvm4OQQglrwZ01CfRJTMz0
+	TbFpBHG6/mme7yBuo6b91rQMdWRYt9z/QjSpJIPuVpkV+kdFA3Yg9Nwg0sbDzw==
+From: Nicolai Buchwitz <nb@tipi-net.de>
+Date: Wed, 21 Oct 2026 13:45:22 +0200
+Subject: [PATCH v4 1/2] serial: amba-pl011: finish a transmission still
+ running when RS485 is enabled
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -111,23 +57,138 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261021-devel-nbuchwitz-pl011-rs485-reconfig-stall-v4-1-ed10e219159a@tipi-net.de>
+References: <20261021-devel-nbuchwitz-pl011-rs485-reconfig-stall-v4-0-ed10e219159a@tipi-net.de>
+In-Reply-To: <20261021-devel-nbuchwitz-pl011-rs485-reconfig-stall-v4-0-ed10e219159a@tipi-net.de>
+To: Russell King <linux@armlinux.org.uk>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Lino Sanfilippo <LinoSanfilippo@gmx.de>, 
+ Nicolai Buchwitz <nb@tipi-net.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.16.0
+X-Last-TLS-Session-Version: TLSv1.3
 
-Hi Andy,
+Disabling RS485 during a transmission keeps it running. If RS485 is
+enabled again before it ends, the state is OFF while data is still going
+out. The TX path does not end a transmission in state OFF, so nothing
+sets the idle RTS level afterwards and the transceiver keeps driving the
+bus.
 
-On Wed, 21 Oct 2026, Andy Shevchenko wrote:
+Hand such a transmission back to RS485 when it is enabled on an open
+port. While PIO or DMA still feeds the FIFO, assert RTS and mark it as
+sending, so that the TX path ends it like any other. With only the FIFO
+left, drain it from trigger_stop_tx instead. Data that is queued but not
+started yet, for example while output is stopped, is not part of the
+transmission.
 
-> Right, but have you read my second question in the above paragraph?
+Fixes: 97f85204275a ("serial: amba-pl011: keep transmitter enabled when disabling RS485")
+Cc: stable@vger.kernel.org # 6.18.x: 1b6d660e038b: serial: amba-pl011: drive the bus during break in RS485 mode
+Cc: stable@vger.kernel.org # 6.18.x
+Signed-off-by: Nicolai Buchwitz <nb@tipi-net.de>
+---
+ drivers/tty/serial/amba-pl011.c | 57 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
 
-Sorry, I missed the second part of your question.
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 79776a882ae35..1edbe75611e63 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1285,6 +1285,11 @@ static inline bool pl011_dma_tx_queued(struct uart_amba_port *uap)
+ 	return uap->dmatx.queued;
+ }
+ 
++static inline bool pl011_dma_tx_active(struct uart_amba_port *uap)
++{
++	return uap->dmacr & UART011_TXDMAE;
++}
++
+ #else
+ /* Blank functions if the DMA engine is not available */
+ static inline void pl011_dma_remove(struct uart_amba_port *uap)
+@@ -1341,6 +1346,11 @@ static inline bool pl011_dma_tx_queued(struct uart_amba_port *uap)
+ 	return false;
+ }
+ 
++static inline bool pl011_dma_tx_active(struct uart_amba_port *uap)
++{
++	return false;
++}
++
+ #define pl011_dma_flush_buffer	NULL
+ #endif
+ 
+@@ -1734,6 +1744,12 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+ 							0 : TIOCSER_TEMT;
+ }
+ 
++/* PIO or DMA still feeds the FIFO */
++static bool pl011_tx_active(struct uart_amba_port *uap)
++{
++	return (uap->im & UART011_TXIM) || pl011_dma_tx_active(uap);
++}
++
+ static void pl011_maybe_set_bit(bool cond, unsigned int *ptr, unsigned int mask)
+ {
+ 	if (cond)
+@@ -2454,6 +2470,42 @@ static int pl011_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 	return ret;
+ }
+ 
++/*
++ * Data from before RS485 was enabled is still going out. Finish it as an
++ * RS485 transmission, so that its end sets the idle level.
++ */
++static void pl011_rs485_tx_resume(struct uart_amba_port *uap,
++				  const struct serial_rs485 *rs485)
++{
++	u32 cr = pl011_read(uap, REG_CR);
++
++	cr |= UART011_CR_TXE;
++	if (!(rs485->flags & SER_RS485_RX_DURING_TX))
++		cr &= ~UART011_CR_RXE;
++	if (rs485->flags & SER_RS485_RTS_ON_SEND)
++		cr &= ~UART011_CR_RTS;
++	else
++		cr |= UART011_CR_RTS;
++	pl011_write(cr, uap, REG_CR);
++
++	/* pl011_break_ctl() ends the transmission when the break ends */
++	if (pl011_read(uap, REG_LCRH_TX) & UART01x_LCRH_BRK) {
++		uap->rs485_break = true;
++		uap->rs485_tx_state = SEND;
++		return;
++	}
++
++	if (pl011_tx_active(uap)) {
++		uap->rs485_tx_state = SEND;
++		return;
++	}
++
++	/* Only the FIFO is left. The timer drains it with the new settings */
++	uap->rs485_tx_state = WAIT_AFTER_SEND;
++	hrtimer_start(&uap->trigger_stop_tx, uap->rs485_tx_drain_interval,
++		      HRTIMER_MODE_REL);
++}
++
+ static int pl011_rs485_config(struct uart_port *port, struct ktermios *termios,
+ 			      struct serial_rs485 *rs485)
+ {
+@@ -2483,6 +2535,11 @@ static int pl011_rs485_config(struct uart_port *port, struct ktermios *termios,
+ 		if (tx_pending && !uart_tx_stopped(port) &&
+ 		    !pl011_dma_tx_start(uap))
+ 			pl011_start_tx_pio(uap);
++	} else if ((rs485->flags & SER_RS485_ENABLED) &&
++		   uap->rs485_tx_state == OFF &&
++		   tty_port_initialized(&port->state->port) &&
++		   (pl011_tx_active(uap) || !pl011_tx_empty(port))) {
++		pl011_rs485_tx_resume(uap, rs485);
+ 	} else if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		pl011_rs485_tx_stop(uap);
+ 	}
 
-If I understand you correctly, since 8250_dw.c already has the BUSY-safe
-set_divisor, you're suggesting that it should have the matching
-get_divisor as well, instead of pairing it with the dwlib getter.
+-- 
+2.53.0
 
-The dwlib getter would stay for the other users of dw8250_setup_port(),
-like 8250_lpss. Is that the structure you had in mind?
-
-Thanks,
-Vinicius
