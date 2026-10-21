@@ -1,78 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792599167;
-	b=qBUHv3U261vNAn/SZncEtT+QxJDGSExRAJ8Jn7EnnMVnEeJeco0avPxObxfum62wOtxM
-	 xrfPTZFJt+R7QzCKwKCUo48XJf5Fg1XUuD7VxToC7GpEtuKg4MOCD5tu4v905cFweb4Rk
-	 6y343oB0Urr40soHC2Y69SR7kZfUabco3MvRKd5lEu8hqFZsLAgB3TRC/neGjlWToTtvX
-	 YGUlxJslXNqRTDokaKXViJAqrpiJ/XxpNV8f3iOuPx9w56C3rtG1JkYqSFxnplXvzuyJf
-	 1SS7PbBGaWaJNXcz7cx6gdGoxzG4QcKpM5ucgykzz5kBfwFHlac9UcWMP1zL2TyQDVg==
+	t=1792599160;
+	b=0ByKuNd653ihs41jGfqF/rHzXyzgHR0PYCKWh6Obp7QE1qVOenywM0wF4FhAR5cVMxTJ
+	 U/YWgyTJe8R7P6738mcFutR7z6DfvXt5ClNcnfVbWs2fyqOicxCcaKUmULAP+Ai09hDjb
+	 IO47Zm80zEjGjM8C837kMVnfZq/dL3HzjM3PDgqX0tabjSjhQ+B/tt4grRi2D3zTNHpHw
+	 zGqyHx+f77sbU3fNMl4WZL7DAj2Xk2RkEuEI4wVrRCtFxCSgp+JjtAtoDtsXJxsdB7ZYX
+	 DlileZ8xZpcHs/ybiJJ1pgOJc233I2u40pD2kImMbLX8zhdSwb26ZSC56cQzp/tlSLA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792599167;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792599160;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=2V1GtdaPYam0RV/wqc+Y0xlUnVgiTsq/Rq95bOUlABI=;
-	b=FZFKkw/CjR2tJJhPU/rSItNKRvpVrukpvLSuTgwNJHAXFz9CeDXJSRdKCmBmmilD9Nrb
-	 AM3Ozcb0o6Ees6p8OH1nn+70N5cbaCV58WFy0itmLcNAygZojv7qrm3NmBudqW8qQGHjM
-	 XGoHSpi+jEYtu0kKbKSo8dMZ3aukHNEuCSPqKXOJLrIy7glRh/JnJIev/RE9S5c2jKD+L
-	 XqzZATAD1UOERefNI0dbOvkvahtbVo6fEw+R3DUJEXneOd6xLxucv5l7gxYrfhTBZuLfy
-	 KzadYRJ5dNLOiusC6bw2qmHRomo38Fe4TX53NOZ9MRos+6JZSuxilSZQEouKegLKkGQ==
+	bh=y/aRDDf0tbbhcaRVo5zqbs8kQxH53mVifboQgC8oqlg=;
+	b=hfRrYa+hheqynrfKklsoVNFqEXSRVYfNZHDgHp85QOcQ4uPcPUA2ZBpmytcMbd70LwNL
+	 3gAfJfont0kqRz2jA+x+W+zvfkGYDKnR9632njp/3rviyfikIklWFXRsMceEM8FsOQVrF
+	 An3zrZSv7vphM65VBfXAQGWfxDAxTqZqrXfRfdim7iScC5FPnyN8Kn31BOIPnsHhMSPX5
+	 r5PYGf08/8oGc2V5mhpchqFslDRjYKH65Nds1UmWYcTfc1VFlzCoUYyKlaXpC7U2bHbOt
+	 E1wDyhcW6JLmge5/7NnidyFQtP9YAOq5jmEF9JWnamcwNOj6fMcbaKzGnf43lArkMsw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=V3XkdOCg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a9RxlqBH;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7210606D8D0;
-	Wed, 21 Oct 2026 16:12:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABB5760A5BD3;
+	Wed, 21 Oct 2026 16:12:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=V3XkdOCg
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a9RxlqBH
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792599166;
-	b=fjM+JLzDvJlZ20ECWo5NEN+SQQELMDo1Bk6nM8RVc1BkviEpCLJ/DXMuBJJvbFgCl0SE
-	 k+IDMZL+LwJ26z9QsTv1GhzupKfLf5pt69L2+SBam0XdJj4P6pkZYCHpIcX0XA+9M3YdG
-	 kzFBTPBRCCyd7fcdg7kQ6niz2Pa4FFYazxUvqCm3zaNiV9iBi0qyU2UweI6Rbc5RUot8Q
-	 7TifiKnxJmby8zGSip9wgAjHrnyGfDejLHWgjWkuIXo9+oFjKoqkAiYQ9lEnDHzZXf54n
-	 J0RI1vjJ84CoeXr76BMtoLPSdqw7o/GW5qvSwjUY8jyEniLvGECnv8aFfKKIdyVEH/A==
+	t=1792599159;
+	b=eDDDNehLR1p2x7B8ned7VtqfH9eKEz93NM41AraLGyxHvh4NoHzPHBHHI/5k7BUhMjpk
+	 z77BwI/58nrmq5QwqBA9BWfKryEiXqS6VB5Sg2lBShRCOODKXWqO9teXGIKrcpZDJzY+c
+	 2tHsUCmRxnNLXmmr/Lbf9VfOFWWo8TtowUFmomMP1q57uNc8lCYQ51NerHUsQfRFwRRPA
+	 rJ/vzTWdzOVZzzaTTxxg7CkO0mnYuBh5QbRuTFKCjTtLYDhw0tmSo4Ta/HAWzBxyXAB7f
+	 gUofVPVYSa7n8kUKxP4i4qqRPvRLVpEJn2v4CbRb926TmrTek1eEI0XcVZOwhX0+xjw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792599166;
+	c=relaxed/relaxed; t=1792599159;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=2V1GtdaPYam0RV/wqc+Y0xlUnVgiTsq/Rq95bOUlABI=;
-	b=nlLObQ31rWIzayDF485RV4ZoWE3UnXRG7vlmAOgDlpQbtQ8KoQhMvEojF3N+8lBL0/4X
-	 Rkop++khG0DCOTycmbiNg5rwM6mw/D0OceH4Yq8IJyj6L56UfWM1l/X3e4Xg+D9gQYQ56
-	 EktTflh0x1hPtJo4XUUSICxpL3hqYsc69aLeao9Y8wbOu0Xzp3hsy3zGyxWPIOsJ9Te6K
-	 5pCHmWqDDjKsS2FwFzglVr17vye9/G/nxOM5TSb1EhjIUlvj8ra4Be3PUl0riSMvUycJE
-	 3GjV72Mwdf34D2D1324GpYoaGTbZNUV5p2Q8aGg/em9bT0wuM7HHVNNgyOVKVDx/mAw==
+	bh=y/aRDDf0tbbhcaRVo5zqbs8kQxH53mVifboQgC8oqlg=;
+	b=fSWRq1A6qwGzlN3Uz39RW+c7Oioj6iIYomjt6eognaDKMJVjR3aJTacPNpYk6RG9nTLs
+	 DMpKY+aQSRC3p4vSd2dzPN/kD+V881uouWvRZEmZpGZtVNkkK4TVOjghmLzsMJh4M+kDK
+	 S4VolXmJsvAWGTUkRQ9fAdTNBeEykTqR8QMYkrTbmFpMrQa6JWFm25vgUHpUaQHrnq8+J
+	 QGw0NGSoBFMIEorWQi+A4z99UODJr8PTmGvJOJAIEbUVKhm++6sLAUcvIHfTe5IAfTRHa
+	 7EBJ+G9BDjPB6Dl8tFmBWedVONhp22xh8HRabHm1+V7rrVcglXRzmZbRuWzP3eUM9ww==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 322AB1F00AE3;
-	Wed, 21 Oct 2026 16:12:41 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id EE9B91F000CD;
+	Wed, 21 Oct 2026 16:12:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792599166;
-	bh=2V1GtdaPYam0RV/wqc+Y0xlUnVgiTsq/Rq95bOUlABI=;
+	s=k20260515; t=1792599159;
+	bh=y/aRDDf0tbbhcaRVo5zqbs8kQxH53mVifboQgC8oqlg=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=V3XkdOCgH8DC/Xk8HSaSoiroTeyZCnpyJ08JcJMXCa7E4oH8yoeMF6gWXoqDolpaN
-	 dad4D+rlqyrH495QlsvaDJDQcfzx6B8Tz4sJDsOfSiNSdBr5cpWE0XTA1JziqTWCpw
-	 QEa/5cv03MDuK/Mnn72pEjt/wPPVJ0fmGdcjWq3KmgXY1UblF/bLyQVUPijaibVJFD
-	 Tm9+062fPw6ZL55eHuRS2Vl6bUHWB7GRtZ2mCCymdaZkYvS8wORxH7H0qNzDXmGVIS
-	 ikFch04kdSAY1rKPQ3QCSvUIzJoUR8DDjvA67c7MY71zgEsJA/gI529YrBobxJ863J
-	 cRB0IP3ioTGBg==
+	b=a9RxlqBHCh3LZ2aCUU+jUEoQFCeF0J+QQ+UnAWpmrT3489+0AnXjcpb0shW68J91T
+	 wded0xqNx9wjgauBxr4GIc36en1QYz1YPWkk629vOYR6+Fn6nCspoaPvf8Gxv13Cnl
+	 1XwirC/n3T8LE/BF7nfiFZ+ExsPC9+PjbJkRlGGmZ897lyg2zLkADRdL/+szSFo/Nm
+	 eXVvMhCQTWBEq9GEkXOEK1jyDgi+HPx4kqe/WdM+idxx6xvhCwp0xIFbFEzlpnFYcv
+	 WchkdYtDJXmV37pXe2NV8B8MhQ3M73rOgZxgKKbJJ743z2wqulwbjGXEblSXE23OIZ
+	 0r1Bf/jB8eu9Q==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id BDFC1433F7;
+	by lkml.kernel.org (Postfix) with ESMTP id 87663433DE;
 	Wed, 21 Oct 2026 16:12:23 +0000 (UTC)
 From: Cunhao Lu via B4 Relay <devnull+1579567540.qq.com@kernel.org>
-Date: Thu, 22 Oct 2026 00:11:19 +0800
-Subject: [PATCH 22/27] phy: rockchip-naneng-combphy: Add RK3572 support
+Date: Thu, 22 Oct 2026 00:11:13 +0800
+Subject: [PATCH 16/27] net: stmmac: dwmac-rk: Add RK3572 support
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,7 +83,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261022-add-board-ok3572-c-v1-22-0b0fd85a31ee@qq.com>
+Message-Id: <20261022-add-board-ok3572-c-v1-16-0b0fd85a31ee@qq.com>
 References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
 In-Reply-To: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
 To: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
@@ -120,11 +120,11 @@ Cc: Cunhao Lu <1579567540@qq.com>, linux-clk@vger.kernel.org,
  linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
  linux-usb@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792599138; l=8706;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792599138; l=2887;
  i=1579567540@qq.com; s=20261015; h=from:subject:message-id;
- bh=wC2aLPgJOhrcC7ie1Sc3x8qp5suDThHbcIf1QuP1Gno=;
- b=DzUmoa+fO7xpmPZra3NC8fmhgRM7tqdEJ+v+VPO74dHb/SZ/y1gKncl1LRskmymmm4VxE4krX
- fKu2I3IpxIyA0/dkLTBuOzaN29bA75HSzMDiQUPFwJdGWyKSPzU5m24
+ bh=Rg9amKxMbRRIlhFsyxhoXU1NtXTBv4uhUyFMSA2skGM=;
+ b=RlAQCZ0baz8YNd+Fe9U9uTTuBsNuYyNIkkmM+sLmCxpFmmJfRH2JQSdcgqoVkpSpp4l5+IsQp
+ ugoGbndipGsB56oFRJkFSBRBu0gv0dr6kL+awbNU6Vp7rpINPT9yOUy
 X-Developer-Key: i=1579567540@qq.com; a=ed25519;
  pk=sUTWrzlIwT4C7ctjNfVZAzzg0G7QUn2XxRGpYsw4RtM=
 X-Endpoint-Received: by B4 Relay for 1579567540@qq.com/20261015 with
@@ -135,232 +135,85 @@ Content-Transfer-Encoding: 7bit
 
 From: Cunhao Lu <1579567540@qq.com>
 
-Support PCIe, USB3, and SATA operation on the RK3572 combo PHY.
+Configure RGMII delays and clocks for both RK3572 GMAC controllers,
+using GMAC-specific GRF registers.
 
 Signed-off-by: Cunhao Lu <1579567540@qq.com>
 ---
- drivers/phy/rockchip/phy-rockchip-naneng-combphy.c | 201 +++++++++++++++++++++
- 1 file changed, 201 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 53 ++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-diff --git a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c b/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
-index 7843356a4dd4..e13a78ab5777 100644
---- a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
-+++ b/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
-@@ -1000,6 +1000,204 @@ static const struct rockchip_combphy_cfg rk3568_combphy_cfgs = {
- 	.combphy_cfg	= rk3568_combphy_cfg,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index 72bdbcb5e863..1a22233179ab 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -872,6 +872,58 @@ static const struct rk_gmac_ops rk3568_ops = {
+ 	},
  };
  
-+static int rk3572_combphy_cfg(struct rockchip_combphy_priv *priv)
++#define RK3572_VCCIO0_3_VO_IOC_CON1		0x10608
++#define RK3572_VCCIO1_2_4_VI_IOC_CON1		0x12604
++#define RK3572_VCCIO5_6_IOC_MISC0		0x14630
++#define RK3572_PHP_GRF_GMAC0_CON		0x0070
++#define RK3572_NVM0_GRF_GMAC1_CON		0x0020
++
++static int rk3572_init(struct rk_priv_data *bsp_priv)
 +{
-+	const struct rockchip_combphy_grfcfg *cfg = priv->cfg->grfcfg;
-+	unsigned long rate;
-+
-+	switch (priv->type) {
-+	case PHY_TYPE_PCIE:
-+		/* Set SSC downward spread spectrum */
-+		rockchip_combphy_updatel(priv, GENMASK(5, 4), BIT(4), 0x7c);
-+
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con0_for_pcie, true);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con1_for_pcie, true);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con2_for_pcie, true);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con3_for_pcie, true);
++	switch (bsp_priv->id) {
++	case 0:
++		bsp_priv->gmac_grf_reg = RK3572_PHP_GRF_GMAC0_CON;
 +		break;
-+	case PHY_TYPE_USB3:
-+		/* Set SSC downward spread spectrum */
-+		rockchip_combphy_updatel(priv, GENMASK(5, 4), BIT(4), 0x7c);
-+
-+		/* Enable adaptive CTLE for USB3.0 Rx */
-+		rockchip_combphy_updatel(priv, GENMASK(0, 0), BIT(0), 0x38);
-+
-+		/* Set PLL KVCO fine tuning signals */
-+		rockchip_combphy_updatel(priv, GENMASK(4, 2), BIT(3), 0x80);
-+
-+		/* Set PLL LPF R1 to su_trim[10:7]=1001 */
-+		writel(0x4, priv->mmio + (0xb << 2));
-+
-+		/* Set PLL input clock divider 1/2 */
-+		rockchip_combphy_updatel(priv, GENMASK(7, 6), BIT(6), 0x14);
-+
-+		writel(0x32, priv->mmio + (0x11 << 2));
-+
-+		/* Set PLL KVCO to min and set PLL charge pump current to max */
-+		writel(0xf0, priv->mmio + (0xa << 2));
-+
-+		/* Set Rx squelch input filter bandwidth */
-+		writel(0x0d, priv->mmio + (0x14 << 2));
-+
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_txcomp_sel, false);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_txelec_sel, false);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->usb_mode_set, true);
-+		break;
-+	case PHY_TYPE_SATA:
-+		/* Enable adaptive CTLE for SATA Rx */
-+		rockchip_combphy_updatel(priv, GENMASK(0, 0), BIT(0), 0x38);
-+
-+		/* Set tx_rterm = 50 ohm and rx_rterm = 43.5 ohm */
-+		writel(0x8f, priv->mmio + (0x06 << 2));
-+
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con0_for_sata, true);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con1_for_sata, true);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con2_for_sata, true);
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->con3_for_sata, true);
-+		rockchip_combphy_param_write(priv->pipe_grf, &cfg->pipe_con0_for_sata, true);
-+		rockchip_combphy_param_write(priv->pipe_grf, &cfg->pipe_con1_for_sata, true);
++	case 1:
++		bsp_priv->gmac_grf_reg = RK3572_NVM0_GRF_GMAC1_CON;
 +		break;
 +	default:
-+		dev_err(priv->dev, "incompatible PHY type\n");
 +		return -EINVAL;
 +	}
 +
-+	rate = clk_get_rate(priv->refclk);
-+
-+	switch (rate) {
-+	case 24000000:
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_24m, true);
-+		if (priv->type == PHY_TYPE_USB3 || priv->type == PHY_TYPE_SATA) {
-+			/* Set ssc_cnt[9:0]=0101111101 & 31.5KHz */
-+			rockchip_combphy_updatel(priv, GENMASK(7, 6), BIT(6), 0xe << 2);
-+
-+			rockchip_combphy_updatel(priv, GENMASK(7, 0), 0x5f, 0xf << 2);
-+		} else if (priv->type == PHY_TYPE_PCIE) {
-+			/* PLL KVCO tuning fine */
-+			rockchip_combphy_updatel(priv, GENMASK(4, 2), 0x4 << 2, 0x20 << 2);
-+
-+			writel(0x0, priv->mmio + (0x1b << 2));
-+
-+			/* Set up su_trim: T0_1 */
-+			writel(0x90, priv->mmio + (0xa << 2));
-+			writel(0x02, priv->mmio + (0xb << 2));
-+			writel(0x57, priv->mmio + (0xd << 2));
-+
-+			writel(0x5f, priv->mmio + (0xf << 2));
-+		}
-+		break;
-+	case 25000000:
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_25m, true);
-+		break;
-+	case 100000000:
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
-+		if (priv->type == PHY_TYPE_PCIE) {
-+			/* gate_tx_pck_sel length select work for L1SS */
-+			writel(0xc0, priv->mmio + 0x74);
-+
-+			/* PLL KVCO tuning fine */
-+			rockchip_combphy_updatel(priv, GENMASK(4, 2), 0x4 << 2, 0x20 << 2);
-+
-+			/* Set up rx_trim: PLL LPF C1 85pf R1 1.25kohm */
-+			writel(0x4c, priv->mmio + (0x1b << 2));
-+
-+			/* Set up su_trim: T3_P1 650mv */
-+			writel(0x90, priv->mmio + (0xa << 2));
-+			writel(0x43, priv->mmio + (0xb << 2));
-+			writel(0x88, priv->mmio + (0xc << 2));
-+			writel(0x56, priv->mmio + (0xd << 2));
-+		} else if (priv->type == PHY_TYPE_SATA) {
-+			/* downward spread spectrum +500ppm */
-+			rockchip_combphy_updatel(priv, GENMASK(7, 4), 0x50, 0x1f << 2);
-+
-+			/* ssc ppm adjust to 3500ppm */
-+			rockchip_combphy_updatel(priv, GENMASK(3, 0), 0x7, 0x9 << 2);
-+		}
-+		break;
-+	default:
-+		dev_err(priv->dev, "Unsupported rate: %lu\n", rate);
-+		return -EINVAL;
-+	}
-+
-+	if (priv->ext_refclk) {
-+		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_ext, true);
-+		if (priv->type == PHY_TYPE_PCIE && rate == 100000000) {
-+			writel(0x10, priv->mmio + (0x20 << 2));
-+
-+			writel(0x0c, priv->mmio + (0x1b << 2));
-+
-+			/*
-+			 * Set up su_trim: T3_P1 650mv
-+			 * CKRCV termination resistor adjust 11: Hi-Z
-+			 */
-+			writel(0x90, priv->mmio + (0xa << 2));
-+			writel(0x43, priv->mmio + (0xb << 2));
-+			writel(0xb8, priv->mmio + (0xc << 2));
-+			writel(0x56, priv->mmio + (0xd << 2));
-+		}
-+	}
-+
-+	if (priv->enable_ssc) {
-+		rockchip_combphy_updatel(priv, GENMASK(4, 4), BIT(4), 0x7 << 2);
-+		/* PLL control SSC module period should be set */
-+		rockchip_combphy_updatel(priv, GENMASK(5, 5), BIT(5), 0x20 << 2);
-+
-+		if (priv->type == PHY_TYPE_PCIE && rate == 24000000) {
-+			/* xin24m T0_1 650mV */
-+			writel(0x00, priv->mmio + (0x10 << 2));
-+			writel(0x32, priv->mmio + (0x11 << 2));
-+			writel(0x00, priv->mmio + (0x1b << 2));
-+			writel(0x90, priv->mmio + (0x0a << 2));
-+			writel(0x02, priv->mmio + (0x0b << 2));
-+			writel(0x08, priv->mmio + (0x0c << 2));
-+			writel(0x57, priv->mmio + (0x0d << 2));
-+			writel(0x40, priv->mmio + (0x0e << 2));
-+			writel(0x5f, priv->mmio + (0x0f << 2));
-+			writel(0x10, priv->mmio + (0x20 << 2));
-+			/* ssc_cnt: 0101111101 & 31.5KHz */
-+			rockchip_combphy_updatel(priv, GENMASK(7, 6), BIT(6), 0xe << 2);
-+			rockchip_combphy_updatel(priv, GENMASK(7, 0), 0x5f, 0xf << 2);
-+		} else if (priv->type == PHY_TYPE_PCIE && rate == 100000000) {
-+			/* ssc_cnt: 1000110001 & 31.5KHz */
-+			rockchip_combphy_updatel(priv, GENMASK(7, 6), BIT(6), 0xe << 2);
-+			rockchip_combphy_updatel(priv, GENMASK(7, 0), 0x8c, 0xf << 2);
-+		}
-+	}
-+
-+	if (priv->type == PHY_TYPE_PCIE)
-+		rockchip_combphy_updatel(priv, BIT(5), BIT(5), 0x64);
-+
++	bsp_priv->clock_grf_reg = bsp_priv->gmac_grf_reg;
 +	return 0;
 +}
 +
-+static const struct rockchip_combphy_grfcfg rk3572_combphy_grfcfgs = {
-+	/* pipe-phy-grf */
-+	.usb_mode_set		= { 0x0000, 5, 0, 0x00, 0x04 },
-+	.pipe_clk_24m		= { 0x0004, 14, 13, 0x00, 0x00 },
-+	.pipe_clk_25m		= { 0x0004, 14, 13, 0x00, 0x01 },
-+	.pipe_clk_100m		= { 0x0004, 14, 13, 0x00, 0x02 },
-+	.pipe_txelec_sel	= { 0x0008, 12, 12, 0x00, 0x01 },
-+	.pipe_txcomp_sel	= { 0x0008, 15, 15, 0x00, 0x01 },
-+	.pipe_clk_ext		= { 0x000c, 9, 8, 0x02, 0x01 },
-+	.pipe_phy_status	= { 0x0034, 6, 6, 0x01, 0x00 },
-+	.con0_for_pcie		= { 0x0000, 15, 0, 0x00, 0x1000 },
-+	.con1_for_pcie		= { 0x0004, 15, 0, 0x00, 0x0000 },
-+	.con2_for_pcie		= { 0x0008, 15, 0, 0x00, 0x0101 },
-+	.con3_for_pcie		= { 0x000c, 15, 0, 0x00, 0x0200 },
-+	.con0_for_sata		= { 0x0000, 15, 0, 0x00, 0x0129 },
-+	.con1_for_sata		= { 0x0004, 15, 0, 0x00, 0x0000 },
-+	.con2_for_sata		= { 0x0008, 15, 0, 0x00, 0x80c1 },
-+	.con3_for_sata		= { 0x000c, 15, 0, 0x00, 0x0407 },
-+	/* php-grf */
-+	.pipe_con0_for_sata	= { 0x0058, 2, 0, 0x00, 0x2 },
-+	.pipe_con1_for_sata	= { 0x005c, 2, 0, 0x00, 0x2 },
++static void rk3572_set_to_rgmii(struct rk_priv_data *bsp_priv,
++				int tx_delay, int rx_delay)
++{
++	u32 val = GRF_FIELD(14, 8, rx_delay) | GRF_FIELD(6, 0, tx_delay) |
++		  GRF_FIELD(15, 15, !!rx_delay) | GRF_FIELD(7, 7, !!tx_delay);
++
++	if (bsp_priv->id == 1) {
++		regmap_write(bsp_priv->php_grf, RK3572_VCCIO0_3_VO_IOC_CON1, val);
++		regmap_write(bsp_priv->php_grf, RK3572_VCCIO5_6_IOC_MISC0, val);
++	} else {
++		regmap_write(bsp_priv->php_grf, RK3572_VCCIO1_2_4_VI_IOC_CON1, val);
++	}
++}
++
++static const struct rk_gmac_ops rk3572_ops = {
++	.init = rk3572_init,
++	.set_to_rgmii = rk3572_set_to_rgmii,
++	.gmac_phy_intf_sel_mask = GENMASK_U16(11, 9),
++	.gmac_rmii_mode_mask = BIT_U16(3),
++	.clock.io_clksel_io_mask = BIT_U16(7),
++	.clock.gmii_clk_sel_mask = GENMASK_U16(6, 5),
++	.clock.rmii_clk_sel_mask = BIT_U16(5),
++	.clock.rmii_gate_en_mask = BIT_U16(4),
++	.supports_rmii = true,
++	.php_grf_required = true,
++	.regs_valid = true,
++	.regs = { 0x29d20000, 0x2a040000, 0 },
 +};
 +
-+static const struct rockchip_combphy_cfg rk3572_combphy_cfgs = {
-+	.grfcfg		= &rk3572_combphy_grfcfgs,
-+	.combphy_cfg	= rk3572_combphy_cfg,
-+};
-+
- static int rk3576_combphy_cfg(struct rockchip_combphy_priv *priv)
- {
- 	const struct rockchip_combphy_grfcfg *cfg = priv->cfg->grfcfg;
-@@ -1407,6 +1605,9 @@ static const struct of_device_id rockchip_combphy_of_match[] = {
- 		.data = &rk3568_combphy_cfgs,
- 	},
- 	{
-+		.compatible = "rockchip,rk3572-naneng-combphy",
-+		.data = &rk3572_combphy_cfgs,
-+	}, {
- 		.compatible = "rockchip,rk3576-naneng-combphy",
- 		.data = &rk3576_combphy_cfgs,
- 	},
+ /* VCCIO0_1_3_IOC */
+ #define RK3576_VCCIO0_1_3_IOC_CON2		0X6408
+ #define RK3576_VCCIO0_1_3_IOC_CON3		0X640c
+@@ -1629,6 +1681,7 @@ static const struct of_device_id rk_gmac_dwmac_match[] = {
+ 	{ .compatible = "rockchip,rk3506-gmac", .data = &rk3506_ops },
+ 	{ .compatible = "rockchip,rk3528-gmac", .data = &rk3528_ops },
+ 	{ .compatible = "rockchip,rk3568-gmac", .data = &rk3568_ops },
++	{ .compatible = "rockchip,rk3572-gmac", .data = &rk3572_ops },
+ 	{ .compatible = "rockchip,rk3576-gmac", .data = &rk3576_ops },
+ 	{ .compatible = "rockchip,rk3588-gmac", .data = &rk3588_ops },
+ 	{ .compatible = "rockchip,rv1108-gmac", .data = &rv1108_ops },
 
 -- 
 2.34.1
