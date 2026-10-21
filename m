@@ -1,87 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792590345;
-	b=5PZ/3O+d6/Vlt6ztny6ns6kc0734Brzu4eybgI4xaTaPUPbCCjBQY8J3YNFZNRELtH7N
-	 uK5IMMZ/iIG6xBjgz0QfeUa0xGNAWDhpb338lHdYvB4CtxrA5eEVsL7Ehq4RV+QIPOZxU
-	 R2hVF3hUj0P1oV4pAfdLtQJMf/TTzjmGuIKr6bfgY3+nV0ACQvRemA/gz44p0wL19SD6E
-	 VZt6WUFCylL/efwVDeUNHD2XhFbQyoKPHbp/SVtoOfGYpb+cUlLTEllT/EPeFIdjnDohk
-	 QzIfKVwyWBJtlzJ7lvfQDyTYQQeV+HsbpyFYaeQmDrGyqRztdNM2kddFGGVFIpRxKhA==
+	t=1792593183;
+	b=Gqy6bdD02xFD4vBqv7irDg3YyFQL6seh+GJcNnGuIp3aOj8l8BXP4AnmWKb//93lF2BA
+	 ezTKagolV+mQ98O2du7Fl7u0tqXIrib/n1Ow9PYNs6X9AR18YRwfve1mvUZgAVdNCZ7vo
+	 QqxHueFvdpkshgG0PiOFd5ubMCeXaqM4XlmXDbz3/OA5JJHirRI1ZBWN/1hwdxm8GhwgT
+	 b6/t0VJtFBVAKASZVaVSRfPcwYcr0I6MoXfLfPRnIqTP4I2iSsIq8Rilm+Poez6c9ZSi6
+	 64MNd509CyYwisyMPs3JzbF6/H+1uMq883EX9iwWJmz6IVJ15Dinoaq5QDKEF8t6vzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792590345;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=om8w7QXSdYKu02tw65tJ99U3eL+Sg+cuLsqMm6GZ54U=;
-	b=YsPNZ0thJ+LJZC51XkLmCdP0/1PRD5QaYAcu8FcN0VEqt4a96V2izFv7T/yndvFt1gt6
-	 4aOSGn4DCX+AvslIaKy87gHYY1RQm7BcsAgZCi0EEdIO1lhy4/2KzsWILZcjHgwC7XkN6
-	 CAbZd0QlBM/oVXfNWPpeNnKdxj6Q5O5k68lbhYV5Hczo2hLf19mUXJ4kMF2gvjbSK+W94
-	 xuo0le3VqOhz6Hne+U5lwV79CqfFmY0Kw++AZSmwpr8WWpV5U18JQNwivzliwFMx7EOvA
-	 oLaZoDWCTJskSinDHpvNmoywipQe5+X+YKNvJncB7ZgxUgSc9b/zhnuycVW0/UNyfTg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792593183;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=kThb887yl4OaivErYCFX9FiyQChfD/n8kNnGpPqyOzY=;
+	b=jYJFNVNgGJay+F43iGFojAznFv/JR2QrcpS66Om/Lef/d2dIYAp6FpC7eCosCkBOdseD
+	 cTnTpskRLJkHXpobg786deH+mjfwmpZ3vj7Fn8/a5R3H6WVAVEB7NPpAZJJH33PABWE4M
+	 gJdTKWOm4m8Be1LhyGsAHSwRfk9sFEqhZ3oMqufUvSL4bqMFkf7UtTVnKD1JloHszzURz
+	 DD7yL9BgDyK/oChz51odSYmEkpJT2lg8BdJwqAJh01aJ88NsQUmEX+/zVqjHMnWXF1loL
+	 XdVLtoltNps11r6WPShn79d02kOCHbQiow+zbXfjjVr5VdP8pC6DXyrB8TQ2Kp8O0Ow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=TPt6zR1M;
-	arc=none smtp.remote-ip=192.198.163.18
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aSCxxTBw;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B39F606A31A;
-	Wed, 21 Oct 2026 13:45:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9B39F606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E39A606A319;
+	Wed, 21 Oct 2026 14:33:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=TPt6zR1M
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792590345; x=1824126345;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lUjLPWWlN6l1+ey7iJlAqTyXZpN23Ksa49kPyHEPupc=;
-  b=TPt6zR1MIR0QDCW81Hj5vkUsr8dJlgA/P1+4N4EsgqzpjNJLxLGMJq8r
-   ks4eo87T7Vazi7ykVsWWLIw0e6oLjrdgrf57wRdrMNgNW1U9e7w4R/EpD
-   kdwGolUc+syPVGpy1v9HPUwo4TGDdBcf0FiloZGjnh5xudWUQoJnVPPvm
-   EE+OjisROn07RSvkc7Iqbhrk7XW7FU+40OxTdapFSeg8yIdfNH3jDftvn
-   Z+B79OgOY0zRsqgTJE12+TkM2j+Qz9ImMeuabU0V4t8u3tYrYwhQKcdkG
-   pPPlaAxuJ4CublXVbhP7yOazsAJ9YS83fsTNIBvCdquZAyPZkc8zqXxzs
-   g==;
-X-CSE-ConnectionGUID: kauiS2zxRjOKOi0gIZjuSg==
-X-CSE-MsgGUID: hHvYUJ3fR0OgujcRpenLPg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1346850"
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="1346850"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 06:45:35 -0700
-X-CSE-ConnectionGUID: +SSgAPUWSeqSj+QSQsE4OQ==
-X-CSE-MsgGUID: Q5rODW1QRJ+XPjGyXAxLGA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="3036317"
-Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 06:45:31 -0700
-Date: Wed, 21 Oct 2026 16:45:28 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, ilpo.jarvinen@linux.intel.com,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	Andre Przywara <andre.przywara@arm.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Enzo Adriano <enzo.adriano.code@gmail.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook
- when DLF is present
-Message-ID: <atjB-BnXclL3FcUm@ashevche-desk.local>
-References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
- <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
- <20261020104753.28703-1-vinicius.eduardo.pedrosa@gmail.com>
- <athe0QikG2mzCAtd@ashevche-desk.local>
- <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aSCxxTBw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC941F000C5;
+	Wed, 21 Oct 2026 14:33:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792593182;
+	bh=kThb887yl4OaivErYCFX9FiyQChfD/n8kNnGpPqyOzY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=aSCxxTBwdQ5fBcPY9rOyetmvAKv8H1aMfpdlqo1ahvg7jvA41DV4oAyTeVEJN8l7q
+	 BeI7135qFLSfUYbAAv/R1tmN1WE1PYgOLR5EZAFITVLgCYQJP54u+dyIBVpW9PouP5
+	 wz++H6El1fqhqn3psexHFsz7He+Nk++0QuaEVrZIgcfqFN1YpFM+QYy/GMfB8WhR40
+	 SBMg1uA46xRCRPOE4EIiCwoi1w78JlXG5CcU2q4tLp0/8UNsW2deh/Gu3mPWyQ7TLg
+	 cuDTKyPv6Dc8b5VLMpHIbXMcm8Pm7tPTZqq9G7gTQVh0ciXQ7tsXiCA2WsXVm7M+YL
+	 7JhqXuotSdbUQ==
+Message-ID: <250bded6-2a51-457d-9bf2-24c299dbd7a9@kernel.org>
+Date: Wed, 21 Oct 2026 16:32:58 +0200
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -91,53 +51,213 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] serdev: handle devices without an ACPI or device
+ tree node
+To: ChunAn Wu <an.wu@canonical.com>, linux-serial@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, markus.probst@posteo.de,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ ilpo.jarvinen@linux.intel.com, mpearson-lenovo@squebb.ca,
+ derekjohn.clark@gmail.com
+References: <20261021092124.2306053-1-an.wu@canonical.com>
+From: Hans de Goede <hansg@kernel.org>
+Content-Language: en-US, nl
+In-Reply-To: <20261021092124.2306053-1-an.wu@canonical.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 21, 2026 at 07:00:49AM -0300, Vinicius Pedrosa wrote:
-> On Wed, 21 Oct 2026, Andy Shevchenko wrote:
+Hi,
+
+On 21-Oct-26 11:21, ChunAn Wu wrote:
+> Driver-created serdev clients may lack an ACPI companion or device tree
+> node.
 > 
-> > Right, but have you read my second question in the above paragraph?
+> Add a creator-supplied name for these clients. Use it as a serial
+> modalias fallback and to match a serdev driver of the same name. Keep
+> returning -ENODEV for unnamed clients.
 > 
-> Sorry, I missed the second part of your question.
+> Signed-off-by: ChunAn Wu <an.wu@canonical.com>
+
+For v3 of this series please include a cover-letter and explain
+why this series is an improvement over the` existing situation.
+
+The dell-uart-backlight and lenovo-yoga-tab2-pro-1380-fastcharger
+drivers are both pretty special cases and here you are adding
+a chunk of code to the serdev-core for those special cases,
+so I wonder: why?
+
+The current manual attach approach taking in these 2 special
+drivers works fine.
+
+What does this new approach gain us ?
+
+Also if you are going to do this may I suggest looking at doing
+some sort of of-compatible matching based on a compatible string
+inside a swnode ? I do not know what that would look like but
+that is something which seems like it might be generally useful
+also outside these 2 special cases.
+
+Regards,
+
+Hans
+
+
+
+> ---
+>  drivers/tty/serdev/core.c | 36 ++++++++++++++++++++++++++++++------
+>  include/linux/serdev.h    | 31 +++++++++++++++++++++++++++++++
+>  2 files changed, 61 insertions(+), 6 deletions(-)
 > 
-> If I understand you correctly, since 8250_dw.c already has the BUSY-safe
-> set_divisor, you're suggesting that it should have the matching
-> get_divisor as well, instead of pairing it with the dwlib getter.
-
-Exactly!
-
-> The dwlib getter would stay for the other users of dw8250_setup_port(),
-> like 8250_lpss. Is that the structure you had in mind?
-
-8250_lpss doesn't redefine either of the _get/_set_divisor, so it won't be
-affected. But I think that 8250_lpss actually lacks of busy support that's
-why it uses simpler version of all this. Maybe we can refactor that (in
-the future?) so that we will have dwlib to provide the IDLE version of them
-for all and depending on the existence of busy functionality degrade to
-the same as just current DFL helpers.
-
-Can you check that approach?
-
-Ah, dw8250_idle_*() are already BUSY-functionality aware. So, what we need
-is to provide dw8250_idlej_*() callbacks via struct dw8250_port_data and
-make current 8250_dw::dw8250_set_divisor() to be part of dwlib.
-
-Patch 1 (dwlib): Add callback definitions for dw8250_idle_*() to struct dw8250_port_data
-Patch 2 (dw): Assign new callbacks and use them in dw8250_set_divisor()
-Patch 3 (lpss): Introduce stubs and assign new callbacks to them
-Patch 4 (dwlib): Use dw8250_idle_*() in dw8250_set_divisor()
-Patch 5 (dw): Kill now duplicate code pieces
-
-(Some of the patches might be combined, but I think the above split is not bad.)
-
-Would it work?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index 7500efcdfc21..8354a4688fd8 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -29,13 +29,21 @@ static DEFINE_IDA(ctrl_ida);
+>  static ssize_t modalias_show(struct device *dev,
+>  			     struct device_attribute *attr, char *buf)
+>  {
+> +	const struct serdev_device *serdev = to_serdev_device(dev);
+>  	int len;
+>  
+>  	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
+>  	if (len != -ENODEV)
+>  		return len;
+>  
+> -	return of_device_modalias(dev, buf, PAGE_SIZE);
+> +	len = of_device_modalias(dev, buf, PAGE_SIZE);
+> +	if (len != -ENODEV)
+> +		return len;
+> +
+> +	if (!serdev->name[0])
+> +		return -ENODEV;
+> +
+> +	return sysfs_emit(buf, "%s%s\n", SERDEV_MODULE_PREFIX, serdev->name);
+>  }
+>  static DEVICE_ATTR_RO(modalias);
+>  
+> @@ -47,15 +55,22 @@ ATTRIBUTE_GROUPS(serdev_device);
+>  
+>  static int serdev_device_uevent(const struct device *dev, struct kobj_uevent_env *env)
+>  {
+> +	const struct serdev_device *serdev = to_serdev_device(dev);
+>  	int rc;
+>  
+> -	/* TODO: platform modalias */
+> -
+>  	rc = acpi_device_uevent_modalias(dev, env);
+>  	if (rc != -ENODEV)
+>  		return rc;
+>  
+> -	return of_device_uevent_modalias(dev, env);
+> +	rc = of_device_uevent_modalias(dev, env);
+> +	if (rc != -ENODEV)
+> +		return rc;
+> +
+> +	if (!serdev->name[0])
+> +		return -ENODEV;
+> +
+> +	add_uevent_var(env, "MODALIAS=%s%s", SERDEV_MODULE_PREFIX, serdev->name);
+> +	return 0;
+>  }
+>  
+>  static void serdev_device_release(struct device *dev)
+> @@ -88,14 +103,23 @@ static const struct device_type serdev_ctrl_type = {
+>  
+>  static int serdev_device_match(struct device *dev, const struct device_driver *drv)
+>  {
+> +	const struct serdev_device *serdev;
+> +
+>  	if (!is_serdev_device(dev))
+>  		return 0;
+>  
+> -	/* TODO: platform matching */
+>  	if (acpi_driver_match_device(dev, drv))
+>  		return 1;
+>  
+> -	return of_driver_match_device(dev, drv);
+> +	if (of_driver_match_device(dev, drv))
+> +		return 1;
+> +
+> +	/* Fall back to the name set by the creator of the device */
+> +	serdev = to_serdev_device(dev);
+> +	if (!serdev->name[0])
+> +		return 0;
+> +
+> +	return strcmp(serdev->name, drv->name) == 0;
+>  }
+>  
+>  /**
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> index b6c3d957ec15..26baa0321eef 100644
+> --- a/include/linux/serdev.h
+> +++ b/include/linux/serdev.h
+> @@ -8,6 +8,7 @@
+>  #include <linux/types.h>
+>  #include <linux/device.h>
+>  #include <linux/iopoll.h>
+> +#include <linux/string.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/termios.h>
+>  #include <linux/delay.h>
+> @@ -19,6 +20,10 @@ struct serdev_device;
+>   * serdev device structures
+>   */
+>  
+> +/* Large enough to hold the KBUILD_MODNAME of any serdev client driver */
+> +#define SERDEV_NAME_SIZE	40
+> +#define SERDEV_MODULE_PREFIX	"serial:"
+> +
+>  /**
+>   * struct serdev_device_ops - Callback operations for a serdev device
+>   * @receive_buf:	Function called with data received from device;
+> @@ -35,6 +40,9 @@ struct serdev_device_ops {
+>   * struct serdev_device - Basic representation of an serdev device
+>   * @dev:	Driver model representation of the device.
+>   * @nr:		Device number on serdev bus.
+> + * @name:	Name of the device, set by its creator, empty for devices
+> + *		which are enumerated from firmware, see
+> + *		serdev_device_set_name().
+>   * @ctrl:	serdev controller managing this device.
+>   * @ops:	Device operations.
+>   * @write_comp:	Completion used by serdev_device_write() internally
+> @@ -43,6 +51,7 @@ struct serdev_device_ops {
+>  struct serdev_device {
+>  	struct device dev;
+>  	int nr;
+> +	char name[SERDEV_NAME_SIZE];
+>  	struct serdev_controller *ctrl;
+>  	const struct serdev_device_ops *ops;
+>  	struct completion write_comp;
+> @@ -135,6 +144,28 @@ static inline void serdev_device_set_client_ops(struct serdev_device *serdev,
+>  	serdev->ops = ops;
+>  }
+>  
+> +/**
+> + * serdev_device_set_name() - set the name of a serdev device
+> + * @serdev:	serdev device.
+> + * @name:	non-empty name to use, typically KBUILD_MODNAME of the client
+> + *		driver.
+> + *
+> + * A serdev device is identified by its ACPI companion, by its device tree
+> + * node, or by a name set by its creator. Serdev devices which are
+> + * instantiated by a driver rather than by firmware have neither of the
+> + * former, so they must set a name before serdev_device_add() to be
+> + * identifiable. Doing so gives them a SERDEV_MODULE_PREFIX modalias and
+> + * makes them match a serdev device driver of the same name.
+> + *
+> + * Devices enumerated from firmware have no name and keep deriving their
+> + * modalias and their driver match from firmware only.
+> + */
+> +static inline void serdev_device_set_name(struct serdev_device *serdev,
+> +					  const char *name)
+> +{
+> +	strscpy(serdev->name, name);
+> +}
+> +
+>  static inline
+>  void *serdev_controller_get_drvdata(const struct serdev_controller *ctrl)
+>  {
+> 
+> base-commit: 9e947d96915af63e28896caae85a81b74855621b
 
