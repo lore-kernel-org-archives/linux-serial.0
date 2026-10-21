@@ -1,57 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792561310;
-	b=R9uTSqrhySjREHcIuYtADS85Jiyf2PesK3YmdUL4oPLH2G+C645KTz1IecuD+tjFFNFE
-	 iDnEqWek/pCroI7RWJQ/4t02WAAFz0aeHFDxcf+qnN/h++ChCJ01twoAYOk7n4EMtLl7i
-	 5hcMmI56cZ0Sb30ToIDMYyHZ/MDn8duGJLdEzVECt6K8iMv0NKdRJNEex8x+4qs4wp8ZI
-	 KQZiCCBco6m5kIFIqVItJK0p/t+NEHK1vKj2r8lD79RBz5+xQTY88kuePBDUtF4LsDjL8
-	 G7XfP1U1IOiQcVnmwlisMEWTp+SxhhX85/oAK1kC+O3guUaw+HGfDZq0x9cJkyarXBQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792561310;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=MN4MangAJwgDVHM/i/uw0B1SMsAPspQRo3yBcgSD3XQ=;
-	b=MR6Gx/9kvrh2g7MRLbzBIaYhRWKOHaZEtF+CcS5DrCGAbOH5tPYfN72vq/0mhbQRvmhx
-	 Ud2zWU4255AiHmtWuut5VQjdOheMlOYa8LwKKnh8GZtd8s7vYHr/pmbHe3xD38JNfmzpM
-	 U494dhXrau0q7QVAcMOPgTxcOUeCLCkHWQpK6k8HbDa4zmV+udKUb4lMS9gvB3VVA2HWg
-	 tvL1jDdN+tBZNkocEZLSL55+/SkNyUOyIoYoHZGDlEgvF4qmACe7C0Y0SZIsULJg66zPR
-	 +/YfDF3WqugqBDRSH5Vd+R65lPZ5OTLXHNlOekiA04cjFf/SuBL8JKN6dA/jDS0KsLg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Dh7V/QJ3";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=185.125.188.123
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792562750;
+	b=SnPW63nDcS1famJkMspkGP8OWA1Mu9yjD045P8LSTqmcxV0d+1WlGq1zARTc/G5dNxsW
+	 xcmraso9HW74OAlldauvTrIiM++jw44vXwKTx0nsP+vlEDnnCZytiWL0bUi2Q+ly6bDRY
+	 AKa4hXSKRy2ux4rKMUuosVvp3wn2ySSK/zgtt+bXESXoVD3SRmlIggfWxZxKZ7hzQclg1
+	 nok4hO5QA7IC9N9/RtCXoYuUwN42aYR105PkCQeOQHJ/ymkVroa7UvJILzOviuNCK8FzI
+	 6/HU3AJVxw6xxQvbCGlgiEa1O//tH8QPjM8kicZhsVoWer0bYHEraAlUWrMvhZ/nEjQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792562750;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:
+	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:MIME-Version:References:In-Reply-To:From:Date:
+	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=NeAEPcOxK40T65rDMNePEAr3pakVYVs90Oj/HtwmwkM=;
+	b=lTsJXOSY14zkmEllbbF5v7NAFt2HQ2nqgxkO3I3g4dgBY0zZPzjLbbBkPp33BKCvlwzZ
+	 Z//s2DyqsvTF8ftfXwKH7yycjoUOD5FI6n2dyZFwqLjgmoA7Oet+kFcf0fDh4kzUoBEZH
+	 VdLY1oI4NRnSdNnCIozMM1v4CMn4vgYVkqVhCVafoUv6mcIRm0wWGknzRUnDQwCCcHV+3
+	 Nud6xFkppgvHJAtKqV9f/+pepOyKoiR9yc4VuGGYNQ4PUzFTukV0vKQmcqe0/mzoVI6Yt
+	 hd5nh09/668b2MJeTV0Xf2eozVS5M+1tEGdtVN/z3ccGxiO99YERw7leacSs60K5oPw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=canonical.com;
+	spf=pass smtp.mailfrom=canonical.com;
+	dkim=pass header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=qJr8260S;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=185.125.188.123
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D796606A31C;
-	Wed, 21 Oct 2026 05:41:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88C7860A2602
+	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 06:05:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 88C7860A2602
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Dh7V/QJ3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C203D1F000C9;
-	Wed, 21 Oct 2026 05:41:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792561310;
-	bh=MN4MangAJwgDVHM/i/uw0B1SMsAPspQRo3yBcgSD3XQ=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Dh7V/QJ37d49BqsjEsAcOD1yf3mGFf0tobtekR5N16e/Vf3l0S4N78CNYIICvYzfE
-	 Fz69r0CtkHkOgbrQfYtqzdE27ADK5P0WzjCPWAFU0LmHOGZxNQIkWKH3v0aAv9+Q9s
-	 Fb5lUJw6wK7NLv7KWT/CrRvvxh9U3UueZ6yW8omfySVqXF7g0FIweXB5ARKlbVYYfO
-	 DsMtJGWMMMqWt05uCLB3oXDd0aZqTcxzAG+Q6rNL75gS2bF2cBg2p5+kv+oZABFacW
-	 eV904D6O6PY0zhMmlnmyo4dcpewCiH5R2vl1q1KSOJ4EhRu9nO23dYxnsM5NzDIw3P
-	 5YW3Ek7cOJwvw==
-Message-ID: <sashiko-outbox-179812@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/2] serial: core: Drive the transceiver interface
- select GPIO
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20261021-serial-rs485-mode-gpio-v1-2-80d7b0903d93@vaisala.com>
-References: <20261021-serial-rs485-mode-gpio-v1-0-80d7b0903d93@vaisala.com>
- <20261021-serial-rs485-mode-gpio-v1-2-80d7b0903d93@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 21 Oct 2026 05:41:49 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=qJr8260S
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B9C5A3F98D
+	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 06:05:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20251003; t=1792562740;
+	bh=NeAEPcOxK40T65rDMNePEAr3pakVYVs90Oj/HtwmwkM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type;
+	b=qJr8260SzRLr9eLbFeuEV+/2qt8abtp210vhqLA8JwLTq9X1VWOzfHtbnL/NlAeaj
+	 OjpLrFF6PfJTDmhM4LqcCjL5ck+KNguaY/b0ObRbBPM3AGOKiaVH/cM1vuVpmKLpTN
+	 /WJdcTKcHJhFXzKHY1GJuSba9oM8DfUrCvDhud3YC5rsVFkTcWJ2qTg+9vHGQHUg3s
+	 37KsSmH71HC2ziK4U67V3cffNpA7mPEyLWjoqRjeFwBibojLKD2B+Msktqgf0KAljI
+	 98d983Rm3WzJTDZezaJX5jvMSTM1w5ndYFF+9svtEc1WUc76KNdf9oFDrhqgrG0s3p
+	 pT8EHftbrdP91PYNc7gEaiTxzOoQyq+Dq3aD7W1hu2/Po7dwd/sJNB9p+2Xa2YGd3i
+	 oo3jBzOb/gdW09O8diMowZ/U4WUOgYUieCmretiA558fNOu8SlbKVUN/zXzl7ulTB6
+	 r+EnE8smQUH2JgyAJIj9GmEFNkzQOKZKdWvSZ2BELE3hBI9gdvH9G9bdZYRZm4+kTc
+	 4Umeiz/QE8WYRNs1VtrFinmfbv5VlcfWwmaQU4Emy5GHv5psAf1jX5W86TlCzBWeRJ
+	 HUabrlmnDgm5J5lD9hs1NlOTwE9vh1kyMpT8CShxLlo8ybZP6liBxYjQh2YHlHhLj+
+	 wsIlhK0pRGMKN+b/18uR6p2E=
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-5407322f927so57003b6e.3
+        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2026 23:05:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792562739; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Y6Qfb5a/D+zZ04fEW6TVjg3MDwwbr7IYdumHvpJeceohTtznsPS7KPu4Vpuh8Lx4kc
+         pvbrYXdeKBypp6jehyyn6M534azL5Ppm6Gn9UZFKQ1HfBKJ+Iu0Azic84srGvvZJGSWe
+         n6ipF/UNu/jBE15DfiAv0BH9BFqk4FUvOT5eRfj2lH/xEFPjZlQgZdOwtb7zphFW/iUw
+         5+UC594FIMC+e38qZMY8mU+2Z4D0g/E3mZZ8JZPUtMyJeDQJx27ThZpvBQP2SC75y8Xh
+         J17qHq9dE8vF0246S8IRaJe2RZr0kV8tV3oNxNUaM3BWHCbobRVIEG0IkHnoQ3Br7pn0
+         Ue7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version;
+        bh=NeAEPcOxK40T65rDMNePEAr3pakVYVs90Oj/HtwmwkM=;
+        fh=2sYPVCfnUihewLZ62ZT5uXqGFoRRvT2ZvcxEOElwOjg=;
+        b=G1NOQj5tSQ2sc0aNHBphCxqNzeADhE3UHdWy5sxRtVOwWETVyxcueT7XG2tcZJYgSR
+         6HwWsPcAHwCKI0BpoXR78DtTmBiMMoN0tfoQDdkhY5BjnWHvt3kjMX19qQPvtqafiA2B
+         Obu7W3tZvlKkTIxYJALA3REjOL6XG4OyDyid2kLS1VRDBPy8eRUHpVZy0iR/qJc9cRid
+         OIrur3uhwSZpv7IyP2cpYGNPVaWyl5xbbGVtlPtNGhKfS/2YicGxPUjPE+wUvnn9HV+m
+         QtmjkPqpjY4LhNAJigjbpTrV5Q9f7WYp4niJiB7GhGEI6h1qLeQaRUrZscayZb/SH+CN
+         5suA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792562739; x=1793167539;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=NeAEPcOxK40T65rDMNePEAr3pakVYVs90Oj/HtwmwkM=;
+        b=gVjB4x/M8iIynERWx/yAajj0SnomvW9NNBBxns9IMwHHTWNT5ShXY7UKXuuOwCltpM
+         SbR2fL06ed5nP8M2tarlPHnx8T9GSedwcBcfeEhedLk29eOnuG5Vry584K4FxyLJZapJ
+         aJsdKgB9rZZ15F5dbktsgYOY0kL8QZs8Ho3gz1kLXJpStIB+A72xIIrAN/M+hcAZAtfn
+         +FnLysBPsKr72MVLUJxgzJWgkx/nRBXfS2zKJ01hTOtBcqhxvt1sizxgz7/fYjzPmdmX
+         vd8mR9iu98JTRFcGmlZ9wn38xQDwRxckSGCsDf7VnK6VzXMc36fG7VV5Ns0veRrhrtK2
+         XSTQ==
+X-Gm-Message-State: AFq9FYIGKag9G1cIJptooKSInS2YIVH0DrUxpUBZRklxzCRBqmzGNLuX
+	Wx7M6PY9EKOqgAv7eodW1QiZOZLvbp3fdKCHoFtAjogrWC0NBtBZl6ni38FsUSiwOtME9ooYQLV
+	gD/oMRWTF9Arv5SAcyskQ8Ghv6ZE2xDwiF+S+VC0zUEhn8ObNxHpYeEaaz7IZTfF5E9m45y7p3X
+	fo3js2gMO5wGIIfmjuPTbtBr1D6XMpYQMqAYEo5UbA/uN6WJ6t1xX5glNo
+X-Gm-Gg: AYBFou0gq393QD+EOmIwawRUbLSE1FkUj/nCR5wDujpcf3Fe4WpXDo/lxTUbvi/vTqg
+	LeGHsgOgAyNb8TtzgG9HeQ2Msz36ctyuc4CIf3wlRYih+NUQCYe/fM/0XO2VynGmgaEMbD1Kp/S
+	qboe7JTZuQFF7aXWmxyGmf6pe7ZrtneTjF6VyBlQqfcQZ9lNcU0aeVO52nzhAl0jrF+zd/EIqR4
+	Si/2zBJTOo+b1k47SbkAyuXuQ1LiyqgvNQrtrV8VSiRxQgB0yZJCofyRI6k5odLmVD77gLd4Rw8
+	GSzIvQ5IFsB1pA==
+X-Received: by 2002:a05:6808:2220:b0:4f8:4a95:991d with SMTP id 5614622812f47-5534e97b346mr929757b6e.2.1792562738777;
+        Tue, 20 Oct 2026 23:05:38 -0700 (PDT)
+X-Received: by 2002:a05:6808:2220:b0:4f8:4a95:991d with SMTP id
+ 5614622812f47-5534e97b346mr929748b6e.2.1792562738360; Tue, 20 Oct 2026
+ 23:05:38 -0700 (PDT)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,160 +115,105 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+References: <20261019054513.1966382-1-an.wu@canonical.com> <8e4ca13d3e8acd5d649bd4c7357e5da0785ba6b3.camel@posteo.de>
+In-Reply-To: <8e4ca13d3e8acd5d649bd4c7357e5da0785ba6b3.camel@posteo.de>
+From: An Wu <an.wu@canonical.com>
+Date: Wed, 21 Oct 2026 14:05:26 +0800
+X-Gm-Features: AclHuK85Z4K9KYus1MecV1QLmAECfS38JxGPUGudcVKY7TXsOmoxb0qgKjK_XhY
+Message-ID: <CAO4Mv0ZvktJxgkP_YHLXneH_dmg+bPP-A6xEgL8L0K_bJictxw@mail.gmail.com>
+Subject: Re: [PATCH] serdev: handle devices without an ACPI or device tree node
+To: Markus Probst <markus.probst@posteo.de>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
-- [High] serial: core: stale rs485_select_gpio access in uart_rs485_config()
-- [Medium] serial: core: rs485-select asserted before RTS parked in uart_ge=
-t_rs485_mode()
---
+Hi Markus
+    Thank you for your detailed guidance.
 
-commit 49736223bf33ff5e8eb201ccbef821265b8748f6
-Author: Tapio Reijonen <tapio.reijonen@vaisala.com>
+BR
+    An
 
-serial: core: Drive the transceiver interface select GPIO
-
-This commit adds support for an optional rs485-select-gpios property in
-uart_get_rs485_mode() to switch multiprotocol transceivers between RS485
-and alternative interfaces such as RS232. The GPIO state is updated during
-boot/resume configuration in uart_rs485_config() and during ioctl handling
-in uart_set_rs485_config().
-
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index c0deec0e6af41..57b022d0cf01b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1435,13 +1435,22 @@ static void uart_set_rs485_rx_during_tx(struct ua=
-rt_port *port,
->  				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
->  }
-> =20
-> +static void uart_set_rs485_select_gpio(struct uart_port *port,
-> +				       const struct serial_rs485 *rs485)
-> +{
-> +	gpiod_set_value_cansleep(port->rs485_select_gpio,
-> +				 !!(rs485->flags & SER_RS485_ENABLED));
-> +}
-> +
->  static int uart_rs485_config(struct uart_port *port)
->  {
->  	struct serial_rs485 *rs485 =3D &port->rs485;
->  	int ret;
-> =20
-> -	if (!(rs485->flags & SER_RS485_ENABLED))
-> +	if (!(rs485->flags & SER_RS485_ENABLED)) {
-> +		uart_set_rs485_select_gpio(port, rs485);
->  		return 0;
-> +	}
-
-[Severity: High]
-Could calling uart_set_rs485_select_gpio() unconditionally here when
-SER_RS485_ENABLED is not set access a released port->rs485_select_gpio
-descriptor when a static uart_port slot is reused?
-
-In drivers/tty/serial/8250/8250_core.c, __serial8250_register_8250_port()
-reuses static entries from serial8250_ports[] and populates port->rs485_sel=
-ect_gpio
-via uart_get_rs485_mode():
-
-drivers/tty/serial/8250/8250_core.c:__serial8250_register_8250_port() {
-	...
-	uart->port.rs485_config	=3D up->port.rs485_config;
-	uart->port.rs485_supported =3D up->port.rs485_supported;
-	uart->port.rs485	=3D up->port.rs485;
-	...
-	if (up->port.dev) {
-		uart->port.dev =3D up->port.dev;
-		ret =3D uart_get_rs485_mode(&uart->port);
-		if (ret)
-			return ret;
-	}
-
-Because port->rs485_select_gpio is acquired with devm_gpiod_get_optional(),
-its lifetime is bound to port->dev. If registration subsequently fails in
-__serial8250_register_8250_port() (for example in mctrl_gpio_init() or
-uart_add_one_port()) or the device is later unbound and unregistered via
-serial8250_unregister_port(), devres releases the descriptor while leaving
-the pointer set in the static serial8250_ports[] entry.
-
-When a subsequent 8250 device claims the same slot without RS485 support or
-without a firmware node, uart_get_rs485_mode() returns early without
-resetting port->rs485_select_gpio:
-
-drivers/tty/serial/serial_core.c:uart_get_rs485_mode() {
-	...
-	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
-		return 0;
-
-	if (!dev_fwnode(dev))
-		return 0;
-
-Previously, uart_rs485_config() returned 0 immediately when
-SER_RS485_ENABLED was clear. With this change, uart_configure_port() ->
-uart_rs485_config() and uart_resume_port() -> uart_rs485_config() call
-gpiod_set_value_cansleep(port->rs485_select_gpio, 0) using the dangling
-pointer.
-
-Should uart_get_rs485_mode() clear the RS485 GPIO pointers before its early
-returns (or when a port is unregistered), and should uart_rs485_config()
-also check port->rs485_supported.flags?
-
-[ ... ]
-
-> @@ -3643,6 +3663,13 @@ int uart_get_rs485_mode(struct uart_port *port)
->  	if (port->rs485_rx_during_tx_gpio)
->  		port->rs485_supported.flags |=3D SER_RS485_RX_DURING_TX;
-> =20
-> +	dflags =3D (rs485conf->flags & SER_RS485_ENABLED) ?
-> +		 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-> +	desc =3D devm_gpiod_get_optional(dev, "rs485-select", dflags);
-> +	if (IS_ERR(desc))
-> +		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-select-gpio=
-s\n");
-> +	port->rs485_select_gpio =3D desc;
-> +
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(uart_get_rs485_mode);
-
-[Severity: Medium]
-When linux,rs485-enabled-at-boot-time is set, doesn't requesting
-rs485-select with GPIOD_OUT_HIGH in uart_get_rs485_mode() switch the
-transceiver into RS485 mode before the UART driver has parked the RTS line
-at its RS485 idle level?
-
-During probe (for example in __serial8250_register_8250_port(),
-imx_uart_probe(), serial_omap_probe_rs485(), and ar933x_uart_probe()),
-uart_get_rs485_mode() runs before uart_add_one_port() ->
-uart_configure_port() -> uart_rs485_config() invokes port->rs485_config()
-to configure RTS and validate the boot-time settings.
-
-In drivers/tty/serial/8250/8250_core.c, uart_get_rs485_mode() also runs
-before mctrl_gpio_init() requests the RTS GPIO (which initializes it to
-GPIOD_OUT_LOW regardless of rs485-rts-active-low) and before 8250
-autoconfig manipulates UART_MCR_RTS:
-
-drivers/tty/serial/8250/8250_core.c:__serial8250_register_8250_port() {
-	...
-	if (up->port.dev) {
-		uart->port.dev =3D up->port.dev;
-		ret =3D uart_get_rs485_mode(&uart->port);
-		if (ret)
-			return ret;
-	}
-	...
-	if (uart->port.dev && !has_acpi_companion(uart->port.dev)) {
-		struct mctrl_gpios *gpios =3D mctrl_gpio_init(&uart->port, 0);
-
-Since RTS acts as the transceiver driver enable in RS485 mode, could
-asserting rs485-select-gpios here in uart_get_rs485_mode() cause transient
-bus contention on probe before uart_rs485_config() runs?
-
-Should uart_get_rs485_mode() instead request rs485-select with
-GPIOD_OUT_LOW and leave asserting it to uart_rs485_config() after
-port->rs485_config() has parked RTS?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261021-serial-rs4=
-85-mode-gpio-v1-0-80d7b0903d93@vaisala.com?part=3D2
+On Wed, Oct 21, 2026 at 12:42=E2=80=AFAM Markus Probst <markus.probst@poste=
+o.de> wrote:
+>
+> On Mon, 2026-10-19 at 13:45 +0800, ChunAn Wu wrote:
+> > Some drivers, such as dell-uart-backlight, manually instantiate serdev
+> > clients without an ACPI companion or device tree node.
+> >
+> > For these devices, both modalias helpers return -ENODEV. This makes the
+> > modalias sysfs read fail and suppresses the device add uevent, even
+> > though the device is registered and bound to its driver.
+> >
+> > Return success with no modalias when neither metadata source exists.
+> > Devices with ACPI or device tree metadata keep their existing alias
+> > generation and error handling.
+> >
+> > Signed-off-by: ChunAn Wu <an.wu@canonical.com>
+> > ---
+> >  drivers/tty/serdev/core.c | 18 ++++++++++++++++++
+> >  1 file changed, 18 insertions(+)
+> >
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index 7500efcdfc21..366c6d906233 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -26,11 +26,26 @@
+> >  static bool is_registered;
+> >  static DEFINE_IDA(ctrl_ida);
+> >
+> > +static bool serdev_device_has_modalias_node(const struct device *dev)
+> > +{
+> > +     if (ACPI_COMPANION(dev))
+> > +             return true;
+> > +
+> > +     return dev->of_node && !dev_of_node_reused(dev);
+> > +}
+> > +
+> >  static ssize_t modalias_show(struct device *dev,
+> >                            struct device_attribute *attr, char *buf)
+> >  {
+> >       int len;
+> >
+> > +     /*
+> > +      * Serdev devices instantiated by a driver instead of by firmware=
+ have
+> > +      * no node to derive a modalias from, which is not an error.
+> > +      */
+> > +     if (!serdev_device_has_modalias_node(dev))
+> > +             return 0;
+> > +
+> >       len =3D acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
+> >       if (len !=3D -ENODEV)
+> >               return len;
+> > @@ -51,6 +66,9 @@ static int serdev_device_uevent(const struct device *=
+dev, struct kobj_uevent_env
+> >
+> >       /* TODO: platform modalias */
+> >
+> > +     if (!serdev_device_has_modalias_node(dev))
+> > +             return 0;
+> > +
+> >       rc =3D acpi_device_uevent_modalias(dev, env);
+> >       if (rc !=3D -ENODEV)
+> >               return rc;
+> >
+> > base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
+>
+> There is a todo comment:
+> /* TODO: platform modalias */
+>
+> Resolving this should also fix your issue.
+>
+> Also keep it closer to
+> - platform_uevent in drivers/base/platform.c
+> - modalias_show in drivers/base/platform.c
+>
+> and avoid the extra `serdev_device_has_modalias_node` function.
+>
+> Please also address the similar todo comment in `serdev_device_match`
+> in the same process.
+>
+> Thanks
+> - Markus Probst
+>
