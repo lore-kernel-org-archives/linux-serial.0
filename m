@@ -1,80 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792574827;
-	b=qorWoFraCd0bb29qRypmlVjMU4tkj3LLHmT578NmST9FW1ODELQmAC25JDP9kcSdETNI
-	 5gc5qWB3DQjSWic7XcfyVqYHc1moSBek/hxPYGQCFhSgGu35NtcBgTYMGKwCDg1WyQB4L
-	 u58/U2worRNKcLNVcSWk64E9gippSc6HGDGkGKMtG2CEnS4cPjYo9GJfSziGK6rX/MHfC
-	 AxSgVYMpU88mEhG50ZrvqFYePb7gxp+vUG9dvXfKmTNT2FnsSPnaaWxxvTC8HdlZ2KOU6
-	 HsuTabP1a/FgQIUkj2v/0/73cI+aUHRf3JRkkU4cP8SVLUhOWXE1awMXCzaV4HRjIJA==
+	t=1792576878;
+	b=HRQWiE4P6jyWj1osMsu8Hp2mOg5KcO5fSuo/NQMgrYlq5L2aXEZWob7Vh1MdZop9IoBo
+	 JyuPW+mRCCDPuh3OCnsP0AH4UGBtrFxgSsdP3z+tKccUsypsHZlY/JoyMAjxTq4iBzeF6
+	 jPdf1nxeSkOIiPcYRxZaSJ9X0U3quPP6lGeogOGguD5Ily/FMOhPmgey3odrLUp5Rj6L7
+	 mZn7yR8Wnv1IhtTul3tuH3lrxHYdIDueUm9WmTi5OLJbqjFfoagAgAp23tDvpt8mUV9rE
+	 0pYG3ah7/HnSOCzYlmcHjJEUuLa2iSYhX+2NWza6rJq18+vWz+MbIKWt5viUZSkNdNw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792574827;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=qx9lvlJFiOXl2YcBYTYDEbTYQw5QvLIYvqfDlGOKQ8w=;
-	b=dx2nVxYU7d8qw9N4vrxS0zxsikdQX9PWZIosT6Cmt6hZDCJXpmqiz7vpTIzsBXR/hSG7
-	 rxdUTIEfbPmY3BkwZB6+AqD4VNGvgbVU02Flwz/NZa+kO9L81fR7q1hpZeHAzjEoKWLcE
-	 FvupxHt5S1MD0Vtkj6O8nawadQ+MyUAR95BbsZdUhIhxYpIi/eoR7wnvB5wRlV1nxkka8
-	 FWX51jB5SNaFNeM8Ygh3rGQ+2Bic7XFlPgONohmShccic4eXEy5RgfAdnGGS0RrmT+AXD
-	 J0R5ACnkEhdDz3u/T+EbwpvOLvZdWqVVZLieLQ6X5GwZcnR+ykgO7BtYS+VbkeXQ36g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792576878;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=RVJTwN159znt8hJRBq+zKCr4Hg7h2qirYM0EqJu+lc4=;
+	b=pg+VIUfVT6YQnMbpfiLO7Jh/QUNDNNUElw3EDYDlGA0NnnMWV7gCk/TiccYl/9oSjjq1
+	 aw0ENIrNckDofjVxpS8vDsVD0m2e7s2UbhnLtDUB83aR6qJ0ehhjsCjsb74KlFlhsu+jF
+	 MSe3gRARE94nBA+8ctQAmMAcUCb9SaU8WGc8IRREpnk1cR+WZEEw64ysCW6n7275l5SdJ
+	 tbT3NnazrvScz1cevTgseADVc/koITCoivatF8/99d871vCkCv6TkmWMe294dSocYCEar
+	 dBD2AT1NSi8dWsrgyzWObXBzjLfY+Ll57V8ak5orw8p29qxRmDGD+7Lt1uRn9PCJnYw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mjOnZhJn;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Md4AJRPq;
+	arc=none smtp.remote-ip=209.85.222.47
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73243606A31A;
-	Wed, 21 Oct 2026 09:27:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 73243606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54866606A31D
+	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 10:01:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 54866606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mjOnZhJn
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792574827; x=1824110827;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HytOmcW56eDQIDDYwdyKPW3M2fCcKHDx/VAyTZ94b5c=;
-  b=mjOnZhJnnHkxsDoyojUUO1NyfqQ7E0UphnGCtlIe2STnuXWX7A5fHxhV
-   /Z0X890rBbO1yThEZsj6xm+FvM+Cpno/h1Tid1UQ3yR7udw63Pv2F+lBU
-   i4T8VFNCXtQlPBUbfk+pXBOKIcYfleVgnPSy5oQGJq2rJ7BwADjvM6vLC
-   YhaAGmof+Wup49qysy0JAynVFSV4AEy1/kBceeeQEpWgHmVJtk/pJ3Zci
-   GgHVT05N118e9LSkeI0sxfhwpLO82eJz3l7mrvTBD9jZEnAz5qNI49cCT
-   lTkMdcHu5s/fvHRnXX+UhE7TXHgHflhlJlLWQwO6dJMogzMPzbKB/sKjM
-   g==;
-X-CSE-ConnectionGUID: w/hDhCsUSdiorWDWhmxNWg==
-X-CSE-MsgGUID: pofHKWG9R4CrpowVI6686w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11941"; a="1167643"
-X-IronPort-AV: E=Sophos;i="6.27,169,1787036400"; 
-   d="scan'208";a="1167643"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 02:27:07 -0700
-X-CSE-ConnectionGUID: beP8jZ3hRlWqXO0REC91Nw==
-X-CSE-MsgGUID: bUETF+PZRJaR8RpfkXvcxw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,169,1787036400"; 
-   d="scan'208";a="3393920"
-Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 02:27:04 -0700
-Date: Wed, 21 Oct 2026 12:27:01 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Arnd Bergmann <arnd@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Md4AJRPq
+Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-99061e2171cso163543241.2
+        for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 03:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792576877; x=1793181677; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=RVJTwN159znt8hJRBq+zKCr4Hg7h2qirYM0EqJu+lc4=;
+        b=Md4AJRPqTd6XcyhcJr0pjgBw3QByVzkZMaaXLEPVkqMKkphH/Oj9O3NJ63bJBVmpo/
+         qJRSZEaID43R45Hdf4XmuYpAMYDJyyHWnspl0iDU2+gmgsn2rDOrjfwpMTYXt35dyxsO
+         nxhdY7dWusvN7DYJS31pRMSVD/wdEY9PooJyKK3mbgniTD+liPMz7cIqZfrWRZKKVXoP
+         9yl1oKHb5UCCJP7oNistdgdGWN3RQrmEE8HCVHJILFjwBn+1rrTSBX1haazi8cPI0VaF
+         M43WpJVIYk1LHGfTUFBWuxEHtB9U9CUyq4OYukx31lPRUYLTu7qv4n6TF4qpN5rLmiG9
+         //IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792576877; x=1793181677;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RVJTwN159znt8hJRBq+zKCr4Hg7h2qirYM0EqJu+lc4=;
+        b=DWXpJjbZaB0hxM9eIrWpFv4n7F2CbZ7ZdWWtUz74qfdaEnD2TM+lOHdiyj4X7udwuS
+         ZGEB89kksjsKL5KhqhQ1dBay4wP3tDHRe9Vi1CR0vi0CgfXKNfSN+pHM/PMnPRMOx/TO
+         thh6wRUdlMw+aQGJvV3O6A7NwWtzx5oKczUhKsGu8BSeCLwlUxzGd7o9US2j4XUB6cjJ
+         VeyjBXpFLOaqxaEWrEwup0QC8lAGk9KEbTVx5t+Z65Qr3xCx88bNggcf2ONZj9TzKCJX
+         brKVhU6vLWazcnf/k30uaDOlkxXBpeBENE1YDOYOJ9vvu//4uJifaRtrD6D/hT1PpI12
+         vtrA==
+X-Gm-Message-State: AFq9FYIspCx4fjHz9pYMxZnk1A4hclSHK9Z7MWl3ZaTT66r25KLr1vhN
+	0yMVL0zb2YDoI4eHcc7T8q8TuNIpH22u2uK5ZG6CwpJ1BFcQO7fWja5h
+X-Gm-Gg: AYBFou1possQslXbfrbgI3/KXt+8FWF7uvs0ipy1qP5FWHzu4NYFFsrIXHqd6gzh2Ky
+	vshwXaIW0rOQgtwgAokEYHa6RlW7TXUmVUybbN9mUu8IbxXVX22idRIrDqpgYdXL9EWR89z6FCV
+	/U8H0dBqwpXbUK90fCWELpTJstG9PBE84H33ZbHIDUZBywi718FoQn5qtGjSaAm4kFvdgaodT0/
+	VZtgV+HOVrjX7TIrnrSGy03K87uefPxWrNQxhQyA2f700azBQZiq3CJnKwVwo6LoJOs3eXs3YTT
+	9z+dDW1mImGQg/z/SVz9mBKUWfiXyANP4lGomzeJ72yjzhDjSwApm1ITjbuML5rTnjThtOrntm9
+	jFg1g5a5US5ZD9vRA7tBUNeF8Pk+Gl5VmYmqYGiyJQCJFoUZj7DFlz4IaU2sBER6xZ8uPSEikjE
+	zf1vhBa9bHkjGPzCJpzhVG4U6RDtcifC0thRRvPw+VuSkOFUAd3aFC8FLVMd2lUtRRattwtzcgk
+	FgokWu+qHI5YJF/dl3fqRIFYa6l/LTgK32KRejFeXxJuaGWtbNbJpMdv1C9n/zKHT2KNlwprSSP
+	vkQCbKlVXlvGglmkGDWWAkeA1Gl4LUlqmCYk/nHQtlMD+hb3FYsbHUa30RyPZ3o=
+X-Received: by 2002:a05:6102:4187:b0:7cc:776:6c41 with SMTP id ada2fe7eead31-7cc9273dca8mr461720137.22.1792576872539;
+        Wed, 21 Oct 2026 03:01:12 -0700 (PDT)
+Received: from MaquinaLab.. ([179.179.238.247])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-990d118d522sm2526812241.10.2026.10.21.03.01.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Oct 2026 03:01:11 -0700 (PDT)
+From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	ilpo.jarvinen@linux.intel.com,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Maciej W . Rozycki" <macro@orcam.me.uk>,
-	Kiyokazu SUTO <suto@ks-and-ks.ne.jp>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 1/2] [v4] serial: 8250: remove obsolete PORT_RSA support
-Message-ID: <atiFZf9dFO3rtsYr@ashevche-desk.local>
-References: <20261021081746.3278002-1-arnd@kernel.org>
+	linux-sunxi@lists.linux.dev,
+	Andre Przywara <andre.przywara@arm.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Enzo Adriano <enzo.adriano.code@gmail.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook when DLF is present
+Date: Wed, 21 Oct 2026 07:00:49 -0300
+Message-ID: <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <athe0QikG2mzCAtd@ashevche-desk.local>
+References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <20261020104753.28703-1-vinicius.eduardo.pedrosa@gmail.com> <athe0QikG2mzCAtd@ashevche-desk.local>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,36 +111,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261021081746.3278002-1-arnd@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 21, 2026 at 10:17:45AM +0200, Arnd Bergmann wrote:
+Hi Andy,
 
-> For all I can tell, the RSA support in the 8250 driver is not functional
-> and has not been for a long time.
-> 
-> The RSA-DV II/S ISA card[1] was sold by IODATA in the 1990s as a faster
-> alternative to regular ISA serial ports, and it was discontinued in
-> 2002. Linux support was added by Kiyokazu SUTO in 2000[2]. The company
-> also made PCI versions of this device, but Linux never supported those.
-> 
-> It seems that a patch to setserial would be required in order to set
-> PORT_RSA when not using autoconfiguration, and this was never merged.
-> Autotoconfiguration in turn requires passing probe_rsa=IOPORT arguments
-> at boot or module load time, which is not how any other uart drivers
-> work any more since linux-2.4.
-> 
-> This patch removes all code related to the RSA support, with the exception
-> of the user-visible PORT_RSA definition. I had originall sent this in
-> 2011 [3], but did not follow up at the time.
+On Wed, 21 Oct 2026, Andy Shevchenko wrote:
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Right, but have you read my second question in the above paragraph?
 
--- 
-With Best Regards,
-Andy Shevchenko
+Sorry, I missed the second part of your question.
 
+If I understand you correctly, since 8250_dw.c already has the BUSY-safe
+set_divisor, you're suggesting that it should have the matching
+get_divisor as well, instead of pairing it with the dwlib getter.
 
+The dwlib getter would stay for the other users of dw8250_setup_port(),
+like 8250_lpss. Is that the structure you had in mind?
+
+Thanks,
+Vinicius
