@@ -1,107 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.180
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792597071;
-	b=pg0fWq8VFm/+Nr3Ud68kVvAyJ3IdQOeBjB2FVkXQLd3yl0ySxG0fIzHBRAlW/cz9kTee
-	 Z+BUzflJ4NLrSF/mBsuuiEv/YGXGL6zNlYuz4YLHlgrxjYRikm0PViJMariQvr/JtlL8w
-	 JUnQ8t+oM9P/RQru6GxEQ1kZj8mAEmpjB7ja2BDad3aReSWtgxo1iohTKMdQR2/gErgKi
-	 g2SwdzCFnuSHMjjQO6i0J07wI78M9X/GmI2IGJgsEcEStKdKFL2OYnY8y70bSVcS5fOEq
-	 S81TbIJjVEmSK3Rzy1GyxgMoYq53hY6xohNsyqoC6dm6tN4nLjjHFGu0GnTwM8a+4kA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792597071;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=pcUJNAa1d5gYFOvrKvELkQqk+wRTOdmweUM3ujZu374=;
-	b=gMHs5f23zl99LTS9AiJwFatvBkJI9me9R0othQnzRhqfYvbLYpJ/+wqNnQts61F2dRUB
-	 kY/c85lUghbBgRqs5mP7qTdDBe/BpZv6KaWcdYgMJcSUEvgzXJoFASSKhVr3Om9q+ajT5
-	 CIMWToIfB8yx38cLaTx1DDIVIkyrKBitddblH+1hL3XG30+DoAYe6bX4+sfDFdZikjQ2g
-	 pJrLHTcKRr/LYLfCb92wuTSF1GkJp/sDcwKaAYtuGc2ydq4o2HwXShV1PiH/43rC1csGZ
-	 TN2fvdu0ypAU5U331yQBGcp6wsgmnaxWD+8CCg8qxgBo59lkANnBna3mrtvhPsIFHTg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=U8WOfcfn;
-	arc=none smtp.remote-ip=209.85.221.180
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792599147;
+	b=aIVN+Pnl+UOFjo8ENPJIIjdXz5mQvB2HK/HRnycku5gnLX2/f/hNcNbmZkWFo+zbt0LI
+	 eFwTgQ2oed2Db1Qy8aOXYPPonMPhquqUgfjMVCyFpbWHRrLESNwcji0e2ryfzB4AuDiN4
+	 uVawuTLUs8reJzqFjYEkliNi66TaDof6yeWMBuxAENtlRe9zrzG5EirZo7b2DnRxZ+ttT
+	 Cd68r4jX92/4QrRYDBj1XuAMSu81vy+DUDAU/xgt0e2ZFH55mU9F8KLsR70Wi8zXvbBil
+	 3rsRpuZ6I06qRnQf5q94SPrE/A0rLbuXvnctMeEQx7AwLKhELroM4vKRIDpCs4APcPw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792599147;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=fTncLPPGPohuW14GIbjnE8CrQrINNX7MPVns5vfiTYo=;
+	b=IeVjXgAbgpxUoJmm6v/AJE9wOOmSKLzr/Liiao418djYKFfTqo2QqUTsBG8EkhnWcmai
+	 h9oP0hLnuDBlQ4I8xas64ZtuRULmdKSxFNWcy6vOM1ew/jCAfKWQG1WIDKgduRDsCy6m3
+	 /rd4fr0OiAmYWottHgFQWrXUVXQo1/68KwcBsXphmpHCrQtgM2PtTVkoJXtmN8gtN+HOe
+	 UbFHEhCgnn/bNkO4VdvgLkLIo8PpSdbaWGmbdJjRhNQtlW7qVsrlZDLgM6F42jmIwx1sH
+	 sf1TmCLIXXaUQUoNwhCD+CQTtujnU1Pm3b4xzrTPRBk402hcusyNOiEEIzwqWWQ0lcg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G6c9RIWI;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26AC606A32D;
+	Wed, 21 Oct 2026 16:12:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G6c9RIWI
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792599147;
+	b=QnRW+pjVI+hMNnTw9osDHw1HT3dxIXgVxJwIZYP57S1B3Ex7cOSIULKpS8lEPhh4lXXn
+	 ftiv39Ltu4h39L28hAHmF/s//hRBuLJ56LOanVwVkK3cYxHL0smqh6MRp9zGoBIrR116k
+	 +8afuzGgwXiRJl6qW5Srvmt/aGpWc4drF6+S4chibRyfZfptKnbNrmvM+fZVSMlB3SOi7
+	 tU3grvEgTliIft7dzDkXZAYrV8/NnQJnqzMHknDLnmdmADKpNIsde5oaZSBeX9x2EcWme
+	 OglUh0+06ktJcmDtTRfEkbi62mRQ5nd2uk+FB3NNBRmpx13gEFxki1wQEiXVVp8+fsQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792599147;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=fTncLPPGPohuW14GIbjnE8CrQrINNX7MPVns5vfiTYo=;
+	b=SixPmX/fP/a5w+NBvUnqhnTAgOgs66whMS9P53XHT96ujHuCGIuV1PbvvNLBAbaoSEp6
+	 AKkmCjbtNKv7zJ8Z1CviWcf16ILxpwX7i6+RsAX0NhoqdxWoJ3GqElCxg7eWZ6Vvj2ste
+	 C3yhSy5VPAwRce5BYyHj7gXh7oDfPeT+J9gEmLrU2UrvdiXgEii60MPRBWOBcI77EvoeS
+	 yPbXcrD9yfdZpvApBciFod9HCI/mMK9aEhMh+M0xPsL6jr3OrtQpF3aMyUdjxqY8sJiSt
+	 QdFX1uTWEemnQaeOws1YZXJ4dtX9ffuY0fnpb18TYAhGwWpFMTx8xDjI+i+klv00SsA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E66C9606A31D
-	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 15:37:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E66C9606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=U8WOfcfn
-Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5eae12762c9so388613e0c.1
-        for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 08:37:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792597070; x=1793201870; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=pcUJNAa1d5gYFOvrKvELkQqk+wRTOdmweUM3ujZu374=;
-        b=U8WOfcfnMnpm6svYe5iJa9/W46YR4FzI8Nlj+7unkM7m0rftH2FoogDPMK26ILs3tw
-         ms9az8/IEBxBnq5+p+y8QpOkfxpbjyjMZpObKISMc1AlVpCtroY8L7HpWqaN9LJp7Av/
-         ikv7zKxySdsv74p2R/3OFIolqJNaymhzG9OFqPY65WDonlV5Pgagk71+wfZENoBDReGO
-         0Wi0rN+Y+MtHE2ZtMEgL2lJ1kLk0G8GP+JFXuGcKj/x824ojcSSn035B408ME33gWqMJ
-         ZSHXqIvQVikv3S5cRgsmonWb7b9tVLhoIH2cIzqoy0U/9rhbqQ6VhgYDS/9NOK7jFZHM
-         qLHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792597070; x=1793201870;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=pcUJNAa1d5gYFOvrKvELkQqk+wRTOdmweUM3ujZu374=;
-        b=lEw4cpInioXllnBhL7V+cdgqwI+6h7tyLE81wk9mcS39R3x/YGaeiXQWawr9D1+Eaa
-         a2vzHXBC2iRAaYko0d7unGRD0dNzBSTyeTD3Q6G8eAUscfW5RWajxp+cyuT56epR2IdF
-         pjZHk29r4Sy3EWiK47oprtKt1bymb73ySz6PfsrPGoVotDkGUfwlRseRZGPWfo9l3bb7
-         IZJgoLfRWqqWwLNRGL6inWlOuzwyfX/ndzqnWctHtBe0HavSXhf6eOKjrXciEsDQwt1F
-         AJJgPVzgo6M0NHP4ufsalAjYwJ3yVVuBcCNUjcCn0O1VgwR13ZjZSktT9bnEcm0tQp4j
-         G1kA==
-X-Gm-Message-State: AFq9FYJt4fKinS3FLtQEDV1nPm8plEhBnoKyGa5i7+2PKp6Qdf+kW9qU
-	WMCvyGG9X71TFk7UZ1n1jfiRhykhFMk5x1hhFBpQ42LcgmN78hrhW96d
-X-Gm-Gg: AYBFou0NLO64pYV9IWvlrWQkmecxXxEHXiCsZ8k8GrJ+79MTxYsnBaFoCAynpMhppSl
-	2/1C3eJwUfXUJ3dGezGg5IvJXmFSSIZAogxLVwjxXk8ep0IEyDGsRhRi21V8eNfewkhrfCY/yBo
-	cfu3G/Bx3ZaHe5JtpiyYZDJ0UaNDLrKiGNXxUxeU95Y/iGsZXq63lPutV3YYTLaoP6jTZbGz7om
-	QorPlqkKCBZ+CRXpMej5B/4O/bon7bDVP6xbqqXUwreS9zX1BQ1EqLWWeK0EMMYplNAv+FPBm3m
-	zv28KKOSqZwPpz/TOAzT3EfOeJSEkjsybL3hVMucENJfWiU3NkG1p06OFMZi+2BxBamNoOvpinR
-	c0JdvRBqxRooIFkcLGZ9xdTViH4DTAjwU8Ea3A9J4Ga8CaMP3a+CuipQ3NdlHwZ+rc0k5/OwdMa
-	1VrA2qH3hLkpTr1V6HIduUDbISHSRjo16rZMii5UvmNpAUnOTtNZOLn2Lvijym2M2KhcPdkxLYf
-	MBgegwOZF3esi3Pqc2jzwbAsKRa1rqRdO0TKm7CC491YOW4ogKR1jcChraczBnONWB5eUYoqSix
-	2zRHIfZ0QKlv5fKYu3DwUhuGH8nfSb+WkelsXmMW0iRtpa3uNwS0P920LnEFNvQ=
-X-Received: by 2002:a05:6122:3122:b0:5ea:db3c:4a3f with SMTP id 71dfb90a1353d-5eaebc14cdemr1063889e0c.2.1792597069786;
-        Wed, 21 Oct 2026 08:37:49 -0700 (PDT)
-Received: from MaquinaLab.. ([179.179.238.247])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5eae97f0a94sm3505688e0c.11.2026.10.21.08.37.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2026 08:37:49 -0700 (PDT)
-From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	ilpo.jarvinen@linux.intel.com,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	Andre Przywara <andre.przywara@arm.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Enzo Adriano <enzo.adriano.code@gmail.com>,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook when DLF is present
-Date: Wed, 21 Oct 2026 12:37:32 -0300
-Message-ID: <20261021153732.1978410-1-vinicius.eduardo.pedrosa@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <atjB-BnXclL3FcUm@ashevche-desk.local>
-References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <20261020104753.28703-1-vinicius.eduardo.pedrosa@gmail.com> <athe0QikG2mzCAtd@ashevche-desk.local> <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com> <atjB-BnXclL3FcUm@ashevche-desk.local>
+	by smtp.kernel.org (Postfix) with ESMTPS id B6D9E1F000C5;
+	Wed, 21 Oct 2026 16:12:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792599147;
+	bh=fTncLPPGPohuW14GIbjnE8CrQrINNX7MPVns5vfiTYo=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=G6c9RIWIQCStjBWnM4azJqBitIGY6GjxLfuPumIkZjGLU33ddLyum7gHgjPbtnP/l
+	 StK7b/B6RtF3OgniNAhzg5+JHgaU1iWjuKWGC4s7qKyrFfCusmpS870S6pk51uMeGN
+	 ZBFWHPnYshqNUVxUYnY0wI181PytWpLIPsLesw/txW6wxduA5D1Q1Y9tyip1quvhC/
+	 i/I3JXCwfjnZpvVBKFgg1M9qyYzL4cfihWHYpDnI342CFbFPUEEIF9lI0VQrDcjB8D
+	 No+INBAa5Gx8jLSQdN+t0O7PysAbql0O/dIIqbzG4EWjApYD1k388FFsKTO4ekj001
+	 qQnWYn2Fm3bgg==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 0A5A0433A3;
+	Wed, 21 Oct 2026 16:12:23 +0000 (UTC)
+From: Cunhao Lu via B4 Relay <devnull+1579567540.qq.com@kernel.org>
+Date: Thu, 22 Oct 2026 00:10:59 +0800
+Subject: [PATCH 02/27] dt-bindings: power: rockchip: Add RK3572 power
+ domains
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -111,41 +83,141 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261022-add-board-ok3572-c-v1-2-0b0fd85a31ee@qq.com>
+References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
+In-Reply-To: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
+To: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+ Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+ Philipp Zabel <p.zabel@pengutronix.de>, 
+ Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>, 
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+ Richard Cochran <richardcochran@gmail.com>, Ulf Hansson <ulfh@kernel.org>, 
+ Andi Shyti <andi.shyti@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Jisheng Zhang <jszhang@kernel.org>, 
+ Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ David Wu <david.wu@rock-chips.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, 
+ Maxime Chevallier <maxime.chevallier@bootlin.com>, 
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+ Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Thinh Nguyen <Thinh.Nguyen@synopsys.com>, 
+ Jaehoon Chung <jh80.chung@samsung.com>, 
+ Shawn Lin <shawn.lin@rock-chips.com>
+Cc: Cunhao Lu <1579567540@qq.com>, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
+ linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org, 
+ linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
+ linux-usb@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792599138; l=2586;
+ i=1579567540@qq.com; s=20261015; h=from:subject:message-id;
+ bh=XCHXnkhL1K3pqwpZtcnxnK6WkRaV98m9UCg4zRZwm8s=;
+ b=MnXYmtt0bh6snlWCojGt8+2eWEY2VDGVIaBGezscAHOMFj3U56kvvBOcA3fufVOxsrbS2Efql
+ GOt1v4997hoC5Ss8sbADnheAa9c6n1i1wCUJNZAPpb2L9gi3GrIigbO
+X-Developer-Key: i=1579567540@qq.com; a=ed25519;
+ pk=sUTWrzlIwT4C7ctjNfVZAzzg0G7QUn2XxRGpYsw4RtM=
+X-Endpoint-Received: by B4 Relay for 1579567540@qq.com/20261015 with
+ auth_id=1177
+X-Original-From: Cunhao Lu <1579567540@qq.com>
+Reply-To: 1579567540@qq.com
+Content-Transfer-Encoding: 7bit
 
-Hi Andy,
+From: Cunhao Lu <1579567540@qq.com>
 
-On Wed, 21 Oct 2026, Andy Shevchenko wrote:
+Define the RK3572 power-domain IDs and require the system GRF used to
+check firewall status.
 
-> Ah, dw8250_idle_*() are already BUSY-functionality aware. So, what we need
-> is to provide dw8250_idlej_*() callbacks via struct dw8250_port_data and
-> make current 8250_dw::dw8250_set_divisor() to be part of dwlib.
->
-> Patch 1 (dwlib): Add callback definitions for dw8250_idle_*() to struct dw8250_port_data
-> Patch 2 (dw): Assign new callbacks and use them in dw8250_set_divisor()
-> Patch 3 (lpss): Introduce stubs and assign new callbacks to them
-> Patch 4 (dwlib): Use dw8250_idle_*() in dw8250_set_divisor()
-> Patch 5 (dw): Kill now duplicate code pieces
->
-> Would it work?
+Signed-off-by: Cunhao Lu <1579567540@qq.com>
+---
+ .../bindings/power/rockchip,power-controller.yaml  | 17 ++++++++++++
+ .../power/rockchip,rk3572-power-controller.h       | 30 ++++++++++++++++++++++
+ 2 files changed, 47 insertions(+)
 
-Yes, I think the approach works. Two details from checking the call
-paths.
+diff --git a/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml b/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml
+index b41db576f95de..f8afb0fabe809 100644
+--- a/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml
++++ b/Documentation/devicetree/bindings/power/rockchip,power-controller.yaml
+@@ -43,6 +43,7 @@ properties:
+       - rockchip,rk3528-power-controller
+       - rockchip,rk3562-power-controller
+       - rockchip,rk3568-power-controller
++      - rockchip,rk3572-power-controller
+       - rockchip,rk3576-power-controller
+       - rockchip,rk3588-power-controller
+       - rockchip,rv1126-power-controller
+@@ -57,6 +58,22 @@ properties:
+   "#size-cells":
+     const: 0
+ 
++  rockchip,grf:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: System GRF with firewall readiness status.
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          const: rockchip,rk3572-power-controller
++    then:
++      required:
++        - rockchip,grf
++    else:
++      properties:
++        rockchip,grf: false
++
+ required:
+   - compatible
+   - "#power-domain-cells"
+diff --git a/include/dt-bindings/power/rockchip,rk3572-power-controller.h b/include/dt-bindings/power/rockchip,rk3572-power-controller.h
+new file mode 100644
+index 0000000000000..c2316fa859df9
+--- /dev/null
++++ b/include/dt-bindings/power/rockchip,rk3572-power-controller.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
++/*
++ * Copyright (c) 2026 Rockchip Electronics Co., Ltd.
++ * Author: Finley Xiao <finley.xiao@rock-chips.com>
++ */
++
++#ifndef __DT_BINDINGS_POWER_RK3572_POWER_CONTROLLER_H__
++#define __DT_BINDINGS_POWER_RK3572_POWER_CONTROLLER_H__
++
++/* VD_NPU */
++#define RK3572_PD_NPU		0
++
++/* VD_GPU */
++#define RK3572_PD_GPU		1
++
++/* VD_LOGIC */
++#define RK3572_PD_NVM0		2
++#define RK3572_PD_NVM1		3
++#define RK3572_PD_DSMC		4
++#define RK3572_PD_PHP		5
++#define RK3572_PD_AUDIO		6
++#define RK3572_PD_IMG		7
++#define RK3572_PD_VDEC		8
++#define RK3572_PD_VI		9
++#define RK3572_PD_VENC		10
++#define RK3572_PD_VO		11
++#define RK3572_PD_VOP		12
++#define RK3572_PD_VOP_PRE	13
++
++#endif
 
-dw8250_setup_port() is skipped for Octeon (skip_autocfg), so 8250_dw
-would still have to install the setter from probe.
+-- 
+2.34.1
 
-For LPSS, I wonder if the idle callbacks could simply be optional.
-8250_dw would provide them and LPSS could leave them NULL, avoiding
-stubs and a separate LPSS patch. The common setter in dwlib would use
-them when present.
 
-I'd still prefer to keep patch 1 as the small fix with the stable tag
-and do the refactoring as a separate follow-up series. Would that work
-for you?
-
-I don't have LPSS hardware, but I can build-test the LPSS side.
-
-Thanks,
-Vinicius
