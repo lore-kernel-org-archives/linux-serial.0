@@ -1,91 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792603280;
-	b=ho6MZH2dXqi+I2nYjtqMp3lpe75ltzDs0J40aJpo5AHKbeoZJ1k/buJhcdzrBfyyCIdR
-	 v9dqRnUxaUkxqYj6mOEIQxGJZd840YL1PXBasJtO7RxhRqHxs9mKRWfFGD/pHv8qlK3Bz
-	 jEV+pIV5WIZT5th68w50auLZb5r8gaP497K+eFBacy73ve7PjhISxe2ZYgxNKJLaMgah+
-	 B2+oBDlIeqnlAgI2kB4iUknR4DK1RvZkKxCPCblXu3bdy9Yg7I0cRpH7xea9Z17tIYWdb
-	 E+KDUc+9dGOsdF/4dKdfJLqCGM7iu/BkoyfFUzBdq086DbkenVZA9OJMMAPm7jwxlhA==
+	t=1792605521;
+	b=EoKeqIPAPeQEfbCpd2buLmmJ+uT3U7nU2zMpeBiJuubuka8RAWsMjGJ0GCIDeNRqdBjN
+	 ll7E1btISL6Cn5hkEhFGPsQuoeXHWzqBaQI/q0H1DezelN0OVIBXlrtrz9tR6B4ew36uf
+	 /poYzBjoULytJLu/ryNx30HrkVRttPxnJcGOSWhyv1OuYmxyZkYvcTCAgCQwZnqZ8OcNS
+	 k4nFXV/LlyW9+OjzMvQDhEoG8IkD3sPPx06nXWKOLWnO3iWAkDdsmswlleZg0t2GVZbBD
+	 cM8UOn5TJvIBMQ4WtxCC8pZ9mOv8AVsZfki7xYr+o2aA8pt0GNmNF7YP6f14TsASF9g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792603280;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=aYnP9EzvQu5c7OzWw3Xivytyue2e+5YkT93F7KbL5/Q=;
-	b=1fdQbJVgGIDSvuMDjQiAeRDAYiDDCnKYcdeSvVtmTyroM3/+lF6su6mz+S1tnMvrkYT9
-	 vPBAAufuo9oA7HJp/nHkGoBvv4Q+R2Xa5H0PBUO7+WhHOxTUr+l5yrDzrLoz2CZMlAyP0
-	 5TK50eyoyz8Xbml06M3A0g9q0OsArih+Gx9d7dLL2piyXZ8QBbcZ7FJwTeIhYhnFpPELr
-	 U+ZnnAZ3js7/+xI1joKAoL+SuVhqOH4yYBWbdune//G8vAPxhxZjS7iR7HzjE/ZWA6l+p
-	 e0B4CjKW8GSnEai9e8RHfbDYqVyc3Z0LbAdlPxPc2tPpsUzFXwREnNplWNvYg9Oz9tw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792605521;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=ha1K352wfyqdFbF8DNVmHU8vhoz9syKvY98S4jY+g6Y=;
+	b=BvFHK2iuX5Y6iuFN4flJd2OJudXPL2Q7AQa8yHOqOst8McU4luehRqeObRiLiZAQw+dP
+	 Lq4nlDpUDZzt6yPuGPSH6fOMx9M9BkUPFBDiM1MMReQ3Mpt5i5WZeTAR8gR3k0FWIj1W6
+	 8QoZ+CN4MwJOl3wZ8bJbztE0UXrS7Dj58H0qd7BjV/VKxmvycDpXuSCM9y8HftSlD3LUL
+	 KVnG476HrPKM2fX/Bt4sgvWyRYmzcpJWcj06QktIneJHjj1JQxF2zL8FpnGYhhB3PznFZ
+	 che2vXXWS6zpwZh+4gt3957JaXbM3aGvmBcGG7xwfRKqi+CxQ8KmnhSMm8VPTZnbRSg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=D2LCNvwu;
-	arc=none smtp.remote-ip=198.175.65.20
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=FT4pwh6g;
+	arc=none smtp.remote-ip=209.85.222.54
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D300606A31D;
-	Wed, 21 Oct 2026 17:21:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3D300606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9371B606A319
+	for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 17:58:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9371B606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=D2LCNvwu
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792603281; x=1824139281;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v7fSLTfyM6AlbgewY7IYOSHnM8YIN5meuZi9253LlHg=;
-  b=D2LCNvwuOlF+wzPz9LdAodIh78N8/jFbepQ+fAC0lfzCLwzAGipagTcq
-   BSPhFrG61TC0ojpij0RyeIKEjOScnuoUci7XDV33+UtrhqYcndU4U/hXC
-   PQliKTkqcXz4S7cWuYHxHROfP5tn85t2yx1IL/pj9dlQqii3LLOqnrrz0
-   B/svgvtFgYRJxh0InT1qV5lBm7+/B7M08KtrG/196QBCOzrHGM9LovJGA
-   4qGWKeHkNLFRkhedkocROkOiMaEGaSbmXYTG+Crwx1/CMmg9oGUyCBjmm
-   ct52SQmNSLMPtx8QaYBOOlNE7q8zXmceIQI4uC9vDSwinsum+U2ZXEozX
-   w==;
-X-CSE-ConnectionGUID: nWhcBqz/Ql6WIkni4RXEXQ==
-X-CSE-MsgGUID: 9e/hdHWyQBK5JDYM38KQYw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1344986"
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="1344986"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 10:21:20 -0700
-X-CSE-ConnectionGUID: Z0kXF4sbQEeShgBC25pcTQ==
-X-CSE-MsgGUID: ooYRJCglToWIM3GUM965iw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="4939386"
-Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 10:21:16 -0700
-Date: Wed, 21 Oct 2026 20:21:13 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, ilpo.jarvinen@linux.intel.com,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=FT4pwh6g
+Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-98febe968deso701888241.0
+        for <linux-serial@vger.kernel.org>; Wed, 21 Oct 2026 10:58:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792605519; x=1793210319; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ha1K352wfyqdFbF8DNVmHU8vhoz9syKvY98S4jY+g6Y=;
+        b=FT4pwh6gpGaIQ6svkDMoqALbka3hBJJwgkHvkiaYv/qNWOGa5DhCoyrhMuH9rgTIJx
+         baThPsKkl3f9EaTmvHlonm7bADrrg1Bu3W2cbchx1i9d3oEFPmfwzJxAPDW0ND4ZB3I+
+         8DQuQNXHSbB90S/57d7YMWMBAN+tY/0o4x8VIb8yR321706XWUmk8ZQkkApNsaZO8Mxe
+         DnMdp053VU2HdjfXWOS8Z1gwoLWH4Z4FVQa+9M1+llC5mYY87rbhsSNrgmcDyFPxLoeC
+         +rAxusdHJf0kJ6URDKVvZa/j2/fs3AatLn7za+iZP/Pr5A66JlTmX+NV8duUTeOHKxkG
+         a5Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792605519; x=1793210319;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ha1K352wfyqdFbF8DNVmHU8vhoz9syKvY98S4jY+g6Y=;
+        b=FJfwLCgns9EB8iJ0T4+T+GQiprgGl3Tbhq/qBqaFq/bKl0i/8/twoz9wB+LwH2pWKM
+         Ramg5H0wx6RRbMpdDTP40wEN/YtUtt4GbnBhtIp3cCEw4m/3XjilV9LU96FuSPXqW/Wv
+         JnGeuNi/yRkXmqYCXehpeMRKw9fT/22cvhV/jspVdBUmhiLbrwKdBdz+pvjAHncyRyGO
+         Z+jQQY13ZP00nC54nJr2sqOKJ8Rno4wgQ0nkRKEO3SEdEA1/80LogBgdmrlYvGgoLeZz
+         q52NBga+nPalUpsM7iJfDpwHjOlq38YdDgaghAzJThrpdwqFSrtx2Z3LycpQKOpnC4zm
+         AxMA==
+X-Gm-Message-State: AFq9FYLCbQdaURr6rl7aI2Rh8A7RwSqtEzZnEhqmWAK3Sq6hkhNXyy6U
+	nCQtgr6Ga4sPRo/+A40QLv1VgU2DlP+mW0DKjoIwAhkUssB28e5nWHFc
+X-Gm-Gg: AYBFou2PAfjqgKmOXRaCfq6KLn/m1HF2ZiRzWFLpf6f+7T4ONC+tQE4+ldFBI8RsyEs
+	erUzXo7ycKEBHi7OqhZjKRygrdHOC/V2pfwU5n7t4djwOvWU+oMeCboqAU29I2AJkJOGMIepg5K
+	348ag8LCZU4XdnYtLM6+ZEJxXGa0JDJpQbQiLFaaqKdclnkmcKqAHvTC3rtHhbQMKO2xfN861fd
+	k5rDMn4rdpy68PNnBiEvCiTA15kJFg7BJaEW5ujO39dQ+XM3yV6GW2GhdvXM9ABwXhn3VwCjIK3
+	Tt4cmYTsUBuFMHmoC8fceMLoPvHDpMmIPjnPqM1e23ekYlm4FfMBkhwgsTMeMLPdwGHmxWOtcTB
+	flginpM0m/LCxiU5ni+RJ3wwvupuBYm+pzHvjP26wqY8hg3iVsRnp/NA7OsjLkkszyRkd1Nhdmc
+	dUVUbpcS92iT3ybOd7ryktCWRJrK9cjYig9rZJMtoh37B579pmlZGTqXBktcL1LyMltxiOiz+w0
+	Ye8nSNLtdSH6vE10vM3b/7ZLtlvwOuGgNPiq9v10+edZQOGs7Wt5C79b72mTwGswhN5GvTd6/de
+	E/AEsa+moDmztzcQPe6anTlXjnI5dUYd938fhq/iEZ42qHoN9E9PNf6zvdTelNptkV3BrtkF+kj
+	spl2YXU8Dgw==
+X-Received: by 2002:a05:6102:508f:b0:7c3:872c:8be6 with SMTP id ada2fe7eead31-7cc9271966dmr1231907137.25.1792605519613;
+        Wed, 21 Oct 2026 10:58:39 -0700 (PDT)
+Received: from MaquinaLab.. ([179.179.238.247])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5eae9788c68sm4090944e0c.5.2026.10.21.10.58.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Oct 2026 10:58:39 -0700 (PDT)
+From: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: linux-serial@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
 	linux-sunxi@lists.linux.dev,
-	Andre Przywara <andre.przywara@arm.com>,
 	Chen-Yu Tsai <wens@kernel.org>,
 	Jernej Skrabec <jernej.skrabec@gmail.com>,
 	Samuel Holland <samuel@sholland.org>,
-	Enzo Adriano <enzo.adriano.code@gmail.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] serial: 8250_dw: Keep the BUSY-safe divisor hook
- when DLF is present
-Message-ID: <atj0iRFTxHKmhxVG@ashevche-desk.local>
-References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
- <cc358c2be6b0b4ea0323e4f694a581ffb667112d.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
- <20261020104753.28703-1-vinicius.eduardo.pedrosa@gmail.com>
- <athe0QikG2mzCAtd@ashevche-desk.local>
- <20261021100049.16504-1-vinicius.eduardo.pedrosa@gmail.com>
- <atjB-BnXclL3FcUm@ashevche-desk.local>
- <20261021153732.1978410-1-vinicius.eduardo.pedrosa@gmail.com>
- <atjqZPuAbHDdaexv@ashevche-desk.local>
- <20261021170403.2052449-1-vinicius.eduardo.pedrosa@gmail.com>
+	Conor Dooley <conor.dooley@microchip.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	ilpo.jarvinen@linux.intel.com,
+	Enzo Adriano <enzo.adriano.code@gmail.com>
+Subject: Re: [PATCH v2 3/4] dt-bindings: serial: snps-dw-apb-uart: Add Allwinner A733
+Date: Wed, 21 Oct 2026 14:58:22 -0300
+Message-ID: <20261021175822.318717-1-vinicius.eduardo.pedrosa@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <414bbb7a-1018-41ac-a580-cd41708c6a78@arm.com>
+References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <09f3a181436e6f19317224e583c2fdaa787797d7.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <414bbb7a-1018-41ac-a580-cd41708c6a78@arm.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -95,43 +112,84 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261021170403.2052449-1-vinicius.eduardo.pedrosa@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 21, 2026 at 02:04:03PM -0300, Vinicius Pedrosa wrote:
-> On Wed, 21 Oct 2026, Andy Shevchenko wrote:
+Hi Andre,
 
-...
+On Wed, 21 Oct 2026, Andre Przywara wrote:
 
-> > I dunno, I prefer just a longer solution, but I don't know how big this issue
-> > is that we need to backport in that way (and not taking the whole series as a
-> > fix).
-> 
-> On the severity: the IER restore comes from a7b9ce39fbe4. On the A733 I
-> saw hardware IER left at 0 and the console stop taking TX/RX
-> interrupts. I haven't tested this on hardware with a real DLF.
+> So if I understand correctly, this compatible is really there for the
+> clock gating issue, right? As the DLF part is now somewhat correctly
+> auto-detected?
 
-Yes. but is it only a single device/platform affected or a big class of the
-devices? I assume only narrow part of them which unfortunately use DFL register
-offset for something else in their RTL.
+Yes, the compatible is only for the clock issue (SKIP_SET_RATE). The
+false DLF detection is handled generically by patch 2.
 
-> Given that, how about keeping the small fix as patch 1 with the stable
-> tag, and putting the refactoring after it in the same series? That would
-> keep the fix independently backportable if needed, while mainline would
-> still end up with the structure you proposed.
+> Can you share what your termios test looks like? Because I assume this
+> affects more Allwinner SoCs (the DLF change definitely does).
+> Then we should add more compatible strings here. If there is a simple
+> test, I am happy to run this on a bunch of boards, to give you a list.
 
-It all depends on the outcome of the above discussion. Maybe others can share
-their opinions, but I lean towards a series-as-a-fix rather than a bit ugly fix
-+ proper refactoring on top.
+I reduced the termios test to a small standalone reproducer and retested
+it on the A733. While the serial console is continuously transmitting,
+this program toggles CLOCAL and restores it:
 
-The whole approach doesn't seem to me like a pile of changes. The deduplication
-patch can be deferred for later actually.
+    #include <fcntl.h>
+    #include <stdio.h>
+    #include <termios.h>
+    #include <unistd.h>
 
--- 
-With Best Regards,
-Andy Shevchenko
+    int main(int argc, char **argv)
+    {
+            const char *dev = argc > 1 ? argv[1] : "/dev/console";
+            struct termios orig, changed;
+            int fd = open(dev, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
+            if (fd < 0 || tcgetattr(fd, &orig)) {
+                    perror(dev);
+                    return 1;
+            }
 
+            changed = orig;
+            changed.c_cflag ^= CLOCAL;
+
+            if (tcsetattr(fd, TCSANOW, &changed) ||
+                tcsetattr(fd, TCSANOW, &orig)) {
+                    perror("tcsetattr");
+                    return 1;
+            }
+
+            return 0;
+    }
+
+I compile it with:
+
+    cc -O2 -o clocal-toggle clocal-toggle.c
+
+and run 300 iterations from a shell on the serial console, keeping the
+console busy:
+
+    dmesg -n 1
+    (while :; do seq 1 1000; done) &
+    gen=$!
+    i=0
+    while [ "$i" -lt 300 ]; do
+            ./clocal-toggle || break
+            i=$((i + 1))
+    done
+    kill $gen
+
+CLOCAL doesn't change the framing, so the output should stay a clean
+1..1000 sequence. A bad run shows garbage characters and missing lines.
+
+On the A733 I ran this test five times without SKIP_SET_RATE and all
+five runs were corrupted. With the A733 compatible selecting
+SKIP_SET_RATE, all five were clean.
+
+Running the same test on your other Allwinner boards would be very
+useful. I also have a small script that checks the capture, if that
+helps.
+
+Thanks,
+Vinicius
