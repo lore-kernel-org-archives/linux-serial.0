@@ -1,49 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.150
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792677187;
-	b=tg7P2U4lxPMMzYtdKN08rhUxsO7wmewGk2BhH1SGfS/EXBaBbn01jpJha30G54i2ERET
-	 KET/Rn07hY7/TevNFGV7vcLvy70v4TLwQDsm1Q8+mTngamuETbHhjnicwk4oc/sVVRfN1
-	 LTWbJ171jExDY0sI3UdCHlDOfJ5TQrTUDBVuNJob+BvCW9jivZiqNRuWuajvJ5l2CQCr3
-	 ngMZxcpZATG2Mlu0A5j8+fxCYEw7RjUnH7xI12wx0EOeGIZX6t5dO7WApdD7fuNh0uE+y
-	 3xXWvb7bhzH38f0UFwlBya+hONAPBfPsYGAgBbcbqKwq6L26fyRWhBk62TQ8k85c6/Q==
+	t=1792677306;
+	b=lCeeDJ6Jm+/h6rrQJr+tZOW7sNyCZFQ9lrZ1/9nrxRqRHZiexgmz5cjZpTTk3TM1sRkT
+	 a+4pFNmxAHZRYraQLL66aRW3X9t+B3D2sxsTNPIqPykjbFMd5kZtEM8fCGyIhvYLlRu2Y
+	 l+CyKq0AzmeD3akNR53tqUOn7ZR73TD3vGaYH6QPd+azDd5K0SiQa0Fhf2rf2r37ROPb5
+	 dBU3RfjjhBlalEe66bVPJMQF/yLic1r1vYJh2dFxWZ20t26U7jwTd3xXhjgqi+EiUs64P
+	 J5WWySShVvgoDAIFHJpSTSj35cQ0T3PS2stAzhzrvJOAuu6VBeErbQ/mP1NkWtzN0tw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792677187;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding;
-	bh=rA7gxUL9eHb/Wehu22XwKglTsNUkAP7+310aScn9f4I=;
-	b=okjRc52tgGLd8WfCc1qDpeJ0YU5mL2guKLT1rWi5hTvZbAg8JZFByMw+fydnW0fpD0+T
-	 O/4gLc1/LPFU7pkctksHGCzSChUOSxMctdyUYgaI7wiAeqdGL2jokxekj7VmtrB3sFAMJ
-	 hiQOPT++aXM6cSKhY2ETMNzPoFoIv/Sgqzaw8DiypLCI63HjhjRg/ETrxcePEoEGFBeBC
-	 Z5g9usqVbVWoVSHt8amphspp0SlvEjOy/bk4Bhkt266yNmicWVR9lDNMMDQgSsK84Su+o
-	 ja+rrrozUsUCVoiKpMdSSdNq2W5WLt71p2/6KD4QdSKgomNiuMRFofhBr3PSLBoLuIA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792677306;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:X-Mailer:
+	 MIME-Version:X-ThreadId:Date:From:To:Cc:Message-Id:In-Reply-To:
+	 References:Subject:Content-Type:Content-Transfer-Encoding;
+	bh=l5aXbbkxmaFUi0aNpyvuSHB6QY9N0/Ewrnv/LM3KvJo=;
+	b=WgcReOJoIfXacA+HnTs3EL5BRk/OJxWdk/CzBqRy/QefCiRpReaU6+YICCt0xhH6Ft82
+	 rZzpd/JPbXufAsZm22v+yGqCRC7G7za33OnQppWTeNsgB57+UzYxHRuIrsn6ILWMY/r8l
+	 SBV0mlMX2AsA3qHfCMy4/PuimbFM1/RtRW1knStmVg8FyBlnanDXgYLia2e6aX6gu0Acc
+	 L4RT8jwnq/gwCa9C5V/LMlAXl0lDxWLHywVcgv+95FhRySWbpFh3SBSFyyRU9RqwJYT8V
+	 R5pBYuGtOmGzW03qy9q0OcqQ8r4UkjYrQrAGZv20uR8p3kPBsitcF7ZcNQpJ+kz5lgA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=tKHtb8K3;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=arndb.de;
+	spf=pass smtp.mailfrom=arndb.de;
+	dkim=pass header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm1 header.b=c9LykKpO;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm2 header.b=vsbOmdVS;
+	arc=none smtp.remote-ip=103.168.172.150
+Received: from fout-a7-smtp.messagingengine.com (fout-a7-smtp.messagingengine.com [103.168.172.150])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AE62606A31E;
-	Thu, 22 Oct 2026 13:53:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90804606A31B
+	for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 13:55:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90804606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=tKHtb8K3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 562471F000C1;
-	Thu, 22 Oct 2026 13:53:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1792677187;
-	bh=rA7gxUL9eHb/Wehu22XwKglTsNUkAP7+310aScn9f4I=;
-	h=Date:From:To:Cc:Subject;
-	b=tKHtb8K3ADcUa5Q34Jfq15UH3UCPKRhqIqEN965ux+lWC7lmyvVCOXeZQ23OOMc7i
-	 /9FZ+XeJ14UT/q/sXw6KAW6mRLMTd4wI1UlHxMnDRrx3JzMFT/99nu25MC5FyLAChi
-	 vYGaKEh3IypUajArkVPcDSp33d70303vkJJM/17M=
-Date: Thu, 22 Oct 2026 15:50:07 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver updates for 7.4-rc1
-Message-ID: <atoUj_wOHwHCqwdS@kroah.com>
+	dkim=pass (2048-bit key, unprotected) header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm1 header.b=c9LykKpO;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm2 header.b=vsbOmdVS
+Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
+	by mailfout.phl.internal (Postfix) with ESMTP id 87A95EC01C5
+	for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 09:55:04 -0400 (EDT)
+Received: from ams-imap-03 ([10.64.2.23])
+  by ams-compute-02.internal (MEProxy); Thu, 22 Oct 2026 09:55:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1792677300;
+	 x=1792763700; bh=l5aXbbkxmaFUi0aNpyvuSHB6QY9N0/Ewrnv/LM3KvJo=; b=
+	c9LykKpOz2WZN95r+kC4EFXd1kE3HV0d/v913CwtCFeY60wXbCSBiKGAM16idduR
+	B9B1zfZHO+55nP6Wd9wsj6WJTQw0uWuhV0FmwGEimIUBFvNYnt2+BK/v2L8vaqPb
+	CoU7dh8bcxCHFEdgWFFFqTz3ZcqHAmEdu8rRmekCn6eV+z8C6LWbo32ALxL4/674
+	DqN7uxZpQgSfKrE5ySYwxpVGR6ridi6f7BFShSnpu3eRiL1luNgRNY7PVfrOPcZ7
+	8vNGUwQfvmtSoZ6Y1oO9P9OzyYs7tDECmMYZTPc4ngbQBK2Yn+wWJOrfy+cVKbv3
+	in77sNEb4irwdZmpcKf0DA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1792677300; x=
+	1792763700; bh=l5aXbbkxmaFUi0aNpyvuSHB6QY9N0/Ewrnv/LM3KvJo=; b=v
+	sbOmdVSAD9ehRIBfWDcNyvJWWn3C4v7GbtsyNvw1Fe2D6z8PcDoU1emBBZ9DMP8l
+	I/uEJaOeNAtT537u6vhdcxv05shLurMjwgFLNC6MUbcz56WxMFpzUKZCLmb+zFO6
+	fyZDXdsPzhKzeTlHCazYIllsUCJ+4WgQwkLLPGgYP2Ao2b2HrGJkuvWWMEq4c5jo
+	Az8fWn3GEF6rEMwluoDS7yb6rUweguGHI612qZxweEKNawRklRI1BbX+g1qQXc7F
+	EQmgDraDSa7RuNplmJJ7jxz8Ai/muIGuO2++JhkkDSwxUJXWhRz7PUvT9brmonXN
+	cFes90WL7Qfz2tYFNmr+w==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-07;
+	repo=github.com/dkim2wg/interop; date=2026-10-18; sw=lmtpprox;
+	action=sign d=arndb.de a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1792677300; d=arndb.de;
+	mf=PGFybmRAYXJuZGIuZGU+;
+	rt=PGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc+;
+	s=fm1:rsa-sha256:nr3aqrLRLaluY7hz9XPy3fyh27s+5bAIXYEsLf0IslJqq0S
+	H0AwISVD6/jx3CmEbzorAXr28qeuktZvBSBX2UuiDfclBS9DhkCzhsmMc+0WDCVx
+	4U2Hgy6n/uQccpikI8+v+xaw9rYbR/Yio5zt6PxXP9bCckFB1ACXax7OzodflzBs
+	0KlF99zPbVukqUaJAQ/BFiWZNDYKJQLUt1hNGKMpvHLS8DW5hegkIih1uZk9uBX0
+	dH0puIJsBgcyzG8Ddr6fxvR1FgruW2toReQpuL08sMNAShSrpSKF5Gnp78sEJKMR
+	vsafQMiXdcYiZNlKBS/ARMD5DsBtcwUrtOakLvQ==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-07;
+	repo=github.com/dkim2wg/interop; date=2026-10-18; sw=lmtpprox;
+	action=mi-m=1; hc=12;
+	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
+	from,in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:jTJCjZKNFVveRZUeuPMJ4UHW3CgnGBnqJh+oGxVFboo=:gLoMRFxOPaqIn94+eUNRicB/Bv2kJELCa6t9Kgiz98A=;
+X-ME-Sender: <xms:rxXaarnThHdAwz_iU3dy5EbVuTgrRFdT7RosIDOls8h6vpZuavjqbw>
+    <xme:rxXaapov4bER9VuTEcKa-b1PbO652ECDYQvJth9OtD4BuJdgr1SCwXMl5Ly6R0a7d
+    WVQSqpShPIatCbyJAxc4iHeUnBHBMIxniq3F5K0E9vGI7Go7VAWaTkZ>
+X-ME-Proxy-Cause: dmFkZTFn6eaGcV85U3YvE7EtaniTIOIaXF/v2CoswBxqFF7JtGWZMoQnAGQQTir8RYKDiO
+    KvPRnYP2VI74ZQlIDX+N6Pbot14qPDvtyrdOhtuoST5EE4G9a1RmfBlsrpJ/MfK+nlKW2O
+    HfgP2YofBohpMyU8l8nBFgxTlIMSWdqBK4t+bKkAa6aAs808bLO8BGbgjnjkjCtepmsMRA
+    A2JNvDYg1ZQTKLgScHX+HEN09pmywQSdmvY9Mlf8PiJkP5aP09XZWTMw2p39nSodJAdcPk
+    LvzOjpg/ojAERqxfBQrBi7FT9/T4BEITbMrpVRDYqoAOCbsQlIN6p3aXIaGlG0WaWEayf6
+    8E8NmKCb6SCGeRxzZ2+CUQyQu7o21Yk4y1w5llrYRsRCYd5+KpDD7B7mHMJlH5NQo1mZ3H
+    0RvICTNANcFQ5qiZFVTJe8cl+uK3rHPjSKH4Fq51tfiLJxVx3NA0zg2+oMs0pYzKW8wBvR
+    56xxfcvmdrOvuvxLjXacLsBg9uC+NfeXQ4ER92TO3o90hAQfSCdA/VLUeflqHmBgyS32Wy
+    TtesIqYxeZwDw1pBuZVf9OHOhqcHZNmNZ8quq5yXTfS5es4qGqcYuN48/CvcgMMiY12gm+
+    Jj1BGQ2qjeGFcVHZW7MIs1fSxA7mNL2d0E4VEFkZzXs3og1KRc59rQQTId4A
+X-ME-Proxy: <xmx:sBXaanHYz3hrdZpjcYDcBRuPX1ywxOpaUU7VmhalhRSWOt5WioIk4g>
+    <xmx:sBXaanavlePOWD_8CwVw6sk_wF_Ri6V0QoXKMfP8cBlmUgQlkD57dQ>
+    <xmx:sBXaajyRRdN51ILteqkWynoaXDELTxniVfbaQ_-jfLxQ5V1O1Uwfyg>
+    <xmx:sBXaahQ2bTmudxu4MuOBRW_TJy6KXl0aaMKetnevMllDSJqnkQMVWQ>
+    <xmx:tBXaahy66MOeP5BVuXljfIA4pQQqYP_gvdefW_Ntbo-H-VqLc1F8HL0k>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.ams.internal (Postfix, from userid 501)
+	id ED79C32A0093; Thu, 22 Oct 2026 09:54:54 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -53,325 +115,49 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-ThreadId: AsT4sEkvhRpB
+Date: Thu, 22 Oct 2026 15:54:34 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Arnd Bergmann" <arnd@kernel.org>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+ "Hugo Villeneuve" <hvilleneuve@dimonoff.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Message-Id: <0cd9560c-6de5-4744-90a4-ecb613594133@app.fastmail.com>
+In-Reply-To: <alpine.DEB.2.21.2610220418380.22065@angie.orcam.me.uk>
+References: <20261019090017.430425-1-arnd@kernel.org>
+ <alpine.DEB.2.21.2610210422160.22065@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2610210500560.22065@angie.orcam.me.uk>
+ <215c694e-bb97-4c21-ae5b-308c03e21611@app.fastmail.com>
+ <alpine.DEB.2.21.2610220418380.22065@angie.orcam.me.uk>
+Subject: Re: [PATCH] [v3] serial: 8250: remove obsolete and broken PORT_RSA support
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit a90ee4305c4a5df72c11b31dacfdc76e00fcf78a:
+On Thu, Oct 22, 2026, at 05:34, Maciej W. Rozycki wrote:
+> On Wed, 21 Oct 2026, Arnd Bergmann wrote:
+>
+>> >  Or, to self-correct after a few more mind cycles spent on this piece, the 
+>> > region below `port->iobase' is an expansion of one above, where standard 
+>> > 8250 registers of the onboard serial port reside.  Which makes even more 
+>> > sense, to me anyway.
+>> 
+>> Good catch, so it should still work the same way it was originally
+>> designed, though I think it still requires a modified setserial to
+>> set PORT_RSA, or a boot time argument for autoconfiguration with
+>> UART_CONFIG_TYPE.
+>
+>  Well, this is ISA, what do you expect?  We've dropped lots of stuff that 
+> required perhaps even more complex manual configuration already (QIC-02 
+> tapes, anyone?).
 
-  Linux 7.3-rc6 (2026-10-04 13:45:25 -0700)
+I pointed it out because this is the only UART driver that relies on
+that specific mechanism. Everything else uses either hardcoded port
+numbers that like the 3f8/2f8/3e8/2e8 ports for PC compatibility or
+they rely on PnP. I understand that we have other network/scsi/sound/iio
+drivers that also do this.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.4-rc1
-
-for you to fetch changes up to 1184f87e2790e8af9be3116f608d2e86b4792d7d:
-
-  tty: hvc: dcc: Detect JTAG connection only on CPU core 0 (2026-10-14 17:40:30 +0200)
-
-----------------------------------------------------------------
-TTY/Serial driver updates for 7.4-rc1
-
-Here is the "big" set of tty and serial driver updates for 7.4-rc1.
-It's not really all that big, it's been kind of quiet in this area of
-the tree this development cycle in relation to other parts of the tree.
-But still, included in here are:
-  - 8250 port updates and fixes
-  - 8250 driver cleanups by Jiri
-  - deletion of the obsolete moxa driver (making this pull request
-    remove more lines than added!)
-  - different serial driver updates for dma and other reported issues
-
-All of these have been in linux-next with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andy Shevchenko (2):
-      serial: 8250_port: Remove redundant pm_runtime_mark_last_busy() call
-      serial: 8250_port: properly handle runtime PM in IRQ
-
-Aniket Randive (2):
-      serial: qcom-geni: Fix port_ida handling for console and probe errors
-      serial: qcom-geni: Avoid double-free of PM domain list
-
-Benjamin Larsson (1):
-      dt-bindings: serial: 8250: Add Airoha compatibles
-
-Christian Marangi (2):
-      dt-bindings: serial: 8250: Reorganize compatible to single enum
-      serial: 8250: Add Airoha SoC UART and HSUART support
-
-Cui GaoSheng (1):
-      serial: core: fix NULL/dangling port_dev on failed re-register
-
-Danish Khateeb (1):
-      serial: 8250: Fix section mismatch with CONFIG_MODULES=n
-
-David Heidelberg (1):
-      serial: qcom-geni: power the console back up on system resume
-
-Dmitry Sinyavin (1):
-      serial: msm: select PM_OPP
-
-Ferry Toth (1):
-      Revert "serial: 8250_port: Drop duplicate NULL check"
-
-Frank Li (3):
-      serial: use dmaengine_get_dma_device() instead of chan->device->dev
-      serial: amba-pl011: use dmaengine public API instead of raw ops
-      tty: serial: pch_uart: use dmaengine_submit() instead of ->tx_submit()
-
-Geert Uytterhoeven (2):
-      dt-bindings: serial: renesas,hscif: Increase number of DMA channels to 6
-      dt-bindings: serial: renesas,scif: Increase number of DMA channels to 6
-
-Greg Kroah-Hartman (2):
-      tty: moxa: remove driver.
-      Merge 7.3-rc6 into tty-next
-
-Greg Ungerer (1):
-      serial: mcf: update author email address
-
-Hemanth Selam (2):
-      tty: serial: fix typo "inteface" in comment
-      tty: serial: fix typo "satify" in comment
-
-Hengyu Liang (1):
-      serial: core: fix TIOCSSERIAL and TIOCSERCONFIG on uninitialised ports
-
-Hugo Villeneuve (1):
-      serial: sc16is7xx: declare MCR and IER as volatile registers
-
-Ibrahim Abdelkader (1):
-      serdev: ttyport: Clear serport->tty after freeing
-
-Igor Putko (1):
-      serial: core: shut down initialized port on removal
-
-Jan Čermák (1):
-      serial: 8250_bcm2835aux: Add support for RTS/CTS auto flow control
-
-Jiannan Du (1):
-      tty: hvc: dcc: Detect JTAG connection only on CPU core 0
-
-Jiri Slaby (SUSE) (6):
-      serial: 8250: drop err label from serial8250_register_8250_port()
-      serial: 8250_exar: remove useless void * casts
-      serial: 8250_exar: store the GPIO platform device in struct exar8250
-      serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
-      serial: 8250_omap: set priv->line before enabling the IRQ
-      serial: 8250: make port operations work on struct uart_8250_port
-
-Jisheng Zhang (1):
-      dt-bindings: serial: snps-dw-apb-uart: Add Synaptics sl2610 uart
-
-Karl Mehltretter (1):
-      serial: ma35d1: Do not force-enable an unselected console
-
-Kees Cook (1):
-      vt: keyboard: Allocate new_map with ARRAY_SIZE()
-
-Li Jun (1):
-      tty: atmel: Replace SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS
-
-Linmao Li (3):
-      serial: 8250_mxpcie: set the driver data before registering ports
-      serial: 8250_mxpcie: only unregister the ports that were registered
-      serial: 8250_mxpcie: take the line settings from the new termios
-
-Malathi A (2):
-      serial: 8250_uniphier: Use devm_clk_get_enabled()
-      serial: 8250_uniphier: Use dev_err_probe() in probe error paths
-
-Martin Fuzzey (1):
-      serial: sc16is7xx: fix data corruption due to unexpected xon/xoff
-
-Mike Rapoport (Microsoft) (3):
-      tty: port: replace get_zeroed_page() with kzalloc()
-      serial: core: replace get_zeroed_page() with kzalloc()
-      tty: hvcs: replace __get_free_page() with kmalloc()
-
-Moteen Shah (2):
-      dt-bindings: serial: snps-dw-apb-uart: Add ti,tda54-uart
-      serial: 8250_dw: Add ti,tda54-uart quirk to skip empty FIFO read
-
-Myeonghun Pak (1):
-      serial: sh-sci: Unregister UART on sysfs setup failure
-
-Nathan Chancellor (1):
-      serial: 8250_mid: Add missing module namespace import for SERIAL_8250
-
-Nicolai Buchwitz (3):
-      serial: amba-pl011: honour delay_rts_before_send for every write
-      serial: amba-pl011: keep transmitter enabled when disabling RS485
-      serial: amba-pl011: drive the bus during break in RS485 mode
-
-Peng Fan (2):
-      tty: serial: fsl_lpuart: use dmaengine_get_dma_device() for DMA mapping
-      tty: use assign_bit() where applicable
-
-Praveen Talari (1):
-      serial: qcom-geni: Drop unsafe rx_buf realloc from setup_fifos()
-
-Rosen Penev (2):
-      serial: 8250: Add Armada 38x earlycon support
-      serial: hvc: use modern IRQ acquisition API
-
-Shawn Lin (1):
-      tty: serial: move sdio_uart from mmc/core to tty/serial
-
-Steffen Dirkwinkel (1):
-      serial: 8250_dw: Add device HID for AMDI0021 AMD UART controller
-
-Swark Yang (1):
-      dt-bindings: serial: Document Axiado AX3005 UART
-
-Tapio Reijonen (9):
-      serial: max310x: don't clobber the TX break bit in set_termios
-      serial: max310x: fix breaks not reaching the wire in RS485 mode
-      serial: max310x: centralize the RS485 transceiver programming
-      serial: max310x: fix RS485 delays being programmed as bit-times
-      serial: max310x: don't power down the port mid-transmission on close
-      serial: max310x: support active-low RTS on the hardware path
-      serial: max310x: schedule tx_work directly from the IRQ handler
-      serial: max310x: drive RTS in software when hardware delays are too short
-      serial: max310x: don't transmit while an RS485 reconfigure is pending
-
-Tate Whiteberg (2):
-      serial: 8250: export and rename wait_for_xmitr()
-      serial: 8250_mid: wait for LSR tx empty before setting termios
-
-Thorsten Blum (2):
-      serial: core: Use isdigit() in uart_parse_options()
-      serial: earlycon: Use isdigit() in earlycon_init()
-
-Tim Douglas (2):
-      serial: pmac_zilog: push received data to the port that received it
-      serial: pmac_zilog: report received breaks
-
-Uwe Kleine-König (1):
-      serial: tegra-tcu: Make use of dev_err_probe() in .probe()
-
-Uwe Kleine-König (The Capable Hub) (8):
-      serial: 8250_pci: Catch up on new pci_device_id entry without named initializer
-      serial: txx9: Drop noop probe function and dangerous remove callback
-      serial: txx9: Drop usage of uart_match_port()
-      serial: 8250: Make uart_match_port() a 8250 specific function
-      serial: 8250: Simplify serial8250_match_port()
-      serial: 8250: Fix corner case for port matching
-      serial: 8250: hub6: Add cleanup code
-      serial: 8250: pnp: Annotate init and exit functions for conditional discarding
-
-Viken Dadhaniya (2):
-      soc: qcom: geni-se: Correct QUP Core ICC vote constants
-      tty: serial: qcom_geni_serial: Keep console RX functional after deep idle
-
-Xiaochun Li (1):
-      serial: core: Fix a potential NULL pointer dereference in uart_parse_earlycon()
-
-Yicong Yang (1):
-      serial: 8250_dw: Prefer SRBR in bogus RX timeout workaround if available
-
-Zongmin Zhou (1):
-      serial: sifive: fix off-by-one in console port bounds check
-
-bui duc phuc (1):
-      serial: qcom-geni: Propagate errors from optional IRQ lookup
-
- Documentation/admin-guide/devices.txt              |   13 +-
- Documentation/devicetree/bindings/serial/8250.yaml |   32 +-
- .../devicetree/bindings/serial/cdns,uart.yaml      |    1 +
- .../devicetree/bindings/serial/renesas,hscif.yaml  |    4 +-
- .../devicetree/bindings/serial/renesas,scif.yaml   |    4 +-
- .../bindings/serial/snps-dw-apb-uart.yaml          |   13 +-
- Documentation/driver-api/serial/driver.rst         |    2 +-
- MAINTAINERS                                        |    2 +-
- drivers/acpi/acpi_apd.c                            |    1 +
- drivers/mmc/core/Kconfig                           |    7 -
- drivers/mmc/core/Makefile                          |    1 -
- drivers/ptp/ptp_ocp.c                              |   36 +-
- drivers/tty/Kconfig                                |   10 -
- drivers/tty/Makefile                               |    1 -
- drivers/tty/hvc/hvc_dcc.c                          |   30 +-
- drivers/tty/hvc/hvc_opal.c                         |   11 +-
- drivers/tty/hvc/hvcs.c                             |    6 +-
- drivers/tty/moxa.c                                 | 2136 --------------------
- drivers/tty/pty.c                                  |    5 +-
- drivers/tty/serdev/serdev-ttyport.c                |    2 +
- drivers/tty/serial/8250/8250.h                     |   17 +-
- drivers/tty/serial/8250/8250_acorn.c               |    5 +-
- drivers/tty/serial/8250/8250_airoha.c              |  178 ++
- drivers/tty/serial/8250/8250_aspeed_vuart.c        |   13 +-
- drivers/tty/serial/8250/8250_bcm2835aux.c          |  187 +-
- drivers/tty/serial/8250/8250_bcm7271.c             |   33 +-
- drivers/tty/serial/8250/8250_core.c                |  153 +-
- drivers/tty/serial/8250/8250_dfl.c                 |   22 +-
- drivers/tty/serial/8250/8250_dma.c                 |   29 +-
- drivers/tty/serial/8250/8250_dw.c                  |   32 +-
- drivers/tty/serial/8250/8250_dwlib.c               |    5 +
- drivers/tty/serial/8250/8250_dwlib.h               |    7 +-
- drivers/tty/serial/8250/8250_early.c               |    1 +
- drivers/tty/serial/8250/8250_em.c                  |   26 +-
- drivers/tty/serial/8250/8250_exar.c                |   59 +-
- drivers/tty/serial/8250/8250_fsl.c                 |   24 +-
- drivers/tty/serial/8250/8250_hp300.c               |   27 +-
- drivers/tty/serial/8250/8250_hub6.c                |   11 +-
- drivers/tty/serial/8250/8250_ingenic.c             |   11 +-
- drivers/tty/serial/8250/8250_ioc3.c                |   26 +-
- drivers/tty/serial/8250/8250_keba.c                |   13 +-
- drivers/tty/serial/8250/8250_loongson.c            |   20 +-
- drivers/tty/serial/8250/8250_lpc18xx.c             |   11 +-
- drivers/tty/serial/8250/8250_lpss.c                |   17 +-
- drivers/tty/serial/8250/8250_men_mcb.c             |   14 +-
- drivers/tty/serial/8250/8250_mid.c                 |   29 +-
- drivers/tty/serial/8250/8250_mtk.c                 |   19 +-
- drivers/tty/serial/8250/8250_mxpcie.c              |   43 +-
- drivers/tty/serial/8250/8250_ni.c                  |   12 +-
- drivers/tty/serial/8250/8250_of.c                  |   25 +-
- drivers/tty/serial/8250/8250_omap.c                |   45 +-
- drivers/tty/serial/8250/8250_parisc.c              |   14 +-
- drivers/tty/serial/8250/8250_pci.c                 |   23 +-
- drivers/tty/serial/8250/8250_pci1xxxx.c            |   41 +-
- drivers/tty/serial/8250/8250_pericom.c             |   15 +-
- drivers/tty/serial/8250/8250_platform.c            |   32 +-
- drivers/tty/serial/8250/8250_pnp.c                 |   23 +-
- drivers/tty/serial/8250/8250_port.c                |   50 +-
- drivers/tty/serial/8250/8250_pxa.c                 |   17 +-
- drivers/tty/serial/8250/8250_tegra.c               |   20 +-
- drivers/tty/serial/8250/8250_uniphier.c            |   43 +-
- drivers/tty/serial/8250/Kconfig                    |   15 +-
- drivers/tty/serial/8250/Makefile                   |    3 +-
- drivers/tty/serial/8250/serial_cs.c                |   15 +-
- drivers/tty/serial/Kconfig                         |   11 +
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/amba-pl011.c                    |  123 +-
- drivers/tty/serial/arc_uart.c                      |    2 +-
- drivers/tty/serial/atmel_serial.c                  |    8 +-
- drivers/tty/serial/earlycon.c                      |   10 +-
- drivers/tty/serial/fsl_lpuart.c                    |   18 +-
- drivers/tty/serial/kgdboc.c                        |    2 +-
- drivers/tty/serial/ma35d1_serial.c                 |    2 +-
- drivers/tty/serial/max310x.c                       |  632 +++++-
- drivers/tty/serial/mcf.c                           |    4 +-
- drivers/tty/serial/pch_uart.c                      |    4 +-
- drivers/tty/serial/pmac_zilog.c                    |    5 +-
- drivers/tty/serial/qcom_geni_serial.c              |   49 +-
- drivers/tty/serial/samsung_tty.c                   |   27 +-
- drivers/tty/serial/sc16is7xx.c                     |    4 +-
- drivers/{mmc/core => tty/serial}/sdio_uart.c       |    0
- drivers/tty/serial/serial_core.c                   |   70 +-
- drivers/tty/serial/serial_txx9.c                   |   62 +-
- drivers/tty/serial/sh-sci.c                        |   22 +-
- drivers/tty/serial/sifive.c                        |    2 +-
- drivers/tty/serial/tegra-tcu.c                     |   22 +-
- drivers/tty/sysrq.c                                |    5 +-
- drivers/tty/tty_port.c                             |    8 +-
- drivers/tty/vt/keyboard.c                          |    4 +-
- include/linux/serial_8250.h                        |    8 +-
- include/linux/serial_core.h                        |    2 -
- include/linux/soc/qcom/geni-se.h                   |   12 +-
- 92 files changed, 1862 insertions(+), 2999 deletions(-)
- delete mode 100644 drivers/tty/moxa.c
- create mode 100644 drivers/tty/serial/8250/8250_airoha.c
- rename drivers/{mmc/core => tty/serial}/sdio_uart.c (100%)
+    Arnd
