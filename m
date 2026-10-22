@@ -1,52 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792640065;
-	b=cHKL6q4b5E1Rq23J6mfNd5HAIuFdSs+uDbW6mgiW5TM41lO4BjO46dlCngT86x6bUszT
-	 enpXJpQAvIOnmlqryg/Ke+XQjgvEQoSO2JoZDntpM60xsQqvSQ2/TeKQ0WxmMVw702S6i
-	 /Nv7NJ4XtGfzMcxr0XaavgAedbdW9Yj/mXK1C11MpNFrLnjZizy2DNvdBX8MjjGgARVyE
-	 3JhklGirVUrtdEK8OlQ+RdtH/hIg5yXEC6zW4+TD7zkQm9gV4O7jiGF9EHtdvC3XDzaE9
-	 V8glMs5SaiZuW+5O6ZDB/IJ3is7h7jNhN0f5yIMqqVQQTGEKqDgfA8Z3SIx3hqJSeWA==
+	t=1792641575;
+	b=pKzwp/aulvHVQEfrNEugCobqkEA65BLY2q5tQ41bzdWsPWSNzZtWiWPN/UjakkTliFKj
+	 G0Od2b+XWYpB5Et1Irv/7VZNaUtcZP/j8mcLdx+g+CT3j7elEvQoiCcMMfmrQnVLmv7G3
+	 MYGSBGtSur/sLJ9RkHVCARPJHrSRT6MvFDVx+KRSfl1ofNYiA8KifUfLH+qWymHc/5XN8
+	 0Rz8KdYiBtnSRkZLugkTOGu+boULeMX+xwA/UTtZ8UIiruk952wwjZTJGCfhPcg7tlebP
+	 k+k5kuoROZdwhw6A3QoYWCMYq5+wIGNFF7jAiasiPe1f+rYJ1Rb+yGtZV5Hia3Q6ZKw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792640065;
-	h=DMARC-Filter:Received:Received:Date:From:To:cc:Subject:In-Reply-To:
-	 Message-ID:References:User-Agent:MIME-Version:Content-Type;
-	bh=3ilS53cVgDiLeeXsr23MPVxO4sxG3qd4lTAwsjvkdXE=;
-	b=3DP69TwVBNW7F5UEzFLrTISzVkT0cUOTwCMXbdhey7L71yXKT2/2fysujtBngC56jWIN
-	 m1EYudvH/hi57qSxjFFLOH4/RGOt/yVR3jpkuGqBb36VjiXWogQGZ3zximztzRBOqDf7f
-	 lBlBRmf7KJY+HOE1+3DgvqR8s/N4Xk9jzbiqiUDmZHZxdpZbztxGaPAtGcnGD/omBU2Qk
-	 vpyQ+qFANhqvyW2HVgaR1dti0GwXwwTkvbMlGMIPJXfuTlc69eg3di30wgeFAdypAvb3A
-	 mDJNwRvPv851913XnzdWE74M457Su7clhRkXzEJz45SKW9goS9B/m3NOYeR7FTu/Wcw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792641575;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=XfnE7enxTP+WkIDLd7AT1Dde/8uqdSrCYp0NNo8s+Jo=;
+	b=PYU5EE7oIeaYi2UNDcopsWYgIrNbFlXikP9bbK6KZJ+fP/lgHlfX8kEDn7SMlRi95z5N
+	 Fa/TM1xRPVgAtequ+Fu7uM92DHlS076cQE1oi2AVgZh4LDcFDYV0yM+ZXSoSZMNsuuQav
+	 35qDF6TJcO1uBz3qows9yJDhlJuTHnLDKWI/nPbWKG0Q4sr1aP+SyCEI8Vt9cOIOq1LiV
+	 WsxYaI7Fh3BCnxvucrvIaBytLES9LTI8Fjt0F8HgfVFZmnBEwfiVKzwW46ECojFcgCtLZ
+	 aWbQ0IYhHIsmrxz2uaGYSo6dE3WupdeR9ykdMkEBMn3jyasgB2+bRKZToFe7YNFBVxA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=orcam.me.uk;
-	spf=none smtp.mailfrom=orcam.me.uk;
-	arc=none smtp.remote-ip=78.133.224.34
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3649E606A31B;
-	Thu, 22 Oct 2026 03:34:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3649E606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 024E892009C; Thu, 22 Oct 2026 05:34:21 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id F1D0792009B;
-	Thu, 22 Oct 2026 04:34:21 +0100 (BST)
-Date: Thu, 22 Oct 2026 04:34:21 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Arnd Bergmann <arnd@arndb.de>
-cc: Arnd Bergmann <arnd@kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
-    =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-    linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] [v3] serial: 8250: remove obsolete and broken PORT_RSA
- support
-In-Reply-To: <215c694e-bb97-4c21-ae5b-308c03e21611@app.fastmail.com>
-Message-ID: <alpine.DEB.2.21.2610220418380.22065@angie.orcam.me.uk>
-References: <20261019090017.430425-1-arnd@kernel.org> <alpine.DEB.2.21.2610210422160.22065@angie.orcam.me.uk> <alpine.DEB.2.21.2610210500560.22065@angie.orcam.me.uk> <215c694e-bb97-4c21-ae5b-308c03e21611@app.fastmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hPg6zk7w;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3102E606A319;
+	Thu, 22 Oct 2026 03:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hPg6zk7w
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EC71F000C1;
+	Thu, 22 Oct 2026 03:59:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792641574;
+	bh=XfnE7enxTP+WkIDLd7AT1Dde/8uqdSrCYp0NNo8s+Jo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=hPg6zk7wA87tvU7+ek8WeuPXi6plGzBFPLvDtfkF5kdajBE7D7228QOzFnxR5kOQ8
+	 W4MO8C1MFowXyDPY1BVGSVWy28w1w5CD3hvi0TatE7cOYgcUJS7bPApqP5B3pQCg54
+	 GDT6oJYgA86diVoefW9fBlBIYYOlwOdUKh6fpHt+3hw1X98g3s3D5CHWsenp9TG/4e
+	 c4JD6iPoKEzQTM5im1bTJMtRJZOK3QrjD+A0IxYi5W+jEmtXYCcCn4XSdXEriHDMmQ
+	 ohxnkZQVyV8l68mJqhj9cFiaL59M9voGvFSK6dLtiNiWAvAIa5avajMhEio/yes9dV
+	 6RJw10VWJ9SJg==
+Message-ID: <8b077ae2-250b-4181-94bd-8b87e9927807@kernel.org>
+Date: Thu, 22 Oct 2026 05:59:31 +0200
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -56,22 +51,95 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: qcom-geni: Set UPSTAT_AUTOCTS for hardware flow
+ control
+To: Michael McAllister <me@michaelmcallister.org>,
+ linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20261021202603.42888-1-me@michaelmcallister.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20261021202603.42888-1-me@michaelmcallister.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 21 Oct 2026, Arnd Bergmann wrote:
+On 21. 10. 26, 22:26, Michael McAllister wrote:
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index a851b8f0ef..5782b89c84 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1503,6 +1503,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>   	struct qcom_geni_serial_port *port = to_dev_port(uport);
+>   	unsigned int baud;
+>   	unsigned long timeout;
+> +	unsigned long flags;
+>   	u32 bits_per_char;
+>   	u32 tx_trans_cfg;
+>   	u32 tx_parity_cfg;
+> @@ -1596,6 +1597,14 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>   	writel(bits_per_char, uport->membase + SE_UART_RX_WORD_LEN);
+>   	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
+>   
+> +	/* CTS gates TX in hardware; no CTS interrupt updates hw_stopped. */
+> +	uart_port_lock_irqsave(uport, &flags);
 
-> >  Or, to self-correct after a few more mind cycles spent on this piece, the 
-> > region below `port->iobase' is an expansion of one above, where standard 
-> > 8250 registers of the onboard serial port reside.  Which makes even more 
-> > sense, to me anyway.
-> 
-> Good catch, so it should still work the same way it was originally
-> designed, though I think it still requires a modified setserial to
-> set PORT_RSA, or a boot time argument for autoconfiguration with
-> UART_CONFIG_TYPE.
+Why not to use scoped_guard()?
 
- Well, this is ISA, what do you expect?  We've dropped lots of stuff that 
-required perhaps even more complex manual configuration already (QIC-02 
-tapes, anyone?).
+> +	if (termios->c_cflag & CRTSCTS)
+> +		uport->status |= UPSTAT_AUTOCTS;
+> +	else
+> +		uport->status &= ~UPSTAT_AUTOCTS;
+> +	uart_port_unlock_irqrestore(uport, flags);
+> +
+>   	trace_geni_serial_set_termios(uport->dev, baud, bits_per_char,
+>   				      tx_trans_cfg, tx_parity_cfg, rx_trans_cfg,
+>   				      rx_parity_cfg, stop_bit_len);
 
-  Maciej
+thanks,
+-- 
+js
+suse labs
