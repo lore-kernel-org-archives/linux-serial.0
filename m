@@ -1,47 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=43.163.128.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792641575;
-	b=pKzwp/aulvHVQEfrNEugCobqkEA65BLY2q5tQ41bzdWsPWSNzZtWiWPN/UjakkTliFKj
-	 G0Od2b+XWYpB5Et1Irv/7VZNaUtcZP/j8mcLdx+g+CT3j7elEvQoiCcMMfmrQnVLmv7G3
-	 MYGSBGtSur/sLJ9RkHVCARPJHrSRT6MvFDVx+KRSfl1ofNYiA8KifUfLH+qWymHc/5XN8
-	 0Rz8KdYiBtnSRkZLugkTOGu+boULeMX+xwA/UTtZ8UIiruk952wwjZTJGCfhPcg7tlebP
-	 k+k5kuoROZdwhw6A3QoYWCMYq5+wIGNFF7jAiasiPe1f+rYJ1Rb+yGtZV5Hia3Q6ZKw==
+	t=1792647253;
+	b=KlrHVFBcC5cNQGK48Yxph1ztB8BE1KI37gRBEQb11VrokFGd6sjutT3LsmjmoGWOkZHe
+	 G+7iCAYd8lXQOyqNc61Z2vA4fTUAelB9jcy0pN2dLNq268aWHJAkmVRvxZCDR5PDhTexN
+	 oU9Kh1uzexCMoA/5KkHCQf/Oadw2Kj0Y73ExeVC3MvZshyTOitiVqVOuiSauIWgkOVBro
+	 Dz3oNcLyJUOMPPK2QMNrMQmi39CumTPaGi7n59jsHYN5oY64Csg7+ZBzrzat9PLHgMVDi
+	 bpr16c5EpVIaPQKh1mHguxgsOixSPnZTIRRArdH7zWLG/O51bDITbEl/FW2DL7NW/Ig==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792641575;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=XfnE7enxTP+WkIDLd7AT1Dde/8uqdSrCYp0NNo8s+Jo=;
-	b=PYU5EE7oIeaYi2UNDcopsWYgIrNbFlXikP9bbK6KZJ+fP/lgHlfX8kEDn7SMlRi95z5N
-	 Fa/TM1xRPVgAtequ+Fu7uM92DHlS076cQE1oi2AVgZh4LDcFDYV0yM+ZXSoSZMNsuuQav
-	 35qDF6TJcO1uBz3qows9yJDhlJuTHnLDKWI/nPbWKG0Q4sr1aP+SyCEI8Vt9cOIOq1LiV
-	 WsxYaI7Fh3BCnxvucrvIaBytLES9LTI8Fjt0F8HgfVFZmnBEwfiVKzwW46ECojFcgCtLZ
-	 aWbQ0IYhHIsmrxz2uaGYSo6dE3WupdeR9ykdMkEBMn3jyasgB2+bRKZToFe7YNFBVxA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792647253;
+	h=DMARC-Filter:DKIM-Signature:X-QQ-XMRINFO:X-QQ-XMAILINFO:From:To:Cc:
+	 Subject:Mime-Version:Content-Type:Content-Transfer-Encoding:Date:
+	 X-Priority:Message-ID:X-QQ-MIME:X-Mailer:X-QQ-Mailer:References:
+	 In-Reply-To:X-QQ-mid;
+	bh=ds0gPqcUBP6L02Z/8E2crybbPUoGn59iBftHI08WL+0=;
+	b=i1HApVAStE/fheYitrmUwA05i7/aTbmAjp8T7cq+br38WiIeC3grNTBe67vS74JpFuqD
+	 Xr9nMlJHQAbPjedZge10T/rqYU9h1QNKgJ942u5l1a4hSCRfgKr3zVNip209HfaKF+bbd
+	 JqFcSgZfyhwaMxV7dZngbrZthVYrSG0WWy7FsgWqpMjKOZ9vfbw3j+en4yIpg/Qsu+72E
+	 hm80BVr8gU/4LupN2vG/7XLF0SXyd8lO9Ujt+rx2T4IJ0fkvI0nKX2iNtyUBl6fxASU+t
+	 4DGDczLTrEiCxyb1JkTNf/vj4ajJ8ubORGaaMps9pwbeXyRScwP6dhDZtSBLZPJzM7A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hPg6zk7w;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=qq.com;
+	spf=pass smtp.mailfrom=qq.com;
+	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=h+FwYlqT;
+	arc=none smtp.remote-ip=43.163.128.49
+Received: from xmbghk7.mail.qq.com (xmbghk7.mail.qq.com [43.163.128.49])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3102E606A319;
-	Thu, 22 Oct 2026 03:59:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99BBE606A31B;
+	Thu, 22 Oct 2026 05:34:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 99BBE606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hPg6zk7w
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EC71F000C1;
-	Thu, 22 Oct 2026 03:59:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792641574;
-	bh=XfnE7enxTP+WkIDLd7AT1Dde/8uqdSrCYp0NNo8s+Jo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=hPg6zk7wA87tvU7+ek8WeuPXi6plGzBFPLvDtfkF5kdajBE7D7228QOzFnxR5kOQ8
-	 W4MO8C1MFowXyDPY1BVGSVWy28w1w5CD3hvi0TatE7cOYgcUJS7bPApqP5B3pQCg54
-	 GDT6oJYgA86diVoefW9fBlBIYYOlwOdUKh6fpHt+3hw1X98g3s3D5CHWsenp9TG/4e
-	 c4JD6iPoKEzQTM5im1bTJMtRJZOK3QrjD+A0IxYi5W+jEmtXYCcCn4XSdXEriHDMmQ
-	 ohxnkZQVyV8l68mJqhj9cFiaL59M9voGvFSK6dLtiNiWAvAIa5avajMhEio/yes9dV
-	 6RJw10VWJ9SJg==
-Message-ID: <8b077ae2-250b-4181-94bd-8b87e9927807@kernel.org>
-Date: Thu, 22 Oct 2026 05:59:31 +0200
+	dkim=pass (1024-bit key, unprotected) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=h+FwYlqT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1792647243; bh=ds0gPqcUBP6L02Z/8E2crybbPUoGn59iBftHI08WL+0=;
+	h=From:To:Cc:Subject:Date:References:In-Reply-To;
+	b=h+FwYlqTXgik5If3mRRsEVYopsIgtFSMYaP28ZusSHv97d6QMxi1q5+lQrRojqo0i
+	 Lote634BZGuOddK1Yxmt+rdrq/5kMqIyam1vRK9bNh1qz3LJ8OjX9Hv0UgBUK8K15t
+	 LnvekWnyUNS0m+DYfJrDJbnbnXX5pkEqcGkf7r8A=
+X-QQ-XMRINFO: NyFYKkN4Ny6FuXrnB5Ye7Aabb3ujjtK+gg==
+X-QQ-XMAILINFO: MhG7PnEq6uVZHX1/fLwaNH4gNTfoyBXS9ICP9bBvYMJm10JGRqKmUPNfnZovbK
+	 nS7LD3DnZM7PG6RiQaSUv5jA6wcYID4CXviFq5wgLYtO/p9oKsmGavyZL23IQr7d0d0757wXjmQq7
+	 yQ7P4DlSJst9LAB48rnkgVe6bMMGzgnOMnx2w510aEb7WmMOZugA+FKA7dFvUSF3uk29l84MQCVWa
+	 jQFL/6ymo+L5sPEnKeO+fuYDDV04n5JfOPyZEFeAEmfXWUAB8OTy/p4ZQ0lksVvz66JR0MwPQoyDb
+	 n5LAxPqjoQkDSVYojlFvKE3QRWo8Nw4pbcgx4sO7HHLYRRdk9PdPe1dl9Oz8L3gwwLZpO2vxs5hei
+	 qATp4aaTQFXj3yXC1oG+ha4AW+3PduUTMWV52PMWa7MyzJ6vjj4gJqIyME5EoA42vB0JgxZ7NY2Wo
+	 9myLFVs1KHj6pNKchD7+yXWnERL3VjkJvvBiZMlLb+FmlEJNA1LZYvJvP7REb9kMKka3Qc/kMWdpw
+	 ME+RFtbLfk9lZ3u5hhUqIRHqnTf9HAtOaX3qkfGVxMghLWghcRkCcjp4YduvxdIgqa1UNak48VkSA
+	 TlF32t4i+7UTKw6wipXCWXomB5M6/VJB6cp/POqY8gU7URPIvvU4LD0ukvML2czWLuGUYH6r30P/m
+	 bXX6boLd8ugiSZw7/nbZ+RGDcnBecAq+r9/slaKApRUKH7s6zm7GotVwmdnJX9S+l+rdESnP8wViE
+	 9vbJL80OFI3AlQqnZEpKIeUtv1OELzKLi9bW/Ak0ZE/uS42Sx35Z7jFPP1A6vwGu63jbHjFK2hvdT
+	 aBnJvGGAzxze/RxDGZcoRUCiglOCmYcbCRxQ+BkyuLIVrFgllCCVH4GP9So5GCpK4pC842+2Woz3H
+	 /x0wBngA2q2A7jL3A4irwZ7fQe06KnNpbK6/KiHbsZ/CwDFMDYmJAPFfRA/yGUucc0EF5M1edwKPd
+	 c8e3odi6IFHoUhzcHqXa1FRKkNwZNlZ1NgdSi1gSFjCRn53/lCjp4yXQ+W6Ng6LzXU9RbIkD7soUE
+	 HaUAEHfrtNxYdCY9egQi/AEZt8oWCx2fFBPqR3sDpr3zBscPLFvJxBqm6q1PwCEUu0SMeN+rBHNVM
+	 iuzehjqgE1gJVCUlbFuba+5M
+From: "=?utf-8?B?Q3VuaGFvIEx1?=" <1579567540@qq.com>
+To: "=?utf-8?B?QW5kcmV3IEx1bm4=?=" <andrew@lunn.ch>
+Cc: "=?utf-8?B?U3RlcGhlbiBCb3lk?=" <sboyd@kernel.org>, "=?utf-8?B?QnJpYW4gTWFzbmV5?=" <bmasney+clk@redhat.com>, "=?utf-8?B?SmVyb21lIEJydW5ldA==?=" <jbrunet+clk@baylibre.com>, "=?utf-8?B?Um9iIEhlcnJpbmc=?=" <robh@kernel.org>, "=?utf-8?B?S3J6eXN6dG9mIEtvemxvd3NraQ==?=" <krzk+dt@kernel.org>, "=?utf-8?B?Q29ub3IgRG9vbGV5?=" <conor+dt@kernel.org>, "=?utf-8?B?SGVpa28gU3R1ZWJuZXI=?=" <heiko@sntech.de>, "=?utf-8?B?UGhpbGlwcCBaYWJlbA==?=" <p.zabel@pengutronix.de>, "=?utf-8?B?RWxhaW5lIFpoYW5n?=" <zhangqing@rock-chips.com>, "=?utf-8?B?TGVlIEpvbmVz?=" <lee@kernel.org>, "=?utf-8?B?TGludXMgV2FsbGVpag==?=" <linusw@kernel.org>, "=?utf-8?B?QmFydG9zeiBHb2xhc3pld3NraQ==?=" <brgl@kernel.org>, "=?utf-8?B?UmljaGFyZCBDb2NocmFu?=" <richardcochran@gmail.com>, "=?utf-8?B?VWxmIEhhbnNzb24=?=" <ulfh@kernel.org>, 
+	"=?utf-8?B?QW5kaSBTaHl0aQ==?=" <andi.shyti@kernel.org>, "=?utf-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?=" <gregkh@linuxfoundation.org>, "=?utf-8?B?SmlyaSBTbGFieQ==?=" <jirislaby@kernel.org>, "=?utf-8?B?SmlzaGVuZyBaaGFuZw==?=" <jszhang@kernel.org>, "=?utf-8?B?QW5kcmV3IEx1bm4=?=" <andrew+netdev@lunn.ch>, "=?utf-8?B?RGF2aWQgUy4gTWlsbGVy?=" <davem@davemloft.net>, "=?utf-8?B?RXJpYyBEdW1hemV0?=" <edumazet@kernel.org>, "=?utf-8?B?SmFrdWIgS2ljaW5za2k=?=" <kuba@kernel.org>, "=?utf-8?B?UGFvbG8gQWJlbmk=?=" <pabeni@redhat.com>, "=?utf-8?B?RGF2aWQgV3U=?=" <david.wu@rock-chips.com>, "=?utf-8?B?UmFmYWVsIEouIFd5c29ja2k=?=" <rafael@kernel.org>, "=?utf-8?B?RGFuaWVsIExlemNhbm8=?=" <daniel.lezcano@kernel.org>, "=?utf-8?B?WmhhbmcgUnVp?=" <rui.zhang@intel.com>, "=?utf-8?B?THVrYXN6IEx1YmE=?=" <lukasz.luba@arm.com>, 
+	"=?utf-8?B?TWF4aW1lIENoZXZhbGxpZXI=?=" <maxime.chevallier@bootlin.com>, "=?utf-8?B?TWF4aW1lIENvcXVlbGlu?=" <mcoquelin.stm32@gmail.com>, "=?utf-8?B?QWxleGFuZHJlIFRvcmd1ZQ==?=" <alexandre.torgue@foss.st.com>, "=?utf-8?B?Vmlub2QgS291bA==?=" <vkoul@kernel.org>, "=?utf-8?B?TmVpbCBBcm1zdHJvbmc=?=" <neil.armstrong@linaro.org>, "=?utf-8?B?TWFuaXZhbm5hbiBTYWRoYXNpdmFt?=" <mani@kernel.org>, "=?utf-8?B?VGhpbmggTmd1eWVu?=" <Thinh.Nguyen@synopsys.com>, "=?utf-8?B?SmFlaG9vbiBDaHVuZw==?=" <jh80.chung@samsung.com>, "=?utf-8?B?U2hhd24gTGlu?=" <shawn.lin@rock-chips.com>, "=?utf-8?B?bGludXgtY2xr?=" <linux-clk@vger.kernel.org>, "=?utf-8?B?ZGV2aWNldHJlZQ==?=" <devicetree@vger.kernel.org>, "=?utf-8?B?bGludXgtYXJtLWtlcm5lbA==?=" <linux-arm-kernel@lists.infradead.org>, 
+	"=?utf-8?B?bGludXgtcm9ja2NoaXA=?=" <linux-rockchip@lists.infradead.org>, "=?utf-8?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>, "=?utf-8?B?bWZk?=" <mfd@lists.linux.dev>, "=?utf-8?B?bGludXgtZ3Bpbw==?=" <linux-gpio@vger.kernel.org>, "=?utf-8?B?bmV0ZGV2?=" <netdev@vger.kernel.org>, "=?utf-8?B?bGludXgtcG0=?=" <linux-pm@vger.kernel.org>, "=?utf-8?B?bGludXgtaTJj?=" <linux-i2c@vger.kernel.org>, "=?utf-8?B?bGludXgtc2VyaWFs?=" <linux-serial@vger.kernel.org>, "=?utf-8?B?bGludXgtbW1j?=" <linux-mmc@vger.kernel.org>, "=?utf-8?B?bGludXgtc3RtMzI=?=" <linux-stm32@st-md-mailman.stormreply.com>, "=?utf-8?B?bGludXgtcGh5?=" <linux-phy@lists.infradead.org>, "=?utf-8?B?bGludXgtdXNi?=" <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH 16/27] net: stmmac: dwmac-rk: Add RK3572 support
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -50,96 +71,29 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: Set UPSTAT_AUTOCTS for hardware flow
- control
-To: Michael McAllister <me@michaelmcallister.org>,
- linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20261021202603.42888-1-me@michaelmcallister.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20261021202603.42888-1-me@michaelmcallister.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Date: Thu, 22 Oct 2026 13:33:59 +0800
+X-Priority: 3
+Message-ID: <tencent_DC0344109BFDE09B646864649812CA465409@qq.com>
+X-QQ-MIME: TCMime 1.0 by Tencent
+X-Mailer: QQMail 2.x
+X-QQ-Mailer: QQMail 2.x
+References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
+ <20261022-add-board-ok3572-c-v1-16-0b0fd85a31ee@qq.com>
+	<b1ab0503-628c-4f96-af38-727d4be06f8a@lunn.ch>
+In-Reply-To: <b1ab0503-628c-4f96-af38-727d4be06f8a@lunn.ch>
+X-QQ-mid: xmsezb41-0t1792647239txf7q5rwo
 
-On 21. 10. 26, 22:26, Michael McAllister wrote:
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index a851b8f0ef..5782b89c84 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1503,6 +1503,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->   	struct qcom_geni_serial_port *port = to_dev_port(uport);
->   	unsigned int baud;
->   	unsigned long timeout;
-> +	unsigned long flags;
->   	u32 bits_per_char;
->   	u32 tx_trans_cfg;
->   	u32 tx_parity_cfg;
-> @@ -1596,6 +1597,14 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->   	writel(bits_per_char, uport->membase + SE_UART_RX_WORD_LEN);
->   	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
->   
-> +	/* CTS gates TX in hardware; no CTS interrupt updates hw_stopped. */
-> +	uart_port_lock_irqsave(uport, &flags);
+SGkgQW5kcmV3LAoKPiBZb3UgbmVlZCB0byBzcGxpdCB0aGlzIHBhdGNoZXMgcGVyIHN1YnN5
+c3RlbS4gUGxlYXNlIHNlbmQgYWxsCj4gbmV0d29ya2luZyBwYXRjaGVzIHRvIG5ldGRldiwg
+b25jZSB0aGUgbWVyZ2Ugd2luZG93IGNsb3Nlcy4KPgo+IGh0dHBzOi8vd3d3Lmtlcm5lbC5v
+cmcvZG9jL2h0bWwvbGF0ZXN0L3Byb2Nlc3MvbWFpbnRhaW5lci1uZXRkZXYuaHRtbAoKVGhh
+bmsgeW91IGZvciB0aGUgZ3VpZGFuY2UuIEkgYXBvbG9naXplIGZvciB0aGUgaW5jb252ZW5p
+ZW5jZS4gSSdsbCBzcGxpdCB0aGUKc2VyaWVzIGJ5IHN1YnN5c3RlbSBhbmQgc2VuZCB0aGUg
+UkszNTcyIEV0aGVybmV0IGJpbmRpbmcgYW5kIGR3bWFjLXJrIGRyaXZlcgpjaGFuZ2VzIHRv
+Z2V0aGVyIGFzIGEgc2VwYXJhdGUgc2VyaWVzIHRvIG5ldGRldiBhZnRlciBOb3ZlbWJlciA5
+LCAyMDI2LgoKQmVzdCByZWdhcmRzLApDdW5oYW8=
 
-Why not to use scoped_guard()?
-
-> +	if (termios->c_cflag & CRTSCTS)
-> +		uport->status |= UPSTAT_AUTOCTS;
-> +	else
-> +		uport->status &= ~UPSTAT_AUTOCTS;
-> +	uart_port_unlock_irqrestore(uport, flags);
-> +
->   	trace_geni_serial_set_termios(uport->dev, baud, bits_per_char,
->   				      tx_trans_cfg, tx_parity_cfg, rx_trans_cfg,
->   				      rx_parity_cfg, stop_bit_len);
-
-thanks,
--- 
-js
-suse labs
