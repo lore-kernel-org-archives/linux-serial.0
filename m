@@ -1,99 +1,127 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.180
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.193.7
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792665030;
-	b=3utSDAyAsvqM9B3I2NFJiUFzw3kM+HjI3MkaqwV1ewKgffGNvAb8iDmybssRuQ26390p
-	 lJKWrQxG1P0tPzYUV9AB0M/jQySOxA1AuhJdLHF6RIq12QJf3j4TbgJi1kAWrX5ewsJLF
-	 aGW3wrneM827epJ1HcHgqATsRNWNI8A4nHSJjxfxd8dwXvpSAt+wMFtZb4fJoNVzTPzSX
-	 GvsFFdzv9ehT0c6Si2Kx/veJq1PB5fbJur07I/QFD3pukAhu/+AX6mNbJguzLJv7kwFCZ
-	 W6jklccZENRRP3Qmxx5t/WEE2a9GJq2UbR7QTKAkUus2d8enmuE2JmgHzSWkUvYa5Hw==
+	t=1792665637;
+	b=pqdPDwrUvN8rBoLcT0ZCozdsth6YFT2u1JhNvZFvlT+BkhUzvOBBKsNQ1CYHcGkSAxJz
+	 nObMRFvfAD/h2yMoECSiQNNfQS+91+dhd34f0pQ1joiB19P7+IdhFEW7zNLrgW39lpS7n
+	 h3cGC3m0TVplKYgY+7ee1crTT/Nq2qxaDKSse19tC3Y9xUHQyU+1N7NJ2OGpAvuuIfFIU
+	 5p7xoku6N+g4FAUuvkszf6YHlVpJ66TAwH1id/a4/TivPUSqMdc2IzB3cX7HvReO3uH/5
+	 S/dkcVMpD5A7jzHPCwgM4TFmVrYS6LCE+85SYK5i0YtCWNNCEKWAmGoJTGkm3xraWkQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792665030;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=BEhHwxYzSMiJvLdiI5HQibRaFl5gonBn5xrnfJkUhrQ=;
-	b=OYRCx3IImTxarKLaul0ruVNY1vuxQ+dBC9FN27iWTR9ro9g0rVvdWzTCcdgpeNiy7snB
-	 tpfAjyTwe8Q2Q9ydXukeq5b/xxrLqScoUaUKL/IMUXVjQUPXlBrvJfoeOWKpL0He6KKPW
-	 r/2xyuzlgVeaL3awD4B6avqPgMFIGNhsU/qVIc/ACSXr0a7kMjNi1qYi2N9z6NmbJWu1F
-	 /OndluyMOhr9pLYGXx1Xn2z3x6gCNbKU6Y4OtEgJG1ktrJvCSHQOp/TekIg2fIfLr+t3X
-	 t2adgYd3avnONbJUuZElPqoFyjjpgOEIFNa2YlalhGhff7K1qrUi864p0e+GjpfhaQw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792665637;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=kboHgt19Dz1TK6Pl0RY67RPVWyrBDrK2fm2eftb+nXQ=;
+	b=cEZzoSCZ8WAQij0SKZcFUDeYx1LXNP864n5hJPgRJyfTPEcoGrJRUwtSQY5tDxLEULkS
+	 CTRcLfkFWai9ChOi22sWPJ2G30UVOP6eESM1pX7wYPQR1ESexO/ko2+4TDX5YPlXg4pOG
+	 HjI+3BG/QM0s7FwjTIQRpFS86wuQE4mvK7BKbH2DSDYC/Zx2IKTmnI8q2D7w90eADvLhg
+	 /ARKIbB0u9/5X1iV3XmEhKjvQz0iw/fXMBZrEuOy4dGLtAiYTYkmrUAwc/NnL/JulPxiD
+	 YmQT9+Zdu2cxm1j1ipWkxxYRNrBMSGxSaoqrYEoo2QXedkNmLGamzU/kobIPzljcuMg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=nN9VfXDM;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.180
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=pfJe5FLa;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.193.7
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010007.outbound.protection.outlook.com [52.101.193.7])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ACBC606A31D
-	for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 10:30:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1ACBC606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7326B606A319;
+	Thu, 22 Oct 2026 10:40:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7326B606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=nN9VfXDM
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-8b06c0794cfso18599827b3.0
-        for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 03:30:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792665029; cv=none;
-        d=google.com; s=arc-20260327;
-        b=YgjKGUFKC0GR/0Q2cXbTs0aIGyWSncXaQqSZwPgBs7YMdUE89siNKsrv0q0Ak9qd5w
-         OlYlkqJLJi6dIPAN0kXLGsqU3KE27RuxCRbo0tgg71bCIthFyrYkC+ZL1BuBx0ngHHOi
-         IqKpW0Xi1fVmawz/3rKCwv4YiSn7ONFGRxveN93fYCvSdzXrVwDFRDn9P3qTv3fLzVLT
-         VK33WCct3WZdu1tbkW3/NRjB4xxbhbSoAMv7hKZsLP222IZ746N2tTnjWhNcMhRr3Km4
-         8K8fHEQ3VpJ4C/u3VEpvA6BWzmE1QHT9M+R6G529GrGiMMxkVWflCUWKNKaFNbAA/AYD
-         Mt1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=BEhHwxYzSMiJvLdiI5HQibRaFl5gonBn5xrnfJkUhrQ=;
-        fh=qZ+seXf+f2TsJGAcBan+zfngSJsoMHLyq6CoMxxVLFE=;
-        b=h2qwMj88pNJsMR76J2IiU5xuXAFc5gIEiZ7aUoZK1KdGjK+5bVRIseEGhXC7fmSfRr
-         QOpAgpiNwowZHc3YDTqbhj/AbV3Aauaq9I40xbOg03XCBFm0v+af0K1+N6j9dIr9bKnw
-         UqZMjPLa9zcvO16oa90A4t7ACynPMUMK6UR+ZUlv3ZDhtFNoX0S6xvvv33CRXrF5BKVn
-         W1beRb2JY0wTdcx6dWit6Bff6OW5lvNXfFXUbMZL3Xp4OcHg7qszFwukmH8jcOV9vrt4
-         xIUq9+UiK8eVyvQ7cvOboXmzQmGNqS8sk/K/NtKflXxb0/Vq20nAhGZfvuEhFkg10dPl
-         O4cA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792665029; x=1793269829; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=BEhHwxYzSMiJvLdiI5HQibRaFl5gonBn5xrnfJkUhrQ=;
-        b=nN9VfXDM0FsUz/mrgy4GZLzQ3MXPeOinIlG5V7+8d+qY0GDkEDX3vx7k5ULeH3SX87
-         n4tDI1qa2sGwlUL2bC1psW5uXmYXP1jTWLPm2j/eBKEzGO4TNP8CGXcCSB0TYQQKoNrf
-         K31SH4scmVzJCb3yVmwYF9bQC89rcwL3F1V3QYEcYJ1k/lvXd0GrXzHCHp+ef7aGRPDQ
-         xjjW75TtK3W/5KkYjbUXiKEdXLqaARPOt7Eabp1zA5WF/KHwkgc+3sPkSVZJn6NV0vtr
-         XhbFcwwkxKudvC4WN0nQ+p9qLLxmeMBNkGz8tLilb+cV+q5VXo5xVWj+erxEV0+jgNgB
-         fDvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792665029; x=1793269829;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=BEhHwxYzSMiJvLdiI5HQibRaFl5gonBn5xrnfJkUhrQ=;
-        b=E3mwXrSq7bSBCnohny8UI5hieWqTnHahnBtEWR7pvz0+bMMmKXWPioVtFd8AAGJwFV
-         YcyumipTdSOx5WiXrYK2MRqHDH2ZoAqm519mObKxXwN3sFzda6T+W8o79pKjV9LzNtNH
-         6Y888ityOvuIx+fZIZph2ZzlYZjXesKcDMBeW/GhUIhJRiLobNKcFDU+k0HNFHJUA5TO
-         vMlEnMgJxuo91g9PAhpyrrC5uB4Audg1ZXVy0cOG5F1jvp7VOwQHieSj3/ZCBw700VfO
-         cvbOmG7Ko7k1hHNBBosCskBiAjs6y7FNeIwnZywkqg/SfxW9MlF0esAUUzVJVPnn+6kE
-         6YbQ==
-X-Gm-Message-State: AFq9FYJXh5U3vAp17W7cz6CnCA3ACBDKlDOLToIevNb7nG7Be3IaHV7M
-	XjkalFCUbJzTDi9fmn8Xjz+0j3eO5TkPS9gvJvMhudRKGw+EDiTWuUNHfIDnP9MMo6r1vK5qokg
-	cquXAeH44UVUsBloZgKC9b1hlmjrLqU8=
-X-Gm-Gg: AYBFou11sc/JZxMJADQiFAyKcUVjuRcaf6SiNQECTpzT674eMsUQ4lnGHckZQKQg9/t
-	2kMgE8FgQH82dqJMxN/M4Sbje7lOPsdREBDzAjEom3Z8MlzB0Iwv9pIJK5NHExxkNrb74KlHwF8
-	3j/UJmzq3J9z9pIJSukfQaPK3H8AX5j4kfbJtpOsn7tEjGfcZi0jM4xt3SRoxOSNmKhjxu7eY+o
-	8EZ7sUiekhpf13tEgfxV5gweY1cYeXIOFn2owOCaJNOIwT3Dj6q34IqIfhAG1vDXp0ZtgGEGZ4b
-	nPCUX6i5YwlJaWkv/g5csyXx6C//1+pxPuE3jX46S7KkcjWZbAC+/MqQHX9ovCAktzLdHeE7ZFR
-	kl10+KG73/AxYBziJrr5hWWlDZX3CDNz2Ve84FlOqCgpKj+VYqY+2OMkPPv/CsegwqXHo++w=
-X-Received: by 2002:a05:690c:6e83:b0:88a:4770:c2e9 with SMTP id
- 00721157ae682-8b133cab00emr32482837b3.14.1792665028968; Thu, 22 Oct 2026
- 03:30:28 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=pfJe5FLa
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cCp5t3GM2v2uPmKoOGUHKtsHWMMgGMRTz8b4AGmOykXPzxMXj/Y2D+Lu9cO/krumh7BGfOGG9QhMmaS69yVTmhYcybN7hOikcG3aE2kUWOi1kzY3jOBZgck7kXZfejavYZ/miAp+2oX7pIwy+xpLxVmcjZI1PuEJKQ8si2nclfpPbKybn0xH+W0xcL3fwCQVXLKceC3xkRtp6Hb/Mh7vxuuCvYbc7ddeN6/Utg8FmM2VJdlkEgTxFAWHQKN5Hh6xKdBY5hJWXMvXYK6NwIprTSd9h6I7wu/O0pDXSr2Yp7iJpPuF8PPIojOH+xlig45c3CX2a8nus17IsHd3xJb62w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kboHgt19Dz1TK6Pl0RY67RPVWyrBDrK2fm2eftb+nXQ=;
+ b=R4sqdSdiDw5X9jJpB6lWJO+7e5C7p0QYFT90g1FlvAcCliQRpPqX3RjudXmcmpu/DPL5SKnCFwtrA5feIk4VarLn+4AS4PclJ1/M5MfLR4FAW7FxtV8b6JBPemeFfYKZSEhj0wG/4X6s9yvjLGbmIKzwRyWgJRS9DdfpLmWRcTGIUc7B0tt8PkrbrZjWkv18Zm8GN3FG8T/JPsenzNsWIVJWp0pDlGZxZNlyz030IyFFyG6JfuGAT+6J+7PDMZCIliOCux9yeGOW164vXb5a96pT1Gn21c1VYid4/z59KEw594U4JmQhB82jzCadNLu0WNhvsO2v3GFl0UQ9UQ1VDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kboHgt19Dz1TK6Pl0RY67RPVWyrBDrK2fm2eftb+nXQ=;
+ b=pfJe5FLakhkUWA+yf6vlQpMVWMKzlYC/+qCSP5+L7UBphGYUKDSOam46D3mgMspLFmrfxVfeWXrBNodzZREhLWBfaE2RHl3PIGhjwixxr/M/Da9ngyjmApv5CZsKAAXOAIRQkRpoOgUDTXhzpewxB7T5EkmbbqzHpgpVAeCa5YDwJSDv//lJZxOjGklvwryCvVRTB2RwuxkS+S3o1qIoUBtuHfyc/OfTbVKiaqpHlV6ZsHF6Ad7X1QF9LaCJueNqqQBUxWOF6911PLg5Tom0Pn0yPu3mOtUr6ln+OKEFjHJv/6GTyEXbqa4rdrXP2j6Hc/HcOsq2sMXxwaf2Vwk5Qw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7PR12MB5974.namprd12.prod.outlook.com (2603:10b6:510:1d9::19)
+ by MW4PR12MB6756.namprd12.prod.outlook.com (2603:10b6:303:1e9::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
+ 2026 10:40:30 +0000
+Received: from PH7PR12MB5974.namprd12.prod.outlook.com
+ ([fe80::f5a5:bbc3:e9da:f8a0]) by PH7PR12MB5974.namprd12.prod.outlook.com
+ ([fe80::f5a5:bbc3:e9da:f8a0%3]) with mapi id 15.21.0546.016; Thu, 22 Oct 2026
+ 10:40:30 +0000
+From: Adrian Ambrozewicz <aambrozewicz@nvidia.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Donald Shannon <donalds@nvidia.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Pavel Machek <pavel@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Mark Brown <broonie@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Corey Minyard <corey@minyard.net>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Lixu Zhang <lixu.zhang@intel.com>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Johan Hovold <johan@kernel.org>,
+	Oliver Neukum <oneukum@suse.com>,
+	Quan Nguyen <quan@os.amperecomputing.com>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Jeremy Kerr <jk@codeconstruct.com.au>,
+	linux-usb@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-leds@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	openipmi-developer@lists.sourceforge.net,
+	linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/11] Add NVIDIA LSTP USB adapter drivers
+Date: Thu, 22 Oct 2026 13:40:26 +0300
+Message-ID: <20261022104025.3956402-3-aambrozewicz@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <2026101355-species-glance-9ff8@gregkh>
+References: <20261012-lstp-usb-adapter-v1-0-aambrozewicz@nvidia.com> <2026101355-species-glance-9ff8@gregkh>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR2P281CA0143.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:98::16) To PH7PR12MB5974.namprd12.prod.outlook.com
+ (2603:10b6:510:1d9::19)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -103,204 +131,88 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261021-g2ul_sci-v2-0-b4e038220018@bp.renesas.com>
- <20261021-g2ul_sci-v2-3-b4e038220018@bp.renesas.com> <sashiko-outbox-180298@kernel.org>
-In-Reply-To: <sashiko-outbox-180298@kernel.org>
-From: Biju Das <biju.das.au@gmail.com>
-Date: Thu, 22 Oct 2026 11:29:57 +0100
-X-Gm-Features: AclHuK9NxPFgx-jqOft8MHFpJQqezzJagWJDKOJP_AqiRF8xMdXQyhKNm1Uf3MY
-Message-ID: <CADT+UeA_z=6o32GdhHD9KrmMpW3WRcujcED_ZvCGSoi38jrg+w@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] serial: sh-sci: Skip TDxE clear when hardware
- clears it automatically
-To: sashiko-reviews@lists.linux.dev
-Cc: linux-serial@vger.kernel.org, kvm@vger.kernel.org, 
-	wsa+renesas@sang-engineering.com, linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5974:EE_|MW4PR12MB6756:EE_
+X-MS-Office365-Filtering-Correlation-Id: f3f1465f-9a94-45e1-e61d-08df3028e4a3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|23010399003|1800799024|7416014|366016|10067099003|18002099003|22082099003|261021123027099003|261009223027099003|4143699003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	+OnPK/ZkKADamwuB/xW7WSQqdzcrb/H0j5vW+0COGwU6r3VdZcZF91SL8N9riWodjFYbEWrxGHL/u2er0vCr2xaVWb+dJMP2l+L0AvzRcP+iolS5oqaiWgUXrLbncFoY+MB4NB4GiDCD9liRmUyp95whTvJGfMwezF94eu5GM1ch9pG4tGLVpnINM38sDV8BE8/4OhXa4YaeLr6iDe6luItBZbNzrVNFboZVIAWwWv2uxmAoh/hAf/VOydGVKDBRiD7+oEj9pY6I4b0fACqY4j9dbQwxgsr0tJaYCpMFZHkyb6FgqXDlYhNUmY3+smUAOjFUSwXp3zB0Miq/4kMwC3C+q6dZZ3GtYOdE3oUaMwe0ym9xQ+rgwOdKFJfRthaBf1B3hyov5VyywkrkiGsg1nqmTUWrVFLLAup7zcJhYDPISILKskt7IskHsnXj2PKdp4Oy3d8JC2hKVJ8a3oI0pCEWiKDmiWT/snYaoXjUUOZqwkQiq1jOF3cwHD0wpqm/AND7kbA7t7Z5aytRKrh8tBT5C2NLbJnAqSC+vIZWiTCnjYK4oBWvbAdOpiKXyKiNGDdb2+AD56sYfn0X0U071YszKun2mgTBOJSa52cibGx93cYeFhoTrUxoQFbsjJLGrf99W1/MyVsoW9iQXlyaxkZA9YyqBHlsjlZThM/bStQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5974.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(7416014)(366016)(10067099003)(18002099003)(22082099003)(261021123027099003)(261009223027099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?gVYd9T3606e6+ZUoYrgJQDFtt74E1gp+2mZ1QyAEiz6aOuf9oJYPSfBAO1y1?=
+ =?us-ascii?Q?3upxoEvhNE/6rCiNNJIH+H9Ma9a0jpIuZS88v2B9lltVZhkoAVyFkzHFQ6Fz?=
+ =?us-ascii?Q?TqPD1B5ZmexGR3NhaJw6w8ntDnCB5x11LFIKHzjCvfXxp3u3Grh8HoY5oa/S?=
+ =?us-ascii?Q?aDDXqkxAdvIKdjR96Su0QliIrQ4O7UWX5/xhiuwXPF8tZqpVZh46K56YygqW?=
+ =?us-ascii?Q?L7Am0rZkf+Ff0Yb/VomPai+Mn1lLPCpGTwybGhHh/oAqa176IZvtxTWkquCa?=
+ =?us-ascii?Q?Aua9ajpwWlay5GVfRLZdIJ6gAUWL7yGAIRNaWd42LoYuFsBwKCs3ui1n//xU?=
+ =?us-ascii?Q?JLHfCQbBWTPLMcSkKD71Nrv2Imy3jAnFaRqafPrevvbaXsslA57uTx7H5rvb?=
+ =?us-ascii?Q?nhPBRmoG/Yf+nwMAg42W/g99Gw/RKAJdLc8ILerP1lS+8ZjGUhT8M6Dh35Dk?=
+ =?us-ascii?Q?53p4AM8fNVsmN9jiIYzuJbq3Uql8mEapfVc0o2K4NfpnID1HZa6Qd0yssKno?=
+ =?us-ascii?Q?s1eU8hunxc2gDofOwLuvVl/YLzfBQbX1jH2E4dvIfUqpYBDCJTQ4SBGQq0aq?=
+ =?us-ascii?Q?iSbV3MQk7nuIUn/CZRePksIQOgr4pYrIx2qnNzv7s6TjSEW00dWFHLdngzm1?=
+ =?us-ascii?Q?5iDvMtYjsufgevTklSgokourIfqpos3YqOebqyPgeuiPre3AJ/qwZCzcBttI?=
+ =?us-ascii?Q?EmE+FB9qMR33Alote3Qgfi87mieYWyR8A23ZFnmFB874SITanrNUAiqoMzGI?=
+ =?us-ascii?Q?1SO9oJiPZKTodv7mam0tqWxgkXN4SGalVH72WWfkgUt3ZhC9A9taYid/H6p5?=
+ =?us-ascii?Q?w0zdrOSeJqUKDxV+QPq0nzMcxrcQXC/2B+20HoFdyEN3G+/dpxUsoTAzeC4m?=
+ =?us-ascii?Q?+0YEMrTUEaY9ou6XjDdohOma2LQpbFtdE1bRckcnAGVz53BfxZiOSSttpPGW?=
+ =?us-ascii?Q?w1YAzadBtfajXb8APTz7cIxv1sLWSiUZUHzxNq2v/PhC/BJYL2NhChplgIfh?=
+ =?us-ascii?Q?QFDZwBPlbOOiX+gCadzZlzo6Qshew/NZ77bH/Ff2xOJXha6Qk2oYnZClIj/6?=
+ =?us-ascii?Q?pYVvzyyFqY9+jak3D1iQlYc1GDCctZ7ccNBCjRk0/blY7nIog3hxvuFlPrzN?=
+ =?us-ascii?Q?COXjpEZCBeElncg/ALwwqTtOV7h3QNjG1DCIHzQ5DWIeMlOVahPG0oyTIb3X?=
+ =?us-ascii?Q?mVvBxh7DeVEdlu0TlBkgWH8YPbXC/PhMyhyIFKWu7XQUypQ7XYURTQQcw0sp?=
+ =?us-ascii?Q?6gzbXifnTJgGG51PPduAeNt2zFyTDOMRmJMLBZm2RhWnRRZY4Gnzl/mfhqSC?=
+ =?us-ascii?Q?VGmGWHILAF04HyV95WTPtj9RnvV9vqWxBLnyaSy1e5Lsu5bB3HwixnkftWfc?=
+ =?us-ascii?Q?A0NoJyNFL0g30ucOhTy+uuphxDAk8iTybi84J6FUFZiFJlfWRW0k2O2qDHCO?=
+ =?us-ascii?Q?WzB5zf91qFw3QCqV1IC6VJgM8oYnph0MsFSGLWVum9MY7qCK/xxgNPvqABbG?=
+ =?us-ascii?Q?2nIf50IZP+/Mewx2rEFqiUi5REUyZzN4mq7GMWeOkDOko+0KF517ydg2QIvj?=
+ =?us-ascii?Q?I7iowG1MnrkVj3ilwiAWZsUhvxwMwSecIoAI1zV5SjsjNRT4rPLRBcjF14qT?=
+ =?us-ascii?Q?2AQ23Xzq99k/ENcKkMF7W/8sWyABdD/OeWu+nRv2TTBBzbmsXv9O9KBr3yo1?=
+ =?us-ascii?Q?Uzlw6snIBKQZ0ck8XBTaM5w3fZlqPvc1GBTkTPo7gdfzniyMF/DbOef3GAJ1?=
+ =?us-ascii?Q?lVV3jxI6Lg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3f1465f-9a94-45e1-e61d-08df3028e4a3
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5974.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 10:40:30.5211
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ryGnCtbVz5eGlNgsfw9MqyG4REoD0G8hTFbkwRbDISxH2zP0uHTAXYLzNUr5LuKEovHbvR9LkB7iipUPee8ghQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6756
 
-On Wed, Oct 21, 2026 at 2:22=E2=80=AFPM <sashiko-bot@kernel.org> wrote:
+On Tue, Oct 13, 2026 at 01:37:11PM +0200, Greg Kroah-Hartman wrote:
+> > Why the auxiliary bus, and why not MFD
+> > --------------------------------------
 >
-> Thank you for your contribution! Sashiko AI review found 1 potential issu=
-e(s) to consider:
-> - [Medium] serial: sh-sci: missing has_tdxe_auto_clear init in scix_early=
-_console_setup()
-> --
->
-> commit 7c4175b5ac1e1b0c0d116921a097acf598dc7be1
-> Author: Au Dang <au.dang.jx@renesas.com>
->
-> serial: sh-sci: Skip TDxE clear when hardware clears it automatically
->
-> This commit adds a tdxe_auto_clear flag to struct sci_of_data and propaga=
-tes
-> it to struct sci_port as has_tdxe_auto_clear to skip software clearing of
-> TDxE in sci_transmit_chars() and sci_poll_put_char() on PORT_SCI variants=
-.
->
-> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > index 58120b523ca1e..aa179c7874878 100644
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -913,7 +913,8 @@ static void sci_poll_put_char(struct uart_port *por=
-t, unsigned char c)
-> >       } while (!(status & SCxSR_TDxE(port)));
-> >
-> >       sci_serial_out(port, SCxTDR, c);
-> > -     s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(po=
-rt));
-> > +     if (!s->has_tdxe_auto_clear)
-> > +             s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR=
-_TEND(port));
-> >  }
-> >  #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
-> >         CONFIG_SERIAL_SH_SCI_EARLYCON */
->
-> [ ... ]
->
-> > @@ -3791,6 +3794,7 @@ static struct plat_sci_port *sci_parse_dt(struct =
-platform_device *pdev,
-> >       sp->ops =3D data->ops;
-> >       sp->port.ops =3D data->uart_ops;
-> >       sp->params =3D data->params;
-> > +     sp->has_tdxe_auto_clear =3D data->tdxe_auto_clear;
->
-> [Severity: Medium]
-> Should scix_early_console_setup() in drivers/tty/serial/sh-sci.c also cop=
-y
-> data->tdxe_auto_clear to sci_ports[0].has_tdxe_auto_clear?
->
-> When earlycon is enabled on a renesas,sci port, sci_early_console_setup()=
- ->
-> scix_early_console_setup() initializes sci_ports[0] from of_sci_sci, but
-> leaves has_tdxe_auto_clear unset:
->
-> drivers/tty/serial/sh-sci.c:scix_early_console_setup() {
->         ...
->         sci_ports[0].cfg =3D &port_cfg;
->         sci_ports[0].params =3D data->params;
->         sci_ports[0].ops =3D data->ops;
->         sci_ports[0].port.ops =3D data->uart_ops;
->         sci_uart_earlycon =3D true;
->         ...
-> }
->
-> During early console output via serial_console_write() ->
-> uart_console_write() -> serial_console_putchar() -> sci_poll_put_char(),
-> s->has_tdxe_auto_clear will still be false on sci_ports[0], causing
-> s->ops->clear_SCxSR() to be called in software instead of being skipped.
->
-> >
-> >       sp->has_rtscts =3D of_property_read_bool(np, "uart-has-rtscts");
-> >
->
-> --
-> Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261021-g2ul_sci=
--v2-0-b4e038220018@bp.renesas.com?part=3D3
+> Neither is ok for USB devices, that's not an argument either way.
 
-Modified patch based on above review.
+Here USB only carries the traffic. The I2C, SPI and GPIO channels are
+ordinary controllers on the board, and their drivers register with
+those subsystems; hosts describe what is wired to them with ACPI, BMCs
+with device tree [1].
 
-From 0efbe7abe7fc1ec3354fcdc1f4c02b77eaac7904 Mon Sep 17 00:00:00 2001
-From: Au Dang <au.dang.jx@renesas.com>
-Date: Mon, 19 Oct 2026 18:01:11 +0100
-Subject: [PATCH 3/4] serial: sh-sci: Skip TDxE clear when hardware clears i=
-t
- automatically
+usb-ljca is a recent driver for a very similar device, so we modelled
+the core on it: one interface carries GPIO, I2C and SPI, and the core
+creates an auxiliary device per function and attaches its ACPI node.
+LSTP extends that model to device tree.
 
-On some SCI variants, the TDxE (Transmit Data Empty) flag in SCxSR is
-cleared by hardware when data is written to TDR. Clearing it again from
-software via clear_SCxSR() generates a spurious TXI interrupt, causing
-the last character to be transmitted twice.
+Whether the next version stays LSTP or becomes a set of divergences
+from an OBMF-ICP driver, as Jeremy suggested, the need is the same: a
+device behind a tunnelled channel is described like one wired straight
+to the BMC, so a board can move between the two without rewriting its
+description.
 
-Add a tdxe_auto_clear flag to struct sci_of_data, propagate it to struct
-sci_port as has_tdxe_auto_clear, and skip the clear_SCxSR() call in
-sci_transmit_chars() and sci_poll_put_char() when it is set. Enable the
-flag for the PORT_SCI (of_sci_sci) variant.
+We don't see an architecture that fits better. If you would rather see
+this done differently, what would you suggest? One function per
+interface I'll answer separately.
 
-Signed-off-by: Au Dang <au.dang.jx@renesas.com>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-v1->v2:
- * Updated commit header and description.
- * Replaced the PORT_SCI check with a has_tdxe_auto_clear flag in
-   struct sci_port, set from the new tdxe_auto_clear field in
-   struct sci_of_data.
----
- drivers/tty/serial/sh-sci-common.h | 2 ++
- drivers/tty/serial/sh-sci.c        | 9 +++++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+[1] https://lore.kernel.org/r/20261016084443.1972351-1-aambrozewicz@nvidia.com
 
-diff --git a/drivers/tty/serial/sh-sci-common.h
-b/drivers/tty/serial/sh-sci-common.h
-index 273856fbc20b..b75e5e1d3075 100644
---- a/drivers/tty/serial/sh-sci-common.h
-+++ b/drivers/tty/serial/sh-sci-common.h
-@@ -108,6 +108,7 @@ struct sci_of_data {
-  const struct sci_port_ops *ops;
-  unsigned short regtype;
-  unsigned short type;
-+ bool tdxe_auto_clear;
- };
-
- struct sci_port {
-@@ -163,6 +164,7 @@ struct sci_port {
-  bool has_rtscts;
-  bool autorts;
-  bool tx_occurred;
-+ bool has_tdxe_auto_clear;
- };
-
- #define to_sci_port(uart) container_of((uart), struct sci_port, port)
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 6df25fef5a5f..1a4d9467d2be 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -913,7 +913,8 @@ static void sci_poll_put_char(struct uart_port
-*port, unsigned char c)
-  } while (!(status & SCxSR_TDxE(port)));
-
-  sci_serial_out(port, SCxTDR, c);
-- s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
-+ if (!s->has_tdxe_auto_clear)
-+ s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
- }
- #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
-    CONFIG_SERIAL_SH_SCI_EARLYCON */
-@@ -1063,7 +1064,8 @@ static void sci_transmit_chars(struct uart_port *port=
-)
-  port->icount.tx++;
-  } while (--count > 0);
-
-- s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
-+ if (!s->has_tdxe_auto_clear)
-+ s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
-
-  if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-  uart_write_wakeup(port);
-@@ -3664,6 +3666,7 @@ static const struct sci_of_data of_sci_sci =3D {
-  .ops =3D &sci_port_ops,
-  .uart_ops =3D &sci_uart_ops,
-  .params =3D &sci_port_params[SCIx_SCI_REGTYPE],
-+ .tdxe_auto_clear =3D true,
- };
-
- static const struct of_device_id of_sci_match[] __maybe_unused =3D {
-@@ -3802,6 +3805,7 @@ static struct plat_sci_port *sci_parse_dt(struct
-platform_device *pdev,
-  sp->ops =3D data->ops;
-  sp->port.ops =3D data->uart_ops;
-  sp->params =3D data->params;
-+ sp->has_tdxe_auto_clear =3D data->tdxe_auto_clear;
-
-  sp->has_rtscts =3D of_property_read_bool(np, "uart-has-rtscts");
-
-@@ -4088,6 +4092,7 @@ int __init scix_early_console_setup(struct
-earlycon_device *device,
-  sci_ports[0].params =3D data->params;
-  sci_ports[0].ops =3D data->ops;
-  sci_ports[0].port.ops =3D data->uart_ops;
-+ sci_ports[0].has_tdxe_auto_clear =3D data->tdxe_auto_clear;
-  sci_uart_earlycon =3D true;
-  regs =3D sci_ports[0].params->common_regs;
-
---=20
-2.43.0
+Thanks,
+Adrian
