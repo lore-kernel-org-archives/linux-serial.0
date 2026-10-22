@@ -1,56 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792685590;
-	b=DzFtogb+Q5SLamETvFUHQJIPO+qrHwNSLe6YaRaKqHyLZk1behVqVttU80IaifBURr3O
-	 8OGl6o1RIIg67FEas431x1VK1hr0zxi6N2mpgXKzm7ysNABOgds89iQeePMMDsWW2qS/E
-	 X2oP521e/c115aLrMTkXVB8G+NFbA9skDJYe9DJv3ivqYhtygAHxALA6BD1yNsSXytE+P
-	 +Gun7OmaeA4KDqSOZHIAGdg6XKodmipyIAhmFZ3PxszEKOT9tDrISll4hJEp5Adhc4gea
-	 bRnGCD4xUOek2sl3Rdsk9h3xefd1eCl9VF2WFLmBb5ZI5/yl3/aSnvvletsTwLGwG9Q==
+	t=1792685581;
+	b=aTUQumSzTM7VJxPvlcrOC9U0UsCixSv9EVBOUuRHCOvDS4tDf4cFhNoKmvUHgPVDG3/8
+	 jhbkgdGdbo5ogxMNlDapE88gNbDKASaRgh/+ZLQ3dXKR2+bqKrGZAzxQ3C9UFaX3CO4pZ
+	 ocfnv5BkgMtYvKtGgL/QLMwhe/DOeoZ7syEs3Ag6zv08GloZ2UNxqIniWAUUrI+L9r/fO
+	 DseKYM+6ZChuVpgejle5OWJt8AGtYcNVFEdc//ZiItcKVPinPiJxH1RHiv0bMWu3v+97k
+	 86gpyikLE0IsmcF9KtAv3PnNC+/BTvwk2bL3Z3zPOEDmRG9krKj5wRTGhZ6fzcNN4YQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792685590;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792685581;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=azoMIcJ3x4Fvz+6dWWV9H6mgNGUvVkZFe5SNxZfs6NU=;
-	b=5lyjoQJagHOrFzL+NOdnzjaArF1CYW/Cz57ndR/un/bmOZFIKQLAHsCMeaJNn5m1IAdC
-	 IT7QwZZg2CUlPCaxjS2ddOCllpAOvkrCplH+/MFoUmJ9K618qDV5CEdJUWVqPybcB+F3r
-	 m0/BMZDN+mO85Jp6QJ2/4tCaCXcCFh1slOC2dlz1TQLVSqj3hatlHb8GRz3CC+K/dP8gx
-	 mgu/lcy+rMfLF/6Ws4v553jHYpr9xEaq0pGMD5P28PuwWnINyi8kmdHNx3TJY9yM/v+qs
-	 R6HZgdnVOXlFGgq3pypK7Yn55SyHazafiMDhLHJyMNGJ+OX5ezDyU3d+X07Rdmj8qYA==
+	bh=qOxYU8LiAy25noU6ALOUDyaeUrh1X7W+kUN39MJgcug=;
+	b=vPQ5/SZI7M6yFQ+dgdpRMX8yrYS7DaAHB6FzZ2ytmGHYLzFeLtAHOKBi7+ip+khDJQ3F
+	 HddumtiYY24Gb3ELrH2rvkNrxgCyhS8jmk0HtubTlnOuZ5WPQliX2xcImn3yotvzFXIiW
+	 auXrtCXIdVE5zN2/qXLNCQIe+2PODfDpCtx01fbom76Rmug6+qZO1hHu1A0JJ3Ffc+kLE
+	 QutfFtOWxrEgyNwfXdMAZ+UTuIUAxeog23hsG4Ntue97m+0NYdKIlYlEqczNLNZEVTk0V
+	 7DouLIiZIpsZrGHfKOpQ2ir34IDq+tjtP2Jv4xYwJSLluw3w2XnUEU4zWiOp+Y+Xo0A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="F6k1/YWp";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gNL8+tYn;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F82606A338;
-	Thu, 22 Oct 2026 16:13:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831A5606A321;
+	Thu, 22 Oct 2026 16:13:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F6k1/YWp
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5636A1F01825;
-	Thu, 22 Oct 2026 16:13:09 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gNL8+tYn
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034951F01829;
+	Thu, 22 Oct 2026 16:13:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792685589;
-	bh=azoMIcJ3x4Fvz+6dWWV9H6mgNGUvVkZFe5SNxZfs6NU=;
+	s=k20260515; t=1792685581;
+	bh=qOxYU8LiAy25noU6ALOUDyaeUrh1X7W+kUN39MJgcug=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=F6k1/YWp8TIVbS4pVcrLu9eXZOp3mZo2Zfoety/ws1Bjz+XqWbkUANZenhqDfo9ni
-	 7AtsjXmauY6WmX4Bn4CCSOxeCA5h9CytpP9DroeE9SgMgJaWtJliwrYDAyIL+SoSxb
-	 kRnW7fDvaghoJ9wUSyv4mjIf6+k3mDgqw8oAWuruDEwSe+AttL7ypfkI1geGldGn4A
-	 RCo1J0PmT7r4hGY4QRJGIQksMRWg7V8M/9jdy1mPnS0E2HMjK+7cTZMyVbRRXsPlvc
-	 Fb7y2FhXRdWtcj8Qa+NZ+EnepRUS7IswreyBL2qvsRWYXMYZwUoUcfeQC3l220aCCI
-	 Hq+KRyuuXGEEQ==
-Message-ID: <sashiko-outbox-181775@kernel.org>
+	b=gNL8+tYnFKhpRuDPHuEH2VPxzlehOGzs3/2bYDtE8NMZKaykRm8BXvKWobHsuQzgG
+	 PulvmH5DJA4KFGQ7OH1+ugMOniJxp6JR7gpJ8VYwc7CcHciTLKxryeq5kySgfEkNrf
+	 wInQHHjpCK8X13j3wpd3gGCeRt310IhtAmV37DQW5NPWJN+Q7j7axnMKYl5cYxv43d
+	 nY5VKiISPN5DhetgmK7D0AV7ZOz8Ciry1MEtQzc/9NRXMfBWEz8Do9X8DmX51nm8ga
+	 whbjXmV8eqcEhvaP1raFoyWT9NBI7Zy8D49uMA9npqIHFIEFaiRHRKD9lzpHFiRfre
+	 OUusELstn3WOA==
+Message-ID: <sashiko-outbox-181768@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 11/27] dt-bindings: i2c: rk3x: Add RK3572
+Subject: Re: [PATCH 04/27] dt-bindings: mfd: syscon: Add RK3572 QoS register
+ compatible
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Cunhao Lu" <1579567540@qq.com>
 Cc: mfd@lists.linux.dev, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, lee@kernel.org
-In-Reply-To: <20261022-add-board-ok3572-c-v1-11-0b0fd85a31ee@qq.com>
+In-Reply-To: <20261022-add-board-ok3572-c-v1-4-0b0fd85a31ee@qq.com>
 References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
- <20261022-add-board-ok3572-c-v1-11-0b0fd85a31ee@qq.com>
+ <20261022-add-board-ok3572-c-v1-4-0b0fd85a31ee@qq.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 22 Oct 2026 16:13:08 +0000
+Date: Thu, 22 Oct 2026 16:13:00 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -62,7 +63,7 @@ Precedence: list
 
 > From: Cunhao Lu <1579567540@qq.com>
 >=20
-> Add the RK3572 I2C compatible using the RK3399 fallback.
+> Add rockchip,rk3572-qos to the syscon compatible list.
 >=20
 > Signed-off-by: Cunhao Lu <1579567540@qq.com>
 
@@ -70,5 +71,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261022-add-board-=
-ok3572-c-v1-0-0b0fd85a31ee@qq.com?part=3D11
+ok3572-c-v1-0-0b0fd85a31ee@qq.com?part=3D4
 
