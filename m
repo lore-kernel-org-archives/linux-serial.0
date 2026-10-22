@@ -1,63 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792697852;
-	b=MaYoo01sPys8NETYQ5zVyW5pEBG/JhC0rf4qmoB6LYw1+SSDVUfXS5QM65TZrzlg+xVK
-	 /6ZehdZTf0OZ2gK4cnrOtJS55Z68YclhaLnbCUoJpdqnOob0I9kyHQJLL7gEaPvMIH7D3
-	 L0GIzQ246mXlG1ll9FstBVCbErQhP21rBHpEtF7n8cQsONHU70pk1SkoUP9Pts8649kWS
-	 XrfjRAlp1L1f4VeyXFUerm8JYYgE5vj/Ij6mn8eBzcea9g5j/kC4VpAlpOpFm8riyEH/M
-	 s7TJrxLRFR91fx3zOXH2bsFoKNn8hdp3/1LRscs8Xl9X7s5FctZZEasNPEh7qTXowow==
+	t=1792698133;
+	b=aGGm6wIuZdYI4nTmUa1C9buVs9esXSNMTPO+YScEvqrVtH/CsNt/8l8LEO3fsAvhEmQk
+	 WvXNrhkcB6KHlZfRKT0WMSms+KXyGJrDrqYbUsB2tdl/lizp8Zl6TpV2rlDuELv5bQmm7
+	 tzmz7lUKCsKP9lmjvhsEo0RMjvVSjyRUzHBmVyPwySXC7RT71S0ni5QmLLUeNpdJwtkLl
+	 74a+F7EsgXTW4+vcJeQeMAwHQP/AX3sVujqBaNKT/HHSRdstbj1LABR4yQyT2cNrwhDsv
+	 q8AqxJnyVtAWBu4DzsuShSwwqgG3iPN/FQValE32wdH8NR1+gvVQfpJ+k9qYAjD9jkQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792697852;
-	h=DMARC-Filter:DKIM-Signature:X-Pm-Submission-Id:From:To:Cc:Subject:
-	 Date:Message-ID:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version;
-	bh=ELoY4ouw+GbHIxZXE0kClky3cyUMs3OifzjnTY/xacI=;
-	b=UEzrqp8cT6pS2ygI8VG7l8eObrH0wHimmHeO2zO87Up7v560ZWYDG+qVLWASLe/BEP4o
-	 yzxwMi4v9kbqrAahH3AHxFet4z15BCObqySFo7dOYe52KNuo0KDMIPp3ncDxgy/idEcXU
-	 7354fk2dBBMpo3qLCFRFSHX31SGxwVexx1kYzwn+ZNO1+Z+D8oKn7/ZGIHMOYmQD93SRJ
-	 y7x10yzV/GbK09HxX/oXDeCnFm9uXPIwM0jER9BFpJtlZtkdV1TOmnTuhWcHAXi2BvENd
-	 zVLEpedGGSZbgwxX5AIn7Rx1hp0mGrWZ0MOm1rPvnJwPMJjooeF5mHr2VG4geKPJPuA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792698133;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=4gbJ38CxGZ63LQqmrDcPuyd5caansWaWUm5JI1grslU=;
+	b=YxJ0udMdqxYFlZHbvW9e+VOHsWFxClxm4IDdkQlCKq4NGXIK6raq8yL3wX5kFsIDC/yx
+	 6FQl7GvP+gNfnzpcWAl86aJx8PaKy8XNFu64/AKpYbOlu5sW+xTo4QDpndpU1rEXV6kL9
+	 HN13W8yfCEkdYNAMWL/fOL7yRwTCIJGIfjKCxHRcUrYH6/IFQwCVSIHsU3y4jP+74XWO/
+	 6rFNpe/3StVFtZ2Hj9z45cfbKeph9FthXFP0/I+OefEKic+V1e266yBSu0Zw63u7RQrro
+	 V3lTScl06QKt7NJsZUkKuSCgI9ideG9TbWyf/TYlZ72SgNp+Wm0Ei8YDpcriK5diV7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=michaelmcallister.org;
-	spf=pass smtp.mailfrom=michaelmcallister.org;
-	dkim=pass header.d=michaelmcallister.org header.i=@michaelmcallister.org header.a=rsa-sha256 header.s=protonmail2 header.b=kItssnuZ;
-	arc=none smtp.remote-ip=109.224.244.108
-Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HlCZB9EB;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C50606A326;
-	Thu, 22 Oct 2026 19:37:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 07C50606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=michaelmcallister.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=michaelmcallister.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5955D606A319
+	for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 19:42:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=michaelmcallister.org header.i=@michaelmcallister.org header.a=rsa-sha256 header.s=protonmail2 header.b=kItssnuZ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=michaelmcallister.org; s=protonmail2; t=1792697849; x=1792957049;
-	bh=ELoY4ouw+GbHIxZXE0kClky3cyUMs3OifzjnTY/xacI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=kItssnuZcUN39djG3egy0E6ZNHiOb8YDHYqEMkK6Rz6Sb6rvOyJEYkWOnud/lE6g+
-	 J7yeDQfmfgfUVx4JfycTgTAl9JeOpVFwA7pT7Rd2evP6xn3uo3Ncr1BIzMW+uygtqe
-	 Sa8Agw4H87gSxN6874ud1+vUSpYrP0fg9bd6HXGJdBJPIvrdKvdub34VkBmfOtORTH
-	 ZbL+9HCZHEnCDFzDGQUOsUpAMsHKkD11P/XPuvT5y9sMkyIVkMwFjaxhxI75ddKYYc
-	 2kwIAJw509DxQlD4Raq2MK3V7AZwkKlSPYxhxxovKUp4JNsAlyCn78ZDfqw3DXndpN
-	 4S3GzdUQ3bDRQ==
-X-Pm-Submission-Id: 4j9byc042bz2ScXH
-From: Michael McAllister <me@michaelmcallister.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject:
- Re: [PATCH] serial: qcom-geni: Set UPSTAT_AUTOCTS for hardware flow control
-Date: Thu, 22 Oct 2026 20:36:39 +0100
-Message-ID: <179269779969.81501.12855437977656454312.geni-autocts-review-reply@michaelmcallister.org>
-In-Reply-To: <8b077ae2-250b-4181-94bd-8b87e9927807@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HlCZB9EB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE7C61F01825;
+	Thu, 22 Oct 2026 19:42:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792698132;
+	bh=4gbJ38CxGZ63LQqmrDcPuyd5caansWaWUm5JI1grslU=;
+	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
+	b=HlCZB9EBMl3p2OAe3uMGa2q6zix8/3DuyWxwHnB3gv9Nrs6MHMNgkKH52S0X9Lak7
+	 bzM2PktlDam+aFG9BdUYyUd7+5tRV0wQsADDXKE6c6TTrhoXmvBECmyniF6SiT/nG6
+	 Dp7WYa1tp7yjSQKYTsFFALvcRN7us5pHjAFC5Jli1w59JJuu5sx4enTmUFJi5k/H4+
+	 vqFHPY2jghPwc7Sr6zVtKssKnQdLEO8cOAyyorMiMcTuVL1sw4opIz/8ty/p3ZIa4W
+	 6bz0D4tGIl8By7NcRgsnNXeSUF0nZwPY/Q8AOLrGG6ONLYM2Oqh1W4QAvy9rySsEH2
+	 l2200p2qJuCVg==
+Message-ID: <sashiko-outbox-181975@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v2] serial: qcom-geni: Set UPSTAT_AUTOCTS for hardware
+ flow control
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Michael McAllister" <me@michaelmcallister.org>, linux-serial@vger.kernel.org
+In-Reply-To: <179269779969.81501.3877980314174207182.geni-autocts-v2@michaelmcallister.org>
 References: <20261021202603.42888-1-me@michaelmcallister.org>
- <8b077ae2-250b-4181-94bd-8b87e9927807@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+ <179269779969.81501.3877980314174207182.geni-autocts-v2@michaelmcallister.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 22 Oct 2026 19:42:12 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -66,6 +59,33 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
 
-Good catch, no technical reason to do this just an oversight on my part
+> qcom_geni_serial_set_termios() clears UART_CTS_MASK when CRTSCTS is set,
+> enabling hardware CTS flow control. However, it never sets UPSTAT_AUTOCTS,
+> so uart_softcts_mode() also selects software-assisted CTS flow control.
+>=20
+> If CTS is deasserted when uart_change_line_settings() samples the modem
+> status, serial core sets hw_stopped and stops transmission. The GENI
+> driver does not handle CTS-change interrupts, so asserting CTS again does
+> not clear hw_stopped or restart the transmitter.
+>=20
+> On a Motorola Moto G10 with WCN3950, this can stall Bluetooth setup in
+> tty_wait_until_sent() while qca_setup() closes the serial port. A captured
+> stall had one byte left in the software transmit queue, hw_stopped set,
+> and CTS asserted, with the UART powered and its interrupt enabled.
+>=20
+> Set UPSTAT_AUTOCTS under the port lock when CRTSCTS is enabled, and clear
+> it when CRTSCTS is disabled, to match the hardware configuration.
+>=20
+> Fixes: 8a8a66a1a18a ("tty: serial: qcom_geni_serial: Add support for flow=
+ control")
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM
+> Signed-off-by: Michael McAllister <me@michaelmcallister.org>
+
+Sashiko has reviewed this patch and found no issues.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/179269779969.81501.=
+3877980314174207182.geni-autocts-v2@michaelmcallister.org?part=3D1
+
