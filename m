@@ -1,57 +1,72 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792703914;
-	b=nW7tlguIsfJyHi3crSuJPwUsLJA3YS9GMTF6eQxSiflzc+L/Tmxnko+A/Pq8GR2HQzkh
-	 zJz3ydjNtFHhTMU3o93UNbCrSvh3kiWESsrZL72FYFjQ8BwHyeSEGv5vsxnA8iTk1KsSA
-	 DGbLftCOPnpIuOUAEpUfPKkHQvBu6FTdpTmOSQPsFEWxjF+QWZjwfUMdHyMnkcrXyb7We
-	 ejEpnun4UlLTMnWyasgQrSWDSJl16NOysCHB/81O7a/MQXBLoeYxu07hwEtqOZiG++XWs
-	 iM30CRbinxRCENTtSTJzrEV2sxUQiQgVanxngQYQEllWfMex1jF7wByvpjArlZDz1Hw==
+	t=1792704882;
+	b=cxM/5JZsX6z83QX2c5OpyeChXhmB+2a624Z1esMbieMavBArElWpS0JnuqWjh3kYf8xo
+	 Yw2YI/PvZGKwf1UwGE5h96OCVSHjTZyrXSBY6pqlwrLq+Pq1WuLwvZJTuW3ReNaQUrKmk
+	 vEnXnxv7Nn/0T1s/3diCMPqtWDYNHh/VlG4Uia9lbAmSgGaOFPQFITa9hwlWsUkHP0FJu
+	 HJ5NFsEKTRiFulDx06wFIJrbhSNR0ueqBMJsofgNZxC/7YWoJJz981OeBK+pifv/iZTi/
+	 JCg+ZZTNiKGL4DhhU9zmmxc7cYFRq2AXm+2g+wIXxpQOChGqaoXKuygiVBeb9Q2UisA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792703914;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=tnSBSKTyrhgXFTYVRvaz33EK2l0zMxtrFeoVm+YjZ9M=;
-	b=AvtFBhomCZa1+3L8taleRqqyxk2rPoCcUhwYPXIyG5GYAp3JAnMBTArK974iGrhFoLCK
-	 VNxNK7U8chkkvSUVV/6H61bV9T/vx5JLhxuy3izRo+awISNONKQFBa/Ih9JzfYHDyB3II
-	 gh5YcC7YCRGoWo6T3N7n+UhS4ygg4QeDlbnwD0wZu7l2LnLSeX8eWhYDndgX2RNU3mEhZ
-	 56UMl9nddV+wVO5lPo4ccLCTsIVlv/mUYjyoqIrUVB9WX2dT5q+0AihSJN9pgHd6SLqvU
-	 bSRaZns0kEO49PZm9/33yV+LvYlYB1bFW6u99QXFw0GE3RSSNoE/Dq9sFcs9TDs1lmQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792704882;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=GjBPTcmaKEEJEyfOSXTyPmKK18HcbgboEZUzZg44Hg4=;
+	b=q4JiRiqqUdirS6v7hvo34X7/GGkYdCfv4MvRjPLOIa/+o7M84n+J1ULQt4Rjoixd9SZP
+	 xZmOd8Wj8SUVJcfdel1ktoBi3/YeIF4AsOKhX7YFSRW/PgBnjpHMJCsNnR7Ba5os7o1x6
+	 iVxloKeCYizf7XCbKg7spK6FxdLhU7YQar8Z7gn97TJyhE/ncEoJjq8n4J/FBSewEz04o
+	 M1t4PaQsLH0wXA7mAmUr8ufPgrPUIRdHK9I5+H3xL+MaJySGlOvQRnXQ9siep6ySyLd3k
+	 EoZ+5mZJqaMA19/rU74Qd/owgAENb1sMWtvhBg/SuS/coVcp0vy464r2PNO6Ks9DHLw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jrlk9cV6;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HVn28AAa;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A48606A319
-	for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 21:18:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59404606A31D;
+	Thu, 22 Oct 2026 21:34:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jrlk9cV6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 630D81F031E2;
-	Thu, 22 Oct 2026 21:18:33 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HVn28AAa
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204EA1F01825;
+	Thu, 22 Oct 2026 21:34:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792703913;
-	bh=tnSBSKTyrhgXFTYVRvaz33EK2l0zMxtrFeoVm+YjZ9M=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=jrlk9cV6xLDLtLw1pT43zCd9gcNQ7EQeH1IXYoWEwbfxy8jKK5I4q25k6PlIZR/mD
-	 X1aoNSDELVhC7q4iaqv6zJhtCOFZZs9xyAn30PdSryhjCARt2unyz7aAlJnOBM4Hj4
-	 6XHLECfweFIDnnTYVurhm2SKmk41TIOyF5rTrlJD7rj7xjHHiN0OLcUTH6EeBtqviO
-	 tPJBcxGvSm4VgI6sBTHaf0VxCSyZq21oyYDrqrfdYAAM7l0/qLbZHqnjGBLBzwEwGI
-	 cYoweCrQnU6gIOMrZQJK/EBG8xjWX3XbBLa+vFmtTF0TmYeKzV3TsSKcQP91Ov1IQE
-	 uL6kdeuJvz9cA==
-Message-ID: <sashiko-outbox-182055@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 3/3] serial: tegra: ignore stale DMA completion
- callbacks
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Austin Schlegel" <schlegelas@outlook.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261022-serial-tegra-dma-uaf-v3-3-129f6d67f673@outlook.com>
-References: <20261022-serial-tegra-dma-uaf-v3-0-129f6d67f673@outlook.com>
- <20261022-serial-tegra-dma-uaf-v3-3-129f6d67f673@outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 22 Oct 2026 21:18:32 +0000
+	s=k20260515; t=1792704881;
+	bh=GjBPTcmaKEEJEyfOSXTyPmKK18HcbgboEZUzZg44Hg4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=HVn28AAatOgqsu3YKKUkLti1PNCx8pyVlgmWUTbL6NGdUayDCSK/vvVc6yLay/EcO
+	 TFP4oEmpcIWlMXx/Nt1ejfmRLu7avn7nTfbz0EUj/EIq/E8zFoKTafgAxuQQudya5E
+	 TXX8TKt/t5O6f6Au6Af/xmyaRckAH1+SyZdu0NYEiPgBxF7LVvESxe9IObgJPkVH6S
+	 KlMAuGC31OeFZdGqgXgSfoeBkScy31SZEw4ygC0GMrBLxfkCP1UI6Da8HM314rlaTT
+	 XjJAPXnuSQaNwNnJd9ZoTj/wM7RJ0RLXzAP1zrT6NnRrMy2T9V557bJEzkNXyEf3RO
+	 nPYBiVbmv1U/Q==
+Date: Thu, 22 Oct 2026 14:34:40 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Imre Kaloz <kaloz@kernel.org>, Thomas Bogendoerfer
+ <tsbogend@alpha.franken.de>, linux-mips@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Lee Jones <lee@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, mfd@lists.linux.dev, linux-serial@vger.kernel.org,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ linux-rtc@vger.kernel.org, Andrew Lunn <andrew+netdev@lunn.ch>, "David S.
+ Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, netdev@vger.kernel.org, Damien Le Moal
+ <dlemoal@kernel.org>, Niklas Cassel <cassel@kernel.org>,
+ linux-ide@vger.kernel.org, Pavel Machek <pavel@kernel.org>,
+ linux-leds@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+ linux-pci@vger.kernel.org, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 00/53] MIPS: SGI-IP27: add support for the IP35
+ (Bedrock hub) machines
+Message-ID: <20261022143440.4ddae87e@kernel.org>
+In-Reply-To: <alpine.DEB.2.21.2610222009000.22065@angie.orcam.me.uk>
+References: <cover.1791890466.git.kaloz@kernel.org>
+	<20261020110619.12774a1c@kernel.org>
+	<20261020204214.28625-1-kaloz@kernel.org>
+	<20261020145611.4e277615@kernel.org>
+	<20261021090556.21168-1-kaloz@kernel.org>
+	<20261021073921.07632a37@kernel.org>
+	<alpine.DEB.2.21.2610222009000.22065@angie.orcam.me.uk>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,32 +75,44 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> From: Austin Schlegel <schlegelas@outlook.com>
->=20
-> The TX and RX DMA completion callbacks run from the DMA engine's
-> tasklet. tegra_uart_stop_tx(), tegra_uart_flush_buffer() and
-> tegra_uart_terminate_rx_dma() can stop the same transfer under the port
-> lock, and dmaengine_terminate_all() does not wait for a callback that
-> is already running. A callback can therefore be waiting on the port
-> lock for a transfer that the driver has already stopped and accounted
-> for.
->=20
-> tegra_uart_tx_dma_complete() reads the DMA status and acks the
-> descriptor before it takes the port lock, then advances the xmit FIFO
-> by the whole transfer and starts the next one unconditionally. If
-> tegra_uart_stop_tx() got there first, the bytes it already accounted
-> for are advanced a second time, skipping data that was never sent.
-> [ ... ]
-> Fixes: e9ea096dd225 ("serial: tegra: add serial driver")
-> Cc: stable@vger.kernel.org
-> Link: https://lore.kernel.org/all/sashiko-outbox-172211@kernel.org/
-> Assisted-by: LLM
-> Signed-off-by: Austin Schlegel <schlegelas@outlook.com>
+On Thu, 22 Oct 2026 20:28:25 +0100 (BST) Maciej W. Rozycki wrote:
+> On Wed, 21 Oct 2026, Jakub Kicinski wrote:
+> > > The users are the people running these machines, the same population
+> > > as for IP27 and IP30, and the ioc3-eth driver in net/ exists for them
+> > > today. The series was developed and tested on a Fuel and a Tezro in
+> > > regular use, so "nobody is using it with Linux" is true only in the
+> > > sense that the support isn't merged yet; that was equally true of IP30
+> > > when it went in for 5.5, and of every port before it.  
+> > 
+> > Not sure if you followed the discussions at the recent maintainer
+> > summit but we are now allowed to be more opinionated about code
+> > we merge. Merging code just to test that code seems like entertainment
+> > for the authors, not useful development.  
+> 
+>  I thought the event was by invitation only.
 
-Sashiko has reviewed this patch and found no issues.
+LWN posts a great summary.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261022-serial-teg=
-ra-dma-uaf-v3-0-129f6d67f673@outlook.com?part=3D3
+>  Anyway, this seems to me like discouraging enthusiasts who do their work 
+> outside their day job from making contributions.  Their natural target are 
+> commercially worthless systems, since working for free on commercially 
+> valuable systems would be taking away someone's bread and I think grossly 
+> undeserved support for corporations.  Taking this stance effectively would 
+> be cutting Linux off from its origins and making it a commercial project.
 
+Or. Perhaps. By pushing this useless retro-hobbist hogwash you're
+contributing to the burn out of genuine maintainers, pushing the
+project into the hands of people who do have anterior motives.
+Who is to say..
+
+>  Please let's not go down this route and only base the acceptance, or not, 
+> of submissions on quality merits.  Many of us took this route to Linux, by 
+> showing competence in public with work done for free, and some of us still 
+> enjoy such side project even if we do have a day job now that involves 
+> Linux development.  Let's not close this option to people.
+
+Who cares about quality of code nobody will run?
