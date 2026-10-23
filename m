@@ -1,83 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792745066;
-	b=RjhNjvzZ0JJLKcTXfa5FTD2O24CGzqrygp5hY0O+9TacpI/Dh2JP+mN7O04uved7nEF8
-	 xG4F9Wc1xM7DX2Nq0wuNVwHez5vGfXVN3BVD4MExDxO80h3hknkVbuc580nXx1oGN/g3o
-	 /Q4kk7pxN4Go8pLfrm7Do58ioI0VqJ8+ivC9Y5865qqV85XeyuiOHcmZnw4wKt0431JnJ
-	 GJcundnSYdoJsFtmPdF4hPFEiZUbz91jHy8Z0Kz2JaUoa/HmackWmJ0VI6lrmwnhPSReC
-	 N6e0PJOtoF8jUaLpkPjnQ7Dk1QR75QwwJsjUbpuZiU2i/BWG6om7x9pcI0favusG1Fg==
+	t=1792745623;
+	b=gpGuCU8+Qr27rV9CXSxWH2bw0HGmUGaEJosN+Sap45Uiz0SqczB50cxh62LEi7+5HNEl
+	 FwZWU84WYjqOkmW9AFU+VN5gLQ1fSvIkGJjI2DXkJTbMmgBZVb6ZnGtZfpx1ByrJoxiCd
+	 AgYZ8m75td7LgKWrpOYs2etCez+Mo1wWkdzp5KcI61uuNY0RFX+0ASn+YFZjsmCjjs5V2
+	 qg3qYK5iJPl7O2KEGf9ThKs9A9fohEME5m9x8FsPDTWgp6Flqc59k+f1hXBTwNk1m6toG
+	 9gVUs2qC6OUysxi4107R2abxDbOlsqXPlqZeeD9PPyGlp6pCXOhJ03eHWjiNMel/+Cg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792745066;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=K1kTIFoe6i1xDHtfLoz66uWP64coXUajiqWJkaCC3as=;
-	b=q0vTo1VBxoxiKXl4R9FOD0mD/lEHhlZf51te14hUXaAb6f1hw2iW9FqW7u6xBqhN82Eg
-	 9thBdIW7znvGBj9HG1J+Bqvm/ebEa75WKQBHlmAZIbhGaoFEgGgCYCx2vivk4ZlnBr17m
-	 c7f+GKfR4vpRHhOaSYC6WFmdM8YjisGfBdzUfOGdciIFp1touD1QgGr4Se+mZkgH1QsqP
-	 l2C1gs9pcOiXLl4Cj+RSP32KmlObUj/8Wa6k/yaMdcQD/27Yt2hIWKIPJBlll6vzOTSac
-	 cEkBN8khm/LSt6+nKJCICXEpNR0RYhfGrBPjpLQ1QAJ4KEPOGld9u3dTQjd54ymu+qg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792745623;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=CdoKhQZLuMkXckBiKIoEwBUaAVMRBZJL1gI/03P97mw=;
+	b=fnfCg7Xa+ahdPnkjAzTErBOMXxlk9j9GXtwQtxpzlNi3HFqciuHCKjpDymclySgNAgqt
+	 aRUoJ/yxrPloUFiJvcvO+npFe78eCaUJUHtlGGDTADLeuYpsZe7gEDkvZhXuglaXO+6gu
+	 /dnCX9Ow73eL0+NBPSqljfZhHSD4SAzjMEVO6m/J+Bhy75LS4VlEDfEtVPj9stYAmyKnz
+	 uit0mhlewVeAZNnfv4yavXl0IGbH/lQxQhXErSrQ9ChLM2zWuYbH6+2HGaOCaZoH3vYPO
+	 WllOCtkm0oH61DFrkLY3edMlQ8FJOY0+zZltM3ZNUlu8G2E1gfTxknwkjCFgZQ8jjIw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=iqwddOac;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DZzUxdOT;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DB7606A31B;
-	Fri, 23 Oct 2026 08:44:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61DB7606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73B68606A31B;
+	Fri, 23 Oct 2026 08:53:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=iqwddOac
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792745064; x=1824281064;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OsCnZCSIZp91hbEsolldC49llZuGKebJONP9W/QrldE=;
-  b=iqwddOacrUmKNSX56bgwcqmdV/pjJ7F5CEjm/eMFnsg/HZWYDQFX2pKj
-   Rtwas0g+hFnKEv2kx2e8DcikpcSt092fBeISN3pFGGhLhbmUvqa1D/E3O
-   YRluZGX1C2Gptnt1UL6H0raWBGXvz/dK9GK+o3JKuVKwsDCu1cimLiWY9
-   LJFLkYeHSVzBZrNm6T+VqmtNJQ1AAVY/WkrtfORj9041UcdqpZRNgqQ1P
-   /DT+DO68D8/lQhaKla4fIpVp2TDfh1gOfX/BhgSGztOAZbVCmQFUoL57q
-   Dd5rdXdm6S2sdhJd/427juK1QeAgEehsfdMSW03R7XKbgwgyxRVwgmKLo
-   A==;
-X-CSE-ConnectionGUID: +yRSmROxQnGDRFI/Ji+/3g==
-X-CSE-MsgGUID: Jtw/y6vmRCS+Ba8xfBRyVQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1393237"
-X-IronPort-AV: E=Sophos;i="6.27,173,1787036400"; 
-   d="scan'208";a="1393237"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 01:44:24 -0700
-X-CSE-ConnectionGUID: 6QZyP2KcSEOiTNAvKkm0rA==
-X-CSE-MsgGUID: uXTOKeiJRTuoCZGli0F6TQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,173,1787036400"; 
-   d="scan'208";a="5408334"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 01:44:21 -0700
-Date: Fri, 23 Oct 2026 11:44:18 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 2/3] serial: 8250_dw: configure the Allwinner H616 UART
-Message-ID: <atseYvQUYvpMFEIM@ashevche-desk.local>
-References: <20261023-submit-h616-uart-fifo-v1-v1-0-e4a3bae2eba8@gmail.com>
- <20261023-submit-h616-uart-fifo-v1-v1-2-e4a3bae2eba8@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DZzUxdOT
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA5DF1F01828;
+	Fri, 23 Oct 2026 08:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792745623;
+	bh=CdoKhQZLuMkXckBiKIoEwBUaAVMRBZJL1gI/03P97mw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=DZzUxdOTgcIRoKA2V+T5Op99DceRrm0cIVtHES2x/nPJgAjZOXUBqSU/GqqdUZrh9
+	 wUck6GflVkpi70dn/sM2T2JkmQ9z7uLB1fdBblfLoWTP20px6NYt1qRUGO6L7XQzzC
+	 kiLmRbBaXKpY2S4bvWMIYoTLXy/Nl+1NoTW7ffjPDsa1wyg06wOnx6l3s9gadOcIxk
+	 RDHXOhXstn1Q/d2iY4StNQyg9QTtSFN9DpY6nKS2n98c1Yn+UuT/GApdAHiKYjmQFg
+	 Z062uidBZwGQCyX3tUvHJBAnXb7VLisMEArdeN5f/NQYjc+Jf1xaJwHC47Qcosu7S4
+	 i9ittSO4yMBWA==
+Message-ID: <c826575e-cc1e-4a9e-880a-9f3deceed895@kernel.org>
+Date: Fri, 23 Oct 2026 10:53:40 +0200
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -87,67 +51,151 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261023-submit-h616-uart-fifo-v1-v1-2-e4a3bae2eba8@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 6/6] serial: 8250: make port operations work on struct
+ uart_8250_port
+To: sashiko-reviews@lists.linux.dev
+Cc: linux-serial@vger.kernel.org
+References: <cover.1791873876.git.jirislaby@kernel.org>
+ <c59fa203f325e0fe7601ea0fbc0d222c8b37f9eb.1791873876.git.jirislaby@kernel.org>
+ <sashiko-outbox-170897@kernel.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <sashiko-outbox-170897@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 23, 2026 at 01:33:50AM -0600, James Hilliard wrote:
-> H616 has 256-byte transmit and receive FIFOs, but its optional DesignWare
-> component parameter register reads as zero. Generic 16550 probing leaves
-> the port using the 16-byte FIFO configuration and its trigger-level table.
-> DMA attachment also depends on a FIFO size being available during probe,
-> so these ports do not reach the existing 8250 DMA path.
+On 14. 10. 26, 8:49, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+> - [High] tty: serial: 8250_hp300: NULL pointer dereference on hpdca device removal
+> --
 > 
-> Use a fixed port configuration for the H616 compatible, with a 256-byte
-> transmit load and the documented receive thresholds of 1, 64, 128 and 254
-> bytes. Select the quarter-full receive trigger by default.
+> commit f913317bfee3afed5e144530ca60f25858464754
+> Author: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Date:   Tue Oct 13 06:48:51 2026 +0000
 > 
-> Skip optional-register probing for this fixed configuration. H616 has
-> debug-divisor and RS485 control registers at the offsets used to detect
-> DesignWare hardware RS485 and fractional-divisor support. Probing these
-> offsets writes unrelated registers and can select incompatible callbacks.
-> Keep the BUSY-safe integer divisor hook and software RS485 handling.
+>      serial: 8250: make port operations work on struct uart_8250_port
+>      
+>      This commit switches the interface of port operations to use
+>      struct uart_8250_port instead of the line number, returning the registered
+>      port or an ERR_PTR() on failure. It updates all drivers to store the port
+>      pointer instead of the line number.
 > 
-> Use the existing SKIP_SET_RATE quirk to keep the UART clock enabled during
-> termios changes. Its clock is a gate on the shared APB2 source, rather than
-> an independent baud-rate generator.
+>> diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
+>> index 59ec0c7377a1c..e9599c5c2fead 100644
+>> --- a/drivers/tty/serial/8250/8250_hp300.c
+>> +++ b/drivers/tty/serial/8250/8250_hp300.c
+> [ ... ]
+>> @@ -177,9 +177,8 @@ static int hpdca_init_one(struct dio_dev *d,
+>>   	uart.port.membase = (char *)(uart.port.mapbase + DIO_VIRADDRBASE);
+>>   	uart.port.regshift = 1;
+>>   	uart.port.dev = &d->dev;
+>> -	line = serial8250_register_8250_port(&uart);
+>> -
+>> -	if (line < 0) {
+>> +	uport = serial8250_register_8250_port(&uart);
+>> +	if (IS_ERR(uport)) {
+>>   		dev_notice(&d->dev,
+>>   			  "8250_hp300: register_serial() DCA scode %d irq %d failed\n",
+>>   			  d->scode, uart.port.irq);
+>>   		return 0;
+
+Am I hallucinating or you do? I have:
+   return -ENOMEM;
+on that line.
+
+>>   	}
+>>   
+>>   	/* Enable board-interrupts */
+>>   	out_8(d->resource.start + DIO_VIRADDRBASE + DCA_IC, DCA_IC_IE);
+>> -	dio_set_drvdata(d, (void *)line);
+>> +	dio_set_drvdata(d, uport);
+>>   
+>>   	/* Reset the DCA */
+>>   	out_8(d->resource.start + DIO_VIRADDRBASE + DCA_ID, 0xff);
 > 
-> Attach DMA from the fixed configuration before registering the port. The
-> 8250 core installs its FIFO defaults during registration, after the probe's
-> FIFO-size test. Configure single-byte RX and TX bursts because the
-> peripheral request can correspond to just one character. The existing
-> startup path requests the firmware-described channels and falls back to
-> PIO when they are unavailable or the port is a kernel console.
+> [Severity: High]
+> If serial8250_register_8250_port() fails here and returns an ERR_PTR, this
+> function logs a warning and returns 0 (success). In this failure path,
+> dio_set_drvdata() is skipped, leaving the device's driver data as NULL.
+> 
+> Because the driver returns 0, the device is considered successfully bound.
+> When the device is later removed, hpdca_remove_one() is called:
+> 
+>> @@ -287,14 +283,13 @@ static int __init hp300_8250_init(void)
+>>   #ifdef CONFIG_HPDCA
+>>   static void hpdca_remove_one(struct dio_dev *d)
+>>   {
+>> -	int line;
+>> +	struct uart_8250_port *uport = dio_get_drvdata(d);
+>>   
+>> -	line = (int) dio_get_drvdata(d);
+>>   	if (d->resource.start) {
+>>   		/* Disable board-interrupts */
+>>   		out_8(d->resource.start + DIO_VIRADDRBASE + DCA_IC, 0);
+>>   	}
+>> -	serial8250_unregister_port(line);
+>> +	serial8250_unregister_port(uport);
+>>   }
+>>   #endif
+> 
+> Will this lead to a NULL pointer dereference?
+> 
+> If the registration failed during probe, uport will be NULL here. Since
+> serial8250_unregister_port() unconditionally dereferences the pointer (e.g.,
+> checking uart->em485), passing NULL will cause a kernel panic.
+> 
+> Should the failure path in hpdca_init_one() return an error code instead of
+> 0, or should hpdca_remove_one() check for a valid uport before
+> unregistering?
+> 
+> Note: This replaces a prior bug where passing an uninitialized 0 line number
+> caused the driver to erroneously unregister ttyS0 instead of crashing.
+> 
 
-...
-
->  	/* Internal 8250 only */
->  	UART_PORT_AIROHA		= 124,
->  	UART_PORT_AIROHA_HS		= 125,
-> +	UART_PORT_DW_APB_256	= 126,
-
-Why? Besides the poorly chosen name, what prevents us from modifying the
-corresponding parameters at probe time by leaving the one of the existing
-types?
-
-...
-
->  struct dw8250_platform_data {
->  	u8 usr_reg;
->  	u32 cpr_value;
-> +	/* Use a fixed configuration instead of probing optional registers. */
-> +	unsigned int type;
-> +	unsigned int dma_maxburst;
-
-This sounds like a hack.  Why do we need type here? The address of platform
-data is enough, no?
-
->  	unsigned int quirks;
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+js
+suse labs
