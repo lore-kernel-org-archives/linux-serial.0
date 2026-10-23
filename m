@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792716736;
-	b=H1t/gcwtJ9lN8XmmEnZ4sx7IqCRPm345hNIDrX373A/IzpQJ3S7LaCavCIJl1T2zAH9r
-	 LwsNe1bwMJwCWgHQ9W6spPyfauulsiZsNfbvmKpjBZ8IerckGU70Z8xtTbIF6A/1sDBqi
-	 2IK8Ss97SCGbWwQGIayPbrtnZgoHDLNpGhyXYy3uHwjQQt2Zf3h7rruKo9ZInu21A91Ul
-	 rPIgP+wsWvomwQUZZOmkQb3S7WmUk+Rmrj9m96r2fcEV/+BfgI/2A4xhciCcc81XBtKHi
-	 n2eMwRLwyqLf5wkS/sveHaMXt7MZ7uMVdLbQWWjWej4cKgQtIAcd7xgYl7JchXYOgDw==
+	t=1792717045;
+	b=kdKiBNP9SZjJEqFgp6W3cxcUouQxjlYyt+oh2a55jGW/U7a/ivKKD4AKIzjQzvnpbr+y
+	 AyXrZbvqRq7uEsnljDi+nZw00jRKsDAzyG4k2oaEJI92Y0WUrLy7/MSkJLr48gsNP5BW6
+	 iolTtQvHrxWcXCl1UwKXaUSMSFK7KITMcboFT828k9tPX0d3g4TkzB6lX8f78BmlCPHKV
+	 qeZrB75Tx7bZzf6dqQ4cElBuiOv5u6IU0KU2wi8aVS/qKglVHSn+VnAjgg7zTQwP+ZXJf
+	 hz/HHLTCy/qWhVrJaDO9Co37Zx3Hw4XA1Gfji4NT1aSZgewOPecb6o6PBUHnH4eLXhA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792716736;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792717045;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=zJzjrrhzM0ixSiXTJfMiX4V75XXZHU0uRHaVUY1PWrE=;
-	b=GMTDR7osm9qtILHuG+PSr6VHkFawuTb4/acQoUKYt4lZAPqQBTMHxUjehXpIf6wtbUmA
-	 kdhrEYUFdYMtiZd4jTeeqqh7Jh4vMjKEFKIWgS7EX/kOR9e9B9s4ns2xUJ/nAYQjm9oVn
-	 eL4whEHFUslcENVNAMbQ36EkDT669E8C4hcO1HVAATDhhFKYlnOEeNTRpGTEF/WNbb0to
-	 SiZA446Zb4chjpmMQsZkagM+eP4TOlk0J5BMzvAV24zP7/jb3bod/B5BoEcPgfsxNihU2
-	 cJLfbL4OyjBBrd9OqrTPjviNyxotfe4TthjXfVtUyiqa5PqopdJkM7xce0dGvO+6FSA==
+	bh=hjurFGa5UfxZ1thkkG3svF13D7aCE8L7hAG5CidjkSs=;
+	b=zvXylAjw7YoHNJbKIALYz9mcF3M9EyMlEthklR/pLVTDzZ/eTMH4ymSBf19sg2uTKr4Z
+	 QwbhNUkPD6JYajerTJYas/vfUY5YC9rtPU2OJQCz8SRqHqjNLurWCa3HRaWGuM0mWbSR7
+	 Rs1jt5Hw7tJFSTlUZGZB6dFWo3szP8mdI8bc00iMiKdx2buBNAwnshqcxmp1Lrwb7jvdO
+	 94C2r9xgXLNDT7ns0gK9jaJGi5YHzv6QZGiHxE4uXmnUAO19Br27n20zfsqJaVDhCDTWq
+	 BrIFwzrOgAhhElApe+zKLb+NPbthPEcm/zCl72qODyf2Dd8rPGrpaFH8m61tMdQqWPg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EWvm7ZWn;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nqcDvf2P;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E06606A319
-	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 00:52:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D985A606A319
+	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 00:57:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EWvm7ZWn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93C8C1F01825;
-	Fri, 23 Oct 2026 00:52:15 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nqcDvf2P
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1061F01825;
+	Fri, 23 Oct 2026 00:57:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792716735;
-	bh=zJzjrrhzM0ixSiXTJfMiX4V75XXZHU0uRHaVUY1PWrE=;
+	s=k20260515; t=1792717044;
+	bh=hjurFGa5UfxZ1thkkG3svF13D7aCE8L7hAG5CidjkSs=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=EWvm7ZWn2wFcXwnMueucL6hZd0Ss2x+d/XalUg25sDWdq8nguzTJ5Xx1KkxK8KUSp
-	 nKOu8bSyiy53uS5iAgNSQzQGt4HesjssoxI32RxFWKU75bFzolcbiBtNOPqeeJ2f29
-	 g4opXFvGKMGCcxI9FDvQslAqffWhy3AZpSm27FUy6HzzLiyqiEucwDCcNH+RRwFJQn
-	 WLpkHbftopQ/Ee+0LJ4fgjz+J6tFArmJ7QT8vLAuGQwNn78JWihISmis8G0YLpiJab
-	 U1ksVrasA7miSO+axxumEWRsRpMQx+4EEeElv95/7bSjiTHolkHiimg1Xk/Tfaz1Vn
-	 kh4K5oAhaSwXw==
-Message-ID: <sashiko-outbox-182185@kernel.org>
+	b=nqcDvf2PQv3IIWYpC6hZGQNaoXDzIaJ0Rlsz7roswhFSNBwtGct8WOekec7PTvYON
+	 4/YHCYrCUM/VfNmhKFduIKBz0Sa8g+9UP6tHsxKAwggT1DRmcwdXxnjRgDd41UoI/J
+	 vl0p8+Sq+4hEK0MZEEl3c56kOkH65ySS/cbxMx6yUQh5fUOXteTe1gVMwE8T9ikeWj
+	 A1QPvDBIG5qHGGjR68JiNHZuLCUjfOTjdBu6gBFQDx/P2dGwBDhxLmpyRLQdP96U6x
+	 IvJzRTsDqaERSM8I933aGoXVsJvU2eyQ/T8ZPCX6Dkk8AkoVw2nyVJ9JpnD/iD5WBT
+	 H+hNDMqohoZQg==
+Message-ID: <sashiko-outbox-182187@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/4] serial: core: allow drivers to reserve flushed
- transmit storage
+Subject: Re: [PATCH v2 4/4] serial: 8250: retire canceled RX DMA before
+ reusing the receive buffer
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261022-submit-serial-8250-dma-cancel-v1-v2-2-088ea51e3891@gmail.com>
+In-Reply-To: <20261022-submit-serial-8250-dma-cancel-v1-v2-4-088ea51e3891@gmail.com>
 References: <20261022-submit-serial-8250-dma-cancel-v1-v2-0-088ea51e3891@gmail.com>
- <20261022-submit-serial-8250-dma-cancel-v1-v2-2-088ea51e3891@gmail.com>
+ <20261022-submit-serial-8250-dma-cancel-v1-v2-4-088ea51e3891@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 23 Oct 2026 00:52:15 +0000
+Date: Fri, 23 Oct 2026 00:57:23 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,213 +61,238 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+Thank you for your contribution! Sashiko AI review found 4 potential issue(=
 s) to consider:
-- [High] serial: core: uart_flush_buffer() and uart_write_wakeup() ignore x=
-mit_blocked
-- [Medium] serial: core: uart_write() and __uart_start() start TX while xmi=
-t_blocked
+- [High] serial: 8250: dw8250_handle_irq() skips RX timeout quirk while rx_=
+terminating
+- [High] serial: 8250: RX interrupts unmasked in UART_IER during RX DMA err=
+or recovery
+- [Medium] serial: 8250: serial8250_stop_rx() drops UART_IER_RTOIE from dma=
+->rx_ier
+- [Medium] serial: 8250: serial8250_rx_dma_flush() allows PIO RX while DMA =
+runs on shutdown
 --
 
-commit 31d69e636df648aacf81276c435bae5c06cd9f96
+commit d3768e2140777caa150bf17338f045f59925e47a
 Author: James Hilliard <james.hilliard1@gmail.com>
 
-serial: core: allow drivers to reserve flushed transmit storage
+serial: 8250: retire canceled RX DMA before reusing the receive buffer
 
-This commit adds uart_xmit_block() and uart_xmit_unblock() so UART drivers
-with asynchronous TX DMA can reserve flushed transmit buffer storage until
-in-flight transfers and completion callbacks retire. While blocked,
-uart_write_room() returns zero and uart_write() and uart_put_char() reject
-new data until uart_xmit_unblock() wakes writers.
+This commit reserves the RX DMA buffer until a workqueue item has drained
+canceled completion callbacks after an RX timeout flush, and adds error
+recovery that masks receive interrupts and falls back to PIO if pausing or
+terminating RX DMA fails.
 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index c0deec0e6af41..f82c812f842f1 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -123,6 +123,46 @@ void uart_write_wakeup(struct uart_port *port)
->  }
->  EXPORT_SYMBOL(uart_write_wakeup);
-> =20
-> +/**
-> + * uart_xmit_block - reserve flushed transmit storage
-> + * @port: port whose transmit storage is still in use
-> + *
-> + * A driver may call this from ->flush_buffer() if DMA still owns the old
-> + * transmit data. The logical FIFO has already been emptied, but writers
-> + * must not overwrite its storage until uart_xmit_unblock() is called.
-> + * write_room() reports zero and write()/put_char() accept no data meanw=
-hile.
-> + *
-> + * The driver must unblock after retiring the transfer, including on shu=
-tdown.
-> + * Repeated calls are idempotent, not nested reservations.
-> + *
-> + * Context: @port->lock held.
-> + */
-> +void uart_xmit_block(struct uart_port *port)
-> +{
-> +	lockdep_assert_held_once(&port->lock);
-> +	port->state->xmit_blocked =3D true;
-> +}
-> +EXPORT_SYMBOL_GPL(uart_xmit_block);
-> +
-> +/**
-> + * uart_xmit_unblock - release reserved transmit storage and wake writers
-> + * @port: port whose storage is available again
-> + *
-> + * The old transfer must no longer access the FIFO storage, and any requ=
-ired
-> + * DMA synchronization must have completed before this call.
-> + *
-> + * Context: @port->lock held.
-> + */
-> +void uart_xmit_unblock(struct uart_port *port)
-> +{
-> +	lockdep_assert_held_once(&port->lock);
-> +	if (!port->state->xmit_blocked)
-> +		return;
-> +	port->state->xmit_blocked =3D false;
-> +	uart_write_wakeup(port);
-> +}
-> +EXPORT_SYMBOL_GPL(uart_xmit_unblock);
-
-[Severity: High]
-Should uart_flush_buffer() and uart_write_wakeup() suppress waking the TTY
-layer while state->xmit_blocked is true?
-
-In drivers/tty/serial/serial_core.c, uart_flush_buffer() resets the FIFO,
-calls port->ops->flush_buffer(port) where the driver calls
-uart_xmit_block(port), drops port->lock, and then unconditionally calls
-tty_port_tty_wakeup():
-
-drivers/tty/serial/serial_core.c:uart_flush_buffer() {
-	...
-	kfifo_reset(&state->port.xmit_fifo);
-	if (port->ops->flush_buffer)
-		port->ops->flush_buffer(port);
-	uart_port_unlock_deref(port, flags);
-	tty_port_tty_wakeup(&state->port);
-}
-
-Similarly, uart_write_wakeup() does not check state->xmit_blocked:
-
-drivers/tty/serial/serial_core.c:uart_write_wakeup() {
-	struct uart_state *state =3D port->state;
-	...
-	BUG_ON(!state);
-	tty_port_tty_wakeup(&state->port);
-}
-
-If a caller invokes uart_write_wakeup() while state->xmit_blocked is true
-(for example via uart_handle_cts_change(), __uart_port_tx(), or a driver TX
-interrupt seeing kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS), or when
-uart_flush_buffer() finishes, tty_port_tty_wakeup() -> tty_wakeup() runs
-while uart_write_room() is still 0 and uart_write() / uart_put_char() still
-reject all data.
-
-Because uart_flush_buffer() also drops port->lock before calling
-tty_port_tty_wakeup(), a concurrent writer that sees state->xmit_blocked,
-gets 0 from uart_write(), and sets TTY_DO_WRITE_WAKEUP in that window will
-have its wakeup bit consumed immediately by uart_flush_buffer() while
-state->xmit_blocked is still true.
-
-When tty_wakeup() fires while state->xmit_blocked is true, several line
-disciplines and TTY clients break:
-
-1. In drivers/tty/n_tty.c:n_tty_write_wakeup():
-
-	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-	kill_fasync(&tty->fasync, SIGIO, POLL_OUT);
-
-TTY_DO_WRITE_WAKEUP is cleared and SIGIO is sent while uart_write_room() is
-0 (so n_tty_poll() reports no EPOLLOUT). If the process checks poll() or
-select() rather than calling write() during the premature signal,
-TTY_DO_WRITE_WAKEUP remains cleared and the later uart_xmit_unblock() ->
-uart_write_wakeup() will not send SIGIO when the buffer is actually
-unblocked.
-
-2. In drivers/tty/serdev/serdev-ttyport.c:ttyport_write_wakeup() and
-drivers/tty/n_gsm.c:gsm_data_kick(), TTY_DO_WRITE_WAKEUP is cleared and the
-write wakeup callback is invoked while uart_write() still returns 0, losing
-the one-shot wakeup needed when uart_xmit_unblock() is later called.
-
-3. In drivers/net/mctp/mctp-serial.c:mctp_serial_tty_write_wakeup() ->
-mctp_serial_tx_work():
-
-	txlen =3D write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
-	if (txlen <=3D 0) {
-		dev->txstate =3D STATE_ERR;
-
-Waking TX while state->xmit_blocked is true causes tty->ops->write() to
-return 0, which puts the device into STATE_ERR and leaves its netdev TX
-queue permanently stopped.
-
-4. In drivers/input/joystick/iforce/iforce-serio.c:iforce_serio_write_wakeu=
-p()
--> iforce_serio_xmit(), queued packets are drained into tty->ops->write()
-while state->xmit_blocked is true and silently dropped. In serdev clients
-such as btnxpuart_tx_work(), waking TX while serdev_device_write_buf()
-returns 0 causes the worker to dequeue an skb, write 0 bytes, requeue it at
-the head of nxpdev->txq, and loop. In slcan_transmit(), slip_transmit(), and
-qcauart_transmit(), when xleft / tx_left is 0, the premature wakeup clears
-TTY_DO_WRITE_WAKEUP and calls netif_wake_queue() while the UART still
-rejects writes.
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250=
+/8250_dma.c
+> index bb30d3588f16f..4cadb3eef9413 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
 
 [ ... ]
 
-> @@ -624,7 +665,7 @@ static ssize_t uart_write(struct tty_struct *tty, con=
-st u8 *buf, size_t count)
->  		return 0;
->  	}
+> @@ -262,16 +317,49 @@ int serial8250_rx_dma(struct uart_8250_port *p)
+>  	return 0;
+>  }
 > =20
-> -	if (port)
-> +	if (port && !state->xmit_blocked)
->  		ret =3D kfifo_in(&state->port.xmit_fifo, buf, count);
+> -void serial8250_rx_dma_flush(struct uart_8250_port *p)
+> +int serial8250_rx_dma_flush(struct uart_8250_port *p)
+>  {
+>  	struct uart_8250_dma *dma =3D p->dma;
+> +	struct dma_tx_state state;
+> +	enum dma_status status;
+> +	int ret;
 > =20
->  	__uart_start(state);
+> -	if (!dma || !dma->rxchan || !dma->rx_running)
+> -		return;
+> +	lockdep_assert_held_once(&p->port.lock);
+> =20
+> -	dmaengine_pause(dma->rxchan);
+> -	__dma_rx_complete(p);
+> -	dmaengine_terminate_async(dma->rxchan);
+> +	if (!dma || dma->shutting_down || !dma->rxchan || !dma->rx_running)
+> +		return 0;
 
 [Severity: Medium]
-When state->xmit_blocked is true, uart_write() skips kfifo_in() and queues 0
-bytes, but still calls __uart_start(state) (which can also be reached via
-uart_flush_chars() -> uart_start() when n_tty_write() sees 0 write_room in
-O_OPOST mode):
+When dma->shutting_down is true while dma->rx_running is still non-zero (or
+while dma->rx_err is set during recovery), serial8250_rx_dma_flush() returns
+0 without pausing or stopping the RX DMA channel.
 
-drivers/tty/serial/serial_core.c:__uart_start() {
-	struct uart_port *port =3D state->uart_port;
-	struct serial_port_device *port_dev;
-	int err;
+In drivers/tty/serial/8250/8250_port.c, serial8250_do_shutdown() sets
+up->dma->shutting_down =3D true under port->lock before calling
+synchronize_irq(port->irq), and only terminates the RX DMA channel afterward
+in serial8250_release_dma():
 
-	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port))
-		return;
-	...
-	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
-		port->ops->start_tx(port);
+drivers/tty/serial/8250/8250_port.c:serial8250_do_shutdown() {
+	scoped_guard(uart_port_lock_irqsave, port) {
+		if (up->dma)
+			up->dma->shutting_down =3D true;
+		up->ier =3D 0;
+		serial_port_out(port, UART_IER, 0);
+	}
+
+	synchronize_irq(port->irq);
+
+	if (up->dma)
+		serial8250_release_dma(up);
 }
 
-Should __uart_start() (or uart_write()) avoid calling port->ops->start_tx()
-while state->xmit_blocked is true?
+If an in-flight IRQ handler (such as serial8250_default_handle_irq() or
+dw8250_handle_irq()) is waiting on port->lock when serial8250_do_shutdown()
+sets shutting_down =3D true, serial8250_handle_irq_locked() -> handle_rx_dm=
+a()
+evaluates !serial8250_rx_dma_flush(up) as true and proceeds to drain UART_RX
+via serial8250_rx_chars().
 
-In drivers whose start_tx() touches hardware before checking whether
-xmit_fifo is empty, calling start_tx() with an empty FIFO while TX storage
-is blocked has unintended side effects:
+Could that allow PIO FIFO reads to run concurrently with an active, unpaused
+RX DMA transfer during shutdown?
 
-1. In drivers/tty/serial/fsl_lpuart.c:lpuart_start_tx(),
-drivers/tty/serial/sh-sci.c:sci_start_tx(), and
-drivers/tty/serial/atmel_serial.c:atmel_start_tx(), start_tx() enables TX
-interrupts before checking kfifo_is_empty(), triggering a spurious TX
-interrupt or tasklet that sees kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS
-and calls uart_write_wakeup(port) while state->xmit_blocked is still true.
+> +	if (dma->rx_terminating) {
+> +		if (dma->rx_err) {
+> +			/* A termios or RS485 change may have enabled RX interrupts. */
+> +			serial8250_rx_dma_mask(p);
+> +			return -EIO;
+> +		}
+> +		return 0;
+> +	}
 
-2. In drivers/tty/serial/atmel_serial.c:atmel_start_tx(), half-duplex RX is
-stopped via atmel_stop_rx(port) and ATMEL_US_TXEN is re-enabled even though
-TX storage is blocked and no data was queued.
+[Severity: High]
+Is re-masking RX interrupts inside serial8250_rx_dma_flush() sufficient when
+termios, RS485, or overrun backoff paths modify UART_IER while dma->rx_err =
+is
+set?
 
-3. In drivers/tty/serial/amba-pl011.c:pl011_start_tx(), when RS485 is
-enabled (SER_RS485_ENABLED), pl011_rs485_tx_start() is called before
-checking whether xmit_fifo has data, asserting RTS and disabling RX
-(~UART011_CR_RXE) on the RS485 bus despite 0 bytes being accepted.
+During RX DMA error recovery (or permanently if dmaengine_terminate_sync()
+fails in serial8250_rx_dma_flush_work()), serial8250_set_ier(),
+serial8250_em485_stop_tx(), and serial_8250_overrun_backoff_work() in
+drivers/tty/serial/8250/8250_port.c can still set UART_IER_RTOIE or
+UART_IER_RLSI | UART_IER_RDI in up->ier and write up->ier directly to
+UART_IER (with serial8250_em485_stop_tx() also resetting the FIFOs via
+serial8250_clear_and_reinit_fifos()).
+
+However, serial8250_handle_irq_locked() only calls handle_rx_dma() ->
+serial8250_rx_dma_flush() when (status & (UART_LSR_DR | UART_LSR_BI)) &&
+!skip_rx is true:
+
+drivers/tty/serial/8250/8250_port.c:serial8250_handle_irq_locked() {
+	if (!(status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS)) &&
+	    (port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)) &&
+	    !(up->ier & (UART_IER_RLSI | UART_IER_RDI)))
+		skip_rx =3D true;
+
+	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
+		...
+		if (!up->dma || handle_rx_dma(up, iir))
+			status =3D serial8250_rx_chars(up, status);
+	}
+}
+
+If serial8250_set_ier() enables UART_IER_RTOIE on a port with UART_CAP_RTOIE
+and hardware flow control (UPSTAT_AUTOCTS | UPSTAT_AUTORTS) while
+UART_IER_RLSI | UART_IER_RDI remain masked, skip_rx is true, so an RX timeo=
+ut
+interrupt will never reach handle_rx_dma() or serial8250_rx_chars() to be
+cleared or re-masked.
+
+Similarly, if an unmasked RX interrupt fires when UART_LSR_DR | UART_LSR_BI
+is clear (for instance, on a DesignWare empty-FIFO UART_IIR_RX_TIMEOUT while
+up->dma->rx_running is still 1, or if the unstopped DMA channel drains the
+byte before serial_lsr_in()), handle_rx_dma() is skipped and the interrupt
+remains unmasked.
+
+Could those UART_IER writers avoid enabling RX interrupts while RX DMA
+recovery owns the mask, rather than relying on serial8250_rx_dma_flush() to
+catch the resulting interrupt?
+
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
+8250_dw.c
+> index eca02e8bd6d13..8a637a85f1013 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+
+[ ... ]
+
+> @@ -435,10 +441,11 @@ static int dw8250_handle_irq(struct uart_port *p)
+>  	 * read.  If we don't do this then the "RX TIMEOUT" interrupt will
+>  	 * fire forever.
+>  	 *
+> -	 * This problem has only been observed so far when not in DMA mode
+> -	 * so we limit the workaround only to non-DMA mode.
+> +	 * Only read the FIFO when DMA no longer owns it, including PIO fallback
+> +	 * after a DMA error.
+>  	 */
+> -	if (!(quirks & DW_UART_QUIRK_SKIP_EMPTY_FIFO_READ) && !up->dma && rx_ti=
+meout) {
+> +	if (!(quirks & DW_UART_QUIRK_SKIP_EMPTY_FIFO_READ) &&
+> +	    (!up->dma || !up->dma->rx_running) && rx_timeout) {
+>  		status =3D serial_lsr_in(up);
+> =20
+>  		/*
+
+[Severity: High]
+When an RX timeout flushes DMA in serial8250_rx_dma_flush(),
+dma->rx_terminating is set to true and dmaengine_terminate_async() stops the
+transfer so PIO can drain the FIFO, but dma->rx_running remains 1 until
+serial8250_rx_dma_flush_work() runs in process context:
+
+drivers/tty/serial/8250/8250_dma.c:serial8250_rx_dma_flush() {
+	serial8250_rx_dma_copy(p, &state);
+	dma->rx_terminating =3D true;
+	ret =3D dmaengine_terminate_async(dma->rxchan);
+	if (ret)
+		goto recover;
+
+	/* Keep the buffer reserved until any old completion has returned. */
+	schedule_work(&dma->rx_flush_work);
+	return 0;
+}
+
+If the DesignWare UART triggers an empty-FIFO UART_IIR_RX_TIMEOUT interrupt
+during this window before serial8250_rx_dma_flush_work() executes,
+(!up->dma || !up->dma->rx_running) in dw8250_handle_irq() evaluates to false
+and skips the dummy serial_port_in(p, d->data.srbr) read. Because UART_LSR_=
+DR
+and UART_LSR_BI are clear, serial8250_handle_irq_locked() does not read RBR
+either.
+
+Wouldn't that leave the level-triggered RX timeout interrupt asserted and
+cause an interrupt storm that prevents serial8250_rx_dma_flush_work() from
+running on the local CPU? Also, right below in dw8250_handle_irq(), the
+DW_UART_QUIRK_IS_DMA_FC check tests up->dma->rx_running and would still wri=
+te
+RZN1_UART_RDMACR and DW_UART_DMASA on subsequent RX timeouts even after
+serial8250_rx_dma_flush() has already terminated the transfer.
+
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index f36f7e18ab951..2f901e97aaded 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1305,6 +1305,8 @@ static void serial8250_stop_rx(struct uart_port *po=
+rt)
+> =20
+>  	guard(serial8250_rpm)(up);
+> =20
+> +	if (up->dma)
+> +		up->dma->rx_ier =3D 0;
+>  	up->ier &=3D ~(UART_IER_RLSI | UART_IER_RDI);
+>  	serial_port_out(port, UART_IER, up->ier);
+>  }
+
+[Severity: Medium]
+In drivers/tty/serial/8250/8250_dma.c, serial8250_rx_dma_mask() moves
+UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE out of p->ier and into
+p->dma->rx_ier.
+
+Here in serial8250_stop_rx(), up->ier only clears ~(UART_IER_RLSI |
+UART_IER_RDI), whereas up->dma->rx_ier =3D 0 clears UART_IER_RTOIE as well.=
+ If
+serial8250_stop_rx() is called during RX DMA error recovery (for example,
+via serial8250_em485_start_tx() during half-duplex RS485 transmission, where
+serial8250_em485_stop_tx() later only re-enables UART_IER_RLSI |
+UART_IER_RDI), wouldn't clearing all of up->dma->rx_ier lose UART_IER_RTOIE
+once PIO fallback completes?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261022-submit-ser=
-ial-8250-dma-cancel-v1-v2-0-088ea51e3891@gmail.com?part=3D2
+ial-8250-dma-cancel-v1-v2-0-088ea51e3891@gmail.com?part=3D4
