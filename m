@@ -1,70 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.246.85.4
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792770605;
-	b=3JI6XF/PugFKjD4sLqMpurgK1qCipR4rdIHUGRbW+R7QXt6n7Ueq61TT6hNn14sB02gS
-	 vPoM8bJuYZYf7PwIUSR1AQG8Yo1MJt7VdWnax2BFpkzr6PAr5eXhKPYrKg9q6d4l5WUOR
-	 gHTD35XCl5nS2AZvFB6LeVGqo3Nfnht6dbVwLUXcKySFPCcrpuIGenjpenJ5gu0T7IRAK
-	 nDsXpSqHurpzpw97TZIakbUViPCqS8ujdtR6GwJezQUQ6q36/Kjx5GBYFeOwKR7/dqcip
-	 K2AmTT3CICj2ZJ75fkkSfkSN5nM5AmtHwyuTh+dIoScNr9G3L3yhTBKPxStc1yaNgqA==
+	t=1792770780;
+	b=hv50j+Xw5DbYMbmyoFGKS/5Aw41QuVAaLaencXECS0RGp4ZGcbM+tOFTpq8GmFhLNSyv
+	 Haq1e0b/4BoNSZUYy5uAM4fADz+YJn2NgyL6PbB/wIpaE75mYomEB92RNU0WNXNq+K/7M
+	 +ivfDdt2uWDJEimlHGHZYbbH0LxbfS31XGQhCOVLwFRZIA0wtU9zijFsaB+OuoNl40kOf
+	 B1/6w8VJwtg+VfF3GN1Jk0j6X5BYdgFYZM3HSMlvLIrf5DLvYR36m/rVQB4fLgXdZJl0O
+	 k6qptMWkjw7DgBQCMspQcfvYfTUISWW8Akp9Ko1GomdawBy2MMxfvNu8QyNxrqTHtpA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792770605;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:From:To:Cc:
-	 Subject:In-Reply-To:References:User-Agent:Date:Message-ID:
-	 MIME-Version:Content-Type:X-Last-TLS-Session-Version;
-	bh=XB/DqQbns0rhIYJzq9cYO4pOM2WNkAQGdTIX1QI/KCw=;
-	b=PrKN4Yc6tODhe/B91cglIv1k7ymSwLWr0aSyJviP+PUYCpqasf02UoaPjf5iirsQU3KK
-	 TdLe+y7xeIrSiCzNOxqvaQ33LNyRiU3z4O19aT2YcjSD4b9pfGBmVFWZHd48Je/+ylcL3
-	 IvT5wkKFbEq5fUd2Ov6WBTc6hQ+hO+5Ocfe1uDY34NdlwD+QMFEKGNUm/sR6Wry/10LI2
-	 R+nrcX0E1aeacna6M2spoiIyKB90Ac+ZlFr8wlJTzJL0iFIN6aOk8kpM3pDF212XpN3IR
-	 Ce+efKzK4TUQY+ttZ7aF9OZ4nllPVXRxgBrHEPBItybyENadU9bYwURsy2cnmR9D54w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792770780;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=f5o7X4fxB23ALa8QVU1p/bEnDNLqxhIQ2MO6MYFZMrE=;
+	b=1V3bpaxrX3uVxrwYTmY/QSWPeTlUAME5y6v8KsJKqW761TkwrWbBTjpKWJIgm/YlP7qR
+	 /E93yq5GJTj5HarlQXVl2yT33ge3IXQENY57NHW3CQv1Yu3CMKagaWXdTehGNChg0pOi1
+	 EdKe7Ro/i18EQUaIbfkuAkNchO5aultLl0uPvqkZsARbcTKacLQwMcCFZ/oXSh34qixjR
+	 3cjcnamd0a6qYOJZpS0PCiqItBlf9L1uIHuLSakG30FBSWKAVdjLnCb1vZMiz5Oj83zwe
+	 B8L0vHPLHMKxQtr8V5icZV9cYo+wgwYu0uwHG57zT2EuFhTz7WZaUBuWRojRuy3MnWQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bootlin.com;
-	spf=pass smtp.mailfrom=bootlin.com;
-	dkim=pass header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=hlvcHbet;
-	arc=none smtp.remote-ip=185.246.85.4
-Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PbGZf2FW;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72E62606A31E;
-	Fri, 23 Oct 2026 15:50:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72E62606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFD0C606A31A
+	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 15:52:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=hlvcHbet
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id 9F67B4E412D0;
-	Fri, 23 Oct 2026 15:50:00 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 7218160398;
-	Fri, 23 Oct 2026 15:50:00 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E56E010329032;
-	Fri, 23 Oct 2026 17:49:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1792770595; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=XB/DqQbns0rhIYJzq9cYO4pOM2WNkAQGdTIX1QI/KCw=;
-	b=hlvcHbeteCd7qBm2mggkskIW9OvJnVDIV8097eleolYeWs5IQtudp04on67RYahWoORzac
-	004KcPlPG3nErF2QDHE+Lq2BIgsCTBmHbWhM/Yd21UL34dC2zdelmsuWtlA1or4UWIQiMX
-	YR8Yak668C+EK9/sxIqCiYncOD007aLANwHtcEz0Yw7Lw0WFk1Au2r1LE+IF/Xn2wfivLE
-	P6MiqXKTqzwjJslF7Xmb7CbxuWYhODCRtSOMO02ykuC3quR1CJwK/z6fG7NpEA604ZFxVQ
-	qA65pRAg74QPsb5UPP7bxMTb7MK6J2s7iqvRrytSCRGfzL9QKOjJLXaXc1yU1Q==
-From: Miquel Raynal <miquel.raynal@bootlin.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,  Jiri Slaby
- <jirislaby@kernel.org>,  Raul E Rangel <rrangel@chromium.org>,  Ilpo
- =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,  Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>,  Heikki Krogerus
- <heikki.krogerus@linux.intel.com>,  linux-kernel@vger.kernel.org,
-  linux-serial@vger.kernel.org,  stable@vger.kernel.org
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PbGZf2FW
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 511091F01825;
+	Fri, 23 Oct 2026 15:52:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792770779;
+	bh=f5o7X4fxB23ALa8QVU1p/bEnDNLqxhIQ2MO6MYFZMrE=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=PbGZf2FWRAOUGjfZ9eqtiQhMJRCtvCpgukXO6Aqp/oiI6RnBsa/AwC0ii8ZfrsGVj
+	 p8D6zA442k6PWTcMTInMp6zPrH2h4YSnaabRbtm00cprPHj5sCdTwxBjoZrGG9DqPK
+	 2/eL39ftvXD4AeM2XTr8POG+byAbtgGRN6/Ec4iH06qz3vdqXcEWn2ukqLgBleZOIt
+	 N7FWgCjZcrDjRCOj9UNW7klwPFW0ElXW17SQxpnBJboB9w9gr5+44R/fwNoxqR0CZT
+	 jDzj4XVJ7M2HptBBt9d/LBIcCPxzKElhbkkQGTcOgbv8gHgfZmeY+55HtDlDIDva6U
+	 YjxqIpnW5wQcA==
+Message-ID: <sashiko-outbox-182930@kernel.org>
+From: sashiko-bot@kernel.org
 Subject: Re: [PATCH v2] serial: 8250: calculate TX length before preparing
  DMA flow control
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "James Hilliard" <james.hilliard1@gmail.com>
+Cc: linux-serial@vger.kernel.org
 In-Reply-To: <20261023-submit-serial-8250-dma-tx-length-v1-v2-1-c3106ef4d2df@gmail.com>
-	(James Hilliard's message of "Fri, 23 Oct 2026 09:40:50 -0600")
 References: <20261023-submit-serial-8250-dma-tx-length-v1-v2-1-c3106ef4d2df@gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 23 Oct 2026 17:49:52 +0200
-Message-ID: <87mrs4o1r3.fsf@bootlin.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 23 Oct 2026 15:52:58 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -73,22 +59,22 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Last-TLS-Session-Version: TLSv1.3
-
-On 23/10/2026 at 09:40:50 -06, James Hilliard <james.hilliard1@gmail.com> wrote:
 
 > The Renesas RZ/N1 preparation hook programs the UART DMA block size from
 > dma->tx_size. The generic TX path calls that hook before calculating the
 > length of the new transfer, so it programs zero on the first transfer and
 > the previous length on subsequent transfers.
->
+>=20
 > Calculate the scatterlist length before calling the preparation hook so
 > the UART flow controller and DMA descriptor use the same transfer size.
->
+>=20
 > Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
 > Cc: stable@vger.kernel.org
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Sashiko has reviewed this patch and found no issues.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261023-submit-ser=
+ial-8250-dma-tx-length-v1-v2-1-c3106ef4d2df@gmail.com?part=3D1
+
