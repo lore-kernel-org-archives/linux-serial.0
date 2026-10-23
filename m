@@ -1,57 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792717045;
-	b=kdKiBNP9SZjJEqFgp6W3cxcUouQxjlYyt+oh2a55jGW/U7a/ivKKD4AKIzjQzvnpbr+y
-	 AyXrZbvqRq7uEsnljDi+nZw00jRKsDAzyG4k2oaEJI92Y0WUrLy7/MSkJLr48gsNP5BW6
-	 iolTtQvHrxWcXCl1UwKXaUSMSFK7KITMcboFT828k9tPX0d3g4TkzB6lX8f78BmlCPHKV
-	 qeZrB75Tx7bZzf6dqQ4cElBuiOv5u6IU0KU2wi8aVS/qKglVHSn+VnAjgg7zTQwP+ZXJf
-	 hz/HHLTCy/qWhVrJaDO9Co37Zx3Hw4XA1Gfji4NT1aSZgewOPecb6o6PBUHnH4eLXhA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792717045;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=hjurFGa5UfxZ1thkkG3svF13D7aCE8L7hAG5CidjkSs=;
-	b=zvXylAjw7YoHNJbKIALYz9mcF3M9EyMlEthklR/pLVTDzZ/eTMH4ymSBf19sg2uTKr4Z
-	 QwbhNUkPD6JYajerTJYas/vfUY5YC9rtPU2OJQCz8SRqHqjNLurWCa3HRaWGuM0mWbSR7
-	 Rs1jt5Hw7tJFSTlUZGZB6dFWo3szP8mdI8bc00iMiKdx2buBNAwnshqcxmp1Lrwb7jvdO
-	 94C2r9xgXLNDT7ns0gK9jaJGi5YHzv6QZGiHxE4uXmnUAO19Br27n20zfsqJaVDhCDTWq
-	 BrIFwzrOgAhhElApe+zKLb+NPbthPEcm/zCl72qODyf2Dd8rPGrpaFH8m61tMdQqWPg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nqcDvf2P;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.217.45
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792722025;
+	b=j2YSDGBcwny5BP6VAOt8gAk8mDG1oeWpGV9z5KyeMRZay/ytM49nh/sLxibh33kN+uet
+	 wnjs21hMWWgjm7puEW+xUi5bQt3Tjhni3VkYNw5385x2kl48JBrJhEB50sQdzyq0W3Op/
+	 Dw64y3MRw1KDKlt+NYgNgzk2jFG9PTB/lpgmm4Jpvh2EfklA67zhJ5TQCvbpmxxFL28gj
+	 WfzGQtzMym53gdfSEkoKSg28IxV8yFvYa6SMZteXdm13qrPLxtAmbLVbG34vCwo9V5zHp
+	 kmVf38JEcqyInkkjsq+8rWNRrcdAFCY8kyRTlITeXZqTtrSN7ISTlTahcJoafrGUbpQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792722025;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=m31+kFGOIU13FQ2niFCIhiyf7qxQvPAkGY0Wzy9JHCU=;
+	b=wOcWzPo3Moy29U+UgKZjn66thK83Xpjjm+9t8xpoHAjpozA3lx/H0UFEMm8w+NG7ekEE
+	 4AKD7+RFmnhFf03+X2n/6ri2jgwZSZ1yFr68654b1FSosIg8fcsDjug8VJ/XXOu0VVpFy
+	 YpCFWEbEmG0+NnJzwV7LzVwCRGS31Bx45Ir1WmdPvZ4tvG4fLxBkGuI8SjUXbBztvmi7m
+	 /cUcOBdGDPlarFi58ARfFDQObb+u/boiFM3fyWuJxgcZ6QyoAzdqvLGxszc2emgzHicUi
+	 L6by8Gj2xpUB33aT140gXfmkNxPLd0vB80cJIfotOeWgqWMpbltHR4WKo0Hef3RKveQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=As7nSnfk;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.217.45
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D985A606A319
-	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 00:57:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C4A4606A319
+	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 02:20:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1C4A4606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nqcDvf2P
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1061F01825;
-	Fri, 23 Oct 2026 00:57:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792717044;
-	bh=hjurFGa5UfxZ1thkkG3svF13D7aCE8L7hAG5CidjkSs=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=nqcDvf2PQv3IIWYpC6hZGQNaoXDzIaJ0Rlsz7roswhFSNBwtGct8WOekec7PTvYON
-	 4/YHCYrCUM/VfNmhKFduIKBz0Sa8g+9UP6tHsxKAwggT1DRmcwdXxnjRgDd41UoI/J
-	 vl0p8+Sq+4hEK0MZEEl3c56kOkH65ySS/cbxMx6yUQh5fUOXteTe1gVMwE8T9ikeWj
-	 A1QPvDBIG5qHGGjR68JiNHZuLCUjfOTjdBu6gBFQDx/P2dGwBDhxLmpyRLQdP96U6x
-	 IvJzRTsDqaERSM8I933aGoXVsJvU2eyQ/T8ZPCX6Dkk8AkoVw2nyVJ9JpnD/iD5WBT
-	 H+hNDMqohoZQg==
-Message-ID: <sashiko-outbox-182187@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 4/4] serial: 8250: retire canceled RX DMA before
- reusing the receive buffer
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261022-submit-serial-8250-dma-cancel-v1-v2-4-088ea51e3891@gmail.com>
-References: <20261022-submit-serial-8250-dma-cancel-v1-v2-0-088ea51e3891@gmail.com>
- <20261022-submit-serial-8250-dma-cancel-v1-v2-4-088ea51e3891@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 23 Oct 2026 00:57:23 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=As7nSnfk
+Received: by mail-vs1-f45.google.com with SMTP id ada2fe7eead31-7777fa8f1ccso135531137.3
+        for <linux-serial@vger.kernel.org>; Thu, 22 Oct 2026 19:20:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792722024; cv=none;
+        d=google.com; s=arc-20260327;
+        b=TF8LU5Qx88hvSKDumf95s1qjkLC3OhT2KN/wtcV4Gat9dUh18yAzIIuR0/MZmM8HWQ
+         HSutbhQrb/0Bc/cjQs4krHv7HIFs4sCO41vJUNvhx45/2dAGfRK0NwydQO0uM/gyAXmC
+         9f4eKsoDWJ7yUyXS100Baj2HHlpx2gxxtr1jwieQHgQjNAH5io8wSxsCCVVWPf/mntJr
+         G164HBdnxWfoV8om5ZvOemzuNl3OLOOYMvZga00kz68mH7AdkSPdbNWXcOuu83APi8gI
+         L+FBTFar5J6vqWo9z94/kfrKevw1POXlOijpyKMH55d7QPT8kcKNileBcUeAwRXBULoH
+         ADUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=m31+kFGOIU13FQ2niFCIhiyf7qxQvPAkGY0Wzy9JHCU=;
+        fh=ket6W+o/VI8NSuI1/naRZnA4/MhcJz1ItYC+3DJ5AAw=;
+        b=etYMIB6xZt1wMxrl2WkSt3EcgFOT7vj2u6QWx1YhBef5YOteWq1DoqFyhjj/vnADD/
+         7VH0h2U61gYJoOZyL+eF83UGzEt7VYLDsleFL81v+l17a7RoomMvpL4CgOnmk5K2Zd46
+         Ze4i602YPT9pKFBUNB6KatVYwGFXpvHIhtGEJ5qSXNOsPaX2N6CB7ExOLVmWqfApZ4Pf
+         nRk6wZSTPm2veHTeg5ZxS3I+4NEuJUr+TOXTjS8bsTi2rLmVAboBgp2iJrIbdq2iUCY9
+         VO2F2XGyMtgajs/caNroQSbIK6JnksuGIOE2E9S+WHK4rqcVGbShs9+Ks4t0x0mns6Jn
+         LpNQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792722024; x=1793326824; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=m31+kFGOIU13FQ2niFCIhiyf7qxQvPAkGY0Wzy9JHCU=;
+        b=As7nSnfkSHggMfctBcifriijdDMf3/xQzJSHc+yzOO1ArUwgMvaAt3eysez4OywqPe
+         HHwJ8/wTfajUPSOuuPGVOjNIWlkJu8E3d3L71UOeRCa52KbSVoN6G1iJHxLmReisLbHH
+         6e1EibhUL4ksaSEU3lBli08gVK7P4cvn+aT4T1kcXhQWIXc5KbxvD7eGUWIUCrnFUhGs
+         SY04Z6Pn2IEhrFslsg6efCDxXuISZDzQ6uB/q7RcguttWSp0uSRIyfeBYyjeJoVhoyRx
+         0W0+4ovki8fS2bBVulgIu96yOI1yLYXSO15sgP9JUtHwKfbrGxha9dlbmxaEkW891S+F
+         xG3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792722024; x=1793326824;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=m31+kFGOIU13FQ2niFCIhiyf7qxQvPAkGY0Wzy9JHCU=;
+        b=Mr0kaQ39tYZHWDpY8Pi/5rV8/EVZnH5VLO87WNm8QqgF7sJk3lCQ+RECiYTo9sC5KE
+         reaHZZ7bK/koQ5oSbdwOiKN+/InjSzBcVc5GzRg1efKcicWH2QlUTIwiVAAzMHcLsyEJ
+         7IRbbeQrBnoOcXxapN6vMV+eBCDvFeFkfCFk4cbdwqRO909NVCpVCEz8Gs1Dqy4UfEov
+         agRvpKakJvkfdbDzmqE2wNZ+OQWCJSihM5zOfRmd1fOkVlY7FUppSJkeSqyGYfSJZ8pt
+         2+70HxLPXxdmBHSak9mBm7LXJFA9K/yePFwHGJBtbsRwcpK76Tuxse4s3HmJClUb5Jxj
+         LQOQ==
+X-Forwarded-Encrypted: i=1; AKwUvBx/+pdPP1fLrg/68SG1fuRBz0AalaWf1nvr5ZY+j/UDRx8GWLYhOgdCVyuvklIMPs5g/G8It0W48AQUnV4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLJDAleL78xVsXHc4u9DqaVK3Lsg1Oj3PRb4fRi+NdzyUMfKqm+
+	omeUXgLSVB87HH18Red46UmCJ6w3koR/9nBJKuHOZ7gdg+CeorsGnbapWk+iAwOtc12c+L94djm
+	zpq3pFpG1WrRnYpV7SUQ5t9fS0oLm2z0=
+X-Gm-Gg: AYBFou1QbDgCfuUJ/ylUf/sTYvROvk6J/WHzAzq27/PAemC9jxhHrkhEnw8mW7FBsbC
+	JLgN4P5R217c0avwLxbVN1OkLs2bU3hD3X+FYFvhgXSxJ7BWVW//63dSKNs5d99d02fBIEvjx0K
+	YFpVamWu4gZn/zLd/VawUW2TB1DKP5xBy2zvTRvxZ6h1SW1tQ6iD4NZQ8eDqMM6iOXSxeAgsNbZ
+	zH0ObBgy9OHwcsWJvLqc7tEuyUBe4k0A4wSXDLpyCsb7Kcu5vS9y3Ywm2wMNcIMATm0gPiauO50
+	MmMH/qib0lmMYGhbaymsPdDEl9ivIBgVNLgNZx0X8uzj8uR/0B8u+/7ooN4hn+By+aQMk4QK4n+
+	lF535ehgOUoySJ4WbcrSnyjzCFp9hVpTtSUoGbEBeIIgH7TUK/HD9nGr1odARZ977GUibqX/dE0
+	8NbBo4ila04xfCsqXW/LH4vtfY1OYjdgT64/wQPLoXXuJ714NysPgpe84vKYDV+ey+MaWJlOM5m
+	UOEnDkUTvP7X5FeykwXdJQFpIpnTA==
+X-Received: by 2002:a67:e704:0:b0:7b1:6028:5475 with SMTP id
+ ada2fe7eead31-7ccc325fc45mr450317137.12.1792722024045; Thu, 22 Oct 2026
+ 19:20:24 -0700 (PDT)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,239 +105,173 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+References: <20261021-submit-serial-8250-dma-cancel-v1-v1-0-efe2b89f2303@gmail.com>
+ <20261021-submit-serial-8250-dma-cancel-v1-v1-1-efe2b89f2303@gmail.com> <atoW90cG8hz-h9tc@ashevche-desk.local>
+In-Reply-To: <atoW90cG8hz-h9tc@ashevche-desk.local>
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Thu, 22 Oct 2026 20:20:13 -0600
+X-Gm-Features: AclHuK89aWM8taPGRZeoSyiqd2k01IuhObkpr-YSGe7k_7rKgUFx5DXk8auc5y4
+Message-ID: <CADvTj4py34R+Ohin7XOh3a1az9_8SbZoZLryeMK7iUCXNumJxA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] serial: 8250: drain canceled TX DMA before reusing
+ its buffer
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Raul E Rangel <rrangel@chromium.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for your contribution! Sashiko AI review found 4 potential issue(=
-s) to consider:
-- [High] serial: 8250: dw8250_handle_irq() skips RX timeout quirk while rx_=
-terminating
-- [High] serial: 8250: RX interrupts unmasked in UART_IER during RX DMA err=
-or recovery
-- [Medium] serial: 8250: serial8250_stop_rx() drops UART_IER_RTOIE from dma=
-->rx_ier
-- [Medium] serial: 8250: serial8250_rx_dma_flush() allows PIO RX while DMA =
-runs on shutdown
---
+On Thu, Oct 22, 2026 at 8:00=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Wed, Oct 21, 2026 at 04:37:43PM -0600, James Hilliard wrote:
+> > uart_flush_buffer() resets the transmit kfifo before calling the driver=
+'s
+> > flush callback. serial8250_tx_dma_flush() terminates DMA asynchronously=
+ and
+> > clears tx_running, allowing a new write to replace tx_size before the o=
+ld
+> > completion callback has finished. That callback can then consume bytes
+> > from the new transmission. The serial core can also overwrite the old
+> > DMA source as soon as it reuses the reset kfifo.
+> >
+> > Give DMA a private transmit buffer, keeping the kfifo offsets used by
+> > FIFO-window providers. Copy only the queued ranges before handing the
+> > buffer to the device. Flushing the kfifo can then no longer change an
+> > in-flight transfer's source.
+> >
+> > Keep tx_running set while a worker synchronizes a successfully terminat=
+ed
+> > channel. Suppress callbacks and new submissions during that interval.
+> > The DesignWare idle helpers must not pause or resume a retiring channel=
+.
+> > Once synchronization finishes, process the zero-length completion under
+> > the port lock and start any data queued after the flush. Reuse the norm=
+al
+> > completion processing for OMAP too, including its delayed register
+> > restore and runtime-PM handling. Drain the worker before releasing DMA
+> > resources on shutdown.
+> >
+> > Calculate the queued length before calling the platform preparation hoo=
+k,
+> > so it sees the length of the transfer being prepared rather than the
+> > previous transfer's length.
+> >
+> > If termination fails, leave the buffer owned by the transfer and let it=
+s
+> > normal completion release it. Do not submit another transfer before tha=
+t
+> > completion. A DMA completion still does not mean that the UART transmit=
+ter
+> > is empty; the existing line-status checks remain in place.
+> >
+> > The race was found by inspecting cancellation and restart while prepari=
+ng
+> > H616 UART DMA support.
+>
+> ...
+>
+> > +static void __dma_tx_complete(void *param)
+> > +{
+> > +     struct uart_8250_port *p =3D param;
+> > +     struct uart_8250_dma *dma =3D p->dma;
+> > +
+> > +     guard(uart_port_lock_irqsave)(&p->port);
+>
+> Add a blank line after guard()() everywhere, otherwise it's harder to see=
+ it
+> in the code.
+>
+> > +     if (!dma->shutting_down && !dma->tx_terminating)
+> > +             serial8250_tx_dma_complete(p);
+> >  }
+>
+> ...
+>
+> > +static void serial8250_tx_dma_flush_work(struct work_struct *work)
+> > +{
+> > +     struct uart_8250_dma *dma =3D container_of(work, struct uart_8250=
+_dma,
+> > +                                            tx_flush_work);
+>
+> Make it a single line.
+>
+> > +     struct uart_8250_port *p =3D dma->port;
+> > +
+> > +     /* Neither the channel nor its buffer may be reused before this r=
+eturns. */
+> > +     dmaengine_synchronize(dma->txchan);
+> > +
+> > +     guard(uart_port_lock_irqsave)(&p->port);
+> > +     dma->tx_terminating =3D false;
+> > +     if (!dma->shutting_down)
+> > +             dma->tx_complete(p);
+> > +}
+> > +
+> > +void serial8250_tx_dma_prepare_buffer(struct uart_8250_port *p,
+> > +                                 struct scatterlist *sgl, unsigned int=
+ nents)
+> > +{
+> > +     struct uart_8250_dma *dma =3D p->dma;
+> > +     struct scatterlist *sg;
+> > +     unsigned int i;
+> > +
+> > +     /* Preserve ring offsets for DMA engines which implement a FIFO w=
+indow. */
+> > +     for_each_sg(sgl, sg, nents, i) {
+> > +             size_t offset =3D sg_dma_address(sg) - dma->tx_addr;
+> > +
+> > +             memcpy(dma->tx_buf + offset,
+> > +                    p->port.state->port.xmit_buf + offset, sg_dma_len(=
+sg));
+> > +     }
+> > +     dma_sync_single_for_device(dmaengine_get_dma_device(dma->txchan),=
+ dma->tx_addr,
+> > +                                UART_XMIT_SIZE, DMA_TO_DEVICE);
+> > +}
+>
+> This is a bounce buffer, why do we need it? Shouldn't this be rather the
+> respective DMAengine issue on how to treat the pieces?
 
-commit d3768e2140777caa150bf17338f045f59925e47a
-Author: James Hilliard <james.hilliard1@gmail.com>
+The problem is ownership of the serial core's transmit storage across
+flush. uart_flush_buffer() resets the FIFO before calling the driver,
+and writers can reuse that storage after the callback returns.
 
-serial: 8250: retire canceled RX DMA before reusing the receive buffer
+dmaengine_terminate_async() does not guarantee that the transfer or its
+completion callback has finished when it returns. The driver's flush
+callback holds the port spinlock, so it cannot wait there using
+dmaengine_synchronize(). This lifetime gap therefore exists even with
+a provider implementing the DMAengine contract correctly.
 
-This commit reserves the RX DMA buffer until a workqueue item has drained
-canceled completion callbacks after an RX timeout flush, and adds error
-recovery that masks receive interrupts and falls back to PIO if pausing or
-terminating RX DMA fails.
+The bounce buffer in v1 protected the transfer's source from those new
+writes, but it added an allocation and copying to normal transmission.
 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250=
-/8250_dma.c
-> index bb30d3588f16f..4cadb3eef9413 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
+> ...
+>
+> Overall I have a feeling that we turned somewhere in a wrong direction.
+> This all activity on 8250 DMA support looks like over engineered approach=
+.
+>
+> Perhaps we need to reconsider the whole picture?
 
-[ ... ]
+I've reworked TX in v2[0] around a serial-core storage reservation instead.
+The logical FIFO is still flushed immediately, but the driver can reserve
+its storage until DMA and the old callbacks have retired. During that
+interval write_room() reports zero, and write()/put_char() accept no data.
 
-> @@ -262,16 +317,49 @@ int serial8250_rx_dma(struct uart_8250_port *p)
->  	return 0;
->  }
-> =20
-> -void serial8250_rx_dma_flush(struct uart_8250_port *p)
-> +int serial8250_rx_dma_flush(struct uart_8250_port *p)
->  {
->  	struct uart_8250_dma *dma =3D p->dma;
-> +	struct dma_tx_state state;
-> +	enum dma_status status;
-> +	int ret;
-> =20
-> -	if (!dma || !dma->rxchan || !dma->rx_running)
-> -		return;
-> +	lockdep_assert_held_once(&p->port.lock);
-> =20
-> -	dmaengine_pause(dma->rxchan);
-> -	__dma_rx_complete(p);
-> -	dmaengine_terminate_async(dma->rxchan);
-> +	if (!dma || dma->shutting_down || !dma->rxchan || !dma->rx_running)
-> +		return 0;
+Normal transmission continues to DMA directly from the FIFO. A worker
+performs synchronization outside the port lock, returns the mapping to
+CPU ownership and releases the reservation. This removes the private TX
+buffer and copying while retaining the required lifetime protection.
 
-[Severity: Medium]
-When dma->shutting_down is true while dma->rx_running is still non-zero (or
-while dma->rx_err is set during recovery), serial8250_rx_dma_flush() returns
-0 without pausing or stopping the RX DMA channel.
+[0] https://lore.kernel.org/r/20261022-submit-serial-8250-dma-cancel-v1-v2-=
+0-088ea51e3891@gmail.com/
 
-In drivers/tty/serial/8250/8250_port.c, serial8250_do_shutdown() sets
-up->dma->shutting_down =3D true under port->lock before calling
-synchronize_irq(port->irq), and only terminates the RX DMA channel afterward
-in serial8250_release_dma():
-
-drivers/tty/serial/8250/8250_port.c:serial8250_do_shutdown() {
-	scoped_guard(uart_port_lock_irqsave, port) {
-		if (up->dma)
-			up->dma->shutting_down =3D true;
-		up->ier =3D 0;
-		serial_port_out(port, UART_IER, 0);
-	}
-
-	synchronize_irq(port->irq);
-
-	if (up->dma)
-		serial8250_release_dma(up);
-}
-
-If an in-flight IRQ handler (such as serial8250_default_handle_irq() or
-dw8250_handle_irq()) is waiting on port->lock when serial8250_do_shutdown()
-sets shutting_down =3D true, serial8250_handle_irq_locked() -> handle_rx_dm=
-a()
-evaluates !serial8250_rx_dma_flush(up) as true and proceeds to drain UART_RX
-via serial8250_rx_chars().
-
-Could that allow PIO FIFO reads to run concurrently with an active, unpaused
-RX DMA transfer during shutdown?
-
-> +	if (dma->rx_terminating) {
-> +		if (dma->rx_err) {
-> +			/* A termios or RS485 change may have enabled RX interrupts. */
-> +			serial8250_rx_dma_mask(p);
-> +			return -EIO;
-> +		}
-> +		return 0;
-> +	}
-
-[Severity: High]
-Is re-masking RX interrupts inside serial8250_rx_dma_flush() sufficient when
-termios, RS485, or overrun backoff paths modify UART_IER while dma->rx_err =
-is
-set?
-
-During RX DMA error recovery (or permanently if dmaengine_terminate_sync()
-fails in serial8250_rx_dma_flush_work()), serial8250_set_ier(),
-serial8250_em485_stop_tx(), and serial_8250_overrun_backoff_work() in
-drivers/tty/serial/8250/8250_port.c can still set UART_IER_RTOIE or
-UART_IER_RLSI | UART_IER_RDI in up->ier and write up->ier directly to
-UART_IER (with serial8250_em485_stop_tx() also resetting the FIFOs via
-serial8250_clear_and_reinit_fifos()).
-
-However, serial8250_handle_irq_locked() only calls handle_rx_dma() ->
-serial8250_rx_dma_flush() when (status & (UART_LSR_DR | UART_LSR_BI)) &&
-!skip_rx is true:
-
-drivers/tty/serial/8250/8250_port.c:serial8250_handle_irq_locked() {
-	if (!(status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS)) &&
-	    (port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)) &&
-	    !(up->ier & (UART_IER_RLSI | UART_IER_RDI)))
-		skip_rx =3D true;
-
-	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
-		...
-		if (!up->dma || handle_rx_dma(up, iir))
-			status =3D serial8250_rx_chars(up, status);
-	}
-}
-
-If serial8250_set_ier() enables UART_IER_RTOIE on a port with UART_CAP_RTOIE
-and hardware flow control (UPSTAT_AUTOCTS | UPSTAT_AUTORTS) while
-UART_IER_RLSI | UART_IER_RDI remain masked, skip_rx is true, so an RX timeo=
-ut
-interrupt will never reach handle_rx_dma() or serial8250_rx_chars() to be
-cleared or re-masked.
-
-Similarly, if an unmasked RX interrupt fires when UART_LSR_DR | UART_LSR_BI
-is clear (for instance, on a DesignWare empty-FIFO UART_IIR_RX_TIMEOUT while
-up->dma->rx_running is still 1, or if the unstopped DMA channel drains the
-byte before serial_lsr_in()), handle_rx_dma() is skipped and the interrupt
-remains unmasked.
-
-Could those UART_IER writers avoid enabling RX interrupts while RX DMA
-recovery owns the mask, rather than relying on serial8250_rx_dma_flush() to
-catch the resulting interrupt?
-
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
-8250_dw.c
-> index eca02e8bd6d13..8a637a85f1013 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-
-[ ... ]
-
-> @@ -435,10 +441,11 @@ static int dw8250_handle_irq(struct uart_port *p)
->  	 * read.  If we don't do this then the "RX TIMEOUT" interrupt will
->  	 * fire forever.
->  	 *
-> -	 * This problem has only been observed so far when not in DMA mode
-> -	 * so we limit the workaround only to non-DMA mode.
-> +	 * Only read the FIFO when DMA no longer owns it, including PIO fallback
-> +	 * after a DMA error.
->  	 */
-> -	if (!(quirks & DW_UART_QUIRK_SKIP_EMPTY_FIFO_READ) && !up->dma && rx_ti=
-meout) {
-> +	if (!(quirks & DW_UART_QUIRK_SKIP_EMPTY_FIFO_READ) &&
-> +	    (!up->dma || !up->dma->rx_running) && rx_timeout) {
->  		status =3D serial_lsr_in(up);
-> =20
->  		/*
-
-[Severity: High]
-When an RX timeout flushes DMA in serial8250_rx_dma_flush(),
-dma->rx_terminating is set to true and dmaengine_terminate_async() stops the
-transfer so PIO can drain the FIFO, but dma->rx_running remains 1 until
-serial8250_rx_dma_flush_work() runs in process context:
-
-drivers/tty/serial/8250/8250_dma.c:serial8250_rx_dma_flush() {
-	serial8250_rx_dma_copy(p, &state);
-	dma->rx_terminating =3D true;
-	ret =3D dmaengine_terminate_async(dma->rxchan);
-	if (ret)
-		goto recover;
-
-	/* Keep the buffer reserved until any old completion has returned. */
-	schedule_work(&dma->rx_flush_work);
-	return 0;
-}
-
-If the DesignWare UART triggers an empty-FIFO UART_IIR_RX_TIMEOUT interrupt
-during this window before serial8250_rx_dma_flush_work() executes,
-(!up->dma || !up->dma->rx_running) in dw8250_handle_irq() evaluates to false
-and skips the dummy serial_port_in(p, d->data.srbr) read. Because UART_LSR_=
-DR
-and UART_LSR_BI are clear, serial8250_handle_irq_locked() does not read RBR
-either.
-
-Wouldn't that leave the level-triggered RX timeout interrupt asserted and
-cause an interrupt storm that prevents serial8250_rx_dma_flush_work() from
-running on the local CPU? Also, right below in dw8250_handle_irq(), the
-DW_UART_QUIRK_IS_DMA_FC check tests up->dma->rx_running and would still wri=
-te
-RZN1_UART_RDMACR and DW_UART_DMASA on subsequent RX timeouts even after
-serial8250_rx_dma_flush() has already terminated the transfer.
-
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index f36f7e18ab951..2f901e97aaded 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1305,6 +1305,8 @@ static void serial8250_stop_rx(struct uart_port *po=
-rt)
-> =20
->  	guard(serial8250_rpm)(up);
-> =20
-> +	if (up->dma)
-> +		up->dma->rx_ier =3D 0;
->  	up->ier &=3D ~(UART_IER_RLSI | UART_IER_RDI);
->  	serial_port_out(port, UART_IER, up->ier);
->  }
-
-[Severity: Medium]
-In drivers/tty/serial/8250/8250_dma.c, serial8250_rx_dma_mask() moves
-UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE out of p->ier and into
-p->dma->rx_ier.
-
-Here in serial8250_stop_rx(), up->ier only clears ~(UART_IER_RLSI |
-UART_IER_RDI), whereas up->dma->rx_ier =3D 0 clears UART_IER_RTOIE as well.=
- If
-serial8250_stop_rx() is called during RX DMA error recovery (for example,
-via serial8250_em485_start_tx() during half-duplex RS485 transmission, where
-serial8250_em485_stop_tx() later only re-enables UART_IER_RLSI |
-UART_IER_RDI), wouldn't clearing all of up->dma->rx_ier lose UART_IER_RTOIE
-once PIO fallback completes?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261022-submit-ser=
-ial-8250-dma-cancel-v1-v2-0-088ea51e3891@gmail.com?part=3D4
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
