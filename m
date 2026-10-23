@@ -1,53 +1,53 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1792762662;
-	b=WTi/GBbt1oXvzGMQeBs2uNr55oG6rTT8d1+DDphDA+CpsHZ/+kdMctuzMCxmAMQvSHJA
-	 /x0cSEPqOdOBKm859lbmotxqguLbDZx1PxMdVBsKRbEDahmcUW7g6xmx8JmEnssZdwhTz
-	 /PQgZVib310jlXchvBdLjk0CEbw7wHdtr/HS60Mz/EPyVn1QVfS6LLU6TPE9XqiawJsmt
-	 yO3qUCeK7PEfxTv0NR0rxYg6OnoSfXWF9R28tTAYl947JyNUfLBHYBx7P3GKxHJNnyxAq
-	 WV7IFRqLO9vgMYLiY79DOKVBe2cdaxCn8KwEgtJKpnBPmLSMoqKm+P4NWm1W5N26jOw==
+	b=iSrA6MJ6MdaSDuy1ADuyElNm3RBPjLAOecUvgQgRHgrSmlqkqYgQlRNdIfD+2XE110RS
+	 ZPPdkeGX48Aew+BZJP73GtLslMrZiPwPX2xlhgIAu9QnyuKpQ6xRdTMgBVJHhqYeZ9vjf
+	 cGpFHb4N0Ngz/2cqXNddWlJShOmLy3aXrZ+YEV2a033SI43NDIpFC/8pHfCEBtKXHqRI7
+	 fZNyUEZFUX2H2fu8Af/KoxG3FK5LCgPhQDiv3RVAWER15FMpIJEEO444P5/UCUQIy8oFT
+	 /+4v9KTIMTvcQKAU3Oj/33iAfqcqWYB83YXoHZYwqFLHyEyRoFumw7q9c52prINe2vg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1792762662;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=ADEl7//kIc7+wsij6ozUr4Uy40SE+e68KHezhrCM3LM=;
-	b=xBskUSaztWEC1Y1xuS+k589RpJLYFIp6caKrn09lD2sgIgMJApL1BruTz+6o0nnB9OUS
-	 xrFEm+18QlvE9xLz8pbX3f+6S3eOBRNpJmNVvAHGZu0pDiOtdlBFz1/xk4Wcspz8dzroB
-	 2xlrLlyqnKUhBWGJCnUlOsCONBJPJNOdCLF/BYYgQ2N9zU2cs2p+E6mPH7fdRyR40DbN9
-	 QxYnTTm9ewoE4OC23/ShdWDdXgTCr1J0G0wT9l6SxtDwZjg2yYnbUodfL/htSlg0eruaC
-	 UUcyB/04bhA5HSAuAyd7rD7Nk/kxH++TMgAxU6o+yS92bFmvbdlM2NKlpl4FsOJHYsg==
+	bh=CETb8YGjh9ciXDIMH3jO0s1/QP1PiTVjjZIgBIcAxfY=;
+	b=k72pDhK0k+ez2QtmBzb9+7MIAHmvWAX9BzF6JHcU/hSDvweILU2ood5HsLyfLot1DLQB
+	 O7EEu4xZ/64/lDdPav+rkNv9ZUdJdMQiYkHAXR9+8GmAZpHt7QtTKXNmSGbDDVLoYpUqL
+	 Dd/YNBhCDbmivpQl9fYTa6WdSAyNmcFJUCTHzQlJZje9cz6ffsvpZL6qufjoLEj2rG2tx
+	 Uy8i3zIVMd1R+Pj+fQNIMQIBlM4FsydcTSQd0cPxfwxR3bSLMCeLqVILyEff5uUvvhEVy
+	 RYM3FAbdfy87AebE/VtQCQpcqXy8/KnrYDbSpWxM+VSmnVCyPcdWpt94aizceQcfJFw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LxmjPNsn;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PNiz5TtY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C6C1606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A325B606A31E
 	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 13:37:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LxmjPNsn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFB6B1F01825;
-	Fri, 23 Oct 2026 13:37:41 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PNiz5TtY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56AE51F01828;
+	Fri, 23 Oct 2026 13:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792762661;
-	bh=ADEl7//kIc7+wsij6ozUr4Uy40SE+e68KHezhrCM3LM=;
+	s=k20260515; t=1792762662;
+	bh=CETb8YGjh9ciXDIMH3jO0s1/QP1PiTVjjZIgBIcAxfY=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LxmjPNsnhNtPBUT6kYVUOPe0vp4U4XJL/dhBFZfY25BjRBeYaYyP3GA0t9fp0CVf8
-	 s0DCdvv7MJ3tlTOUmityzN5GGDSVvF7/BUowbTDCmvKy47JAABb1c59F3HpcDvCbfn
-	 SVPltkF4wJHi7/WOa2U8llbx8b7fCjuLshB9f6vadVrgvtC7uJbLzf8eIBqRkjSI8q
-	 yOa2eaFaV4mATpx/KhbDqGRqPtpdII/ntM8qnwH97BI69juipCNlt9lmCLRjZry50Y
-	 sSIJ1RDJfFYVtEVodo59Jelk63fjmSOSdS7RkRAgDWDOwUl/oBYmrQGTBayY0e6GoQ
-	 EYxcq/elNbsaA==
-Message-ID: <sashiko-outbox-182831@kernel.org>
+	b=PNiz5TtYYeeevA45jUGKZYjUtGwE+8kgANfDJjC2L6QNYlQkfbz3QjNsl4jfw69Ir
+	 GyNti8LMyD7VxD/FPw72kuhKGZxZOrVZ24y7gDjrsbnTsWmCI3eV+EUskiKBhEbBmW
+	 lWNyR46LGJwWMXATO/5z9mg8WE7a7OxngDJMqm1IhXnlb7nqjd+XS1Lyda8WTggSM8
+	 mJxkwIUUtk9s6ourX82SL5w4+9rr6xBhmUMonrV8q2XesZSt0QmlNj4TcJ4gK1Dpfw
+	 vZh3P1QuYPGmd3dwCoHq8JX/ZI5zkClsrRRo/U0uiXKte87w2qhDbFTHmaTWoADLSa
+	 kq3bJZPl43akg==
+Message-ID: <sashiko-outbox-182833@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 2/7] dummycon: Implement struct consw.con_unblank
+Subject: Re: [PATCH v3 7/7] vt: Remove old-style con_blank
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Thomas Zimmermann" <tzimmermann@suse.de>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261023132448.115747-3-tzimmermann@suse.de>
+In-Reply-To: <20261023132448.115747-8-tzimmermann@suse.de>
 References: <20261023132448.115747-1-tzimmermann@suse.de>
- <20261023132448.115747-3-tzimmermann@suse.de>
+ <20261023132448.115747-8-tzimmermann@suse.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Date: Fri, 23 Oct 2026 13:37:41 +0000
@@ -60,9 +60,12 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Implement con_unblank from struct consw as a duplicate of con_blank.
-> As dummycon does not do anything, the implementation only returns
-> true or false to trigger a redraw (or not).
+> All consoles implement the new con_blank plus con_unblank. Remove
+> the old semantics from con_blank. Always pass a VESA blank mode to
+> the blank parameter.
+>=20
+> v3:
+> - keep con_blank's mode_switch parameter
 >=20
 > Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 
@@ -70,5 +73,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261023132448.1157=
-47-1-tzimmermann@suse.de?part=3D2
+47-1-tzimmermann@suse.de?part=3D7
 
