@@ -1,55 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.67.36.66
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792847448;
-	b=C/3WQWAAyj8yC5hzQE1/xSNjDTFzELCiKWg/gNXhWBlC6VoF1nDI+TIZGiU5CgivDCgU
-	 wCEC3+eKdzYZTE/vwBFjEiTVHhnQeNi7+MAtrRz9u900Ms4FKoZcYMSc1eTfW1Vo3ah6V
-	 Xdgw4UPu/+XMkQHngA1FIh0FG5ZVZ18PRQ9POs3I02YSINIU1PlbEzoxrJPFiOW9TA0DQ
-	 O0C8nzlGKnl06CIFHDMqpjnx3OM+Dkmjs9K1RbZbj16M5llsdMFLuxF0MXcBpVtuKhdkQ
-	 SGXBXqzJhdPrL98wuv8gbZsbHKzFR/qOjypxhO++WL9fSqIjbAT4KQE9t0O1+mMjdAg==
+	t=1792847519;
+	b=04nkEvfLq4MyNxlHAxUfVg2HtZmf7W1KcXfwnCnpbLApfvwGWnSXLPaED0s3vajwfNoN
+	 2/SzGX+JbvG22O8MwFBxHoK1cpmfREwU/iSarKU1B59WrPvuBMouJuJ3SiMYGw08MCYZa
+	 ro29kqyqrc3w2Jaznrdyd4pVPtUTbObGb1pvLBMHTmuF4PhIWNwP8ipHWQb38zK7DIdo2
+	 wNPcTfw+7kZHiyY88wzeMrmxT0hMf3sddwQhT2rT7ubyiNZ/9vy15fvEzZKsjhCPXpVM4
+	 pQOC7R0T8Y7x7Dk0ppdlxq6pwD/hjAv4gNo7hSeC3pbGfO/3pGQ2tgS058Bk0BHhw5A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792847448;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 Reply-To:From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=/o2PIVRg25wdrYsWjdmENqYtru3DXq4FjhnXnBlYgJI=;
-	b=LE2EYnh3wPJOrT8eZ7sm8OwRwyj2JFcRvk8l2a+wlGiV8VHv9vRXvCo4AFqU1egl3kbl
-	 E9szZx4hQE1OjcL7JC8s8kMLxGjuvF56Wl2Km46+M3Yrwdkr4qGQuVb2DuGCzkGF/dk1i
-	 pkOhiim5HxY4FXdzJOeAVxNL/J/+sKhO6n88YDbVSzwM3XXUlxMhYdv572D5J8Sb9FEFz
-	 oun+gxmUDJUgmclDHGtBSFmcjYGxlqVuIq4VnwOpKdakxQxZYXvngR/MCXH9l2mbeQfEP
-	 B/oBsTfwRR0nOAvFU2Zr/YmwT1xl2xC/cNtcUM8B6A6h5Oq1IAqXof6cRzS1VCE/9gA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792847519;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Message-ID:Subject:
+	 From:To:Cc:Date:In-Reply-To:References:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP;
+	bh=Iv3dSry8ogl8b6c7rH4YrBtBHXy5H/q98FiU+OoQmhY=;
+	b=38oczmhkOYldxpXTxXKqkMby+++kLxcqY7xRv3p/fZldU3nD8Yal8xPOBuc5XvaZzHck
+	 d05wnomHdVzgO86u2noV6JFNI+xYsACx01GLTtCxlCb7MqcwpG8KpMVfRfcgWlLaaf+Uq
+	 Lss4sIqob/jw/Z5mTAPmK/dk7GwpvcXJazqbwn4L3eYx5qXtiFCAGeQxz5sIIiBsvO4Bw
+	 1+HfldDgSfSdP8FENdx+gnpy0uPGTnzfPkARXjSHQHtcc1qutqEqgXFqxZYwNQcrJvez0
+	 jxDx4vUSdfvGjJfWGGX7DAP70BFB91JRAtJP9PJ4wE5AKFbuN9eGRtSKBNZr8UoN76Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AUvMJ6Qv;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=posteo.de;
+	spf=pass smtp.mailfrom=posteo.de;
+	dkim=pass header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=FUsVZk+2;
+	arc=none smtp.remote-ip=185.67.36.66
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA94606A31E
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 13:10:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A58EC606A31E
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 13:11:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A58EC606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AUvMJ6Qv
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D7751F01829
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 13:10:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792847447;
-	bh=/o2PIVRg25wdrYsWjdmENqYtru3DXq4FjhnXnBlYgJI=;
-	h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc;
-	b=AUvMJ6Qvkgucz6gji/qdag1s9OT/Zldxjk8LwoKm+CATVQFe+q0mKfF9VdO20hSUl
-	 xkpjUYv4x3z/b7ab7wZ3xVYbLSom1Se/TRULcxiuKeCW2E8s564+JRbaZ1sAh4XGVw
-	 HRQpONqf/R7iDd4KzxA3TCuaNAAnI9kA+pIiy7PCiZ7OdtaTG9zbTnohM/IInRnJLp
-	 gfJtJlY64AcTU+mteV+iDYNuJThwRnqzaKFH+UpoHl/UhRiYUHMUQR7ipN8hEmq6F7
-	 803RkaCvN2aZr3YJkl0YaLSmZ30GtZBl/od9magtj0HVFJdSoONnLoA57ZMsVrYqU0
-	 XsdYz7bQHHNtQ==
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3ab53a99771so13093691fa.3
-        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 06:10:47 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBw7wC9j+AQps493Q36cTYIHnFadIu8DwfwcfM9/gf+hB+F31p1XYQ9lbLH/GefXqnuWCL5XtV8u8xAvwts=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLv/e8jQwXNBPQll0TmsoJk7XzkoiT0FG5Cj37VdEJe8L4ulegw
-	U/ehScaLNB/mfBlZWerAOawyc8CcuHKofkcCvAeKTsPIFH/2zIpEWvZtPtw/Gp5dyxeYppPoh0j
-	n+c+OUsR38UHuc1meY0vw9vww56D5uFU=
-X-Received: by 2002:a05:651c:b08:b0:3ab:522c:dacc with SMTP id
- 38308e7fff4ca-3ac6fd3b96emr4386811fa.18.1792847445659; Sat, 24 Oct 2026
- 06:10:45 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=FUsVZk+2
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout02.posteo.de (Postfix) with ESMTPS id E7E53240109
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 15:11:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1792847516;
+	bh=Iv3dSry8ogl8b6c7rH4YrBtBHXy5H/q98FiU+OoQmhY=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=FUsVZk+2uFc5gnxYgfTk8xPLsVV0MbrvuFRu7PB/2o86jX4dq9+BR8UqAvIJwDBIe
+	 tmIW+nEWl1HiUxbE5ztWrB/Uy/+Tx8mzi9G5XiNtbzkxcJk2JqDkqUbn4vmw5gt1a5
+	 36QtUid1Rs6xv3gqp/CNVDmR3VygoM7SJ4RnFqK5KXK+uNg2G9Etst/yhnyeFnnOTT
+	 KrxcnrOGN4eE5CUQazqw+FyUDM0xAoXrQqT5vZXycmlg9B/0aES84Iju7V+2bdygzH
+	 wOOwW8w8p1eVvyL/U0403v2o7t5JptVZlDODmQcIyLoC1pPGvr6uGkR5oiYLE6PTd5
+	 4xwY4mkWn+qyw==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4jBgJr07Rwz9rxN;
+	Sat, 24 Oct 2026 15:11:55 +0200 (CEST)
+Message-ID: <3cb4f43b2fc95c348f0646edce338064ec7add69.camel@posteo.de>
+Subject: Re: [PATCH v5 3/3] platform/x86:
+ lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal serdev matching
+From: Markus Probst <markus.probst@posteo.de>
+To: ChunAn Wu <an.wu@canonical.com>, linux-serial@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, hansg@kernel.org, ilpo.jarvinen@linux.intel.com, 
+	mpearson-lenovo@squebb.ca, derekjohn.clark@gmail.com
+Date: Sat, 24 Oct 2026 13:11:56 +0000
+In-Reply-To: <5e70a181599ada304c6aa6589cc61662f1a8d710.1792831564.git.an.wu@canonical.com>
+References: <cover.1792831564.git.an.wu@canonical.com>
+	 <5e70a181599ada304c6aa6589cc61662f1a8d710.1792831564.git.an.wu@canonical.com>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=mQINBGiDvXgBEADAXUceKafpl46S35UmDh2wRvvx+UfZbcTjeQOlSwKP7YVJ4JOZrVs93
+ qReNLkOWguIqPBxR9blQ4nyYrqSCV+MMw/3ifyXIm6Pw2YRUDg+WTEOjTixRCoWDgUj1nOsvJ9tVA
+ m76Ww+/pAnepVRafMID0rqEfD9oGv1YrfpeFJhyE2zUw3SyyNLIKWD6QeLRhKQRbSnsXhGLFBXCqt
+ 9k5JARhgQof9zvztcCVlT5KVvuyfC4H+HzeGmu9201BVyihJwKdcKPq+n/aY5FUVxNTgtI9f8wIbm
+ fAjaoT1pjXSp+dszakA98fhONM98pOq723o/1ZGMZukyXFfsDGtA3BB79HoopHKujLGWAGskzClwT
+ jRQxBqxh/U/lL1pc+0xPWikTNCmtziCOvv0KA0arDOMQlyFvImzX6oGVgE4ksKQYbMZ3Ikw6L1Rv1
+ J+FvN0aNwOKgL2ztBRYscUGcQvA0Zo1fGCAn/BLEJvQYShWKeKqjyncVGoXFsz2AcuFKe1pwETSsN
+ 6OZncjy32e4ktgs07cWBfx0v62b8md36jau+B6RVnnodaA8++oXl3FRwiEW8XfXWIjy4umIv93tb8
+ 8ekYsfOfWkTSewZYXGoqe4RtK80ulMHb/dh2FZQIFyRdN4HOmB4FYO5sEYFr9YjHLmDkrUgNodJCX
+ CeMe4BO4iaxUQARAQABtCdNYXJrdXMgUHJvYnN0IDxtYXJrdXMucHJvYnN0QHBvc3Rlby5kZT6JAl
+ QEEwEIAD4CGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AWIQSCdBjE9KxY53IwxHM0dh/4561
+ D0gUCaIZ9HQIZAQAKCRA0dh/4561D0pKmD/92zsCfbD+SrvBpNWtbit7J9wFBNr9qSFFm2n/65qen
+ NNWKDrCzDsjRbALMHSO8nigMWzjofbVjj8Nf7SDcdapRjrMCnidS0DuW3pZBo6W0sZqV/fLx+AzgQ
+ 7PAr6jtBbUoKW/GCGHLLtb6Hv+zjL17KGVO0DdQeoHEXMa48mJh8rS7VlUzVtpbxsWbb1wRZJTD88
+ ALDOLTWGqMbCTFDKFfGcqBLdUT13vx706Q29wrDiogmQhLGYKc6fQzpHhCLNhHTl8ZVLuKVY3wTT+
+ f9TzW1BDzFTAe3ZXsKhrzF+ud7vr6ff9p1Zl+Nujz94EDYHi/5Yrtp//+N/ZjDGDmqZOEA86/Gybu
+ 6XE/v4S85ls0cAe37WTqsMCJjVRMP52r7Y1AuOONJDe3sIsDge++XFhwfGPbZwBnwd4gEVcdrKhnO
+ ntuP9TvBMFWeTvtLqlWJUt7n8f/ELCcGoO5acai1iZ59GC81GLl2izObOLNjyv3G6hia/w50Mw9MU
+ dAdZQ2MxM6k+x4L5XeysdcR/2AydVLtu2LGFOrKyEe0M9XmlE6OvziWXvVVwomvTN3LaNUmaINhr7
+ pHTFwDiZCSWKnwnvD2+jA1trKq1xKUQY1uGW9XgSj98pKyixHWoeEpydr+alSTB43c3m0351/9rYT
+ TTi4KSk73wtapPKtaoIR3rOFHLQXbWFya3VzLnByb2JzdEBwb3N0ZW8uZGWJAlEEEwEIADsWIQSCd
+ BjE9KxY53IwxHM0dh/4561D0gUCaIO9eAIbAwULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCR
+ A0dh/4561D0oHZEACEmk5Ng9+OXoVxJJ+c9slBI2lYxyBO84qkWjoJ/0GpwoHk1IpyL+i+kF1Bb7y
+ Hx9Tiz8ENYX7xIPTZzS8hXs1ksuo76FQUyD6onA/69xZIrYZ0NSA5HUo62qzzMSZL7od5e12R6OPR
+ lR0PIuc4ecOGCEq3BLRPfZSYrL54tiase8HubXsvb6EBQ8jPI8ZUlr96ZqFEwrQZF/3ihyV6LILLk
+ geExgwlTzo5Wv3piOXPTITBuzuFhBJqEnT25q2j8OumGQ+ri8oVeAzx24g1kc11pwpR0sowfa5MvZ
+ WrrBcaIL7uJfR/ig7FyGnTQ1nS3btf3p0v8A3fc4eUu/K2No3l2huJp3+LHhCmpmeykOhSB63Mj3s
+ 3Q87LD0HE0HBkTEMwp+sD97ZRpO67H5shzJRanUaDTb/mREfzpJmRT1uuec0X2zItL7a6itgMJvYI
+ KG29aJLX3fTzzVzFGPgzVZYEdhu4y53p0qEGrrC1JtKR6DRPE1hb/OdWOkjmJ75+PPLD9U5IuRd6y
+ sHJWsEBR1F0wkMPkEofWsvMYJzWXx/rvTWO8N4D6HigTgBXAXNgbc3IHpHlkvKoBJptv6DRVRtIrz
+ 0G0cfBY0Sm7he4N2IYDWWdGnPBZ3rlLSdj5EiBU2YWgIgtLrb8ZNJ3ZlhYluGnBJDGRqy2jC9s1jY
+ 66sLA9rQZMHhJTzMyIDwweGlvMzJAcG9zdGVvLmV1PokCbQQTAQgAVxYhBIJ0GMT0rFjncjDEczR2
+ H/jnrUPSBQJpa71VGxSAAAAAAAQADm1hbnUyLDIuNSsxLjExLDIsMgIbAwULCQgHAgIiAgYVCgkIC
+ wIEFgIDAQIeBwIXgAAKCRA0dh/4561D0gKJD/9uOQKYlsDoQX65Gd0LiMT0C+5vXgr3VI0PHDOwcv
+ 51fJ3A1vNyPZRFPGrz8+mDEXUQOF/INfnz5Tu1QHwf+iYcWcTGAN/FHgVR6ET6VBNU2hJaKhu+Ggo
+ kjYyJTOvyX+3yNRUfSny0GjTjIPuPTErjqmHF+BtjXslpgwqnNMznf3lRIuUjRORupos6p3k1DndE
+ 5vzUTmXSvMyXyOD2KhBl/kL76k0bHYyAQytZPag12pltrtFbA/r2phDGN2si8PooDT99bSTJjaM45
+ MTAAHbHKJfvgfK41bNFD5mMtpWpL195XRtS0Nrxdg3PaYBxN5gtTG0RyZfpYRlkdEhm+jj/8RxuSG
+ i/qdhRdbiI7K2IELWeQVHSNDi9JabR/UzlR4NSnhfAjRIVlRM+eFbUl8XwxwVrAkojF5IraH2qRvg
+ VCmuFsHUW07FUlrDrzpjXsD73cKppoFGDCdDR0BHJepXbFLS9+AqkT+guRJlnCTg2p+TQtnbwPgKp
+ Vj98JixovCl99zRYTsL2bRNU5+q8iET65VMJ1ydyNanvLd5vI/NqDkXhlXLsGmdaDTtu4R21PkToX
+ dQNGrZ91M9nlIBKw8Y7c7xZ4098qX2b8JX/CxD+gC1r4C8vuA3GkhFLx+KlkON7LyiJPkrePp6Qky
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-cnwEvQ0BMpxM4kJfOKJQ"
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,136 +118,129 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261023-submit-h616-uart-fifo-v1-v1-0-e4a3bae2eba8@gmail.com>
- <20261023-submit-h616-uart-fifo-v1-v1-2-e4a3bae2eba8@gmail.com>
- <atseYvQUYvpMFEIM@ashevche-desk.local> <CADvTj4pRW9q6VyQ=nLi8q0mMF8LgccfO4eqAeqgzzgOkDno1dw@mail.gmail.com>
-In-Reply-To: <CADvTj4pRW9q6VyQ=nLi8q0mMF8LgccfO4eqAeqgzzgOkDno1dw@mail.gmail.com>
-Reply-To: wens@kernel.org
-From: Chen-Yu Tsai <wens@kernel.org>
-Date: Sat, 24 Oct 2026 22:10:33 +0900
-X-Gmail-Original-Message-ID: <CAGb2v65LVm1GV2kV4bVO8YJd16tkubHOvXUtbJ3uuBw2O3TBsA@mail.gmail.com>
-X-Gm-Features: AclHuK9wKet6Jt3sV0zB4WjiNOHkgfPFEYhV8e4eMS7tcxLyr3V3Z_SWiMMvN94
-Message-ID: <CAGb2v65LVm1GV2kV4bVO8YJd16tkubHOvXUtbJ3uuBw2O3TBsA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] serial: 8250_dw: configure the Allwinner H616 UART
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-sunxi@lists.linux.dev
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+
+
+--=-cnwEvQ0BMpxM4kJfOKJQ
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Oct 24, 2026 at 12:12=E2=80=AFAM James Hilliard
-<james.hilliard1@gmail.com> wrote:
->
-> On Fri, Oct 23, 2026 at 2:44=E2=80=AFAM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > On Fri, Oct 23, 2026 at 01:33:50AM -0600, James Hilliard wrote:
-> > > H616 has 256-byte transmit and receive FIFOs, but its optional Design=
-Ware
-> > > component parameter register reads as zero. Generic 16550 probing lea=
-ves
-> > > the port using the 16-byte FIFO configuration and its trigger-level t=
-able.
-> > > DMA attachment also depends on a FIFO size being available during pro=
-be,
-> > > so these ports do not reach the existing 8250 DMA path.
-> > >
-> > > Use a fixed port configuration for the H616 compatible, with a 256-by=
-te
-> > > transmit load and the documented receive thresholds of 1, 64, 128 and=
- 254
-> > > bytes. Select the quarter-full receive trigger by default.
-> > >
-> > > Skip optional-register probing for this fixed configuration. H616 has
-> > > debug-divisor and RS485 control registers at the offsets used to dete=
-ct
-> > > DesignWare hardware RS485 and fractional-divisor support. Probing the=
-se
-> > > offsets writes unrelated registers and can select incompatible callba=
-cks.
-> > > Keep the BUSY-safe integer divisor hook and software RS485 handling.
-> > >
-> > > Use the existing SKIP_SET_RATE quirk to keep the UART clock enabled d=
-uring
-> > > termios changes. Its clock is a gate on the shared APB2 source, rathe=
-r than
-> > > an independent baud-rate generator.
-> > >
-> > > Attach DMA from the fixed configuration before registering the port. =
-The
-> > > 8250 core installs its FIFO defaults during registration, after the p=
-robe's
-> > > FIFO-size test. Configure single-byte RX and TX bursts because the
-> > > peripheral request can correspond to just one character. The existing
-> > > startup path requests the firmware-described channels and falls back =
-to
-> > > PIO when they are unavailable or the port is a kernel console.
-> >
-> > ...
-> >
-> > >       /* Internal 8250 only */
-> > >       UART_PORT_AIROHA                =3D 124,
-> > >       UART_PORT_AIROHA_HS             =3D 125,
-> > > +     UART_PORT_DW_APB_256    =3D 126,
-> >
-> > Why? Besides the poorly chosen name, what prevents us from modifying th=
-e
-> > corresponding parameters at probe time by leaving the one of the existi=
-ng
-> > types?
->
-> The new type was primarily a way to reuse the core's FIFO configuration
-> table, including the RX trigger mapping. H616 uses thresholds of 1, 64,
-> 128 and 254 bytes, whereas PORT_16550A maps the same FCR bits to 1, 4, 8
-> and 14 bytes. Overriding only fifosize and tx_loadsz would leave
-> rx_trig_bytes reporting and selecting the wrong thresholds.
->
-> The core already has get_rxtrig/set_rxtrig callbacks, though. I'll rework
-> this to retain PORT_16550A, supply the H616 FIFO parameters during setup,
-> and use those callbacks for the correct trigger mapping.
+On Sat, 2026-10-24 at 20:04 +0800, ChunAn Wu wrote:
+> The software-node-backed serdev client cannot be matched through ACPI or
+> device tree and is force-attached to its driver.
+>=20
+> Pass the modalias to serdev_device_add() and give the serdev driver a
+> matching id_table, so that the serdev core binds the two through normal
+> matching. Deferred probing is then handled by the driver core, so the
+> -EAGAIN translation is no longer needed.
+>=20
+> A failing serdev probe no longer propagates out of the platform probe;
+> as for any other bus, the client is simply left unbound.
+>=20
+> Signed-off-by: ChunAn Wu <an.wu@canonical.com>
+> ---
+>  .../lenovo/yoga-tab2-pro-1380-fastcharger.c   | 25 +++++++------------
+>  1 file changed, 9 insertions(+), 16 deletions(-)
+>=20
+> diff --git a/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c=
+ b/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c
+> index 8551ab4d2c7d..d0bd9d4e3137 100644
+> --- a/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c
+> +++ b/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c
+> @@ -219,11 +219,17 @@ static int yt2_1380_fc_serdev_probe(struct serdev_d=
+evice *serdev)
+>  	return 0;
+>  }
+> =20
+> +static const struct serdev_device_id yt2_1380_fc_serdev_id[] =3D {
+> +	{ KBUILD_MODNAME },
+> +	{ }
+> +};
+> +
+>  static struct serdev_device_driver yt2_1380_fc_serdev_driver =3D {
+>  	.probe =3D yt2_1380_fc_serdev_probe,
+>  	.driver =3D {
+>  		.name =3D KBUILD_MODNAME,
+>  	},
+> +	.id_table =3D yt2_1380_fc_serdev_id,
+>  };
+> =20
+>  static const struct pinctrl_map yt2_1380_fc_pinctrl_map[] =3D {
+> @@ -260,25 +266,12 @@ static int yt2_1380_fc_pdev_probe(struct platform_d=
+evice *pdev)
+>  	/* The fwnode is a managed node, so it will be auto-put on serdev_devic=
+e_put() */
+>  	fwnode_handle_get(dev_fwnode(&serdev->dev));
+> =20
+> -	ret =3D serdev_device_add(serdev);
+> +	ret =3D serdev_device_add(serdev, KBUILD_MODNAME);
+>  	if (ret) {
+>  		serdev_device_put(serdev);
+>  		return dev_err_probe(&pdev->dev, ret, "adding serdev\n");
+>  	}
+> =20
+> -	/*
+> -	 * serdev device <-> driver matching relies on OF or ACPI matches and
+> -	 * neither is available here, manually bind the driver.
+> -	 */
+> -	ret =3D device_driver_attach(&yt2_1380_fc_serdev_driver.driver, &serdev=
+->dev);
+> -	if (ret) {
+> -		/* device_driver_attach() maps EPROBE_DEFER to EAGAIN, map it back */
+> -		serdev_device_remove(serdev);
+> -		return dev_err_probe(&pdev->dev,
+> -				     (ret =3D=3D -EAGAIN) ? -EPROBE_DEFER : ret,
+> -				     "attaching serdev driver\n");
+> -	}
+> -
+>  	/* So that yt2_1380_fc_pdev_remove() can remove the serdev */
+>  	platform_set_drvdata(pdev, serdev);
+>  	return 0;
+> @@ -305,8 +298,8 @@ static int __init yt2_1380_fc_module_init(void)
+>  	int ret;
+> =20
+>  	/*
+> -	 * serdev driver MUST be registered first because pdev driver calls
+> -	 * device_driver_attach() on the serdev, serdev-driver pair.
+> +	 * serdev driver MUST be registered first so that the serdev device
+> +	 * created by the pdev probe binds to it via the id_table match.
+>  	 */
+NIT: I think the order doesn't matter anymore, since it will bind
+regardless whether driver or device is registered/added first. I think
+you can remove the comment.
 
-Please consider just taking the FIFO size from the DT. On some chips
-not every UART has the same size FIFO, so we already need to deal with
-it.
+Reviewed-by: Markus Probst <markus.probst@posteo.de>
 
-Also, FIFO size is a standard UART DT property, though somehow not included
-for dw-uart.
+Thanks
+- Markus Probst
 
 
-ChenYu
 
-> >
-> > ...
-> >
-> > >  struct dw8250_platform_data {
-> > >       u8 usr_reg;
-> > >       u32 cpr_value;
-> > > +     /* Use a fixed configuration instead of probing optional regist=
-ers. */
-> > > +     unsigned int type;
-> > > +     unsigned int dma_maxburst;
-> >
-> > This sounds like a hack.  Why do we need type here? The address of plat=
-form
-> > data is enough, no?
->
-> The type member selected the new table entry and also identified the
-> fixed-configuration path. The matched platform-data pointer can select
-> the H616 setup directly, including bypassing the incompatible optional
-> register probes. I'll remove the type member and use that instead.
->
-> >
-> > >       unsigned int quirks;
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> >
->
+>  	ret =3D serdev_device_driver_register(&yt2_1380_fc_serdev_driver);
+>  	if (ret)
+
+
+
+--=-cnwEvQ0BMpxM4kJfOKJQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmrcrpsbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSHwAQALQOE9nZFnHYee2suLio
+jVAK4rNPY5jgMlsrJVYXByghGLZ8sub3MRK3J79DheNb5D+L2p2Z4GVtXzytYSfw
+FIAaFS7P2ASxUQgwbfqrS0+FXx3M535LFoDPL88xgghQl+AZMgtWBAMwTecWBZlY
+CaYejJC21HVrxijILtOF5cg38ZvgQ7Gyap4eJ4c4J113JzcrBGQsGGrFs/h2WxoC
+7oVFCbXEEjVqi9fD8eoYlcJQ2vhotzYd1OYGEGcAecCsmtl3ZkN9tpc6MKNVtJrz
+MnGnh48JMxP89td9SHs5oCjgXLJ6feMNuNF0a9h+O52lm95DS9XZ8yoIzUoet+FQ
+xI25uGzp6r3JdTB7SmCoE4SPh8+MTMwtQIeJJ8intqKDgI0N4WkGM5MoKV7gMsvJ
+JtPvZeVafHKuREnnimD7B5IdtXZedF+g7jUFO3/OY4gV2BYhGdWcMayggN0FvcIl
+fDGFR1BIdwup87JZd2fdqDLfSpgzrsWz2UjKxHSry24pfxTKXQFNyPYwJp1a3ueC
+Bo8oI0vYDMFxJFomgvtuTTkxJNtOo5MmhmIR47wGzxMhPLmLE1elrp1ui9Dsb2ie
+OaXSzk8KCgdCLe80pMs452d69K07SiZbll0tMYCZfJZPKeoawgrKtrpA7UauEu8d
+/Ky+q3nQ9FEhQljJlCBwCTRR
+=XPcs
+-----END PGP SIGNATURE-----
+
+--=-cnwEvQ0BMpxM4kJfOKJQ--
