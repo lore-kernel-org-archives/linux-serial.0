@@ -1,95 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.173
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792835499;
-	b=CoVtUg1Q0aZD7Z1BjipFs4RKH2ECwNwNA+EuS7Bu7aYPY5kCCw6FvUxzpwbqg3Nii1Ua
-	 X9zz27hGFyi755CLc9tMKlkYbXjOn1MFQMfMnEft/QgW63qWsyrCt052uIeE5dTzzWYEX
-	 6R1pWBkIL/KA2j9Ny2nmZbwu1fo8mPqjkUtO8jOKJ7PNnjVFIIdlppqGI1Q7k3hjf2ECL
-	 Wom3kM/3ScBoWAzGFEAj6wLdq3h42O7oTtR8HLLb5vqEPwG56sPnvP7EQAGdnHRZHx+xs
-	 coKsWhtBMKhFqbhzhRu4qEBkFpu5sfFihWZXKKaHW9oFtwOp/Ya7mdhhfWzBgQ/rykw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792835499;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:From:Date:
-	 X-Gm-Features:Message-ID:Subject:To:Content-Type;
-	bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
-	b=jBOOtg0uTSIQUaO/iotWWBYUphmm8Armbk8HWdjbbttGvLTiVYR1wXThTP2m/8607bEn
-	 CzOIrWcmNYtoPH7G/041jOwDnkJjLEbIilIXuEhEyhzyjPukGuV0rYoVrkJcQU9L73uu5
-	 qDE8QwoQKKnQqIiBoMiZtKV6lMgQGKxSZ+epD9iGTxx7P86NtrBRDiXOZ5hhJQ2OS+tZH
-	 23+WEg2jr4hYae9VPyNyniHiSVhDPLcVSiu1qgCRB8340h97Zc0SvtEtMYMs7kdDgMHAA
-	 t5/tokZF1Y7ORYiJPxcY1b8THSjRE3okia+/X1BI5oEeoJRKkyzmM03wzepyTK3NZIw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UvzDO78A;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.173
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.17
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792839280;
+	b=1vWTJnmKpzTPBoC+XEUQa72DyaWoxfOaAHbmIFEKDfYLg7wC/wxi34nBPGQ/FZhDW+zQ
+	 7wla+NGmkJXVUA42t0SgB8sXZv0HFkrLkxu2GqJrxtallizh8TdMTJtn8OTAl756KrDEd
+	 DO5/gJRm2zuci5O68VNL8D8Oq6T3QqpoJidtqLJVgwYDJvB8YJYj5oREso5XiAibKIUNs
+	 jvOxbGnEDTFC2WNTSD4qhqTst9rNC5A18im4zTKr/8cNhzDo/Uw5MAZIz94lgTk07SFRn
+	 GmWhl3+7k2Ho16z2QC4fheX1KoIdIOpS2qUOK6BXDJ8ZOBUwFXaM+qXavFxBItZ7LRg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792839280;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=PImphhu3wIi9qvd60NuK0r09MdROw2ZiyCj8HwZ8s3U=;
+	b=p+AFsenHoXo+j8Cn9T8bLrNo1/UNB+FR2zngrJqxhx606vNNnJAfY2cwUIiPtCQAy9n5
+	 KxMqkVnQIdXFmZqgsH+w3dfQyst+uz7Es7EDTl2j+En2yvubXCCHwf/wU9mxjpATx8e0Y
+	 YAqEqITXjp6qmAa1IOXm6lwElSwXDzI5r3PW3IFGbw1D022XvxdSdEHLxwuOATkfUDAl/
+	 nrIV/qoOLyJSpN/FwOUNG5869nPc1yleSX+UqHGI3b7G+i91T5WBy4P9KGMMk0gKYwNo/
+	 4sl65nwRsZDmPrTmCFZSI58rFzuiUbKKjg+KCrepSkSP8HyTYRGY2ohccGxXuEKpHwA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	arc=none smtp.remote-ip=192.198.163.17
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FA66606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 09:51:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5FA66606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UvzDO78A
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-36681e85e87so188256eec.1
-        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 02:51:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792835498; cv=none;
-        d=google.com; s=arc-20260327;
-        b=K2LHgKwdSeORCNht1dqqix39PsCEQyuK5W3ZryAQ5I00HIA3srnXxnTJz3b0tQjXwj
-         L3p6ejlz+KoK+1XO9+YuYm15k/CztL4dg8zaRbMRcMmhQTDSdGwuDpUKgexIKWGGCM++
-         Awht9WIxZbn7pYcYcNmANhU27z/MtpVStXK2a7vrOiJcIx7sWNOVfxxDOp3Y3gzEN14V
-         ehz25cNc7culYSayo7AMETnfZQ2ychIAgrMn45r2tTK+dIwoZ48qp9TN88MeIAT2izRH
-         jjy1sAQxyrzBD/B9p4LtvXRxIs8ddzRlHcxt366xiT6/mtwD1gQby1MQUoxNZoaJrFzh
-         0KiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
-        fh=3xwkVqf7pOGEVxIfFiioFsp8V5pHuGMuOEVeglcpJ3A=;
-        b=J8wgrjzLcZG+UsqBGcO8CwfGk5C52oXgyvTHbxxki0ZDhCUbBMFo2ttZc8z7vfKW+t
-         Zwv5AyQ0pvXXHSU63WskxNgEp9Chs9QF+XONTbtudNzFNJbg2P/xxtQ0FVLMdLvYZinc
-         4ZnnJ9NANwGDicDLOQZyADgyOf6OeKO1rFf4LQHXOJ7Jp59ieg7gujv3uVgbRH0HjlWG
-         WPlWZDQu5QBsBGMbO4CcOd61qXvzITJyMQDl7Pvj1JGYxXQ6gRXWHnEa+pngErBqqFfb
-         ks/bH+Jo7rWIIcwfpjI2u9F8lJL65JE0dA51/eymjO8sFsRye13JrsLpr5fI2uPs/zpv
-         b/XQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792835498; x=1793440298; darn=vger.kernel.org;
-        h=content-type:to:subject:message-id:date:from:mime-version:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
-        b=UvzDO78Ai7JHXSkiTJGRXae+A4QyEFi2H2uvSzAgk3+zJIb9Z3QDCC7eAml83VMYT0
-         0sRm+r4J22rvuBr6dIWNTnoSpSfFkaeVLs+6hEbMTDCeFxWSM+4EHS0ladzL+5xmhL4P
-         qeD4jS0JwWNDivjeh0ghL072fK5guEk2sfKGU6EBs5puzDuB/Z9bpMVhriWzNLJqw7we
-         B9BKyU0omAazxbFzu8gqx+cYMDZMtvyzZWmhE5RSrvCKET0n3yhrxqF8z1F2qa807Nbk
-         RU1ay/53zQ3lbyt6S2rVG1EufXQjpNw4hh+bbfrGHCPU5Zar/t/4mLKH8MaHsSXwjE49
-         ENiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792835498; x=1793440298;
-        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
-        b=GJO5tk6TOBsWqRbfijcIH/6mXzhKdYooE2HJjKjNz07TM7wErgemnRAoRKFKEPDgnX
-         uSKTvtYOvi3dMbNI89L1uUVrc84TC2w1A2nt5RqITTnxKrlsXx9Se/L4toKwEmZjc3Gq
-         DRC4YYaQDD0ZxDh+FLMfsS2jQkYxZ4K3TOkYpAX1qLXpDRjndvAQleNVQ8Qd12FDqOjt
-         HQHnbWXE81W3Fb8NcIFpFUNRGiKH6bw1P8liwc048EP50g6iTbO8mDvICT/4aYe7toJb
-         vsiZlXUbiYbj+avVIgk4NoF3ABOGOnUzWwin3fzWfYG9UCyMXIOgXB0xG1BHWHtuQUzE
-         /thA==
-X-Gm-Message-State: AFq9FYLZSM/r66FjNc49Lczazr9VUtqfYkHm+qOD4zAhnssQ+LjjGEPB
-	Scg0zMwWAmedJs8M6cBWlUOdrfFeb8Rgges2SdQO4ZfxaIKmAV+CXZg3qBkry5UyE52Wj75PGsL
-	Bb3fZxXJvhoG/SrDQciv8FFXtB1Pd/zuYRzuI
-X-Gm-Gg: AYBFou2GRPqmJAY2Iwvf5SN5aFqdWWiJLrbkFvAKTSVxqc03qeqIa+Sf5KNE8wFkWTr
-	EAUTNKP8smviAFhKidEOV1JVo3h8eVxEOLi3ea+9Lox6kL27TLrevu101ryWA2pMcyLCvSIv3Aj
-	yt49uKlPnIaqeI2Q+H5gnnnWhjdhFFbNStVB6qgXQ4I3Jgh6Hpa2g/YQXcZ0TD+mhhyJgGpV7Sk
-	DWxzEQVKvLzZR5360Bwva2jL3kV3IuEE9SLs0I4pvMLxwYBWQq00i31mMdyFfcuyI4k27U5MjY0
-	MANdCaN8DHVieUymx/m/K/PZXsx3fTpzHCuQ8wNcpneZpxlRi+XeM+oahq+g+WuTghNrY5vGicn
-	qC/ymTTEH9JHdZX+y0WqEoD8fGkVYKar8JBeOJq9Obc/SAAdUBIhhGXtpU3Te87pJUw==
-X-Received: by 2002:a05:7301:4394:b0:353:8122:27b4 with SMTP id
- 5a478bee46e88-369e845c87emr2587293eec.18.1792835498429; Sat, 24 Oct 2026
- 02:51:38 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED63E606A31A;
+	Sat, 24 Oct 2026 10:54:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ED63E606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792839275; x=1824375275;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xz5PQv0ox+JrG5g9K0fQpO/jVvuTlGpeFFcNwDdTuSA=;
+  b=lTvkfwR4btj1IsIhLcBgJBOlmlYMgXIZvgoGr7GaawDJ3Vrxh9ZLXmyA
+   V6he6YNpd7HnbvB5zFhlrashPjMjeGwdzZSiJDidkPFKP9XJbc8h5NtGJ
+   uk55/9kkxgidH5x3kqT1LX5CTWpcp1ypYSSaIeeNg+qoCom9tbvdWkmdq
+   Gj3LHy1446UTW+s2rFYaHCvY6UBJJ4rXkh9fMs+C18AtNw9Irdcxp5TUo
+   VUml7ZSXMC+kJtGhtNMiXg0HdHI8cvHbe39eFn+OVsglw1m0OGO5Sk7TR
+   f2wo9HStm+HkDhDTaJqlfUqngetloZ3wqNlPMb+DPYB10rChXpKM82/VC
+   A==;
+X-CSE-ConnectionGUID: 21HRsTWCTJmYAef200FhZQ==
+X-CSE-MsgGUID: OuGQTj6cQTG64FzwxL/yZg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11944"; a="1588583"
+X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
+   d="scan'208";a="1588583"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2026 03:54:35 -0700
+X-CSE-ConnectionGUID: IE+gK7i/SBCiQ1gyGE/l2Q==
+X-CSE-MsgGUID: hTBVR/MXRzmLcXOjYpwx3A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
+   d="scan'208";a="4194078"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.221])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2026 03:54:32 -0700
+Date: Sat, 24 Oct 2026 13:54:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v2 2/3] serial: 8250_dw: configure the Allwinner H616 UART
+Message-ID: <atyOZcmdRMnpF078@ashevche-desk.local>
+References: <20261023-submit-h616-uart-fifo-v1-v2-0-af0593504635@gmail.com>
+ <20261023-submit-h616-uart-fifo-v1-v2-2-af0593504635@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -99,34 +84,122 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-From: Vivek yadav <linux.ninja23@gmail.com>
-Date: Sat, 24 Oct 2026 15:21:27 +0530
-X-Gm-Features: AclHuK8DTI2ZJCEbvN8MElAUlRdRfPs17ZsSGClMvqpYMHPqNrFGcKFC9bXvojQ
-Message-ID: <CAO6a-9_b5qEu7WqZ_Db0fwKRo29zhsYV+UbQFPvHJa+O=HES-Q@mail.gmail.com>
-Subject: Questions on UART FIFO Depth, Watermark, and RFR Values
-To: linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261023-submit-h616-uart-fifo-v1-v2-2-af0593504635@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi,
+On Fri, Oct 23, 2026 at 03:19:28PM -0600, James Hilliard wrote:
+> H616 has 256-byte transmit and receive FIFOs, but its optional DesignWare
+> component parameter register reads as zero. Generic 16550 probing leaves
+> the port using the 16-byte FIFO configuration and its trigger-level table.
+> DMA attachment also depends on a FIFO size being available during probe,
+> so these ports do not reach the existing 8250 DMA path.
+> 
+> Keep PORT_16550A and supply the FIFO size, transmit load and capabilities
+> when matching the H616 platform data. Provide receive-trigger callbacks
+> for the documented thresholds of 1, 64, 128 and 254 bytes. The normal
+> 16550A half-full trigger selects 128 bytes on this integration. Serialize
+> trigger changes with termios and hold a runtime PM reference while
+> programming FCR, preserving the FIFO contents.
+> 
+> Advertise automatic flow control so CRTSCTS enables MCR.AFCE. The
+> DesignWare termios path selects hardware CTS handling, so the capability
+> must be present for the corresponding hardware control to be enabled.
+> 
+> Skip optional-register probing for this fixed configuration. H616 has
+> debug-divisor and RS485 control registers at the offsets used to detect
+> DesignWare hardware RS485 and fractional-divisor support. Probing these
+> offsets writes unrelated registers and can select incompatible callbacks.
+> Keep the BUSY-safe integer divisor hook and software RS485 handling.
+> 
+> Use the existing SKIP_SET_RATE quirk to keep the UART clock enabled during
+> termios changes. Its clock is a gate on the shared APB2 source, rather than
+> an independent baud-rate generator.
+> 
+> Attach DMA from the fixed configuration before registering the port.
+> Configure single-byte RX and TX bursts because the peripheral request can
+> correspond to just one character. The existing startup path requests the
+> firmware-described channels and falls back to PIO when they are unavailable
+> or the port is a kernel console.
 
-**File:** `drivers/tty/serial/qcom_geni_serial.c`
+...
 
-The functions `qcom_geni_serial_port_setup(...)` and
-`qcom_geni_serial_earlycon_setup(...)` both call `geni_se_init(...)`,
-but with different parameter values.
+> +static int dw8250_h616_set_rxtrig(struct uart_port *p, unsigned char bytes)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(p);
+> +	int i, ret;
 
-I noticed that the RX watermark is set to 2 (`UART_RX_WM`) in the
-former case and 8 (`DEF_FIFO_DEPTH_WORDS / 2`) in the latter.
+Why is 'i' signed?
 
-I have two questions:
+> +	/* Use the nearest lower threshold, as the generic 8250 implementation does. */
+> +	for (i = 1; i < ARRAY_SIZE(dw8250_h616_rxtrig_bytes); i++)
+> +		if (bytes < dw8250_h616_rxtrig_bytes[i])
+> +			break;
+> +
+> +	guard(mutex)(&p->state->port.mutex);
+> +
+> +	ret = pm_runtime_resume_and_get(p->dev);
+> +	if (ret < 0)
+> +		return ret;
 
-1. **FIFO depth assumption:** Why do we assume a default FIFO depth of
-16 words? Since the FIFO depth may vary across hardware
-implementations, shouldn't we detect it at runtime or obtain the value
-from the device tree?
-2. **Watermark and RFR values:** What is the rationale behind choosing
-these specific watermark and Ready-to-Receive (RFR) values? How do
-these values affect UART operation and performance?
+Don't we have a guard()() for this?
 
-Thanks,
-Vivek Yadav
+> +	scoped_guard(uart_port_lock_irqsave, p) {
+> +		up->fcr &= ~UART_FCR_TRIGGER_MASK;
+> +		up->fcr |= (i - 1) << UART_FCR_R_TRIG_SHIFT;
+> +		/* Changing the trigger alone preserves the FIFO contents. */
+> +		serial_port_out(p, UART_FCR, up->fcr);
+> +	}
+> +	pm_runtime_put(p->dev);
+> +
+> +	return 0;
+> +}
+
+...
+
+> static int dw8250_probe(struct platform_device *pdev)
+
+> -	if (!data->skip_autocfg)
+> -		dw8250_setup_port(p);
+> -
+> -	/* If we have a valid fifosize, try hooking up DMA */
+> -	if (p->fifosize) {
+> -		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
+> -		data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
+> -		up->dma = &data->data.dma;
+> +	if (data->pdata == &dw8250_h616_data) {
+> +		dw8250_h616_setup(up, data);
+> +	} else {
+> +		if (!data->skip_autocfg)
+> +			dw8250_setup_port(p);
+> +
+> +		/* If we have a valid fifosize, try hooking up DMA */
+> +		if (p->fifosize) {
+> +			data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
+> +			data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
+> +			up->dma = &data->data.dma;
+> +		}
+>  	}
+
+This looks unscalable and too much churn. What you should do is to add
+a .setup() callback member to struct dw8250_platform_data and assign that
+to dw8250_setup_port(), and change the
+
+	if (!data->skip_autocfg)
+		dw8250_setup_port(p);
+
+to
+
+	if (data->pdata->setup)
+		data->pdata->setup(...);
+
+which effectively kills that skip_autocfg. This is done in a separate patch.
+Then in your patch you won't need this churn.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
