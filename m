@@ -1,90 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.166
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792862638;
-	b=Yhm7qurJMayXU9lUf/NRaqHwnt3PF21X0lX6oYBNiIoJ3VcIxNY2f8GzpVuMKNJ8Ccbo
-	 Ge7RsDfNJF397jAgosP9KOXanTkoOsfrwl6eSGxG1eBuML5f5yWoChMacf72bzPnh3BA7
-	 uk6RJSsP3807VH9GZ0rqZfpIKK/0VasFHY95VJWXIN1N+tThk8NY0/K3Bhr0CoO0Tymbk
-	 mNpqqUXjkiPFadZFWcTYnuZVb2fu5OkDSLQc3+5DvL+xTToGcOv5a1GwEZWon8+vG3dXX
-	 qqidsHxjTtfsjfPmvWx7SqULltu+ZvgI+uvmqb1ajm224wQfI8UgntYPOwbcmDnPvkQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792862638;
-	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
-	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
-	bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
-	b=Lhj5mnAjAGKY3EeseCs3U9nahSLSdcpKZSavCA8iPmogqGrensI830uzjlQHwuNl4qJg
-	 61V2YVEa8uMpHN+7vTTlhJUdAJ0ZKDHWf0xAcFWoKFTImbhdXdAMy2ZDD7X/JYyEmk5w/
-	 78XBW4jhim3c79lXpHI/kCWwXSf1pyR79Ixb53FZDHZ7zY2r4d/4E6mnA04b8SA//fgSQ
-	 q1e2vnneItTgHTSauMW2sMHHRXRWMU6C4jFzD5rbOi5D/HeN+cpTA30dByO/EDsr9oiGV
-	 fMFlCgsIPOZe+EqpLdb6z08z9/KYXghbf8Pu3Sxb2uiG5pjDEAqUfKzdYMaRB/eRQRA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=goldelico.com;
-	spf=pass smtp.mailfrom=goldelico.com;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b="abwLC/p2";
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b="2Jq7/VTT";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.166
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792863755;
+	b=XMud8cil9/BB8bO3drIwuW9pwd5JWs1YZz6yslck+be6YMJRk0hdW1alLetb7oKufUcm
+	 E5V+nETFbKbiOXSNYSLjK9BdmXdVuf7swo8E331cGi8FEdVnudOc51+OLTA5kAAViXkkF
+	 es8Xm4gGLEF0TMHSUP1BGjAjHKLhML35OLDQloEKRo5hvaZptur7cuDeyyMXMxHOT+fjS
+	 wNOQMyKjPoWX7w9Pvvgyuy3z3zn2FIvoLiYRaNgH5aJQd+gnX+7o1Aj0f62CfNX9quJLG
+	 Y+Kobu2VotHCWNfVoLjlg+84By7NuWusziw2+BOl3ElqocaDmFRnEq8riG3cE2ijFlA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792863755;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=BuZ1t5C7X+sSlJUKEoZNCJc0nbbvghvhuZ0zbUxxORM=;
+	b=JzhWeqhCTF62Q0S80bs/R0DIkMo4STV8L0FwOPfRvSLS60P9PTRbRSAmitqqbvVJ9U/E
+	 3yVvVqxQDSws0mTBH7X4N6ABGKh4qT0WcOJ4XSNrGHFC0MBef4GBuQbme1c871KKyi2F/
+	 HdLIMaNWpSFl7+rbjx4cxRoIHCoxOLdjtGnFhwEeiF+vsyJgMidK4seYyKjsTas7X989p
+	 WPs7bQYUvXK/G+V3titc5m4jytB7t8gNol9B75M1G5Gs5mdCS8Qqyfq7RWv0SV37hshJt
+	 +2OJOpZxzmfagP+kJTxEfp6Vr7KNLyuzVrGbDs+OZLCCQh0mBpLdrvD+usq/efXkIbQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fyJ0Oph1;
+	arc=none smtp.remote-ip=198.175.65.9
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 205D2606A31A;
-	Sat, 24 Oct 2026 17:23:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 205D2606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF57606A31B;
+	Sat, 24 Oct 2026 17:42:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9AF57606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=abwLC/p2;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=2Jq7/VTT
-ARC-Seal: i=1; a=rsa-sha256; t=1792862626; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=bFjv2h8C9fooxwGDjur2bBKmhkxWD8iMQO71jSZpt03sGOm2pffpBjztslvGPXd8m8
-    oZPXAIEEfe9ISc/uoCoBfGXkkHP2E8mNYEgI0Ywx9R0x90XIdJprdRCowJQc+cR94tDR
-    plETGz9n9HiyHGvcjQZ0xIlAIqSYjgj02IBGIqYBZ05Mc4+ZiVBQUV/SIQ+WYy0THv3W
-    itSsSabToaDs9OpucpmGAXRCE+5vxcYUqH1h4JnqWZLYwUaoBApbomcd5L0oTA1lwL19
-    h7cP8D+rb3LkUpsKiVmDcBaDCfWrShmpENWaTiFZ6m8HCfBl7coHWIfzvOtRoVI7cAMF
-    2c3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1792862626;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
-    b=OZ7CYd8vWN1/qtzIzCdltFCK2faWcP6Nf+5Qs8moEsK1Pa/h6K1r+BY1TyrDLEM+hC
-    1BstVBsvHtSX6nGxRgXttAasRwkhjJT/T0N4qFKRp5ajCYekEVZPX3hcgFbsIT63MSgh
-    kL1OLjK/2IQScK6iFFWZ1ycXKuT5MEhjkYNgAuTKDVZnMakuuAr3Wr7W3sokymVgaQW5
-    kJa2vSAtpli0k+OknqgEwqi9XXbbVGuRWeH8skEqnDmX7MvgFtyKV4zRe9HgpsU9r1Qb
-    80lFqX5cu5NqxrVOIYpY3RvhCbbpr9+D9pP7e+WPltTnAc/QZ6M3AsKWziqlxi1fl9e2
-    ga3w==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1792862626;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
-    b=abwLC/p2md+SjBsSzF62IL4A5mo0slDrCt8vw5V1Sm/mK0n3TIPqKI9YRsiQLhfPxF
-    /ZdjQuD7lx6EG+Yb3GEI9tFSAExuPiRT99odB6JX0SZBU1f2ZAXvU6jXUeKDqqFTkJYY
-    EbODiQqlJOax3AZvFBJTUK++J9WwR8d6YkF0DTFZLLnRqgKAepEHMM2GESdnBR1NPt2/
-    BpcM2Amx31zZJ239KnSPos1xq6T/NLAyn+NMJPUkfDOul0zqz+Xe3SZs84rIdlWO5VPq
-    n5ABZdhSMQOibpQngJfP6jnrM1jtoybryzHON+4RCL1T6fd+Un2dhoPb8N9fODnSOQdz
-    MZVQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1792862626;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
-    b=2Jq7/VTTRVBfmbeXTT0xwzHULw34qqan+v9q3EK3vu4cGIS8ovV9nBfO2PAms/XgWJ
-    zUlWsSKtJqotPh+CfRBw==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV2poKzsiNzptYNlV1C1yk7253raiyx+O3Hxli"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 55.6.3 AUTH)
-    with ESMTPSA id Qb56a229OHNjwqO
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Sat, 24 Oct 2026 19:23:45 +0200 (CEST)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fyJ0Oph1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792863754; x=1824399754;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8vNrTE29DnPOhUoUbcQAhuV/RJaOFG+RLJlehh9FQn4=;
+  b=fyJ0Oph1du/s8g1KSUDFOKoY88kjZE+pJLWEL2dRto838761xsywg67B
+   3twdNjPcJZe5i8gTgPICv8CO5lLrOt0Y3JHsfjLuRsqcMjX7d9HpSpZd/
+   5l1pThimy5+dbiwTmHgzFT5Jg34e/9VB7C7ByBBEVRSgvWECBNw0b1NNx
+   Nfm0q8ZGu7RRGN9LuQAIRnOsOOp+RRPlAywA6uE4b501aJCwEiT0XNqQz
+   sVRVf4MJAUjSLnI3q7pxG6Sq2DjFdwIlaAnTsLfmA/oqchG9bouv7bsDV
+   oBvskF5plW5dbFWUEhdUdWFPo9V0KmKQCskfHeX2bNyLjGWzQPRpwno16
+   Q==;
+X-CSE-ConnectionGUID: ystu15h1Q5WaO4CnXeNfRw==
+X-CSE-MsgGUID: exDBMffOSu2tp9z3aq/oNA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11945"; a="1468463"
+X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
+   d="scan'208";a="1468463"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2026 10:42:34 -0700
+X-CSE-ConnectionGUID: eJZY8DdJSTC/QSpw94f05w==
+X-CSE-MsgGUID: 3ONycMUWSKq+6Lkg09qGPg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
+   d="scan'208";a="4013537"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa002.fm.intel.com with ESMTP; 24 Oct 2026 10:42:30 -0700
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xKflD-00000000U6o-1dkn;
+	Sat, 24 Oct 2026 17:42:27 +0000
+Date: Sun, 25 Oct 2026 01:42:26 +0800
+From: kernel test robot <lkp@intel.com>
+To: ChunAn Wu <an.wu@canonical.com>, linux-serial@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, markus.probst@posteo.de,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, hansg@kernel.org,
+	ilpo.jarvinen@linux.intel.com, mpearson-lenovo@squebb.ca,
+	derekjohn.clark@gmail.com
+Subject: Re: [PATCH v4] platform/x86: dell-uart-backlight: Bind through
+ normal serdev matching
+Message-ID: <202610250118.t0UAW41j-lkp@intel.com>
+References: <20261024022930.2704030-3-an.wu@canonical.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -93,166 +86,113 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.10\))
-Subject: Re: [PATCH 2/2] serial: 8250_ingenic: Start the X1600 UART from 16
- clocks a bit
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20261024051515.55639-2-olivier@mgcrea.io>
-Date: Sat, 24 Oct 2026 19:23:15 +0200
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Paul Cercueil <paul@crapouillou.net>,
- linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-mips@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
- Paul Boddie <paul@boddie.org.uk>,
- Andreas Kemnade <akemnade@kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <ACAE791A-545A-4AB7-842B-BD3F4ABE9208@goldelico.com>
-References: <20261024051515.55639-1-olivier@mgcrea.io>
- <20261024051515.55639-2-olivier@mgcrea.io>
-To: Olivier Louvignes <olivier@mgcrea.io>
-X-Mailer: Apple Mail (2.3826.700.81.1.10)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261024022930.2704030-3-an.wu@canonical.com>
 
-Hi,
+Hi ChunAn,
 
-> Am 24.10.2026 um 07:15 schrieb Olivier Louvignes <olivier@mgcrea.io>:
->=20
-> The X1600 UART samples each bit with UMR clocks, adjusted per bit by
-> UACR, while the divisor the 8250 core computes assumes 16. The driver
-> never sets them, so the UART keeps what ran before it: on a HiBy R1 =
-the
-> vendor kernel leaves UART0's UMR at 8, which by the register's meaning
+kernel test robot noticed the following build errors:
 
-So this patch adjusts a driver to a specific board and not the x1600 =
-chip?
+[auto build test ERROR on driver-core/driver-core-testing]
+[also build test ERROR on driver-core/driver-core-next driver-core/driver-core-linus linus/master v7.3 next-20261023]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Then, this asks for a device tree property if it is really needed.
+url:    https://github.com/intel-lab-lkp/linux/commits/ChunAn-Wu/platform-x86-dell-uart-backlight-Bind-through-normal-serdev-matching/20261024-102929
+base:   driver-core/driver-core-testing
+patch link:    https://lore.kernel.org/r/20261024022930.2704030-3-an.wu%40canonical.com
+patch subject: [PATCH v4] platform/x86: dell-uart-backlight: Bind through normal serdev matching
+config: x86_64-randconfig-1014-20261024 (https://download.01.org/0day-ci/archive/20261025/202610250118.t0UAW41j-lkp@intel.com/config)
+compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261025/202610250118.t0UAW41j-lkp@intel.com/reproduce)
 
-Or it should be fixed in U-Boot. Otherwise, assuming now that UMR =3D 16 =
-is
-correct for all x1600 boards would introduce a big issue for other =
-boards
-which suddenly stop working at the previously correct rate.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202610250118.t0UAW41j-lkp@intel.com/
 
-> doubles every rate set here (the line rate itself was not measured). =
-The
-> Bluetooth chip on that UART then never answers: "command 0xfc18 tx
-> timeout" from hci_bcm.
->=20
-> Add an X1600 entry that writes UMR =3D 16 and UACR =3D 0 at probe. The
-> offsets come from Rockbox's X1600 register headers and match the UMR
-> read on the R1. The X1000, whose compatible the X1600's falls back to,
-> may have the same registers, but I could not check one, so it is left
-> alone.
+All errors (new ones prefixed by >>):
 
-Well, it should be checked...
+>> drivers/platform/x86/dell/dell-uart-backlight.c:328:60: error: array has incomplete element type 'const struct serdev_device_id'
+     328 | static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
+         |                                                            ^
+   drivers/platform/x86/dell/dell-uart-backlight.c:328:21: note: forward declaration of 'struct serdev_device_id'
+     328 | static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
+         |                     ^
+>> drivers/platform/x86/dell/dell-uart-backlight.c:363:34: error: too many arguments to function call, expected 1, have 2
+     363 |         ret = serdev_device_add(serdev, KBUILD_MODNAME);
+         |               ~~~~~~~~~~~~~~~~~         ^~~~~~~~~~~~~~
+   <command line>:8:24: note: expanded from macro 'KBUILD_MODNAME'
+       8 | #define KBUILD_MODNAME "dell_uart_backlight"
+         |                        ^~~~~~~~~~~~~~~~~~~~~
+   include/linux/serdev.h:161:5: note: 'serdev_device_add' declared here
+     161 | int serdev_device_add(struct serdev_device *);
+         |     ^                 ~~~~~~~~~~~~~~~~~~~~~~
+   2 errors generated.
 
-... the x1000 has the same register.
 
-Of course it does not seem to be a standard 8250 register. Anyways,
-it should be checked is how other 8250 drivers handle special/private
-register setup.
+vim +328 drivers/platform/x86/dell/dell-uart-backlight.c
 
-Or this should even become part of the clock setup?
+   327	
+ > 328	static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
+   329		{ KBUILD_MODNAME },
+   330		{ }
+   331	};
+   332	
+   333	static struct serdev_device_driver dell_uart_bl_serdev_driver = {
+   334		.probe = dell_uart_bl_serdev_probe,
+   335		.driver = {
+   336			.name = KBUILD_MODNAME,
+   337		},
+   338		.id_table = dell_uart_bl_serdev_id,
+   339	};
+   340	
+   341	static int dell_uart_bl_pdev_probe(struct platform_device *pdev)
+   342	{
+   343		enum acpi_backlight_type bl_type;
+   344		struct serdev_device *serdev;
+   345		struct device *ctrl_dev;
+   346		int ret;
+   347	
+   348		bl_type = acpi_video_get_backlight_type();
+   349		if (bl_type != acpi_backlight_dell_uart) {
+   350			dev_dbg(&pdev->dev, "Not loading (ACPI backlight type = %d)\n", bl_type);
+   351			return -ENODEV;
+   352		}
+   353	
+   354		ctrl_dev = get_serdev_controller("DELL0501", NULL, 0, "serial0");
+   355		if (IS_ERR(ctrl_dev))
+   356			return PTR_ERR(ctrl_dev);
+   357	
+   358		serdev = serdev_device_alloc(to_serdev_controller(ctrl_dev));
+   359		put_device(ctrl_dev);
+   360		if (!serdev)
+   361			return -ENOMEM;
+   362	
+ > 363		ret = serdev_device_add(serdev, KBUILD_MODNAME);
+   364		if (ret) {
+   365			dev_err(&pdev->dev, "error %d adding serdev\n", ret);
+   366			serdev_device_put(serdev);
+   367			return ret;
+   368		}
+   369	
+   370		ret = serdev_device_driver_register(&dell_uart_bl_serdev_driver);
+   371		if (ret)
+   372			goto err_remove_serdev;
+   373	
+   374		/* So that dell_uart_bl_pdev_remove() can remove the serdev */
+   375		platform_set_drvdata(pdev, serdev);
+   376		return 0;
+   377	
+   378	err_remove_serdev:
+   379		serdev_device_remove(serdev);
+   380		return ret;
+   381	}
+   382	
 
->=20
-> Tested on a HiBy R1: UMR reads 16 and UACR 0 after probe, and the
-> BCM43430A1 on UART0 comes up at 1.5 Mbaud and streams A2DP audio.
->=20
-> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
-> ---
-> The test on the R1 ran with the same reset placed in the X1000 entry; =
-the
-> R1's device tree lists "ingenic,x1600-uart" first, so it takes the =
-same
-> path with this version. Build-tested with W=3D1 on tty-next.
->=20
-> drivers/tty/serial/8250/8250_ingenic.c | 18 ++++++++++++++++++
-> 1 file changed, 18 insertions(+)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c =
-b/drivers/tty/serial/8250/8250_ingenic.c
-> index 0cdadacd7019..40307189021b 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -25,6 +25,7 @@
-> struct ingenic_uart_config {
-> int tx_loadsz;
-> int fifosize;
-> + bool has_umr;
-> };
->=20
-> struct ingenic_uart_data {
-> @@ -40,6 +41,10 @@ static const struct of_device_id of_match[];
-> #define UART_MCR_MDCE BIT(7)
-> #define UART_MCR_FCM BIT(6)
->=20
-> +/* Clocks a bit, 16 for the divisor the 8250 core computes, and their =
-per-bit adjustment. */
-> +#define UART_UMR 9
-> +#define UART_UACR 10
-> +
-> static struct earlycon_device *early_device;
->=20
-> static uint8_t early_in(struct uart_port *port, int offset)
-> @@ -298,6 +303,12 @@ static int ingenic_uart_probe(struct =
-platform_device *pdev)
-> }
-> uart.port.uartclk =3D clk_get_rate(data->clk_baud);
->=20
-> + /* Whatever ran before may have left another count: 8 on a HiBy R1. =
-*/
-> + if (cdata->has_umr) {
-> + writel(16, uart.port.membase + (UART_UMR << uart.port.regshift));
-> + writel(0, uart.port.membase + (UART_UACR << uart.port.regshift));
-> + }
-> +
-> data->uport =3D serial8250_register_8250_port(&uart);
-> if (IS_ERR(data->uport)) {
-> err =3D PTR_ERR(data->uport);
-> @@ -344,6 +355,12 @@ static const struct ingenic_uart_config =
-x1000_uart_config =3D {
-> .fifosize =3D 64,
-> };
->=20
-> +static const struct ingenic_uart_config x1600_uart_config =3D {
-> + .tx_loadsz =3D 32,
-> + .fifosize =3D 64,
-> + .has_umr =3D true,
-
-the x1000 has it as well. And even the jz4780. So correctly setting this
-flag (as it is named) for more SoC variants will break more boards...
-
-> +};
-> +
-> static const struct of_device_id of_match[] =3D {
-> { .compatible =3D "ingenic,jz4740-uart", .data =3D &jz4740_uart_config =
-},
-> { .compatible =3D "ingenic,jz4750-uart", .data =3D &jz4760_uart_config =
-},
-> @@ -352,6 +369,7 @@ static const struct of_device_id of_match[] =3D {
-> { .compatible =3D "ingenic,jz4775-uart", .data =3D &jz4760_uart_config =
-},
-> { .compatible =3D "ingenic,jz4780-uart", .data =3D &jz4780_uart_config =
-},
-> { .compatible =3D "ingenic,x1000-uart", .data =3D &x1000_uart_config =
-},
-> + { .compatible =3D "ingenic,x1600-uart", .data =3D &x1600_uart_config =
-},
-
-No, this is not special to the x1600, but a workaround of some peculiar
-setup of your bootloader.
-
-> { /* sentinel */ }
-> };
-> MODULE_DEVICE_TABLE(of, of_match);
-> --=20
-> 2.39.5
-
-BR, H. Nikolaus Schaller <hns@goldelico.com>=
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
