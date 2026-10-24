@@ -1,57 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.125.188.122
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792798997;
-	b=JLvRipEklwDD9ixafOsQKnQuHBaR58Pn7xSHfBkQdRB6lzRX9UOCJnCUtS0mYt5Uk11E
-	 h4YoySePzIuiGwc28PXZ8ULVc5n09IF8F4P1C0MQxmFu+32W2J8MXsdjMgzXzdkIGSj7q
-	 q4wPrpclxpZpEpR/PXa7G4FzxTwTDfCm1SHQUZOcqDQfaGhIoxv5o4wLs4roWumCZcDip
-	 xWUxyNdlM/rUaXBylBvTOfKLlMVq2bwozgpC61JoxsaE4+ojsrBg2aznyg1MsjxwoewFD
-	 m32yc0uzON8MQ4AWq8zMC4fN/Yu9YNohw24jb58EZyGcYepkDOhVlTTW6DQnrUHZ4oQ==
+	t=1792808988;
+	b=4efGg63lBt+MjL4LX2lTRF1NA+gwVtrKmC/DOj2dg1/ofka+xlN5tJDOpPUQp9wfxS1a
+	 759bCZ4lBEePCcYXp+jp80Fd6wZFjS5I6qbD9U3tbB9c7+ZtlQainiiL56k0tlwF66N07
+	 vD+yjgIE10svAYfSOLiFjwx8b1yQYxBdSYVg2guU1wH+sv8jPk0Ci0jxXEWpm6sV4X8d6
+	 7fQ3C8nwdNjQ3wbaFeYdV+pis09pXmo+4iJ7UhqPp3KdZaeFcwHeZ6zRyIYAsslkhhmQX
+	 Ii2F1VBBnHW1WOBkCaP2UwgDr3GJt3RPmoM8MJExFagJb1ZvJT5XndlNPOvykNqsAow==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792798997;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=FPsfde8YxOHDp7aosHgoVbONaJKp2v6gpfuF7Irl66k=;
-	b=UEFKwHdd1Fs9wwEzpeUL1nZZQfFJIAIHzzIAp3NsrwqeOmhakcug6WxACZstw4PwdHiX
-	 tLLjgRUrFlBhpXaAEVv9t4dot1aBNWwverzE8e8XZGlJIN2LJB92BoQQrJYJg1/p+Bcox
-	 v2oWJb+KJE9bp/sGc760UY+cEU6nA3zuRmAmbizKrUJTwVvKt6ljGTjM0jnrkLQnVZgYY
-	 BWmGLD16CbQ9XkjXIiIzqSgKY7KcU6MdH0EvYXwAwb+wTSBejbqEvCQ9BCWQ8cYHfUD2h
-	 RS4L3CvwhCUFMPHYDnHcY8+f6cGEF6dhpk8RichDFccdbyHXbYiOc9arkcOPXjV6ZQQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792808988;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:
+	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=xWqePsieUNYmC/YQ6OK9IVWqiLiqQMDh5G8B7qqj1fE=;
+	b=fG6XING55LatjJmudb6uGBnbmD1HHCZ5/FrBW3EN6dYTxUe2EPL1WpX9nZ3vHGBFMefR
+	 T2l9b72Od0xwV7OK9Fh+HrR32HQM8kFrHIquOZLDs9vyMB0byPUXiOXNRF34olZYEHMh5
+	 S0O24wnywirTN9qLsuT62bU+WTTeGX1bXcyS03bsnBQeDqS7o0+0gmT8q65c0+PaH1z6/
+	 PdII8yk2ZtVKJJQto+YSJ2MFicPv4HMzMGTcyHYsZNDpgRfOBhj1adAMgfySbFCvdrT7C
+	 MC9K3lvtFJvTcEy8m5xw6dzh8sADIqgIOZWueRErrcOD5pyxPB0VnRYKXM2YhRxmclw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C21q8aO0;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=canonical.com;
+	spf=pass smtp.mailfrom=canonical.com;
+	dkim=pass header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=nMYl7Afg;
+	arc=none smtp.remote-ip=185.125.188.122
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 073BC606A31B
-	for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 23:43:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87757606A323
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 02:29:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 87757606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C21q8aO0
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846541F01825;
-	Fri, 23 Oct 2026 23:43:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792798996;
-	bh=FPsfde8YxOHDp7aosHgoVbONaJKp2v6gpfuF7Irl66k=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=C21q8aO0Nq1d2hycLGV9HhBYO46X20Jp9gbrwgonlNoBq1ycfs/by0v7sy7m+Hoaz
-	 jbcc1fwsJSrFMWxmBxlNnt1bOhqjT8TUKbvJOmg0EhbTme1LskU0itMmYOqKDraF5O
-	 evRL6CVgis7cmg6yx/bykeCnQ8rkRFVvAXi4mg6P1czv+5axEoIIxhTRhaJZw8ksdW
-	 roOS93gIz4EKjrkAUlANaPFdFqE2dulCEgvzlH0UzFEKVC6GWVI+p4fwydBruKVci4
-	 J1HbLQh2zE92QVGUG3gQqrV1cSXpKhTaqPighvLqmmmEsMLuWk+HOwDUi7zOVzrmrg
-	 OX1s0JxoWYpug==
-Message-ID: <sashiko-outbox-183428@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 2/4] serial: core: allow drivers to reserve flushed
- transmit storage
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261023-submit-serial-8250-dma-cancel-v1-v4-2-e759de1839de@gmail.com>
-References: <20261023-submit-serial-8250-dma-cancel-v1-v4-0-e759de1839de@gmail.com>
- <20261023-submit-serial-8250-dma-cancel-v1-v4-2-e759de1839de@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 23 Oct 2026 23:43:16 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=nMYl7Afg
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 04C53402D2
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 02:29:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20251003; t=1792808985;
+	bh=xWqePsieUNYmC/YQ6OK9IVWqiLiqQMDh5G8B7qqj1fE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version;
+	b=nMYl7AfgUPHe/7mapPEAw4y0J5BBwF+y6yjlFQyBZS6wcFFobFOMXpQ5+N+tPVrg+
+	 tDScXeAj7DQ0TIXbUR0inr/VbxLUcOtcqSSa3wEFYC9ID53ASFSYKJlHlk0/adjc1/
+	 EROBJviy+oetTIN084Dt9lcxE2CJ18WcDaYsbgpCp5BX5CR0dz7+bc8iNv/aLhWHyH
+	 felnqd4WJigqZY1j2n+3rGGwvUVlCYZjb1GLfxRp26rnJIGd/0GXoCLMNtoLbox1CU
+	 MGwylCwR9bewz/38QjKnDAssd58oP1xVNbnufjFd/VthD2AuJ/GyqM2+2G+CEVwYHq
+	 +t1iomcymIQ8brg7iyW+OhodWt8oE78tyACi5HP1owSMoWW/pHdqGwfoOmEJASmQkO
+	 ydaskgsPg/pblj798St5oVT9wz+4jLp/vfMbNuPPdt9BQ+6vwkOe74Nlcsr+Z00Ghi
+	 kfBbyI/hI/dUVDZH1Ms68iCw8xt0H8WCj6nAuSvwX+RUfvRyoDrT7xnofqnTEHKluj
+	 Pxl2s7UOIRq06kJSYAQmeZ7wswCrkrnw1TGVTeVDCljmT3wOxNCchGQjhm2S35eH0d
+	 nwaR18hfXqiKdIwLOp809OW3CEWupDR0QL9An4IY3yZ3AXyCMdcAStKb9qfK8m50dd
+	 Y+BV08P+k17TZXsErTsFCI+8=
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2e9a4052726so5523785ad.0
+        for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 19:29:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792808983; x=1793413783;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=xWqePsieUNYmC/YQ6OK9IVWqiLiqQMDh5G8B7qqj1fE=;
+        b=lxQEDDDM8ZQ/sWKL1n9XbBcsuwQpUeFe3DQ7D09Gmwm/n48I5V+CtXza4Uiwp1T3F3
+         QSexRuuhS13NzuITXEEflMgoJRd18MygB1xhCMqwIv6xHgKCQkhJGqq1kcBqmf0fdGPO
+         gaRVFh6TH/LX18SFbHGWCkJbW4cUE+RswqdcQU8S/bDoMG/+7xqJBLZIzF+Ruc1edJKF
+         43eFcMKB0wFGAORVh9OukU8bj4uvhRdh3rX9BzumFkkw+M/b3VITh+tGFItgRSupj2TY
+         +p8pInwfWg3CreorNB34s/n40nXIVrD1ZNWOdeeBOLNnYo7iDecUARdUcSaZ0TwWDori
+         4mEw==
+X-Gm-Message-State: AFq9FYJUUMVKYNjTOSWIDSpfHh8GCNUDpdFdJdDv7gcQeJWmhK8toD98
+	NjInIaHSc6LJ/eiG3IymUuKYDd5FJIscsYBVtdIoeiriGRTkS5oyQvRYzKfigXYHjO65TlDZ6zF
+	nvKMEJrWdYhxUo7lQMDSOsYkMws7gKdG7pICgR1BUs3EGEu/3wBVAW8n0S3PG8IotSpjDIQCIsR
+	DypeEpOXgYu3qIsw==
+X-Gm-Gg: AYBFou2ootv/XJdDRobb0JugpBtJKuEMOREhrqSlPU/v7cC5ZrQOJL6keg3ekapsySs
+	ef+UcRQ+dHVBaz3gT9y/G2TjsO8LtSiTOdM9phdrvMmH0Vo5NUP14yYMkYt4E7Rpm3sdMRwCJQc
+	xRBSWbBRRrBAa+G1jayP8NIKW7cqlZkjx4nETCCIGEpZQX/EL79MNMR6D8AOgKcF7U0I3LjO7fJ
+	Als/iouqu1hA7YLFl6NUkwxPNdpdm7JS1dpV4vNy9tU7+3AYHhGe1cC/XEsKxmYDTPJZmDOq6Bd
+	BNqwdxJX0hwYFW/7Ct2UqD5OI55n0WEnCHlaNDrAIPZLQtHOygbH0V57Q1EXFpE5oj0Ds/dO6cb
+	fBS7a7L/RwRTyXWtE8ciIM51q2DQ7WbCWSZy8HYcmsCdZrxfes75Apc1gbx+2WpdZrF3hn+qpHT
+	lnEP7ePxlUanr8zFkn1vTOp5//YhW2X9PL5gKiCH8NYSXP1wsbVzB0t/xbtG/IfOwI2RctYERRd
+	VHI3HfyVoWZoQHG5ftL6fCIajBc3n5YO2RWCoz4ZcY=
+X-Received: by 2002:a17:90b:39a6:b0:3a7:a463:54bb with SMTP id 98e67ed59e1d1-3adeb10f4c4mr1474106a91.5.1792808983302;
+        Fri, 23 Oct 2026 19:29:43 -0700 (PDT)
+X-Received: by 2002:a17:90b:39a6:b0:3a7:a463:54bb with SMTP id 98e67ed59e1d1-3adeb10f4c4mr1474086a91.5.1792808982878;
+        Fri, 23 Oct 2026 19:29:42 -0700 (PDT)
+Received: from an-XPS-15-9520.buildd (2001-b011-2008-445c-9c57-136b-f73a-3698.dynamic-ip6.hinet.net. [2001:b011:2008:445c:9c57:136b:f73a:3698])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebb75254sm587341a91.4.2026.10.23.19.29.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2026 19:29:42 -0700 (PDT)
+From: ChunAn Wu <an.wu@canonical.com>
+To: linux-serial@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	markus.probst@posteo.de,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	hansg@kernel.org,
+	ilpo.jarvinen@linux.intel.com,
+	mpearson-lenovo@squebb.ca,
+	derekjohn.clark@gmail.com
+Subject: [PATCH v4 1/3] serdev: handle devices without an ACPI or device tree node
+Date: Sat, 24 Oct 2026 10:29:28 +0800
+Message-Id: <20261024022930.2704030-2-an.wu@canonical.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261024022930.2704030-1-an.wu@canonical.com>
+References: <20261024022930.2704030-1-an.wu@canonical.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,275 +115,296 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 4 potential issue(=
-s) to consider:
-- [High] serial: core: race and late unblock in uart_resume_port()
-- [High] serial: core: stale xmit_blocked in uart_alloc_xmit_buf() when reu=
-sing xmit_buf
-- [High] serial: core: permanent TX block if uart_xmit_unblock() runs durin=
-g startup
-- [Medium] serial: core: lost deferred write wakeup when restarting open po=
-rt
---
+Serdev clients instantiated by a driver have no ACPI companion and no
+device tree node. Their modalias read returns -ENODEV, their add uevent
+is suppressed, and they cannot be driver-matched, so creators force a
+bind with device_driver_attach().
 
-commit f5e8cd060228c45857c337ffa1d0fd793601a7e0
-Author: James Hilliard <james.hilliard1@gmail.com>
+Resolve both TODOs in the serdev core by modelling matching on the SPI
+bus: let the creator pass a modalias to serdev_device_add() and give
+struct serdev_device_driver an id_table. ACPI and OF are still tried
+first; clients without their own modalias keep returning -ENODEV. The
+device name, derived from the controller, is unchanged.
 
-serial: core: allow drivers to reserve flushed transmit storage
+Split struct serdev_device_id and its defines into a new
+include/linux/device-id/serdev.h, following the pattern already used by
+the SPI and I2C buses.
 
-This commit adds uart_xmit_block() and uart_xmit_unblock() so UART drivers =
-can
-reserve the transmit FIFO buffer after uart_flush_buffer() until any in-fli=
-ght
-asynchronous DMA transfer and its completion callbacks have retired. While
-blocked, write_room() reports zero, write() and put_char() reject new data,
-and write wakeups are deferred until the reservation is released.
+Signed-off-by: ChunAn Wu <an.wu@canonical.com>
+---
+ MAINTAINERS                                   |  1 +
+ .../platform/x86/x86-android-tablets/core.c   |  2 +-
+ drivers/power/sequencing/pwrseq-pcie-m2.c     |  2 +-
+ drivers/tty/serdev/core.c                     | 65 ++++++++++++++-----
+ include/linux/device-id/serdev.h              | 19 ++++++
+ include/linux/serdev.h                        | 12 +++-
+ 6 files changed, 82 insertions(+), 19 deletions(-)
+ create mode 100644 include/linux/device-id/serdev.h
 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index c0deec0e6af41..e5756934b8f47 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -119,10 +119,56 @@ void uart_write_wakeup(struct uart_port *port)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 917f3f72e31b..06e67aa5d9b0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -24905,6 +24905,7 @@ L:	linux-serial@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/serial/serial.yaml
+ F:	drivers/tty/serdev/
++F:	include/linux/device-id/serdev.h
+ F:	include/linux/serdev.h
+ F:	rust/helpers/serdev.c
+ F:	rust/kernel/serdev.rs
+diff --git a/drivers/platform/x86/x86-android-tablets/core.c b/drivers/platform/x86/x86-android-tablets/core.c
+index cfff7f5eac5d..853aa6ff5d50 100644
+--- a/drivers/platform/x86/x86-android-tablets/core.c
++++ b/drivers/platform/x86/x86-android-tablets/core.c
+@@ -317,7 +317,7 @@ static __init int x86_instantiate_serdev(const struct x86_dev_info *dev_info, in
+ 	ACPI_COMPANION_SET(&serdev->dev, serdev_adev);
+ 	acpi_device_set_enumerated(serdev_adev);
+ 
+-	ret = serdev_device_add(serdev);
++	ret = serdev_device_add(serdev, NULL);
+ 	if (ret) {
+ 		dev_err(&serdev->dev, "error %d adding serdev\n", ret);
+ 		serdev_device_put(serdev);
+diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
+index e42e85f47629..e0482f2ef39f 100644
+--- a/drivers/power/sequencing/pwrseq-pcie-m2.c
++++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
+@@ -309,7 +309,7 @@ static int pwrseq_pcie_m2_create_serdev_one(struct pwrseq_pcie_m2_ctx *ctx,
+ 	if (ret)
+ 		goto err_free_serdev;
+ 
+-	ret = serdev_device_add(pci_dev->serdev);
++	ret = serdev_device_add(pci_dev->serdev, NULL);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to add serdev for PCI device (%s): %d\n",
+ 			pci_name(pdev), ret);
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 7500efcdfc21..45175403bd55 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -29,13 +29,21 @@ static DEFINE_IDA(ctrl_ida);
+ static ssize_t modalias_show(struct device *dev,
+ 			     struct device_attribute *attr, char *buf)
+ {
++	const struct serdev_device *serdev = to_serdev_device(dev);
+ 	int len;
+ 
+ 	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
+ 	if (len != -ENODEV)
+ 		return len;
+ 
+-	return of_device_modalias(dev, buf, PAGE_SIZE);
++	len = of_device_modalias(dev, buf, PAGE_SIZE);
++	if (len != -ENODEV)
++		return len;
++
++	if (!serdev->modalias[0])
++		return -ENODEV;
++
++	return sysfs_emit(buf, "%s%s\n", SERDEV_MODULE_PREFIX, serdev->modalias);
+ }
+ static DEVICE_ATTR_RO(modalias);
+ 
+@@ -47,15 +55,22 @@ ATTRIBUTE_GROUPS(serdev_device);
+ 
+ static int serdev_device_uevent(const struct device *dev, struct kobj_uevent_env *env)
+ {
++	const struct serdev_device *serdev = to_serdev_device(dev);
+ 	int rc;
+ 
+-	/* TODO: platform modalias */
+-
+ 	rc = acpi_device_uevent_modalias(dev, env);
+ 	if (rc != -ENODEV)
+ 		return rc;
+ 
+-	return of_device_uevent_modalias(dev, env);
++	rc = of_device_uevent_modalias(dev, env);
++	if (rc != -ENODEV)
++		return rc;
++
++	if (!serdev->modalias[0])
++		return -ENODEV;
++
++	return add_uevent_var(env, "MODALIAS=%s%s", SERDEV_MODULE_PREFIX,
++			      serdev->modalias);
+ }
+ 
+ static void serdev_device_release(struct device *dev)
+@@ -70,11 +85,6 @@ static const struct device_type serdev_device_type = {
+ 	.release	= serdev_device_release,
+ };
+ 
+-static bool is_serdev_device(const struct device *dev)
+-{
+-	return dev->type == &serdev_device_type;
+-}
+-
+ static void serdev_ctrl_release(struct device *dev)
+ {
+ 	struct serdev_controller *ctrl = to_serdev_controller(dev);
+@@ -86,28 +96,51 @@ static const struct device_type serdev_ctrl_type = {
+ 	.release	= serdev_ctrl_release,
+ };
+ 
++static const struct serdev_device_id *serdev_match_id(const struct serdev_device_id *id,
++						      const char *modalias)
++{
++	if (!id || !modalias[0])
++		return NULL;
++
++	while (id->name[0]) {
++		if (!strcmp(modalias, id->name))
++			return id;
++		id++;
++	}
++
++	return NULL;
++}
++
+ static int serdev_device_match(struct device *dev, const struct device_driver *drv)
+ {
+-	if (!is_serdev_device(dev))
+-		return 0;
++	const struct serdev_device *serdev = to_serdev_device(dev);
++	const struct serdev_device_driver *sdrv = to_serdev_device_driver(drv);
+ 
+-	/* TODO: platform matching */
+ 	if (acpi_driver_match_device(dev, drv))
+ 		return 1;
+ 
+-	return of_driver_match_device(dev, drv);
++	if (of_driver_match_device(dev, drv))
++		return 1;
++
++	return !!serdev_match_id(sdrv->id_table, serdev->modalias);
+ }
+ 
+ /**
+  * serdev_device_add() - add a device previously constructed via serdev_device_alloc()
+  * @serdev:	serdev_device to be added
++ * @modalias:	Driver name or alias, used to match devices which have neither
++ *		an ACPI companion nor a device tree node. NULL for devices
++ *		enumerated from firmware.
+  */
+-int serdev_device_add(struct serdev_device *serdev)
++int serdev_device_add(struct serdev_device *serdev, const char *modalias)
+ {
+ 	struct serdev_controller *ctrl = serdev->ctrl;
+ 	struct device *parent = serdev->dev.parent;
+ 	int err;
+ 
++	if (modalias)
++		strscpy(serdev->modalias, modalias);
++
+ 	dev_set_name(&serdev->dev, "%s-%d", dev_name(parent), serdev->nr);
+ 
+ 	/* Only a single slave device is currently supported. */
+@@ -553,7 +586,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+ 
+ 		device_set_node(&serdev->dev, of_fwnode_handle(node));
+ 
+-		err = serdev_device_add(serdev);
++		err = serdev_device_add(serdev, NULL);
+ 		if (err) {
+ 			dev_err(&serdev->dev,
+ 				"failure adding device. status %pe\n",
+@@ -707,7 +740,7 @@ static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
+ 	ACPI_COMPANION_SET(&serdev->dev, adev);
+ 	acpi_device_set_enumerated(adev);
+ 
+-	err = serdev_device_add(serdev);
++	err = serdev_device_add(serdev, NULL);
+ 	if (err) {
+ 		dev_err(&serdev->dev,
+ 			"failure adding ACPI serdev device. status %pe\n",
+diff --git a/include/linux/device-id/serdev.h b/include/linux/device-id/serdev.h
+new file mode 100644
+index 000000000000..96644953cece
+--- /dev/null
++++ b/include/linux/device-id/serdev.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef LINUX_DEVICE_ID_SERDEV_H
++#define LINUX_DEVICE_ID_SERDEV_H
++
++#ifdef __KERNEL__
++typedef unsigned long kernel_ulong_t;
++#endif
++
++/* serdev */
++
++#define SERDEV_NAME_SIZE	40
++#define SERDEV_MODULE_PREFIX	"serial:"
++
++struct serdev_device_id {
++	char name[SERDEV_NAME_SIZE];
++	kernel_ulong_t driver_data;	/* Data private to the driver */
++};
++
++#endif /* ifndef LINUX_DEVICE_ID_SERDEV_H */
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index b6c3d957ec15..96a441abc1ac 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -7,7 +7,9 @@
+ 
+ #include <linux/types.h>
+ #include <linux/device.h>
++#include <linux/device-id/serdev.h>
+ #include <linux/iopoll.h>
++#include <linux/string.h>
+ #include <linux/uaccess.h>
+ #include <linux/termios.h>
+ #include <linux/delay.h>
+@@ -35,6 +37,10 @@ struct serdev_device_ops {
+  * struct serdev_device - Basic representation of an serdev device
+  * @dev:	Driver model representation of the device.
+  * @nr:		Device number on serdev bus.
++ * @modalias:	Name of the driver to use with this device, or the alias
++ *		for it. Empty for devices enumerated from firmware, which
++ *		are identified through their ACPI companion or their device
++ *		tree node instead. See serdev_device_add().
+  * @ctrl:	serdev controller managing this device.
+  * @ops:	Device operations.
+  * @write_comp:	Completion used by serdev_device_write() internally
+@@ -43,6 +49,7 @@ struct serdev_device_ops {
+ struct serdev_device {
+ 	struct device dev;
+ 	int nr;
++	char modalias[SERDEV_NAME_SIZE];
+ 	struct serdev_controller *ctrl;
+ 	const struct serdev_device_ops *ops;
+ 	struct completion write_comp;
+@@ -55,12 +62,15 @@ struct serdev_device {
+  * struct serdev_device_driver - serdev slave device driver
+  * @driver:	serdev device drivers should initialize name field of this
+  *		structure.
++ * @id_table:	List of serdev devices supported by this driver, used to
++ *		match devices which are not enumerated from firmware.
+  * @probe:	binds this driver to a serdev device.
+  * @remove:	unbinds this driver from the serdev device.
+  * @shutdown:	shut down this serdev device.
+  */
+ struct serdev_device_driver {
+ 	struct device_driver driver;
++	const struct serdev_device_id *id_table;
+ 	int	(*probe)(struct serdev_device *);
+ 	void	(*remove)(struct serdev_device *);
+ 	void	(*shutdown)(struct serdev_device *);
+@@ -158,7 +168,7 @@ static inline void serdev_controller_put(struct serdev_controller *ctrl)
+ }
+ 
+ struct serdev_device *serdev_device_alloc(struct serdev_controller *);
+-int serdev_device_add(struct serdev_device *);
++int serdev_device_add(struct serdev_device *serdev, const char *modalias);
+ void serdev_device_remove(struct serdev_device *);
+ 
+ struct serdev_controller *serdev_controller_alloc(struct device *host,
+-- 
+2.34.1
 
-[ ... ]
-
-> +void uart_xmit_unblock(struct uart_port *port)
-> +{
-> +	lockdep_assert_held_once(&port->lock);
-> +	if (!port->state->xmit_blocked || !tty_port_initialized(&port->state->p=
-ort))
-> +		return;
-> +	port->state->xmit_blocked =3D false;
-> +	uart_write_wakeup(port);
-> +}
-> +EXPORT_SYMBOL_GPL(uart_xmit_unblock);
-
-[Severity: High]
-Can checking !tty_port_initialized(&port->state->port) in uart_xmit_unblock=
-()
-leave state->xmit_blocked permanently stuck at true if a flush and DMA
-retirement complete during port startup?
-
-In tty_port_open(), uart_set_info() (TIOCSSERIAL), and uart_do_autoconfig()
-(TIOCSERCONFIG), uart_startup() -> uart_port_startup() allocates
-state->port.xmit_buf, invokes uport->ops->startup(uport) (enabling interrup=
-ts
-and DMA), and configures line settings before tty_port_set_initialized(port,
-true) is called:
-
-drivers/tty/tty_port.c:tty_port_open() {
-	...
-		clear_bit(TTY_IO_ERROR, &tty->flags);
-		if (port->ops->activate) {
-			int retval =3D port->ops->activate(port, tty);
-			if (retval) {
-				set_bit(TTY_IO_ERROR, &tty->flags);
-				return retval;
-			}
-		}
-		tty_port_set_initialized(port, true);
-	...
-}
-
-During that window, tty_port_initialized() is still false, while TTY_IO_ERR=
-OR
-is already cleared and neither uart_write(), uart_put_char(), nor
-uart_flush_buffer() checks tty_port_initialized() or acquires port->mutex.
-
-If TX DMA is started and flushed in this window (for example via RX echo and
-a VINTR/VQUIT/VSUSP signal character in n_tty_receive_signal_char() ->
-isig() -> tty_driver_flush_buffer(), or via a concurrent write() and
-ioctl(TCFLSH, TCOFLUSH) on an existing descriptor), uart_flush_buffer() cal=
-ls
-port->ops->flush_buffer(port) -> uart_xmit_block().
-
-If that DMA transfer finishes retiring and calls uart_xmit_unblock() before
-tty_port_set_initialized(port, true) runs, uart_xmit_unblock() sees
-!tty_port_initialized() and returns early without clearing
-state->xmit_blocked. When tty_port_set_initialized(port, true) subsequently
-executes in tty_port_open(), uart_set_info(), or uart_do_autoconfig(),
-nothing calls uart_xmit_unblock(), leaving TX permanently wedged with
-uart_write_room() returning 0 and uart_write()/uart_put_char() dropping all
-writes.
-
-[ ... ]
-
-> @@ -260,6 +309,7 @@ static int uart_alloc_xmit_buf(struct tty_port *port)
->  	uport =3D uart_port_ref_lock(state, &flags);
->  	if (!state->port.xmit_buf) {
->  		state->port.xmit_buf =3D buf;
-> +		state->xmit_blocked =3D false;
->  		kfifo_init(&state->port.xmit_fifo, state->port.xmit_buf,
->  				PAGE_SIZE);
->  		uart_port_unlock_deref(uport, flags);
-
-[Severity: High]
-What happens in uart_alloc_xmit_buf() when state->port.xmit_buf is already
-allocated and the else branch is taken?
-
-In uart_alloc_xmit_buf(), state->xmit_blocked is only cleared when
-state->port.xmit_buf is NULL:
-
-drivers/tty/serial/serial_core.c:uart_alloc_xmit_buf() {
-	...
-	uport =3D uart_port_ref_lock(state, &flags);
-	if (!state->port.xmit_buf) {
-		state->port.xmit_buf =3D buf;
-		state->xmit_blocked =3D false;
-		kfifo_init(&state->port.xmit_fifo, state->port.xmit_buf,
-				PAGE_SIZE);
-		uart_port_unlock_deref(uport, flags);
-	} else {
-		uart_port_unlock_deref(uport, flags);
-		kfree(buf);
-	}
-}
-
-If uart_flush_buffer() sets state->xmit_blocked =3D true on an open port and
-uart_suspend_port() then runs, uart_suspend_port() sets
-tty_port_set_initialized(port, false) and calls ops->shutdown(uport) to
-retire DMA without freeing state->port.xmit_buf, leaving state->xmit_blocked
-set to true.
-
-If the port is then closed while tty_port_initialized(port) is false,
-tty_port_shutdown_locked() returns early without calling
-uart_tty_port_shutdown() or uart_free_xmit_buf():
-
-drivers/tty/tty_port.c:tty_port_shutdown_locked() {
-	if (!tty_port_initialized(port))
-		return;
-	...
-}
-
-This can be reached without uart_resume_port() having run its unblock path,
-for example when:
-- a driver's suspend or freeze callback fails after calling
-  uart_suspend_port() or serial8250_suspend_port() (such as
-  omap8250_suspend(), pci1xxxx_suspend(), or imx_uart_suspend()), so the PM
-  core skips the driver's resume callback;
-- a driver's resume callback fails before calling uart_resume_port() or
-  serial8250_resume_port() (such as omap8250_resume(), pci1xxxx_resume(),
-  bcm2835aux_resume(), brcmuart_resume(), loongson_uart_resume(), or
-  uniphier_uart_resume());
-- a PCMCIA serial port (serial_cs.c) is suspended at runtime via sysfs
-  pm_state and then closed and reopened; or
-- a console port is suspended with console_suspend_enabled =3D=3D true and
-  resumed after console_suspend_enabled is set to false, skipping the
-  (console_suspend_enabled || !uart_console(uport)) block in
-  uart_resume_port().
-
-On a subsequent open (uart_open() -> tty_port_open() -> uart_port_activate()
--> uart_startup() -> uart_port_startup() -> uart_alloc_xmit_buf()) or
-reconfiguration (uart_set_info() -> uart_startup() -> uart_port_startup()),
-uart_alloc_xmit_buf() sees state->port.xmit_buf !=3D NULL, takes the else
-branch, and leaves state->xmit_blocked set to true with no active DMA
-transfer to ever call uart_xmit_unblock(). Could state->xmit_blocked remain
-stuck true and permanently block all transmit operations on the port?
-
-[Severity: Medium]
-Also in uart_alloc_xmit_buf(), if state->xmit_blocked was true and a new
-xmit_buf is allocated while the TTY remains open, could clearing
-state->xmit_blocked =3D false directly without calling uart_write_wakeup() =
-lose
-a deferred write wakeup?
-
-When uart_flush_buffer() runs on a port whose driver calls uart_xmit_block(=
-),
-uart_write_wakeup() suppresses tty_port_tty_wakeup(&state->port) and defers
-waking writers on tty->write_wait and one-shot TTY_DO_WRITE_WAKEUP line
-discipline callbacks until the reservation is released.
-
-If the open port is then shut down and restarted via TIOCSERCONFIG
-(uart_do_autoconfig()) or TIOCSSERIAL (uart_set_info() when change_port or
-change_irq is true), or if uart_resume_port() fails ops->startup(uport) and
-calls uart_shutdown(tty, state) followed by a later open() on the still-open
-TTY, uart_shutdown() clears TTY_PORT_INITIALIZED before ops->shutdown(uport)
-(making any driver uart_xmit_unblock() call a no-op) and frees xmit_buf via
-uart_free_xmit_buf().
-
-When uart_startup() -> uart_port_startup() -> uart_alloc_xmit_buf() then
-allocates a new xmit_buf, it sets state->xmit_blocked =3D false without cal=
-ling
-uart_write_wakeup(), and nothing in the startup path triggers a TX wakeup
-because the newly allocated FIFO is empty. Wouldn't writers sleeping on
-tty->write_wait or line disciplines waiting for write_wakeup() stall?
-
-[ ... ]
-
-> @@ -2500,6 +2551,8 @@ int uart_resume_port(struct uart_driver *drv, struc=
-t uart_port *uport)
->  					ops->start_tx(uport);
->  				}
->  				tty_port_set_initialized(port, true);
-> +				scoped_guard(uart_port_lock_irq, uport)
-> +					uart_xmit_unblock(uport);
->  			} else {
->  				/*
->  				 * Failed to resume - maybe hardware went away?
-
-[Severity: High]
-In uart_resume_port(), is calling uart_xmit_unblock(uport) after
-ops->startup(uport), uart_change_line_settings(), and ops->start_tx(uport)
-have already run and dropped uport->lock safe against a concurrent
-uart_flush_buffer()?
-
-Looking at the resume sequence in uart_resume_port():
-
-drivers/tty/serial/serial_core.c:uart_resume_port() {
-	...
-			ret =3D ops->startup(uport);
-			if (ret =3D=3D 0) {
-				if (tty)
-					uart_change_line_settings(tty, state, NULL);
-				uart_rs485_config(uport);
-				scoped_guard(uart_port_lock_irq, uport) {
-					if (!(uport->rs485.flags & SER_RS485_ENABLED))
-						ops->set_mctrl(uport, uport->mctrl);
-					ops->start_tx(uport);
-				}
-				tty_port_set_initialized(port, true);
-				scoped_guard(uart_port_lock_irq, uport)
-					uart_xmit_unblock(uport);
-			}
-}
-
-This placement appears to create two issues:
-
-1. If state->xmit_blocked was false prior to suspend, ops->start_tx(uport) =
-can
-   start a new TX DMA transfer from state->port.xmit_buf (using data queued
-   before suspend or written after ops->startup()). When the first
-   scoped_guard(uart_port_lock_irq, uport) exits, uport->lock is released
-   before tty_port_set_initialized(port, true) and the second scoped_guard
-   calling uart_xmit_unblock(uport).
-
-   Because uart_flush_buffer() only serializes on uport->lock and does not
-   take port->mutex, a concurrent uart_flush_buffer() in that unlocked wind=
-ow
-   (for example via tcflush(TCOFLUSH), serdev_device_write_flush(), or an RX
-   signal character in n_tty_receive_signal_char() ->
-   tty_driver_flush_buffer()) will reset xmit_fifo and call
-   port->ops->flush_buffer(port) -> uart_xmit_block(uport) to reserve
-   state->port.xmit_buf for the newly started post-resume DMA transfer.
-
-   Immediately afterward, uart_resume_port() sets
-   tty_port_set_initialized(port, true), re-acquires uport->lock, and calls
-   uart_xmit_unblock(uport), which cannot distinguish a stale pre-suspend
-   reservation from the new post-resume reservation. Doesn't this clear
-   state->xmit_blocked =3D false and wake writers to overwrite
-   state->port.xmit_buf while the post-resume TX DMA transfer is still in
-   flight?
-
-2. Conversely, if state->xmit_blocked was true before suspend (and the old
-   transfer was already retired by ops->shutdown(uport) in
-   uart_suspend_port()), state->xmit_blocked remains true while
-   uart_change_line_settings() runs during resume. If uport->hw_stopped
-   transitions from true to false in uart_change_line_settings(),
-   __uart_start(state) sees state->xmit_blocked && !port->x_char and returns
-   early without starting TX.
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261023-submit-ser=
-ial-8250-dma-cancel-v1-v4-0-e759de1839de@gmail.com?part=3D2
