@@ -1,112 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=185.125.188.122
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.173
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792831243;
-	b=xpHBwESU34BztA2I+iQPGtARhuR7529mKr0dsrbIciEBlsquaYjRf0UTWUXZa5LNh5Fi
-	 J9IzEmn0Z2UsbG+d915xccya2+c8IIC1l1Z9dP/2j3SZnUY4I5tyChwB/XIqM0DPN7EPn
-	 61AMlSaElALT1PxeNmm0hjktur2bQM4zyPR41SbB8zq/56wyB/OfzHN5cOpMQCijuTfsO
-	 rAWE/djfqDo+bR7RAZTB9c5SaBNIZTnIT0fhNCQJN13wY5ZsvZyplto7gJBW+s9993gZJ
-	 pMV4fapn0Y+9qK1yUDuVacQOsyVmYrTeb6eT40pCvFTMAUMWLoT3df0+0+a7orWmX/w==
+	t=1792835499;
+	b=CoVtUg1Q0aZD7Z1BjipFs4RKH2ECwNwNA+EuS7Bu7aYPY5kCCw6FvUxzpwbqg3Nii1Ua
+	 X9zz27hGFyi755CLc9tMKlkYbXjOn1MFQMfMnEft/QgW63qWsyrCt052uIeE5dTzzWYEX
+	 6R1pWBkIL/KA2j9Ny2nmZbwu1fo8mPqjkUtO8jOKJ7PNnjVFIIdlppqGI1Q7k3hjf2ECL
+	 Wom3kM/3ScBoWAzGFEAj6wLdq3h42O7oTtR8HLLb5vqEPwG56sPnvP7EQAGdnHRZHx+xs
+	 coKsWhtBMKhFqbhzhRu4qEBkFpu5sfFihWZXKKaHW9oFtwOp/Ya7mdhhfWzBgQ/rykw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792831243;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:
-	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 X-Received:MIME-Version:References:In-Reply-To:From:Date:
-	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=yXq52twcMI4Pp7oE3JQoJWzm+YSJCWMd6m0T6uz2FyY=;
-	b=QTxm/jTYvesFc9ND6R1/UrzKKF9SROPja6Hg94cFQKvK3VB067+4uidM0LPjV4lWs0DW
-	 /FvtOl0ZmrvcclcAtvZSTCplAHgVvhxr0PQg0gU+12wMXWkBsX81JrY6QjK1SmMbMXwZx
-	 Nb4+lo2oTC0eqXVNjogqxwgtrqQICrKfFSTom//GTQfVtz0DGfdunUar4b6D8yrWlmo9Y
-	 Z7n/750RoMmZY1XtywR9JD1l4j+pnj6Y6rVKnnhnBAdV7rKTx+Y4Mu8R6DmVBkSj0UTO0
-	 7LNwVORX16ivz3+ffLjXafnqg0JwoTJbxSzhNqIdBQHBItGevbrlzgo6TFYTuEgHcwg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792835499;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:From:Date:
+	 X-Gm-Features:Message-ID:Subject:To:Content-Type;
+	bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
+	b=jBOOtg0uTSIQUaO/iotWWBYUphmm8Armbk8HWdjbbttGvLTiVYR1wXThTP2m/8607bEn
+	 CzOIrWcmNYtoPH7G/041jOwDnkJjLEbIilIXuEhEyhzyjPukGuV0rYoVrkJcQU9L73uu5
+	 qDE8QwoQKKnQqIiBoMiZtKV6lMgQGKxSZ+epD9iGTxx7P86NtrBRDiXOZ5hhJQ2OS+tZH
+	 23+WEg2jr4hYae9VPyNyniHiSVhDPLcVSiu1qgCRB8340h97Zc0SvtEtMYMs7kdDgMHAA
+	 t5/tokZF1Y7ORYiJPxcY1b8THSjRE3okia+/X1BI5oEeoJRKkyzmM03wzepyTK3NZIw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=canonical.com;
-	spf=pass smtp.mailfrom=canonical.com;
-	dkim=pass header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=RWGzfM5E;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=185.125.188.122
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UvzDO78A;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.173
+Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F5A606A31B
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 08:40:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 47F5A606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FA66606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 09:51:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5FA66606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=RWGzfM5E
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2AC15402D8
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 08:40:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20251003; t=1792831239;
-	bh=yXq52twcMI4Pp7oE3JQoJWzm+YSJCWMd6m0T6uz2FyY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type;
-	b=RWGzfM5ErxOVLdI8XJpxlcLmXn8iUZXzY2VW2zIJgikQXCaPH/ITUBadQJS/HQBt9
-	 50s4xhguHny6+B36AQUx4cXY0sxwvZEh70Wcrh1BrMwVo/U/5YTrdROLf4gRy2rQUE
-	 d2m6gfSZGo6j/qNVznjSAfMNzqDk3rMb/1wvBfuQh6+/jJZ5JZjIdmR2Ayw9fAIA59
-	 88KHXOP7Xlss3P/0FwlrKvGm+2zB2w+Vthx6j1vNjqhsiaRyIZC4fgGrL3Qsno3CEt
-	 v70vtzef3j9+WWfpI8DrplobNtYX0j/abb4XyLcra6mjvl9XjMWWoCX3XMsVTK9MxD
-	 KurQU6EQhCAMh3P/MmpFVQoVjb+zjItCjX8jrnHO/nVUQy01xQnpyDtAMGWYZQ2pU0
-	 vXMEm2KaBf8FP93vBsqIcuwoJ3QyRSoEAuEtJeqznIlSizDhxySNdaUI4AWyPIvgtQ
-	 o8k8rZ2gee5IfiXfYEloK8mrPOuWN+iYMZi0TqIZN1Wx+dhdmdg+KptcZu2xfeV0kX
-	 lBIFXBCXraIXbBtJTu2sZytV00Md/Z0LduY4vjWUyhUYPjTqkGQU8b7uoiAiZsvnmS
-	 MVZr1NTRti6GSTcqEt+nCeDfmLUsFjQXioNvMd+E3r8eUVQxhG+UZUglUH9pXj014Z
-	 GQi75yZBJunvS1o2j81BM3NE=
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7ffe90b2cfdso813689a34.1
-        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 01:40:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792831238; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UvzDO78A
+Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-36681e85e87so188256eec.1
+        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 02:51:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792835498; cv=none;
         d=google.com; s=arc-20260327;
-        b=g1Lp0J+xr+mdLpmtyHPv+cYblua4bB+MjqI/y7gcCzRooM4awdMDKCjDf16LNUTsTR
-         sOKVOjXH/r7LRCoa1/RMdIZUWa59UHVRIc6+W/g880iPEvMWbK81lEjeBT8/rawRgU1j
-         zILWPdLe+6xdfizKXO41ILNTeAjTPn1sKew67q4m/6AHpZDXsysAxCs3CvYBV4eGJvT1
-         OsnRdseJMdYuZZGsw/2Wx+9FJDV6ckJgQWgJKsNsC5Bv7ozicB6j8mh0i02w+nHGbRd+
-         JbhNMFMrwusi7N4PxAr6fmdCBd2DSd2M4LATOO5ULNFwCWdf6BHfGv405BgbTZ0uiEyp
-         Njow==
+        b=K2LHgKwdSeORCNht1dqqix39PsCEQyuK5W3ZryAQ5I00HIA3srnXxnTJz3b0tQjXwj
+         L3p6ejlz+KoK+1XO9+YuYm15k/CztL4dg8zaRbMRcMmhQTDSdGwuDpUKgexIKWGGCM++
+         Awht9WIxZbn7pYcYcNmANhU27z/MtpVStXK2a7vrOiJcIx7sWNOVfxxDOp3Y3gzEN14V
+         ehz25cNc7culYSayo7AMETnfZQ2ychIAgrMn45r2tTK+dIwoZ48qp9TN88MeIAT2izRH
+         jjy1sAQxyrzBD/B9p4LtvXRxIs8ddzRlHcxt366xiT6/mtwD1gQby1MQUoxNZoaJrFzh
+         0KiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version;
-        bh=yXq52twcMI4Pp7oE3JQoJWzm+YSJCWMd6m0T6uz2FyY=;
-        fh=2uBPYL4qfXd7YxRhj70ax1je9Y3bi0NJwXAVPCYpjmE=;
-        b=cQYMJI1tWkLM/giAkQAZ58yt6b96Wo0rI1z9HtTcrQ1gvWKmgDPzTG1eCAH0XkZjyT
-         jFHYQLDDfhyhUhODvFMHYuo0KJEaUVKl8LBK4bFU5L8S3qOT4BOSIie86O7iKDi5czF8
-         YBKOG7Es4aE8PVupdRK1cUQF0vqYPZWsb7RuMz9uwmmbfc40jRBxRsf3DDZey8S3IydY
-         XZV5CL/uKiLJJMamlxoyLmQcPVB6UUuGVf7WyH2qaHw3UEdMt/LSq8VFH4+0oxNC+jx/
-         p28MSaTOJoLUIkgOMTOHZom2udZUJ0J4uPxMsVCKJ4SzCXVsPaKzTh5NVBarbiDtF+y5
-         zoAQ==;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
+        fh=3xwkVqf7pOGEVxIfFiioFsp8V5pHuGMuOEVeglcpJ3A=;
+        b=J8wgrjzLcZG+UsqBGcO8CwfGk5C52oXgyvTHbxxki0ZDhCUbBMFo2ttZc8z7vfKW+t
+         Zwv5AyQ0pvXXHSU63WskxNgEp9Chs9QF+XONTbtudNzFNJbg2P/xxtQ0FVLMdLvYZinc
+         4ZnnJ9NANwGDicDLOQZyADgyOf6OeKO1rFf4LQHXOJ7Jp59ieg7gujv3uVgbRH0HjlWG
+         WPlWZDQu5QBsBGMbO4CcOd61qXvzITJyMQDl7Pvj1JGYxXQ6gRXWHnEa+pngErBqqFfb
+         ks/bH+Jo7rWIIcwfpjI2u9F8lJL65JE0dA51/eymjO8sFsRye13JrsLpr5fI2uPs/zpv
+         b/XQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792835498; x=1793440298; darn=vger.kernel.org;
+        h=content-type:to:subject:message-id:date:from:mime-version:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
+        b=UvzDO78Ai7JHXSkiTJGRXae+A4QyEFi2H2uvSzAgk3+zJIb9Z3QDCC7eAml83VMYT0
+         0sRm+r4J22rvuBr6dIWNTnoSpSfFkaeVLs+6hEbMTDCeFxWSM+4EHS0ladzL+5xmhL4P
+         qeD4jS0JwWNDivjeh0ghL072fK5guEk2sfKGU6EBs5puzDuB/Z9bpMVhriWzNLJqw7we
+         B9BKyU0omAazxbFzu8gqx+cYMDZMtvyzZWmhE5RSrvCKET0n3yhrxqF8z1F2qa807Nbk
+         RU1ay/53zQ3lbyt6S2rVG1EufXQjpNw4hh+bbfrGHCPU5Zar/t/4mLKH8MaHsSXwjE49
+         ENiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792831238; x=1793436038;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1792835498; x=1793440298;
+        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=yXq52twcMI4Pp7oE3JQoJWzm+YSJCWMd6m0T6uz2FyY=;
-        b=Bnpe2uwRBgJa+hWEN81MEhm2lXb8LvU4rKkSMDNTB9S09DG+bhhgXwt8D26xQK9HdZ
-         g0i72CFnIe+f7Gx0x1zX2IiErGtkedPrvVqod+N/jf3snbKMWGrIsQCV0hCX/Kok6kjr
-         7NTqbFumUqQuvgJa3oi1Vm1xqallI/7DeALu3S7tjyWJzRuZZgeccJkbhTbpCQ5Z3P7C
-         GU17ZTc9RQJ5SkTdLDVlxNHP+rmurTG5yuK84nknf5qXAkRszhQzkWIt7bGwrdjZfFlt
-         efkGKJg4amTPlgnrWd5bMchCPw87D56VEG8V4kj22qpNQouzP1wj5joK7kINcHILv4r7
-         85Fw==
-X-Gm-Message-State: AFq9FYIi6+BzBGwkULo6Qbvog+DLaplQzWwQTgHpBM5XjbR8tzLIYfcx
-	AdylWbqmZDWk1++U6FTYubg0EuNPqxSebIyQhYRmHBPa/mVu6ePvFPFrOfrmZ6zIdgXQL4Dcpn8
-	IChO8WTVHNhjwCObVi1Beve4rDqEJmi8RHXNTLI896pxojYT3r4drnCYKoldLddegJtUp0viqjM
-	fYqmc2WLXly40aY8sMF1TelDtON40Qzq4S9a9iepqC/OwxaX8DTGfzgUNHuY7Yxa8k+Ss=
-X-Gm-Gg: AYBFou04vJCpjAA4RYxJx9T5NI2v0+WvAOdKSv6xq+vWGqTcr1+KAR2qguKuDBTfJSi
-	IXAHu7/ZzRjY4pcUeKU29dO48UqI6ZoYEGHN5UgIBXmhWEVKn/SQTJ6ErLRbsY1SYGwJ3n/IAXH
-	SLF83iKUr4mAgCmHVbTAgkYT1DyuYELGGDH99oLkc7i3RLb/9zyEJfU6/FN8fSM273pk1V5hy5r
-	4er97qTg1WL1jRvsedtDGuGby/uIEKpmRoOscGHhHBunDhoN51C8j8xZkBVKsJ84fBtwRR1yV3R
-	/Yct64FzxHJ/0ds=
-X-Received: by 2002:a05:6808:180f:b0:4e8:9e40:a0dc with SMTP id 5614622812f47-55bfff897a6mr1484029b6e.1.1792831237658;
-        Sat, 24 Oct 2026 01:40:37 -0700 (PDT)
-X-Received: by 2002:a05:6808:180f:b0:4e8:9e40:a0dc with SMTP id
- 5614622812f47-55bfff897a6mr1484014b6e.1.1792831237305; Sat, 24 Oct 2026
- 01:40:37 -0700 (PDT)
+        bh=vjxoIJzlpzcgf9BPcIKsojKmntjoGNgJq7tusKjlXR4=;
+        b=GJO5tk6TOBsWqRbfijcIH/6mXzhKdYooE2HJjKjNz07TM7wErgemnRAoRKFKEPDgnX
+         uSKTvtYOvi3dMbNI89L1uUVrc84TC2w1A2nt5RqITTnxKrlsXx9Se/L4toKwEmZjc3Gq
+         DRC4YYaQDD0ZxDh+FLMfsS2jQkYxZ4K3TOkYpAX1qLXpDRjndvAQleNVQ8Qd12FDqOjt
+         HQHnbWXE81W3Fb8NcIFpFUNRGiKH6bw1P8liwc048EP50g6iTbO8mDvICT/4aYe7toJb
+         vsiZlXUbiYbj+avVIgk4NoF3ABOGOnUzWwin3fzWfYG9UCyMXIOgXB0xG1BHWHtuQUzE
+         /thA==
+X-Gm-Message-State: AFq9FYLZSM/r66FjNc49Lczazr9VUtqfYkHm+qOD4zAhnssQ+LjjGEPB
+	Scg0zMwWAmedJs8M6cBWlUOdrfFeb8Rgges2SdQO4ZfxaIKmAV+CXZg3qBkry5UyE52Wj75PGsL
+	Bb3fZxXJvhoG/SrDQciv8FFXtB1Pd/zuYRzuI
+X-Gm-Gg: AYBFou2GRPqmJAY2Iwvf5SN5aFqdWWiJLrbkFvAKTSVxqc03qeqIa+Sf5KNE8wFkWTr
+	EAUTNKP8smviAFhKidEOV1JVo3h8eVxEOLi3ea+9Lox6kL27TLrevu101ryWA2pMcyLCvSIv3Aj
+	yt49uKlPnIaqeI2Q+H5gnnnWhjdhFFbNStVB6qgXQ4I3Jgh6Hpa2g/YQXcZ0TD+mhhyJgGpV7Sk
+	DWxzEQVKvLzZR5360Bwva2jL3kV3IuEE9SLs0I4pvMLxwYBWQq00i31mMdyFfcuyI4k27U5MjY0
+	MANdCaN8DHVieUymx/m/K/PZXsx3fTpzHCuQ8wNcpneZpxlRi+XeM+oahq+g+WuTghNrY5vGicn
+	qC/ymTTEH9JHdZX+y0WqEoD8fGkVYKar8JBeOJq9Obc/SAAdUBIhhGXtpU3Te87pJUw==
+X-Received: by 2002:a05:7301:4394:b0:353:8122:27b4 with SMTP id
+ 5a478bee46e88-369e845c87emr2587293eec.18.1792835498429; Sat, 24 Oct 2026
+ 02:51:38 -0700 (PDT)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -116,159 +99,34 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261024022930.2704030-1-an.wu@canonical.com>
-In-Reply-To: <20261024022930.2704030-1-an.wu@canonical.com>
-From: An Wu <an.wu@canonical.com>
-Date: Sat, 24 Oct 2026 16:40:26 +0800
-X-Gm-Features: AclHuK_lw0KrbOay5TaRrHza0ih03wUncsXLxEBm0ja6_fb_XrMQvlNi_qhwGNo
-Message-ID: <CAO4Mv0bkBSHHXo=_0SyCAN54Jb76fy34ba1hFVPVkFfs6ufoqA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] serdev: handle devices without an ACPI or device
- tree node
-To: linux-serial@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, markus.probst@posteo.de, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, hansg@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, mpearson-lenovo@squebb.ca, 
-	derekjohn.clark@gmail.com
+From: Vivek yadav <linux.ninja23@gmail.com>
+Date: Sat, 24 Oct 2026 15:21:27 +0530
+X-Gm-Features: AclHuK8DTI2ZJCEbvN8MElAUlRdRfPs17ZsSGClMvqpYMHPqNrFGcKFC9bXvojQ
+Message-ID: <CAO6a-9_b5qEu7WqZ_Db0fwKRo29zhsYV+UbQFPvHJa+O=HES-Q@mail.gmail.com>
+Subject: Questions on UART FIFO Depth, Watermark, and RFR Values
+To: linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Hi Makus
-    According to sashiko:
-'''
-In drivers/tty/serdev/core.c, serdev_controller_alloc() places controller
-devices on serdev_bus_type:
+Hi,
 
-    device_initialize(&ctrl->dev);
-    ctrl->dev.type =3D &serdev_ctrl_type;
-    ctrl->dev.bus =3D &serdev_bus_type;
+**File:** `drivers/tty/serial/qcom_geni_serial.c`
 
-When yt2_1380_fc_module_init() calls serdev_device_driver_register() for
-yt2_1380_fc_serdev_driver (or when a new serdev_controller is added), the
-driver core runs serdev_device_match() against every device on
-serdev_bus_type, including struct serdev_controller instances:
+The functions `qcom_geni_serial_port_setup(...)` and
+`qcom_geni_serial_earlycon_setup(...)` both call `geni_se_init(...)`,
+but with different parameter values.
 
-static int serdev_device_match(struct device *dev, const struct
-device_driver *drv)
-{
-        const struct serdev_device *serdev =3D to_serdev_device(dev);
-        const struct serdev_device_driver *sdrv =3D to_serdev_device_driver=
-(drv);
+I noticed that the RX watermark is set to 2 (`UART_RX_WM`) in the
+former case and 8 (`DEF_FIFO_DEPTH_WORDS / 2`) in the latter.
 
-        if (acpi_driver_match_device(dev, drv))
-                return 1;
+I have two questions:
 
-        if (of_driver_match_device(dev, drv))
-                return 1;
+1. **FIFO depth assumption:** Why do we assume a default FIFO depth of
+16 words? Since the FIFO depth may vary across hardware
+implementations, shouldn't we detect it at runtime or obtain the value
+from the device tree?
+2. **Watermark and RFR values:** What is the rationale behind choosing
+these specific watermark and Ready-to-Receive (RFR) values? How do
+these values affect UART operation and performance?
 
-        return !!serdev_match_id(sdrv->id_table, serdev->modalias);
-}
-
-Because serdev_device_match() does not check is_serdev_device(dev) before
-casting dev with to_serdev_device(dev), and yt2_1380_fc_serdev_driver has n=
-o
-ACPI or OF match table, serdev_device_match() falls through to
-serdev_match_id(sdrv->id_table, serdev->modalias) on struct serdev_controll=
-er
-devices.
-
-In struct serdev_device, modalias[SERDEV_NAME_SIZE] starts at offset
-sizeof(struct device) + 4, which in struct serdev_controller overlaps the
-struct device *host pointer, ctrl->nr, ctrl->serdev, ctrl->ops, and extends=
- 12
-bytes past sizeof(struct serdev_controller). When the overlapping byte at
-modalias[0] is non-zero, serdev_match_id() passes that non-string memory an=
-d
-trailing out-of-bounds bytes to strcmp().
-
-Should serdev_device_match() verify is_serdev_device(dev) before casting de=
-v
-to struct serdev_device?
-'''
-
-If we remove is_serdev_device could cause some problem due to the
-serdev_controller could also
-run into this function and "serdev_match_id(sdrv->id_table,
-serdev->modalias);" can be a potential risk.
-
-I will add the "is_serdev_device" back and send v5 out.
-
-BR
-    An
-
-
-On Sat, Oct 24, 2026 at 10:29=E2=80=AFAM ChunAn Wu <an.wu@canonical.com> wr=
-ote:
->
-> Driver-created serdev clients without an ACPI companion or device tree
-> node currently have no modalias and cannot be matched to a driver:
-> their modalias sysfs read returns -ENODEV and their creators force a
-> bind with device_driver_attach().
->
-> Backlight function on dell-uart-backlight is not affected: that class
-> device is registered independently and gets its own add uevent. The
-> user-visible breakage is the failing modalias read on an existing
-> serdev child -- Checkbox dkms_info_attachment aborts with
-> "OSError: [Errno 19] No such device".
->
-> Resolve the two long-standing serdev-core TODOs by letting the creator
-> pass a modalias to serdev_device_add() and giving the serdev driver an
-> id_table, modelled on the SPI bus. ACPI and OF match first and are
-> unchanged. Convert dell-uart-backlight and the Lenovo Yoga Tab 2 Pro
-> fastcharger to this path and drop their force-attach workarounds.
->
-> Changes in v4:
-> - Patch 1: drop the dead is_serdev_device() guard from the match
->   callback, and dereference serdev once at the top
-> - Patch 1: drop the "large enough" comment on SERDEV_NAME_SIZE
-> - Patch 1: in struct serdev_device_driver, place id_table right under
->   driver, next to driver->of_match_table and driver->acpi_match_table
-> - Patch 1: merge serdev_device_set_modalias() into serdev_device_add()
->   so the modalias is set at the only point where forgetting it would
->   matter; internal firmware callers pass NULL
-> - All three patches: tightened commit messages and moved the v2/v3
->   changelog narrative out of Patch 1 into this cover letter
->
-> Changes in v3:
-> - Rename struct serdev_device::name to ::modalias; dev_name() is
->   unchanged
-> - Model matching on the SPI bus: add struct serdev_device_id and
->   id_table; drop driver->name matching
-> - Add serdev_device_set_modalias() helper and SERDEV_MODULE_PREFIX
-> - No MODULE_DEVICE_TABLE(serdev, ...) support: both in-tree
->   firmware-less clients are created by the same module that provides
->   their driver, so udev has nothing to autoload
->
-> Changes in v2:
-> - Instead of silently returning success with no modalias, use a
->   creator-supplied name as a "serial:<name>" modalias fallback and as
->   the matching key, so clients can bind through normal serdev matching
->
-> v3: https://lore.kernel.org/lkml/20261023052717.2577234-1-an.wu@canonical=
-.com/
-> v2: https://lore.kernel.org/lkml/20261022032842.2492572-1-an.wu@canonical=
-.com/
-> v1: https://lore.kernel.org/lkml/20261021092124.2306053-1-an.wu@canonical=
-.com/
->
-> ChunAn Wu (3):
->   serdev: handle devices without an ACPI or device tree node
->   platform/x86: dell-uart-backlight: Bind through normal serdev matching
->   platform/x86: lenovo-yoga-tab2-pro-1380-fastcharger: Bind through
->     normal serdev matching
->
->  MAINTAINERS                                   |  1 +
->  .../platform/x86/dell/dell-uart-backlight.c   | 33 ++++------
->  .../lenovo/yoga-tab2-pro-1380-fastcharger.c   | 25 +++----
->  .../platform/x86/x86-android-tablets/core.c   |  2 +-
->  drivers/power/sequencing/pwrseq-pcie-m2.c     |  2 +-
->  drivers/tty/serdev/core.c                     | 65 ++++++++++++++-----
->  include/linux/device-id/serdev.h              | 19 ++++++
->  include/linux/serdev.h                        | 12 +++-
->  8 files changed, 105 insertions(+), 54 deletions(-)
->  create mode 100644 include/linux/device-id/serdev.h
->
->
-> base-commit: 9e947d96915af63e28896caae85a81b74855621b
-> --
-> 2.34.1
->
+Thanks,
+Vivek Yadav
