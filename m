@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792824632;
-	b=InXZ1GXWgVLSt00VYShny5o/u9Ihwia5g6gp7/tpCkJh3MAomSJ2cPz6qd4L32dPq+ps
-	 00bmMLmnt1DnJepNUcdHWbUv1yo2fqdB1V52Ax/1BGfqBsAD3eBW8W3CDoIMsvtOdAC/e
-	 we0jcP9Sdp9Jx7UQABVFlSfHMKq2CG9cvV82Jg9X02SmZVp9/a694+joDYVXM91Lfuit5
-	 eEygs8ZBZtc0KV3R0dpUw4kMZXY6EiXP4siOTkYH86qObsO34CWLcXsq7l+FNGDlEYWvj
-	 zzYiHWL73DVNKqyCTSkjdbE9ER7RhHBe6wWEuUQtOp7dvbfTjm9UeYU4x/0oNqeshpQ==
+	t=1792824942;
+	b=C8U+vR0x/dre1FaGFrBS70jrWRgaG19Kkfrgk2ghbkQxV0Ep3TSOIXMOOrDvR41ArOJl
+	 l3S8JZlR3+Wj7EMJ7pZ34GQum4VqqtjxvuALvU/+1SV7w+VBwbqIH7RzkEmPeX+/rW++P
+	 VC8bsh7NeD9/nlYSeEJyStEEVBgfWGmPxODfYoqLpM/a+uWSEujG4FBaSLi7XHmubeyaB
+	 UeibuchvRvMNmhzBgu7vImMHO8+F3hjxokG1FjCcfJzK/uXweoPDJvG5IPdo3/fNeulxC
+	 DOzOEtKE5vny3ce18V5Aw1sjK67D1948Xv/lSW1cDtJPEti2hkgGmII2e70KwFkCdsg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792824632;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792824942;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=U7lkWM1icUBok0mW0cdkmYyTSqtjf9+7YVfQCQ/6Bro=;
-	b=IKICRIuqeuqC/5UBxnwTK7j7HLVudWbjviang2ZJvAM6VIkMGBtoS5L66ebW6aLAFCsS
-	 kOb3xUsHOlo1Jn6PoxEj8UYypxg5jvG5IOWid4Uug6piluN4sDxe+AXRrR4qIuiQaMuMq
-	 nukiaZMPo8d8bmEuPdq+fyEfUrRvTwmLPsK5g6giCTCA6FsgHAqElmdcVwAD98vKE6ATT
-	 egweMqYwJTUfToThpA4AXfJccbtmqd7uQiEcefLKJi8GvXfQxC8sITiNBBIcedv2Pc5Mr
-	 ASC6Bz7XaaJ/4tCYL5kyByIa7m07f3z9NysoFiSHhnlZ6oFCe0n5iK8uzbkDBWWOPrg==
+	bh=TN76DgHGuNiXQUw80MnBtKmr6Bz9p4P+NPXEazJyMZc=;
+	b=BQI8/DyDHv1W4cB8iSZBTQY6ZH4fxhaFH8aD5yxoUJmgvQhnu14hAB3pEeW7bAs+Zj75
+	 iflKfkljsBIJjZ+3sTDiDPEs/3T9XVqe7ST/o9/7amnCNapn57t7rYKOwg1wGXjmBf46u
+	 hzPsNny0gQkXUyESdZa76fMgqgac6bImur5fliHsZ3BkXJ5Y4UdY1Vsfy5qyyzOxoNQ4L
+	 kUxeCNf1Wdlgg4IEuSFt5JmVa4tMRlQXT9SiLdTWbvCJbT6JYn4NMuT7WTe7Hs9VhGFZT
+	 ODqIxfXysKJ2D3O2HxgmA/OeaSyqoJ55In3sJSFSNfuTQResjl9k/jld8oZDew2uDuw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d1bDNlKv;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lqgEAMdl;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5FE4606A31A;
-	Sat, 24 Oct 2026 06:50:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA8F0606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 06:55:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d1bDNlKv
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BF121F01825;
-	Sat, 24 Oct 2026 06:50:31 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lqgEAMdl
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB6D1F01825;
+	Sat, 24 Oct 2026 06:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792824631;
-	bh=U7lkWM1icUBok0mW0cdkmYyTSqtjf9+7YVfQCQ/6Bro=;
+	s=k20260515; t=1792824941;
+	bh=TN76DgHGuNiXQUw80MnBtKmr6Bz9p4P+NPXEazJyMZc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=d1bDNlKvLO1wnTd4A6+6/yItsAANhcrCheZzS2NVRM1oR3P4rHQqOFO8AHXgy+H5X
-	 brGOtwPf7wDorTIPfHe9mOSKfmG7kKPvDCjklmHHamXkZSPynrpq0ffFxJr6Vv8ahF
-	 nEYQu1vyXytUJmHuBzvdjf/e9kmWUB0hCl1+sXUrg6VW/IreA803GbhdA5nL+XIeXe
-	 qzSMplrNaEgO9bxKYfeRq2BVEzbXXiuyXR8abMRwmgo0ORsaAFUuLOqHNy/a/LmKz2
-	 PMPNHygqDtaJt1hwoa4GHK0q+5Mq0UDk4pmtug6enAXUMbSLDBl2tcgFQFfUgd7/Xl
-	 uXF4AJ925vmkA==
-Message-ID: <sashiko-outbox-183574@kernel.org>
+	b=lqgEAMdllb5SIi4s/QsMQl7H8Dfuugf91dHGGFKUeTHWlRpLd2R+J//kzRom4YlAo
+	 k6AiZ1UtmvWAFXPC3zkrWUKnG2GE6rChg80QGUxaqUSbQoR3gvSChBCtWpTVHKAA6c
+	 +eR7207gq+uzH59HHLJZG1AFWhyPRXr/dgE2b0VGtoaU5lVGTSP/foTaK6FQcA3oH/
+	 P21HOaoJ+XDunWpKpmHy8pUw+M/lGuvXvOyLH6JY4qGwbjyeYGdk3MZmY8RH1OC+AS
+	 SRNSKJEscZRjQhoBDqumr+xgYeX3YKf3A+74rKp2v+aggC8kyVuf4p5OPbzGMuAohO
+	 GEfLx8cfUcKQg==
+Message-ID: <sashiko-outbox-183576@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 2/5] serial: serialize asynchronous write wakeups
- with the port lock
+Subject: Re: [PATCH v5 4/5] serial: 8250: drain canceled TX DMA before
+ reusing its buffer
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: linux-serial@vger.kernel.org, imx@lists.linux.dev, Frank.Li@kernel.org
-In-Reply-To: <20261024-submit-serial-8250-dma-cancel-v1-v5-2-9e52968928d2@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261024-submit-serial-8250-dma-cancel-v1-v5-4-9e52968928d2@gmail.com>
 References: <20261024-submit-serial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com>
- <20261024-submit-serial-8250-dma-cancel-v1-v5-2-9e52968928d2@gmail.com>
+ <20261024-submit-serial-8250-dma-cancel-v1-v5-4-9e52968928d2@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 24 Oct 2026 06:50:30 +0000
+Date: Sat, 24 Oct 2026 06:55:41 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,61 +61,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] serial: clps711x: deadlock between uart_clps711x_int_tx() and stop=
-_tx()
---
+> uart_flush_buffer() resets the transmit kfifo before calling the driver.
+> serial8250_tx_dma_flush() terminates DMA asynchronously and clears
+> tx_running, allowing a new write to replace tx_size while the old callback
+> is still waiting for the port lock. That callback can then consume bytes
+> from the new transmission. Reusing the reset kfifo can also overwrite the
+> source of a transfer that has not stopped yet.
+>=20
+> Reserve the flushed FIFO storage through serial core before returning
+> from the flush callback. Keep tx_running set until a worker synchronizes
+> the terminated channel, suppressing old callbacks and new submissions
+> during that interval. Return the mapping to CPU ownership before releasing
+> the reservation and waking writers. Normal transfers continue to use the
+> FIFO directly.
+>=20
+> Reuse the locked completion processing after retirement, including OMAP
+> [ ... ]
+> The race was found by inspecting cancellation and restart while preparing
+> H616 UART DMA support.
+>=20
+> Fixes: a424a34b8fad ("serial: 8250: Fix TX deadlock when using DMA")
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-commit dc0a2d4e309be9916a0d844a2a8caf7397942a8f
-Author: James Hilliard <james.hilliard1@gmail.com>
-
-serial: serialize asynchronous write wakeups with the port lock
-
-This commit acquires the UART port lock around asynchronous write wakeups
-and transmit helpers in several serial drivers so that uart_write_wakeup()
-is serialized with port-locked serial-core state changes.
-
-> diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-> index 83186bf500027..054b9d8359de2 100644
-> --- a/drivers/tty/serial/clps711x.c
-> +++ b/drivers/tty/serial/clps711x.c
-> @@ -174,8 +174,10 @@ static irqreturn_t uart_clps711x_int_tx(int irq, voi=
-d *dev_id)
->  			break;
->  	}
-> =20
-> -	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-> -		uart_write_wakeup(port);
-> +	scoped_guard(uart_port_lock_irqsave, port) {
-> +		if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-> +			uart_write_wakeup(port);
-> +	}
-
-[Severity: High]
-Can acquiring port->lock in uart_clps711x_int_tx() deadlock with
-uart_clps711x_stop_tx()?
-
-The serial core invokes uart_ops->stop_tx() (uart_clps711x_stop_tx()) with
-port->lock held, for example during uart_stop(), uart_flush_buffer(), or
-uart_port_shutdown(). Inside uart_clps711x_stop_tx(), it calls synchronous
-disable_irq(port->irq) while holding port->lock:
-
-drivers/tty/serial/clps711x.c:uart_clps711x_stop_tx() {
-	struct clps711x_port *s =3D dev_get_drvdata(port->dev);
-
-	if (s->tx_enabled) {
-		disable_irq(port->irq);
-		s->tx_enabled =3D 0;
-	}
-}
-
-If uart_clps711x_int_tx() is running concurrently (on another CPU or in a
-threaded interrupt handler) and attempts to acquire port->lock while
-uart_clps711x_stop_tx() holds port->lock and waits inside
-disable_irq(port->irq) for the interrupt handler to complete, won't both
-contexts deadlock waiting on each other?
+Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261024-submit-ser=
-ial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com?part=3D2
+ial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com?part=3D4
+
