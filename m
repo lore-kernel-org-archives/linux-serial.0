@@ -1,57 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792814532;
-	b=gS0JOIlCGooSOhKHDj+pXirHsWWIIbWsExB6qVKt8o0ImCXCWF4HitPNbG5aRLVI12HD
-	 Msybo+06ja5sscT/sqR2rViuYHuSkhoSxE0/cOdDEhafgsgLknRR3T0e1L71B8/LT+IeU
-	 zH+AipeLbUC56HTPSD16cVEl0ecv4pNZX4NopJV493eI260ZjWWhKolqDTK4fwyhcStsZ
-	 lX3CvyazyFpxwyYWiENpkp9GM8vR+4TY5gm5YjB8c1C8kf7iuWc9xNU5dnytzZBwM/cXZ
-	 PLOUIU0qQ5dSyBb+wJONZejxbxjMHxBBWpTBUWnIbWR67achr9Qr0ttsFA16apPdziA==
+	t=1792814850;
+	b=UNXvwsixLyPlo3PizeN4yn1F1NS6q9XPNcd0gycNX5t+Fmj/+nQTaqYKYdEQMrng6Wg5
+	 +1J2ijDbuMltX12U/vM4mo0tIGRFtw6BPz/LPGOKA7AE3gKEA5/jMq1Au0CzHmCMpw7YI
+	 fQwkUr5/OGKIlp3aV13UprlWRS2M+eKI2kfh2ksJgsOmEizuSCo3GWB0mrM7yHV1h1UId
+	 dWB7uej5jx4q6wj0TMgd8YpzK21AogxNgrJieUXaR7e1ueeJOWHaqGm4M2hHjxAUwpJvM
+	 iHDMi5NKU2Yln/4FxdJLi1701YbihdjrHzJgxNFG9rm68MzfUMPxrkG3AAXbw92kl/w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792814532;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	a=rsa-sha256; c=relaxed/relaxed; t=1792814850;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=bAW9h2tUGtY/enb1ivgZUDTyE7K/Pw7kZvjPEYa+cQU=;
-	b=ZvKaCp5FawduhuoPWYLMWJnbEzlqpBBOvThx5kZtN2CPCo7P7iXldPUd7WRKs1kd/R87
-	 nxxDfGF5AOp2ats0D04VZzEyOjGiCZzwag+/5QLyDO1kJf+W6hleaDjPg4tQpqL+9J0xm
-	 t/lSuDHyokrPqpWotd5C2SMewhMHifIFSiGyOHTJCvDyXvoBQ9pUvRLgV8LWActHup290
-	 wf+5EqmbvdSaZm8zqPsGOjHPb+2asT441hQFPo7sfBb3/ozFaHUPHSLYSv9aoM2Nr92pw
-	 OxW6DblYGOmSu5/SIeMKdZ9jvDjdoCaO3mKvKXu97wG9304td9Wx0wPH8qoKA2zbM9g==
+	bh=lJ+gXVjAjTUc7MW4E9DYp68frI0wTGEvsWclZZGaF7c=;
+	b=PZfdHN/TkOOl7NqTNe4qU+q2NH4Sv/3bnvRC/G+q+1UCnjwymN9ArTuKhhmGRUZ38Z+l
+	 mnOgANtMD6zWXR2RfqVEOCoPKrnHSe+JQ6dzU1NJEdU9AJxpXH3rwuwaajKfWuIUVaDFj
+	 JPi2Fb3NeImIUu1EwTxCBRSdcM5FVkwkY5p5wsh7SB1sABpdXg6g3QiRDv1Avzugbw4rM
+	 S/kUbuAsUi4puHR8yizKDeNQyZT8C4j3d/HnIjn2EgRoaVZpKqlmEGY1wpdNG3x/MoQBT
+	 mbdRkDHDL4HEOcX1U/KaqL05Qmad+RV0qnDTj4l0wrj5cBPSCG9aKJ6dD4n7g5nnw9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="D/J7dXk7";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PMwBT6DX;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 422E7606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 04:02:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A489606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 04:07:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D/J7dXk7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49021F01828;
-	Sat, 24 Oct 2026 04:02:11 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PMwBT6DX
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BC91F01825;
+	Sat, 24 Oct 2026 04:07:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792814532;
-	bh=bAW9h2tUGtY/enb1ivgZUDTyE7K/Pw7kZvjPEYa+cQU=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=D/J7dXk7QngzmKA7F0x8z9oMlpvFKbfd1ClmMAkrz41fQTdZ5tdS9lpNL/J/maLF2
-	 UxmaYvr76m2u6R2XdRX5bLq2gYXUqbT5chVhgx5wlMUQDahVnDKOPtHcUI2zbO8139
-	 BKaLl+gy90AH2hORfLFeVikPxfj+ZBuLENCGW13ODJ81D183+Fdkh9mrYgjziFypjA
-	 A7oLSW65B/qNDlh8eJPEVh4h2qCqzxP+jsXCUcOAVoayn/44V7As+kQCfcf/SvQXHX
-	 9CQC1fBZqlSbdt0dqlM2I/1jmjRnSm0PkHRUIFGj7gMTK8hYeVmQAssdkK853NDiOb
-	 pYCIKh+NJzTcg==
-Message-ID: <sashiko-outbox-183537@kernel.org>
+	s=k20260515; t=1792814850;
+	bh=lJ+gXVjAjTUc7MW4E9DYp68frI0wTGEvsWclZZGaF7c=;
+	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
+	b=PMwBT6DXMUIvSTWFDxAX4TIqd8IaEfIa1HMlJ43gkEWSh4g96IM7wzJQvWIcE3tua
+	 50QECk7X3NRhUaPWrtED5sOILI9W6Bw1gK47usCzGiSHX5rbIkisLSZOgmXx3Y+POD
+	 lswPz3VKa3ZT6cX59G5fpekaw4AcoHaJlPcHoBQjtHIYMdCwQilV/rF4PauJ+Emi0C
+	 YtS90RhycQ1btHVgOqhZiWxSwv76AOk9KHfilm+/z0qHUIJAZ2dY9W9UOTvt1tzNRl
+	 C6M5HiEueYsyIM9YKX2uFa1aPBxBB3PU4DK3CEubbDYSEO/YB6ZQB72H8/GNezMnrd
+	 jq+hx5zUH78Yw==
+Message-ID: <sashiko-outbox-183538@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 2/3] platform/x86: dell-uart-backlight: Bind through
- normal serdev matching
+Subject: Re: [PATCH v4 3/3] platform/x86:
+ lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal serdev matching
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "ChunAn Wu" <an.wu@canonical.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261024035011.2712103-1-an.wu@canonical.com>
+To: "ChunAn Wu" <an.wu@canonical.com>, linux-serial@vger.kernel.org
+In-Reply-To: <20261024022930.2704030-4-an.wu@canonical.com>
 References: <20261024022930.2704030-1-an.wu@canonical.com>
- <20261024035011.2712103-1-an.wu@canonical.com>
+ <20261024022930.2704030-4-an.wu@canonical.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 24 Oct 2026 04:02:11 +0000
+Date: Sat, 24 Oct 2026 04:07:29 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,66 +62,65 @@ Precedence: list
 
 Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-- [High] platform/x86: dell-uart-backlight: type confusion in serdev_device=
-_match()
+- [High] serdev: type confusion in serdev_device_match() via driver id_table
 --
 
-commit 845cea88ea8fd97f6d009ac4a558f36871acb863
+commit bc4039918b4164f5e3178978c756b91d89a4bde7
 Author: ChunAn Wu <an.wu@canonical.com>
 
-platform/x86: dell-uart-backlight: Bind through normal serdev matching
+platform/x86: lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal se=
+rdev matching
 
-This commit switches the dell-uart-backlight driver from manually binding
-its serdev client via device_driver_attach() to passing a modalias to
-serdev_device_add() and matching via a serdev_device_id table.
+This commit switches the Lenovo Yoga Tab 2 Pro 1380 fastcharger driver from
+manual driver attachment via device_driver_attach() to standard serdev moda=
+lias
+matching by passing KBUILD_MODNAME to serdev_device_add() and adding an
+id_table to yt2_1380_fc_serdev_driver.
 
-> diff --git a/drivers/platform/x86/dell/dell-uart-backlight.c b/drivers/pl=
-atform/x86/dell/dell-uart-backlight.c
-> index f323a667dc2d2..9b8ef91bb0a20 100644
-> --- a/drivers/platform/x86/dell/dell-uart-backlight.c
-> +++ b/drivers/platform/x86/dell/dell-uart-backlight.c
-> @@ -325,11 +325,17 @@ static int dell_uart_bl_serdev_probe(struct serdev_=
-device *serdev)
->  	return PTR_ERR_OR_ZERO(dell_bl->bl);
+> diff --git a/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c=
+ b/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c
+> index 8551ab4d2c7db..d0bd9d4e3137c 100644
+> --- a/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c
+> +++ b/drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c
+> @@ -219,11 +219,17 @@ static int yt2_1380_fc_serdev_probe(struct serdev_d=
+evice *serdev)
+>  	return 0;
 >  }
 > =20
-> +static const struct serdev_device_id dell_uart_bl_serdev_id[] =3D {
+> +static const struct serdev_device_id yt2_1380_fc_serdev_id[] =3D {
 > +	{ KBUILD_MODNAME },
 > +	{ }
 > +};
 > +
->  static struct serdev_device_driver dell_uart_bl_serdev_driver =3D {
->  	.probe =3D dell_uart_bl_serdev_probe,
+>  static struct serdev_device_driver yt2_1380_fc_serdev_driver =3D {
+>  	.probe =3D yt2_1380_fc_serdev_probe,
 >  	.driver =3D {
 >  		.name =3D KBUILD_MODNAME,
 >  	},
-> +	.id_table =3D dell_uart_bl_serdev_id,
+> +	.id_table =3D yt2_1380_fc_serdev_id,
 >  };
 
 [Severity: High]
-Does adding id_table to dell_uart_bl_serdev_driver trigger a type confusion
-and out-of-bounds read in serdev_device_match() when
-dell_uart_bl_pdev_probe() calls serdev_device_driver_register()?
+Does adding id_table to yt2_1380_fc_serdev_driver trigger a type confusion =
+and
+out-of-bounds read in serdev_device_match() when matching against
+serdev_controller devices on serdev_bus_type?
 
-Both struct serdev_controller and struct serdev_device are registered on
-serdev_bus_type:
+In drivers/tty/serdev/core.c, serdev_controller_alloc() places controller
+devices on serdev_bus_type:
 
-drivers/tty/serdev/core.c:serdev_controller_alloc() {
-	...
-	device_initialize(&ctrl->dev);
-	ctrl->dev.type =3D &serdev_ctrl_type;
-	ctrl->dev.bus =3D &serdev_bus_type;
-	ctrl->dev.parent =3D parent;
-	ctrl->host =3D host;
-	device_set_node(&ctrl->dev, dev_fwnode(host));
-	...
-}
+    device_initialize(&ctrl->dev);
+    ctrl->dev.type =3D &serdev_ctrl_type;
+    ctrl->dev.bus =3D &serdev_bus_type;
 
-Earlier in the series, commit 1b3d9973e0d0 ("serdev: handle devices without
-an ACPI or device tree node") removed the is_serdev_device(dev) check from
-serdev_device_match(), leaving an unconditional cast via to_serdev_device():
+When yt2_1380_fc_module_init() calls serdev_device_driver_register() for
+yt2_1380_fc_serdev_driver (or when a new serdev_controller is added), the
+driver core runs serdev_device_match() against every device on
+serdev_bus_type, including struct serdev_controller instances:
 
-drivers/tty/serdev/core.c:serdev_device_match() {
+static int serdev_device_match(struct device *dev, const struct device_driv=
+er *drv)
+{
 	const struct serdev_device *serdev =3D to_serdev_device(dev);
 	const struct serdev_device_driver *sdrv =3D to_serdev_device_driver(drv);
 
@@ -135,29 +133,24 @@ drivers/tty/serdev/core.c:serdev_device_match() {
 	return !!serdev_match_id(sdrv->id_table, serdev->modalias);
 }
 
-When dell_uart_bl_pdev_probe() calls:
+Because serdev_device_match() does not check is_serdev_device(dev) before
+casting dev with to_serdev_device(dev), and yt2_1380_fc_serdev_driver has no
+ACPI or OF match table, serdev_device_match() falls through to
+serdev_match_id(sdrv->id_table, serdev->modalias) on struct serdev_controll=
+er
+devices.
 
-  serdev_device_driver_register(&dell_uart_bl_serdev_driver)
-    -> driver_register()
-      -> bus_add_driver()
-        -> driver_attach()
-          -> serdev_device_match()
+In struct serdev_device, modalias[SERDEV_NAME_SIZE] starts at offset
+sizeof(struct device) + 4, which in struct serdev_controller overlaps the
+struct device *host pointer, ctrl->nr, ctrl->serdev, ctrl->ops, and extends=
+ 12
+bytes past sizeof(struct serdev_controller). When the overlapping byte at
+modalias[0] is non-zero, serdev_match_id() passes that non-string memory and
+trailing out-of-bounds bytes to strcmp().
 
-the driver core iterates over every device on serdev_bus_type, including
-the struct serdev_controller instance ("serial0").
-
-Because dell_uart_bl_serdev_driver has no ACPI or OF match table and sets a
-non-NULL id_table, serdev_device_match() reaches
-serdev_match_id(sdrv->id_table, serdev->modalias) with serdev pointing to a
-struct serdev_controller.
-
-In struct serdev_device, modalias is at offset sizeof(struct device) + 4
-and is 40 bytes long. In struct serdev_controller, that offset overlaps
-struct device *host, unsigned int nr, struct serdev_device *serdev,
-const struct serdev_controller_ops *ops, and extends 12 bytes past the end
-of struct serdev_controller, passing those bytes into strcmp(modalias,
-id->name) in serdev_match_id().
+Should serdev_device_match() verify is_serdev_device(dev) before casting dev
+to struct serdev_device?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261024022930.2704=
-030-1-an.wu@canonical.com?part=3D2
+030-1-an.wu@canonical.com?part=3D3
