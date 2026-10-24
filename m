@@ -1,83 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792863755;
-	b=XMud8cil9/BB8bO3drIwuW9pwd5JWs1YZz6yslck+be6YMJRk0hdW1alLetb7oKufUcm
-	 E5V+nETFbKbiOXSNYSLjK9BdmXdVuf7swo8E331cGi8FEdVnudOc51+OLTA5kAAViXkkF
-	 es8Xm4gGLEF0TMHSUP1BGjAjHKLhML35OLDQloEKRo5hvaZptur7cuDeyyMXMxHOT+fjS
-	 wNOQMyKjPoWX7w9Pvvgyuy3z3zn2FIvoLiYRaNgH5aJQd+gnX+7o1Aj0f62CfNX9quJLG
-	 Y+Kobu2VotHCWNfVoLjlg+84By7NuWusziw2+BOl3ElqocaDmFRnEq8riG3cE2ijFlA==
+	t=1792867522;
+	b=aLor0w+Bm7czJTNBGgH/CsOVoE5Rl9wnE6bFbjSlfG+gLCg0tfbqDTXYKv4GqaYBPkab
+	 rlKx9R3rN6hxCfC/gtkYXaucUOV6rzCCLSPcJNFl9U50eCRjTt/a55tqc11kSM3hq/8Ch
+	 VE7GvBAMFi9736D7g5gyZyjkdjo5obT43B4ZvThDNorITYp+ycFBmZjGfgt6gODPFrO1q
+	 6rh0hyxVWNBpypYH1Zyh+A81CVmYSNtctnqmijeZ3q60JX9Qf1kO2Oeej8c09MnT/nUzv
+	 R4ixvWR3tdr4ZauibT6TaUbeGM3DFErJ7rxhIBiiIfknDDQ+tu9ZAoTiSQMgHBvGs6A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792863755;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=BuZ1t5C7X+sSlJUKEoZNCJc0nbbvghvhuZ0zbUxxORM=;
-	b=JzhWeqhCTF62Q0S80bs/R0DIkMo4STV8L0FwOPfRvSLS60P9PTRbRSAmitqqbvVJ9U/E
-	 3yVvVqxQDSws0mTBH7X4N6ABGKh4qT0WcOJ4XSNrGHFC0MBef4GBuQbme1c871KKyi2F/
-	 HdLIMaNWpSFl7+rbjx4cxRoIHCoxOLdjtGnFhwEeiF+vsyJgMidK4seYyKjsTas7X989p
-	 WPs7bQYUvXK/G+V3titc5m4jytB7t8gNol9B75M1G5Gs5mdCS8Qqyfq7RWv0SV37hshJt
-	 +2OJOpZxzmfagP+kJTxEfp6Vr7KNLyuzVrGbDs+OZLCCQh0mBpLdrvD+usq/efXkIbQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792867522;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=yY5UXFYpbU9bup1uqrZFIbo3hCy719yJ98Mgxjg26z4=;
+	b=nZoU2Stey0kS0/DivmLGHnguVYXAHXPAO7jJFzLNA1XAsJ3I8KrNYCOoUJcDMZGvBrJf
+	 N4xyj1ugDo0of37hxgMLAQ25v+FneiFbFEArvcSGtbzJASKrMbknbgldvb5BJZKPrlPEz
+	 zulf3i1/swRKjWMUQL7yjO2moc+ZqQVTIgP34q1wj3zunDPAt/ZsLRClwvbplPG28mGpL
+	 6vthNZkN86rRNLFSh2ysWDT/a9neLXEkKa96BTlGTfkATASw2MZErcVGHIlOD+QwqUKmI
+	 TYKI192WVQRrgIbutC1T/N8qQr2JSqzo//3oRYZjO7aO1ABjnoGpby5BuXunFHTN5QA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fyJ0Oph1;
-	arc=none smtp.remote-ip=198.175.65.9
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="Ve/5r0+s";
+	arc=none smtp.remote-ip=209.85.210.48
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF57606A31B;
-	Sat, 24 Oct 2026 17:42:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9AF57606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3011606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 18:45:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D3011606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fyJ0Oph1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792863754; x=1824399754;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8vNrTE29DnPOhUoUbcQAhuV/RJaOFG+RLJlehh9FQn4=;
-  b=fyJ0Oph1du/s8g1KSUDFOKoY88kjZE+pJLWEL2dRto838761xsywg67B
-   3twdNjPcJZe5i8gTgPICv8CO5lLrOt0Y3JHsfjLuRsqcMjX7d9HpSpZd/
-   5l1pThimy5+dbiwTmHgzFT5Jg34e/9VB7C7ByBBEVRSgvWECBNw0b1NNx
-   Nfm0q8ZGu7RRGN9LuQAIRnOsOOp+RRPlAywA6uE4b501aJCwEiT0XNqQz
-   sVRVf4MJAUjSLnI3q7pxG6Sq2DjFdwIlaAnTsLfmA/oqchG9bouv7bsDV
-   oBvskF5plW5dbFWUEhdUdWFPo9V0KmKQCskfHeX2bNyLjGWzQPRpwno16
-   Q==;
-X-CSE-ConnectionGUID: ystu15h1Q5WaO4CnXeNfRw==
-X-CSE-MsgGUID: exDBMffOSu2tp9z3aq/oNA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11945"; a="1468463"
-X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
-   d="scan'208";a="1468463"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2026 10:42:34 -0700
-X-CSE-ConnectionGUID: eJZY8DdJSTC/QSpw94f05w==
-X-CSE-MsgGUID: 3ONycMUWSKq+6Lkg09qGPg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
-   d="scan'208";a="4013537"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 24 Oct 2026 10:42:30 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xKflD-00000000U6o-1dkn;
-	Sat, 24 Oct 2026 17:42:27 +0000
-Date: Sun, 25 Oct 2026 01:42:26 +0800
-From: kernel test robot <lkp@intel.com>
-To: ChunAn Wu <an.wu@canonical.com>, linux-serial@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, markus.probst@posteo.de,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, hansg@kernel.org,
-	ilpo.jarvinen@linux.intel.com, mpearson-lenovo@squebb.ca,
-	derekjohn.clark@gmail.com
-Subject: Re: [PATCH v4] platform/x86: dell-uart-backlight: Bind through
- normal serdev matching
-Message-ID: <202610250118.t0UAW41j-lkp@intel.com>
-References: <20261024022930.2704030-3-an.wu@canonical.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Ve/5r0+s
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-8479f46ecd8so853179a34.0
+        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 11:45:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792867521; x=1793472321; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=yY5UXFYpbU9bup1uqrZFIbo3hCy719yJ98Mgxjg26z4=;
+        b=Ve/5r0+s4HTSaPMV+Kcd0hHLM4mvn30baQ0K+5/cDnRd1/q4ZAdyzOH8Qx8XwZdUwG
+         iZEHx/mZKCNTq/+KL7IxQjvkMqJYCgHm3Kp/lLMDPoEgVWPZ2R5DiHK5PEs4g2ADKAVi
+         yYuK0EEVEDQkZFg48hcb+xwu5JiftUyGemWFaAKWc/rH/yqNbngOsY17MPtClvNH5fJ9
+         wMQDKJDpzDWoXJ0Gl/lkNpqllyH2b4B3pSR9fRZ0VodECxwUfjl8+D+2C41wxGu8Jijr
+         wPlELm44jX8sz8L4RAXqw3Jvdt5/Bx+DpMl+kezbTZtGxNzcgWbPeHF/eZhTAOQoqEwb
+         4e6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792867521; x=1793472321;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=yY5UXFYpbU9bup1uqrZFIbo3hCy719yJ98Mgxjg26z4=;
+        b=fmV18CQFtU6ZX0I0psUM73z+KRbvvV4FXMS88PLI3tntIyStMqKSyq8tzKzFONqAaV
+         Y2vRG57T72YzuoY+FA8FaHvcwg35FuVWSDY6vJ9D1+ne7uHz+chJQerfwAeU1DKvI9Fl
+         kCRy0rVFBaSan6F0qvnaElH7ISCtLq7b/cEJkL259MNMuXYD08k9eYa7jYS1hs6FmhEA
+         gAfUuU7GPzqAcJdajgtRLxdo3QCp0eH3XtDzIGDixG8HEbNvEKtaE1dswYOcQNKmuyEp
+         kC8aVnlKzO8YjXi5CZoAD/DwlK/jHsDLGvcbpPFe6AhZ90NI4S5MdWKkyCI0zKUa8hy7
+         5Bog==
+X-Forwarded-Encrypted: i=1; AKwUvBw1hJSTgmt3yKn+nIu9YEyE+X3xyXWgaWXihh7phH83ejgnwFS7dUkZzGgEMxnFYs/IBfhQmxBCChYurPk=@vger.kernel.org
+X-Gm-Message-State: AFq9FYI/TlWH01Ovc8Rkley/EhvicxKpVm+hLa4Rqa95odAs/+YLjNpY
+	KW9+1DayN+uNaY11O9o2EJS3vttB4zxzxguLs/EcaoKHbOHFgT0LkUprYtQoymsq
+X-Gm-Gg: AYBFou0UAc77kU+V2tlNS6uPzCKsZVPAWdV91FpmPtgxW58kI9uWrHl1yORzr73GTM1
+	XsfMDr8uHaGBSM5ys5WBP/TrfH/TJV0GYEHByGEEp0rrxuAWH6asWoY/rTSUp9bShTcNd2ZNO5l
+	IuFaTs722QtQEje7xW+B6QO56vpUDKkktF0J5ffS7+y0CGzpsXqb3M194As1KlPXBBSfOiQ1nmU
+	1p0qn7UYCrAHd4uDWfKt2Z2VRriNQwhXbw5GT9SvTmjGzaCL9oFQq5SUW7jCvq0qu78X3ePJ+LN
+	gzKmv3RW2u1o65bmoYh5mBX+O936BfjqCb2V8GNIKWI3h479NXkRZ2tKcQ5QrCHfJuSECzAkFTt
+	84MYkh3qhzWvV6m4FicQcwhtIQ1ZxjiaBVoE3qXYC+s170kHKdWHmXv+gLq+WsTIqdXNlXJZUKI
+	nH3wKQZZ6wMMw7MsB4Cyp1jDcvYJ79RsCHagReJ7e7w+VxS7TxJmwKe/47RhnCbfRZHVU7ygBng
+	DszQ1D/EwXVKe9ygZGOmI4XLSVdyUnfyjZb04IdgogNR5QqrUbrfyPk2S3VD2biu15EDMOctdR1
+	3bt972/DywqGI/1P6OtzRvSqmnZ9ZAG7PWZe0bkp73wDa8ACIfzQFM5Ukch7vV+LhMIdrMlgLc7
+	yQgBMWv4WqlqZvLnD0oystyUnkG4liAZHBicMxPQqqMXlBOb2g6BjA82jrKRrzeKU8z+NewfD64
+	z5CSU=
+X-Received: by 2002:a05:6871:287:b0:447:4fc:1da1 with SMTP id 586e51a60fabf-4a83f445ec0mr1555289fac.12.1792867520675;
+        Sat, 24 Oct 2026 11:45:20 -0700 (PDT)
+Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4a843231095sm1477278fac.17.2026.10.24.11.45.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Oct 2026 11:45:20 -0700 (PDT)
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Sat, 24 Oct 2026 12:45:18 -0600
+Subject: [PATCH v2] serial: 8250_dw: preserve BUSY-safe fractional divisor
+ programming
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -87,112 +93,168 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261024022930.2704030-3-an.wu@canonical.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261024-submit-serial-8250-dw-divisor-v1-v2-1-032ca5338359@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/5WO3Q6CMAyFX4Xs2iqbjKBXvofhYj8FagTMNhFCe
+ Hc3fAKT9uK0PV/Pyjw6Qs+u2cocTuRpHKIQh4yZTg0tAtmomchFyXNxBv/WPQVINvWESsgc7Ac
+ sRevoYOIgG15WF7S5VBWLmJfDhub9xb3+6ch4oAmJmy608gjaqcF0aRTCcooNA84hrTvyYXTLH
+ nHiCfNHmlgcmkIKW2jNNW9uba/oeTRjz+pt276XvDWCAQEAAA==
+X-Change-ID: 20261023-submit-serial-8250-dw-divisor-v1-5f1689ed05a8
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Raul E Rangel <rrangel@chromium.org>, 
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>
+X-Mailer: b4 0.15.2
 
-Hi ChunAn,
+dw8250_probe() installs a divisor setter that makes the UART idle and
+checks DLAB before writing DLL and DLH. When dw8250_setup_port() detects
+fractional-divisor support, it replaces that setter with the library's
+callback. The replacement writes DLF and uses serial8250_do_set_divisor(),
+bypassing the divisor setter's idle sequence and DLAB readback.
 
-kernel test robot noticed the following build errors:
+If the LCR update fails to set DLAB, the subsequent divisor writes can
+reach TX and IER instead of DLL and DLH.
 
-[auto build test ERROR on driver-core/driver-core-testing]
-[also build test ERROR on driver-core/driver-core-next driver-core/driver-core-linus linus/master v7.3 next-20261023]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Expose the library's fractional-divisor calculation and DLF write as
+shared helpers. Install the BUSY-safe setter after hardware discovery and
+use the shared DLF helper to program the fractional field only after DLAB
+has been confirmed, alongside DLL and DLH. Select the shared calculator
+when fractional divisors are supported, preserving the core calculation
+for integer-only ports.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/ChunAn-Wu/platform-x86-dell-uart-backlight-Bind-through-normal-serdev-matching/20261024-102929
-base:   driver-core/driver-core-testing
-patch link:    https://lore.kernel.org/r/20261024022930.2704030-3-an.wu%40canonical.com
-patch subject: [PATCH v4] platform/x86: dell-uart-backlight: Bind through normal serdev matching
-config: x86_64-randconfig-1014-20261024 (https://download.01.org/0day-ci/archive/20261025/202610250118.t0UAW41j-lkp@intel.com/config)
-compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261025/202610250118.t0UAW41j-lkp@intel.com/reproduce)
+Fixes: a7b9ce39fbe4 ("serial: 8250_dw: Ensure BUSY is deasserted")
+Cc: stable@vger.kernel.org
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+---
+Changes in v2:
+- Share the fractional-divisor calculation and DLF write through exported
+  dwlib helpers, and use them in the platform driver as requested by Andy.
+- Select the fractional calculator only when DLF is implemented, preserving
+  the existing core calculation for integer-only ports.
+- Link to v1: https://lore.kernel.org/r/20261023-submit-serial-8250-dw-divisor-v1-v1-1-f452d4bb1b1f@gmail.com
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610250118.t0UAW41j-lkp@intel.com/
+Previously included in the DMA cancellation series v4:
+https://lore.kernel.org/r/20261023-submit-serial-8250-dma-cancel-v1-v4-0-e759de1839de@gmail.com
 
-All errors (new ones prefixed by >>):
+Changes in DMA cancellation v4:
+- Keep DesignWare's BUSY-safe divisor setter after fractional-divisor
+  discovery, writing DLF and DLL/DLH only after confirming DLAB.
+- Link to v3: https://patch.msgid.link/20261023-submit-serial-8250-dma-cancel-v1-v3-0-d78f9e4c4932@gmail.com
+---
+ drivers/tty/serial/8250/8250_dw.c    |  9 ++++++++-
+ drivers/tty/serial/8250/8250_dwlib.c | 15 +++++++++++----
+ drivers/tty/serial/8250/8250_dwlib.h |  2 ++
+ 3 files changed, 21 insertions(+), 5 deletions(-)
 
->> drivers/platform/x86/dell/dell-uart-backlight.c:328:60: error: array has incomplete element type 'const struct serdev_device_id'
-     328 | static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
-         |                                                            ^
-   drivers/platform/x86/dell/dell-uart-backlight.c:328:21: note: forward declaration of 'struct serdev_device_id'
-     328 | static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
-         |                     ^
->> drivers/platform/x86/dell/dell-uart-backlight.c:363:34: error: too many arguments to function call, expected 1, have 2
-     363 |         ret = serdev_device_add(serdev, KBUILD_MODNAME);
-         |               ~~~~~~~~~~~~~~~~~         ^~~~~~~~~~~~~~
-   <command line>:8:24: note: expanded from macro 'KBUILD_MODNAME'
-       8 | #define KBUILD_MODNAME "dell_uart_backlight"
-         |                        ^~~~~~~~~~~~~~~~~~~~~
-   include/linux/serdev.h:161:5: note: 'serdev_device_add' declared here
-     161 | int serdev_device_add(struct serdev_device *);
-         |     ^                 ~~~~~~~~~~~~~~~~~~~~~~
-   2 errors generated.
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index eca02e8bd6d1..d036a2fe258a 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -190,6 +190,7 @@ static int dw8250_idle_enter(struct uart_port *p)
+ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+ 			       unsigned int quot, unsigned int quot_frac)
+ {
++	struct dw8250_port_data *pd = p->private_data;
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 	int ret;
+ 
+@@ -201,6 +202,8 @@ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+ 	if (!(serial_port_in(p, UART_LCR) & UART_LCR_DLAB))
+ 		goto idle_failed;
+ 
++	if (pd->dlf_size)
++		dw8250_set_divisor_dlf(p, quot_frac);
+ 	serial_dl_write(up, quot);
+ 	serial_port_out(p, UART_LCR, up->lcr);
+ 
+@@ -651,7 +654,6 @@ static int dw8250_probe(struct platform_device *pdev)
+ 
+ 	p->set_ldisc	= dw8250_set_ldisc;
+ 	p->set_termios	= dw8250_set_termios;
+-	p->set_divisor	= dw8250_set_divisor;
+ 
+ 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+@@ -768,6 +770,11 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	if (!data->skip_autocfg)
+ 		dw8250_setup_port(p);
+ 
++	/* Use the BUSY-safe sequence for both integer and fractional divisors. */
++	if (data->data.dlf_size)
++		p->get_divisor = dw8250_get_divisor_dlf;
++	p->set_divisor = dw8250_set_divisor;
++
+ 	/* If we have a valid fifosize, try hooking up DMA */
+ 	if (p->fifosize) {
+ 		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 9bb02a4ab11f..88562c8d5d1d 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -23,8 +23,8 @@
+  * we have: div(F) * (16 * baud) = rem
+  * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16 * baud)
+  */
+-static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
+-				       unsigned int *frac)
++unsigned int dw8250_get_divisor_dlf(struct uart_port *p, unsigned int baud,
++				  unsigned int *frac)
+ {
+ 	unsigned int quot, rem, base_baud = baud * 16;
+ 	struct dw8250_port_data *d = p->private_data;
+@@ -35,11 +35,18 @@ static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
+ 
+ 	return quot;
+ }
++EXPORT_SYMBOL_GPL(dw8250_get_divisor_dlf);
++
++void dw8250_set_divisor_dlf(struct uart_port *p, unsigned int quot_frac)
++{
++	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
++}
++EXPORT_SYMBOL_GPL(dw8250_set_divisor_dlf);
+ 
+ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+ 			       unsigned int quot, unsigned int quot_frac)
+ {
+-	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
++	dw8250_set_divisor_dlf(p, quot_frac);
+ 	serial8250_do_set_divisor(p, baud, quot);
+ }
+ 
+@@ -217,7 +224,7 @@ void dw8250_setup_port(struct uart_port *p)
+ 
+ 	if (reg) {
+ 		pd->dlf_size = fls(reg);
+-		p->get_divisor = dw8250_get_divisor;
++		p->get_divisor = dw8250_get_divisor_dlf;
+ 		p->set_divisor = dw8250_set_divisor;
+ 	}
+ 
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 39fcb1b323ad..7191cabfb086 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -97,6 +97,8 @@ struct dw8250_port_data {
+ 	int		srbr;
+ };
+ 
++unsigned int dw8250_get_divisor_dlf(struct uart_port *p, unsigned int baud, unsigned int *frac);
++void dw8250_set_divisor_dlf(struct uart_port *p, unsigned int quot_frac);
+ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, const struct ktermios *old);
+ void dw8250_setup_port(struct uart_port *p);
+ 
 
+---
+base-commit: 1184f87e2790e8af9be3116f608d2e86b4792d7d
+change-id: 20261023-submit-serial-8250-dw-divisor-v1-5f1689ed05a8
 
-vim +328 drivers/platform/x86/dell/dell-uart-backlight.c
+Best regards,
+--  
+James Hilliard <james.hilliard1@gmail.com>
 
-   327	
- > 328	static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
-   329		{ KBUILD_MODNAME },
-   330		{ }
-   331	};
-   332	
-   333	static struct serdev_device_driver dell_uart_bl_serdev_driver = {
-   334		.probe = dell_uart_bl_serdev_probe,
-   335		.driver = {
-   336			.name = KBUILD_MODNAME,
-   337		},
-   338		.id_table = dell_uart_bl_serdev_id,
-   339	};
-   340	
-   341	static int dell_uart_bl_pdev_probe(struct platform_device *pdev)
-   342	{
-   343		enum acpi_backlight_type bl_type;
-   344		struct serdev_device *serdev;
-   345		struct device *ctrl_dev;
-   346		int ret;
-   347	
-   348		bl_type = acpi_video_get_backlight_type();
-   349		if (bl_type != acpi_backlight_dell_uart) {
-   350			dev_dbg(&pdev->dev, "Not loading (ACPI backlight type = %d)\n", bl_type);
-   351			return -ENODEV;
-   352		}
-   353	
-   354		ctrl_dev = get_serdev_controller("DELL0501", NULL, 0, "serial0");
-   355		if (IS_ERR(ctrl_dev))
-   356			return PTR_ERR(ctrl_dev);
-   357	
-   358		serdev = serdev_device_alloc(to_serdev_controller(ctrl_dev));
-   359		put_device(ctrl_dev);
-   360		if (!serdev)
-   361			return -ENOMEM;
-   362	
- > 363		ret = serdev_device_add(serdev, KBUILD_MODNAME);
-   364		if (ret) {
-   365			dev_err(&pdev->dev, "error %d adding serdev\n", ret);
-   366			serdev_device_put(serdev);
-   367			return ret;
-   368		}
-   369	
-   370		ret = serdev_device_driver_register(&dell_uart_bl_serdev_driver);
-   371		if (ret)
-   372			goto err_remove_serdev;
-   373	
-   374		/* So that dell_uart_bl_pdev_remove() can remove the serdev */
-   375		platform_set_drvdata(pdev, serdev);
-   376		return 0;
-   377	
-   378	err_remove_serdev:
-   379		serdev_device_remove(serdev);
-   380		return ret;
-   381	}
-   382	
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
