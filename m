@@ -1,95 +1,94 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.125.188.122
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792843500;
-	b=0Pc/sAoVrjuK6dfFbc6qbiTB6HtBaN+dCuOcrl1wvxDBdw1Dq61P5uHZfS7AYKJeIkmk
-	 mzrN/Z9GQ4NjNZ0VVpGEgRaBKIpeMfz1gAeZTR+4Eh5dC9T912Hxo3OQXr/y66LZEtMSs
-	 qPjxKDEfEUsZL7WjdS47cNFFq7dqnuQkLxHwjz4an0Tj3TDNpLli3lCHWGIrDHpyeVd8T
-	 E3t2Hui5QnR3ppTjCfNqKcGcNFryTNAMM0Hyzpb1d51I6oFil5ySkqJstzzmFLtjO1vnO
-	 Wg660RhqhCnR9nzC7of4AtnrNr8aMVGt0BojMzllR/wEY3ycGr7/mssIntBWJAk4mGw==
+	t=1792843496;
+	b=pVai9vbi93uQfItNUJUSvWfJTj15uD7fx7q1X7N/udZCIv8Ib1Tx2oecN+UX6lZusTbJ
+	 xje9MO96LC/i2Ex7ZsoC1kmLSEFZH6t22zMJKjLnhrEYqFOPe4HFTP/RxLyY+I5nav7Zy
+	 d6zAWpb8dLQ+mi1ubKpeOHYq6i02qTcaaFVvKXXantY0CL2nbYArW7llqdqXppk0hZzoA
+	 UYDYQa10hzFjQbfiTXFFZS4GQoC0Gmv2zOCzaYz4ST4pK562HAQr7GyrRP6wfddTO2+zW
+	 efOuyEXxSaOk+g4KkDu4BAsmZ7Ivk/sIkoRMpCHFRXH1DLNPzDDLVRY3y6D+wamroVA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792843500;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792843496;
 	h=DMARC-Filter:Received:DKIM-Signature:Received:
 	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 X-Received:Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=i4VVej3KE6r0xh/Sp6hm3WcrpLIYI5P1lVi2/jNr6p8=;
-	b=Db0FaabmOHXu67Hibd4tm7yXzoV+SPeAoObbXEXoT7/kO7VTVQn4WbCJf6Ynrvdpg+S2
-	 Z3G01TNfPibx59E+SOJg6vK1oRgzyfsI8myxi63y3gsLtWYarW29BS0GxzFZr/l058AMM
-	 dsBiPhR/PwpfcjtmdBihqiv6THU2uwucvHw7/p2g9Q39/39wRhJdb2m+FPuBJKRj2Ci2M
-	 qjntHI8ryOEwtON/M+4sVIlESR4D2zt243NTghpo7DQxBHEca5ZwWlkJuframGN2t/fqo
-	 rYW6DKVmlh8zi/IBYTTbEj/IH6BAq6Y6p8YPPt26B/cAPpZZPrROqb809WegpNG3WKw==
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=/yYlcVbWauKdzvWIvsccZxgFQkxdIfYL+H0J9xQ3krg=;
+	b=mxkyfsNR9C6kgNuW7FmKYTlU03JriQH2Vw6/viXRQDlf2F7q+JEj9isf2gvYbHShMiYL
+	 bH8pmL7tZ1UjqAJ7WvTsXLlhJ8W0HfORS91eNPYXlSfeIuEvFAkNC6tkNtGkYBOdUadUP
+	 FZ1CiRtpL1whUb9qdomdSUK1kfQ2UnMGZHKy2m4RhedFp4rc84b9qZwo+1aKYB5b/3NGr
+	 EvEsqY5aR8CJtWQ/DODjG84V3VdWad0kIxsfdwh9CcJhbAs8x9zewFUbiO+jUp9mJoeni
+	 sVnx2hCjluHtyGl9/SDAEG5WLVRWhitGBtjseVB92P/FA/evABOqs6C7uWJNJCoDW4g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=canonical.com;
 	spf=pass smtp.mailfrom=canonical.com;
-	dkim=pass header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b="Sj/37OOt";
+	dkim=pass header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=P201Pd5s;
 	arc=none smtp.remote-ip=185.125.188.122
 Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A3C606A336
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 12:05:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 27A3C606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD3BB606A31B
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 12:04:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AD3BB606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=Sj/37OOt
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	dkim=pass (4096-bit key, unprotected) header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=P201Pd5s
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EA58B402DD
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 12:04:58 +0000 (UTC)
+	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F2146402DC
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 12:04:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20251003; t=1792843498;
-	bh=i4VVej3KE6r0xh/Sp6hm3WcrpLIYI5P1lVi2/jNr6p8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version;
-	b=Sj/37OOtuJAT0DfmI+N1gQgSFXXNz+xG9KImkEuUsGwiAQ+RpD5AeU3xkEofXyzUY
-	 +MwuGDNCvyvq8eSgINBUJQ/2zXK9zMJaEfyg8SdptciOAO81X+IUfMtzRu4VtbLdE7
-	 dXDwAVeFh+qbI/Oi7axaAihCoKGcp9RC2hfsQxVfea3oiBhmR2ocVbMQnRWNDuVWTI
-	 ZXbgcncur1J31d37l8wxBr3pt6gypynXpMnCtSfYGyDnQrExPHCBiW1Fm2hdMfcHr4
-	 PkZBM5Qe4QmsJCv0sbJ7p/SpGv2VEwPqQa/h7jTsP2Flsq9ig3C3eK2RH/VTMIDLep
-	 1drP3QWoDy1PnnzWQkDOJZZJksNW6QByEPjmRj06LYXQ3znrVP60ZPF9wRhR25Tduj
-	 AXpZaS/GWmIYRGy4UFvyqoqhvlZ3/RYHrMCAVNen2sXegfALGtQbiulQ0gzHUDIfJx
-	 q22ab1RQbaYvspk4SzOGDE4iNHMokk9tBtW5yNRY9fcNDY3SStYFA03NhuTPoIfQou
-	 myDBedp0v/stewfJVKIr09qAMCKCLA36yF+ws1EAH4FKW1DOIUjV3o/hGZeaMfeUn9
-	 yOnGv0Vr2YZCwRnbUo0WM9qYe+DKxGVrcu9FN8O9rPhHCdj4dFUwub56nZmnMFgEx0
-	 x1aUrUkmWJKi1jcQhN0jZiEQ=
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-3ab27c28489so504443a91.1
-        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 05:04:58 -0700 (PDT)
+	s=20251003; t=1792843493;
+	bh=/yYlcVbWauKdzvWIvsccZxgFQkxdIfYL+H0J9xQ3krg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+	b=P201Pd5s0w4aw1aifwhAModYUBhN0vy0itF9/K2OE7dMg/x/hthPfzGxKqCraAS/U
+	 3YXSiOWracxVeXftjIomUmzRmBhCAtISAy/NDYIYIlTK9OFQ+UlWZDfgaJiT+3I8aP
+	 E7if4tbV+9J05mW9ZzZZsgSp7/97jFnSwRQTLxKvCkT8fgyUioPuh/TWB4W6tNbqeV
+	 hZDso8pXe3x6dmLLjzBRqjGto9Uh2uOmCofH0DBkhTYb9jQ5SO9dmjNPbuOnGwi7dX
+	 rWPB52T27S8E3qy4vNtuVumRlYlQL1dKfkfI5CZRTkwzanZXKCgwW93OmaBfrZGDV3
+	 1glYoEAPf+8Mley/LQnDIr7MUftMOHGJYedtWi8myPZ/v9he5kn4lhRKoxv927pEH9
+	 MXToKbaat6DPwROSnt8jCSZJEyRVFphfA2z1JJWtHI56aKTruwrK2kxX1yR1cTmYZ0
+	 cIyOGtY/M65+dbpPApUC/yXPHNYyiSu2q14epSofX9+BRb5mMB+SxH9Taue6dZu9UD
+	 tV0xuzJHmGxJGHFRaJ5SmFwR5F/axFhlLGGRCT/MwwwbqZVOvoqhb0zVbiAFsCkRo7
+	 jPAtevTL4StCVVrkjt3sM0W+CqkOdepRy3yZG8mkw7FftQJtJ3NgthBTDjl9QEa641
+	 XG49+MH/T+YIpoVs81i8XfLw=
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-3aa8f8c2638so508369a91.3
+        for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 05:04:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792843497; x=1793448297;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=i4VVej3KE6r0xh/Sp6hm3WcrpLIYI5P1lVi2/jNr6p8=;
-        b=I8F/m2eC34qwH/vOj6b1WCGybRUQYy5wL6a2D536oU0wvGxEYVOg1zfZaOgdFwOIhM
-         IYgi9hKnmPKtx2q0S7AsbP8CKImh6Vy1MxpYTPyOUGK8RhVt9ben4wPkFEI7KcKcTw/R
-         LdXtxLH2o/ICh3Gv/KsHjeLbja5FaYD2kfk+usgWmyaPbvNXJZLb7w+y4tojjn6iiP+C
-         ib6u5PwWXD1CGX1mGhbLV4lWXKyGQBZ+ehoXqfst/yOhCBz+UKZDq8OI+D4xzHkFHFMm
-         hNEufmextyiCZtM0scQ66xeSmCEpfe7N8NlL3ijEukIFUat2nN0PjbzVzbSAF0wlkIyK
-         dXFg==
-X-Gm-Message-State: AFq9FYLEXAOXWC7BHbMER1Ew2L+7jyZlTKCKjs8yYx2OHy8LVfEOF6Uv
-	VNr2PttSUIf45gdwmPfdLaSJebfOGD4DtJiXp4QPnprrc212aosKJprI00yPVjM/zuWwvlWFdwA
-	lJ2JCI6o3iOmjuzPLkVDsdm0kst/KWvnK1DB42l+ICAEgmm72ta5Enf4JrZjA9OVnObo62DshSq
-	WS7giBBcbX9Fw7NQ==
-X-Gm-Gg: AYBFou3gU64WdXrF2LKw2wxC6V+iZEKHmk4GAVPeZij2RPZzMJxy8hjoJ4yhp7YPBa2
-	ujgM3PQfUKUHjnClSJcMF88oW108mGoxC9ML6NBfNoPDc/wrCvei9tGNi5m8BCXdlQDnJAE5Ckh
-	Ah1x6F2jUVEP83QQ3UVsDknR5CNiu7hZ1en93g46RteLjiJ2pPtfn8jC5G6X9G953q0J6DZxSlK
-	VdFQsjUwJPdRaqv4UkowoYJRDFzLPBuxm3gpGPCe0eIHAsgCsyxGAhMgDPyqY+cEKLDPDJWUX6K
-	wDmQXuUbKEHoY9x7GdWohRZBdijJ65gjynmYC235kimTStA6U72J4leQZRV+ZxZOjXMrtSKlAIj
-	Dxf2uBDESi3l8Dh5WV82dlnukk3AV8ZPvPrAcFpUqL66YI1c3NYW2Y9FVPYVKvkbroQeE3qK3MY
-	9Vv5LRScPJ98saunLvXhEOj5+NhAG/Lg1/cckDvnQmQtTDGyARm9NVmO5yFk+23rsQPGvl9BAh2
-	Bo6IXLkjIJoXLhO/v/M5JJ1q3KBeNyQH1LIahjUAA==
-X-Received: by 2002:a17:90b:4fd0:b0:3a0:238b:db4d with SMTP id 98e67ed59e1d1-3adeb0f6c42mr2849032a91.5.1792843497177;
-        Sat, 24 Oct 2026 05:04:57 -0700 (PDT)
-X-Received: by 2002:a17:90b:4fd0:b0:3a0:238b:db4d with SMTP id 98e67ed59e1d1-3adeb0f6c42mr2849002a91.5.1792843496815;
-        Sat, 24 Oct 2026 05:04:56 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792843491; x=1793448291;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=/yYlcVbWauKdzvWIvsccZxgFQkxdIfYL+H0J9xQ3krg=;
+        b=QaptBOkHlb2+OlKxAl+ga1aknricCcumPphtf5BsU7CSeU76jb8U6qzNqZZ8Iq+Kq+
+         m4oyOsW5RRPlW37rdv5vCife8pe/EaAROjbpoYmNCUgT7Huf4T4oFWE5BA3C2XxO9jJO
+         e38hi+WLnwbisroxGCkIxEFa3h4sy01C1Rik+khcyHoySeBis27eh8rx2/Noreup7++v
+         27Fp5pR2fvtzlLjyLXbqI+PxLaeq44Wu8u93YFZZKAnQ9RXldoFtgqTc3KgigniJLNUp
+         kCoOv1exrYuk+afMwH09Zj6iI20ikNMcDJhiq2dagxBX3hxJKxIIGDGFK1fh9yK143vW
+         f/tQ==
+X-Gm-Message-State: AFq9FYLV5Y6G8B3BYAOEmN6VWVkCA4GwCADZsHCM5oKpZJ7EL2rmo0qs
+	CjZrn3P5psaG1m0OQ57J2Tn9qSjXCkEvDFbKF6e8W9LfNnxfGXJwaNme+qKD9RDpaCqA+MvqGr3
+	259tQgW3vi6xFWf+t67uK01VqOd+0y5fSwBqoj6HCcXNSzPRkHvpTbx7WOSrHqlo4NYQ1yqyQLR
+	8iE5qycImpTGrsBA==
+X-Gm-Gg: AYBFou0Juvt6lnB/BLYyIMvwAwitEbmIhXXxOdnHTYcZ+3Wmv40W2Pz0jxg1hDKluCe
+	Wn3lV0axlkgSLqSDgcP6UHPbA2JUbzDVeVQ2Gae6qblUbVsAD+B1eNadLlK2l8SyqAQLldAZxwP
+	yvihkt3RzoUKWkQgInN/nk5cuCqC1jlJDdmJ8GWUeY10agCpJbLn4QTS2KOTCbraOiRekkokX+q
+	WVRmS67JFGOmmLlh1UluBQnfAPndPVCt6g4BHkF6WcKlW7e5jUjrVZ9tSkyGfXvYMAXWvoyiULX
+	3J9ql+vE0MLGGwUo5IWzt4NsfsYs/8+wl8LgUPW0yUZjwjgtWxWGvldjZ4u9ZmpdTZaayDLzaBb
+	X52inTra7Ei+26g/K6WHjZxQt8cAZzSYjTG+OMDRz7RxOzBAFaUnaPabnK4C2jkVV+8iNPINOLJ
+	nOHpe8kWROg60rklkRqwtAxPKQ/zV5npS1o2KJJvdCxjGQH3NxQc08m+oWfZOsNNLzyxkXZCuJs
+	TsCGXJD3NUVwjrfhGTXG3VUwaqodJsWDaM3O/JG9Q==
+X-Received: by 2002:a17:90b:2645:b0:3a6:e61f:749d with SMTP id 98e67ed59e1d1-3ade9b2ce6bmr2893145a91.1.1792843491091;
+        Sat, 24 Oct 2026 05:04:51 -0700 (PDT)
+X-Received: by 2002:a17:90b:2645:b0:3a6:e61f:749d with SMTP id 98e67ed59e1d1-3ade9b2ce6bmr2893103a91.1.1792843490725;
+        Sat, 24 Oct 2026 05:04:50 -0700 (PDT)
 Received: from an-XPS-15-9520.buildd (2001-b011-2008-445c-0e25-4b6d-1924-440d.dynamic-ip6.hinet.net. [2001:b011:2008:445c:e25:4b6d:1924:440d])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebb24a04sm2893409a91.16.2026.10.24.05.04.54
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebb24a04sm2893409a91.16.2026.10.24.05.04.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Oct 2026 05:04:56 -0700 (PDT)
+        Sat, 24 Oct 2026 05:04:50 -0700 (PDT)
 From: ChunAn Wu <an.wu@canonical.com>
 To: linux-serial@vger.kernel.org,
 	platform-driver-x86@vger.kernel.org
@@ -101,12 +100,10 @@ Cc: linux-kernel@vger.kernel.org,
 	ilpo.jarvinen@linux.intel.com,
 	mpearson-lenovo@squebb.ca,
 	derekjohn.clark@gmail.com
-Subject: [PATCH v5 2/3] platform/x86: dell-uart-backlight: Bind through normal serdev matching
-Date: Sat, 24 Oct 2026 20:04:39 +0800
-Message-Id: <4ac249174a529766e8fd69c39fc08dfa1572a650.1792831564.git.an.wu@canonical.com>
+Subject: [PATCH v5 0/3] serdev: handle devices without an ACPI or device tree node
+Date: Sat, 24 Oct 2026 20:04:37 +0800
+Message-Id: <cover.1792831564.git.an.wu@canonical.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1792831564.git.an.wu@canonical.com>
-References: <cover.1792831564.git.an.wu@canonical.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -118,75 +115,85 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The driver creates a serdev client without firmware metadata and
-force-attaches its driver to it.
+Driver-created serdev clients without an ACPI companion or device tree
+node currently have no modalias and cannot be matched to a driver:
+their modalias sysfs read returns -ENODEV and their creators force a
+bind with device_driver_attach().
 
-Pass the modalias to serdev_device_add() and give the serdev driver a
-matching id_table, so that the serdev core binds the two through normal
-matching, then drop the manual attachment.
+Backlight function on dell-uart-backlight is not affected: that class
+device is registered independently and gets its own add uevent. The
+user-visible breakage is the failing modalias read on an existing
+serdev child -- Checkbox dkms_info_attachment aborts with
+"OSError: [Errno 19] No such device".
 
-The client now also reports a "serial:dell_uart_backlight" modalias to
-userspace instead of failing with -ENODEV. A failing serdev probe no
-longer propagates out of the platform probe; as for any other bus, the
-client is simply left unbound.
+Resolve the two long-standing serdev-core TODOs by letting the creator
+pass a modalias to serdev_device_add() and giving the serdev driver an
+id_table, modelled on the SPI bus. ACPI and OF match first and are
+unchanged. Convert dell-uart-backlight and the Lenovo Yoga Tab 2 Pro
+fastcharger to this path and drop their force-attach workarounds.
 
-Signed-off-by: ChunAn Wu <an.wu@canonical.com>
----
- .../platform/x86/dell/dell-uart-backlight.c    | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+Changes in v5:
+- Patch 1: restore is_serdev_device() guard at the top of
+  serdev_device_match(). Dropping it was correct when match only
+  called acpi/of helpers, but Patch 1 also adds
+  serdev_match_id(sdrv->id_table, serdev->modalias), which
+  dereferences serdev_device-only memory. Since serdev_controller
+  shares serdev_bus_type, the driver core calls .match on controllers
+  too; without the guard, serdev->modalias on a controller reads bytes
+  from inside host/nr/serdev/ops, and strcmp() can walk past the end of
+  the controller struct. Reported by sashiko-bot on 2/3 and 3/3.
 
-diff --git a/drivers/platform/x86/dell/dell-uart-backlight.c b/drivers/platform/x86/dell/dell-uart-backlight.c
-index f323a667dc2d..9b8ef91bb0a2 100644
---- a/drivers/platform/x86/dell/dell-uart-backlight.c
-+++ b/drivers/platform/x86/dell/dell-uart-backlight.c
-@@ -325,11 +325,17 @@ static int dell_uart_bl_serdev_probe(struct serdev_device *serdev)
- 	return PTR_ERR_OR_ZERO(dell_bl->bl);
- }
- 
-+static const struct serdev_device_id dell_uart_bl_serdev_id[] = {
-+	{ KBUILD_MODNAME },
-+	{ }
-+};
-+
- static struct serdev_device_driver dell_uart_bl_serdev_driver = {
- 	.probe = dell_uart_bl_serdev_probe,
- 	.driver = {
- 		.name = KBUILD_MODNAME,
- 	},
-+	.id_table = dell_uart_bl_serdev_id,
- };
- 
- static int dell_uart_bl_pdev_probe(struct platform_device *pdev)
-@@ -354,7 +360,7 @@ static int dell_uart_bl_pdev_probe(struct platform_device *pdev)
- 	if (!serdev)
- 		return -ENOMEM;
- 
--	ret = serdev_device_add(serdev);
-+	ret = serdev_device_add(serdev, KBUILD_MODNAME);
- 	if (ret) {
- 		dev_err(&pdev->dev, "error %d adding serdev\n", ret);
- 		serdev_device_put(serdev);
-@@ -365,20 +371,10 @@ static int dell_uart_bl_pdev_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_remove_serdev;
- 
--	/*
--	 * serdev device <-> driver matching relies on OF or ACPI matches and
--	 * neither is available here, manually bind the driver.
--	 */
--	ret = device_driver_attach(&dell_uart_bl_serdev_driver.driver, &serdev->dev);
--	if (ret)
--		goto err_unregister_serdev_driver;
--
- 	/* So that dell_uart_bl_pdev_remove() can remove the serdev */
- 	platform_set_drvdata(pdev, serdev);
- 	return 0;
- 
--err_unregister_serdev_driver:
--	serdev_device_driver_unregister(&dell_uart_bl_serdev_driver);
- err_remove_serdev:
- 	serdev_device_remove(serdev);
- 	return ret;
--- 
+Changes in v4:
+- Patch 1: drop the dead is_serdev_device() guard from the match
+  callback, and dereference serdev once at the top
+- Patch 1: drop the "large enough" comment on SERDEV_NAME_SIZE
+- Patch 1: in struct serdev_device_driver, place id_table right under
+  driver, next to driver->of_match_table and driver->acpi_match_table
+- Patch 1: merge serdev_device_set_modalias() into serdev_device_add()
+  so the modalias is set at the only point where forgetting it would
+  matter; internal firmware callers pass NULL
+- All three patches: tightened commit messages and moved the v2/v3
+  changelog narrative out of Patch 1 into this cover letter
+
+Changes in v3:
+- Rename struct serdev_device::name to ::modalias; dev_name() is
+  unchanged
+- Model matching on the SPI bus: add struct serdev_device_id and
+  id_table; drop driver->name matching
+- Add serdev_device_set_modalias() helper and SERDEV_MODULE_PREFIX
+- No MODULE_DEVICE_TABLE(serdev, ...) support: both in-tree
+  firmware-less clients are created by the same module that provides
+  their driver, so udev has nothing to autoload
+
+Changes in v2:
+- Instead of silently returning success with no modalias, use a
+  creator-supplied name as a "serial:<name>" modalias fallback and as
+  the matching key, so clients can bind through normal serdev matching
+
+v4: https://lore.kernel.org/lkml/20261024022930.2704030-1-an.wu@canonical.com/
+v3: https://lore.kernel.org/lkml/20261023052717.2577234-1-an.wu@canonical.com/
+v2: https://lore.kernel.org/lkml/20261022032842.2492572-1-an.wu@canonical.com/
+v1: https://lore.kernel.org/lkml/20261021092124.2306053-1-an.wu@canonical.com/
+
+ChunAn Wu (3):
+  serdev: handle devices without an ACPI or device tree node
+  platform/x86: dell-uart-backlight: Bind through normal serdev matching
+  platform/x86: lenovo-yoga-tab2-pro-1380-fastcharger: Bind through
+    normal serdev matching
+
+ MAINTAINERS                                   |  1 +
+ .../platform/x86/dell/dell-uart-backlight.c   | 18 +++---
+ .../lenovo/yoga-tab2-pro-1380-fastcharger.c   | 25 +++-----
+ .../platform/x86/x86-android-tablets/core.c   |  2 +-
+ drivers/power/sequencing/pwrseq-pcie-m2.c     |  2 +-
+ drivers/tty/serdev/core.c                     | 62 ++++++++++++++++---
+ include/linux/device-id/serdev.h              | 19 ++++++
+ include/linux/serdev.h                        | 12 +++-
+ 8 files changed, 102 insertions(+), 39 deletions(-)
+ create mode 100644 include/linux/device-id/serdev.h
+
+
+base-commit: 9e947d96915af63e28896caae85a81b74855621b
+--
 2.34.1
 
