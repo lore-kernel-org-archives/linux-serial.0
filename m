@@ -1,90 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792824056;
-	b=xINsNgjejEXvEReHW/DyZuiX3eFON5x/RC9DwkHGcIbAjEP7cb31NK0RO8R8XSNiNtG/
-	 88zBN308rMcyNCpLmKlJoA62ICb5Azfs0vfkXtdCH6B0QpSLpDqtTIasdNbFgBmmlcCrw
-	 +B+4AGNOd11JaAjkUvH04qMjM5jJK+pxXhT1w2oleyKvhbeeu/3iU51gwG2fFlSEJc0jQ
-	 7vvNV0lZ/VdiWL1x/5ml82vlodiqdUMmBq27JNCrg7u2M/HwI0O+e3XOl75lme3seZ1f3
-	 9SQ6CH2g0c9qECAS+RLGMm29miPoyyP2LH4V4wlmXU6E4YG4OYD1F0Tdoj34BIS0egg==
+	t=1792824052;
+	b=QVfkPPDpzP/sHEINbdYjFQLnUPgLoe8/1DY3yLyJBb6z96r8pxmMoNuG+mcftM/gbMW2
+	 3zm3Ghm7YXW6deuM1CUCa8KkSIEDN0a5eDy4ybh+Yq2tG86kpxU+G7O89Z35ZdpMT5jCO
+	 K2lgauQXJPWvdUpJyPwlxC2+3rnWurCLhA9h5woizULvdKq053e7sH3MXRcUbbWBftGxR
+	 O8CYcInngmFd69/v/b6z/uC9IjTVuz5dTYHEkyiux+xloV9RLAkQk5LpzzSjQ83pV09ja
+	 GEHP5S3bxUmwve48zB+JzkkBf4oKrFkI4JZMzwe+e94Y5uwPPyXa5fc0p0fikA6qyKw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792824056;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792824052;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=HghwYhffT2wkbiQA375AMS0eWRI47V+WwoxJxlqek0Q=;
-	b=byjP/JeiA5eMYZavLIxrFf9ZMmtZVSyCJnsHsCeyQtCb5glS7MCW17XdRQNdTM28YR/I
-	 VfaTD7ye3/cq+Zkhpj8TzpN7X+V3u8HW0e2NPYziMrsHSGp1ds65OYkSmh+uA6olKpTwM
-	 IJ80JVBMgKX7CBdKGEjH8eepR8E/erkjdqFKGvww/z168UoJP61r9ksTVZPUk6T6xbAT/
-	 /YGP1m6HaYTYkAp3R8W4pRSc0MrS3yVXPskMGW9zELt8CIg+FP6d5JkYQcM/5c9z/Y8Pm
-	 UQQ6lYXWdWbZy32w9ld583Rhuf1wYV+CwXi30UhBiX7FWdK4r+YuK8ti1pDrFvSZFUw==
+	bh=vTCI+nDxJukp6A5kK1BpAWHpCDcT464wzBcHkx0Jj0Y=;
+	b=kvq5LSXnB8VwCzhyNr9ZATjsIWwCR57jvwQVedOUqsg+SQZO8zFF3CqnWpShQayNdSTk
+	 UO6s5EUh1q4k1a8xe0hqbTO2URuqsx6F2YNjk2AmpwNlStWPIK+/6mJtN0zh2ku2orCE8
+	 qDy4BocvVP8WldLsM7qa9Yr3z9vIkGTJX67PU+0uZY1iTwtXsn8Gab5p1BlJJYLnY74nv
+	 0RJ/sU/ifbsyUFPossMK0uIBWR2BDOztOLrvm6+kr3wh8l0w6sc2IKxGHzGJ88Xii0yy+
+	 a6O4zZHFRYJfnLtTX4NWlVlrieHxsIzHLNp5FH0D0wfC/tP33RoKXd2vLBea2XUsJGA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ngXHdPab;
-	arc=none smtp.remote-ip=209.85.210.43
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=d30j8H1v;
+	arc=none smtp.remote-ip=209.85.210.42
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9B6D606A332
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 06:40:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A9B6D606A332
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40E58606A328
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 06:40:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40E58606A328
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ngXHdPab
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-81ae6aefdceso1314827a34.0
-        for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 23:40:55 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=d30j8H1v
+Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-82380b0f55dso638240a34.1
+        for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 23:40:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792824054; x=1793428854; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792824051; x=1793428851; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=HghwYhffT2wkbiQA375AMS0eWRI47V+WwoxJxlqek0Q=;
-        b=ngXHdPabU02TcB8q1hgVVNBdMiRHZOcChA0CB0DvMSdo9Gsoto1hg+/B19VySjaMqJ
-         /tZoarsFzSrrZV4EFp3Y6aSVZxG2Tly2HOgVvhvzhmj8o/A0mZOmlzROiyIw+s/V10ME
-         cgE/3et03StR+XZptswENv8X8ZI4iXffEJ2eShhPtzTecbvjNOnoZURBN5xlohDRFNHj
-         onpGt0XxkAUZBlODj+SxKV8X8Eva+YBHkB3+87OP9LbynFAbI0ObG5sXQ9USTnAvBipa
-         /QQk1EmpQiX4lY22zB6vpv4iCpB0Q9JNyoaRzoSMdOtEfnM7tbwwEpr0V4IMYpjcjgkx
-         10Kg==
+        bh=vTCI+nDxJukp6A5kK1BpAWHpCDcT464wzBcHkx0Jj0Y=;
+        b=d30j8H1vjZ55HFIhncWSScYUvpCWn74ZPocxwU34Jc13PiIB34jmSMmDWqbru6ozSZ
+         YC6cNohO9xmUQ7hkS16ubYaIXA7G0jHHeV3ucvVr5lmdQU1liDgkt6dhB+0wc4OJ/MWx
+         45MphtLCnZMLwOxV68kW/t8IW8vSREabK7RayR46Ioj6owJsJdccWKf1AyX35ZbVIKHD
+         VJJbV36UagDBkWtophmbj74WhX0r6gJze7wvMgA2RmUgwfbv1HkmX0MjGfc8rRJLs/ct
+         DFmLzSR1U2TK3UDKKzNiaBt7DnEhVmhUYOQCM5ZHNu+Ueb55IxaUQyP3lWjDBFLyAP2E
+         77Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792824054; x=1793428854;
+        d=1e100.net; s=20260707; t=1792824051; x=1793428851;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=HghwYhffT2wkbiQA375AMS0eWRI47V+WwoxJxlqek0Q=;
-        b=Jc/UYLD6ugufZy828Hat7riRFUfRnmn3xRnl3iqUQBrLtEMC0PhiTpX+WsCgMWIIYk
-         6WXjIyuKBgQnQ9uVH2XFNlta4bdHqW54GobwYZHPKlhtcpF0zhtWwphp8465VU2tHT4n
-         HzAK1AXlwHUDlT2TdiwwOe89P61K51L9DM42dFknAoDdpDkPwEI1SeGRkPWvYn7KG7d2
-         tlK+olIMxP4UNdFAu4IOvOouOF1q3JLPFadevWN/OtdCYbJenucp15axoQERZt3TCdVQ
-         2qR9YfM8OX14PW2KSLtz7+6ExlGsvp+woeWjrRfzaf2vYlOs+cxkjQLNchdZ5zqJMK01
-         oCww==
-X-Forwarded-Encrypted: i=1; AKwUvBx6agh9PsDnSIVXcdN4fANnv2mTQQOl1wZEVJ04DJYT9VB4NEjcLiYXMYpHa/mSQ5as1YfN/Qhyg0HiPbg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKj9ZxRG4SGH1gJlAnz7v2ZaU0A81bWEftCFWqpS+oMh/CQBqaS
-	06ULSgs4mqmNTxIxVI8yMCXU1zeqtSX9hY9oKSVLoHaUXV2glcGN/W+9
-X-Gm-Gg: AYBFou2cWi8QyhpfPsnPyySAqihUAkNL+l8IESJa4xmTU4cOZVwAqhxuYIcQV7nuEXk
-	FFIlVg3mMCVlQKJoXKrnBz86nGZtisTYc0dWS1oDBEQvPAcOPRVe45Eq9bYS3OEMtS4bcSG/lbN
-	Zk6WRiXHsJLtQ8GcoEwFI2meZvdcMMKHJiAW8yrP71SUPVjgO5kBtxC6ytZQ26KuoTKI592Y6ta
-	lCNjCq1tQRnl5bCmtaBxC57ckSx00Bk7LgTZj1+JkFA5SIGktT4BWZvdlJQpLyGSw9UZIxfr8Q4
-	Ae3EvDAWTvh1jMLOOZGM1rMa0rO3To5O3T/HYxK94A5UJcNPRFEUJyBcxAmyWjXqK8mdcAtFn/q
-	LhAaGmANNthkmYC4oQAphhT56VMIJCmaaV+64tbTN3I/ApgcQXftcJkHa2276yj1IMIJmBN9Hwd
-	NspqPJHfJrcXX0TNutUc/WnX+AaYUhRM6G5iqJNHhahCFJOCW289NlYzz7LXTKZPtUvlcOsBeHz
-	5K0PXvZf6hXlyzJPqwElEf9C8yfdPR7IhHc0zBCquAE8wYthiMbFIb588AaVQSCaMVK71AI/02/
-	KtbKHuHLoMGvyVyW+LZSSWi23dCPLBmOJjDZeOz0eKh6edq2YpoyqnbbJYo5TEe4lBencAQPDTx
-	65d1C8rupfxr1VUYUaEaab9Kg214GsXMshyD1FRMZXBPUlIBnsbZjDVYA3DKyiW4IfmRV4eHGQL
-	Q27eU=
-X-Received: by 2002:a05:6808:13c3:b0:533:87ee:d131 with SMTP id 5614622812f47-55c00290da3mr1015587b6e.25.1792824054546;
-        Fri, 23 Oct 2026 23:40:54 -0700 (PDT)
+        bh=vTCI+nDxJukp6A5kK1BpAWHpCDcT464wzBcHkx0Jj0Y=;
+        b=wPdhEgI/Myna3Cmba7de1xwmA8NAZ1HC0O4kHl0EMaQ7XfRZQTw8iVqa8evuKtsPG6
+         uyJ0geY2aIti/HWwL57zv+/sJenCTFg69XqckeVIj3KG3DeOY/z987W67+8jvmUt4RX2
+         bdJzIUsY5tkDbBw4TsmlBhPtxIw7su6Y3jWuA1BjtSU2I9I2QXHWdVIzOeViYorzL8yE
+         /YFjiB/AGaRTPsK4WpRcKVpP01RJHXFmufeEHpRAMYCTLG6HJTQx1vM+Yw9xhY2wRvGG
+         alczLCv7M+iqKASsOAfUfEUGBLQjiXN85bXnJBkac/eeSi9xbd40911gglx0qWle6RaH
+         /jyA==
+X-Forwarded-Encrypted: i=1; AKwUvBxasv438lF8MY9tkBiudkE90TnEMzeAQ4+SAL/wKbsJlEH4SCkkWR7YcH0qxZ/MEH5IeHXO3QWElxswnvU=@vger.kernel.org
+X-Gm-Message-State: AFq9FYItGLOn8Qa2OAwyjSks+donnpIP4/Q3igkEWv/fjJNaW26Ibanh
+	K7OSorlG5poIooh+JaQdCnPxz7HIRG4Bzpj3DRc6y0Q+9BQIQqrdq8rC
+X-Gm-Gg: AYBFou2XmBosPnc/rbH8DRQOb0tRzX6mPcSmzySPOyNtr4G/hLQ//cUhpDYMveIwrId
+	tNkwhIAKFBq2MO9Io1NHtuH+/1HR+n+8JYxTV+EU0KgYiAtsDoFnFFDJXrqCNX9nvaK1CWxNu2B
+	ImKH0+RUW4FwqoGx8pSDCp8DAIz6RlgkgkuCnb5BZa/cre8V2ipG6+NXhSozlTNUDazw7S4JePA
+	sLsfuDEsui0AmNwVVa1/wMw0yIxKMXNmQzjCM/6BVPkblUSwKFROM7IPUUJqq8k4ggU4oEdbD20
+	S0R1VVP0JwqxovQ/3ck8g6aT0oaJpoQHaHil6Lts5dAkFnvHn/3+Op3fi8BclKQtlnYmvwpFLvK
+	7nj8kE3Rd4FAe2wgYH9eDvI896C8sP0aRUSrqhnZTT39S+QdoZXw9zS3XEGbKGtteL+Uv4Jmrf8
+	FPoYWcNviswlLImA+7yjz0/53/qnwrnpQTlSWwt8EyQZZnA5+4I5vYYzuBS42+AM+4cqfa4Ag9z
+	o+AXoRpyjGeNbUZCsetIXpXrKut0vPBF702xmvklDWWFM7MxF1GyNHLGh4GCa/K4ABgPuoZYHlr
+	GgiUx9inFx1zUtuv+SYX1wWUMvxL0F279No1B2UqrwfiDFzGXcCbBXvTAojcI9JNgbiUhUTU9Zy
+	+sLjI0tardg4YDMER84SFDkGE89Jv1tK9PhxAZWPSRYt6GYx2g9wlken9tdJBNP2Ho+duZL6yHc
+	XZJUWasKQg1w8cOw5xdsKklnQ=
+X-Received: by 2002:a05:6808:4fe3:b0:4f0:1f76:8ca0 with SMTP id 5614622812f47-55c003e9dbbmr788058b6e.56.1792824051160;
+        Fri, 23 Oct 2026 23:40:51 -0700 (PDT)
 Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-55c0429c56asm864633b6e.9.2026.10.23.23.40.52
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-55c0429c56asm864633b6e.9.2026.10.23.23.40.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 23:40:53 -0700 (PDT)
+        Fri, 23 Oct 2026 23:40:50 -0700 (PDT)
 From: James Hilliard <james.hilliard1@gmail.com>
-Date: Sat, 24 Oct 2026 00:40:42 -0600
-Subject: [PATCH v5 3/5] serial: core: allow drivers to reserve flushed
- transmit storage
+Date: Sat, 24 Oct 2026 00:40:40 -0600
+Subject: [PATCH v5 1/5] serial: 8250_omap: separate locked TX DMA
+ completion processing
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -96,7 +96,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261024-submit-serial-8250-dma-cancel-v1-v5-3-9e52968928d2@gmail.com>
+Message-Id: <20261024-submit-serial-8250-dma-cancel-v1-v5-1-9e52968928d2@gmail.com>
 References: <20261024-submit-serial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com>
 In-Reply-To: <20261024-submit-serial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -121,284 +121,59 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  linuxppc-dev@lists.ozlabs.org, James Hilliard <james.hilliard1@gmail.com>
 X-Mailer: b4 0.15.2
 
-uart_flush_buffer() resets the transmit FIFO before calling the driver's
-flush callback. An asynchronous DMA transfer can still access that storage
-after the callback returns, while a new write can immediately reuse it.
-
-Add uart_xmit_block() and uart_xmit_unblock() so a driver can reserve the
-flushed storage until its transfer and completion callbacks have retired.
-Serialize the reservation with FIFO producers using the port lock.
-
-While the storage is reserved, write_room() reports no space and write()
-and put_char() accept no data. Defer write-ready notifications until the
-reservation is released, preserving one-shot TTY wakeups. Keep the flush
-wakeup under the port lock so it cannot race another reservation.
-
-Suppress ordinary TX starts while the FIFO storage is blocked. Preserve
-high-priority flow-control characters, which use separate storage.
-Releasing the reservation wakes writers through the existing TTY wakeup
-path. This preserves immediate logical flushing while applying write
-backpressure until the storage is reusable.
-
-Track port readiness separately from DMA ownership. Retirement releases the
-reservation even during startup or shutdown, while writes and wakeups stay
-gated until successful startup or resume. Reopening or restarting a port
-wakes deferred writers with either a new or retained FIFO. Restart queued
-output when reusing a FIFO after suspension. Keep its write-ready
-notification pending until the retained output drains below the normal
-wakeup threshold.
-
-Publish resume readiness under the same port lock as the TX restart,
-without clearing any reservation. A concurrent flush can then reserve a
-new transfer without resume releasing its storage prematurely.
+Separate the port-locked completion processing from the DMA callback
+wrapper. Keep the shutdown check and locking in the callback, and retain
+the existing FIFO accounting, delayed register restore and THRI handling
+in the helper.
 
 Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 ---
- drivers/tty/serial/serial_core.c | 100 +++++++++++++++++++++++++++++++++++----
- include/linux/serial_core.h      |  18 ++++++-
- 2 files changed, 107 insertions(+), 11 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index c0deec0e6af4..30358fe8c341 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -100,6 +100,11 @@ static inline struct uart_port *uart_port_check(struct uart_state *state)
- 	return state->uart_port;
- }
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 4805b644ccb1..b6f108d34854 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1080,18 +1080,13 @@ static int omap_8250_rx_dma(struct uart_8250_port *p)
  
-+static bool uart_xmit_writable(const struct uart_state *state)
-+{
-+	return state->xmit_ready && !state->xmit_blocked;
-+}
-+
- /**
-  * uart_write_wakeup - schedule write processing
-  * @port: port to be processed
-@@ -119,10 +124,71 @@ void uart_write_wakeup(struct uart_port *port)
- 	 * closed.  No cookie for you.
- 	 */
- 	BUG_ON(!state);
-+	if (!uart_xmit_writable(state))
-+		return;
- 	tty_port_tty_wakeup(&state->port);
- }
- EXPORT_SYMBOL(uart_write_wakeup);
+ static int omap_8250_tx_dma(struct uart_8250_port *p);
  
-+/* Publish readiness without releasing any transfer's storage reservation. */
-+static void uart_xmit_enable(struct uart_port *port)
-+{
-+	struct uart_state *state = port->state;
-+
-+	lockdep_assert_held_once(&port->lock);
-+	if (state->xmit_ready)
-+		return;
-+	state->xmit_ready = true;
-+	/* Retained output must drain before consuming a write-ready notification. */
-+	if (kfifo_len(&state->port.xmit_fifo) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+}
-+
-+/**
-+ * uart_xmit_block - reserve flushed transmit storage
-+ * @port: port whose transmit storage is still in use
-+ *
-+ * A driver may call this from ->flush_buffer() if DMA still owns the old
-+ * transmit data. The logical FIFO has already been emptied, but writers
-+ * must not overwrite its storage until uart_xmit_unblock() is called.
-+ * write_room() reports zero and write()/put_char() accept no data meanwhile.
-+ * Write wakeups are deferred until the reservation is released.
-+ *
-+ * The driver must unblock after retiring the transfer, including on shutdown.
-+ * Serial core separately gates writes and wakeups until startup or resume
-+ * has made the port ready.
-+ * Repeated calls are idempotent, not nested reservations.
-+ *
-+ * Context: @port->lock held.
-+ */
-+void uart_xmit_block(struct uart_port *port)
-+{
-+	lockdep_assert_held_once(&port->lock);
-+	port->state->xmit_blocked = true;
-+}
-+EXPORT_SYMBOL_GPL(uart_xmit_block);
-+
-+/**
-+ * uart_xmit_unblock - release reserved transmit storage and wake writers
-+ * @port: port whose storage is available again
-+ *
-+ * The old transfer must no longer access the FIFO storage, and any required
-+ * DMA synchronization must have completed before this call.
-+ * Retirement is recorded even while the port is inactive. Writes and wakeups
-+ * remain deferred until startup or resume has made the port ready.
-+ *
-+ * Context: @port->lock held.
-+ */
-+void uart_xmit_unblock(struct uart_port *port)
-+{
-+	lockdep_assert_held_once(&port->lock);
-+	if (!port->state->xmit_blocked)
-+		return;
-+	port->state->xmit_blocked = false;
-+	uart_write_wakeup(port);
-+}
-+EXPORT_SYMBOL_GPL(uart_xmit_unblock);
-+
- static void uart_stop(struct tty_struct *tty)
+-static void omap_8250_dma_tx_complete(void *param)
++static void omap_8250_tx_dma_complete(struct uart_8250_port *p)
  {
- 	struct uart_state *state = tty->driver_data;
-@@ -141,7 +207,10 @@ static void __uart_start(struct uart_state *state)
- 	struct serial_port_device *port_dev;
- 	int err;
+-	struct uart_8250_port	*p = param;
+ 	struct uart_8250_dma	*dma = p->dma;
+ 	struct tty_port		*tport = &p->port.state->port;
+ 	bool			en_thri = false;
+ 	struct omap8250_priv	*priv = p->port.private_data;
  
--	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port))
-+	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port) || !state->xmit_ready)
+-	guard(uart_port_lock_irqsave)(&p->port);
+-	if (dma->shutting_down)
+-		return;
+-
+ 	dma_sync_single_for_cpu(dmaengine_get_dma_device(dma->txchan), dma->tx_addr,
+ 				UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 
+@@ -1123,6 +1118,18 @@ static void omap_8250_dma_tx_complete(void *param)
+ 	}
+ }
+ 
++static void omap_8250_dma_tx_complete(void *param)
++{
++	struct uart_8250_port *p = param;
++	struct uart_8250_dma *dma = p->dma;
++
++	guard(uart_port_lock_irqsave)(&p->port);
++
++	if (dma->shutting_down)
 +		return;
-+	/* High-priority flow-control characters have their own storage. */
-+	if (state->xmit_blocked && !port->x_char)
- 		return;
- 
- 	port_dev = port->port_dev;
-@@ -375,6 +444,11 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state,
- 		return -EIO;
- 
- 	serial_base_port_startup(uport);
-+	scoped_guard(uart_port_lock_irq, uport) {
-+		uart_xmit_enable(uport);
-+		if (!kfifo_is_empty(&port->xmit_fifo) || uport->x_char)
-+			__uart_start(state);
-+	}
- 
- 	return 0;
- }
-@@ -397,8 +471,11 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	if (tty)
- 		set_bit(TTY_IO_ERROR, &tty->flags);
- 
--	if (uport)
-+	if (uport) {
-+		scoped_guard(uart_port_lock_irq, uport)
-+			state->xmit_ready = false;
- 		serial_base_port_shutdown(uport);
-+	}
- 
- 	if (tty_port_initialized(port)) {
- 		tty_port_set_initialized(port, false);
-@@ -593,7 +670,7 @@ static int uart_put_char(struct tty_struct *tty, u8 c)
- 		return 0;
- 	}
- 
--	if (port)
-+	if (port && uart_xmit_writable(state))
- 		ret = kfifo_put(&state->port.xmit_fifo, c);
- 	uart_port_unlock_deref(port, flags);
- 	return ret;
-@@ -624,7 +701,7 @@ static ssize_t uart_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 		return 0;
- 	}
- 
--	if (port)
-+	if (port && uart_xmit_writable(state))
- 		ret = kfifo_in(&state->port.xmit_fifo, buf, count);
- 
- 	__uart_start(state);
-@@ -640,7 +717,7 @@ static unsigned int uart_write_room(struct tty_struct *tty)
- 	unsigned int ret;
- 
- 	port = uart_port_ref_lock(state, &flags);
--	if (!state->port.xmit_buf)
-+	if (!state->port.xmit_buf || !uart_xmit_writable(state))
- 		ret = 0;
- 	else
- 		ret = kfifo_avail(&state->port.xmit_fifo);
-@@ -682,8 +759,9 @@ static void uart_flush_buffer(struct tty_struct *tty)
- 	kfifo_reset(&state->port.xmit_fifo);
- 	if (port->ops->flush_buffer)
- 		port->ops->flush_buffer(port);
-+	/* Serialize the wakeup with reservation changes, including another flush. */
-+	uart_write_wakeup(port);
- 	uart_port_unlock_deref(port, flags);
--	tty_port_tty_wakeup(&state->port);
- }
- 
- /*
-@@ -1748,8 +1826,10 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	if (WARN(!uport, "detached port still initialized!\n"))
- 		return;
- 
--	scoped_guard(uart_port_lock_irq, uport)
-+	scoped_guard(uart_port_lock_irq, uport) {
-+		state->xmit_ready = false;
- 		uport->ops->stop_rx(uport);
-+	}
- 
- 	serial_base_port_shutdown(uport);
- 	uart_port_shutdown(port);
-@@ -2391,9 +2471,10 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		unsigned int mctrl;
- 
- 		tty_port_set_suspended(port, true);
--		tty_port_set_initialized(port, false);
- 
- 		scoped_guard(uart_port_lock_irq, uport) {
-+			state->xmit_ready = false;
-+			tty_port_set_initialized(port, false);
- 			ops->stop_tx(uport);
- 			if (!(uport->rs485.flags & SER_RS485_ENABLED))
- 				ops->set_mctrl(uport, 0);
-@@ -2498,8 +2579,9 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 					if (!(uport->rs485.flags & SER_RS485_ENABLED))
- 						ops->set_mctrl(uport, uport->mctrl);
- 					ops->start_tx(uport);
-+					tty_port_set_initialized(port, true);
-+					uart_xmit_enable(uport);
- 				}
--				tty_port_set_initialized(port, true);
- 			} else {
- 				/*
- 				 * Failed to resume - maybe hardware went away?
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 4eeb8253752a..41598a38a408 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -208,8 +208,17 @@ struct gpio_desc;
-  *	Flush any write buffers, reset any DMA state and stop any ongoing DMA
-  *	transfers.
-  *
-- *	This will be called whenever the @port->state->xmit circular buffer is
-- *	cleared.
-+ *	This is called after the transmit FIFO has been cleared, with @port->lock
-+ *	still held. A driver whose asynchronous transfer can still access the
-+ *	flushed storage must call uart_xmit_block() before returning. This keeps
-+ *	write_room() at zero and prevents write() and put_char() from reusing the
-+ *	storage until the driver calls uart_xmit_unblock().
-+ *
-+ *	Release the reservation only after the transfer and its callbacks have
-+ *	retired and any required DMA synchronization has completed. Shutdown must
-+ *	also retire the transfer and release the reservation before returning,
-+ *	since serial core then frees the transmit buffer. Serial core separately
-+ *	gates writes and wakeups until startup or resume has made the port ready.
-  *
-  *	Locking: @port->lock taken.
-  *	Interrupts: locally disabled.
-@@ -834,6 +843,9 @@ enum uart_pm_state {
-  */
- struct uart_state {
- 	struct tty_port		port;
-+	/* TX readiness and storage ownership; protected by the UART port lock. */
-+	bool			xmit_ready;
-+	bool			xmit_blocked;
- 
- 	enum uart_pm_state	pm_state;
- 
-@@ -909,6 +921,8 @@ struct uart_driver {
- };
- 
- void uart_write_wakeup(struct uart_port *port);
-+void uart_xmit_block(struct uart_port *port);
-+void uart_xmit_unblock(struct uart_port *port);
- 
- /**
-  * enum UART_TX_FLAGS -- flags for uart_port_tx_flags()
++	omap_8250_tx_dma_complete(p);
++}
++
+ static int omap_8250_tx_dma(struct uart_8250_port *p)
+ {
+ 	struct uart_8250_dma		*dma = p->dma;
 
 -- 
 2.53.0
