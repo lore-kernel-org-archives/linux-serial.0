@@ -1,56 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792814952;
-	b=jNqBlxTHNunBJWxWKa2Qdd+02fIfpnVZoOQjBGJb7ziwYLXhY0oCqbpcFs+TzM+v/12+
-	 mjYQgvLeOMqx/mqzmRGbeUcsSSl9//Sp8OB66Zvr8lL+qiv2LWZRl5BlYPsf+ECp++Jnw
-	 mpPr+gI01Egv6wavk4XIxCceF9DlKvX/p/xMlrb+MK9mAvEoNmeKsoFcHKTgp6AyMSF3y
-	 XjqJK7h7Th7chOI2KX/RXOJ5H9ZRvUeZVhmQOuwFbpcpnLZYAvX/w50NABASVRvmlIgTE
-	 2qxZwQRqWSC3fMx70NGUW0mfMp+FJauYzhG0/8J8Quf/KL+IDw0wXMIlswEwl4NOhXQ==
+	t=1792815828;
+	b=LgQz77nu68zJBzKHaN3xccsg1SxxKpJUyIXZgPrxMmaA6iUajJ1Rkct9z/euUtYV7OzS
+	 yx7OolH7a2LBABs70yVlt+6V6KDMyEUYE3e7q+KXiqxi6eRcpASgTGbfKPfvhQHSTmBKq
+	 z6YYw2CXEy94SbKcC4DZr+dPeqn/hny7euveb+OBZtuSCf9uxzb4oliDIkCdZSRMp1zvq
+	 JsblqHWTlJBtQId/5kv91+PQ1DLBfQa/Rrps83nRbL8fMUeIQ57UPMCPwWSQs8YQE/UnM
+	 7CfYID1OQx0wOdH8qKtXqshjCKSCoju3FwfEnlGxp1zwyILN6EoEiWHSp3/7Z299GKw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792814952;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=kT7BgyL0KLHW/KUtoyc14qlEBQAVp14d3YqMhm7i2YA=;
-	b=PyotoGqx28D1Icg+BiCGT2w7uAYzuIX353f9H7pk6sGE93mRV397BjebS1KgAx32wzAi
-	 0N6+rYo3g9Kq77/alSsaKETzG7hYl0GWpk84TIYsWl16PJzfnQg9NLxlODzKm7hxko/pm
-	 Hh4vuRron9iSpHjd1xa+ki3Hla1KpQHd0ETf8lYUl/MT4dGT9KfqE6ZvvKLxttS6TFqxv
-	 dYnir/ZAIT84h4SS4rcFWsvsByRVpOR6Qu03Qmf78dUOrgCKKXwSZrV5SMyW2Wb/BLJgI
-	 nObidHkNFc0eLL2OwChr1Y43lwG9NuSgpP358Ret772uxmWPafOUrgeT/YoPMOlhLsg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792815828;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=A7v3iQvYpOI1vlkhEubPLkV9x5gOZiQT5f5VIsmNMyk=;
+	b=1pV8spOvL8gJ4u1PInQpqtVO4wm+TZAeOAbhIPtoRBPq55/U4vKjOsavvj6e2OhLvA+Z
+	 gorg/DH7UBJKMo4iS1irh0W3YCplbviavw3/OJKdpcWt+JB0BqdWM0fOeNmLLdsdQgg7F
+	 DO6zq2ObY3sEntlR2igcSY+Jz96EKg4S0LsGN0qPknq+WUK/zPrhIA91eRTuNgHyTHZxm
+	 yYPlNldoIRTNkQs+3TEbRFScU0LDqkDVrPTeedCCHPO89Ln1QqFc55amIzzm34UcUq5nc
+	 lVPbWCS/oguVcBbTIfq5i3azVQDeBKRCvdNAfMXyRWzg1J0CwDLuSNWfVJDnwPDd8hg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Rk/oyIg6";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=glD74pUq;
+	arc=none smtp.remote-ip=209.85.210.53
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1409606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 04:09:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33BC5606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 04:23:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 33BC5606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Rk/oyIg6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CE271F01825;
-	Sat, 24 Oct 2026 04:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792814951;
-	bh=kT7BgyL0KLHW/KUtoyc14qlEBQAVp14d3YqMhm7i2YA=;
-	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=Rk/oyIg6pnFUDOhUW5mkqSKVSKifUppH2FSoGIlMrwMqFoy+ScVFqGC/XNwHd8v6X
-	 D2YzseWMSv/BvddL5OS3TDa3TEzPL510r0hNuG19v+VNxmsRQtMWhP0pCrQ/U5Jw04
-	 yOWTzFsQn3iCjfaHoslrF2soxn7get1OgH7pprRv/P/9aSIgF+ICiT9CVl9CTNbm/8
-	 rbRSz5ny9pNlVF1z96XXn2JDO+1Olpr55PpspNfz8ZH/MxEtiNRuYo2KaQs1nTAi49
-	 Wq9fnq2aOsGbA22J1SQmYoOjd5xFdPdwCnO+0xGVPLVSIORbPIMit6tttPPCT892+V
-	 s5jI79U7sQOnA==
-Message-ID: <sashiko-outbox-183539@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 1/3] serdev: handle devices without an ACPI or device
- tree node
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "ChunAn Wu" <an.wu@canonical.com>, linux-serial@vger.kernel.org
-In-Reply-To: <20261024022930.2704030-2-an.wu@canonical.com>
-References: <20261024022930.2704030-1-an.wu@canonical.com>
- <20261024022930.2704030-2-an.wu@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 24 Oct 2026 04:09:11 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=glD74pUq
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-81ba09a5d23so1662907a34.3
+        for <linux-serial@vger.kernel.org>; Fri, 23 Oct 2026 21:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792815827; x=1793420627; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=A7v3iQvYpOI1vlkhEubPLkV9x5gOZiQT5f5VIsmNMyk=;
+        b=glD74pUqbkxWRdZnLCx3z60ZiLGN9SkQ82qloBuEp8QYlM9I7Z4/ghs9839ux9Sim3
+         h0x6oKvoaSA4mG3EEKuJforRNNCa/VCIJRfUg4fip1q/XJjedlIbwt9+O7/v3W6Hx2Fv
+         Xj53HOLbRTTSBbLjHxHRAVakPg/OnQ4nojy3sR3QdukG2RLNbQgZE4Bg5vpB0GXc4Fz0
+         Itjqsu8/z5wrMYZVe8Zw0IrKFrK1EBeBou0i5LOCh0K4OP+tRB8i4BNeqzvOZ8Xe9rNM
+         7w/tXHYufggjje0ugsQLs4fklpm0wiU1/IRjuY1nPvsp9Dx7hYHvrGowt/vmoMwWl9W4
+         mYFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792815827; x=1793420627;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=A7v3iQvYpOI1vlkhEubPLkV9x5gOZiQT5f5VIsmNMyk=;
+        b=xVx+9Q7eC2A20l/PM5TfTWBWBof63kSncvsBVoNxa9P/1/8Yey+dvaAI0PDJ/qTqZC
+         t9V5ePc7UzsEJW1fAcuAjJZxZa8aMGe4I79UDjxjZAPPMAC2/IvkKWHGMCbreOehdYH0
+         UKaGR6TLIiSPFStwDV84PpJnCdOgmvVmwUpM0gz9mGm2JEzGLmtk50Uka1/zkRh4I/uW
+         A9F6k64djnl8FFyrDqS5mIU2gJ7JLZOs2N4cLqWDIgz7GfvnU4pq882tbhBvM7uUqaSw
+         u7IuyP6nRZrvzi03/IruAwBUB15Ghd0bEFcKWAZhomdBvrz04SMPSrMqBQ63XJkXrH/Y
+         3bHA==
+X-Forwarded-Encrypted: i=1; AKwUvByp48DRuW3euH6g0/VjB9Pv76060G1rrNh1ihBkPcqlrUsUdAIsT7x8i0JwWxQB33T27ARM7BtqBzsu1qY=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIXh9k1rQOjXmZWz1gfuukTXl6yz/Yy2f9Xk7+8QsURAmJ6NcyQ
+	Ypj3bBI4d5Uq32RHQDzaYr8vlA8Wutwj81T83Sc3kgjGmpaixknXBB8lWE2BhtS0
+X-Gm-Gg: AYBFou0fsrn1/AMn8jBW2TnyHTGlgJy0RZaJbMs1NhT3sUYZ8mEHYzCv6QM/LtM9x9D
+	6dbmWX5lnYqRaCZ+nn5RNo3veqm1DDHOjtq5y+3onp4mfwU8YBZEhavrhQ01Fy0mbHSNR98t4ow
+	Idd8uKxvR8UCTW7Whc3cMxDtAI7HaXrKmFcj/2elgGhFMoJ6UsuX/zw9VynccJFkhJWdXO1JV85
+	IhI155A7TA7TsAOBRfHH7bwIuBuktQldP2HpmcI/BNI7LEfN8nUXwgeSbiJvnchGzQUJcwV6A28
+	1lV8+EJidFzzrR4yaXBwlsmDFFCyVVAGrSjFQSBSfmftvJwKbONTs5oCuWFDQdg8v+lpcvNqZtC
+	fwipE7/f4qT/JePel5FZfi4tlp0pO+FwUx8Rt9DjyuLYAcVmYK9kXSRCplZyTDu01i7ooHwNJDF
+	zWfyYGhXkCCUDrFzjtIMrw098CXrShsuB6BGeLE7VGFhpToAE1OSlVZYSphOWJPGtz6YKVMeW9o
+	bn+1Y5r7f5ocpc7AnUb+KFz0ipKF62x1yVmh6riXp9cw838rtrqMEMuFugXa1mP+R7rZavAvsjO
+	gRTZLPe1l47g7SzcweeIznMtSVYJHlyncBwQF20Y/ow9fq08MqLnWllBV0DieZaOkQ678J2Prhq
+	AjBqIEEHlPEr82ennxa1cq+U+NLO608K7Ibe/I+m8MMlSlG1/gzSTq/J7BWnghlU76OrcSqEnmh
+	/+dgJP
+X-Received: by 2002:a05:6808:e89:b0:539:a2c2:aba3 with SMTP id 5614622812f47-55c00366527mr677126b6e.52.1792815827190;
+        Fri, 23 Oct 2026 21:23:47 -0700 (PDT)
+Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-55c040806a7sm691649b6e.2.2026.10.23.21.23.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2026 21:23:46 -0700 (PDT)
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Fri, 23 Oct 2026 22:23:44 -0600
+Subject: [PATCH] Input: serport - defer write wakeups to a worker
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,217 +91,111 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261023-submit-serport-write-wakeup-v1-v1-1-74e7311638a2@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWNSw7DIAxErxJ5XauQSln0KlUXEEzjfggykESKc
+ vdCu3yjmTc7JBKmBNduB6GFE8+hgj51ME4mPAjZVYZe9YNW/QVTsR/OWGdxloyrcCZczYtKxEW
+ jts5ppQZvvIEqiUKet9/B7f7nanjSmJu1NaxJhFZMGKcWcYgln/0s+OZQEhzHF6qWmPqkAAAA
+X-Change-ID: 20261023-submit-serport-write-wakeup-v1-1bdd1006fafa
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org, 
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ James Hilliard <james.hilliard1@gmail.com>
+X-Mailer: b4 0.15.2
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
-s) to consider:
-- [High] serdev: type confusion and OOB read in serdev_device_match() for c=
-ontrollers
-- [Medium] serdev: missing mod_devicetable and file2alias wiring for serdev=
-_device_id
-- [Low] serdev: unupdated serdev_device_add() callers break build at this c=
-ommit
---
+UART drivers can invoke the line discipline's write_wakeup() callback with
+their port lock held. serport forwards the notification directly to the
+serio driver. I-Force's callback can transmit a queued packet through
+serio_write(), which calls back into uart_write() and tries to acquire the
+same port lock. A notification after I-Force queues a packet but before it
+sets IFORCE_XMIT_RUNNING can therefore deadlock.
 
-commit 1b3d9973e0d0ff0b39b8ad4f9814e44ecd6e06a9
-Author: ChunAn Wu <an.wu@canonical.com>
+Defer the serio notification to a work item, as required for transmitting
+from a line discipline's write-wakeup path. Keep the SERPORT_ACTIVE check
+and callback under serport->lock to serialize with serio close. Cancel the
+work before freeing serport in line-discipline close, where the TTY layer
+has already excluded further line-discipline callbacks.
 
-serdev: handle devices without an ACPI or device tree node
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+---
+ drivers/input/serio/serport.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-This commit adds modalias and id_table support to the serdev bus so that
-serdev client devices instantiated without an ACPI companion or device tree
-node can emit uevents and match against serdev device drivers. It also moves
-struct serdev_device_id into include/linux/device-id/serdev.h.
-
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index 7500efcdfc218..45175403bd551 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-
-[ ... ]
-
-> @@ -70,11 +85,6 @@ static const struct device_type serdev_device_type =3D=
+diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
+index cabe3876c168..24c0d0c0c9aa 100644
+--- a/drivers/input/serio/serport.c
++++ b/drivers/input/serio/serport.c
+@@ -18,6 +18,7 @@
+ #include <linux/serio.h>
+ #include <linux/tty.h>
+ #include <linux/compat.h>
++#include <linux/workqueue.h>
+ 
+ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
+ MODULE_DESCRIPTION("Input device TTY line discipline");
+@@ -33,6 +34,7 @@ struct serport {
+ 	wait_queue_head_t wait;
+ 	struct serio *serio;
+ 	struct serio_device_id id;
++	struct work_struct write_wakeup;
+ 	spinlock_t lock;
+ 	unsigned long flags;
+ };
+@@ -66,6 +68,16 @@ static void serport_serio_close(struct serio *serio)
+ 	clear_bit(SERPORT_ACTIVE, &serport->flags);
+ }
+ 
++static void serport_write_wakeup(struct work_struct *work)
++{
++	struct serport *serport = container_of(work, struct serport, write_wakeup);
++
++	guard(spinlock_irqsave)(&serport->lock);
++
++	if (test_bit(SERPORT_ACTIVE, &serport->flags))
++		serio_drv_write_wakeup(serport->serio);
++}
++
+ /*
+  * serport_ldisc_open() is the routine that is called upon setting our line
+  * discipline on a tty. It prepares the serio struct.
+@@ -85,6 +97,7 @@ static int serport_ldisc_open(struct tty_struct *tty)
+ 	serport->tty = tty;
+ 	spin_lock_init(&serport->lock);
+ 	init_waitqueue_head(&serport->wait);
++	INIT_WORK(&serport->write_wakeup, serport_write_wakeup);
+ 
+ 	tty->disc_data = serport;
+ 	tty->receive_room = 256;
+@@ -101,6 +114,7 @@ static void serport_ldisc_close(struct tty_struct *tty)
  {
->  	.release	=3D serdev_device_release,
->  };
-> =20
-> -static bool is_serdev_device(const struct device *dev)
-> -{
-> -	return dev->type =3D=3D &serdev_device_type;
-> -}
-> -
->  static void serdev_ctrl_release(struct device *dev)
->  {
->  	struct serdev_controller *ctrl =3D to_serdev_controller(dev);
-> @@ -86,28 +96,51 @@ static const struct device_type serdev_ctrl_type =3D {
->  	.release	=3D serdev_ctrl_release,
->  };
-> =20
-> +static const struct serdev_device_id *serdev_match_id(const struct serde=
-v_device_id *id,
-> +						      const char *modalias)
-> +{
-> +	if (!id || !modalias[0])
-> +		return NULL;
-> +
-> +	while (id->name[0]) {
-> +		if (!strcmp(modalias, id->name))
-> +			return id;
-> +		id++;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
->  static int serdev_device_match(struct device *dev, const struct device_d=
-river *drv)
->  {
-> -	if (!is_serdev_device(dev))
-> -		return 0;
-> +	const struct serdev_device *serdev =3D to_serdev_device(dev);
-> +	const struct serdev_device_driver *sdrv =3D to_serdev_device_driver(drv=
-);
-> =20
-> -	/* TODO: platform matching */
->  	if (acpi_driver_match_device(dev, drv))
->  		return 1;
-> =20
-> -	return of_driver_match_device(dev, drv);
-> +	if (of_driver_match_device(dev, drv))
-> +		return 1;
-> +
-> +	return !!serdev_match_id(sdrv->id_table, serdev->modalias);
->  }
+ 	struct serport *serport = tty->disc_data;
+ 
++	cancel_work_sync(&serport->write_wakeup);
+ 	kfree(serport);
+ }
+ 
+@@ -249,10 +263,8 @@ static void serport_ldisc_write_wakeup(struct tty_struct * tty)
+ {
+ 	struct serport *serport = tty->disc_data;
+ 
+-	guard(spinlock_irqsave)(&serport->lock);
+-
+-	if (test_bit(SERPORT_ACTIVE, &serport->flags))
+-		serio_drv_write_wakeup(serport->serio);
++	/* A serio driver may write to the TTY, so defer the callback. */
++	schedule_work(&serport->write_wakeup);
+ }
+ 
+ /*
 
-[Severity: High]
-Is it safe to remove the is_serdev_device(dev) check from
-serdev_device_match()?
+---
+base-commit: 2e6f2e5799f328ca0879dad14d7f3709c7f7496b
+change-id: 20261023-submit-serport-write-wakeup-v1-1bdd1006fafa
 
-Unlike the SPI bus where controllers are registered on a class rather than
-spi_bus_type, serdev registers both struct serdev_controller and struct
-serdev_device onto serdev_bus_type:
+Best regards,
+--  
+James Hilliard <james.hilliard1@gmail.com>
 
-drivers/tty/serdev/core.c:serdev_controller_alloc() {
-	device_initialize(&ctrl->dev);
-	ctrl->dev.type =3D &serdev_ctrl_type;
-	ctrl->dev.bus =3D &serdev_bus_type;
-	ctrl->dev.parent =3D parent;
-	ctrl->host =3D host;
-	device_set_node(&ctrl->dev, dev_fwnode(host));
-}
-
-Commit 7ee69102dbc4ee ("serdev: only match serdev devices") added the
-is_serdev_device(dev) check so controller devices on serdev_bus_type are
-ignored during driver matching.
-
-Without that check, when serdev_device_match() is called with dev pointing =
-to
-&ctrl->dev, it first evaluates acpi_driver_match_device() and
-of_driver_match_device() against the controller's fwnode, which could match
-and probe a struct serdev_controller as a struct serdev_device.
-
-If neither firmware match succeeds, serdev_device_match() casts &ctrl->dev =
-via
-to_serdev_device(dev) and passes serdev->modalias to serdev_match_id(). In
-struct serdev_device, modalias[SERDEV_NAME_SIZE] starts at offset
-sizeof(struct device) + sizeof(int), which in struct serdev_controller alia=
-ses
-the upper bytes of ctrl->host, followed by ctrl->nr, ctrl->serdev, ctrl->op=
-s,
-and extends 12 bytes past the end of struct serdev_controller on 64-bit
-platforms. Because the upper bytes of the kernel pointer ctrl->host are
-non-zero, modalias[0] is non-zero and strcmp(modalias, id->name) will read =
-out
-of bounds past struct serdev_controller when sdrv->id_table is set.
-
-> diff --git a/include/linux/device-id/serdev.h b/include/linux/device-id/s=
-erdev.h
-> new file mode 100644
-> index 0000000000000..96644953ceced
-> --- /dev/null
-> +++ b/include/linux/device-id/serdev.h
-> @@ -0,0 +1,19 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef LINUX_DEVICE_ID_SERDEV_H
-> +#define LINUX_DEVICE_ID_SERDEV_H
-> +
-> +#ifdef __KERNEL__
-> +typedef unsigned long kernel_ulong_t;
-> +#endif
-> +
-> +/* serdev */
-> +
-> +#define SERDEV_NAME_SIZE	40
-> +#define SERDEV_MODULE_PREFIX	"serial:"
-> +
-> +struct serdev_device_id {
-> +	char name[SERDEV_NAME_SIZE];
-> +	kernel_ulong_t driver_data;	/* Data private to the driver */
-> +};
-> +
-> +#endif /* ifndef LINUX_DEVICE_ID_SERDEV_H */
-
-[Severity: Medium]
-Should struct serdev_device_id also be wired up in
-include/linux/mod_devicetable.h, scripts/mod/devicetable-offsets.c, and
-scripts/mod/file2alias.c?
-
-serdev_device_uevent() emits MODALIAS=3Dserial:<modalias> to userspace, and=
- this
-header follows the include/linux/device-id/ pattern used by modpost. Howeve=
-r,
-without including device-id/serdev.h in include/linux/mod_devicetable.h and
-adding the corresponding DEVID(serdev_device_id) and devtable[] entries in
-scripts/mod/, MODULE_DEVICE_TABLE(serdev, ...) is silently ignored by
-handle_moddevtable() and no serial:<name> aliases are generated for module
-autoloading.
-
-> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> index b6c3d957ec155..96a441abc1ace 100644
-> --- a/include/linux/serdev.h
-> +++ b/include/linux/serdev.h
-
-[ ... ]
-
-> @@ -158,7 +168,7 @@ static inline void serdev_controller_put(struct serde=
-v_controller *ctrl)
->  }
-> =20
->  struct serdev_device *serdev_device_alloc(struct serdev_controller *);
-> -int serdev_device_add(struct serdev_device *);
-> +int serdev_device_add(struct serdev_device *serdev, const char *modalias=
-);
->  void serdev_device_remove(struct serdev_device *);
-
-[Severity: Low]
-Does changing the signature of serdev_device_add() here break the build for
-bisecting before the follow-up patches in the series?
-
-Two callers in drivers/platform/x86/ still pass a single argument at this
-commit:
-
-drivers/platform/x86/dell/dell-uart-backlight.c:dell_uart_bl_pdev_probe() {
-	...
-	ret =3D serdev_device_add(serdev);
-}
-
-drivers/platform/x86/lenovo/yoga-tab2-pro-1380-fastcharger.c:yt2_1380_fc_pd=
-ev_probe() {
-	...
-	ret =3D serdev_device_add(serdev);
-}
-
-Those two callers are updated to pass KBUILD_MODNAME in the subsequent comm=
-its
-"platform/x86: dell-uart-backlight: Bind through normal serdev matching" and
-"platform/x86: lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal
-serdev matching", but at this commit (and the next commit for
-yoga-tab2-pro-1380-fastcharger.c) building with CONFIG_DELL_UART_BACKLIGHT =
-or
-CONFIG_YOGA_TAB2_PRO_1380_FASTCHARGER enabled fails with too few arguments =
-to
-serdev_device_add(). Could those callers be updated to pass NULL in this
-commit so every patch in the series builds cleanly?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261024022930.2704=
-030-1-an.wu@canonical.com?part=3D1
