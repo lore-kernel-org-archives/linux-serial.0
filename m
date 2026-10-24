@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792843867;
-	b=qIzRktQH/Q9Q3EZM6BiK7pi11xwVmBEJ3JfjfvH9txVYlrn5OwtnhJmLjascdNsV442j
-	 uYAKoy5i/qTiAsF+fV6h/8kha9u8uzNsb8BFArzLf6PCDuu5YKo2a48Qx36k4K9jibU6r
-	 SVVqVUNzsfBTWYlJsvTRzCPYNaDN1GCBBi0soifdNOEdDtIV6Oe0QyMwCtp98ElHC+Sq2
-	 UhxuciiddP5gvqZQCg/VoTouYK3kvm9Fi2jxCvPBOV8U8PEfZIAccNed9Kfv+/5cMIZ31
-	 Sj/fby8BGHtb7IwsmhbOC4JAUHVdPMxG75/y7gm0Ogi/9dcrUmU/8XyUCtzQDdxzgEg==
+	t=1792844282;
+	b=F4WikurEbMmUsbX9VR0YieG5gEjZ8jAKRgp1K+gEhhCyhHk177dxStPhNIoE/Au71EOS
+	 LSYO4SlETvEtPs2bJtC1BHWUi93+3OeGHxYnHO88NeHpijdrob/XKZ/zIkvZqClm2HCvv
+	 Qbprb3o7bPafUq0df5Z486fVxTdXCdv6oLhXX1CRLZc9uEEJEy4/W3jfJsa2HAzYc6i80
+	 Y26ODAoXvKyiZInuheJsTucVkBRByqpOISa1xgbBFN7wtBryRbXFpSvadWyhSJK7DVBdm
+	 id8FMQorIxXo+usUOzDUuQadw2n4+QVS3aJGV5MqETXdo5B2I1XEpzOKND6GCN60iWA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792843867;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792844282;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=k9pufUDwGPhpSWQnakqCkkdFQxUrbEi6N4k/sYx40Gc=;
-	b=38A+ajMaKrMnqgsYu7UY2EYXgCWebMXVY5wT5FoJwunaMYF2tmxJNOwOIIrwilpMIp+x
-	 gHILqjgnYxfv/4//ZrRSCnNkSYAWH0QQFFaspxfSPVljsQqrPDnn+BEbxWKNIS2sCL/az
-	 ugwU1H6mwbyAuUQhc/BB7XdlIK5fDshp8djONQSgGR+UN2PbosyXMgt6Jp956y6cKfknR
-	 Lm5S6ZjSZQ0Ki5Z7n8pE13Nfdheg7X9Nb6lNuVWsmkb9V7Uq6bqnjgd/YEI2lsFCTeh+J
-	 fHUjny6s+HZVA4WxpvtTuZ4Ac9CLvGGX6k68wyfQPNXa812o4nJT2BeH80TRG3pqurw==
+	bh=4UMT7/CEAHG5Vy9vioK1mFirwm7Y0UCiOobzuG1X6aQ=;
+	b=Fm2I6MoD2le1qWq2CAOkAlIa5VEO0N2F7jg3XTH4OsbHVLCbMphkU7bT014uK5vs4wpT
+	 boloQ50YOcU8H1yGABRcbgBcCm0Ym5kiIPTqJL9U0YXwrcXidz6CQAV108+Th4Iw0SiJZ
+	 WyLyu5AI1zrW19XLlep8gTVGPiAGTlZNwPUj/F/3Fca6rCsrHnlp4D6B7eKgQTMAX0fhe
+	 1MZsbxxXxHGf4uzUtrvtzhMYpFm6zimvp2ly+a438mIKXo9R/jSOzdM7UkEKMgyPghcSe
+	 6bBhcNwbgwPjLveaGmdvae0/3MyOoccgjUk0FQ9UH9df1+mrQRkqdl7Qf0jvdp6fZKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DsIdy8hV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ISFXbg4m;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77AC0606A31B
-	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 12:11:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A173606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 24 Oct 2026 12:18:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DsIdy8hV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDC951F01825;
-	Sat, 24 Oct 2026 12:11:06 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ISFXbg4m
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C751F01825;
+	Sat, 24 Oct 2026 12:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792843867;
-	bh=k9pufUDwGPhpSWQnakqCkkdFQxUrbEi6N4k/sYx40Gc=;
+	s=k20260515; t=1792844281;
+	bh=4UMT7/CEAHG5Vy9vioK1mFirwm7Y0UCiOobzuG1X6aQ=;
 	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=DsIdy8hV6IxUOXBLEwdwDjsJVwdaS4/ReszhFOhYjmJn6CVktnWby596CffVNC5k/
-	 bZ46JT/viK8ox0wO25nEnH4gIAr2IzmJ+s6/eTDYBl6kI4pzMwMKNS9MBGIlDqI6qQ
-	 OSvXUfZTUwyrcIJZhXJ/Pr/S8AQh9PWi2R8XqmujBtAzv4yMbdwmAU6pBYYLmM5m75
-	 TmXYisfsV9YwJIiNoK+DVuRcjS9Gzcuq3W+A6QyjN2lBdnGu+QPeN3aSfZThvO7PCu
-	 0X17AM1ZBZ8Jv3R9wZvKzbxauUzI4odkh2E1ZhdJTQDmltThsvrQwpqIbfjugysEv7
-	 D1wQX+vhtIVqQ==
-Message-ID: <sashiko-outbox-183704@kernel.org>
+	b=ISFXbg4msc1b2nj1QA1D+DuZR8SuNFm9/7KKjzQlzzVkoSBzLBcmgwJH4FO+mINLy
+	 zlXIYokpgsNy6eAtJqnuWa+KpOuv1SgKSjw7XhzdhUSivKwqXoiA6wUtWy0Y7g58If
+	 01QxAjDIymcg56vMQlixgOgAIvZ/S3biO5GEuS0xykzqQfyTttfbfujoyB24zZkBea
+	 Wv2u9VoPYdEo7GD787C3s8JjJZQsWieN/e2DBDugVoD4gPkTFCX5Lca0Yps/Muj6jt
+	 F7DiNk5loPTFOwprZroFL+16vmeB4gVcf6KUeSyBbFtDDF4ofcKHUUQLN6RkjvYxac
+	 1CqJCqk3WexdQ==
+Message-ID: <sashiko-outbox-183706@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 2/3] platform/x86: dell-uart-backlight: Bind through
- normal serdev matching
+Subject: Re: [PATCH v5 3/3] platform/x86:
+ lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal serdev matching
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "ChunAn Wu" <an.wu@canonical.com>, linux-serial@vger.kernel.org
-In-Reply-To: <4ac249174a529766e8fd69c39fc08dfa1572a650.1792831564.git.an.wu@canonical.com>
+In-Reply-To: <5e70a181599ada304c6aa6589cc61662f1a8d710.1792831564.git.an.wu@canonical.com>
 References: <cover.1792831564.git.an.wu@canonical.com>
- <4ac249174a529766e8fd69c39fc08dfa1572a650.1792831564.git.an.wu@canonical.com>
+ <5e70a181599ada304c6aa6589cc61662f1a8d710.1792831564.git.an.wu@canonical.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 24 Oct 2026 12:11:06 +0000
+Date: Sat, 24 Oct 2026 12:18:01 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,17 +60,16 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The driver creates a serdev client without firmware metadata and
-> force-attaches its driver to it.
+> The software-node-backed serdev client cannot be matched through ACPI or
+> device tree and is force-attached to its driver.
 >=20
 > Pass the modalias to serdev_device_add() and give the serdev driver a
 > matching id_table, so that the serdev core binds the two through normal
-> matching, then drop the manual attachment.
+> matching. Deferred probing is then handled by the driver core, so the
+> -EAGAIN translation is no longer needed.
 >=20
-> The client now also reports a "serial:dell_uart_backlight" modalias to
-> userspace instead of failing with -ENODEV. A failing serdev probe no
-> longer propagates out of the platform probe; as for any other bus, the
-> client is simply left unbound.
+> A failing serdev probe no longer propagates out of the platform probe;
+> as for any other bus, the client is simply left unbound.
 >=20
 > Signed-off-by: ChunAn Wu <an.wu@canonical.com>
 
@@ -78,5 +77,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1792831564.gi=
-t.an.wu@canonical.com?part=3D2
+t.an.wu@canonical.com?part=3D3
 
