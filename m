@@ -1,80 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792851278;
-	b=Y2cy1gZhW9HLGwK5TK8ad+WlSbJEjfDmR5u9+Hb7qQH2PaO2/7pMgYCw9Gv25c4TXzA8
-	 AndgMgcaqJw1xDcWayFg4BteqyGvfsJUtjvcJfTbCT+D4kj4RjfqEqj4SFmFioxE4Z2xJ
-	 2eFCIrttpAafP31YZxEN/JXpCnf6zgBezy5Cc1NpaZndH06hk8ruWUpsiPiE8/e2WCdtl
-	 tDWnFtS6NiXtfolCDhyBY7uPuoVFcJG88DnfWV07BP9aqTscxMI71OnzAbrYlxfq19Pe6
-	 wvG1IMkeiZVKwogTW0d7igyWdaPyg4eMAEqYaQY6e4L5C9RiCTD13T651x5kAE5qNMg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792851278;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=8Bv8zm7XNsLRVn3LnImSn0NVeOMUvsqV0SZT9DMvmik=;
-	b=kdhIgTcHFWErDmagPOKDjK+bzpOZdgpyxzzb+M6yrhSBpW7t3vppLDP2dJxx7v/QMCyJ
-	 7X4NBDm+tdUL+UwxXn3U9RJPR7zjohZKHvtM2jx61GZ/F1kAvgQV5bPWBMQFuc2BodRCf
-	 arKkWnXjXGlYVDsLdT9bXHuQFV9CDkKnpYVDxl3e35cKRf5lO+DAORwUKa0IRphqXcsLH
-	 UUOzXLqQgZP2ZsX2+0fONGm0ebAqOtZG5CHVbGm7D8bDBozwAiri41cyJgQycWRVNVmYo
-	 5++SndNbCtQ5AO7Cp1MgtL36JuxDzoQ8x47gDn/Qyqah7iKT88Q3NYcCBFQh6wgPU/g==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=db9xt5Mv;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.166
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792862638;
+	b=Yhm7qurJMayXU9lUf/NRaqHwnt3PF21X0lX6oYBNiIoJ3VcIxNY2f8GzpVuMKNJ8Ccbo
+	 Ge7RsDfNJF397jAgosP9KOXanTkoOsfrwl6eSGxG1eBuML5f5yWoChMacf72bzPnh3BA7
+	 uk6RJSsP3807VH9GZ0rqZfpIKK/0VasFHY95VJWXIN1N+tThk8NY0/K3Bhr0CoO0Tymbk
+	 mNpqqUXjkiPFadZFWcTYnuZVb2fu5OkDSLQc3+5DvL+xTToGcOv5a1GwEZWon8+vG3dXX
+	 qqidsHxjTtfsjfPmvWx7SqULltu+ZvgI+uvmqb1ajm224wQfI8UgntYPOwbcmDnPvkQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792862638;
+	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
+	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
+	bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
+	b=Lhj5mnAjAGKY3EeseCs3U9nahSLSdcpKZSavCA8iPmogqGrensI830uzjlQHwuNl4qJg
+	 61V2YVEa8uMpHN+7vTTlhJUdAJ0ZKDHWf0xAcFWoKFTImbhdXdAMy2ZDD7X/JYyEmk5w/
+	 78XBW4jhim3c79lXpHI/kCWwXSf1pyR79Ixb53FZDHZ7zY2r4d/4E6mnA04b8SA//fgSQ
+	 q1e2vnneItTgHTSauMW2sMHHRXRWMU6C4jFzD5rbOi5D/HeN+cpTA30dByO/EDsr9oiGV
+	 fMFlCgsIPOZe+EqpLdb6z08z9/KYXghbf8Pu3Sxb2uiG5pjDEAqUfKzdYMaRB/eRQRA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=goldelico.com;
+	spf=pass smtp.mailfrom=goldelico.com;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b="abwLC/p2";
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b="2Jq7/VTT";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.166
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE8BF606A31A;
-	Sat, 24 Oct 2026 14:14:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE8BF606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 205D2606A31A;
+	Sat, 24 Oct 2026 17:23:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 205D2606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=db9xt5Mv
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792851277; x=1824387277;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=usH5EuShCy2UbML2kbeFVG+kU8NRmf11PsDnNGqiAvY=;
-  b=db9xt5MvsIgLQPQyju66o7BxIyHdvOq/y/dzhMddvjYsC1OaqQpJe75w
-   x5xOsMWQOyq46zVzdz8eRQQ3dse4VKzUZ9xl8TjDpKrLSzOrkv+U2lUNy
-   uDqKqYv7frIu5KI1BJo8toHYYv4VxAqAJHrF1aDGM2q4bNTt2v++8cLkv
-   iudxQFrK4niQiKYt6GKviXe/3dvnAGTFtJirkd3PJcw+FyjTU/5mvmmCx
-   p40KA1Vkwdt/695SlTtPRGkvz4UnEF9jzOhRLL/jc18SOizcmiB8Q73SG
-   txLydsRAiWyH5pw/id1oAbnI4qcW7FTBSdzTRsJYov/mrZVjOKW4+s/Sv
-   g==;
-X-CSE-ConnectionGUID: qmTp7o6BTOO8YfQmIGa1MA==
-X-CSE-MsgGUID: 9pbRMMw7S3mTsPiIfPuaXg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11944"; a="1594542"
-X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
-   d="scan'208";a="1594542"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2026 07:14:36 -0700
-X-CSE-ConnectionGUID: EfaqV5EhQT26ry0mQSZHHg==
-X-CSE-MsgGUID: nV1Z65ktSMOV29IAbSTkqQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,176,1787036400"; 
-   d="scan'208";a="3744843"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.221])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2026 07:14:13 -0700
-Date: Sat, 24 Oct 2026 17:14:11 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Raul E Rangel <rrangel@chromium.org>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_dw: preserve BUSY-safe fractional divisor
- programming
-Message-ID: <aty9MzTQX-iKPdt3@ashevche-desk.local>
-References: <20261023-submit-serial-8250-dw-divisor-v1-v1-1-f452d4bb1b1f@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=abwLC/p2;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=2Jq7/VTT
+ARC-Seal: i=1; a=rsa-sha256; t=1792862626; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=bFjv2h8C9fooxwGDjur2bBKmhkxWD8iMQO71jSZpt03sGOm2pffpBjztslvGPXd8m8
+    oZPXAIEEfe9ISc/uoCoBfGXkkHP2E8mNYEgI0Ywx9R0x90XIdJprdRCowJQc+cR94tDR
+    plETGz9n9HiyHGvcjQZ0xIlAIqSYjgj02IBGIqYBZ05Mc4+ZiVBQUV/SIQ+WYy0THv3W
+    itSsSabToaDs9OpucpmGAXRCE+5vxcYUqH1h4JnqWZLYwUaoBApbomcd5L0oTA1lwL19
+    h7cP8D+rb3LkUpsKiVmDcBaDCfWrShmpENWaTiFZ6m8HCfBl7coHWIfzvOtRoVI7cAMF
+    2c3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1792862626;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
+    b=OZ7CYd8vWN1/qtzIzCdltFCK2faWcP6Nf+5Qs8moEsK1Pa/h6K1r+BY1TyrDLEM+hC
+    1BstVBsvHtSX6nGxRgXttAasRwkhjJT/T0N4qFKRp5ajCYekEVZPX3hcgFbsIT63MSgh
+    kL1OLjK/2IQScK6iFFWZ1ycXKuT5MEhjkYNgAuTKDVZnMakuuAr3Wr7W3sokymVgaQW5
+    kJa2vSAtpli0k+OknqgEwqi9XXbbVGuRWeH8skEqnDmX7MvgFtyKV4zRe9HgpsU9r1Qb
+    80lFqX5cu5NqxrVOIYpY3RvhCbbpr9+D9pP7e+WPltTnAc/QZ6M3AsKWziqlxi1fl9e2
+    ga3w==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1792862626;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
+    b=abwLC/p2md+SjBsSzF62IL4A5mo0slDrCt8vw5V1Sm/mK0n3TIPqKI9YRsiQLhfPxF
+    /ZdjQuD7lx6EG+Yb3GEI9tFSAExuPiRT99odB6JX0SZBU1f2ZAXvU6jXUeKDqqFTkJYY
+    EbODiQqlJOax3AZvFBJTUK++J9WwR8d6YkF0DTFZLLnRqgKAepEHMM2GESdnBR1NPt2/
+    BpcM2Amx31zZJ239KnSPos1xq6T/NLAyn+NMJPUkfDOul0zqz+Xe3SZs84rIdlWO5VPq
+    n5ABZdhSMQOibpQngJfP6jnrM1jtoybryzHON+4RCL1T6fd+Un2dhoPb8N9fODnSOQdz
+    MZVQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1792862626;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=M9m5zzaSa9x02c7lCxTqJXB+aAtIcTuE3vabyXJlYe0=;
+    b=2Jq7/VTTRVBfmbeXTT0xwzHULw34qqan+v9q3EK3vu4cGIS8ovV9nBfO2PAms/XgWJ
+    zUlWsSKtJqotPh+CfRBw==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV2poKzsiNzptYNlV1C1yk7253raiyx+O3Hxli"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 55.6.3 AUTH)
+    with ESMTPSA id Qb56a229OHNjwqO
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Sat, 24 Oct 2026 19:23:45 +0200 (CEST)
+Content-Type: text/plain;
+	charset=us-ascii
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,107 +93,166 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261023-submit-serial-8250-dw-divisor-v1-v1-1-f452d4bb1b1f@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.10\))
+Subject: Re: [PATCH 2/2] serial: 8250_ingenic: Start the X1600 UART from 16
+ clocks a bit
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20261024051515.55639-2-olivier@mgcrea.io>
+Date: Sat, 24 Oct 2026 19:23:15 +0200
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Paul Cercueil <paul@crapouillou.net>,
+ linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-mips@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
+ Paul Boddie <paul@boddie.org.uk>,
+ Andreas Kemnade <akemnade@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <ACAE791A-545A-4AB7-842B-BD3F4ABE9208@goldelico.com>
+References: <20261024051515.55639-1-olivier@mgcrea.io>
+ <20261024051515.55639-2-olivier@mgcrea.io>
+To: Olivier Louvignes <olivier@mgcrea.io>
+X-Mailer: Apple Mail (2.3826.700.81.1.10)
 
-On Fri, Oct 23, 2026 at 11:50:17PM -0600, James Hilliard wrote:
-> dw8250_probe() installs a divisor setter that makes the UART idle and
-> checks DLAB before writing DLL and DLH. When dw8250_setup_port() detects
-> fractional-divisor support, it replaces that setter with the library's
-> callback. The replacement writes DLF and uses serial8250_do_set_divisor(),
-> bypassing the divisor setter's idle sequence and DLAB readback.
-> 
-> If the LCR update fails to set DLAB, the subsequent divisor writes can
-> reach TX and IER instead of DLL and DLH.
-> 
-> Install the BUSY-safe setter after hardware discovery and extend it to
-> write DLF when fractional divisors are supported. Program both divisor
-> fields only after DLAB has been confirmed, retaining the fractional
-> divisor calculation selected by dw8250_setup_port().
+Hi,
 
-...
+> Am 24.10.2026 um 07:15 schrieb Olivier Louvignes <olivier@mgcrea.io>:
+>=20
+> The X1600 UART samples each bit with UMR clocks, adjusted per bit by
+> UACR, while the divisor the 8250 core computes assumes 16. The driver
+> never sets them, so the UART keeps what ran before it: on a HiBy R1 =
+the
+> vendor kernel leaves UART0's UMR at 8, which by the register's meaning
 
-> static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+So this patch adjusts a driver to a specific board and not the x1600 =
+chip?
 
->  	if (!(serial_port_in(p, UART_LCR) & UART_LCR_DLAB))
->  		goto idle_failed;
->  
-> +	if (pd->dlf_size)
-> +		dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
+Then, this asks for a device tree property if it is really needed.
 
-I still think it's better to export dw8250_?et_divisor_dfl() from dwlib and use
-both here.
+Or it should be fixed in U-Boot. Otherwise, assuming now that UMR =3D 16 =
+is
+correct for all x1600 boards would introduce a big issue for other =
+boards
+which suddenly stop working at the previously correct rate.
 
-In dwlib:
+> doubles every rate set here (the line rate itself was not measured). =
+The
+> Bluetooth chip on that UART then never answers: "command 0xfc18 tx
+> timeout" from hci_bcm.
+>=20
+> Add an X1600 entry that writes UMR =3D 16 and UACR =3D 0 at probe. The
+> offsets come from Rockbox's X1600 register headers and match the UMR
+> read on the R1. The X1000, whose compatible the X1600's falls back to,
+> may have the same registers, but I could not check one, so it is left
+> alone.
 
-unsigned int dw8250_get_divisor_dfl(struct uart_port *p, unsigned int baud,
-                                    unsigned int *frac)
-{
-        unsigned int quot, rem, base_baud = baud * 16;
-        struct dw8250_port_data *d = p->private_data;
+Well, it should be checked...
 
-        quot = p->uartclk / base_baud;
-        rem = p->uartclk % base_baud;
-        *frac = DIV_ROUND_CLOSEST(rem << d->dlf_size, base_baud);
+... the x1000 has the same register.
 
-        return quot;
-}
+Of course it does not seem to be a standard 8250 register. Anyways,
+it should be checked is how other 8250 drivers handle special/private
+register setup.
 
-void dw8250_set_divisor_dfl(struct uart_port *p, unsigned int baud,
-                            unsigned int quot, unsigned int quot_frac)
-{
-        dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-}
+Or this should even become part of the clock setup?
 
+>=20
+> Tested on a HiBy R1: UMR reads 16 and UACR 0 after probe, and the
+> BCM43430A1 on UART0 comes up at 1.5 Mbaud and streams A2DP audio.
+>=20
+> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+> ---
+> The test on the R1 ran with the same reset placed in the X1000 entry; =
+the
+> R1's device tree lists "ingenic,x1600-uart" first, so it takes the =
+same
+> path with this version. Build-tested with W=3D1 on tty-next.
+>=20
+> drivers/tty/serial/8250/8250_ingenic.c | 18 ++++++++++++++++++
+> 1 file changed, 18 insertions(+)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_ingenic.c =
+b/drivers/tty/serial/8250/8250_ingenic.c
+> index 0cdadacd7019..40307189021b 100644
+> --- a/drivers/tty/serial/8250/8250_ingenic.c
+> +++ b/drivers/tty/serial/8250/8250_ingenic.c
+> @@ -25,6 +25,7 @@
+> struct ingenic_uart_config {
+> int tx_loadsz;
+> int fifosize;
+> + bool has_umr;
+> };
+>=20
+> struct ingenic_uart_data {
+> @@ -40,6 +41,10 @@ static const struct of_device_id of_match[];
+> #define UART_MCR_MDCE BIT(7)
+> #define UART_MCR_FCM BIT(6)
+>=20
+> +/* Clocks a bit, 16 for the divisor the 8250 core computes, and their =
+per-bit adjustment. */
+> +#define UART_UMR 9
+> +#define UART_UACR 10
+> +
+> static struct earlycon_device *early_device;
+>=20
+> static uint8_t early_in(struct uart_port *port, int offset)
+> @@ -298,6 +303,12 @@ static int ingenic_uart_probe(struct =
+platform_device *pdev)
+> }
+> uart.port.uartclk =3D clk_get_rate(data->clk_baud);
+>=20
+> + /* Whatever ran before may have left another count: 8 on a HiBy R1. =
+*/
+> + if (cdata->has_umr) {
+> + writel(16, uart.port.membase + (UART_UMR << uart.port.regshift));
+> + writel(0, uart.port.membase + (UART_UACR << uart.port.regshift));
+> + }
+> +
+> data->uport =3D serial8250_register_8250_port(&uart);
+> if (IS_ERR(data->uport)) {
+> err =3D PTR_ERR(data->uport);
+> @@ -344,6 +355,12 @@ static const struct ingenic_uart_config =
+x1000_uart_config =3D {
+> .fifosize =3D 64,
+> };
+>=20
+> +static const struct ingenic_uart_config x1600_uart_config =3D {
+> + .tx_loadsz =3D 32,
+> + .fifosize =3D 64,
+> + .has_umr =3D true,
 
-static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
-                                       unsigned int *frac)
-{
-        return dw8250_get_divisor_dfl(p, baud, frac);
-}
+the x1000 has it as well. And even the jz4780. So correctly setting this
+flag (as it is named) for more SoC variants will break more boards...
 
-static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-                               unsigned int quot, unsigned int quot_frac)
-{
-	dw8250_set_divisor_dfl(p, baud, quot, quot_frac);
+> +};
+> +
+> static const struct of_device_id of_match[] =3D {
+> { .compatible =3D "ingenic,jz4740-uart", .data =3D &jz4740_uart_config =
+},
+> { .compatible =3D "ingenic,jz4750-uart", .data =3D &jz4760_uart_config =
+},
+> @@ -352,6 +369,7 @@ static const struct of_device_id of_match[] =3D {
+> { .compatible =3D "ingenic,jz4775-uart", .data =3D &jz4760_uart_config =
+},
+> { .compatible =3D "ingenic,jz4780-uart", .data =3D &jz4780_uart_config =
+},
+> { .compatible =3D "ingenic,x1000-uart", .data =3D &x1000_uart_config =
+},
+> + { .compatible =3D "ingenic,x1600-uart", .data =3D &x1600_uart_config =
+},
 
-        serial8250_do_set_divisor(p, baud, quot);
-}
+No, this is not special to the x1600, but a workaround of some peculiar
+setup of your bootloader.
 
-In dw:
+> { /* sentinel */ }
+> };
+> MODULE_DEVICE_TABLE(of, of_match);
+> --=20
+> 2.39.5
 
-static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
-                                       unsigned int *frac)
-{
-        return dw8250_get_divisor_dfl(p, baud, frac);
-}
-
-static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-                               unsigned int quot, unsigned int quot_frac)
-{
-	...
-	if (pd->dfl_size)
-		dw8250_set_divisor_dfl(p, baud, quot, quot_frac);
-	...
-}
-
-...
-
-> +	/* Use the BUSY-safe sequence for both integer and fractional divisors. */
-
-...and here
-
-	p->get_divisor = dw8250_get_divisor;
-
-> +	p->set_divisor = dw8250_set_divisor;
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+BR, H. Nikolaus Schaller <hns@goldelico.com>=
