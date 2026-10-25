@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792894723;
-	b=ncZ2OMC8ukAMGh6uJwqKflxnZgRpraFMoHJGqIDzTe4oL8i6zA59fYHqAT932DUgSljU
-	 OB+CRJdjFDPNV5S5sW/RSVpeMDwLNf7IqgH886AmYoqp7NFBy2X6LFCG+Zw6ycFL89Fll
-	 FMvxmDTeKno5iexDPMMSP0kRD5G35u73Dnp490UBSMr16UzRy+hEv3EyYtXL8CcAy6Cs1
-	 GA9dG3Ul1jFQ/gFnUS7KsSNubW5gaBfMyxSeH7J9sTustcta0Yo20gj+fkKKhlGV35UPX
-	 y51Coq0bpfOikyjT6+W99Y3pMf9oVIbOWMeUK3BjPhto+2w5xOyxWKT0K/5qaddYoug==
+	t=1792894849;
+	b=Fv0ILzUkxm4nCouZPTmBfhIqVwO28Y6LWfoINHxsSQFo+RCczHVu83vJLSAcYuqyU5Ar
+	 myBOktp4saDfxDZRV/fV/kkOyEskrhMFyaA5KX/VjmuGHiAuDj+lJ161n3Z/e5LuOwNLM
+	 kSukbXNbbySRSuRNmKzT5tQic1QexjV28TQAooLBgZma50opgcywyvoQ56WIgv7NLQK68
+	 lYpkF6uUIjfhqE7mJq0jngZpCgXby+eX8pQI1o7QGRfjogybACB03g/pnaDZe//ZPAhqf
+	 P809p3LjrIxBe4AWogSM6Yk6yffmtPozULSXJkPtRAXPfFj390W4eVxaz5KG//ATS/A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792894723;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792894849;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=YmlvGuVjsawZ/B8QYQwrdMEeo/FtYdo8b7szvaaHQXs=;
-	b=OSoxIeDa3jp4XOQbYfF0YU75sGoFVi1127fRuY8ZoKKgRDqpTKoEjXoiARbHfBTuxb3S
-	 Nz8uVp9O7pzsR022TcwcmL/ihUiFTBwBABqQZ+yc+DsVWt3FDWrcEevGL0nkVGHSjLJFt
-	 i0oScnCWP3iKkROp77501TOcA0u0T10lmBKPsVasky7uozbqwehgw6dezGbzCwoCwuliy
-	 dbdrU7b15fRpnqsIbxMMUQTMvOaYhswbKu8ZKjgzV/+T21n1RfeO4T5U2gLuSCBfuYllF
-	 EQOO8/nX3zTIcO0dGIt+KuOYgeAqXfqPy61PLrTEb0Hoj40OccGw2ewo0sqyiIC9z7Q==
+	bh=s6Ddw/yI+mjAY8qV4Nl9kgRhIyuqzMhK4+qg7LDAA2s=;
+	b=QrtxCV5KfCPgslahIMoz7uhM5sNtJpggvklxMqPMgC67NtwQ+zEfRYoDa+6jBct6anjU
+	 TtcCSVDCO9w69myukYH82dGYAuNEUqgOb0trgm+139n+lil6ICQTBp7M2ZEVhukDdQ217
+	 YfSzdAiFEqwyWYBONPLePkh90jU6unlFQQTCawKdINBI4c1TBU5dOmfSYP33AjyknixsB
+	 mBZfY3eCnh1RRZWccWCOqFwdXL6fj8v+nwP3lboNPmp+nf0pyOdNTUAEKXu8WJu2FChJC
+	 9P1eIY4BiyIePcoxNNrpAvR2ZlzYX52/qDcJTyyu54kY08X1uOTvjLtrGYo4dwF1kMw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MNcB9Fop;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XOhuvQdh;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4FD9606A31A
-	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 02:18:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73784606A32E
+	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 02:20:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MNcB9Fop
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 546001F01825;
-	Sun, 25 Oct 2026 02:18:42 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XOhuvQdh
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9C521F01825;
+	Sun, 25 Oct 2026 02:20:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792894722;
-	bh=YmlvGuVjsawZ/B8QYQwrdMEeo/FtYdo8b7szvaaHQXs=;
+	s=k20260515; t=1792894849;
+	bh=s6Ddw/yI+mjAY8qV4Nl9kgRhIyuqzMhK4+qg7LDAA2s=;
 	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=MNcB9Fopen2b/mvgGwAOOW3N80IBaXVVDmO1HHG89MfUCDiaNKj9tHBRwpc68NYai
-	 QGAPLxMy2BeHCR1XN4MEUUsXNvo7ZIomMIW77+5AJ51U+aFljDqdJTMLg/z7d9o/Ao
-	 IgKHeB4aPk2dKPuvq7Y5LdpsOV+goovQ55dBpe3FhqMitSgZpIe1D4bTO9N9yXvzIb
-	 ECi0QVydmnIjitDNAG3yKMb6b+iKCDf8R6vgztlRfCFBLPoMSneXHhKbq5XhzjEehx
-	 aYYmLH8OHOngs4GdE3neBA80HZ6u2vL5xlKulpNAYnPnH+I8tywDCGhgC3RJAh8IiT
-	 xnHJ8KECMMdmw==
-Message-ID: <sashiko-outbox-183981@kernel.org>
+	b=XOhuvQdhm0twjs0Qz3C+agZ404ryid6S9Fh0Y3BZVgWQzoX3rLTBmoTCNIstNG3Wb
+	 /gNoO2nWGPXF/e8TFs2l0nkq7CZkAZmgL1Dpv24pyXTU4+7f8Ws6UvQCi2peLQSrbP
+	 o/03KQYRwSFwkyv6fAWPdoJwdrkELzWwKLQYuwNOfV3y0ZBFRkJQ92hY7QG81hosv7
+	 lQI91Vlt5Gz91KCyWOyrIKyD8x7VAovooQ/ZBpW3SwhpRQGujgCYIsj/i5gjahBBch
+	 2hEiiZ7aGGKOfJgBUqbtw+GY2V7gOo0WYOq9dDQhVP8Z6xVdwxSi4P/svdTa0Y4HeC
+	 rFbi3qNpPTVRA==
+Message-ID: <sashiko-outbox-183983@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v6 1/3] serdev: handle devices without an ACPI or device
- tree node
+Subject: Re: [PATCH v6 3/3] platform/x86:
+ lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal serdev matching
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "ChunAn Wu" <an.wu@canonical.com>, linux-serial@vger.kernel.org
-In-Reply-To: <263a607c3602f31a3f6fdd245e3c2008cdf97abd.1792856688.git.an.wu@canonical.com>
+In-Reply-To: <3827984795c4bd797008652a49b069151e1e8be6.1792856688.git.an.wu@canonical.com>
 References: <cover.1792856688.git.an.wu@canonical.com>
- <263a607c3602f31a3f6fdd245e3c2008cdf97abd.1792856688.git.an.wu@canonical.com>
+ <3827984795c4bd797008652a49b069151e1e8be6.1792856688.git.an.wu@canonical.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 25 Oct 2026 02:18:41 +0000
+Date: Sun, 25 Oct 2026 02:20:48 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,27 +60,16 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Serdev clients instantiated by a driver have no ACPI companion and no
-> device tree node. Their modalias read returns -ENODEV, their add uevent
-> is suppressed, and they cannot be driver-matched, so creators force a
-> bind with device_driver_attach().
+> The software-node-backed serdev client cannot be matched through ACPI or
+> device tree and is force-attached to its driver.
 >=20
-> Resolve both TODOs in the serdev core by modelling matching on the SPI
-> bus: let the creator pass a modalias to serdev_device_add() and give
-> struct serdev_device_driver an id_table. ACPI and OF are still tried
-> first; clients without their own modalias keep returning -ENODEV. The
-> device name, derived from the controller, is unchanged.
+> Pass the modalias to serdev_device_add() and give the serdev driver a
+> matching id_table, so that the serdev core binds the two through normal
+> matching. Deferred probing is then handled by the driver core, so the
+> -EAGAIN translation is no longer needed.
 >=20
-> Split struct serdev_device_id and its defines into a new
-> include/linux/device-id/serdev.h, following the pattern already used by
-> the SPI and I2C buses, and wire the new ID struct up in file2alias and
-> the of_table coccinelle check.
->=20
-> Update the existing serdev_device_add() callers to pass NULL. The two
-> in-tree firmware-less clients (dell-uart-backlight, yoga-tab2-pro-1380
-> fastcharger) also pass NULL here so the tree keeps building across the
-> series; the two following patches switch them to a real modalias and
-> drop their force_attach workarounds.
+> A failing serdev probe no longer propagates out of the platform probe;
+> as for any other bus, the client is simply left unbound.
 >=20
 > Signed-off-by: ChunAn Wu <an.wu@canonical.com>
 
@@ -88,5 +77,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1792856688.gi=
-t.an.wu@canonical.com?part=3D1
+t.an.wu@canonical.com?part=3D3
 
