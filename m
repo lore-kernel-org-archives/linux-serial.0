@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792969719;
-	b=l837iyKns9NZCxMGU3lUBndIynYdiGjPA3KzAi1FZcLpgqhrpILIy/w6LAJgE/M3UxOR
-	 as2GSBTDsg2WJYMSkc71TLFKVlA1mpwmW2Wt18s9GHXsQDweff+KSbZsxq5Tv3koz97Xs
-	 L+FbfKOQpMv9kyA0mYNcZkhVTbiCaM5Ze1a0ZDu/mi1/RUJuc7saftOARIjOl4nadLJGg
-	 vMqcdrpNXrbFJ2ZkWAdTRhIKmJIxp9SUYPAIMeaNbNtv/bZpiIjBxQDpIdNKFqtLUaBS0
-	 3VxOaLUuyvA+s3BEMuqRL0UnlixtASpld9mYv0kya44veW8txXW9S5nzTAqo9GLbRKQ==
+	t=1792969982;
+	b=De5BlL3vs1r0rYmiThm/jc9L1BXF4sr2NVRIT6eihSBfuXSFqeC5eXxJskh9XO9lkVjf
+	 wSpBuD/VTmUHzoJ+8e4INUxws2pmtvA627yr5NA0DtWDQJrpg507S/d/zbESM/4a2bofX
+	 ZkykAV2gicLXp6ktvfT/3BSHK1Uf4qZySBgXtjH/em8uK2lof2svnAKLZHMMYw7sSD2W3
+	 6iv753tjyBJpWeVLZyWyipTJ7FPBbWF65ezpN62FA7+jRYB/9eO5/3YjNxzLPnXqNH7N6
+	 8MKigOrAHztlTEFvUidlKx39i9qB/JotkhxgG/zdRQslL2Dexhg1cLwxaAo01E80IJg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792969719;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792969982;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=lMrYniHNrKwNoV/oXJT/U47m0VG07J3Oza8E+HQOjGY=;
-	b=UddgafJ01c/CpU3E4tiNPH4tO54GPBHLWo3pvBKHI4HdG8YwOIMuq0p2B0mdmey1F0lv
-	 W38cTUl81f3B5YbzTkZGZ912TKeW7TUCoiym5WBKTJDYN6HqwHHHLN2i29oXdPEHrPINy
-	 9xkcfrmixrNcTa0Nzw3b3IYc0GPB567yhBP2FGLXYwCVYHzQ8L0K1sVmiPyGA88cw1hBY
-	 z0YxBsLGDWkbIpO79ocl1VyWoT5OdWZsGwMhy7dLZNehfW5ekScDkqZOhpN2gXcqbeIsI
-	 CyyC533/aSUllxeN646oXx7IczcMDZfvbhatOtxSz3JYQmtH1SnsJUOL3Ddv5r5AzLg==
+	bh=mMv7zhwehuLmRAntlR9maYJn78qQTfxh4CiiQFQ3p0Y=;
+	b=VLrjpx1ydUeijk6ec2cwxna9JDCdHUUZ+/IMXi1baPlQZfMrNLTso3G1PeY9Go5eBbge
+	 pm/BUREvtughIfIfhM/y0VU8aKxdk1D9lB7jrLoDTfD/oWeIh5PaERfvzBCYx45k+wUFL
+	 cOtfarUZlAlzi7WKPjkbMFckNXtH/9x70+hx6or+wf80sX3IGXrxoTR6TWKt87+obI7ht
+	 e3syhY4bCKmEQYihqwG3J6bhWrUolfqoQfXbJGT1W9GMZTSyMc4dgrdu/67oE4YSrxncf
+	 gQVCdmXtMBVfjLj8fa7oersynSlj0YBstnJ3lCNWdJMuH3ZpHf7pvZx7USFNHGUw9mg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hW6HuwP5;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jJdKpd61;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6425606A31B
-	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 23:08:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17DBC606A31A
+	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 23:13:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hW6HuwP5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 471D51F01825;
-	Sun, 25 Oct 2026 23:08:38 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jJdKpd61
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852FE1F01825;
+	Sun, 25 Oct 2026 23:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792969718;
-	bh=lMrYniHNrKwNoV/oXJT/U47m0VG07J3Oza8E+HQOjGY=;
+	s=k20260515; t=1792969981;
+	bh=mMv7zhwehuLmRAntlR9maYJn78qQTfxh4CiiQFQ3p0Y=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=hW6HuwP5wGrRNVjFFhUBQSyrKzTjpem1ArDvUftgGVeo5ZXeMNRMOs5egAzJzTkh8
-	 4vgvote63p/gHMmSCsUB1LJww3P+AYk6DgoFyo82PlQiOLo7wsLX1DfwA8pxFYdpF4
-	 gEXVGLnY7ma6X2cRF7m+1cHTy12mmzocW+LK+lcohSU3REY185pxSYgHZXN+cdWNhi
-	 vgj2s8gSjxx+uPNqaygEXIV18uIv/lK7xHRW+bqvxdmeXnQPfBA9OVzsD45gRJNTWV
-	 j0RTxiVrcJhU5CoVN7O0kADVO/pnNAWwOgrVtccX7CXoJq2YTYvQb+YDRyhxBfGrRb
-	 vKefty5HF7o7w==
-Message-ID: <sashiko-outbox-184519@kernel.org>
+	b=jJdKpd61Iou2fGRegbfEXk233HLUy6v3LInSjQcjloNAM/r/sqkyqDGH7SfgW+c2H
+	 4T6mXb9AjYtuZzM4buPxEEca8T8gXBJkmAtiOuHzZJyXiY85NhSW80grOEF9utVCvl
+	 d3d7ySV3kbukc8sm4pomwVPUeF418yZbxiH1McWVxeoe4s0oFcM5kCCrYupq6Ww1lS
+	 Mlz7j5PbSlf7ejZnzWhzP5OqkwPSQxr++gWIxv4GkYhg4JvK2bKxfU+MctAs0iTrjZ
+	 tOplwP9pcoqg3VvvmeQ1X3Ye9egFvW8VbYfImDsyde5rBUK14F3jF7de9/KdFZ8ks8
+	 kXhy/qALYy0Aw==
+Message-ID: <sashiko-outbox-184520@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/2] serial: tegra: Fix overflow in
- tegra_check_rate_in_range()
+Subject: Re: [PATCH 1/2] serial: tegra: Fix overflow in
+ tegra_get_tolerance_rate()
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Patrick Fischer" <admin@tsv-stahl-riesa.de>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261025-upstream-serial-tegra-overflow-v1-2-267b5b7a79ee@tsv-stahl-riesa.de>
+In-Reply-To: <20261025-upstream-serial-tegra-overflow-v1-1-267b5b7a79ee@tsv-stahl-riesa.de>
 References: <20261025-upstream-serial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de>
- <20261025-upstream-serial-tegra-overflow-v1-2-267b5b7a79ee@tsv-stahl-riesa.de>
+ <20261025-upstream-serial-tegra-overflow-v1-1-267b5b7a79ee@tsv-stahl-riesa.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 25 Oct 2026 23:08:37 +0000
+Date: Sun, 25 Oct 2026 23:13:01 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,27 +63,31 @@ Precedence: list
 
 > From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 >=20
-> tegra_check_rate_in_range() calculates the deviation of the configured
-> from the required clock rate as (configured_rate - required_rate) *
-> 10000 in a long, which is only 32 bits wide on 32-bit ARM. This
-> overflows as soon as the two rates differ by more than about 214.7 kHz,
-> so the check lets through exactly the large deviations it is meant to
-> catch.
+> tegra_get_tolerance_rate() raises or lowers the UART clock rate by the
+> tolerance from "nvidia,adjust-baud-rates", given in units of 0.01 %. It
+> calculates rate * tolerance in a long, which is only 32 bits wide on
+> 32-bit ARM. With a tolerance of 136 this overflows from a clock rate of
+> about 15.8 MHz, i.e. from about 1 Mbaud, and the rate ends up adjusted
+> in the wrong direction.
 >=20
-> On the Tegra Note 7 (Tegra114) the Bluetooth UART ran at 45.33 MHz
-> instead of 48 MHz at 3 Mbaud (-5.6 %, see the previous patch). The
-> check calculated -0.18 % and let it pass, although the limit is 4 %.
+> The Tegra Note 7 (Tegra114) uses a tolerance of 136 for 1 to 4 Mbaud on
+> its Bluetooth UART, as in the downstream device tree. For 3 Mbaud the
+> driver asks for 47.79 MHz instead of 48.65 MHz, the clock rounds that
+> down to 408 MHz / 9 =3D 45.33 MHz (-5.6 %), and the WL1801 controller
+> stops answering after the switch to 3 Mbaud (HCI commands time out
+> with -110). The same overflow gives 23.31 MHz instead of 24 MHz at
+> 1.5 Mbaud; both rates were confirmed on the device.
 >=20
-> Do the multiplication in 64 bits.
+> Do the multiplication in 64 bits. With that the driver asks for
+> 48.65 MHz at 3 Mbaud and gets 48.00 MHz.
 >=20
-> Tested on the Tegra Note 7 with a tolerance of -500 for 1 to 4 Mbaud,
-> which gives 45.33 MHz at 3 Mbaud: the driver now logs
-> "configured baud rate is out of range by -555" and does not apply the
-> rate. With the tolerance of 136 (48.00 MHz) it logs nothing.
+> Tested on the Tegra Note 7 with the tolerance of 136: Bluetooth comes
+> up at 3 Mbaud, scans and connects to a paired device, and the HCI
+> counters show no errors.
 >=20
 > 64-bit platforms are not affected.
 >=20
-> Fixes: d781ec21bae6 ("serial: tegra: report clk rate errors")
+> Fixes: f04a3cc8d455 ("serial: tegra: add support to adjust baud rate")
 > Cc: stable@vger.kernel.org
 > Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
 
@@ -91,5 +95,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261025-upstream-s=
-erial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de?part=3D2
+erial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de?part=3D1
 
