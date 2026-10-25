@@ -1,64 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.119.170.32
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792966447;
-	b=EUKt+hJGza0Oifi+AbaPI1ba94Rw55gdrKA//hF6S/kwxRO9wkcVNJA0UloKJrPu/+i+
-	 EyL4AnZmyP8utNeBhpq4b1gXeQ2fv5Ux+VVhTRHYwmfOrtvOI05e9pz5GgBl0l7LGjRus
-	 Cci08mqp7uUraWvNQauraGejIY/RH7YcOOQpspugV1Au+MbBgC87rWZ1urDAbxM+4VjHh
-	 TLetxdHyLBLhhaMrZnOBv3P1G10joh3Emr1waLsXHLjsAzkPQePkNNsbmg6j7SQS8Ajjd
-	 rvEKRY50O/X+v7yNEcYfMve6zW+AGQaXlOrEkqgnOQfh3j/ftkVeon9bX1e3UrOpJxg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792966447;
-	h=DMARC-Filter:Message-ID:Subject:From:To:Cc:Date:In-Reply-To:
-	 References:Autocrypt:Content-Type:Content-Transfer-Encoding:
-	 MIME-Version;
-	bh=z+OGvBaqXC2+1NVfUpcRsQ1hy6WHpkZO2inZyh4ifHs=;
-	b=dgeneKDphB8HzTFh7x/vQRyFrojCo/YsKcpa8jjyrLZeaXt0/MpjJ+Jmw/NEZqSMcw3E
-	 Vl3CrQF+dGTxrzzuCbCXZ5NOSDY70qhHkOL1DdlfIrscTMdK0Ejcez7trJ7wV+SG3jZnx
-	 bkhASYsP4crbxCkWOcM2cRNV+5jr0M5Pq98hTEYhkUp5Lh8cPN6l3pt0YyTU2xbkA7cgz
-	 ilAV0KXYjWeDjSt5HT8DJHgOiw4uXiXIiwX0Jhs/oBtgg62CkTK7pDREXd0H0quQGDShZ
-	 zgGDpZ4h6i64C4C3+QN2JfS2EBqJpt50dRJrTJEbMRdr5N5GqnGlhWrEs29lV0E75ZA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=crapouillou.net;
-	spf=pass smtp.mailfrom=crapouillou.net;
-	arc=none smtp.remote-ip=185.119.170.32
-Received: from aposti.net (aposti.net [185.119.170.32])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792968616;
+	b=tjf7dQimqPWTQN9R3rO0NBvYlGMJUkLXSCLxmyz1N+EcWvtoE7zZffH8udWQF/IyEdmP
+	 /+2Xy9cCHQEDZpZGoykX3zsi/rirDc1pAOgjLq8/lihGSKU5u6dl6r8hs7gUk5Ajnggwr
+	 +usdc9P5ysSzwF+gqFb1ZrncmkKhHCDpFMlp+QveZ148LCEd0t6aeGKop1k659FYUxPC+
+	 4NaiXASqYDZbFXfdDEyAXKJ1JKceS0IK+N0BJOMPW24Ung2fClah+H30lPWSqVgoQ1rpn
+	 PGUTIQ2wgPJwI7wXGb4JJZHkvu1xIJByxTbcd4uRkZYXJ0RcOEKV/LWlVLvjx1xEDSw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792968616;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=S2b4fzgPseJ0YYTVek2k+9cCGWE8NVj6xa+49CmOEyI=;
+	b=DI7HtC49CgrgRsuSyfyaL1Gmq47674Sr4XoL28JmpDR2QYmYmCUwUanSgxlo9Venwlxt
+	 oOAy0/S/+sOivJmGp8AsWFPkDY1ly5cFGKCwzUvQm9qmtToJ/3GbXgvx+HW8iQErje5uz
+	 3Icv+Q1cqXmBJBO/N9p4pKbyOAKGJx5JUTCAD/gkIRaY7L/NaP0NPMjgwWj4M9BL7kA9T
+	 Mv4Cu7he5O2jMMryEMK0uApFt7YmS307i/UjJomKWdwUH/sk1SRtKuZJVMSnZM5n0bwuQ
+	 cXIS51uNqZDkbZqn7LtZRu23lrLIgv42tGmFOduObT4VaKs1TBoipVuzxfguP9/ubLQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4MSH6XV;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8242606A31A;
-	Sun, 25 Oct 2026 22:14:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8242606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
-Message-ID: <c930c184b1bcac3cfd76ecb329a8c478482d819d.camel@crapouillou.net>
-Subject: Re: [PATCH v2 2/2] serial: 8250_ingenic: Set UMR and UACR at probe
-From: Paul Cercueil <paul@crapouillou.net>
-To: Olivier Louvignes <olivier@mgcrea.io>, Greg Kroah-Hartman
-	 <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "H . Nikolaus Schaller" <hns@goldelico.com>,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Sun, 25 Oct 2026 23:13:59 +0100
-In-Reply-To: <20261024220712.23250-3-olivier@mgcrea.io>
-References: <20261024220712.23250-1-olivier@mgcrea.io>
-	 <20261024220712.23250-3-olivier@mgcrea.io>
-Autocrypt: addr=paul@crapouillou.net; prefer-encrypt=mutual;
- keydata=mQENBF0KhcEBCADkfmrzdTOp/gFOMQX0QwKE2WgeCJiHPWkpEuPH81/HB2dpjPZNW03ZM
- LQfECbbaEkdbN4YnPfXgcc1uBe5mwOAPV1MBlaZcEt4M67iYQwSNrP7maPS3IaQJ18ES8JJ5Uf5Uz
- FZaUawgH+oipYGW+v31cX6L3k+dGsPRM0Pyo0sQt52fsopNPZ9iag0iY7dGNuKenaEqkYNjwEgTtN
- z8dt6s3hMpHIKZFL3OhAGi88wF/21isv0zkF4J0wlf9gYUTEEY3Eulx80PTVqGIcHZzfavlWIdzhe
- +rxHTDGVwseR2Y1WjgFGQ2F+vXetAB8NEeygXee+i9nY5qt9c07m8mzjABEBAAG0JFBhdWwgQ2VyY
- 3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PokBTgQTAQoAOBYhBNdHYd8OeCBwpMuVxnPua9InSr
- 1BBQJdCoXBAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEHPua9InSr1BgvIH/0kLyrI3V0f
- 33a6D3BJwc1grbygPVYGuC5l5eMnAI+rDmLR19E2yvibRpgUc87NmPEQPpbbtAZt8On/2WZoE5OIP
- dlId/AHNpdgAtGXo0ZX4LGeVPjxjdkbrKVHxbcdcnY+zzaFglpbVSvp76pxqgVg8PgxkAAeeJV+ET
- 4t0823Gz2HzCL/6JZhvKAEtHVulOWoBh368SYdolp1TSfORWmHzvQiCCCA+j0cMkYVGzIQzEQhX7U
- rf9N/nhU5/SGLFEi9DcBfXoGzhyQyLXflhJtKm3XGB1K/pPulbKaPcKAl6rIDWPuFpHkSbmZ9r4KF
- lBwgAhlGy6nqP7O3u7q23hRU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D988606A320;
+	Sun, 25 Oct 2026 22:50:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4MSH6XV
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792968616;
+	b=0aJXbAJxNW1+FUufKrTwTp2T+GJWjqQ42C4CasrmTRiCmVozTs3wSOh98urC5NeYjbwo
+	 waEL9fDs3MSMT6Cv86nddemxxtSRSz9vTCGi9TWZW2tY1xcNTFCnBlrTPp5G0rhUvozgH
+	 HL6HnKGseFfbLaYmV/6lnyFiYQjl5SbtpdXfrXyKsur64ID6yaH1ZEyIF/8gDKwQrxOlm
+	 sEtQt7r0pn9296bzCozrlrlDgULfMMdNKMWasehq8qJq1F667ienLtt3Nf86UZE80nTfn
+	 zSubgUHLsY6iachCtCURvD3Po6iiXom2tGfk0I0s89nIBtZSPW8T0U+v/hZW+dmKHcA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792968616;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=S2b4fzgPseJ0YYTVek2k+9cCGWE8NVj6xa+49CmOEyI=;
+	b=EiK4vYEvwL6ozfGFF0rPuAR1Y2g3rtSkBGmEofoxelioWIJTxq/LQ9h6FkpzQWbhZhLO
+	 5azCr+Ixz+fUt+2rtVJ6+R2bQQCH4zKwSN5tdljH0JyYzuw5auugQ0hTnmWr3kUVFqY9K
+	 CYsT6qc/12unq22NBBwZHv8m7vUS8pmsIe8wyzsso0mzLYaiO18EtFSXpCQXzF3vu8xf7
+	 M8pvk5M2JGmFwUvDIFC/zeUjNe/XbC+2wA8U+ZGSWQTPTTw1WhU1NmNyHyL3Md1oEHbjv
+	 bkaj42dtNmIdgp3KX7NXR92Gl5nZZJqnN8OmjzExYiDlHDX9yuUAnsY+Pam1W0iapwQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 4D4671F01829;
+	Sun, 25 Oct 2026 22:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792968616;
+	bh=S2b4fzgPseJ0YYTVek2k+9cCGWE8NVj6xa+49CmOEyI=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=K4MSH6XVymmsxGRHevKOAMSqJQlJ48OAZghelWS1ltidkkcmFvRgWR4WJz1jiPnfe
+	 OwAeim7ZBiQd1AW+NhZkcqaQTq03mkwTHuawJWNQFWrJiuMyG4T+JUYJr4Ca7H+gj1
+	 iSkzXbtS6Ynue7zPAej+ggUoYbNkyfhjh92281cgV+rj085PC4GjP1y/HmuBrYCh4+
+	 8WM9F2FY4L+oeu4iYTJwV4WKiVW/mlt/ZdEfAjjLRDRkZoxvrBoJhNiQcEpXOlcP1x
+	 zSeteb/AuX5J/lVR4fS3m904Kaap17RPh5r8K0e5k9rAxHNITWPF/kuap1neAGA6q8
+	 h3tHgPhGP9sdA==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id D2AD744B15;
+	Sun, 25 Oct 2026 22:50:14 +0000 (UTC)
+From: Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org>
+Date: Sun, 25 Oct 2026 23:50:05 +0100
+Subject: [PATCH 2/2] serial: tegra: Fix overflow in
+ tegra_check_rate_in_range()
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -68,88 +83,80 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261025-upstream-serial-tegra-overflow-v1-2-267b5b7a79ee@tsv-stahl-riesa.de>
+References: <20261025-upstream-serial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de>
+In-Reply-To: <20261025-upstream-serial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de>
+To: Laxman Dewangan <ldewangan@nvidia.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Thierry Reding <thierry.reding@kernel.org>, 
+ Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Shardar Shariff Md <smohammed@nvidia.com>, 
+ Krishna Yarlagadda <kyarlagadda@nvidia.com>, 
+ Svyatoslav Ryhel <clamor95@gmail.com>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, 
+ stable@vger.kernel.org, Patrick Fischer <admin@tsv-stahl-riesa.de>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792968614; l=1845;
+ i=admin@tsv-stahl-riesa.de; s=20261020; h=from:subject:message-id;
+ bh=itgIcGWGOLTyUm1KE2QunM+q/33HpForOO0+9QOkieo=;
+ b=ifzVpAwj3ytlam2cPbnwHEpgbVut600nZsB8xfp8yN+PiAPG/fl0ebaGnWo93f+fn/JFOt1PD
+ DyJny1Zu3E3BqCKSZejwKM+IswXF+xrNvbegyTICip8X/rspzZoLoSW
+X-Developer-Key: i=admin@tsv-stahl-riesa.de; a=ed25519;
+ pk=D+v6EloYcEY9PIUHFyTM5sqcGIU/fIXzLUdkR8vjAtk=
+X-Endpoint-Received: by B4 Relay for admin@tsv-stahl-riesa.de/20261020 with
+ auth_id=1251
+X-Original-From: Patrick Fischer <admin@tsv-stahl-riesa.de>
+Reply-To: admin@tsv-stahl-riesa.de
+Content-Transfer-Encoding: 7bit
 
-Hi Olivier,
+From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 
-Le dimanche 25 octobre 2026 =C3=A0 00:07 +0200, Olivier Louvignes a =C3=A9c=
-rit=C2=A0:
-> Ingenic UARTs have two registers beyond the 16550's: UMR, the number
-> of
-> clocks a bit takes, and UACR, which adds one clock to chosen bits of
-> a
-> frame, for fractional baud rates. The JZ4725, JZ4740, JZ4755, JZ4760,
-> X1000, X1830, X2000 and X1600 programming manuals all have them at
-> 0x24
-> and 0x28. The divisor the 8250 core computes assumes 16 clocks a bit
-> and
-> none added.
->=20
-> The driver never writes them, so a UART keeps whatever was there
-> before.
-> On a HiBy R1 (X1600) the vendor boot loader sets UMR to 8 on its
-> console
-> UART, and the vendor kernel had left 8 on UART0, which carries the
-> Bluetooth chip: every rate came out doubled, and the chip never
-> answered
-> ("command 0xfc18 tx timeout" from hci_bcm). Their reset value, 0,
-> which
-> the X1000 and X1600 manuals call normal mode, does not work on the
-> X1600
-> either: with UMR at 0 the same command times out.
->=20
-> Set UMR to 16 and UACR to 0 at probe.
->=20
-> Tested on a HiBy R1: with UMR at 0 or 8 the BCM43430A1 on UART0 fails
-> to
-> set up; with this patch it comes up at 1.5 Mbaud and streams A2DP
-> audio.
->=20
-> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
-> ---
-> =C2=A0drivers/tty/serial/8250/8250_ingenic.c | 12 ++++++++++++
-> =C2=A01 file changed, 12 insertions(+)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c
-> b/drivers/tty/serial/8250/8250_ingenic.c
-> index 0cdadacd7019..ca45e74b999b 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -40,6 +40,10 @@ static const struct of_device_id of_match[];
-> =C2=A0#define UART_MCR_MDCE	BIT(7)
-> =C2=A0#define UART_MCR_FCM	BIT(6)
-> =C2=A0
-> +/* Clocks a bit, and an extra clock for chosen bits */
-> +#define UART_UMR	9
-> +#define UART_UACR	10
-> +
-> =C2=A0static struct earlycon_device *early_device;
-> =C2=A0
-> =C2=A0static uint8_t early_in(struct uart_port *port, int offset)
-> @@ -298,6 +302,14 @@ static int ingenic_uart_probe(struct
-> platform_device *pdev)
-> =C2=A0	}
-> =C2=A0	uart.port.uartclk =3D clk_get_rate(data->clk_baud);
-> =C2=A0
-> +	/*
-> +	 * The 8250 core's divisor assumes 16 clocks a bit. Whatever
-> ran before
-> +	 * may have left another count, and on the X1600 even the
-> reset value,
-> +	 * 0, does not give 16.
-> +	 */
-> +	writel(16, uart.port.membase + (UART_UMR <<
-> uart.port.regshift));
-> +	writel(0, uart.port.membase + (UART_UACR <<
-> uart.port.regshift));
-> +
-> =C2=A0	data->uport =3D serial8250_register_8250_port(&uart);
-> =C2=A0	if (IS_ERR(data->uport)) {
-> =C2=A0		err =3D PTR_ERR(data->uport);
+tegra_check_rate_in_range() calculates the deviation of the configured
+from the required clock rate as (configured_rate - required_rate) *
+10000 in a long, which is only 32 bits wide on 32-bit ARM. This
+overflows as soon as the two rates differ by more than about 214.7 kHz,
+so the check lets through exactly the large deviations it is meant to
+catch.
+
+On the Tegra Note 7 (Tegra114) the Bluetooth UART ran at 45.33 MHz
+instead of 48 MHz at 3 Mbaud (-5.6 %, see the previous patch). The
+check calculated -0.18 % and let it pass, although the limit is 4 %.
+
+Do the multiplication in 64 bits.
+
+Tested on the Tegra Note 7 with a tolerance of -500 for 1 to 4 Mbaud,
+which gives 45.33 MHz at 3 Mbaud: the driver now logs
+"configured baud rate is out of range by -555" and does not apply the
+rate. With the tolerance of 136 (48.00 MHz) it logs nothing.
+
+64-bit platforms are not affected.
+
+Fixes: d781ec21bae6 ("serial: tegra: report clk rate errors")
+Cc: stable@vger.kernel.org
+Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
+---
+ drivers/tty/serial/serial-tegra.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index cc09fbc3aad8..cb5ef8aac198 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -380,8 +380,8 @@ static int tegra_check_rate_in_range(struct tegra_uart_port *tup)
+ {
+ 	long diff;
+ 
+-	diff = ((long)(tup->configured_rate - tup->required_rate) * 10000)
+-		/ tup->required_rate;
++	diff = div_s64((s64)(tup->configured_rate - tup->required_rate) * 10000,
++		       tup->required_rate);
+ 	if (diff < (tup->cdata->error_tolerance_low_range * 100) ||
+ 	    diff > (tup->cdata->error_tolerance_high_range * 100)) {
+ 		dev_err(tup->uport.dev,
+
+-- 
+2.56.0
 
 
-This assumes that these registers are available on all Ingenic SoCs,
-which is not the case. Looking at the PM it looks like they were added
-in the JZ4725B.
-
-Cheers,
--Paul
