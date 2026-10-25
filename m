@@ -1,56 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=78.133.224.34
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792894849;
-	b=Fv0ILzUkxm4nCouZPTmBfhIqVwO28Y6LWfoINHxsSQFo+RCczHVu83vJLSAcYuqyU5Ar
-	 myBOktp4saDfxDZRV/fV/kkOyEskrhMFyaA5KX/VjmuGHiAuDj+lJ161n3Z/e5LuOwNLM
-	 kSukbXNbbySRSuRNmKzT5tQic1QexjV28TQAooLBgZma50opgcywyvoQ56WIgv7NLQK68
-	 lYpkF6uUIjfhqE7mJq0jngZpCgXby+eX8pQI1o7QGRfjogybACB03g/pnaDZe//ZPAhqf
-	 P809p3LjrIxBe4AWogSM6Yk6yffmtPozULSXJkPtRAXPfFj390W4eVxaz5KG//ATS/A==
+	t=1792905008;
+	b=X/osK+COpKSlsMvUPejZITaAJTE2oOV3EAALdfitl4FhwWw9800rBf2Liyb1Pz+qocpe
+	 W9nIeY1Ww8HrXnkBQ9YrSyvhxXPOSPemi5gVs00A0aWT3dTBrSqLBPVs66l2XwZhNtQFX
+	 nxJ13uDjF3JV22vwEhh/h+Wbb8BgOEzDz2Abx5G8udQs3fUAQr7N/F6ZqCUJrwbVHBq9l
+	 ZuhcJXOQMvn2wdnRDLZBn3owgSFWeNcOsGd4XCwZ5ax8bzOKJ5bEVzrM93zy52Xb/a5Eo
+	 ch6V/u6hgy0isSetvrO81MDTOE//dZxRbP4q1i3Ro8wPFGj/Zp0n4soeebJZ+q6LCxA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792894849;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=s6Ddw/yI+mjAY8qV4Nl9kgRhIyuqzMhK4+qg7LDAA2s=;
-	b=QrtxCV5KfCPgslahIMoz7uhM5sNtJpggvklxMqPMgC67NtwQ+zEfRYoDa+6jBct6anjU
-	 TtcCSVDCO9w69myukYH82dGYAuNEUqgOb0trgm+139n+lil6ICQTBp7M2ZEVhukDdQ217
-	 YfSzdAiFEqwyWYBONPLePkh90jU6unlFQQTCawKdINBI4c1TBU5dOmfSYP33AjyknixsB
-	 mBZfY3eCnh1RRZWccWCOqFwdXL6fj8v+nwP3lboNPmp+nf0pyOdNTUAEKXu8WJu2FChJC
-	 9P1eIY4BiyIePcoxNNrpAvR2ZlzYX52/qDcJTyyu54kY08X1uOTvjLtrGYo4dwF1kMw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792905008;
+	h=DMARC-Filter:Received:Received:Date:From:To:cc:Subject:In-Reply-To:
+	 Message-ID:References:User-Agent:MIME-Version:Content-Type;
+	bh=8e88usUcYauyf3azJlO/PIAv73piHOHPPh8TVgMWY7s=;
+	b=pzPuvZmxgvlTwddU3u6OthAkS/+kYnaXIhlR6TS5r8q9w1fhK3+QVP6iUsKnKqdBR0yJ
+	 cjXg+ByYYErSYU1IbO9npXWOKP6gbXI3bm4INvIS8AXqNht+Tz62MXY88sgSHwcnNunMR
+	 vjpOG1MMNADOX/v7acILuDHKmAsWlnhPa969y/a0uXl9IbFujeZUtsWEWc0eY8Z0kIgCA
+	 DkkVbTo5dIeqXGBp9Im/s182pZWCvGchn17CHkyG9ZioIxvpgeszGDBPYaWUU7xQrFvGC
+	 RMe1Cgza8AUboWPqJJCIew4CaUBd7gCDLSjsH1/X0s0yLM/PFZAzBU1Y0ZlEfVrwNwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XOhuvQdh;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73784606A32E
-	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 02:20:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XOhuvQdh
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9C521F01825;
-	Sun, 25 Oct 2026 02:20:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792894849;
-	bh=s6Ddw/yI+mjAY8qV4Nl9kgRhIyuqzMhK4+qg7LDAA2s=;
-	h=From:Subject:Reply-To:To:In-Reply-To:References:Date;
-	b=XOhuvQdhm0twjs0Qz3C+agZ404ryid6S9Fh0Y3BZVgWQzoX3rLTBmoTCNIstNG3Wb
-	 /gNoO2nWGPXF/e8TFs2l0nkq7CZkAZmgL1Dpv24pyXTU4+7f8Ws6UvQCi2peLQSrbP
-	 o/03KQYRwSFwkyv6fAWPdoJwdrkELzWwKLQYuwNOfV3y0ZBFRkJQ92hY7QG81hosv7
-	 lQI91Vlt5Gz91KCyWOyrIKyD8x7VAovooQ/ZBpW3SwhpRQGujgCYIsj/i5gjahBBch
-	 2hEiiZ7aGGKOfJgBUqbtw+GY2V7gOo0WYOq9dDQhVP8Z6xVdwxSi4P/svdTa0Y4HeC
-	 rFbi3qNpPTVRA==
-Message-ID: <sashiko-outbox-183983@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v6 3/3] platform/x86:
- lenovo-yoga-tab2-pro-1380-fastcharger: Bind through normal serdev matching
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "ChunAn Wu" <an.wu@canonical.com>, linux-serial@vger.kernel.org
-In-Reply-To: <3827984795c4bd797008652a49b069151e1e8be6.1792856688.git.an.wu@canonical.com>
-References: <cover.1792856688.git.an.wu@canonical.com>
- <3827984795c4bd797008652a49b069151e1e8be6.1792856688.git.an.wu@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sun, 25 Oct 2026 02:20:48 +0000
+	dmarc=none header.from=orcam.me.uk;
+	spf=none smtp.mailfrom=orcam.me.uk;
+	arc=none smtp.remote-ip=78.133.224.34
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 80536606A31B;
+	Sun, 25 Oct 2026 05:10:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 80536606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id EAB0892009C; Sun, 25 Oct 2026 06:10:03 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id DDFC292009B;
+	Sun, 25 Oct 2026 05:10:03 +0000 (GMT)
+Date: Sun, 25 Oct 2026 05:10:03 +0000 (GMT)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: James Hilliard <james.hilliard1@gmail.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Raul E Rangel <rrangel@chromium.org>, 
+    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+    Tony Lindgren <tony@atomide.com>, 
+    Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
+    Richard Genoud <richard.genoud@bootlin.com>, 
+    Nicolas Ferre <nicolas.ferre@microchip.com>, 
+    Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+    Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
+    Jacky Huang <ychuang3@nuvoton.com>, Shan-Chun Hung <schung@nuvoton.com>, 
+    =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+    Sascha Hauer <s.hauer@pengutronix.de>, 
+    Pengutronix Kernel Team <kernel@pengutronix.de>, 
+    Fabio Estevam <festevam@gmail.com>, Timur Tabi <timur@kernel.org>, 
+    linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+    linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev, 
+    linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v5 2/5] serial: serialize asynchronous write wakeups with
+ the port lock
+In-Reply-To: <20261024-submit-serial-8250-dma-cancel-v1-v5-2-9e52968928d2@gmail.com>
+Message-ID: <alpine.DEB.2.21.2610250459200.42255@angie.orcam.me.uk>
+References: <20261024-submit-serial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com> <20261024-submit-serial-8250-dma-cancel-v1-v5-2-9e52968928d2@gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,23 +67,40 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 
-> The software-node-backed serdev client cannot be matched through ACPI or
-> device tree and is force-attached to its driver.
->=20
-> Pass the modalias to serdev_device_add() and give the serdev driver a
-> matching id_table, so that the serdev core binds the two through normal
-> matching. Deferred probing is then handled by the driver core, so the
-> -EAGAIN translation is no longer needed.
->=20
-> A failing serdev probe no longer propagates out of the platform probe;
-> as for any other bus, the client is simply left unbound.
->=20
-> Signed-off-by: ChunAn Wu <an.wu@canonical.com>
+On Sat, 24 Oct 2026, James Hilliard wrote:
 
-Sashiko has reviewed this patch and found no issues.
+> uart_write_wakeup() expects the UART port lock to be held. Several worker,
+> DMA completion and interrupt paths call it without that lock, including
+> indirect calls from uart_handle_cts_change() and the transmit helpers.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1792856688.gi=
-t.an.wu@canonical.com?part=3D3
+ Fair enough, and thank you for the cleanup and spotting the issue in the 
+first place, however...
 
+> diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
+> index b4e1b90e5960..b15f76acd06b 100644
+> --- a/drivers/tty/serial/sb1250-duart.c
+> +++ b/drivers/tty/serial/sb1250-duart.c
+> @@ -454,10 +454,12 @@ static irqreturn_t sbd_interrupt(int irq, void *dev_id)
+>  
+>  		if (intstat & M_DUART_ISR_RX)
+>  			sbd_receive_chars(sport);
+> -		if (intstat & M_DUART_ISR_IN)
+> -			sbd_status_handle(sport);
+> -		if (intstat & M_DUART_ISR_TX)
+> -			sbd_transmit_chars(sport);
+> +		scoped_guard(uart_port_lock_irqsave, uport) {
+> +			if (intstat & M_DUART_ISR_IN)
+> +				sbd_status_handle(sport);
+> +			if (intstat & M_DUART_ISR_TX)
+> +				sbd_transmit_chars(sport);
+> +		}
+
+... why do you think the whole functions need to be called with the lock 
+held while they may or may not call the handlers in question even?  I 
+think we should avoid excessive locking where possible to avoid holding 
+execution elsewhere unnecessarily, shouldn't we?
+
+  Maciej
