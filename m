@@ -1,79 +1,80 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1792968616;
-	b=tjf7dQimqPWTQN9R3rO0NBvYlGMJUkLXSCLxmyz1N+EcWvtoE7zZffH8udWQF/IyEdmP
-	 /+2Xy9cCHQEDZpZGoykX3zsi/rirDc1pAOgjLq8/lihGSKU5u6dl6r8hs7gUk5Ajnggwr
-	 +usdc9P5ysSzwF+gqFb1ZrncmkKhHCDpFMlp+QveZ148LCEd0t6aeGKop1k659FYUxPC+
-	 4NaiXASqYDZbFXfdDEyAXKJ1JKceS0IK+N0BJOMPW24Ung2fClah+H30lPWSqVgoQ1rpn
-	 PGUTIQ2wgPJwI7wXGb4JJZHkvu1xIJByxTbcd4uRkZYXJ0RcOEKV/LWlVLvjx1xEDSw==
+	b=x39hgH18R0pJlRcA+xaM+hUJkdI/qoGGnYO9YMTGB+pS9hjI/epJQlPAefkSNaaigDXO
+	 Ilp3SjDBF9h5EIHl2L7DIQtx74HP/dP8JaRHXEiV6A3IBEgBYTLsRoWc8Uht+IUZDzLxx
+	 NjYepVzFaLc82bgtPigLYlbG/T6wAkUjVgxPIiLhWsBPf/x3puPvQ17SFEuhLhAlIZLYz
+	 fiCmNHUXNLXKrRosMJ1loWVQrEpSCg8rdtYEBO34JnPqOg9mcj5s8Fj5ZOJmbfH0CLuld
+	 ZU9Nr2uThaQUObO8XyvxSs4e0UGVYMvXIf47ar7XBIRRvqgo+f3WK13NT86YGCnLBxw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1792968616;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=S2b4fzgPseJ0YYTVek2k+9cCGWE8NVj6xa+49CmOEyI=;
-	b=DI7HtC49CgrgRsuSyfyaL1Gmq47674Sr4XoL28JmpDR2QYmYmCUwUanSgxlo9Venwlxt
-	 oOAy0/S/+sOivJmGp8AsWFPkDY1ly5cFGKCwzUvQm9qmtToJ/3GbXgvx+HW8iQErje5uz
-	 3Icv+Q1cqXmBJBO/N9p4pKbyOAKGJx5JUTCAD/gkIRaY7L/NaP0NPMjgwWj4M9BL7kA9T
-	 Mv4Cu7he5O2jMMryEMK0uApFt7YmS307i/UjJomKWdwUH/sk1SRtKuZJVMSnZM5n0bwuQ
-	 cXIS51uNqZDkbZqn7LtZRu23lrLIgv42tGmFOduObT4VaKs1TBoipVuzxfguP9/ubLQ==
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=a9Qiko2feZgxRy5+X3KOBqrrvb16AA+EtLX8DrgxqDE=;
+	b=BCmTCMdbsLJcM92/1kC935hKuxhHtLje49ll8LCmsasOfPJjZSlOQa/oBHzw+05j+zer
+	 YiCUi0jvCOIn6yTFpQVmO/z6VaDDrizpm3iHpq4UcJBF1afAa7Ypjssp+o0PPp795t2BH
+	 IVwtUGjpAxsWPQwEgdtS/AY1MZ5TZveTp6qy8uLdklaRpr0y4bggzkgiF7tARRYP82gva
+	 ltTs1VCOFZFobUb7GvXbohQHHhstHWW7j9oYHlixsaPCMJX7DOuszUK0rBVDJ6zHwm1wX
+	 L4b3A0cTngs3kJtO8PXo9X8jUvxakNz8ZaycZp1Gblu95qhIRUnEgLwx+J+wDRidMfg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4MSH6XV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QTwtY3yR;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D988606A320;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F006606A31A;
 	Sun, 25 Oct 2026 22:50:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4MSH6XV
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QTwtY3yR
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792968616;
-	b=0aJXbAJxNW1+FUufKrTwTp2T+GJWjqQ42C4CasrmTRiCmVozTs3wSOh98urC5NeYjbwo
-	 waEL9fDs3MSMT6Cv86nddemxxtSRSz9vTCGi9TWZW2tY1xcNTFCnBlrTPp5G0rhUvozgH
-	 HL6HnKGseFfbLaYmV/6lnyFiYQjl5SbtpdXfrXyKsur64ID6yaH1ZEyIF/8gDKwQrxOlm
-	 sEtQt7r0pn9296bzCozrlrlDgULfMMdNKMWasehq8qJq1F667ienLtt3Nf86UZE80nTfn
-	 zSubgUHLsY6iachCtCURvD3Po6iiXom2tGfk0I0s89nIBtZSPW8T0U+v/hZW+dmKHcA==
+	t=1792968615;
+	b=v/G+urbiRqePt6UIpBpWZP8bLbGJm8jGyZc2hAcF/wVsaYTTPtwkh6jNJEZHxvExwu7O
+	 TsaFAg52fJ6LmBwi4nJDZwTJSxqnWfhm+8+KkY3POi4i/cKrl+C+QaCYNIqpmUYQulfyB
+	 /3shBtO98imEuzO6uBDqANs+fR1HHpWrm8DpBpXCZt+MS4NM5xmi5ae6jYQQ0kfe8vxoK
+	 nTH/UkOwvKfiNTYK0fANyXrJBiyvgNOZ9uLz4/Bb3tGgoV3EtkGFdDwkQNJGc2vN2o4jg
+	 Oeeb/2TzlTxmsTE9mz0e9jFEtQMZKeb1FKmuwF2N5/emBJJnDRpkHFwVqqxNyhFycKA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792968616;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=S2b4fzgPseJ0YYTVek2k+9cCGWE8NVj6xa+49CmOEyI=;
-	b=EiK4vYEvwL6ozfGFF0rPuAR1Y2g3rtSkBGmEofoxelioWIJTxq/LQ9h6FkpzQWbhZhLO
-	 5azCr+Ixz+fUt+2rtVJ6+R2bQQCH4zKwSN5tdljH0JyYzuw5auugQ0hTnmWr3kUVFqY9K
-	 CYsT6qc/12unq22NBBwZHv8m7vUS8pmsIe8wyzsso0mzLYaiO18EtFSXpCQXzF3vu8xf7
-	 M8pvk5M2JGmFwUvDIFC/zeUjNe/XbC+2wA8U+ZGSWQTPTTw1WhU1NmNyHyL3Md1oEHbjv
-	 bkaj42dtNmIdgp3KX7NXR92Gl5nZZJqnN8OmjzExYiDlHDX9yuUAnsY+Pam1W0iapwQ==
+	c=relaxed/relaxed; t=1792968615;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=a9Qiko2feZgxRy5+X3KOBqrrvb16AA+EtLX8DrgxqDE=;
+	b=xe0uEGKXL9NPb3TRk4foYDj65W4vEoCgeUArK2kXRy4xBaOZIyxh7Ql+jeVw3XmeZgGD
+	 ejdfys5fnN6aQjL8C17xeouojP0JaoKzeWzNWPGQPHG7FIxc22JUtP6xmTHCyqJLsGXAD
+	 Q1F1PuOa5OinbkqDFm+AMc4edT2WMRWHz4CRUNkPBAgbrEPrzr1jDVard9fAq6wISA4T/
+	 v5yFZ+qOaOclzYJoe/fPL2u+z3Lw73fpmeHkEsfx7Iw5VpIG8qt2crCEgrFH8qT2mooS0
+	 Gxi1IVtbnNXh2Pwyb2p30o/EXGxXpm50nxwF0k3kI6YilCSSEHhH5hSvisjNiUMV70A==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4D4671F01829;
+	by smtp.kernel.org (Postfix) with ESMTPS id 357D01F01828;
 	Sun, 25 Oct 2026 22:50:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792968616;
-	bh=S2b4fzgPseJ0YYTVek2k+9cCGWE8NVj6xa+49CmOEyI=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=K4MSH6XVymmsxGRHevKOAMSqJQlJ48OAZghelWS1ltidkkcmFvRgWR4WJz1jiPnfe
-	 OwAeim7ZBiQd1AW+NhZkcqaQTq03mkwTHuawJWNQFWrJiuMyG4T+JUYJr4Ca7H+gj1
-	 iSkzXbtS6Ynue7zPAej+ggUoYbNkyfhjh92281cgV+rj085PC4GjP1y/HmuBrYCh4+
-	 8WM9F2FY4L+oeu4iYTJwV4WKiVW/mlt/ZdEfAjjLRDRkZoxvrBoJhNiQcEpXOlcP1x
-	 zSeteb/AuX5J/lVR4fS3m904Kaap17RPh5r8K0e5k9rAxHNITWPF/kuap1neAGA6q8
-	 h3tHgPhGP9sdA==
+	s=k20260515; t=1792968615;
+	bh=a9Qiko2feZgxRy5+X3KOBqrrvb16AA+EtLX8DrgxqDE=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=QTwtY3yRp1VUTWEXYIZTkPSeeIPSvO8P0jFtrqeWzKKvr/oCo9VVqQkjKm1448AEP
+	 9RwtLs67qJETXOf7pRdg8V41MTmePeQEqEtawMDMDrWyQPZJNAaAliBlVZTe7se7Jf
+	 HeTqzcDfPkB1QfjVnZ4GPGydc7w08OoY7APeqQZ347mVz/WgjDoAVnnBVy88rm+BUb
+	 AtBQDhAu5l1TOEd51Jg4GJBtWgxgidRa5p7UWEoJXT3F4N7Yk4xsJhwAsnCd7CNzGv
+	 NnNLBC6PtXF8fq0m9E0pm5uvu4+VWY213aWXlUahrvv0ZYWTyMXH0bSrD1paeiMKmT
+	 NM8stAptCMEYw==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id D2AD744B15;
+	by lkml.kernel.org (Postfix) with ESMTP id BBCDF44B11;
 	Sun, 25 Oct 2026 22:50:14 +0000 (UTC)
 From: Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org>
-Date: Sun, 25 Oct 2026 23:50:05 +0100
-Subject: [PATCH 2/2] serial: tegra: Fix overflow in
- tegra_check_rate_in_range()
+Subject: [PATCH 0/2] serial: tegra: Fix 32-bit overflows in the clock rate
+ adjustment
+Date: Sun, 25 Oct 2026 23:50:03 +0100
+Message-Id: <20261025-upstream-serial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,9 +85,11 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261025-upstream-serial-tegra-overflow-v1-2-267b5b7a79ee@tsv-stahl-riesa.de>
-References: <20261025-upstream-serial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de>
-In-Reply-To: <20261025-upstream-serial-tegra-overflow-v1-0-267b5b7a79ee@tsv-stahl-riesa.de>
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNyw6CQAyF4VchXdtkGIy3VzEuKtPBGmRIO6AJ4
+ d0ddPktzn8WMFZhg0u1gPIsJmkoqHcVtA8aOkYJxeCdP9TONziNlpXphduQeszcKWGaWWOf3rg
+ /hSa4eKQYzlAio3KUz+/gevvbpvuT27xVYV2/5xV1CYIAAAA=
+X-Change-ID: 20261023-upstream-serial-tegra-overflow-48d3d0f7afd9
 To: Laxman Dewangan <ldewangan@nvidia.com>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>, 
@@ -98,65 +101,64 @@ Cc: Shardar Shariff Md <smohammed@nvidia.com>,
  linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, 
  stable@vger.kernel.org, Patrick Fischer <admin@tsv-stahl-riesa.de>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792968614; l=1845;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792968614; l=2014;
  i=admin@tsv-stahl-riesa.de; s=20261020; h=from:subject:message-id;
- bh=itgIcGWGOLTyUm1KE2QunM+q/33HpForOO0+9QOkieo=;
- b=ifzVpAwj3ytlam2cPbnwHEpgbVut600nZsB8xfp8yN+PiAPG/fl0ebaGnWo93f+fn/JFOt1PD
- DyJny1Zu3E3BqCKSZejwKM+IswXF+xrNvbegyTICip8X/rspzZoLoSW
+ bh=6EwOpSqQKG4Eh41ZzqS8mdnou7ZQ+bwoEZb8R5Qxc/Y=;
+ b=dOtxdFiyP5QQqFHMgbg5Yi29rC6fDt+1DPiL6e561nRFUU6GC7l7b1GuEiU2nixn8r2ZuZ5H7
+ xQ7UgE/Z9r+Bu/PkHgJnoNc/fIyQYUed7VWa9qWjjNLCMTQoqjoUR+j
 X-Developer-Key: i=admin@tsv-stahl-riesa.de; a=ed25519;
  pk=D+v6EloYcEY9PIUHFyTM5sqcGIU/fIXzLUdkR8vjAtk=
 X-Endpoint-Received: by B4 Relay for admin@tsv-stahl-riesa.de/20261020 with
  auth_id=1251
 X-Original-From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 Reply-To: admin@tsv-stahl-riesa.de
-Content-Transfer-Encoding: 7bit
 
-From: Patrick Fischer <admin@tsv-stahl-riesa.de>
+On 32-bit ARM, both the clock rate adjustment from
+"nvidia,adjust-baud-rates" and the check of the resulting rate overflow
+a 32-bit long at the high baud rates the adjustment is meant for. On
+the Tegra Note 7 (Tegra114), Bluetooth at 3 Mbaud therefore ran with a
+UART clock 5.6 % too low, and the check computed -0.18 % and let it
+pass.
 
-tegra_check_rate_in_range() calculates the deviation of the configured
-from the required clock rate as (configured_rate - required_rate) *
-10000 in a long, which is only 32 bits wide on 32-bit ARM. This
-overflows as soon as the two rates differ by more than about 214.7 kHz,
-so the check lets through exactly the large deviations it is meant to
-catch.
+UART clock at 3 Mbaud with a tolerance of 136 for 1 to 4 Mbaud
+(pll_p 408 MHz):
 
-On the Tegra Note 7 (Tegra114) the Bluetooth UART ran at 45.33 MHz
-instead of 48 MHz at 3 Mbaud (-5.6 %, see the previous patch). The
-check calculated -0.18 % and let it pass, although the limit is 4 %.
+                    requested    configured   check
+  without patches   47.79 MHz    45.33 MHz    -0.18 %
+  with patches      48.65 MHz    48.00 MHz     0.00 %
 
-Do the multiplication in 64 bits.
+With both patches and the unchanged tolerance of 136, Bluetooth on the
+Tegra Note 7 works at 3 Mbaud: the UART clock is 48.00 MHz, and the
+WL1801 scans and connects to a paired device without HCI errors.
 
-Tested on the Tegra Note 7 with a tolerance of -500 for 1 to 4 Mbaud,
-which gives 45.33 MHz at 3 Mbaud: the driver now logs
-"configured baud rate is out of range by -555" and does not apply the
-rate. With the tolerance of 136 (48.00 MHz) it logs nothing.
+With a deliberately wrong tolerance of -500, which gives 45.33 MHz at
+3 Mbaud, the check now reports the deviation (out of range by -555,
+i.e. -5.55 %) instead of letting it pass.
 
-64-bit platforms are not affected.
+Both bugs date back to v5.4. 64-bit platforms are not affected.
 
-Fixes: d781ec21bae6 ("serial: tegra: report clk rate errors")
-Cc: stable@vger.kernel.org
-Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
+Tool use (see Documentation/process/generated-content.rst): both
+patches, their changelogs and this cover letter were prepared with an
+LLM coding assistant (Claude Code), which traced the wrong clock rates
+I measured on the device to the overflows, wrote the fixes and drafted
+the texts. It also recalculated the old and new arithmetic for the
+affected rates in a small userspace program; the results match the
+rates measured on the device. I reviewed the changes and ran the tests
+on the device.
+
 ---
- drivers/tty/serial/serial-tegra.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Patrick Fischer (2):
+      serial: tegra: Fix overflow in tegra_get_tolerance_rate()
+      serial: tegra: Fix overflow in tegra_check_rate_in_range()
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index cc09fbc3aad8..cb5ef8aac198 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -380,8 +380,8 @@ static int tegra_check_rate_in_range(struct tegra_uart_port *tup)
- {
- 	long diff;
- 
--	diff = ((long)(tup->configured_rate - tup->required_rate) * 10000)
--		/ tup->required_rate;
-+	diff = div_s64((s64)(tup->configured_rate - tup->required_rate) * 10000,
-+		       tup->required_rate);
- 	if (diff < (tup->cdata->error_tolerance_low_range * 100) ||
- 	    diff > (tup->cdata->error_tolerance_high_range * 100)) {
- 		dev_err(tup->uport.dev,
+ drivers/tty/serial/serial-tegra.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+---
+base-commit: 734bef548a96e8774d6eef5dfa2026c6edc4e80b
+change-id: 20261023-upstream-serial-tegra-overflow-48d3d0f7afd9
 
--- 
-2.56.0
+Best regards,
+--  
+Patrick Fischer <admin@tsv-stahl-riesa.de>
 
 
