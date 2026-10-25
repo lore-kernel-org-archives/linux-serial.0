@@ -1,102 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.174
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.177
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792954037;
-	b=MgKoEmSEtY+v/b1oVTMbKQDz9olAEKNV6KK98Tc9IKlGkK0voi3/GcbaqHG2um8QA3Su
-	 Iz9um3am5ayT6kX3v30/iRy8BK1p54BHKbTlEAc/j1En/1jZPU7yn6Jas3qGG3zKEE4xp
-	 qAa6t9tuBXemmiorBApXGl0Vn9LFxOPUQ6ovsuflBkSuDeE7M0vDHu30U464hQxIt8ecC
-	 PF657eSK8hnSeigWcPL+XU+UE0lE7EOY/0WbQ4HH3GP7YruQtZuKVR8OdU5WGo7PJx6MB
-	 qSoRPvnkk+IXC/kpjiUBh75fn3iH33B3gmSksfrlLXI5QREL7E8h6k5bP1v3DRk0YHA==
+	t=1792959959;
+	b=19pqOGkH3ZXGDq4zzCJR/VmsX6TI3hpvGAYm2noU/Z7YwCgk6DHklrM1DylRfirke5fJ
+	 tg94RUkSrWxdLluQjYgP2Xjm6aCQ4pBrFM5sywOonI/9tvI+0PLW5lqvbeHU4rKgYYjm3
+	 Y0CAahyzIEpwmPnqfTVnGP9JCnABvMMhWMDfv2cPcicrAJ8Euz5wSQcLWnXl94O/WvZss
+	 6qlaxYg3XoZ7+S/EMt5l1lLZNemEBVCLq5X0TldYCrUymu/z6HBIVRPFv+zS0QbCjo9Rg
+	 PWg3/kAsuP5qQD43g/Xw7y542Zhnm4q/AXOPI5UW71F4Ylj63H99+R5QDc79hLCg5Sg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792954037;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792959959;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=cd/Rf0PmOsf9SbzCT228kopwmzuVCMtn/HtZcsjTHHw=;
-	b=dcbGmEsjKk+LUDNbonC0CH/UAIQrRbkjzJYD7yLq3rHqMcSwmSlwGMEmVLuWEQJYBk/u
-	 qAEbNkSBRrrWQezYDprpj+SUUyDdsVXmcrGpXWttU08qIy5crfdImFGqX6dxRHivg0j96
-	 vfw/6lZPFA1Zng/NPjdPepUJQDhZDBRXRp4L2NrswQ2ld0pTdftlZqgYz5KvM6EW+Sov0
-	 HKoaAQmCID3GZD2EJlFscRJfrli5U76Kz2VEI2VYp1VYj13xHlQpevGGKWc6JORZSF5vD
-	 BrKdtKBhAAX1YkO+scG6aP5wD5G2t3TMg00bNkx9jyy373LNUewDD/4cprg0s8847Jw==
+	bh=C/RThAUA8B7cnZs887BkMxa6IkSw9Jpa0pELDADdrhA=;
+	b=SZM70isv3LtXDyRm3YPwo6JAIy/yQh7k9hbKDseu36OEQu/zNxm7c9KdIZsRxuN2n6t4
+	 +v4oxCJfb7yesBE1jbclNntiVvr5EpBs5+4CfCrNhafUMsN3k8NW1Ywwlyi7fKTpPiEK4
+	 pSEXb2dbXrbrVUBdUKjvzdegaWwsr5MR1f8SgI1yroEW77N6GzDQWIKJOrt/5Z2GxNL0y
+	 Nq7hqBkWYH4oOYNeWJDwjLpsw6zvvv6mEV8KTExX5LdHNdad2ostgVoj9/2yUnM7slWVF
+	 zWsjKx0VbUbbULCZW0AfXlwF1Dt9/zLTMh84aX/w+SslQI6x89N17fa+K5uTgzkaHKQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=pFZ5a2iX;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.174
-Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Ch7l0h8g;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.177
+Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2808606A31D
-	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 18:47:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E2808606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EB3606A31B
+	for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 20:25:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A3EB3606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=pFZ5a2iX
-Received: by mail-vk1-f174.google.com with SMTP id 71dfb90a1353d-5ead9f60e26so2961988e0c.1
-        for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 11:47:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792954036; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Ch7l0h8g
+Received: by mail-vk1-f177.google.com with SMTP id 71dfb90a1353d-5eae12762c9so1094847e0c.1
+        for <linux-serial@vger.kernel.org>; Sun, 25 Oct 2026 13:25:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792959957; cv=none;
         d=google.com; s=arc-20260327;
-        b=KGRLRbeHOrvuR4evg2v+GNiOxHY4yAEGrV7vprzqcmDfweo3e6o6+1JnZdWL1dKrLZ
-         i13Cci9bi+lw5ti1uKHQemmrAIVkjZYJwmbxeTwdVM2BwvUwTuCZ6SnBEh0z+dWMkjZA
-         qCWEgmNsJyKBjGT5FkOjl+8bFasqGcLwro5iGD2bayNdBSmaBJkJ3LMKhPjswIfdNf5j
-         WKPiBa9fUTHjSaZ+5ZZb73NupGYOpFJMpdzAWugELXuVt6uNnuFubIlUD8cVn3oL1E5y
-         rhUa3G5C4kIc54BV2ngyJ+btK6DyXuH5ngkO1d+ACXmPOFvsBvtI3kSF8I9gb/vO+FTP
-         ugvg==
+        b=qKQLg8hAM7zD13HG2VTH/NLYJ2xbcktH9+PBqO//uOSPMRFFeMsLZoU6P2AyNty/iM
+         hOhfXsliQy8CrG0fgqCHdUCRF1iMAWjERQmd9IRU7CSIhP3tERiWzuVeGe08dAm3UgLT
+         S8A7yL639j5DmfSfK1TNh28pVCg0CwInwO6PSEMFkVxWBnqPYQKwiTqJU5s2JAp6ikjj
+         NzBe3OT/d7HxBLxbuHRbWI/QvOndUhFw9atgV9sSVkNSpNAU//JTErZ2wYiwJUEEDebi
+         fwwyB0jMmauxSXshCX3tJXGiyiVDzLutE0Cx1IbgxS9R2ux5Wk10UsBGbhif1xIrP0cJ
+         ulUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=cd/Rf0PmOsf9SbzCT228kopwmzuVCMtn/HtZcsjTHHw=;
-        fh=zLDLAJrUUHRM0idfmpN1Dko36Un6KY8pkvflpnHQiPE=;
-        b=b0105rwKKoGpdzf0P3L1eHYG5eHoW1gzY5d70KhPahopR80ZvXcA39IvzmsgFEQahc
-         736O6AyllB/ilwliAF2TqEhChCvPL4J3iVtMNuYM9ceM6Qk51qB3CYe2JsbFjU3OF14T
-         Z2NlbtKg0YFa/FXHtwfud9zV0pEKwQtUQayL97xBb3W8NvYCCt98C2Yilbehl9gCOuAJ
-         oUnVqSzMvz8BfLzVD9SroCepm4dlJmhcgkf/X+kcQ4RZtbq9XWwhI06ziBSQNk/mk1FN
-         FFgubL2m7cFNrywo1z9Cpd3ihZyEvH1/6xrxQ6EmRgVxeJj/MxQIZq8ZmiESmXw8NF0Z
-         jykA==;
+        bh=C/RThAUA8B7cnZs887BkMxa6IkSw9Jpa0pELDADdrhA=;
+        fh=eNts8nMZJsN40szkRMSsip/Ez0DElkFsALPb1GkQ+2g=;
+        b=NpSMVJy34aLDl+r7uWjfq/zYQB+zzTiVyRkIi2bjgZQbwVT4uoQbb07HLmJj6gal3i
+         Hhk7W8gCLSo/7q0kGKQcJRYxnvTP/iiSCxpNa1RKUkZFtFGNIjoYasmSD71xGj8qXn0i
+         w/cG1Ca9bN98z+R/3XqhhMk1Rk9Yg4JtPp2EI/wSBGg9u2ZpTxzKqj0eNgBG5DuEEl3F
+         q+v2ktPgRoUEc8IXzjxR+NVOv5alnQHasdUJmt0FuaNXmbH7EVJBjVJjs0FSQ7iS87l2
+         5pxR9iVlqnI3P7pzeq+VupmrYcwpGBsFG2Ji401yEKozw94WF4NN75LYY5cKTZE8X6R9
+         xg4A==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792954036; x=1793558836; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792959957; x=1793564757; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=cd/Rf0PmOsf9SbzCT228kopwmzuVCMtn/HtZcsjTHHw=;
-        b=pFZ5a2iX/z+pKe+hYLL1GQnSOuYDBsz3Ynetp+1FWxgyGkX28iH2CSl267qWQgDyM+
-         RGRJPcOXNuTcRjE8ZLrMLmU7T+dN7BWz82eGoPJdVXP2Mvp9vwELoUeGlVLP1nOK9Xcf
-         7i722QRvAnnSymbAbqjIULgrN8IXRBrkDHcsBVG8B/xiMPMkam2S62O+X8e0DtCoP6Th
-         nl3gIW+nmYYec9t9wbAvuRGY6nPN108gaPfaCKBhFCew4Dad7WB+wwngNqiwEKYtP4uS
-         aH6gkvQr1EnE0CNMNrA2l5zFCFFOXGACQi4eaWzXmMZC3vm/YEiF0haCDgZ+hu/V61Cy
-         VLOw==
+        bh=C/RThAUA8B7cnZs887BkMxa6IkSw9Jpa0pELDADdrhA=;
+        b=Ch7l0h8gZZLQtaVyD/x/SnDeFWAhlvqHNhtw91SY7a670GgzUlF43VyYylVlpdMXUb
+         bJCz5CQ3mLM6o0F9NfkZr4VNj189ngdFRsj/RmUx4NEXPBcUWii7+nkRHa6oSLWKHlmY
+         rGcnL6UcCygRCwmSWn3nb+LNdcCjBKT7V8FYrf7xgA0IofiNJAdBfBRXQshvaIHsG3qN
+         2nrj8RlqHwDWtowWp8seSIQj7BOUx3TcvO9ZorLYUQ5zaVFU+a1y9xmSjD+H61SSDSa4
+         Z7qQYY1ynxcv1uIlTtP5ixYdJ2NX8yN3Te5Gc0ZaCeryz3nK2ZFKQ0xOeLgSybbpWkLr
+         ZU4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792954036; x=1793558836;
+        d=1e100.net; s=20260707; t=1792959957; x=1793564757;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=cd/Rf0PmOsf9SbzCT228kopwmzuVCMtn/HtZcsjTHHw=;
-        b=vPPdCTfBm5HvumpDRHmtxyePXqGLyviyzqAdj7jmgWEnJozsStlDwyyskrW9BQ4JLc
-         FIKnUsqni6yXsXTgeVtV0fRM1M4y7ci3Nl53mDTu1dW0jOkDr0x1mrvbCrWtiLgLEQy4
-         F5aYUgOls9OKqRUwVqhOkSukvnLk9/9Re5lzNgMh6J0qXLVoU3UfqRjCcqaEyCXFryYR
-         xvLBnGNB9lmHxz6SzIswmDsP9E/WsnzULXy/ug2VvvMjqmYTq4yV0zhQQgFi3EaKmIfz
-         zCoCP4pWkfzt5yrKiC4WdPRMPmNCkJ3klaMsif4qRYJ5yVqhhnupNkZ/MMIL8wH/TMOK
-         ETAA==
-X-Forwarded-Encrypted: i=1; AKwUvBw/GjBndtNVZLZaQ1ReXKg/6qmCDA0TT3wcf20mFNB2QqD1vP2vVwy04bHR8b8zwmB0T+lY1x37qlfCgF0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIK3gvdqU/Fn+g1o7nI7tmI0BKA/Lxg7uth/eFm3d+gFlUsqg2X
-	J6V8n8uvpNkRrNnIxSFtjU38WTjxeS+c3B/vvSY3ErKh0rqO9bcIs/WBlGrG9uyzy5hEtw4ojTJ
-	l5ZHB0qMW1au1x0jZEiAchryQ8KTXGIo=
-X-Gm-Gg: AYBFou1khSm3PgUNeRkb21M/9tOpUzet01/b537G62zs2Av8IwIFM58vrJ7x2gCampr
-	wqFyl0znqU4pygfzD4wHY+k3XJdpm8ucJmQ4xjmX7sHszKlPbg7TlIxwrfYxnkufsyI3daSNO6+
-	YTDiR5WOIIkAVlZI9aCt6xK+gpzOA6zUkts1vxbvItJ6JeF9iM67yeVi+qkaSySnRvld1K5QtPb
-	ag0fVkdkx1p6xn1CEU2GBUycyiIXIDTkrC9Bwby1pGk0priijOMwtqbl1x7btOj0JEPrDs5QdgV
-	yGqe0J8+VMWg0M+S2SlNA1at1xdZQrfJ1IbHsk862MZ2Es8nShXy0YaX8zdj6vjaij8BckacKvO
-	rR9/fZJIQAXGLXvxWKBteiFQDDabWt/NaFdyys7iqoks2rbBPDZVRwjkIeXkifxYM1XEr0hOPNv
-	+FleP4eTQdNXXTLliRdAPW/EZjMyD08abreDSdV/wtLRvBVonCd52CwiD7/1Q52MoZDmYdDto5a
-	zA8QJjbkLZAwxmsnq9CvhNNv/ipWA==
-X-Received: by 2002:a05:6102:b04:b0:7b5:8fd9:27e9 with SMTP id
- ada2fe7eead31-7ce5d005cd0mr1043722137.2.1792954035832; Sun, 25 Oct 2026
- 11:47:15 -0700 (PDT)
+        bh=C/RThAUA8B7cnZs887BkMxa6IkSw9Jpa0pELDADdrhA=;
+        b=hERR6yQqTXSudZKYD9rjKth/YsC/eaLQ4eW9wduZMevLgtJBS6wCJCtAxIWojWOFJJ
+         DeBZoXZGTQ+BPLQXd1fiIALmRhR3zH6IyQXAb7/N2u/BVOuCw4+Pwr/XlaaQe8YG39lc
+         L9ymU8D4GsEoPa9vucyqzbfaCqtMPZnuNlgybyWUMYJ8tk4XlWxqbYQmFxa4HNSoyy0+
+         +gry8IaF5fuEHz6VZ4eyayo8iMXnlb8SyOz0hSGxD9dIB5DtgsoANHM1w7IFv34vaKqC
+         NLcoYdubAfvpfeBA9sciBxjWCGh6ylCm8dHKa5eefGtnPWBg2mxFIj3n6PvYN/In2kLW
+         laUg==
+X-Forwarded-Encrypted: i=1; AKwUvBz6pRd3meKRvYtdzclI9P8YLzPpZKd5OTBtZS+FY2qIpoHYGY6O93TaapL+7h2vRM1cpEuMtcOh9gGKOQ4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJcNlkoLEIn/bb1Vw/t1zEJzOjJLmZIJVgNyIxKMYsFBHt0jPs7
+	eNQI1SYffqh2WZ1ysGF7DFdfC2RIa4lOKcDatoZdxKzYVXS2Ug7RZEELmXOpJV8uUjfY3t0GJyT
+	fxli/NYfrO+Qu5GsHs4LaQMG2cshoP74=
+X-Gm-Gg: AYBFou2ospamGEmX94NEYgY6kPxZvVctKuvWEB76x+72SvaC4hfDECBeZf4NwCBH0QI
+	u9HlE7A2hpepL+NZXBBu+r4TUyUNWN0tKst4VI0tNY/HRrUkZMT5UlLCPb/3fpkX4DvCL6WfOC4
+	mB5DKnczmN8yiM8R95N/q+2TYFjanh3SqOqFPaKTFQqkYZYPDC9HzqT5ucuCEOk/4SukvOgWXdz
+	+cWwpPgmgH+hIiUlq5KCFaM40ZH0mVwQYo1H8nE41XxwX5QRJ2NyTpbLuV/nDN7dZEio2fHWw14
+	0uEppaPxY+YXR1GaD0njqadPqC0AKHQU+mCH6N/ppLkMar2DD5niWjx4FvLRpYfA6m50OvIYV70
+	lpxUF/D5YDmrOGO7DLbGUbCGYRfrg1d6fEAMx6qeSAMs5wKiKZaBc7tjkYOvNbcVmK8xnXhCMpY
+	nj2EETS/FbHOJuLNAyjEQehbc9TDrkYkduIMyaKmcmwD+WBiJqw173/abh387l2VAE5k4e6nMIM
+	XeRHKinQIELBxt7erE3MBBYQNAf2w==
+X-Received: by 2002:a05:6102:a213:20b0:7ce:645a:13a4 with SMTP id
+ ada2fe7eead31-7ce645a802emr619643137.20.1792959957403; Sun, 25 Oct 2026
+ 13:25:57 -0700 (PDT)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -107,18 +107,19 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 References: <20261024-submit-serial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com>
- <20261024-submit-serial-8250-dma-cancel-v1-v5-2-9e52968928d2@gmail.com> <alpine.DEB.2.21.2610250459200.42255@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2610250459200.42255@angie.orcam.me.uk>
+ <20261024-submit-serial-8250-dma-cancel-v1-v5-2-9e52968928d2@gmail.com>
+ <alpine.DEB.2.21.2610250459200.42255@angie.orcam.me.uk> <at4bw-G8czG-G7Wl@ashevche-desk.local>
+In-Reply-To: <at4bw-G8czG-G7Wl@ashevche-desk.local>
 From: James Hilliard <james.hilliard1@gmail.com>
-Date: Sun, 25 Oct 2026 12:47:05 -0600
-X-Gm-Features: AclHuK8RfnuoMKUL7_ChiQcwJjtxWWikUNjoVOQNx_xye2F4G1UoFeQQYjFC0tc
-Message-ID: <CADvTj4ryYd91LYMCktJ6a8=ygm0BG6dd4ZyK6XByaVcWvFTvkw@mail.gmail.com>
+Date: Sun, 25 Oct 2026 14:25:46 -0600
+X-Gm-Features: AclHuK95EKPTnWE_5NOhWBwYmgu-dizSaKFvAkW3Q_P3x_TD5WYGvbT2T9PcLnc
+Message-ID: <CADvTj4psJcY2T1PG9H8_hJWjz62R7unj3PPgv3FrVquUMFVhGg@mail.gmail.com>
 Subject: Re: [PATCH v5 2/5] serial: serialize asynchronous write wakeups with
  the port lock
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Raul E Rangel <rrangel@chromium.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Raul E Rangel <rrangel@chromium.org>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
 	Heikki Krogerus <heikki.krogerus@linux.intel.com>, Tony Lindgren <tony@atomide.com>, 
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Richard Genoud <richard.genoud@bootlin.com>, 
 	Nicolas Ferre <nicolas.ferre@microchip.com>, 
@@ -132,66 +133,83 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kerne
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Oct 24, 2026 at 11:10=E2=80=AFPM Maciej W. Rozycki <macro@orcam.me.=
-uk> wrote:
+On Sun, Oct 25, 2026 at 9:10=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 >
-> On Sat, 24 Oct 2026, James Hilliard wrote:
->
-> > uart_write_wakeup() expects the UART port lock to be held. Several work=
-er,
-> > DMA completion and interrupt paths call it without that lock, including
-> > indirect calls from uart_handle_cts_change() and the transmit helpers.
->
->  Fair enough, and thank you for the cleanup and spotting the issue in the
-> first place, however...
->
-> > diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1=
-250-duart.c
-> > index b4e1b90e5960..b15f76acd06b 100644
-> > --- a/drivers/tty/serial/sb1250-duart.c
-> > +++ b/drivers/tty/serial/sb1250-duart.c
-> > @@ -454,10 +454,12 @@ static irqreturn_t sbd_interrupt(int irq, void *d=
-ev_id)
+> On Sun, Oct 25, 2026 at 05:10:03AM +0000, Maciej W. Rozycki wrote:
+> > On Sat, 24 Oct 2026, James Hilliard wrote:
 > >
-> >               if (intstat & M_DUART_ISR_RX)
-> >                       sbd_receive_chars(sport);
-> > -             if (intstat & M_DUART_ISR_IN)
-> > -                     sbd_status_handle(sport);
-> > -             if (intstat & M_DUART_ISR_TX)
-> > -                     sbd_transmit_chars(sport);
-> > +             scoped_guard(uart_port_lock_irqsave, uport) {
-> > +                     if (intstat & M_DUART_ISR_IN)
-> > +                             sbd_status_handle(sport);
-> > +                     if (intstat & M_DUART_ISR_TX)
-> > +                             sbd_transmit_chars(sport);
-> > +             }
+> > > uart_write_wakeup() expects the UART port lock to be held. Several wo=
+rker,
+> > > DMA completion and interrupt paths call it without that lock, includi=
+ng
+> > > indirect calls from uart_handle_cts_change() and the transmit helpers=
+.
+> >
+> >  Fair enough, and thank you for the cleanup and spotting the issue in t=
+he
+> > first place, however...
 >
-> ... why do you think the whole functions need to be called with the lock
-> held while they may or may not call the handlers in question even?
+> He already issues a v6. I think the tactics against AI contributions shou=
+ld be
+> to not answer for a week or so until there will be a quiescent week.
 
-For sbd_transmit_chars(), locking only uart_write_wakeup() would leave the
-empty-FIFO decision and TX interrupt masking racing with start_tx(). A
-writer could queue data and enable TX after the empty check, then the
-interrupt handler disables TX interrupts and leaves that output stalled.
+At least with the workflow I've been using, a good signal for quiescence is
+simply whether or not the Sashiko reviewer found issues.
 
-The same lock protects x_char handling and FIFO consumption against
-concurrent updates and flushing. These races predate this series, but
-wakeup-only locking would leave them unresolved. I'd keep the complete TX
-operation locked; each invocation sends at most one character without a
-FIFO-drain wait.
+I am feeding the Sashiko prompts into my local agent but it seems to
+sometimes miss issues that get flagged by the public Sashiko reviewer
+still.
 
-> I
-> think we should avoid excessive locking where possible to avoid holding
-> execution elsewhere unnecessarily, shouldn't we?
+I've been attempting to peel off independently reviewable fixes where
+feasible as well to minimize the amount of patches/code during respins
+as well.
 
-For sbd_status_handle(), I'd read and filter the change status first, take
-the lock around the CTS/DSR updates, and release it before waking
-modem-status waiters.
+> At least that's what I learn from this patch storm.
 
-I'd also move the TX lock into sbd_transmit_chars(), so RX-only interrupts
-don't acquire it. That means two acquisitions when both status and TX need
-servicing, in exchange for narrower critical sections.
+Whenever my local branch accumulates significant refactoring/changes
+due to Sashiko or manual reviews I generally try and send out the new
+revision fairly quickly in an attempt to avoid reviewers wasting time
+reviewing code that is obsoleted by the new fixes/changes in my local
+branch.
+
+Locally I actually have far more UART related patches in an integration
+tree that I've held off on sending for now since they are dependent upon
+the prerequisite fixes I have already sent. My unposted patches actually
+have an even larger amount of code changes than all the UART related
+patches that I've posted so far, at least when measured in terms of total
+lines of code changed.
+
+The large amount of patches I ended up with seems to have mostly come
+about due to the AI agent identifying most of these bugs while iterating on
+and debugging new features(most of which are still largely unsent so far).
+
+The strategy I've been using is to send small isolated fixes separately and
+then reference them as needed in the larger series that depend on them.
+I figure this should make the changes easier to review than having them
+all in a larger series. I contributed the changes[0] to make this compatibl=
+e
+with the Sashiko reviewer actually.
+
+I also use a custom AI agent controlled hardware in the loop test harness
+which makes iterating/testing changes much faster since the AI agent can
+autonomously test and iterate on changes far faster than is possible to do
+manually. This test setup also allows much more thorough testing as a lot
+of error handling or uncommonly hit code paths can then be tested using
+AI generated fault injection tests on real hardware tailored to the specifi=
+c
+fix being validated. I manually review the final changes before sending as
+well of course.
+
+I'm constantly refining these patch development/review workflows as well
+so feel free to give me any suggestions for anything I should change to
+make review easier.
+
+[0] https://github.com/sashiko-dev/sashiko/pull/389
 
 >
->   Maciej
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
 >
