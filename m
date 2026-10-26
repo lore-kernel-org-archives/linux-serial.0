@@ -1,80 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793012652;
-	b=4YPNXuvTuD2UrVP8i4jsOyPNrgSTtN/GUr+8a6vGF0V9EedGqyx2kq9cA1VijT+F5+FI
-	 yfoA7VkCq+EFuUZ5ppeZND2v+4C5e7DDh1Okq1BIV67d5CisdddOVRjtAEAwdnxhDVtz5
-	 NOwvKWVzunyw2RRRjO7KBpmPY11beapfMrZNwygmnbIBVq5HREwdiiwHIVp1IFnIyHeSs
-	 81ySMtPSjzXEU+WBf9c8VQjSuc0EPzDJKDXMVSce6ktVcC0qG7BtEa38tPR2PInhsGGY+
-	 CBkN8bBA3Rc6jjmXKXyd2u706Ie4+N7Zj70lyu9oBClKRGmUybhCBlrftW8EzEAcs2w==
+	t=1793013370;
+	b=CfG7GzPJjQZdEdhM9y0qEvw3yGA2A6RF5goG3t8A+MBSy3zjaRnm0qQufYWp0wMrzzS1
+	 p4XbnFJABKs1reARTA4d8/2/1bW/uSYgYTJyY+7V9pvRHyzJBvnKIETKQo7uu1QmAxi85
+	 SB93gOP73u1xgQPQYRC8oADQB2LhfqSNQ/ZCfqXYwYSXdQRRMnpt+rpgOgi3trJ6mEmH/
+	 siSwM/Qae5EXfzSJyieoKUHl4nhxdVOjHq6VZ4j2Rz1Lz4qQtwc05m4Msqdot4RCCC2Jf
+	 eCHgSA/nd+muwnjxLKzdJxXRDUkoqEHmFDc3wHC3X+xhzi482cHM+m37WYuXYyP9T4Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793012652;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793013370;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:Date:To:cc:
 	 Subject:In-Reply-To:Message-ID:References:MIME-Version:Content-Type;
-	bh=+7lSc9bS1/FhK1L6agezkJWt52iS9SoyfWq4Ni3rD1M=;
-	b=uwEoWCtqaDJ99NRHFEh15gx5PVdwJMglW9nMvSw4NK01ybIUWBUSnkUO23/ovlIomwUj
-	 27O1VhgRrFg8UGsu0jfHsocQBXqtvEPLfBckoZfogzq7KhISHofxg5iDWBon+HNPH7L1N
-	 20yvQoDl/v39+s9PTjeUQL/WvGLskO45UvdAl/4gwmgMOwKWOOOYWtqENQrvoS4Qc+fTV
-	 MytbPK9QZ8ywOyKtSyTSmGoOhcW65mRh4R9kEFnbdkpO5dPATp9v5iTHpRrnXViT5E7kb
-	 zLJA4aeGPB+qwZQlX+rHQM5gnpnAgd5nYzKK3WI99quAD7YInQQJYlmb+3b3y/0DfGQ==
+	bh=LAzq4cyS54q1OMpA3stV0scLcFCff1wzup/apzkv5TY=;
+	b=B00l9mZdG2i4I3B9C/wf8Yi9rkPb+wOWGkpM4VjyqZvn2pyvZdlpSYlPf0DsE7cML4VC
+	 3J3MPtwnmQ60RcU7OD7w7kv+mvAMFKDdYjAgjtVU1uo1cfGCCAoXHMGex1jhSX1gFiJqA
+	 91MnjhonmuUc2RSJRdLHbHz8tUhW+5ktoV0y86OuQgARMIqEVMfFnzLi1+iriI746QLZ1
+	 O0+IKJmBCLbXBxQWr6qVY9A5UJ0IPXiWvhLoIT23Ub/EW391cvePZ7MGNsLuF5QXUj8nN
+	 nXcBg0Y3p/RcQSOPdyIx/Kn2rodHaF6BcbKHr1q1GJqkcpkuYHeUWk2nebK3dl//tkQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UwKKjowA;
-	arc=none smtp.remote-ip=192.198.163.11
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aBNUT5N+;
+	arc=none smtp.remote-ip=192.198.163.13
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0194606A324;
-	Mon, 26 Oct 2026 11:04:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A0194606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52C0C606A31A;
+	Mon, 26 Oct 2026 11:16:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 52C0C606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UwKKjowA
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aBNUT5N+
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793012652; x=1824548652;
+  t=1793013369; x=1824549369;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=6eG67Ytw/5AXlsrQajZVFK7YTNbjLHeV4uqlUNul9IA=;
-  b=UwKKjowA/Ajb9yEaWzbWnGqubPIUl9k8rNzPu8oXF6hPc4ztexe/OdKc
-   +UbNDOvOI170/8zc2RZ7qsxH0mBT7UBarOiWP0cUTyeVKLfqLdD408FNR
-   7j0GbP8mBNcMSroqGb7D+4X8wBJlxzy+hKxOBdkcSlZzI3LS4kYF7ncKl
-   gDxiF/JN+z9ak5l5ASv6+r767VcWYnPR4QvEZnJfbMwHst+is+hukg9Ho
-   EEqlpspN/xPTa91POI3B86H01Lqj0DOcjiiGOaN7LOhuuF73I0EuVLnws
-   6wt+ocWL7BdjU+L0rYI0jeMrAJLtj3kMcDbj/sYQg6ZZ1Cpw3zzL42zez
-   A==;
-X-CSE-ConnectionGUID: HDSN3q+IRyuoD5TG1Md2aA==
-X-CSE-MsgGUID: Kzi5PMIESsuCofoo5n7IRw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1583637"
+  bh=AphQK58+g81EWzAi3VXX0VFnAVqOX1dQuy1qI7BOKMg=;
+  b=aBNUT5N+KHaeTEMAuOq939zIyfdDS3Enz9D4H5uM7TZE6MCg0MRExZxr
+   OkzzIQpHBc4D4j1Cch/jUJAT2edn001nuBn7XUZ4BuGkLrUcWXjrVeVM7
+   ajrJZPN0LHfGq4dOg3kquTg06Ud/Y6N+Ug0vafDDgpwcpa7OR8ZiK9AIs
+   zBUMD08auiUrSpO1WCAt8CKCwg/4q+/V/0+plFxsKNvS6gpa9O3yKokjq
+   u1uuYkQSEn5mg/1vtgwiNR1MiQSCBzy6HRfB72VzYjRBalvwcH+qTtqGB
+   RTlVxDFoRgm+7/d47nmnydUFLY7abgQiVQL6Mv1m0nmlTIoQ/beh/yVxl
+   g==;
+X-CSE-ConnectionGUID: nTSBHRspReerectEjiQOiQ==
+X-CSE-MsgGUID: 8JQr54mcRl2yJx4WkU9h4Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1670452"
 X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1583637"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 04:04:11 -0700
-X-CSE-ConnectionGUID: YRbEG+DiRHKgICnjwsLgog==
-X-CSE-MsgGUID: xAgWaSUFQDy7fkQ30DF7JA==
+   d="scan'208";a="1670452"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 04:16:08 -0700
+X-CSE-ConnectionGUID: iiWYMFKDTuWiIPMIP/jZVw==
+X-CSE-MsgGUID: +sweVC7nS1K/YdC9OecmNA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="4347067"
+   d="scan'208";a="4635828"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.109])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 04:04:07 -0700
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 04:16:00 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 26 Oct 2026 13:04:03 +0200 (EET)
+Date: Mon, 26 Oct 2026 13:15:55 +0200 (EET)
 To: James Hilliard <james.hilliard1@gmail.com>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Raul E Rangel <rrangel@chromium.org>, 
     Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Raul E Rangel <rrangel@chromium.org>, 
     Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+    Tony Lindgren <tony@atomide.com>, 
+    Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
+    Richard Genoud <richard.genoud@bootlin.com>, 
+    Nicolas Ferre <nicolas.ferre@microchip.com>, 
+    Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+    Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
+    Jacky Huang <ychuang3@nuvoton.com>, Shan-Chun Hung <schung@nuvoton.com>, 
+    =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>, 
+    Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+    Pengutronix Kernel Team <kernel@pengutronix.de>, 
+    Fabio Estevam <festevam@gmail.com>, 
+    "Maciej W. Rozycki" <macro@orcam.me.uk>, Timur Tabi <timur@kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
     linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v2] serial: 8250_dw: preserve BUSY-safe fractional divisor
- programming
-In-Reply-To: <20261024-submit-serial-8250-dw-divisor-v1-v2-1-032ca5338359@gmail.com>
-Message-ID: <e3567bb4-394c-39bf-fb97-8254585fffa6@linux.intel.com>
-References: <20261024-submit-serial-8250-dw-divisor-v1-v2-1-032ca5338359@gmail.com>
+    linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev, 
+    linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v6 0/5] serial: 8250: serialize DMA cancellation with
+ buffer reuse
+In-Reply-To: <20261024-submit-serial-8250-dma-cancel-v1-v6-0-6f366591f566@gmail.com>
+Message-ID: <a011174b-d64c-305b-7dab-62017fc885fa@linux.intel.com>
+References: <20261024-submit-serial-8250-dma-cancel-v1-v6-0-6f366591f566@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -88,162 +101,207 @@ Content-Type: text/plain; charset=US-ASCII
 
 On Sat, 24 Oct 2026, James Hilliard wrote:
 
-> dw8250_probe() installs a divisor setter that makes the UART idle and
-> checks DLAB before writing DLL and DLH. When dw8250_setup_port() detects
-> fractional-divisor support, it replaces that setter with the library's
-> callback. The replacement writes DLF and uses serial8250_do_set_divisor(),
-> bypassing the divisor setter's idle sequence and DLAB readback.
+> Reserve canceled transmit and receive storage until DMA and its completion
+> callbacks have retired. Serial-core write backpressure protects a flushed
+> TX FIFO while normal transfers continue to DMA directly from that FIFO.
 > 
-> If the LCR update fails to set DLAB, the subsequent divisor writes can
-> reach TX and IER instead of DLL and DLH.
+> The series separates OMAP's locked completion processing and serializes
+> asynchronous write wakeups with the port lock before adding the serial-core
+> reservation helpers and applying them to 8250 TX. Flushing
+> empties the logical queue immediately. While the old transfer owns its
+> storage, write_room() reports zero and write-ready notifications wait for
+> retirement. Failed termination retains the reservation until normal
+> completion, without advancing the reset FIFO. DMA retirement releases the
+> reservation independently of port readiness. Serial core keeps writes and
+> wakeups gated during shutdown until successful startup or resume.
 > 
-> Expose the library's fractional-divisor calculation and DLF write as
-> shared helpers. Install the BUSY-safe setter after hardware discovery and
-> use the shared DLF helper to program the fractional field only after DLAB
-> has been confirmed, alongside DLL and DLH. Select the shared calculator
-> when fractional divisors are supported, preserving the core calculation
-> for integer-only ports.
+> RX delivers paused data before the PIO fallback and retires callbacks in
+> process context. Track FIFO access separately from buffer retirement so
+> PIO and the DesignWare empty-FIFO timeout handling can run once DMA has
+> released the FIFO. On failure, retain the requested interrupt enables in
+> the existing IER shadow and mask receive interrupts in hardware until DMA
+> has stopped. Recovery then leaves RX on PIO until reopen. Shutdown excludes
+> new retirement work before releasing the channels.
 > 
-> Fixes: a7b9ce39fbe4 ("serial: 8250_dw: Ensure BUSY is deasserted")
-> Cc: stable@vger.kernel.org
+> Based on tty-next with the posted shutdown guard [0], channel
+> configuration error handling [1], RX TTY accounting fix [2], RZ/N1
+> transfer-length fix [3], transmit-PM shutdown fix [4], serport
+> write-wakeup deferral [5], DesignWare BUSY-safe fractional-divisor
+> programming [6], and Intel MID RX DMA timeout locking [7]. The serport fix
+> is needed before serializing the remaining write-wakeup callers with the
+> port lock.
+> 
+> [0] https://lore.kernel.org/r/20261021-submit-serial-8250-dma-shutdown-v1-v1-1-3d3ce383c614@gmail.com
+> [1] https://lore.kernel.org/r/20261021-submit-serial-8250-dma-config-errors-v1-v1-1-c067587d1ef2@gmail.com
+> [2] https://lore.kernel.org/r/20261021-submit-serial-8250-dma-rx-accounting-v1-v1-1-c11795914ab4@gmail.com
+> [3] https://lore.kernel.org/r/20261023-submit-serial-8250-dma-tx-length-v1-v2-1-c3106ef4d2df@gmail.com
+> [4] https://lore.kernel.org/r/20261022-submit-serial-8250-tx-pm-shutdown-v1-v1-1-0e894afa3bb8@gmail.com
+> [5] https://lore.kernel.org/r/20261023-submit-serport-write-wakeup-v1-v1-1-74e7311638a2@gmail.com
+> [6] https://lore.kernel.org/r/20261024-submit-serial-8250-dw-divisor-v1-v2-1-032ca5338359@gmail.com
+> [7] https://lore.kernel.org/r/20261024-submit-serial-8250-mid-rx-lock-v1-v1-1-2b9afdf869d7@gmail.com
+>
+> Assisted-by: Codex:gpt-6-astra
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 > ---
-> Changes in v2:
-> - Share the fractional-divisor calculation and DLF write through exported
->   dwlib helpers, and use them in the platform driver as requested by Andy.
-> - Select the fractional calculator only when DLF is implemented, preserving
->   the existing core calculation for integer-only ports.
-> - Link to v1: https://lore.kernel.org/r/20261023-submit-serial-8250-dw-divisor-v1-v1-1-f452d4bb1b1f@gmail.com
+> Changes in v6:
+
+Hi,
+
+This series is moving way too fast with new versions. Please slow down.
+
+We're not aiming to who manages to produce highest version counter for a 
+series. ;-)
+
+You're making non-trivial changes so please do expect human review to 
+take time. Cranking new versions almost back to back (or even every other 
+day) will just fill up inboxes.
+
+--
+ i.
+
+
+> - Use v2 of the DesignWare BUSY-safe fractional-divisor prerequisite.
+> - Serialize CLPS711x TX servicing and interrupt-enable state with the
+>   port lock. Use non-waiting IRQ disable in stop_tx(), skip queued TX
+>   interrupts after stopping, and drain the handler outside the lock
+>   during shutdown.
+> - Make the Atmel RX/TX tasklets and SB1250 termios locking IRQ-safe
+>   alongside their interrupt-handler locking, preserving the caller's
+>   interrupt state when releasing the port lock.
+> - Report RX DMA recovery after releasing the port lock, keeping the
+>   state changes and interrupt-enable restoration serialized.
+> - Link to v5: https://patch.msgid.link/20261024-submit-serial-8250-dma-cancel-v1-v5-0-9e52968928d2@gmail.com
 > 
-> Previously included in the DMA cancellation series v4:
-> https://lore.kernel.org/r/20261023-submit-serial-8250-dma-cancel-v1-v4-0-e759de1839de@gmail.com
+> Changes in v5:
+> - Add the posted serport write-wakeup deferral as a prerequisite for the
+>   caller-locking preparation.
+> - Add a preparatory patch serializing asynchronous write-wakeup callers
+>   with the port lock, including indirect CTS and transmit-helper calls.
+>   Keep sleeping register accesses outside the lock and defer SCCNXP
+>   notifications until its controller lock is released.
+> - Use the separately posted DesignWare BUSY-safe fractional-divisor fix
+>   and Intel MID RX DMA timeout locking fix as prerequisites, leaving five
+>   patches in this series.
+> - Separate serial-core write readiness from DMA storage reservations. Record
+>   retirement during startup and shutdown while keeping writes and wakeups
+>   gated until the port is ready.
+> - Wake deferred writers after successful startup or resume, including when
+>   reopening with a retained FIFO, and restart any retained queued output.
+> - Keep the write-ready notification pending while retained output is at or
+>   above the normal wakeup threshold, until TX completion drains it.
+> - Publish resume readiness under the TX restart lock without releasing a
+>   reservation that may belong to a newly flushed transfer.
+> - Release 8250's TX reservation after shutdown has stopped DMA and unmapped
+>   the source; serial core retains control of write readiness.
+> - Link to v4: https://patch.msgid.link/20261023-submit-serial-8250-dma-cancel-v1-v4-0-e759de1839de@gmail.com
 > 
-> Changes in DMA cancellation v4:
+> Changes in v4:
+> - Retain flushed TX reservations through shutdown and failed resume. Release
+>   them after successful resume, or when allocating a new FIFO on reopen,
+>   so retirement cannot wake writers into a closing port.
+> - Treat RX flush as complete once the channel is inactive, and clear the
+>   shutdown guard before startup configures the UART and tests interrupts.
+> - Check completion after a failed pause so a transfer that finished before
+>   its callback acquired the port lock is delivered and retired normally.
 > - Keep DesignWare's BUSY-safe divisor setter after fractional-divisor
 >   discovery, writing DLF and DLL/DLH only after confirming DLAB.
 > - Link to v3: https://patch.msgid.link/20261023-submit-serial-8250-dma-cancel-v1-v3-0-d78f9e4c4932@gmail.com
+> 
+> Changes in v3:
+> - Defer write-ready wakeups while flushed TX storage is reserved, and
+>   serialize the flush wakeup with the reservation under the port lock.
+> - Suppress ordinary TX starts during the reservation while preserving
+>   high-priority flow-control characters, which use separate storage.
+> - Separate RX FIFO access from callback retirement, allowing PIO and the
+>   DesignWare empty-FIFO timeout workaround after a successful pause and
+>   termination while keeping the receive buffer reserved.
+> - Use the existing IER shadow for requested enables and a shared register
+>   writer to keep receive interrupts masked throughout DMA error recovery,
+>   including termios, RS485, modem-status and overrun-backoff updates.
+> - Preserve the timeout-enable bit across stop_rx(), exclude late shutdown
+>   interrupts from PIO, and avoid FIFO resets during RX DMA recovery.
+> - Preserve the completion-path LSR read after stop_rx(), while gating DMA
+>   resubmission on the receive interrupt enable.
+> - Pack the cancellation flags after moving all their accesses under the
+>   port lock, including the recovery worker's snapshot and initialization.
+> - Apply the early-return, shared-helper and line-wrapping cleanups.
+> - Link to v2: https://patch.msgid.link/20261022-submit-serial-8250-dma-cancel-v1-v2-0-088ea51e3891@gmail.com
+> 
+> Changes in v2:
+> - Add serial-core helpers to reserve flushed transmit storage until DMA
+>   retirement. Apply write backpressure during that interval and keep normal
+>   TX using the FIFO directly, replacing the private transmit buffer in v1.
+> - Document the flush callback's reservation, writer backpressure and
+>   retirement requirements, including release before shutdown returns.
+> - Split the OMAP completion refactor into a preparatory patch and move
+>   the RZ/N1 preparation-order and shutdown PM fixes to independent
+>   submissions, keeping four patches in this series.
+> - Take runtime PM references around worker UART accesses, and leave normal
+>   RX retirement to release ownership without reading LSR or restarting DMA.
+> - Synchronize the queued TX ranges before preparing the descriptor and
+>   return the mapping to CPU ownership before releasing the reservation.
+> - Keep the TX transfer length separate from FIFO cancellation, so a failed
+>   termination can account completion without advancing the reset FIFO.
+> - Exclude late RX flush work during shutdown, including Intel MID DMA
+>   timeout interrupts which are independent of UART_IER.
+> - Accept DMA_IN_PROGRESS after successful pause, and recover from failed
+>   pause, termination or DMA_ERROR before handing the receiver to PIO.
+> - Preserve stop_rx() and shutdown across recovery, and retain the
+>   DesignWare empty-FIFO timeout workaround when receiving through PIO.
+> - Apply the requested guard spacing and container_of() formatting.
+> - Link to v1: https://patch.msgid.link/20261021-submit-serial-8250-dma-cancel-v1-v1-0-efe2b89f2303@gmail.com
+> 
 > ---
->  drivers/tty/serial/8250/8250_dw.c    |  9 ++++++++-
->  drivers/tty/serial/8250/8250_dwlib.c | 15 +++++++++++----
->  drivers/tty/serial/8250/8250_dwlib.h |  2 ++
->  3 files changed, 21 insertions(+), 5 deletions(-)
+> James Hilliard (5):
+>       serial: 8250_omap: separate locked TX DMA completion processing
+>       serial: serialize asynchronous write wakeups with the port lock
+>       serial: core: allow drivers to reserve flushed transmit storage
+>       serial: 8250: drain canceled TX DMA before reusing its buffer
+>       serial: 8250: retire canceled RX DMA before reusing the receive buffer
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index eca02e8bd6d1..d036a2fe258a 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -190,6 +190,7 @@ static int dw8250_idle_enter(struct uart_port *p)
->  static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
->  			       unsigned int quot, unsigned int quot_frac)
->  {
-> +	struct dw8250_port_data *pd = p->private_data;
->  	struct uart_8250_port *up = up_to_u8250p(p);
->  	int ret;
->  
-> @@ -201,6 +202,8 @@ static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
->  	if (!(serial_port_in(p, UART_LCR) & UART_LCR_DLAB))
->  		goto idle_failed;
->  
-> +	if (pd->dlf_size)
-
-Why does 8250_dw.c have to care about this detail? It feels 8250_dw is 
-still crossing "layer" entirely unnecessarily here, can't dwlib's 
-dw8250_set_divisor_dlf() just do nothing if dlf_size is not set? That is, 
-do this in dw8250_set_divisor_dlf():
-
-	if (!pd->dlf_size)
-		return;
-
--- 
- i.
-
-> +		dw8250_set_divisor_dlf(p, quot_frac);
->  	serial_dl_write(up, quot);
->  	serial_port_out(p, UART_LCR, up->lcr);
->  
-> @@ -651,7 +654,6 @@ static int dw8250_probe(struct platform_device *pdev)
->  
->  	p->set_ldisc	= dw8250_set_ldisc;
->  	p->set_termios	= dw8250_set_termios;
-> -	p->set_divisor	= dw8250_set_divisor;
->  
->  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
->  	if (!data)
-> @@ -768,6 +770,11 @@ static int dw8250_probe(struct platform_device *pdev)
->  	if (!data->skip_autocfg)
->  		dw8250_setup_port(p);
->  
-> +	/* Use the BUSY-safe sequence for both integer and fractional divisors. */
-> +	if (data->data.dlf_size)
-> +		p->get_divisor = dw8250_get_divisor_dlf;
-> +	p->set_divisor = dw8250_set_divisor;
-> +
->  	/* If we have a valid fifosize, try hooking up DMA */
->  	if (p->fifosize) {
->  		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-> index 9bb02a4ab11f..88562c8d5d1d 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -23,8 +23,8 @@
->   * we have: div(F) * (16 * baud) = rem
->   * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16 * baud)
->   */
-> -static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
-> -				       unsigned int *frac)
-> +unsigned int dw8250_get_divisor_dlf(struct uart_port *p, unsigned int baud,
-> +				  unsigned int *frac)
->  {
->  	unsigned int quot, rem, base_baud = baud * 16;
->  	struct dw8250_port_data *d = p->private_data;
-> @@ -35,11 +35,18 @@ static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
->  
->  	return quot;
->  }
-> +EXPORT_SYMBOL_GPL(dw8250_get_divisor_dlf);
-> +
-> +void dw8250_set_divisor_dlf(struct uart_port *p, unsigned int quot_frac)
-> +{
-> +	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-> +}
-> +EXPORT_SYMBOL_GPL(dw8250_set_divisor_dlf);
->  
->  static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
->  			       unsigned int quot, unsigned int quot_frac)
->  {
-> -	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-> +	dw8250_set_divisor_dlf(p, quot_frac);
->  	serial8250_do_set_divisor(p, baud, quot);
->  }
->  
-> @@ -217,7 +224,7 @@ void dw8250_setup_port(struct uart_port *p)
->  
->  	if (reg) {
->  		pd->dlf_size = fls(reg);
-> -		p->get_divisor = dw8250_get_divisor;
-> +		p->get_divisor = dw8250_get_divisor_dlf;
->  		p->set_divisor = dw8250_set_divisor;
->  	}
->  
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-> index 39fcb1b323ad..7191cabfb086 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.h
-> +++ b/drivers/tty/serial/8250/8250_dwlib.h
-> @@ -97,6 +97,8 @@ struct dw8250_port_data {
->  	int		srbr;
->  };
->  
-> +unsigned int dw8250_get_divisor_dlf(struct uart_port *p, unsigned int baud, unsigned int *frac);
-> +void dw8250_set_divisor_dlf(struct uart_port *p, unsigned int quot_frac);
->  void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, const struct ktermios *old);
->  void dw8250_setup_port(struct uart_port *p);
->  
-> 
+>  drivers/tty/serial/21285.c          |   2 +
+>  drivers/tty/serial/8250/8250.h      |  59 +++++++-
+>  drivers/tty/serial/8250/8250_core.c |   2 +-
+>  drivers/tty/serial/8250/8250_dma.c  | 286 +++++++++++++++++++++++++++---------
+>  drivers/tty/serial/8250/8250_dw.c   |  27 +++-
+>  drivers/tty/serial/8250/8250_omap.c |  38 +++--
+>  drivers/tty/serial/8250/8250_port.c |  31 ++--
+>  drivers/tty/serial/atmel_serial.c   |  12 +-
+>  drivers/tty/serial/clps711x.c       |  23 ++-
+>  drivers/tty/serial/cpm_uart.c       |   2 +
+>  drivers/tty/serial/fsl_lpuart.c     |   2 +-
+>  drivers/tty/serial/jsm/jsm_cls.c    |   3 +-
+>  drivers/tty/serial/jsm/jsm_neo.c    |   9 +-
+>  drivers/tty/serial/lantiq.c         |   3 +-
+>  drivers/tty/serial/ma35d1_serial.c  |   6 +-
+>  drivers/tty/serial/max3100.c        |   6 +-
+>  drivers/tty/serial/max310x.c        |   9 +-
+>  drivers/tty/serial/mux.c            |  13 +-
+>  drivers/tty/serial/mvebu-uart.c     |   2 +
+>  drivers/tty/serial/mxs-auart.c      |   2 +
+>  drivers/tty/serial/sb1250-duart.c   |  14 +-
+>  drivers/tty/serial/sccnxp.c         |  45 ++++--
+>  drivers/tty/serial/serial_core.c    | 100 +++++++++++--
+>  drivers/tty/serial/ucc_uart.c       |   6 +-
+>  include/linux/serial_core.h         |  18 ++-
+>  25 files changed, 551 insertions(+), 169 deletions(-)
 > ---
 > base-commit: 1184f87e2790e8af9be3116f608d2e86b4792d7d
-> change-id: 20261023-submit-serial-8250-dw-divisor-v1-5f1689ed05a8
+> change-id: 20261021-submit-serial-8250-dma-cancel-v1-b208f84e89c1
+> prerequisite-patch-id: 3604bfaa3a1c214997de1f11162b81a4541af5ab
+> prerequisite-patch-id: 79dd093ffb35e254e790dffb8887faf51b64f947
+> prerequisite-patch-id: 80a5061d84c055a64c760268febed179c687b99f
+> prerequisite-patch-id: 7dbb404baf1f861982cf6a4b755d39cfec548223
+> prerequisite-patch-id: 40881d81a27b3a1aa45203d171214faaf2197768
+> prerequisite-patch-id: 4456eb7f800cb5d50a70c898e6d5a452a7f0bca4
+> prerequisite-patch-id: c3d8ac0d54d1bfe43657964c517cfa4c7fde11af
+> prerequisite-patch-id: 48659e5ef3f5fb377d0b751f0830c0de4699262c
 > 
 > Best regards,
 > --  
 > James Hilliard <james.hilliard1@gmail.com>
 > 
+
+-- 
+ i.
+
