@@ -1,11 +1,11 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793013822;
-	b=Wq0FirKPg6rjPEUfZDAfwPNk5X3As48P8oPJfzGiQ8gupzXJda1CLceo3yDrhbEaBsEd
-	 vZjaeVvkLlF8AJfbv+lDWylTSbI1428R/EkKR/zsCFYaDccMDIZie0GdX5KLgNHLh/HVK
-	 9swYjI4zS04g8GA2nYNL+n497qAU7Cv4DFFaYhsS4kFbNjKzxU/twBUerT/QoPINZZ2II
-	 PzYW9pGQtgJ9ASu6QOkvJHgRoHGTX+Eu4vvNDi6qvBOqEolW+x597MZz+zI6xmEhRhpfx
-	 qmnhEC/gWQXmT4cn70O0Lx3iJHF836jCjAJ/QU5S2chm0RSQaOl23b0jp9UDhjjaE6g==
+	b=5RgTi0ic9LyH3bNa/hUWXgMQJKM4xHmJGAJkPsHYZ388mW7Ck1Bg8Q6xhBVaIU28dE7T
+	 B917Vytcn72l7vievfnmZ/6xiiVyJFDfKa6o89JEg53Z3OSs0ViJWUyIf0o3vis5aONvO
+	 IbpCf/WjREm7aAi8DUvif8GMbp7aGnK5FbJDOe8s8xhfUI6Yrubjj5wzQaJRgg+E4bykh
+	 tQOKrfVv3uH6ZAtPluN0QsKcmBtYYHJ9YUoJsuNpPSEI2+osdjHedW3k722gY/POQtSGK
+	 TcvLVQPYVLs8B7gBf2JQX/OWUckSv898L2XzitChx7haiaZWH+EdIOvaMvLgeufGTag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793013822;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
@@ -13,77 +13,77 @@ ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=NkHFqvFUiAfPwzGNvVdLDGTDUaLNG4S8G8Zms7Ox124=;
-	b=bM1c3hxDgMKHvDpe8r14N0eYXkMljuVStMB49yGcUPbxAjjq0/M/gtJJahXjt9gE3JQ2
-	 0DbRqxYGYC7JUz7tyxmobheDSPeAoxPRZdTDHO1Tc6g+rxT8wr/0PaEo2Ho8G7+GHMPIq
-	 s+Bf3QQj3PAMQnrZcujz+QaoxXBrcOJkHOHP7S6CUaajtUkIevGO4SKxU7+Op2PSuwmCK
-	 g5TFk4zff2At0lVqEqEQGY+1Z/pyIdH77mpHHMtuZrE33T2gFZIabyx26ATolLlOexiGh
-	 JxR0xmhwLSp4NF4G3MAk6nbfuVjn88cu76rrsTq50D6Z5EG0RzD3klCPIYz39EnGffw==
+	bh=ZVnVrRYLB+qKKrukA39OJ5KX7KFcwt/Dh/drOtJ/Eyo=;
+	b=GI12vUTnOv7ZQP/DpXwkHBOdVT7e9Jxq8lB9v9lChdMkbaf/w/8Kh5QbjFqyUps+q9BQ
+	 qs78clhOxq+RIByoVslSt0vUIGB2BbqW0jpSN8dJChX3rkuXHtsX9GRstJCpFhgso7M4e
+	 IHomESuXvf0qabO0peen+eEiZRxeFsT0LAIEcbSXYzk+h2HoMxq9a7IUckxNcVzJmchYl
+	 EdqxNvTzgFEatzvR7pTIihaKwaiPBk+YitzmYTiT7ZlQeF9E6gh5yHO4ch+0wii7ZwVl8
+	 s755recFJoenFY7g5o1uOKrRrnJA/dIuqKXUjlw6MpMjDljc9D+nDKqQhWIQZ74E4SQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=h4s5zCyQ;
-	arc=none smtp.remote-ip=209.85.221.51
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=iDTtyrE9;
+	arc=none smtp.remote-ip=209.85.221.53
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6142860A261F
-	for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 11:23:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6142860A261F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5509C60A2630
+	for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 11:23:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5509C60A2630
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=h4s5zCyQ
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-48e46e449e8so867514f8f.3
-        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 04:23:41 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=iDTtyrE9
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-48e10a70540so1574426f8f.1
+        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 04:23:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793013820; x=1793618620; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1793013821; x=1793618621; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=NkHFqvFUiAfPwzGNvVdLDGTDUaLNG4S8G8Zms7Ox124=;
-        b=h4s5zCyQcTz922ZU8qa+kLa0ADt04uotU1dYVXVKNPs2n6HqMB1AZ44+a+bi/aD3Ql
-         zmdVMUICGIqnQ+WBEA0SPQFWEXPmGz/hlDGCLv+rI8nV9lB+HdB4sL3gtrSyCEg9Mx2Q
-         RkyTb5gEESzf25R2EDTPNj37nBMeeLgU/HaF7RzSArWUNoz6RTV/T8isGi+x1XGs+gBe
-         tLL3SbOhKD/OrncJSFVWqabtn008LsgdZClSrvZ8voUsyY8wDJfO9ZiXUBGgSQxVd1U0
-         gWcH2Yj3fYujXLwwRfEgnuq1lDJYI4kFjqntp4zTHEQcXdvdz5DqPyKAUyyVCP9v/qs3
-         496w==
+        bh=ZVnVrRYLB+qKKrukA39OJ5KX7KFcwt/Dh/drOtJ/Eyo=;
+        b=iDTtyrE9BVqqKPSXE4cXO8eADEeCatz8AddAjfjI/JB/R7KGCfZeodzaZwAlz34hXl
+         l0UAS4jSeak3Yvm1K5KWk0aDOJO/WC6D+AQnWVSt/P8ccuf+2FTLlDJ76zxoUo733Ep/
+         IeMQRF5OcIClCU0e9RldG3qDyKXb7mw5dWiVv+2pIJLJihFIxtuGVK5b1q4/amsyH7Xn
+         gyLvD+5zjPO4HIrzWY5TYn6QYRy2PaD5o1BJU++JZ7s94zcCT0moJ6Dd5YY44TJU3nRj
+         hqzsJ4GZxThKOIG63XI5Ks5RKAFcYCzFpdoNYc72BuvdBPP3+mWrBMxLEq20phZq1MB8
+         g84w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793013820; x=1793618620;
+        d=1e100.net; s=20260707; t=1793013821; x=1793618621;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=NkHFqvFUiAfPwzGNvVdLDGTDUaLNG4S8G8Zms7Ox124=;
-        b=nBoGl4kBt2fCM3sHDAX9xnEyNzLcRUd4gfPOd77I6IQwOMWSyOe4W/gpKcbBc3UzTE
-         lJsJZ4fX6qbbaQTcqHdzcVEAW0KZkfya0yrCQqGYkq7+JZTGixYh46CPaN/JAfy1GEuC
-         q9ka7ORbK/RiQdUfsGFIhz6/z7F6Jd9zB0g2lZEvQ08jSVItVs+I1WuEkytP3kb3RcK9
-         S0STVxdJ1FV3zpHL/yDAHLa4w3YFzzmHXnQvu01eBcCJxq8+aYZYXtbUyZ0CE3vojEQk
-         ewkaWthc+YgKEFnuY1m0/6+Q8PWX44b3krvkxiNDAf8J+cYmTsLQVdOXOJ71oxqxc37c
-         pIUw==
-X-Forwarded-Encrypted: i=1; AKwUvBxw5MvOhHnFQLbBuRVM58feWERMK6Rcy8Cw8x92iCORJoIdQOqeQAcmBVqqHivPgRE7Q0jx1AUxKXJczLI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYK7JN1QnKPP3YXFkoVlo7rw62rbrLgdsx59qd+v9e0LKUUnadEq
-	05VHS09S5FgpSkEkagvTeUXEsZE1R5MhQS8gqE2jlWnko1ae7PpsbzXn
-X-Gm-Gg: AYBFou3lvuGXJ9LM2ZK/iUKgzgawU4ByhbJXcf07zCihfVVlU9WX8vXG3Uj2R26cWnE
-	tOGRtkqetcHYY984BvMIqkRrnbivNPmu6hlBfF5opZ+iGt0Ae5bDb0xnX+ytPsJHLqG5Sy2PfiC
-	5S2SQoyrzNvPfDl18fcsGMQYeVjvWrRcVulQ4zGQ5AIJNEWPLDWr2L6JjWUo7iVBn6b+HIJScZK
-	rXHSAoK/fPcHZdaFOIhj40ZvJi+D/CXKOzxP0KSrSNkA/uYlKWd4GoRqesPM487UnI3C2EViDqI
-	lx/pPHMjBbQxgQ9GXUaiwGOqTVgup46zRMZq6qJhRKOgRAJJzkuGOyVSM7OLYF5P/wh/yQMATNr
-	efhW4ChJmH9aqbKwaWd5KI8A+O02+qmnxxdLumVDZ49IwQFZrpwhNdH5960cW0gHlmBeWYFnLOU
-	gnIgztPiIzqA6RapPRuXxtGPeadzATV0sABa5Ik1FGbeWF1/x2A7pbefbhOmhVOknUbudyCbcmV
-	J4ZdBDgXcULjqpeAhI9F4FUJ90yCyUY3eUhB4qhpq+7/D5mT3LCB9Ud0dYsbAHATnNpICYsQGpc
-	SlIenr4W7QCJxWObE26YEjE9eg9CLdl4PPKHSSY=
-X-Received: by 2002:a5d:4383:0:b0:48d:fd53:828d with SMTP id ffacd0b85a97d-48e3eb8a1b6mr7627995f8f.30.1793013819697;
-        Mon, 26 Oct 2026 04:23:39 -0700 (PDT)
+        bh=ZVnVrRYLB+qKKrukA39OJ5KX7KFcwt/Dh/drOtJ/Eyo=;
+        b=lYRu5AwuODwL8Mr6JZpL0NUGf4Crj6iWOoO/VRHae3OOdNa4jvyhxkNZssZ3vabG8Y
+         rlJM0hkDtcXUp3Z8cLsIP1Bzewdj9QiW4lQJ4c0NPt5LZT7i4xW+/HbgetdKE2Y5l122
+         TB65Y5FctyGn4zPEm9hblXQXktk4xUiubYDrmEp5lacHPEw1h4nvrAo76zCciusw7AHW
+         siFILhiy95QrTF8mabyivQXC0jUUf40kgdqBKRag6aOWi0zegv8iHSzDrK7JYudgfLUz
+         VP6AKw4bPgDcK2RtQPQxLUsPkqoeg70DejShYRZ/sHpDeSqPbbbnYOohLjVrmL3tWugS
+         875Q==
+X-Forwarded-Encrypted: i=1; AKwUvBz9DvPhWaRokLdA5w9yNGnnFaSxpVlOgoOcgkGt3n7Vkc0ej3IE1fGCncxhCEoCingpBoMBIyJlSQ0KsVY=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJ0sJmzBM0C2SCr0AW1CKShrO3i6a76m2oARKZhEZr9KmepHR1H
+	PrSWmHGaCr0knHQ9bJZovZ+DXF8wGJeWuSl2k30miE8p5jDGtBUTD23z
+X-Gm-Gg: AYBFou0ftHNJmiArj5iiNtxFIDkN2oTW0cVAKRCoSkuS9JTUbkakAquy2+ZZMROVchk
+	gSrrQhSra79t4EEUQtuzc2c4hxejpmxRXAHMhZKhgxwV2K3tbE5EJEjGFLCRTUTxuYjdNw6sD9S
+	8VvXSBzRppzh5mDYRLXtPrx8646toyiuRTFaIkLzEGkW+MMCTmCK5BZhHvj9PS2+0vqBTf3c5oO
+	k3ywIzyVs8RMF5PZd4dhd+JECWJKt4iMFumpkr77UN58PM3wTq17y8i1Ct9e1pwclung4/yy+jS
+	u5xQmtdAzrkVUKm1ZCqMWkoOh9FahkXTLSULI34gLjpG5bK3/2YkiGww16YsYSiBkY84bJoEW18
+	Sd092JfgvcGE8q59xjUIgLw+ESNBw/YAbIlo9bU53dO5otymR7/+ASsuZPTc3x5Xe2uBmHp/CMA
+	j3SpYm7p5Iv4lYfAiSo+ExQ5/VPrJVbm1l4edcA/lvdfirM68owCnFgu32Ak4dfHfaEvVB1xzGz
+	e8982n+7eyo7iFZ+i4lFAmJbxrGGO78V8Hpwo4+eLkl03y95NalGu0zBVNrHiw3HaS1RdN/oehX
+	bRoio3WG8XdoiRrD3n2JIs4EGuxlnf9JFkARJ6s=
+X-Received: by 2002:a05:6000:2408:b0:48d:f5e7:bb77 with SMTP id ffacd0b85a97d-48e3eab5a61mr14950329f8f.0.1793013820776;
+        Mon, 26 Oct 2026 04:23:40 -0700 (PDT)
 Received: from [127.0.1.1] ([2a00:23c4:a702:d301:482f:657c:9770:475e])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ecdfb8esm15959263f8f.54.2026.10.26.04.23.38
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ecdfb8esm15959263f8f.54.2026.10.26.04.23.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 04:23:39 -0700 (PDT)
+        Mon, 26 Oct 2026 04:23:40 -0700 (PDT)
 From: Biju Das <biju.das.au@gmail.com>
-Date: Mon, 26 Oct 2026 11:23:35 +0000
-Subject: [PATCH v3 3/4] serial: sh-sci: Skip TDxE clear when hardware
- clears it automatically
+Date: Mon, 26 Oct 2026 11:23:36 +0000
+Subject: [PATCH v3 4/4] serial: sh-sci: Toggle TE when restoring SCSCR in
+ console write on SCI
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -95,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261026-g2ul_sci-v3-3-b3097163edd5@bp.renesas.com>
+Message-Id: <20261026-g2ul_sci-v3-4-b3097163edd5@bp.renesas.com>
 References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
 In-Reply-To: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -107,109 +107,78 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  linux-coco@lists.linux.dev, kvm@vger.kernel.org, 
  Biju Das <biju.das.jz@bp.renesas.com>, Au Dang <au.dang.jx@renesas.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793013815; l=3620;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793013815; l=2314;
  i=biju.das.jz@bp.renesas.com; s=20261020; h=from:subject:message-id;
- bh=KB+kE1+shxRd3dGwjTbXEQz+rrpnAjxkBvUYxhCqGQ4=;
- b=FyiJOLjQsEgh7hED9u6Vg84+oXVavAcckL1O3uxMZb2M4M6TLvy0YXizK/YFDsHSZWWowmR4Z
- eVo9V5O27wgD36iRG5CapP2RVofAO2y0Su45I6MBJOB4ez2CMGOmxRx
+ bh=05m98a4wCXyibckYyionDlpRiTiYXuxhqxZ1PhGSbGg=;
+ b=bKAOy583UIZlEm+R8TR5tzfEPZMqzZolU5PmQM9oM2xSnSvxn5og0ZRbtXW+xozXhpatxmnaV
+ xcrrVCu8raAAVgRgpEfD7LcDkqXrqE9q9R84hWIaIqRheB6OTl6ciuw
 X-Developer-Key: i=biju.das.jz@bp.renesas.com; a=ed25519;
  pk=yzD2T1OLS3lEYflbk64xhLlxhk75lZ+NoOtkTOqrlVw=
 
 From: Au Dang <au.dang.jx@renesas.com>
 
-On some SCI variants, the TDxE (Transmit Data Empty) flag in SCxSR is
-cleared by hardware when data is written to TDR. Clearing it again from
-software via clear_SCxSR() generates a spurious TXI interrupt, causing
-the last character to be transmitted twice.
+When SCI0 (PORT_SCI) is the system console on RZ/G2UL, the board can
+hang at the serial console output stage during boot.
 
-Add a tdxe_auto_clear flag to struct sci_of_data, propagate it to struct
-sci_port as has_tdxe_auto_clear, and skip the clear_SCxSR() call in
-sci_transmit_chars() and sci_poll_put_char() when it is set. Enable the
-flag for the PORT_SCI (of_sci_sci) variant.
+ftrace shows the following sequence:
+
+1. sci_transmit_chars() is draining the TX kfifo through TXI
+   interrupts with SCSCR=0xf0 (TE=1, TIE=1, RE=1, RIE=1).
+
+2. serial_console_write() runs in the middle of that drain. It saves
+   SCSCR=0xf0, switches to polling by writing SCSCR=0x30 (TE=1, TIE=0)
+   and outputs the characters with sci_poll_put_char().
+
+3. It then restores SCSCR=0xf0 in a single write. TE is 1 both before
+   and after, so there is no TE transition.
+
+4. sci_start_tx() is then called repeatedly with SCSCR unchanged, but
+   no TXI is ever raised again, so the drain never resumes and the
+   console hangs.
+
+The RZ/G2UL User's Manual (section 23.3.6, "SCI Initialization") notes
+that changing SCR.TE from 1 to 0 or from 0 to 1 while SCR.TIE is 1
+generates a TXI interrupt request. Without a TE transition, the TXI
+that would restart the drain is never generated.
+
+For PORT_SCI, restore SCSCR in two steps: first with TE cleared, then
+with the full saved value. This forces the TE 1->0->1 transition while
+TIE is being re-enabled, so TXI fires and the interrupted drain
+resumes.
 
 Signed-off-by: Au Dang <au.dang.jx@renesas.com>
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v2->v3:
- * Added missing has_tdxe_auto_clear init in scix_early_console_setup().
+ * Replaced to_sci_port(port)->type with sci_port->type in
+   serial_console_write().
 v1->v2:
- * Updated commit header and description.
- * Replaced the PORT_SCI check with a has_tdxe_auto_clear flag in
-   struct sci_port, set from the new tdxe_auto_clear field in
-   struct sci_of_data.
+ * No change.
 ---
- drivers/tty/serial/sh-sci-common.h | 2 ++
- drivers/tty/serial/sh-sci.c        | 9 +++++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sh-sci.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci-common.h b/drivers/tty/serial/sh-sci-common.h
-index 273856fbc20b..b75e5e1d3075 100644
---- a/drivers/tty/serial/sh-sci-common.h
-+++ b/drivers/tty/serial/sh-sci-common.h
-@@ -108,6 +108,7 @@ struct sci_of_data {
- 	const struct sci_port_ops *ops;
- 	unsigned short regtype;
- 	unsigned short type;
-+	bool tdxe_auto_clear;
- };
- 
- struct sci_port {
-@@ -163,6 +164,7 @@ struct sci_port {
- 	bool has_rtscts;
- 	bool autorts;
- 	bool tx_occurred;
-+	bool has_tdxe_auto_clear;
- };
- 
- #define to_sci_port(uart) container_of((uart), struct sci_port, port)
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 6df25fef5a5f..1a4d9467d2be 100644
+index 1a4d9467d2be..35a2f721bf56 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -913,7 +913,8 @@ static void sci_poll_put_char(struct uart_port *port, unsigned char c)
- 	} while (!(status & SCxSR_TDxE(port)));
+@@ -3456,10 +3456,14 @@ static void serial_console_write(struct console *co, const char *s,
+ 		cpu_relax();
  
- 	sci_serial_out(port, SCxTDR, c);
--	s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
-+	if (!s->has_tdxe_auto_clear)
-+		s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
- }
- #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
- 	  CONFIG_SERIAL_SH_SCI_EARLYCON */
-@@ -1063,7 +1064,8 @@ static void sci_transmit_chars(struct uart_port *port)
- 		port->icount.tx++;
- 	} while (--count > 0);
+ 	/* restore the SCSCR */
+-	if (sci_port->ops->finish_console_write)
++	if (sci_port->ops->finish_console_write) {
+ 		sci_port->ops->finish_console_write(port, ctrl);
+-	else
++	} else {
++		if (sci_port->type == PORT_SCI)
++			sci_port->ops->write_reg(port, regs->control, ctrl & ~SCSCR_TE);
++
+ 		sci_port->ops->write_reg(port, regs->control, ctrl);
++	}
  
--	s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
-+	if (!s->has_tdxe_auto_clear)
-+		s->ops->clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
- 
- 	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
-@@ -3664,6 +3666,7 @@ static const struct sci_of_data of_sci_sci = {
- 	.ops = &sci_port_ops,
- 	.uart_ops = &sci_uart_ops,
- 	.params = &sci_port_params[SCIx_SCI_REGTYPE],
-+	.tdxe_auto_clear = true,
- };
- 
- static const struct of_device_id of_sci_match[] __maybe_unused = {
-@@ -3802,6 +3805,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 	sp->ops = data->ops;
- 	sp->port.ops = data->uart_ops;
- 	sp->params = data->params;
-+	sp->has_tdxe_auto_clear = data->tdxe_auto_clear;
- 
- 	sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
- 
-@@ -4088,6 +4092,7 @@ int __init scix_early_console_setup(struct earlycon_device *device,
- 	sci_ports[0].params = data->params;
- 	sci_ports[0].ops = data->ops;
- 	sci_ports[0].port.ops = data->uart_ops;
-+	sci_ports[0].has_tdxe_auto_clear = data->tdxe_auto_clear;
- 	sci_uart_earlycon = true;
- 	regs = sci_ports[0].params->common_regs;
- 
+ 	if (locked)
+ 		uart_port_unlock_irqrestore(port, flags);
 
 -- 
 2.43.0
