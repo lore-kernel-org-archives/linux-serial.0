@@ -1,102 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793000484;
-	b=2Gc2mss2GRMSeUIy0SUQ72Vubln0rP6UtRYy7isl8T8CtYb3HgCcjF6dO1PrFAVslMCF
-	 Lk2cxp9nHWGNFJmAyA7PSRRlHsIA/sKIl5seizRNaW0M6U1Hld+Pz21CdrMmsUHiK/eK/
-	 8fM4IXjUuHC8S7S7fATmrvdWVFHhc5SMPNHz7a9K67AV1PNU8fkD4bAaVhVPT5vbpG7qk
-	 Nfn/o3Bxqt9NMGFE+YIvb0LnPC8pBnG/4hqlMv8T7s4JQgX1e3uFZySOP02W25ATIl1Gi
-	 nKiM3eOJoKsmfiuYKz18c7ijLCM/QXPfGi8uJ6W4c7kfncy2EPiZv1XBDvlF9utnLPw==
+	t=1793000815;
+	b=sSTQAbQiseUGmPFflh93AkM9VpFSavxy5F4vZRz7vDYcMnMx2qnEcfGV22OoUHYsrZ28
+	 ldCWV4bmTSvCK5YcCFIKPGZMpVrTlDey8S9qmMt43pMG5gOPeYk2PCJpubUB/EOKM3Ao1
+	 jYeaiTN89fH8jZhKfC06nDmUFm11nMjt+oSBe1nDhYp0qbZhVxTHps0sz6W7prOiTw/Os
+	 q3ijB2TzqPFz4kZ083JQZciiG/F76PItSrTUZLvxXl/ybnblNeUoRhghCmKxVskKtQ3Fz
+	 PMMCXPw5Dh/UKJQwskfeWIAuU4RSNxTJAQ/ddgJO/zRi/Jt45ZQaqzDpBNV9cqPl9WQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793000484;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
-	 DKIM-Signature:Received:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:Autocrypt:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Spamd-Result:
-	 X-Spam-Score:X-Spam-Level:X-Spam-Flag;
-	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
-	b=xqST7GMV15ii+0jtc2UMllMZenVHAIH5MaDy9eZFc5AnFZOmt3m1j+zCvSed9S7thHhR
-	 56ecJV4AuL6b1xONE6V0OnetjF1GvaeONMReENPleHBjzkV0iBp/nEtzMZ3rbwfNbA8Af
-	 c2K5UDqT5V1sTMAtD2hql6Jqn72XLcHlbmDlRip1cTe4XKyq6UTCGDn2IHBUY5AzmEOYn
-	 PxGD7YEZWY2c8yj+jDauCRJ4NrzaAWedDMdtXGlDRT74Tah8vX6Nz+W2psc+496l2e6sZ
-	 faL5J/TEUkHw97oQjI0Pyh3cfH/ZllY36peIvAkyyLSGrh+yVT3y7gXrG/cvmjbhCBw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793000815;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=MaW4IJWC0g/bCa4F071QFM2op8BvQwVDTC8JsoSAq5M=;
+	b=wmTZqHJw4xxXyN7cG0ZsIu8dLEZEig+x5eksXGGiy9K59hlA2TXDVdrORxiocEM/jYaO
+	 oVoIAPW5K02d7rFcyKq04pVEa1osDXmgA0v21Zf+HuUZMyVXyIp1g+PldVOXsZLUNhcgd
+	 r2RKMnyITzwNOyPbdyH6KXwuWNbqYj5yMIqEHpL0X7yXnzgxptn6hCuDhCtuumHHjcA6d
+	 9oyJVM688AhMJFE/+8CbIMSNnxooOTjpv9B4vCtUoDwfaJbKaUfbi5nU8rpW4iAnXxd+w
+	 tMjRQem/2B2aLc2SePGocPVdFqLPvqwttIhUr/sw7aTyEOuiKtbFIgDETgEP1rFsaMA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.de;
-	spf=pass smtp.mailfrom=suse.de;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ;
-	arc=none smtp.remote-ip=195.135.223.130
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="K8aIDWO/";
+	arc=none smtp.remote-ip=209.85.128.46
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB12606A321;
-	Mon, 26 Oct 2026 07:41:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CBB12606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE61606A31B
+	for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 07:46:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1BE61606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 0FF47222C7;
-	Mon, 26 Oct 2026 07:41:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1793000482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
-	b=IMSjQOaCYWrZu7o5oVeTyU5bR+QO2aHnpndiTERI5WvKhqz750d5ghV49LPUysNNNTkC9h
-	0zAl5CtbyfEov4yIlVzmrfTc2ykbkwfbaYGf1ExI9csxqZKV/TXReZztxrbvbw8xI43yLz
-	eF4XcUzEWGDs4UbBJFUgDeFyWlakNNg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1793000482;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
-	b=FedeyjtJmYr8yfqpxxZ7nqWPJCLWdfeDsrXcaVNhFTgOWJQTS7/yvJss8Yb3TZmacB+Gny
-	HxldMtmc75DcbzBQ==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1793000482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
-	b=IMSjQOaCYWrZu7o5oVeTyU5bR+QO2aHnpndiTERI5WvKhqz750d5ghV49LPUysNNNTkC9h
-	0zAl5CtbyfEov4yIlVzmrfTc2ykbkwfbaYGf1ExI9csxqZKV/TXReZztxrbvbw8xI43yLz
-	eF4XcUzEWGDs4UbBJFUgDeFyWlakNNg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1793000482;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
-	b=FedeyjtJmYr8yfqpxxZ7nqWPJCLWdfeDsrXcaVNhFTgOWJQTS7/yvJss8Yb3TZmacB+Gny
-	HxldMtmc75DcbzBQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A324F13319;
-	Mon, 26 Oct 2026 07:41:21 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id MKHHESEE32qkBgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Mon, 26 Oct 2026 07:41:21 +0000
-Message-ID: <4baeea95-1628-485e-bee7-925849a867d2@suse.de>
-Date: Mon, 26 Oct 2026 08:41:20 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=K8aIDWO/
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49d05d51553so17898155e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 00:46:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793000813; x=1793605613; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=MaW4IJWC0g/bCa4F071QFM2op8BvQwVDTC8JsoSAq5M=;
+        b=K8aIDWO/9vobgoNaHDeHs63GRCjcODxwXky3Nq02Xikwnau67QyVp7FZu3ERHcUegf
+         Zgw8RxfKLX5hxLGOs6LlAxk+EQ0m+jVeuWmiNk/B2GVZrxxP9VySjUeC4zD9PQmkzEJ+
+         RfOjhl5k4Uq1OhQj9slRU9uYOw0AnTcoV/HTftyzGhqRcTH1VWEWbgOTGmCu25TeWgwA
+         Xl8KQb+vSZO/oLuiCWtKlwbhYD8VCxfgBZjv0khwG3VY5v3sHlKyQI079BKCLUsBP5oh
+         FpR4PABafjb8LA4OVLfRbss+Y2pEyKhx8WsGjp78M7ISpZAeNfmcQ/pkz+78HKsewBd4
+         i4vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793000813; x=1793605613;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=MaW4IJWC0g/bCa4F071QFM2op8BvQwVDTC8JsoSAq5M=;
+        b=MXGXBpce7VrWp3Eeplblm3b9pL5F8Zkg/OQtkT52slW87BcvK3eiQey1XBvQbbMERm
+         mb0c4MIAgf5Kb69xcYtNXYjlu+lmKnnKhVuHOhsTpbq7Tz+xEkTYaNL6LyMXc0+jLKqa
+         9WUzNncivMfxxz4lyLu6+R3LWIkP4w6jWk3sLme4+cmoJlLss5RGh5kS7DOv9kaKnCPA
+         vVpigKf+JyurImd3L9lmA717oG9rRC6nH51mo0uy4CbKr6rT0iHZqBcpyYo591nq24+b
+         EfSVq6QTQcvXLQZdW+PPJ/0u3krP5FJW4CVprcaFTB6MktqaH5xqoPJ29LJE1fMfAuS7
+         u/iw==
+X-Gm-Message-State: AFq9FYLHNZ/d95l4nDd3PIDZIyJR4b2OZ0JGI2+UrX/2EgT8wG8iDB8y
+	I7U/idbgp687BhM7BnIrzYTl5KHStW/hCnUDhiadp5s57Q0AVeR0hGtQ
+X-Gm-Gg: AYBFou3cYkCG7+oW2bANyP64j61Owj8MdXk/VWRaQAbCizu+naxOcOn4LIzqck5746V
+	2guI4V4X/JG8Fi3RiuCmgrxW/nzTBHuKEbEpGAqoUx66A1v12/Kq4vsRT1BP2pHGvv/TfswTm45
+	aSBZtSAkXpsQu9r76igU3zc7K5dWiaNv1ToMoHXm7+zf/kf+a7VFqR0hxLLA+zZID3vo/tlI6ft
+	3vE7ClMNMrJjFe61idKwIi8dHSPPW+0YtRNcRvOQhEzwF9rktE91scM2yfUfzEwijq1YQQRP95E
+	LGTGC1kc5jwXC0iW7ZS6QEhVcNwtNXqV5SSKOCYkX22vSZAyYppaEZs1WYqSidZqgXiFNyrXKD9
+	mT/ePPuXCRAEzg0R7u5+jtZUlHZGFBDN2r5B6Ij7oMoZ2GNy28s8m3e625yWKcCe6qybFNV3azO
+	8YMaZ/vuRZT+vie1dhntK0Ib+qQcYtDP15rKY0PyXwbLtgqWMFb9zjPsDYh0VPJPfm9qQnGfOiD
+	3ngXmlfejElw/mXiELph8O+6JTiBdE9yZmDPFM4qHInwXbUO/JAYMrUK2h5h87u5oCTMw==
+X-Received: by 2002:a05:600c:3493:b0:4a2:a6e:80f5 with SMTP id 5b1f17b1804b1-4a35ac9d0e8mr108207515e9.11.1793000813031;
+        Mon, 26 Oct 2026 00:46:53 -0700 (PDT)
+Received: from fedora.jkuat.ac.ke ([41.204.187.5])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a59d238sm162898215e9.14.2026.10.26.00.46.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2026 00:46:52 -0700 (PDT)
+From: Bramwel Barack <bramwelbarack89@gmail.com>
+To: pali@kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Bramwel Barack <bramwelbarack89@gmail.com>
+Subject: [PATCH] tty: serial: mvebu-uart: use device_get_match_data()
+Date: Mon, 26 Oct 2026 10:46:44 +0300
+Message-ID: <20261026074644.17464-1-bramwelbarack89@gmail.com>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -106,109 +94,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 7/7] vt: Remove old-style con_blank
-To: Helge Deller <deller@gmx.de>, Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, James.Bottomley@hansenpartnership.com,
- simona@ffwll.ch, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-fbdev@vger.kernel.org, linux-parisc@vger.kernel.org,
- sashiko-reviews@lists.linux.dev
-References: <20261023132448.115747-1-tzimmermann@suse.de>
- <20261023132448.115747-8-tzimmermann@suse.de>
- <2026102312-chute-proud-204a@gregkh>
- <68342b92-0e12-4aa1-a215-efb623418696@gmx.de>
-Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <68342b92-0e12-4aa1-a215-efb623418696@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spamd-Result: default: False [-13.29 / 50.00];
-	SUSE_INTERNAL_BYPASS(-9.00)[];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	XM_UA_NO_VERSION(0.01)[];
-	RCPT_COUNT_SEVEN(0.00)[10];
-	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.com:url]
-X-Spam-Score: -13.29
-X-Spam-Level: 
-X-Spam-Flag: NO
 
-Hi
+Modernize the driver by replacing the legacy of_match_device() call
+with the modern device_get_match_data() helper API. This cleans up
+the boilerplate code by extracting the match driver data configuration
+directly.
 
-Am 25.10.26 um 08:48 schrieb Helge Deller:
-> On 10/23/26 15:37, Greg KH wrote:
->> On Fri, Oct 23, 2026 at 03:16:17PM +0200, Thomas Zimmermann wrote:
->>> All consoles implement the new con_blank plus con_unblank. Remove
->>> the old semantics from con_blank. Always pass a VESA blank mode to
->>> the blank parameter.
->>>
->>> v3:
->>> - keep con_blank's mode_switch parameter
->>
->> Shouldn't the "v3:" stuff go below the --- line?
+Consequently, drop the explicit inclusions of <linux/of_device.h> and
+<linux/of_platform.h> as they are no longer required by the driver.
 
-Force of habit. Putting the change log in the commit description is 
-common for DRM patches.
+Signed-off-by: Bramwel Barack <bramwelbarack89@gmail.com>
+---
+ drivers/tty/serial/mvebu-uart.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-I'll do better next time.
-
-
-> Series applied to fbdev git tree.
-> While at it, I dropped the v3: stuff lines, so no need to resend.
-
-Thanks Helge.
-
-Best regards
-Thomas
-
->
-> Helge
-
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 33ea496c93b2..adc2cf7ee65d 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -18,9 +18,7 @@
+ #include <linux/math64.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+-#include <linux/of_device.h>
+ #include <linux/of_irq.h>
+-#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+@@ -866,8 +864,6 @@ static int uart_num_counter;
+ 
+ static int mvebu_uart_probe(struct platform_device *pdev)
+ {
+-	const struct of_device_id *match = of_match_device(mvebu_uart_of_match,
+-							   &pdev->dev);
+ 	struct uart_port *port;
+ 	struct mvebu_uart *mvuart;
+ 	struct resource *reg;
+@@ -919,7 +915,7 @@ static int mvebu_uart_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	/* Get controller data depending on the compatible string */
+-	mvuart->data = (struct mvebu_uart_driver_data *)match->data;
++	mvuart->data = (struct mvebu_uart_driver_data *)device_get_match_data(&pdev->dev);
+ 	mvuart->port = port;
+ 
+ 	port->private_data = mvuart;
 -- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
-GF: Stefan Gaiser, Jochen Jaser, Abhinav Puri, (HRB 36809, AG Nürnberg)
-
+2.56.0
 
