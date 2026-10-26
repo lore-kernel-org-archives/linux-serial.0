@@ -1,111 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792998409;
-	b=xdjBDUv5FQpsB+C1PcG28BO6D9SVZgVSu6EQWZR3jSqQjYiP1msVzwRX42yNDxzk4JFy
-	 b/NmNskh0KU/u+9XAEOMkJhDhU+bQ3ZJ1sAlKEyoj8q4RmzpLYg7+vFhIW2jhVfXV9QMY
-	 wPJ2A+vaVtpvWnTI2pG93sQjR7sWY6Ei1aqaa9dnLeXBrWDsjpnSRWzyz1AdDUFybzL2e
-	 t3hJeK+WvPu3qtEBjgBsDZ/142g+CaGu0NqKKquSTxE3iBWGJDCT4PX24WztIcI5Q0V2F
-	 8f67ji/uF2+AgyCEZphpGcQ+pMUGMW2/Coo6UW/a+UqGbBdoIspffOSsLb75grnLU7Q==
+	t=1793000484;
+	b=2Gc2mss2GRMSeUIy0SUQ72Vubln0rP6UtRYy7isl8T8CtYb3HgCcjF6dO1PrFAVslMCF
+	 Lk2cxp9nHWGNFJmAyA7PSRRlHsIA/sKIl5seizRNaW0M6U1Hld+Pz21CdrMmsUHiK/eK/
+	 8fM4IXjUuHC8S7S7fATmrvdWVFHhc5SMPNHz7a9K67AV1PNU8fkD4bAaVhVPT5vbpG7qk
+	 Nfn/o3Bxqt9NMGFE+YIvb0LnPC8pBnG/4hqlMv8T7s4JQgX1e3uFZySOP02W25ATIl1Gi
+	 nKiM3eOJoKsmfiuYKz18c7ijLCM/QXPfGi8uJ6W4c7kfncy2EPiZv1XBDvlF9utnLPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792998409;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-Proofpoint-GUID:X-Authority-Analysis:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=LACHu7oKfmE41jF5sp+MfYyJU/SxFmiy1at/NlNWtfU=;
-	b=1/RuVN4VCtinrT9tzUd4JuqfSZag7hj4XTOYfKLWYXumO0e9CNZe+CFdJ/B0hrLMsA8b
-	 1SZ6E/01ZTQhOFq/V/EjGlNZt3oy6/RC7wJ/k8sRMVCn6zWIo4LVFPKHgB/OnykBDd9US
-	 xmQBNW+dRdQYjQvS0M2LZlKxHx9sMKIGtG0EN71stSFbggZUzO6gM6cgWjuPF0bquUYGu
-	 TyrguVV23AL0Zvhh+7hJzgavcoV6ig7moz+7iKSvrU6UUvVIIJXkR0419B15f3vZQOiM3
-	 VYuTwU25O2IEQ1o/mKm84AWVFYMdNA8NYMSLSydpNJ1xmlEByVE3T/CUowXD8vlpdEQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793000484;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:Autocrypt:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Spamd-Result:
+	 X-Spam-Score:X-Spam-Level:X-Spam-Flag;
+	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
+	b=xqST7GMV15ii+0jtc2UMllMZenVHAIH5MaDy9eZFc5AnFZOmt3m1j+zCvSed9S7thHhR
+	 56ecJV4AuL6b1xONE6V0OnetjF1GvaeONMReENPleHBjzkV0iBp/nEtzMZ3rbwfNbA8Af
+	 c2K5UDqT5V1sTMAtD2hql6Jqn72XLcHlbmDlRip1cTe4XKyq6UTCGDn2IHBUY5AzmEOYn
+	 PxGD7YEZWY2c8yj+jDauCRJ4NrzaAWedDMdtXGlDRT74Tah8vX6Nz+W2psc+496l2e6sZ
+	 faL5J/TEUkHw97oQjI0Pyh3cfH/ZllY36peIvAkyyLSGrh+yVT3y7gXrG/cvmjbhCBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=LPUVN+oy;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=FZVJGxMo;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ;
+	arc=none smtp.remote-ip=195.135.223.130
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D9B0606A31D
-	for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 07:06:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6D9B0606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB12606A321;
+	Mon, 26 Oct 2026 07:41:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CBB12606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=LPUVN+oy;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=FZVJGxMo
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69Q4b1Ex2806329
-	for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 07:06:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	LACHu7oKfmE41jF5sp+MfYyJU/SxFmiy1at/NlNWtfU=; b=LPUVN+oypp41UgYo
-	YKB5MUPrcJn4wIXAteNamG2ccCJykFAFgLk79bcBlPFU20WT9AKuKq06fI3FQH8n
-	yudGHlKf+G2TrEoGRU1RFXb9IWFJaxd19Wg0uIgytNgKq2Ui5bnFwiF5e+t9pwHi
-	OftpA82p68kRtbADY3FzUu4nTpXXq339prUwoUZOTJfLkDhbCZ83+mvsjJdDJymi
-	wtjkiL+Xv28eq+dHFgZhX2OwLmJl8tdWrtuENsMHWCR0pBtH8Mforp+o0LEe/XMc
-	8JtUKlebd56U/R9ztCMKcFHPwk1JcA//iyFkC2GtiCXVxkRLb/oefHf6DNhoHFBL
-	LHzkjw==
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hgm8xn9bx-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 07:06:48 +0000 (GMT)
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2e8ba4757baso29315545ad.0
-        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 00:06:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1792998407; x=1793603207; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LACHu7oKfmE41jF5sp+MfYyJU/SxFmiy1at/NlNWtfU=;
-        b=FZVJGxMo9la8WYPubjksKYk3S7fJ9KkEW3gAeRRLRxINlXC/Twhfr8wulzBxFbpLsB
-         y3F0lv+gXhZsjtJgCEHukXz/lGO9w5WuazGUQyG0YpJzAl/S3vQUV9FcXJgb5SOJzSpz
-         G/+RmMcExo6Nw0w0lg830j7Pvu8Qpaz33f5fevo4JgSb9FG9FbuN3/RxLvdLOer6C+WY
-         mYVuCYyorLOiOnLgwQE5TZIVN7SJCFFiHVmmDutiB1DcJ1rlH2DVGjrJY1jfsgSYbeX0
-         gPbsWvorQ9xNL1w35cudgkJIuijv/6070/RT4LBYp/4ocMvBVDLHj6DuDJPA+lnNtiIy
-         9d2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792998407; x=1793603207;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=LACHu7oKfmE41jF5sp+MfYyJU/SxFmiy1at/NlNWtfU=;
-        b=r+sbU0qGY7M8CT4OOWmK2LzZ898YK7ziwWvlMGz0CWEVSoEvPQ8reAzJbpZsf7yZz2
-         iE2CR3QUvw/07apRMp0OIB/z37coYkwdwuBCYMZpuUuga+C5fUIjMx1eRN0npwxKgMJn
-         uh4ETFTkQxOEa4Xukm61o0oO4wk/1kLsuXy27Iu/xMAHsPvDneOUjWtT3JYMzaasp3Z1
-         NdmNNJBWo5Rr34yKWwkyF6Y8G+VzXpGfd3xoeK9UU7xtndcS8fn6OTAyP/0YvaDnWhEO
-         enh5uWs4vLUJKvb5PqquJ17lgLB8uGYYvPELGL3wHQtxHCXmJ5sWf/X37PxXhov+mmnI
-         oHtQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzsUDBXOBp9yym8cgq2HijRFpG+1memCo/VytOxaU5db8M0jC7ss6r5CMapay+7T4OMzNb+ElC6NJ4bcoY=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJUQFOZ78+zL2U55+Qn2JFNjl1RWYJ43y8LDUwe/fl8ZFfg8D83
-	hR9k+VuFEVLQIyLcAfRegL/+JrSQA/9dOah9Bsfsv2ZKP8Cs6zTbDvOOsdjzX4TLU4XtjePLcnM
-	s6E+pwQhQ/Qyx6JznHGq/HlyU7FBmy0MRlG91oee65qN5aUA7c0hG1T5ZmEbX1zXEDDA=
-X-Gm-Gg: AYBFou0PnlRBea4sZDEuaP2SsuzuVxxaOW0YOsvYLdwjF3QqWuvAp4WVwO/qsWV7T1/
-	jsyEx/954D/1vm8k7gXsB9F+2wx18XIoX10zKCXnD4mRn9MgxWnWW5pN1a8KKvv+wAOTR9hP2Zv
-	/h2wjaO18Vs2ORMvsTK15U/vwbkf9gDengocFQtmifaQu1JNhVuiO0PAlZQbAxeOvD7gI1ixtOd
-	1NCH6Qsa/ZEBTNcYp41QfZD/IFJCl65vhT+yBOoDQflCQ6MZuZPccWpN38RellMzvfa+fxz5wYf
-	7Jng6x5U/kMSjkyjF7e2xwKIeAKXh9VKOG/o3VNX1f6rnsBFATdFCAath33NJhDb4uT11UZZTQP
-	kUSi1H9FDPvsVJE0odHEBtwbmhJfWhQ==
-X-Received: by 2002:a17:90a:e7c8:b0:3ad:77fd:c3d8 with SMTP id 98e67ed59e1d1-3ade9a3644dmr5600085a91.1.1792998407061;
-        Mon, 26 Oct 2026 00:06:47 -0700 (PDT)
-X-Received: by 2002:a17:90a:e7c8:b0:3ad:77fd:c3d8 with SMTP id 98e67ed59e1d1-3ade9a3644dmr5600067a91.1.1792998406269;
-        Mon, 26 Oct 2026 00:06:46 -0700 (PDT)
-Received: from [10.218.14.97] ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebb0718esm6949365a91.11.2026.10.26.00.06.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Oct 2026 00:06:45 -0700 (PDT)
-Message-ID: <57158d21-44ca-4776-8fcf-313d583b340a@oss.qualcomm.com>
-Date: Mon, 26 Oct 2026 12:36:41 +0530
+	dkim=pass (1024-bit key, unprotected) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=IMSjQOaC;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FedeyjtJ
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 0FF47222C7;
+	Mon, 26 Oct 2026 07:41:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1793000482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
+	b=IMSjQOaCYWrZu7o5oVeTyU5bR+QO2aHnpndiTERI5WvKhqz750d5ghV49LPUysNNNTkC9h
+	0zAl5CtbyfEov4yIlVzmrfTc2ykbkwfbaYGf1ExI9csxqZKV/TXReZztxrbvbw8xI43yLz
+	eF4XcUzEWGDs4UbBJFUgDeFyWlakNNg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1793000482;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
+	b=FedeyjtJmYr8yfqpxxZ7nqWPJCLWdfeDsrXcaVNhFTgOWJQTS7/yvJss8Yb3TZmacB+Gny
+	HxldMtmc75DcbzBQ==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1793000482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
+	b=IMSjQOaCYWrZu7o5oVeTyU5bR+QO2aHnpndiTERI5WvKhqz750d5ghV49LPUysNNNTkC9h
+	0zAl5CtbyfEov4yIlVzmrfTc2ykbkwfbaYGf1ExI9csxqZKV/TXReZztxrbvbw8xI43yLz
+	eF4XcUzEWGDs4UbBJFUgDeFyWlakNNg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1793000482;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=sWrkcP/yBVW3JGHMD8FsWZTL1fQHiKFs8LimUVOooqU=;
+	b=FedeyjtJmYr8yfqpxxZ7nqWPJCLWdfeDsrXcaVNhFTgOWJQTS7/yvJss8Yb3TZmacB+Gny
+	HxldMtmc75DcbzBQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A324F13319;
+	Mon, 26 Oct 2026 07:41:21 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id MKHHESEE32qkBgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Mon, 26 Oct 2026 07:41:21 +0000
+Message-ID: <4baeea95-1628-485e-bee7-925849a867d2@suse.de>
+Date: Mon, 26 Oct 2026 08:41:20 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -116,108 +107,108 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: Add tracepoints for SE reg dump
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc: chandana.chiluveru@oss.qualcomm.com, mukesh.savaliya@oss.qualcomm.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20261019-add-tracepoints-for-se-reg-dump-uart-v1-1-1fb47b1605b9@oss.qualcomm.com>
- <2876c850-e2d0-4ee4-9d8f-50710c371a49@oss.qualcomm.com>
+Subject: Re: [PATCH v3 7/7] vt: Remove old-style con_blank
+To: Helge Deller <deller@gmx.de>, Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, James.Bottomley@hansenpartnership.com,
+ simona@ffwll.ch, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-fbdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+ sashiko-reviews@lists.linux.dev
+References: <20261023132448.115747-1-tzimmermann@suse.de>
+ <20261023132448.115747-8-tzimmermann@suse.de>
+ <2026102312-chute-proud-204a@gregkh>
+ <68342b92-0e12-4aa1-a215-efb623418696@gmx.de>
 Content-Language: en-US
-From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-In-Reply-To: <2876c850-e2d0-4ee4-9d8f-50710c371a49@oss.qualcomm.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <68342b92-0e12-4aa1-a215-efb623418696@gmx.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: juQy2r3fvrA2R1ZrPdt94jLAYtbeHykg
-X-Authority-Analysis: v=2.4 cv=Ra0FmFtv c=1 sm=1 tr=0 ts=6adefc08 cx=c_pps
- a=JL+w9abYAAE89/QcEU+0QA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=EUspDBNiAAAA:8 a=zCML_R-7N-o1qndpGR8A:9 a=QEXdDO2ut3YA:10 a=O8hF6Hzn-FEA:10
- a=324X-CrmTo6CU4MGRt3R:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDAyOCBTYWx0ZWRfX66Zzhb9nymb+
- QLFt3RuO6/w0XDvS7x6nW+2Z6U27V1cdjMlvXwmWzH5XBF2+2voi7S4q9prs5l3NpsB0aPprz+B
- BFjyKrHFEvDF7JcyCqKz80z7v4n8+Eo=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDAyOCBTYWx0ZWRfX4xcT0H4EloCU
- jSZm9YoNdZTA6NP129lnK0qw/Pfqxvi5xaLiNvReQJr0t9lNxWBDLkSSMXV9cbhv6oPnBvAM9Kr
- Ntel6GdmmECjoeRBwwvwmC9Pswegk6WD7gkS5OJMSyi7V3jFB8QW78Z1Ro19fDkWWCmnIo3p8m5
- d8o+Q66PxANfB97SiDqo5BvRfEWVphyVChyKgIB/etNN60uzBiZYhy3DEPKKMInwJ3q/UHTLW0v
- AJcIOW9LI90I9Nbfo/TXAtbsc9prflUcP5zOgykM6PZSccf9ZQ4Nk6JrGgg0JCIAYNmuMt8Irw6
- KJWl0YELcs9h6Yg+kiPPRQtIwBn+HsNgHxxM4hkgQ2aI7QNAoJ1F7F7DtA1DPxERS+tAgTeXkBO
- iRlUKIV3oEW6vNDXzAwqxzyr5u2XxEaFMu2/iN5hKYFNlHOSDPkAGVgmGpm8tF3eB40iL8eR9MX
- GEO0DiQA5qjcmc+KsHw==
-X-Proofpoint-ORIG-GUID: juQy2r3fvrA2R1ZrPdt94jLAYtbeHykg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-26_01,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 adultscore=0 impostorscore=0 phishscore=0 lowpriorityscore=0
- priorityscore=1501 suspectscore=0 bulkscore=0 malwarescore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610260028
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-13.29 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	XM_UA_NO_VERSION(0.01)[];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.com:url]
+X-Spam-Score: -13.29
+X-Spam-Level: 
+X-Spam-Flag: NO
 
-Hi Konrad,
+Hi
 
-On 23-10-2026 17:32, Konrad Dybcio wrote:
-> On 10/19/26 5:32 AM, Praveen Talari wrote:
->> The GENI serial driver reports various transfer failures such as
->> M_CMD abort/cancel timeouts, DMA TX/RX FSM reset timeouts, RX FIFO
->> write errors, illegal command interrupts, and DMA parity errors.
->> However, diagnosing the root cause of these failures is difficult as
->> the hardware state is not captured when the error occurs.
+Am 25.10.26 um 08:48 schrieb Helge Deller:
+> On 10/23/26 15:37, Greg KH wrote:
+>> On Fri, Oct 23, 2026 at 03:16:17PM +0200, Thomas Zimmermann wrote:
+>>> All consoles implement the new con_blank plus con_unblank. Remove
+>>> the old semantics from con_blank. Always pass a VESA blank mode to
+>>> the blank parameter.
+>>>
+>>> v3:
+>>> - keep con_blank's mode_switch parameter
 >>
->> Add trace_geni_se_regs() calls at critical serial error handling paths
->> to automatically capture GENI serial engine debug registers when
->> failures are detected. This includes:
->>
->> - M_CMD abort/cancel timeout
->> - DMA TX/RX FSM reset timeout
->> - Unexpected zero-byte RX DMA completion
->> - RX FIFO write error and illegal command interrupt status
->> - RX DMA parity error
->>
->> Dumping the SE debug registers at the time of failure provides
->> additional hardware context and significantly improves post-mortem
->> analysis of serial transfer issues without affecting normal
->> operation.
->>
->> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
->> ---
-> The commit message should mention the additional logging changes
-> too
-Sure, will update in next patch.
+>> Shouldn't the "v3:" stuff go below the --- line?
+
+Force of habit. Putting the change log in the commit description is 
+common for DRM patches.
+
+I'll do better next time.
+
+
+> Series applied to fbdev git tree.
+> While at it, I dropped the v3: stuff lines, so no need to resend.
+
+Thanks Helge.
+
+Best regards
+Thomas
+
 >
-> [...]
->
->> -	if (WARN_ON(m_irq_status & M_ILLEGAL_CMD_EN))
->> +	if (m_irq_status & M_ILLEGAL_CMD_EN) {
-> if (WARN_ON(m_irq...))
-Sure, will update in next patch.
->
-> Konrad
->
->> +		trace_geni_se_regs(&port->se);
->> +		WARN_ON(1);
->>   		goto handle_rx;
->> +	}
->>   
->>   	if (dma) {
->>   		if (dma_tx_status & TX_DMA_DONE) {
->> @@ -1270,6 +1285,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
->>   			if (dma_rx_status & RX_DMA_PARITY_ERR) {
->>   				uport->icount.parity++;
->>   				drop_rx = true;
->> +				trace_geni_se_regs(&port->se);
->>   			}
->>   
->>   			if (dma_rx_status & RX_DMA_BREAK)
->>
->> ---
->> base-commit: 2efb7a11f1aa4d2dc285fe2680cca22cb9f72f64
->> change-id: 20260927-add-tracepoints-for-se-reg-dump-uart-30d93639447a
->>
->> Best regards,
->> --
->> Praveen Talari <praveen.talari@oss.qualcomm.com>
+> Helge
+
+-- 
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
+GF: Stefan Gaiser, Jochen Jaser, Abhinav Puri, (HRB 36809, AG Nürnberg)
+
+
