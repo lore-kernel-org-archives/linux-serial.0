@@ -1,68 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.62.57.87
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793088859;
-	b=pQGcqSKILnk8gTXOwhaT8OPlZHlAGS/ExAisYy1frGA5KpWtltaIEHrKtL7/6atLG8yu
-	 PZqcT7JqC3x6eqstTj3GcQX7B/6iJjZjiXzh8csVX7Deq2SpE34Tb1jVa6tIB8hQCgeb9
-	 3SVVD/+uvBiRlOwKyHwUkAyYhuwXseTGrpCoqYQCpGHzruWUq5I9ExsqypevhcFjnqehr
-	 vqOEG+Ts+OzPnNo7hLxB7qOacchY8iWXMR2EI9GnPyBGw2545HN7lNixJ/83XvDNqGZDk
-	 +P6HZRVQDSg5kzFFv6IW6cmNWWJbv8Jk0f/T5oVWYcY+DPEqoMDoy1hmQLYCAWE93BA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793088859;
-	h=DMARC-Filter:DKIM-Signature:X-QQ-XMRINFO:X-QQ-XMAILINFO:From:To:Cc:
-	 Subject:Mime-Version:Content-Type:Content-Transfer-Encoding:Date:
-	 X-Priority:Message-ID:X-QQ-MIME:X-Mailer:X-QQ-Mailer:References:
-	 In-Reply-To:X-QQ-mid;
-	bh=nGbu4upuJLgm2lXKD/Z91nFxrjKCKZHpwQrOt6s2bDY=;
-	b=T9P0YceJrHewQNWUI7QxqijjRYwa3mnclkDrnrzLY85NHp9HxmjnXoKLjUSnfsoZhhu5
-	 yKEZ5kfnIBG6JR3sqSkIbfnT/mf0pO7uarCVGuzjJYofGvWwYx9GSKpo8EzJIpFQNmIpg
-	 /by7FLwuQosjOdNJR42X8xKJbe9/bx4Hb4bn6ZIiu9oZztvaIkbesHUkSwYQJLB6zRIkE
-	 lX7mhoJI5fae/aFRg6ccu8cWLk+Zgo8xlY1/s28qU35A3VGdjgspZXgWj0nF3mR/rd7HT
-	 yEQt1kN36a/p4kCkqCNxoN5A2MER7/UmcxlwQ2+ciEpFkOBLrOu6cLaVyzu6u2QcDCQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=qq.com;
-	spf=pass smtp.mailfrom=qq.com;
-	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=ZRB1vNch;
-	arc=none smtp.remote-ip=162.62.57.87
-Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.202
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793089292;
+	b=LPlSAZbk6/9L7K560sz1LDfBv5VjK8QZnEjzyVS+/irJfW3C6gAF3zkDPnNkwLM++UNx
+	 3Cq/QCmhjwscx/wUXp97FVM/FfBnG6eOpkj3mYPWdJ1+kpfprG/wba+sUrNWXKxfvxW+d
+	 8hBnNmulvnl8+THL9S10FoS9qBExAnDMVHyBAXSlVD5/QkPKYR4Yo7+fnvfhlncPkNPJW
+	 iYoaEIqIf3HLnArEOdYjXekJCmwr5n7C0HevCI6CVDlgvZ9GNbroL4EqWM5HoKPrXCOjE
+	 REcqs0ub7qiwcmx5E2XcTj2Cr9j5iY3I+udc1mWZI6cjqEwJq4eZM3c16ODbId7L0Gg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793089292;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type;
+	bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
+	b=rgOofjoN99bKQkA/40i5ljw4hchTNOdm5ZZveqLj2VKMX85/7yJetjMppVNWtr5aFcsM
+	 BCDA/zv0lxB+HbLiZMFq0CYkwwxe2nuZCEKP9NFozDlNcjfBDz2RSf6AsQYcix/wKiW+J
+	 zBnM/pijX2DFFDdg9FOyvTmo4z5Nkl0V7ms1jjt/E6wrd8ZFBqWuqxhfplIPi252wS5c/
+	 0qrgXk30Bg+tV+TMknEk5vtCcR7HjZEHdYg3MRwFnaZarh33CDL1J+wmqTrCzeeU1oP47
+	 G3axpSJlnu6rOTkkaglC5IjfR6w0rr99bhldSirk03X23vZfjvwUUX3wqOx6QCh8v/g==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=JrJzxOmC;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.202
+Received: from mail-oi2-f10.google.com (mail-oi2-f10.google.com [74.125.231.202])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D47E606A339;
-	Tue, 27 Oct 2026 08:14:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8D47E606A339
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43FDB606A31A
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 08:21:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43FDB606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=ZRB1vNch
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1793088845; bh=nGbu4upuJLgm2lXKD/Z91nFxrjKCKZHpwQrOt6s2bDY=;
-	h=From:To:Cc:Subject:Date:References:In-Reply-To;
-	b=ZRB1vNchEBn1xTDidt7KlotYbtlRGWLoegdUkgm34YutKGqGFS1vndGuabXwuQZ90
-	 /f0QxD6nmcPMBlMpQq6BxhjlE6opBg1xCkYHbn2pqTPsi40cCO5nyYQN/e07PWbv1P
-	 526lVXWyA9AKXODNJhPhJr8lZw09DmYOIJjw38go=
-X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
-X-QQ-XMAILINFO: M/8oWtQ8RXooJTRnGxFYe36RnPXjfz6V34oARLY5ztdCgTVzwe4zrpt0OZIqiV
-	 6WOy1tfKUMOwIp89CO5v2jtf8fTEeOq5mi2JUzH4Nef7OjAKvx4xPiylH90reQ6IHIXTUg6D63e0T
-	 481ZvsLL6TnnEWH6cGafWPYXdPkOaWIDYmQaR1TyCkbo1JAipqPJjLWdkJ7c5f9Ntm6rE/Vc85MFA
-	 6/0Yv3GuE058KwOnH34QUKfrzxTwP4bBI/d4wotgx7yzEXWjSCUkxlS5SsVZOnxqFUStijqTic+NF
-	 aNvSUUJDUS18HxXkxELs9NR1BNaF9SEdq07pweT3dgStQMYxIOxFwsx6Ap79t3P7Wda50cBNlyUzK
-	 L0nGZYeXMmxra3ro1YB2pEadf81VxEf50WmhVY2f7ZPN8y/UM4PdbyPXVRvhxVv5nxNg2J/hfK3Kw
-	 pSUJyHx1xsdjaUc/Gnio/6cqfs97icdTwq6NCBZO/byU2hnjUaTaSt9AEwM87gAki9zbOe1yZScN+
-	 PYFSmvDn44vv/ex5eNUA78ks2mSVtzQxrO7o6vvSIaJ6tqOmxNsMswoV+th2FwjbUQUCw5dIurGYx
-	 UiC98zYj+8M80tQd0v5a55xNOCWrzJMcpL9u6ctYYBOGjDYnmGgQj5BgHu3DucOOtbhhIP6iVdcse
-	 NZTX916vUU0yg5PAavrQyQmT52VA/r5Xy6Ozbu+A1EzoVqgRPIIiO+pX5cRNy8l9R/uK/vKiFdjfS
-	 Ky3dE5tvMSNS1KhWn0R+OuSWPkiRCjFJy5irVQouqZ4/77IVsPighdskAl4O9q7fgA02C+iRFllws
-	 TrKDgHhDDjWkiTzDvbHNZ+Xui1Lnl5aLZBJ/0ZBY97G6jebO3CJGueOksuo4EaO36eMoHjNsEs7jF
-	 gP2WMOd83oGx+87D1EJrlBu4GKZGwED07/KKJKyeCzvvIAfQ9zrQH9ERkrMRJD8C0oXuiXNt8am21
-	 KQeoVpouoyLgDKb99Ev+/BEPpEcXH07BurkkWIUVwhaRz5pdTGd6RB/IhJuRgQajP6VGsNTm4Hw8p
-	 61dj2p8TsB+wovP+gd5bvf5tjSyip3s4Xa6VnLxgzG1xCV2ekXBbBh4XrhkKmA+tZOsI4QpyF03f0
-	 IPelgJyNvew7LQ==
-From: "=?utf-8?B?Q3VuaGFvIEx1?=" <1579567540@qq.com>
-To: "=?utf-8?B?U2hhd24gTGlu?=" <shawn.lin@rock-chips.com>, "=?utf-8?B?U3RlcGhlbiBCb3lk?=" <sboyd@kernel.org>, "=?utf-8?B?QnJpYW4gTWFzbmV5?=" <bmasney+clk@redhat.com>, "=?utf-8?B?SmVyb21lIEJydW5ldA==?=" <jbrunet+clk@baylibre.com>, "=?utf-8?B?Um9iIEhlcnJpbmc=?=" <robh@kernel.org>, "=?utf-8?B?S3J6eXN6dG9mIEtvemxvd3NraQ==?=" <krzk+dt@kernel.org>, "=?utf-8?B?Q29ub3IgRG9vbGV5?=" <conor+dt@kernel.org>, "=?utf-8?B?SGVpa28gU3R1ZWJuZXI=?=" <heiko@sntech.de>, "=?utf-8?B?UGhpbGlwcCBaYWJlbA==?=" <p.zabel@pengutronix.de>, "=?utf-8?B?RWxhaW5lIFpoYW5n?=" <zhangqing@rock-chips.com>, "=?utf-8?B?TGVlIEpvbmVz?=" <lee@kernel.org>, "=?utf-8?B?TGludXMgV2FsbGVpag==?=" <linusw@kernel.org>, "=?utf-8?B?QmFydG9zeiBHb2xhc3pld3NraQ==?=" <brgl@kernel.org>, "=?utf-8?B?UmljaGFyZCBDb2NocmFu?=" <richardcochran@gmail.com>, 
-	"=?utf-8?B?VWxmIEhhbnNzb24=?=" <ulfh@kernel.org>, "=?utf-8?B?QW5kaSBTaHl0aQ==?=" <andi.shyti@kernel.org>, "=?utf-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?=" <gregkh@linuxfoundation.org>, "=?utf-8?B?SmlyaSBTbGFieQ==?=" <jirislaby@kernel.org>, "=?utf-8?B?SmlzaGVuZyBaaGFuZw==?=" <jszhang@kernel.org>, "=?utf-8?B?QW5kcmV3IEx1bm4=?=" <andrew+netdev@lunn.ch>, "=?utf-8?B?RGF2aWQgUy4gTWlsbGVy?=" <davem@davemloft.net>, "=?utf-8?B?RXJpYyBEdW1hemV0?=" <edumazet@kernel.org>, "=?utf-8?B?SmFrdWIgS2ljaW5za2k=?=" <kuba@kernel.org>, "=?utf-8?B?UGFvbG8gQWJlbmk=?=" <pabeni@redhat.com>, "=?utf-8?B?RGF2aWQgV3U=?=" <david.wu@rock-chips.com>, "=?utf-8?B?UmFmYWVsIEouIFd5c29ja2k=?=" <rafael@kernel.org>, "=?utf-8?B?RGFuaWVsIExlemNhbm8=?=" <daniel.lezcano@kernel.org>, "=?utf-8?B?WmhhbmcgUnVp?=" <rui.zhang@intel.com>, 
-	"=?utf-8?B?THVrYXN6IEx1YmE=?=" <lukasz.luba@arm.com>, "=?utf-8?B?TWF4aW1lIENoZXZhbGxpZXI=?=" <maxime.chevallier@bootlin.com>, "=?utf-8?B?TWF4aW1lIENvcXVlbGlu?=" <mcoquelin.stm32@gmail.com>, "=?utf-8?B?QWxleGFuZHJlIFRvcmd1ZQ==?=" <alexandre.torgue@foss.st.com>, "=?utf-8?B?Vmlub2QgS291bA==?=" <vkoul@kernel.org>, "=?utf-8?B?TmVpbCBBcm1zdHJvbmc=?=" <neil.armstrong@linaro.org>, "=?utf-8?B?TWFuaXZhbm5hbiBTYWRoYXNpdmFt?=" <mani@kernel.org>, "=?utf-8?B?VGhpbmggTmd1eWVu?=" <Thinh.Nguyen@synopsys.com>, "=?utf-8?B?SmFlaG9vbiBDaHVuZw==?=" <jh80.chung@samsung.com>
-Cc: "=?utf-8?B?c2hhd24ubGlu?=" <shawn.lin@rock-chips.com>, "=?utf-8?B?bGludXgtY2xr?=" <linux-clk@vger.kernel.org>, "=?utf-8?B?ZGV2aWNldHJlZQ==?=" <devicetree@vger.kernel.org>, "=?utf-8?B?bGludXgtYXJtLWtlcm5lbA==?=" <linux-arm-kernel@lists.infradead.org>, "=?utf-8?B?bGludXgtcm9ja2NoaXA=?=" <linux-rockchip@lists.infradead.org>, "=?utf-8?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>, "=?utf-8?B?bWZk?=" <mfd@lists.linux.dev>, "=?utf-8?B?bGludXgtZ3Bpbw==?=" <linux-gpio@vger.kernel.org>, "=?utf-8?B?bmV0ZGV2?=" <netdev@vger.kernel.org>, "=?utf-8?B?bGludXgtcG0=?=" <linux-pm@vger.kernel.org>, "=?utf-8?B?bGludXgtaTJj?=" <linux-i2c@vger.kernel.org>, "=?utf-8?B?bGludXgtc2VyaWFs?=" <linux-serial@vger.kernel.org>, "=?utf-8?B?bGludXgtbW1j?=" <linux-mmc@vger.kernel.org>, 
-	"=?utf-8?B?bGludXgtc3RtMzI=?=" <linux-stm32@st-md-mailman.stormreply.com>, "=?utf-8?B?bGludXgtcGh5?=" <linux-phy@lists.infradead.org>, "=?utf-8?B?bGludXgtdXNi?=" <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH 24/27] mmc: dw_mmc-rockchip: Keep RK3572 NVM domain powered
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=JrJzxOmC
+Received: by mail-oi2-f10.google.com with SMTP id 5614622812f47-4f742fc5d09so1087781b6e.0
+        for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 01:21:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1793089291; cv=none;
+        d=google.com; s=arc-20260327;
+        b=bJaIZpiZ83tMhXjzPW2d6UE565mjslBlEzz8nus2tBm9a6UQTEX+bB6M0Fq6YLRkqU
+         FpmpvLF8cYZnCtiBiPaTzF8+Ij18GEG6zle48mv49d9kTjDYmHdmcZFJqYjJTNlOniMN
+         FWwIBYu7jylXIiP5WGk70UnuX+mYUPREUShCs6sycUGGQKPK8TRTONZ6vpOXnOnCwF7m
+         3El0VoW9b3e2XDaeTkcJ6zeiJipzL/W9Jex3ngNTKoR/lW3C31Jiey2l1tV84JOkloi+
+         KIUd+cgijTQYftLBb9T7GEttLoyEZdzoJReb0FaEmneGXNwKsLq+wukcQ2T4tZ4cGlfL
+         08Cw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
+        fh=wnuZu36DwD6BPiYJmd4uMI588x5y3vF7ufwIJaP8AQI=;
+        b=qIU9ccCbXvHn9dFSS4no47pG1wRqLQePgu7OAVp72IWILTIjV8zJYsDYgrZwN6jc5F
+         aFXRVSHXIUd8zk+yswI8gw5tNFSmnEFWlxmNMtrGMUbgpb1dibLmdE9wiM9jwNuiHxJa
+         HKWEqls8/nTP8RUFM63A8MyfM/cfoaIGMF5qzbxaYlsnY9SkkkGyGhi+Xz+wi8wtVBiA
+         fmZ/vyVH6/vyQDmUpGcxztSDIw3sdYS4FNYVN+YQ6Co9OAKLmKq7Cd/9Y7RcV0dhC8vE
+         hoK9vgsY84H/EHbbZGV7qfgRW64744/avuvwMTYSHiUWoWnDYsLVFX6ex/h1muaZBMwf
+         3Dzg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793089291; x=1793694091; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
+        b=JrJzxOmCl/3md7/9Fi86tAUmHB4RjLyVlcTp7r1WUV1Es7K6QmrtvV+LVRO/jRwUKU
+         Du5QtEPYCrYPasuy58hmeSEBeVHBq4+N3JxHfmAC/Ba7MtDeveZmmmyESrELyXeF+51g
+         /LyjaXbvOpzBqoaiHABQwUCSmwQA/GcEiCc/PnBxy7xeSTDy3CJUkHewdZjOubSQP3Dd
+         M3Vo3r78VYIrYMZJicXHVHqZDbcOJWehlyjhjtgAdi2Q1ZuLfp4GNwzcQQz4tpGAMSzO
+         73AodoElXKdQ76NkpHuJYzmdN3y5YQ5abefMX9Wlo5DKQuiXCIcL7P636/qs0DDBpARG
+         OPNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793089291; x=1793694091;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
+        b=fafKakMt0fH06MpmFZTB8e6tbenKYZv6NEA86MhbtHjYBSOl3+kWLonKH8qRn1n6uG
+         5UKns8JEIHzlrguHQLhFLwxoUhv6yg/7Oqbg3MFk8bBTWIBD57Qdw5PLYuokBhYqo2fb
+         6v26pApksHta6CF41CdW9cI+X6wV/Z93GmLDvsiZYSVy05+SCxl9rHjkBEgakAsv/B2E
+         Got8UhqBGuKXkfYqREC7n9rH6teVy9l5BWBh04zS5jv6h0jQSUfLnrlbGeHZXW9qVn+c
+         9wLe13q5Iy3ht3kvr0upsAJe6l4nVjzFDn2A1MpcrAk5rmraBQP5Fijm5Pw1Rw9Z7pD6
+         oegg==
+X-Forwarded-Encrypted: i=1; AKwUvBz1bgTQ+VWVyvlac8fT9lTgmvAjH0tYuGNAYd6U4vJQQwn7Nu2kxOwZF4c7wkJbokSIHhbr6BrGp2l9I3I=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKb0zLcvFqrmWMwdVxaaJTI/cuIjP4dhcDg74LqLyHvFOTiPYBM
+	HDJ/S5nn+UfqbseE/YXZBVEyNp3F88g9ZB/KrA+OHQ1bGb256iRMPo/QD7kmdQLsfqpi9EnRQWg
+	7Yj7/F2FMrP28VFSyvTTl6t7x/sIekg9bm1HRiogDYA==
+X-Gm-Gg: AYBFou2rB5egjKtArAZKp0YT33BfDU+ntuECFG6M6lqWQxrPSPxYvrwy5tuhi6Xue2m
+	GtFIs4eXOJ5FidM8GkDnHMkCEQrVsiwhbP+pAB3vATt532zlWCpyncoFEGc52WS5G3owzsuDwqF
+	ROYN8nQt6AToPiZ272dlfs4Xzb4wTz/6rOR6wcqF98DNnJ+xz35J5fxLUGZ2Nnk8t41aQMxJ1h7
+	QRZZYWiuBtptX9a2W3viZSmuZynxw1+fb10fi63dL/fdDpFSLO/KhhhkvWI+vh9iR/Ff5W00aWc
+	b/LYFP/Xts/rYiLYbVySd5mMAZpTFa24TkpyrR5lDEpD4nFX3DhLmzhbFSByq7nYQkR8Sp81Ia1
+	XNwvMukrbbjtSZXUaB8rBxbiu+6J3CvgSE4d2G/timABkXEaDQL5A8XS/+5fc5IzDf7lfdhozb4
+	bnIDBusZDlCWNG1Ff/
+X-Received: by 2002:a05:6808:198d:b0:4f3:68d6:f0dd with SMTP id
+ 5614622812f47-55c002f88b2mr7047283b6e.38.1793089291107; Tue, 27 Oct 2026
+ 01:21:31 -0700 (PDT)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -71,47 +103,30 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Tue, 27 Oct 2026 16:14:00 +0800
-X-Priority: 3
-Message-ID: <tencent_0431D34CCA9424908F2C068820D6F9C1370A@qq.com>
-X-QQ-MIME: TCMime 1.0 by Tencent
-X-Mailer: QQMail 2.x
-X-QQ-Mailer: QQMail 2.x
-References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
- <20261022-add-board-ok3572-c-v1-24-0b0fd85a31ee@qq.com>
-	<bb38e2c8-1868-4a66-9e0d-78d9f68ab4be@rock-chips.com>
-In-Reply-To: <bb38e2c8-1868-4a66-9e0d-78d9f68ab4be@rock-chips.com>
-X-QQ-mid: xmsezb41-0t1793088840t5jwsbqnj
+MIME-Version: 1.0
+References: <20261027054304.35543-1-dennylin0707@gmail.com> <2026102711-venture-amicably-24c7@gregkh>
+In-Reply-To: <2026102711-venture-amicably-24c7@gregkh>
+From: Hungyu Lin <dennylin0707@gmail.com>
+Date: Tue, 27 Oct 2026 01:21:20 -0700
+X-Gm-Features: AclHuK8mKEFqNZ6r-25CgQcNCoeN3KIl4Rlv2fmwKxPrps12_lcpFHKvKnkhJ5Y
+Message-ID: <CAGEkeHePGOKXsHg-bqkJH4Dpn=OSxTQx8z5vbjW18uSWHqrpWA@mail.gmail.com>
+Subject: Re: [PATCH] tty: discard flip-buffer input for TCSAFLUSH
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-SGkgU2hhd24sCgo+IEJlZm9yZSB5b3VyIHYyIGFib3V0IHRoaXMgcGF0aCwgSSB3b3VsZCBs
-aWtlIHRvIGFzayB3aHkgeW91IG5lZWQgdGhpcz8KPiBUaGUgZHdfbW1jLXJvY2tjaGlwIGNv
-bnRyb2xsZXIgaXMgYWx3YXlzIHVuZGVyIEEgcG93ZXIgZG9tYWluIG9uIGV2ZXJ5Cj4gU29D
-LCBub25lIG9mIHRoZSBwcmVkZWNlc3NvcnMgbmVlZCB0aGlzIGtpbmQgb2YgY2hhbmdlLiBJ
-ZiB5b3Ugc2VlCj4gc29tZSBlcnJvcnMgZHVyaW5nIFJQTSwgcGVyaGFwcyB5b3Ugc2hvdWxk
-IGhhdmUgYSBsb29rWzFdIGFuZCBjaGVjayB5b3VyCj4gRFRTLgoKVGhhbmsgeW91IHZlcnkg
-bXVjaCBmb3IgcG9pbnRpbmcgb3V0IG15IG1pc3Rha2UuCgpJIHdyb3RlIHRoaXMgcGF0Y2gg
-YWZ0ZXIgb2JzZXJ2aW5nIHJlcGVhdGVkIFNEIGNhcmQgcmVzZXRzIGFuZCByZWNvdmVyeS4K
-QWZ0ZXIgc2V2ZXJhbCB0ZXN0cywgSSBmb3VuZCB0aGF0IGtlZXBpbmcgTlZNMSBwb3dlcmVk
-IHByZXZlbnRlZCB0aGUKcHJvYmxlbS4gSSBjaGVja2VkIHRoZSBTRCBzdXBwbHkgYW5kIHBp
-biBzZXR0aW5ncyBhZ2FpbnN0IEZvcmxpbngncwp2ZW5kb3IgRFRTLiBUaGUgc2V0dGluZ3Mg
-bWF0Y2hlZC4KCkkgdGhlbiBzZWFyY2hlZCB0aGUgbWFpbmxpbmUgaGlzdG9yeSBmb3IgUksz
-NTc2IGFuZCBmb3VuZCBpdHMgU0RIQ0kKd29ya2Fyb3VuZCB0aGF0IGtlZXBzIFBEX05WTSBw
-b3dlcmVkLiBJIHRoZXJlZm9yZSBhc3N1bWVkIHRoaXMgd2FzIGEKc2hhcmVkIGRlc2lnbiBp
-c3N1ZSBpbiB0aGUgUkszNTd4IGZhbWlseS4KCkFmdGVyIHlvdXIgZW1haWwsIEkgY2FyZWZ1
-bGx5IHJldmlld2VkIGFuZCBjb21wYXJlZCB0aGUgRm9ybGlueApPSzM1NzItQyBzY2hlbWF0
-aWMgYW5kIERUUy4KClRoZSBPSzM1NzItQ19MaW51eDYuMTIuNThfQWxwaGExIEJTUCBpbmNv
-cnJlY3RseSByZWZlcmVuY2VzIFJLODA2IFBMRE80CmFzIHRoZSBTRCBjYXJkIHN1cHBseS4g
-VGhlIGNhcmQgYWN0dWFsbHkgdXNlcyBhIHNlcGFyYXRlIDMuMyBWIHN1cHBseQp0aHJvdWdo
-IGEgc3dpdGNoIGNvbnRyb2xsZWQgYnkgR1BJTzBfQjYuIFRoZSBvcmlnaW5hbCBEVFMgdXNl
-cyBuYXRpdmUKUFdSRU4sIHdoaWNoIGxvc2VzIHRoZSBlbmFibGUgc3RhdGUgd2hlbiBOVk0x
-IHBvd2VycyBkb3duLgoKSSBpbmNvcnJlY3RseSBhc3N1bWVkIHRoYXQgRm9ybGlueCBoYWQg
-dmFsaWRhdGVkIGl0cyB2ZW5kb3Iga2VybmVsCmFuZCB0aGUgY29ycmVzcG9uZGluZyBkZXZp
-Y2UgdHJlZS4KSSBhbSB2ZXJ5IHNvcnJ5IGZvciB0aGlzIGluY29ycmVjdCBhc3N1bXB0aW9u
-LgoKSSB3aWxsIHJlcG9ydCB0aGlzIGlzc3VlIHRvIEZvcmxpbnggYW5kIHJlcGxhY2UgdGhp
-cyBwYXRjaCB3aXRoIHRoZSBEVFMKZml4IGluIHRoZSBuZXh0IHJldmlzaW9uLgoKQmVzdCBy
-ZWdhcmRzLApDdW5oYW8K
+> What commit id does this fix?  How was this tested?
 
+The missing flip-buffer flush is already present in 1da177e4c3f4
+(initial Git import). I could not identify its original introducing
+commit.
+
+Tested on ARM64 QEMU: an 8192-byte PTY write leaves 4097 stale bytes after
+TCSAFLUSH before the fix, and none afterwards. Built the ARM64 Image and
+32-bit x86 tty_ioctl.o with GCC 13.3.0, W=1.
+
+I'll send v2 addressing the unthrottle issue.
+
+Thanks,
+Hungyu
