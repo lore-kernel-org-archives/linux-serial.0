@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099232;
-	b=uwZ1OsdPkCfDuL2/e2al/IfdwMEJZfKhGRYEGJgx1xuFCftGMk64BjuHyjRseGD0Erf/
-	 5rX5LyZUXGGwtpE/1h4rO3p9dCo88xD4SqkbDyeu+M6l1lKbuMCBec0NSq3ISW3vZud6e
-	 hdqsA0edvbxLwX+N6jklUJzYIL1ctw3rkLf0VxjSAKfMcZ0ZgFptErmRGsX5iGIf0GIKh
-	 z+cgy4Bkqx6wz3fTHHDtLWJaaMgqEnR/rySRsTlAox/YS7rQjYo008Q3NG7q3OmIlX/rC
-	 PQq6FDgOjogV+ifMjy2d7OmWcEnSvfrZWapEzv9WS6MlN5jIRo9xqYoofs0WQMGk86w==
+	t=1793099230;
+	b=O1lor2zf1B4/z37j0776CUChNPFp62Z5aZmEQfaapAaLM1Oo2KEsceyTc7tD1lNzOXww
+	 P3cD0z7GYyye8WEzrkRaDNxQONn9TiDqHxgGh0MJBMga/pJeJEO8N/K5rE/WE8vxUZfL7
+	 esIsAVZ9a2l8ydR2Pm4jK63nGvXXEm7HCi6Q+ML+Y7Xsr0OECGy2a8yjP2sC28Cug4sS5
+	 8cDRNYTcdvIJj9W5WsUAQ21twfa8NO8hp28YE3SCP2Q9FbZyhakH1OMUvzNL4Zz3VZ+Am
+	 uhJYuNbIn/1jpl+QWdfkyxhSZID4TNU44iAKZHrLc7X4u8XzFrc10GJHlZU+4xG+LgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099232;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099230;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=IS2f9CzmgPzLCWC2brqivclf2ZPHfhRDbonV89t5d1M=;
-	b=gpzzt3urIWcy9w426ImRbNL5flHXYxv/QPzc0YSxc/vuBLigS2aVSvnpGJBibWwkm2SA
-	 SEDEIXKrlW8XUi/dXDOkdiMcYB7tKgY0aqSUQHlOrWi2iIUp9Bnr450ITRfYNN0xEM5C0
-	 saF8tJTiKAHMa+1rOTAKujPfnYKfkxaQ8QAw0HyqkWQvZvwpbb9CmQwzFVjh02Q9AcIS1
-	 gl8IrHArJHxyrrEKvIvH2MSu2dvKy0pjPZc2OcnnyKysAVuz8LYtwJZKZe0Wftj9Ici6K
-	 pa3ou0L1fvwh3fvepV9KDtpjLYv8RRWIOmR9VJMXVB37EDFf/VFUXVO21MGWyfxGSew==
+	bh=SBUXsm2Glbmq/xc2iMDGALM78KKVeQy6HcffzQ5brds=;
+	b=v6FQuRNX89KRPUx0VgS64GNGZxixPYQOPyR6U+OpfZHoC4EgbHIOckCsvH61bR4gkrrm
+	 iO9HUYLIRO+wo6T4bV21vh8kijlQ2ejBgY/cKdhKxORNtoRsIlS8O004C+4Aa9aMuuoO4
+	 m1CHKWpCLJZuTPFJjZ4U+QzRFWgRjfC+BheqCrGunUS9qM6rcfMqafWWvDc7OzDFubJWC
+	 fkiiBjY/c8OXBq+dH7lXJVUofFCtdkkziTqLoVZJyM5GVH0isNXULs/WEkeLJ/cSvNJ8o
+	 Y8g83RdLhlcK7PjiGG4tbTUOYnHOrPL6N1XJ+SKMO2/xAoIYrZWGYJC/WhQFhuTjn+A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b="bJMZ/a+5";
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=d0fl9iTr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8076A606A31B;
-	Tue, 27 Oct 2026 11:07:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FA4606A33D;
+	Tue, 27 Oct 2026 11:07:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=bJMZ/a+5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BF51F01280;
-	Tue, 27 Oct 2026 11:07:11 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=d0fl9iTr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C28B11F01284;
+	Tue, 27 Oct 2026 11:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099232;
-	bh=IS2f9CzmgPzLCWC2brqivclf2ZPHfhRDbonV89t5d1M=;
+	s=korg; t=1793099229;
+	bh=SBUXsm2Glbmq/xc2iMDGALM78KKVeQy6HcffzQ5brds=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=bJMZ/a+5Ad41npjc4pkXOzR34K8/ZY60Znl+w9Ezzxz2yxVDmNbN7PQ3hCT2Ja7ut
-	 9G8V/a8lrpo+bZLxrZ4CXF7GL1AN/HJkmXRHqidShnpUvcpgFYsQuob7Kr/VNFdpi7
-	 BvK3WS/UCYMD9yTGV4mQQq5d9RUCqZ/NNwHxsy5U=
+	b=d0fl9iTrf7/Vh8qCvr9D4rtisAL9qxQgRCytNEF55prl6cOXCWATLwRVqpy5+4x2T
+	 6s8CGUUUbzYG3CXZChQQcOvzMDXQM0SSXfd/dE1HTFapxWX0yrvqj3kEN/k2NVdQW/
+	 I7HaWV9YkAdEtg3PbkUcI+ATQi3LnEUNye88Xq9U=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:37 +0100
-Subject: [PATCH 11/24] serial: 8250: cap OxSemi Tornado UART count against
- BAR size
+Date: Tue, 27 Oct 2026 12:06:36 +0100
+Subject: [PATCH 10/24] serial: 8250: pericom: validate port offset against
+ BAR length
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,8 +51,8 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261027-tty-llm-v1-10-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,69 +83,47 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
- Bjorn Helgaas <bhelgaas@google.com>, Lukas Wunner <lukas@wunner.de>, 
- Marnix Rijnart <marnix.rijnart@iwell.eu>, stable <stable@kernel.org>
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1879;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1250;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=VNWPqad47ORfVGxS6XN/YPqH0tGaIVf0nzG2TKO+/bY=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWveJ/RX8coGj8s7hkC0PJhbyqR8J8ZwX2XzCYPbfz
- ojt9upJHbEsDIJMDLJiiixftvEc3V9xSNHL0PY0zBxWJpAhDFycAjCRZcoMCw5Najq4w3qp+xy1
- N+2TjlVOqrF+oc4wT5Pzy33eJOXbxw6H87yaPf+35+9nzwA=
+ bh=TLap2Ak0d1LKnfE7R+MmhsL0EtK05TZodWA14547btk=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvfZirfl+OvNNt6q8mmffLJqZEvjuSm1pZsUeM5ck
+ em5Z6PUEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABP5PJNhwS71i3d1tR3kXveU
+ TrtTk9RUnFb7n2GubMzTnmcrrqvcXntm1RJm3/6AHGEHAA==
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Joshua Rogers <linux@joshua.hu>
 
-pci_oxsemi_tornado_init() reads the UART count from device-controlled
-BAR0 memory without validation, allowing a malicious device to report up
-to 255 ports. Cap the device-reported count against what actually fits
-in the BAR using the Tornado register layout.
+The fourth port on 4-port Pericom devices uses offset 0x38 instead of
+the linear 0x18, but maxnr is computed assuming uniform 8-byte spacing.
+A malicious PCI device with an undersized BAR could cause I/O access
+outside the assigned resource. Check that offset + 8 fits within the BAR
+before registering each port.
 
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Marnix Rijnart <marnix.rijnart@iwell.eu>
-Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 Cc: stable <stable@kernel.org>
 Signed-off-by: Joshua Rogers <linux@joshua.hu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/tty/serial/8250/8250_pericom.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 1dda63be6b89..9919504334bb 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1083,6 +1083,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
- 	u8 __iomem *p;
- 	unsigned long deviceID;
- 	unsigned int  number_uarts = 0;
-+	resource_size_t bar_len;
+diff --git a/drivers/tty/serial/8250/8250_pericom.c b/drivers/tty/serial/8250/8250_pericom.c
+index bbbf48c6d07d..f7a7a3f737be 100644
+--- a/drivers/tty/serial/8250/8250_pericom.c
++++ b/drivers/tty/serial/8250/8250_pericom.c
+@@ -123,6 +123,9 @@ static int pericom8250_probe(struct pci_dev *pdev, const struct pci_device_id *i
+ 	for (i = 0; i < nr && i < maxnr; i++) {
+ 		unsigned int offset = (i == 3 && nr == 4) ? 0x38 : i * 0x8;
  
- 	if (!pci_oxsemi_tornado_p(dev))
- 		return 0;
-@@ -1095,6 +1096,15 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
- 	/* Tornado device */
- 	if (deviceID == 0x07000200) {
- 		number_uarts = ioread8(p + 4);
++		if (offset + 8 > pci_resource_len(pdev, bar))
++			break;
 +
-+		/* Cap against BAR0 size (Tornado layout: 0x1000 + n * 0x200) */
-+		bar_len = pci_resource_len(dev, 0);
-+		if (bar_len >= 0x1000)
-+			number_uarts = min_t(unsigned int, number_uarts,
-+					     (bar_len - 0x1000) / 0x200);
-+		else
-+			number_uarts = 0;
-+
- 		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
- 			number_uarts,
- 			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
+ 		uart.port.iobase = pci_resource_start(pdev, bar) + offset;
+ 
+ 		dev_dbg(&pdev->dev, "Setup PCI port: port %lx, irq %d, type %d\n",
 
 -- 
 2.56.0
