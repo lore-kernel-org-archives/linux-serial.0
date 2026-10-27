@@ -1,55 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793080614;
-	b=Z65jHKTuShnXYU0CGWETu98nJXihIHJInnueUUd5XiEjN7iDC4V719t7j3jsTYZfJY4S
-	 NTwQBvy7WNLOC8YUt2Sz0AdmCeSQPC52pO2U3bPMnLA56JVncB2kAZ62KtO8iqdZYFyCY
-	 /Tg7F6+vtt3w1g6YGSeOxuSO1+Xpy8/nInU+IaYkiIl2xfzoBfVJverms4l0YV2F9H4dy
-	 Fn3VjDb8wrK7VH1Hm+pKD0z26QYuwxR2NO0BuffaAsEqZIUH/9ugGTUGAOUu+wKjPFc/5
-	 rGj58rVAQ8mbOT7dsZArBcRjbPsiUR7jJpHBC4MBxSBwKOekqGVVNS3rJziopd9sl5Q==
+	t=1793080704;
+	b=JFisixkMe495N5RPxywmcVkFr6TdbepX8the5LWMYu0AzA4uXzvWqljhv0ELr9aW6GoS
+	 ipwDpBhLCVG7AIPuysG9duHFzuAEhOsJubORF2ALmOC7WbSlvFRYhZAL6nQhkQjp394/e
+	 1EHsnx/21AKlKWjkUlPHDU+fqlzAtJkf7PcgeWR5SKT+PQu+FLQiQ2/OsNea/xkCNAR4Q
+	 +7DqKuPovEl6GRGA1FoveoXTr4WVOicBUAY7KAxki/EZ6JZWVHqowQMa/X1ZdACKZ/Lhp
+	 IpRf+VZdxeDjLXLgCWl+7Eh/fJ6IyxmInt6n1gplQEdjTVzlVJFJdl4n2GWt1+QanpA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793080614;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=QN8oxWLdLEw9peAXXsLw8QZSEZvNg90iKcaYq0zFZV4=;
-	b=Y343a8uqxjixa90fZBnhj6soDNZamj6bjGyoUd0H7IUHIiJsFlpSvfBFqASoPDETJ5FF
-	 1C67tELmGY5kIVGXGnvy3wmPxKr0G+O7mCOONbHzOxKFueM+/VYHjwpV0+cVZLVzQyFAf
-	 FwkDxh1+vhuApSdTdO43aNXTilvHV0ofUQQQT2VB0JX/h1Vx2kMIXRi7RAmBqKFAwcXZB
-	 ZscSIhyhwRcsPbOXaK0z7kUIxQbFGzwZXvcbmBkDJN4dXQ61fGMO0CAidHE2TiY81ns+m
-	 GOUSAitzydqWMuocrrCjQrLCB7S/RtCa9C0Gy5vS8WdCax3JTZZ7YGsfPF2a1Sw3hNg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793080704;
+	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=U6GE1LrLOCs5b3m6xLmSmwKe0aSHdCa9uF8nqQ/v9LY=;
+	b=LOp6yzB1TqGWueFh/as6QDFRLCRUYbmOCPgge7dFf2QAPquHn18ZIRgy/4Kp9t+TMQ9G
+	 u4XvR2H4/eEV0s0RlcXgiSy7zVuVgAolbyngaCqLbw4TZsGFhg7kXRNRYTO13sOZhZG0x
+	 JXf0B+cGB0nmxuzkuopMejNZOb4wi9F1nFb81kbrqSFbeSS5593c+/Nn9GXvTZ6Ou4Ucv
+	 nUFYR7NCuhXWA7c2Qrd+uyWii8ks32UEGdMRUbtRuhI/6QbIF71RajsX05p9cnLSMvn/z
+	 90e2V7Eog0qczFsCVjfsuHZ6Aqb25SZO4TphiWureKXx7Ex6paiw4f9crz9PPzCrY2w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JnOG5Y1Q;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=alien8.de;
+	spf=pass smtp.mailfrom=alien8.de;
+	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=k8Fa0uXR;
+	arc=none smtp.remote-ip=65.109.113.108
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE4C2606A31A
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 05:56:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3A0606A31B;
+	Tue, 27 Oct 2026 05:58:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3A3A0606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JnOG5Y1Q
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261A61F01828;
-	Tue, 27 Oct 2026 05:56:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793080613;
-	bh=QN8oxWLdLEw9peAXXsLw8QZSEZvNg90iKcaYq0zFZV4=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=JnOG5Y1QjmMWFuNFLX2nbe/1YRbY1u2cRQpLH/w+1ZwEA3sjqHtkTUORfh12bpH/d
-	 Hxm25A2DIlHqmuY1NnfbmIojavLJBknn4qV3UjpUJrmX2s56js2sRt1amNcnd9xx+4
-	 5F1itD5Hoib7sK2UPUKi1/aHvBjIWBxya6NbP2IrwWArI/b6aKdy9cZR6/CqHdFwbB
-	 4oJVnv2M4qTvAN6gxikn2gBrTK8Syiuol8ZXxSOKDLA4D21HKRZ4++fLZ0kyy1VcHq
-	 DNepGa/esz2fgtSfMS3JUNrBHtrR/kzmMZo1uLmNnm8fI8kHx1UQuia8J8evEETVzO
-	 kKH6LH+/lba3A==
-Message-ID: <sashiko-outbox-186146@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: discard flip-buffer input for TCSAFLUSH
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Hungyu Lin" <dennylin0707@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027054304.35543-1-dennylin0707@gmail.com>
-References: <20261027054304.35543-1-dennylin0707@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 05:56:52 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=k8Fa0uXR
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 704F540E029C;
+	Tue, 27 Oct 2026 05:58:13 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id dnewe4J-05mh; Tue, 27 Oct 2026 05:58:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1793080688; bh=U6GE1LrLOCs5b3m6xLmSmwKe0aSHdCa9uF8nqQ/v9LY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=k8Fa0uXRq3nhY8JsoX4ytOOAV79yrsJgwQrxOsSMH5SJj1N3PJEWxUoKPzKGE40Ck
+	 H5aetr7EGyQw/Rr7IfWw18HB2AQbdRoDlLCqZpse9lhVVRlW/EtVPuwReRQSaXkFYa
+	 VjZRXByjQNqMIHLLf3KF88moIKsIUMX4F1zqAJeciTOR36+ZkVbiwVYiyFwYY4l9UA
+	 3X7ICl0N6vmEvMk2mhhf8i8tRTZPQp0RObf0pC7JhDXiTpiBYEx9TJVUFRoU4ya+W5
+	 42E3+sXbYBs0haLQ508za1nIyTkvYFs1HT4DWkt9QEPoHvh8yHYDXk2qRpc4YdBxKK
+	 W4T4ohunLd8CXltthNnWVuoJjXnE5WCDs9EUrwcTzXiFAc3A7K/4kakFZtWL7DVZxJ
+	 KMEK3rZ/WqCXNNRdxRD45Sh/9xcedK8vPPGqQEiu6IacBCmTYuemZxk/X9rkZeYBD5
+	 1N6XAuwESUITP7g2kEf/z/nO8Haw2/88yp+3s8qiZ7vvWLC9DBw2tpvzPr2QdW236T
+	 XcbqDzhQSJebMrnz4ybNzeZudYngtQNj0eztbDQ1WoPepAtLxq5vD4N742SWd4EmMS
+	 iJW5prAIfnGLBdX3DR31Esntmn3EB+AHnpeiC1K2gbde5rNR68uD+vCu+UtDonzPJz
+	 ZcyF2Le85vTi5LCvgBRG97tU=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::a])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D7CAA40E0298;
+	Tue, 27 Oct 2026 05:57:53 +0000 (UTC)
+Date: Mon, 26 Oct 2026 22:57:50 -0700
+From: Borislav Petkov <bp@alien8.de>
+To: Biju Das <biju.das.au@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org, x86@kernel.org,
+	linux-coco@lists.linux.dev, kvm@vger.kernel.org,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Au Dang <au.dang.jx@renesas.com>
+Subject: Re: [PATCH v3 0/4] Fix transmit handling on SCI/RSCI ports
+Message-ID: <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
+References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -58,91 +85,38 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] tty: missing tty_unthrottle() in set_termios() on TERMIOS_FLUSH
---
+On Mon, Oct 26, 2026 at 11:23:32AM +0000, Biju Das wrote:
+>  drivers/tty/serial/rsci.c          |  4 ++-
+>  drivers/tty/serial/sh-sci-common.h |  4 +++
+>  drivers/tty/serial/sh-sci.c        | 71 ++++++++++++++++++++++++++------------
+>  3 files changed, 56 insertions(+), 23 deletions(-)
 
-commit 757d2dda2b0d44401d4d977f6413afe8f7669c45
-Author: Hungyu Lin <dennylin0707@gmail.com>
+$ ./scripts/get_maintainer.pl --no-rolestats -f drivers/tty/serial/rsci.c  drivers/tty/serial/sh-sci-common.h  drivers/tty/serial/sh-sci.c
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Jiri Slaby <jirislaby@kernel.org>
+Biju Das <biju.das.jz@bp.renesas.com>
+Geert Uytterhoeven <geert+renesas@glider.be>
+Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Frank Li <Frank.Li@nxp.com>
+linux-kernel@vger.kernel.org
+linux-serial@vger.kernel.org
 
-tty: discard flip-buffer input for TCSAFLUSH
+So why is
 
-This commit updates set_termios() to call tty_buffer_flush() instead of only
-invoking the line discipline flush_buffer callback when TERMIOS_FLUSH is se=
-t,
-so pending input in the tty flip buffers is also discarded on TCSAFLUSH.
+x86@kernel.org, linux-coco@lists.linux.dev
 
-> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-> index 90c70d8d14e3a..45cb77185dbb2 100644
-> --- a/drivers/tty/tty_ioctl.c
-> +++ b/drivers/tty/tty_ioctl.c
-> @@ -496,8 +496,8 @@ static int set_termios(struct tty_struct *tty, void _=
-_user *arg, int opt)
-> =20
->  		ld =3D tty_ldisc_ref(tty);
->  		if (ld !=3D NULL) {
-> -			if ((opt & TERMIOS_FLUSH) && ld->ops->flush_buffer)
-> -				ld->ops->flush_buffer(tty);
-> +			if (opt & TERMIOS_FLUSH)
-> +				tty_buffer_flush(tty, ld);
+in your Cc: list?
 
-[Severity: High]
-Should this path also call tty_unthrottle(tty) after flushing the buffers,
-similar to how __tty_perform_flush() handles TCIFLUSH and TCIOFLUSH?
+What can those people do about Renesas-something-serial driver?
 
-drivers/tty/tty_ioctl.c:__tty_perform_flush() {
-	switch (arg) {
-	case TCIFLUSH:
-		if (ld && ld->ops->flush_buffer) {
-			ld->ops->flush_buffer(tty);
-			tty_unthrottle(tty);
-		}
-		break;
-}
+-- 
+Regards/Gruss,
+    Boris.
 
-When a terminal using N_TTY fills ldata->read_buf and queues additional byt=
-es
-in the flip buffers, n_tty_receive_buf_common() sets ldata->no_room and cal=
-ls
-n_tty_check_throttle() -> tty_throttle_safe(), which sets TTY_THROTTLED and
-throttles the underlying driver (or on a PTY pair, fills port->buf up to
-mem_limit so the master blocks on write_wait).
-
-Previously, set_termios() only called ld->ops->flush_buffer(tty), leaving t=
-he
-flip buffer data intact to refill ldata->read_buf via flush_to_ldisc(), so a
-subsequent n_tty_read() would still see input_available_p(tty, 0) and reach
-n_tty_check_unthrottle(tty).
-
-With tty_buffer_flush(tty, ld) now emptying both the flip buffers and
-ldata->read_buf without calling tty_unthrottle(tty), a subsequent n_tty_rea=
-d()
-sees no available input and blocks in n_tty_wait_for_input() before reaching
-n_tty_check_unthrottle(tty):
-
-drivers/tty/n_tty.c:n_tty_read() {
-		if (!input_available_p(tty, 0)) {
-			up_read(&tty->termios_rwsem);
-			tty_buffer_flush_work(tty->port);
-			down_read(&tty->termios_rwsem);
-			if (!input_available_p(tty, 0)) {
-				int ret =3D n_tty_wait_for_input(tty, file, &wait,
-							       &timeout);
-				if (ret <=3D 0) {
-					retval =3D ret;
-					break;
-				}
-				continue;
-			}
-		}
-}
-
-Can this leave a throttled serial/USB-serial device unable to receive new
-input to wake the reader, or leave a PTY master permanently blocked on
-write_wait after tcsetattr() with TCSAFLUSH?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027054304.3554=
-3-1-dennylin0707@gmail.com?part=3D1
+https://people.kernel.org/tglx/notes-about-netiquette
