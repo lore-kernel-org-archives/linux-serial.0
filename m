@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099251;
-	b=ElOauyuOqyVf/4PI7m7sDkPHgbtvQb2GA61a9Ww3eQSPW0NF9jrSX3c18IdbveEn63k8
-	 GFN/3ZIGJF/YpqqAuQPUkP/xB9cLuNfdQXp0DuWKT9ph9RnieWOwZ4J2Y6FKB+9GEd04q
-	 njH4+Hj2PAdofbfYOmJO7GdefhNqAmIiLIQuDsh1UWgBEMc90xriGAzrZ6JR3EYQJwjnn
-	 4w/ijIpQZ7EZsDYd4s8xe/vSvF6PIexVDYZIb0t9WLgls/PljoQznpx3FrYOyR9kbUZfI
-	 epEkeWKF1Aei6uK0/16GR2gyZqwPR9/MX2w6k0Qfj0eqbhkiOo/rY8wzhNIg5rVcskw==
+	t=1793099249;
+	b=QzA4gSvrSdXZzC7338ylYETe+u7goY2Op65KulVjiDiGDw5nBPdIfRD7/ckn2OB5NYaL
+	 4Qpz00gToUdQPWOpZO8JHkjCK0QQ1lwNhMZ/GzA2KSfFT0NRxiJCYWzhmtEa4ofHkNkIW
+	 u62ZyWcVNRgERHLwO9U11/a9T7lb3hOj+ItfBZd/dmlcI12EtEN4Dx58R2NznWDJIgl93
+	 hxgRoqZGBXMOOqpQFqqo6u3MKBy3F7AQe9Wgce4bXUL66WPdpABxtUCuLkCXb5SA65ViM
+	 9Dhebujipro+jXbfJm47PCqXm/X2vwjMkRr44cYwtLyS/hmq9sua/tZ+6HrSGQMM26Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099251;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099249;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=LmFYO9q8aHV3jXtCeg+1TpTcQaYP/vBmoA7b4hJD89E=;
-	b=DeqkNFspuGUDeYmSSySd0S0ZnxeCa9aVeXLNGXz0CwQP2sdpKOBbL18SHskBr6j8KWkk
-	 4AwnvZ0mcDBHGmgloa2nqgtv7MpVm/bVLoRkGLp0UsgLcJNOefaCfJWnWsK4oOkj+evmu
-	 VKx2StIeFosuAqmbjT7LgpEaOJKhCi0OZ39vLdnvOESRnhML89vXh4R1habVTHu+XpJn8
-	 HYIr420O7e7S1Wbord2NzDRE6CuThbs1WgHiRgYaJ+bMbBi0GCoXXWhKVKf/pYiho1fc8
-	 qsGuJ+U4Qycwj9CSRQ3WAf2Jydq9x15ibnV9Fd9Cn9ozs37yGbAK/kH7487IndFnaJw==
+	bh=+7vTR01S7b+SPrLDby0xgmE9w+qgR4IvyOvbvo/4vaA=;
+	b=r0PE9x45TPY0qhOEFLwMaiPiTklbRTDZYo6H3AshEFZ+Dd4myEvBPn5rnLIsfLInntyC
+	 AgwPeEbEGcZVa5fA6uCi2IVezrTZYdOTWsmFLGVreQUebKg21YVLUMnT09uMZ5IrB4Ere
+	 T1Wm/+qW09wwkMYEtFg2vFxAT4qmuL1L0JVKidLLHURk5PB4yiFd7gQuenlF0CfX/xmAz
+	 OJ2BNhrLyCSMl1GtgX9cjPlZStcdqvhhPP66qKrnXmVWWCi1ISBWpRayc+5i6uzRV/6bP
+	 BC1Ag+YCKU8h9wR016o3bCvgmQ/19Cj2OdTrnZi6uzDXFq95TdPucHS0e9H7v78JzYg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=woku000l;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xeMwpc0c;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BA31606E7F8;
-	Tue, 27 Oct 2026 11:07:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FFE606E7ED;
+	Tue, 27 Oct 2026 11:07:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=woku000l
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5581F031E6;
-	Tue, 27 Oct 2026 11:07:30 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xeMwpc0c
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA711F01282;
+	Tue, 27 Oct 2026 11:07:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099251;
-	bh=LmFYO9q8aHV3jXtCeg+1TpTcQaYP/vBmoA7b4hJD89E=;
+	s=korg; t=1793099248;
+	bh=+7vTR01S7b+SPrLDby0xgmE9w+qgR4IvyOvbvo/4vaA=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=woku000lxuAqiwy3NYW8oA1WWgEvS02a4ROvMSt1k95stU2lkkUhQ2o+nK2WW00PK
-	 Db1orD3M1O4a+Gt6Z1lViT1/KvP18yZ5cPHPzpCKxhI6KLjdn+UZX2X1GnUn3T+0dV
-	 umMZXvrdLLLm9rOukUb5w8Lau3h45fTt3QYNq1PA=
+	b=xeMwpc0cNyC3jRcK10FLCqZDCipoFmsGzZPJD0qmEB6yQ89s7cnNLSjSXj5uBpcts
+	 pIQjjWhVbS5GRG4+EqyJw1r9GSjkoMuyrniKf/atmqMnqCgANtkNjNg0pIbCIq3Kat
+	 64s6NypelhAP6iHoSoUHZORpgJBufe/D6TtmSrPI=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:44 +0100
-Subject: [PATCH 18/24] serial: fsl_lpuart: fix tty ref of wakeup event
+Date: Tue, 27 Oct 2026 12:06:43 +0100
+Subject: [PATCH 17/24] serial: 8250_mxpcie: handle hangup during break
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,7 +51,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261027-tty-llm-v1-18-99b0202ae546@linuxfoundation.org>
+Message-Id: <20261027-tty-llm-v1-17-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,61 +83,87 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
- Peng Fan <peng.fan@nxp.com>, Shitalkumar Gandhi <shital.gandhi45@gmail.com>
+ Linmao Li <lilinmao@kylinos.cn>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1672;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2777;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=7PndLWziLhFxVf15LX4uO3S84WcvtpCFzOrbOnnsIEc=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvedW1TjGF3KsWPVrrnS4cwtnf+uPJnLF7/55bK9W
- 97sC3nq1xHLwiDIxCArpsjyZRvP0f0VhxS9DG1Pw8xhZQIZwsDFKQATuV3BMM+2syirRiBvR5mg
- ybVnshdjaw+mPGKYZ7ppnaDDFXPXW9urTkYHtzjz68xcCAA=
+ bh=J91DkBMBgSffmt7KPliGKD/HKZr1NJIz2mRXJ5MJI0o=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvelXTFkmnT8h8YO2ZMrC7M+2jgz+Ukqq0e+edc9J
+ 62kp6moI5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACYyPY1hfuDBq9OT234sd9/Y
+ /s3zyrHT4jPmP2eYzb7lfwW/VlP1I5MJ/MYi6s4nMoL7AA==
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-To report a wakeup event, lpuart_resume_noirq() gets the tty with
-tty_port_tty_get() and never puts it: each wakeup by the UART leaks a
-reference, and the tty is not freed when it is closed.
+Ending a software break on a Moxa PCIe port in RS-485 2-wire mode
+dereferences a NULL tty pointer if the port was hung up while the break
+was being sent.
 
-With no_console_suspend, the function also gets there for a console
-which is not open.  Then tty_port_tty_get() returns NULL, which is
-dereferenced.
+send_break() calls ->break_ctl(tty, -1), sleeps for the break duration
+and then calls ->break_ctl(tty, 0), without excluding a concurrent
+hangup. A hangup (a modem DCD drop, or the session leader exiting while
+another process of the session is in TCSBRK/TCSBRKP) runs uart_hangup(),
+which shuts the port down and clears port->state->port.tty. The second
+call still reaches mxpcie8250_software_break_ctl() through
+uart_break_ctl(), which then does:
 
-Fixes: 18bdfccf3c30 ("tty: serial: fsl_lpuart: Add missing wakeup event reporting")
+    struct tty_struct *tty = port->state->port.tty;
+    ...
+    baud = tty_get_baud_rate(tty);
+
+with tty == NULL.
+
+The bug was found by code inspection and has not been reproduced.
+
+Fix by taking a reference to the port's tty with tty_port_tty_get() and
+only restoring the divisor when a tty is still attached; a hung up port
+is shut down, and the next open programs the divisor again through
+set_termios().
+
+Fixes: ade78d3d253c ("serial: 8250_mxpcie: add break support for RS485 using MUEx50 features")
 Cc: stable <stable@kernel.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Frank Li <Frank.Li@nxp.com>
-Cc: Peng Fan <peng.fan@nxp.com>
-Cc: Shitalkumar Gandhi <shital.gandhi45@gmail.com>
-Cc: Sherry Sun <sherry.sun@nxp.com>
+Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Linmao Li <lilinmao@kylinos.cn>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/fsl_lpuart.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_mxpcie.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c8575c965203..e54b4c44db42 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -3113,8 +3113,14 @@ static int lpuart_resume_noirq(struct device *dev)
- 			/* check whether lpuart wakeup was triggered */
- 			wake_active = stat & (UARTSTAT_RDRF | UARTSTAT_RXEDGIF);
+diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
+index 4935a5d1c1a3..b3418c1ccb05 100644
+--- a/drivers/tty/serial/8250/8250_mxpcie.c
++++ b/drivers/tty/serial/8250/8250_mxpcie.c
+@@ -412,7 +412,7 @@ static int mxpcie8250_handle_irq(struct uart_port *port)
+ static void mxpcie8250_software_break_ctl(struct uart_port *port, int break_state)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+-	struct tty_struct *tty = port->state->port.tty;
++	struct tty_struct *tty;
+ 	unsigned int baud, quot;
+ 	u8 sfr, tx_byte = 0x01;
  
--			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq)))
--				pm_wakeup_event(tty_port_tty_get(port)->dev, 0);
-+			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq))) {
-+				struct tty_struct *tty = tty_port_tty_get(port);
-+
-+				if (tty) {
-+					pm_wakeup_event(tty->dev, 0);
-+					tty_kref_put(tty);
-+				}
-+			}
- 		}
+@@ -439,9 +439,14 @@ static void mxpcie8250_software_break_ctl(struct uart_port *port, int break_stat
+ 
+ 		serial_out(up, UART_FCR, UART_FCR_CLEAR_XMIT);
+ 
+-		baud = tty_get_baud_rate(tty);
+-		quot = uart_get_divisor(port, baud);
+-		serial8250_do_set_divisor(port, baud, quot);
++		/* A hangup during the break detaches the tty */
++		tty = tty_port_tty_get(&port->state->port);
++		if (tty) {
++			baud = tty_get_baud_rate(tty);
++			quot = uart_get_divisor(port, baud);
++			serial8250_do_set_divisor(port, baud, quot);
++			tty_kref_put(tty);
++		}
+ 		serial_out(up, UART_LCR, up->lcr);
  	}
- 
+ }
 
 -- 
 2.56.0
