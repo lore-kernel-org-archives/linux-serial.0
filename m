@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099216;
-	b=T1wWiGLjHuxl3MXCi1je5XacKX22AtVhMHuexuXq/FXhgz+SYTRj6fspAbeP+YD6nuJ6
-	 Ingd7p6ONQjkNxrrJYvy5aOVQXC4YQYplXNleRWIi9cBKPeMRS1CdiI60NOVEzWIjYUix
-	 itv2MSC3rEybcDAMyg+yrMwbHKyxMlRSAj848hl9vIJY48DbiZnNfZak8Ddq01tPvZyBc
-	 tL+9+M1lYd8YVDpmkfqNIoI6r0CGDfoyTM6kIlA/XwC9IlinBiPUg3nMLOgP+DsEGPu0Y
-	 ChUWOsOnT4dIQ7RaLmu2CTErQximaVJW1rsU69Z2M+PtP9PnfjddWhUgyJuEF6QeUbQ==
+	t=1793099221;
+	b=zBoD48/Oi2pPjdITIzfQOPUYUZV1zNO2bgb7zSB5c0iTRS3H471WtwPSn5qg6VrVzJAw
+	 jnNe317XwI4w5ABqXBd/EZHSBcpdMMqSDn7JQLq8UEPcR6U2F8JXNk/n/zC56EUucCXHx
+	 Atmf7h2lYSads7Pk+jcj/M/XnjBpDRfykVPFfNMMClRZHCxLhYIJTDCocA30lJNkRCmHJ
+	 afxJVbVftpYeFNBcwuoeHMy7fJw0TBi2RlWra94ySlwgZpZPfc6ynxn7gna3mnnKrjera
+	 +cq2X0RdUEx9/IJwlxOAeJjTFRo5+uMJxt3vrbefcRXDTvpjhQE6mCAzRYQTcPPF67g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099216;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099221;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=5V+NTNXd/FXUpAJ/0YqChFjhlfLulYUqlSw66QLAoKQ=;
-	b=BRHtJKhhD9Zo5/7MhrssVCSHflfQAr1cXIxiKUsWQ5UZ/iVAUYwB9ACKq9BYqFNNvHiG
-	 CYidEVRgXU8RyHoIujzy86OP6hY7oqzsteI5LeVZ7uOBxyLtgkKQHRcOe3CrXq7AN86H1
-	 r2m8475sSNAN9O/c3o6C9u7w0fAKgh2vgbBo4Fcq349PB+T8EI/QFzL9O82hQcv8qQ/vh
-	 7eHa/16hdXILfdnTqsZfAAYOKdNQ/+oLi79ytOpfpyrjtPPtTLUoGDnajraLthYv53qRx
-	 6BmC/PTYEvo1VGkoOAwffxghCUYm/7zvdHvYjqFrJzgXTSGONu1O15I8GbVmYaaNbIA==
+	bh=XqA2CBJjhMJL8Mk8j5Ut9pRVYsUXltzgvTWbgwZcBrI=;
+	b=GtglF/znDXOAvj3F+kj16qoNkG2L2XMYR4LLMEdiLPoXkykJZenL1aKNfbpUaJ8UyHK9
+	 7K18AHzsLZxUF/GIb7P4Kl22q2FeLxOtp4fvNkrRE45PyB0gRZ0nX2zSfOLKq62z0ylvN
+	 MkzoMk0Rq6SoD4ZMSGskU4u3ziD4KpPKxJQ3TX0BWIXnEEYvye4jnR8aI21/NpDahnqDT
+	 yudQms23Nh6f147xr4gpw2+tlVt134/y1PQVH+F/6AwqDea+j3HpyvG4HJ+DfWFtiQnpU
+	 Cx5W3LNlrMHgi4qWr3mK+PgFiIUwBE/FknrkN+Q/IYHLp0ENsfVX2lNyrVoFUJfsq9A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=odiNqdLJ;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=sy8QuPrx;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A277606A327;
-	Tue, 27 Oct 2026 11:06:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ABC760A382C;
+	Tue, 27 Oct 2026 11:07:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=odiNqdLJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3457A1F031E0;
-	Tue, 27 Oct 2026 11:06:55 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=sy8QuPrx
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA291F031FA;
+	Tue, 27 Oct 2026 11:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099215;
-	bh=5V+NTNXd/FXUpAJ/0YqChFjhlfLulYUqlSw66QLAoKQ=;
+	s=korg; t=1793099221;
+	bh=XqA2CBJjhMJL8Mk8j5Ut9pRVYsUXltzgvTWbgwZcBrI=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=odiNqdLJ+mcNhlxG37anjc84XhtwQNc1buTyV2kDMDIMNHPHhk3II4+H2wiO/VEls
-	 MVOmXNL49A5SD2DSd3xWIffSuP6GMx4uZVvCKz6lQPTQMZIATPQKoNyKKa678jco1L
-	 6zcGG7ZqR3PQJR1OSsB7juZBvEBwHzqbm5QdchLQ=
+	b=sy8QuPrxG7yg4yPsDSh3Jangxdh41s9mOCxymi3pPipnljocXw6YU/c7y8Mk6fBJY
+	 JtmKhjiY+izhKbZteRtJayeynGy7czJg4wBXWzNkzbPotw11ItDSJSCuBaVeqYC8tZ
+	 Hk4VHyjWig30QIVpqNQt4mnKrS1fwKCnsltdh0mk=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:31 +0100
-Subject: [PATCH 05/24] serial: 8250: clear subdriver state on port
- unregister
+Date: Tue, 27 Oct 2026 12:06:33 +0100
+Subject: [PATCH 07/24] serial: 8250: hold hash_mutex across irq_info lookup
+ and linking
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -52,7 +52,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-tty-llm-v1-5-99b0202ae546@linuxfoundation.org>
+Message-Id: <20261027-tty-llm-v1-7-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -85,84 +85,66 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
  John Ogness <john.ogness@linutronix.de>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
- Fushuai Wang <wangfushuai@baidu.com>
+ Fushuai Wang <wangfushuai@baidu.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2654;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1880;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=cMeH4DULlVmc9dyw8KyMoZoVsoB/ZNh5BBEA0k29aRE=;
- b=kA0DAAIRMUfUDdst+ykByyZiAGrghb2gw9mBMGux1l0evX8FOjPZW9Y2Fc/ph3xxeYxV3nCSy
- IhdBAARAgAdFiEE9LYMxb94wiFKMT3LMUfUDdst+ykFAmrghb0ACgkQMUfUDdst+yk++wCbBMxQ
- +Yz/VKNl1lhhrBZSnuzwY5UAn0IunEyLJkuSnMJln+1l6AB5tg2w
+ bh=k/IznmFdPUBiWkkVnhpei1rTD3fXdpdQNK/Q/j9Fml0=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvfx7Jxxm1n51N6NPTN/Ppc/EPP1wZVM1x3SGUdEd
+ s0LnLLxZkcsC4MgE4OsmCLLl208R/dXHFL0MrQ9DTOHlQlkCAMXpwBM5I8xw1yB4ktlWicEBe/r
+ 5i7ztPp70qbqoDDDgu4QzVTdyfy3A+x+FLEtUeOZ+O1iBwA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Joshua Rogers <linux@joshua.hu>
 
-When serial8250_unregister_port() re-adds a port as a fallback ISA port,
-it only partially resets the port state via serial8250_init_port(). All
-subdriver-owned function pointers and per-driver state copied during
-registration (such as startup, shutdown, handle_break, get_mctrl,
-set_mctrl, set_termios, private_data, dma, gpios, and rs485 callbacks)
-are left intact. After the original driver module is unloaded, these
-become dangling pointers that can trigger use-after-free on subsequent
-port operations.
-
-Clear all subdriver-copied fields and call serial8250_set_defaults() to
-restore default I/O accessors before re-adding the fallback port.
+serial_get_or_create_irq_info() released hash_mutex before returning the
+irq_info pointer, allowing serial_unlink_irq_chain() on another CPU to
+free the irq_info before serial_link_irq_chain() could link its port,
+causing a use-after-free. Hold hash_mutex in serial_link_irq_chain() for
+its entire scope so the irq_info lifetime is protected across both
+lookup and linking.
 
 Cc: stable <stable@kernel.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
 Cc: John Ogness <john.ogness@linutronix.de>
+Cc: Fushuai Wang <wangfushuai@baidu.com>
 Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
-Cc: Fushuai Wang <wangfushuai@baidu.com>
 Signed-off-by: Joshua Rogers <linux@joshua.hu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_core.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/tty/serial/8250/8250_core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 0951d3e42e1f..673fde55828a 100644
+index 673fde55828a..5730ef97f836 100644
 --- a/drivers/tty/serial/8250/8250_core.c
 +++ b/drivers/tty/serial/8250/8250_core.c
-@@ -956,7 +956,35 @@ void serial8250_unregister_port(struct uart_8250_port *uart)
- 		uart->port.dev = &serial8250_isa_devs->dev;
- 		uart->port.port_id = uart->port.line;
- 		uart->capabilities = 0;
+@@ -131,12 +131,11 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
+  * - find the corresponding info in the hashtable and return it, or
+  * - allocate a new one, add it to the hashtable and return it.
+  */
++/* Caller must hold hash_mutex */
+ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_port *up)
+ {
+ 	struct irq_info *i;
+ 
+-	guard(mutex)(&hash_mutex);
+-
+ 	hash_for_each_possible(irq_lists, i, node, up->port.irq)
+ 		if (i->irq == up->port.irq)
+ 			return i;
+@@ -157,6 +156,8 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 	struct irq_info *i;
+ 	int ret;
+ 
++	guard(mutex)(&hash_mutex);
 +
-+		/*
-+		 * Clear subdriver-owned state copied by
-+		 * serial8250_register_8250_port() to prevent dangling
-+		 * pointers after the original driver module is unloaded.
-+		 */
-+		uart->port.private_data = NULL;
-+		uart->port.set_termios = NULL;
-+		uart->port.set_ldisc = NULL;
-+		uart->port.get_mctrl = NULL;
-+		uart->port.set_mctrl = NULL;
-+		uart->port.get_divisor = NULL;
-+		uart->port.set_divisor = NULL;
-+		uart->port.startup = NULL;
-+		uart->port.shutdown = NULL;
-+		uart->port.throttle = NULL;
-+		uart->port.unthrottle = NULL;
-+		uart->port.handle_break = NULL;
-+		uart->port.rs485_config = NULL;
-+		memset(&uart->port.rs485, 0, sizeof(uart->port.rs485));
-+		memset(&uart->port.rs485_supported, 0,
-+		       sizeof(uart->port.rs485_supported));
-+		uart->gpios = NULL;
-+		uart->dma = NULL;
-+		uart->rs485_start_tx = NULL;
-+		uart->rs485_stop_tx = NULL;
-+
- 		serial8250_init_port(uart);
-+		serial8250_set_defaults(uart);
- 		serial8250_apply_quirks(uart);
- 		uart_add_one_port(&serial8250_reg, &uart->port);
- 	} else {
+ 	i = serial_get_or_create_irq_info(up);
+ 	if (IS_ERR(i))
+ 		return PTR_ERR(i);
 
 -- 
 2.56.0
