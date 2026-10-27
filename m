@@ -1,44 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=156.224.81.90
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.195
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793062408;
-	b=2kPa5IRq7EJvdvjtPewsBKtrzZz6W/PIc41nKPpYlKgPJER8v0sEcGFOUub9YX1e4Elb
-	 necJqfG5Azj6x8h15DxvXe92yZq0HwpiHU6dV7xhSQfpt3MHuO8XxbdFx/lem/g7WLewc
-	 3fDtLj7ddzBJaUXESgaOJbYOC0DV2k8hfBXrU6HrFxbLTcJBJpkUt/nVnAYVQ/CJni777
-	 HPhpS/uf32WjXGktqfyMrTTI5LMEybV2UQmFeB8hDd1uotBQ5IQFFYvWo84eBh1kyakXj
-	 hcKepKE0CAfEPqhNDnwdPKWutXXD+kkMjHFioIRmLympDx01CG4F383Hgog/GIc07+g==
+	t=1793079821;
+	b=YeQdduEFcwzpOJgjBF59T5ZUYv2BZ9Jm92touJNCzOJifn8pfgAUWjDKRcVOg+B8abWi
+	 ECGcD1jh9i8s3dLl/Md1sH+rjBqrOjIiV5up7SzF2BzIf6HS0cwEU1jgrg9pYXHUerChd
+	 L3SZxolZppRnpR7Ldly4GyTWsEm6ARr0BVuQK/GKVQh/Q8Mq6I05ODKOMSWqstcXs2TTe
+	 YDN++Fzt7A7HkFfJRIzVR6poFDRq5SY2jtc/n0gmqMAcvWtIeD7Sqias+UgeDQ2kgkVNv
+	 GhyIV6Z/Qaj97s7P1g5WIVD1GG11n1wovaFAM0VlNln8Hx3uF7+bMDNkSAeSdK/5d0g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793062408;
-	h=DMARC-Filter:Received:Message-ID:Date:MIME-Version:User-Agent:Cc:
-	 Subject:To:References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-HM-Tid:X-HM-MType:X-HM-Spam-Status:
-	 DKIM-Signature;
-	bh=wghg31XooAJPKL/XTiGnCxCN5pFUy2mBUdUxi6yrLos=;
-	b=hsqc+Gv09Vibsh4zPxQF0+f1hqGEsB+xnje/B5sxXEBwklVJZTP/NAUzYwSpCEROr+kA
-	 3iOP+u1Ar1bp/EYH7+1ts8/IgloPHXyYKxP5LmSOY+1UjRC0lv+AE0F3KHlHz+n0W4Th2
-	 UjGXDRTKoIjqsU8xzcL257v5Zc4tmsGsdDsyVE+e8ivOJp9Mucud9fRZoGvL9iS60Wuwq
-	 Pxf5tFfwgM7LXxTU3EfHNOHRRVKoZ1kLOjPhNEF69gewYqa9hHjRwm6h8wAmTCJ1SbH7o
-	 OQHAVGtkWRjuoj2k2ZjA/VClm7DxoxVV2DogKQVaMmq7dFR1JJiTh3XNzJ9fIvYWD5A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793079821;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=FqWB2wVkmtIRr5mzG2098ehyTIGBIw8KJYdLx1Y6IvQ=;
+	b=WfSuLnjMYZP1vuQktPjDGMrSh1xgUJgiO/vDzX4qg809vdqxct30oKpmUGmKRo7OmAl3
+	 cBrwKTq1Jc9RxkKlFWpAub6FLMJXNlguf/neFjeVjsye16GWJKgzqzh5UgcBAOl3U5KW8
+	 yf6sOOjZf0+cOB8o5josxGmNh/EMySDpROFzWI77hBWg7trpPAsoiMNqBmQ9JIr5dOwqc
+	 mGmy9RwhWpCIFUhPPHHAdkpiH5mJjo5rCHCEXM62JyZkw8UgYBNupBJey9m3LdKeb6tft
+	 huBdtX3Y9s3Ycid0uwUNRuszf4qoVqN0y2UjedFxY6A5Lhq9DfMQS8jPKyCxB2qDV6Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=rock-chips.com;
-	spf=pass smtp.mailfrom=rock-chips.com;
-	dkim=pass header.d=rock-chips.com header.i=@rock-chips.com header.a=rsa-sha256 header.s=default header.b=IJsQys7w;
-	arc=none smtp.remote-ip=156.224.81.90
-Received: from mail-m8190.xmail.ntesmail.com (mail-m8190.xmail.ntesmail.com [156.224.81.90])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UScxL+7p;
+	arc=none smtp.remote-ip=74.125.82.195
+Received: from mail-dy1-f195.google.com (mail-dy1-f195.google.com [74.125.82.195])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 320C1606A31A;
-	Tue, 27 Oct 2026 00:53:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 320C1606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4878E606A31E
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 05:43:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4878E606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=rock-chips.com header.i=@rock-chips.com header.a=rsa-sha256 header.s=default header.b=IJsQys7w
-Received: from [172.16.12.48] (unknown [61.154.14.86])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 526e8ceb0;
-	Tue, 27 Oct 2026 08:53:12 +0800 (GMT+08:00)
-Message-ID: <bb38e2c8-1868-4a66-9e0d-78d9f68ab4be@rock-chips.com>
-Date: Tue, 27 Oct 2026 08:53:09 +0800
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UScxL+7p
+Received: by mail-dy1-f195.google.com with SMTP id 5a478bee46e88-35d0be18c71so781236eec.1
+        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 22:43:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793079820; x=1793684620; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=FqWB2wVkmtIRr5mzG2098ehyTIGBIw8KJYdLx1Y6IvQ=;
+        b=UScxL+7pN50Cx5va0u4tF9i803tCUmr1fjXNMTJYSvUCBWs81tT39d6+7lEpMpfDuX
+         vRFAdOq0vqk3UgoucZaFTpIiZy6NJFjRBxS4KFUl4j4ibma2Bb21zSP2bi/allqV6elu
+         xcCe0RzlL6Sp1LMcLMhspT1e0k2odbEZ0I7T0BvnSOWF/oR9H1YO1B8L7MD2SEKSSuxZ
+         70GzDqIGlLZ9sciXG+dH6TyTZ+Ouo38rg8BZk1COix1B/Sza/xAHTv78dcPoKw6Tp4rG
+         TYol7YC7pY42JF8uhLOaWpob5I1ljDct2jINcFosy7JpQuQeKeODNoeMD9+guzOgxdPz
+         Se9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793079820; x=1793684620;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=FqWB2wVkmtIRr5mzG2098ehyTIGBIw8KJYdLx1Y6IvQ=;
+        b=ZIdhE6n5DKULtaymTKNYIjZZV44NPZZ6asbi9muXTKUmQa2+kJ0b+n+Y6tnNH+1pUI
+         /rUwmIvrgDRJJrJw0jxNC05zXBxPYV+3DL70vjlzYf9AlRyv18YWY5wJSfTZUNWbGhtj
+         fk0+UQt5sgtY2CJmtGFwWQUmnQDakZ2HhcDLhQC2UatfELSQ8rj0RtaLqXR0wwl5Y4fA
+         lGZSme40q9LFWYGpmicTNhy44fQvz4l6v8bi3u91/2EO6tSGlcwx7FWxIk0zEV+VaLMq
+         WeAz8frm3eX4q0NUAaVg7PiFmRKgE+lixwQ0wfL++Zh3w3yxmzey/msQXXmtruh//aVr
+         RSww==
+X-Gm-Message-State: AFq9FYJZc+hQsZGKMhBd13fsuxY7ZyYqykZBtHK2e0D1yDm3jLq6DNca
+	eM9ntAgQQEJqn35J5IE7mikXbm/TVY4ISWvkViyC92wYB6MSR+0+wd47
+X-Gm-Gg: AYBFou1BQ9WrOdID9DLAUrTXE5a5L3KpBxeY7rAVzpgp8vUgKGMKHoz0jR0lo5Nhp6G
+	XN7C0+6ApsGEX5glaw/BNBnKyxxxFB/l6lmFyxSMUz/EV8ogqLmFQFtfwn8uvup+4ETnh2LK/7K
+	QTY/g1fP1UPXftvYMhnCSZ76Or8QYFcBYuV0e9zo7BIU6vUDYCWDV8p1cpHSWyhuMO6UQr8iGW2
+	u4oqW3iPaCv5jub02ziqVSs5RwOYg2O6Afzlxb2zM6gSEdzUxTMPm9fl20kucVH4fNAhJxRWaZk
+	MlA17+3sRc6VAdllgdm6ICIGnSY/FszjgQVrBQMXiKYv+HdiTOEfjoB663azw/ADnuHymrWhu/D
+	MqLc4X9b/4Q9A1q4MKASqErsVDdkeV7GMapvlf+vLcqDBRXzdNAD3GkwmPKmYm9rycJvWDnIvbE
+	/l32NRucVUHRR7rA5iKt9wVFQ/12ZCInEWWUYZxZoYdv6fkJn3+barJAzv0VfaNPLw3ABjatw8I
+	NZ0Pq91wkPiM8DP1jN2qLxFPNFuxQrQhqH7+GLw/iyqMgMpOyIkRRn2vwM2K/WXEVInnfTsW3P8
+	JL1cqTJuKxWIMQNWaySU85cbnhYv
+X-Received: by 2002:a05:7022:2609:b0:159:d448:dd1c with SMTP id a92af1059eb24-1a3c904ca8dmr2950895c88.19.1793079820223;
+        Mon, 26 Oct 2026 22:43:40 -0700 (PDT)
+Received: from localhost.localdomain ([98.148.34.5])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-19894d59f90sm29033485c88.3.2026.10.26.22.43.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2026 22:43:39 -0700 (PDT)
+From: Hungyu Lin <dennylin0707@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	dennylin0707@gmail.com
+Subject: [PATCH] tty: discard flip-buffer input for TCSAFLUSH
+Date: Tue, 27 Oct 2026 05:43:04 +0000
+Message-ID: <20261027054304.35543-1-dennylin0707@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -48,137 +94,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: shawn.lin@rock-chips.com, linux-clk@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
- mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org,
- linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org,
- linux-usb@vger.kernel.org
-Subject: Re: [PATCH 24/27] mmc: dw_mmc-rockchip: Keep RK3572 NVM domain
- powered
-To: 1579567540@qq.com, Stephen Boyd <sboyd@kernel.org>,
- Brian Masney <bmasney+clk@redhat.com>,
- Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Philipp Zabel <p.zabel@pengutronix.de>,
- Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- Richard Cochran <richardcochran@gmail.com>, Ulf Hansson <ulfh@kernel.org>,
- Andi Shyti <andi.shyti@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Jisheng Zhang <jszhang@kernel.org>,
- Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- David Wu <david.wu@rock-chips.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>,
- Maxime Chevallier <maxime.chevallier@bootlin.com>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>,
- Manivannan Sadhasivam <mani@kernel.org>,
- Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
- Jaehoon Chung <jh80.chung@samsung.com>
-References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
- <20261022-add-board-ok3572-c-v1-24-0b0fd85a31ee@qq.com>
-From: Shawn Lin <shawn.lin@rock-chips.com>
-In-Reply-To: <20261022-add-board-ok3572-c-v1-24-0b0fd85a31ee@qq.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa17ad8d47003a4kunm11e232fa473cda
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDTh1CVh1KTR9CSE1LQx4fGFYVFA
-	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSE
-	pKQk1VSktLVUpCWQY+
-DKIM-Signature: a=rsa-sha256;
-	b=IJsQys7w6ZxV+DGACFu7tp6IC2XPPwcJXSelxQSD1vTGjhE9PoZcuZz9xwdeWJyiMmawVu+MEW+G8WAm2iMk67hmhZOiMs56Iq7OGWJB2jXbZ7rtdDSqWunDi5ua9gLF9vWCsJIjLwel7Nty1TbOGwqxXT82cvpybuOOJTauLtE=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=wghg31XooAJPKL/XTiGnCxCN5pFUy2mBUdUxi6yrLos=;
-	h=date:mime-version:subject:message-id:from;
 
-Hi Cunhao,
+set_termios() handles TERMIOS_FLUSH by clearing only the line discipline's
+input buffer. Data already committed to the tty flip buffers can be
+delivered after that flush, leaving old input readable after a successful
+tcsetattr(TCSAFLUSH).
 
-在 2026/10/22 星期四 0:11, Cunhao Lu via B4 Relay 写道:
-> From: Cunhao Lu <1579567540@qq.com>
-> 
-> Power cycling the RK3572 NVM domain causes repeated SD recovery. Keep it
-> powered during runtime suspend without disabling controller runtime PM.
-> 
+This can be reproduced with a raw PTY: complete an 8192-byte master write,
+wait until the slave reports 4095 unread bytes, and apply TCSAFLUSH.
+The remaining 4097 bytes are still readable afterwards. Small amounts of
+pending input can also survive if they have not reached the line
+discipline yet.
 
-Before your v2 about this path, I would like to ask why you need this?
-The dw_mmc-rockchip controller is always under A power domain on every
-SoC, none of the predecessors need this kind of change. If you see
-some errors during RPM, perhaps you should have a look[1] and check your
-DTS.
+Use tty_buffer_flush() with the referenced line discipline to discard both
+receive queues under the existing buffer lock. The helper checks for the
+line discipline's flush_buffer callback itself.
 
-[1] 
-https://lore.kernel.org/linux-mmc/1768524932-163929-1-git-send-email-shawn.lin@rock-chips.com/
+Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
+---
+ drivers/tty/tty_ioctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Signed-off-by: Cunhao Lu <1579567540@qq.com>
-> ---
->   drivers/mmc/host/dw_mmc-rockchip.c | 24 ++++++++++++++++++++++++
->   1 file changed, 24 insertions(+)
-> 
-> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
-> index 75c82ff20f177..8bc55d4b996c6 100644
-> --- a/drivers/mmc/host/dw_mmc-rockchip.c
-> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
-> @@ -10,6 +10,7 @@
->   #include <linux/mmc/host.h>
->   #include <linux/of_address.h>
->   #include <linux/mmc/slot-gpio.h>
-> +#include <linux/pm_domain.h>
->   #include <linux/pm_runtime.h>
->   #include <linux/slab.h>
->   
-> @@ -528,6 +529,19 @@ static int dw_mci_rockchip_init(struct dw_mci *host)
->   	return 0;
->   }
->   
-> +static int dw_mci_rk3572_init(struct dw_mci *host)
-> +{
-> +	int ret;
-> +
-> +	/* Power cycling the NVM domain disrupts SDMMC recovery. */
-> +	ret = dev_pm_genpd_rpm_always_on(host->dev, true);
-> +	if (ret && ret != -EOPNOTSUPP)
-> +		dev_warn(host->dev, "failed to keep power domain on: %pe\n",
-> +			 ERR_PTR(ret));
-> +
-> +	return dw_mci_rockchip_init(host);
-> +}
-> +
->   static const struct dw_mci_drv_data rk2928_drv_data = {
->   	.init			= dw_mci_rockchip_init,
->   	.parse_dt		= dw_mci_rk2928_parse_dt,
-> @@ -541,6 +555,14 @@ static const struct dw_mci_drv_data rk3288_drv_data = {
->   	.init			= dw_mci_rockchip_init,
->   };
->   
-> +static const struct dw_mci_drv_data rk3572_drv_data = {
-> +	.common_caps		= MMC_CAP_CMD23,
-> +	.set_ios		= dw_mci_rk3288_set_ios,
-> +	.execute_tuning		= dw_mci_rk3288_execute_tuning,
-> +	.parse_dt		= dw_mci_rk3576_parse_dt,
-> +	.init			= dw_mci_rk3572_init,
-> +};
-> +
->   static const struct dw_mci_drv_data rk3576_drv_data = {
->   	.common_caps		= MMC_CAP_CMD23,
->   	.set_ios		= dw_mci_rk3288_set_ios,
-> @@ -554,6 +576,8 @@ static const struct of_device_id dw_mci_rockchip_match[] = {
->   		.data = &rk2928_drv_data },
->   	{ .compatible = "rockchip,rk3288-dw-mshc",
->   		.data = &rk3288_drv_data },
-> +	{ .compatible = "rockchip,rk3572-dw-mshc",
-> +		.data = &rk3572_drv_data },
->   	{ .compatible = "rockchip,rk3576-dw-mshc",
->   		.data = &rk3576_drv_data },
->   	{},
-> 
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 90c70d8d14e3..45cb77185dbb 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -496,8 +496,8 @@ static int set_termios(struct tty_struct *tty, void __user *arg, int opt)
+ 
+ 		ld = tty_ldisc_ref(tty);
+ 		if (ld != NULL) {
+-			if ((opt & TERMIOS_FLUSH) && ld->ops->flush_buffer)
+-				ld->ops->flush_buffer(tty);
++			if (opt & TERMIOS_FLUSH)
++				tty_buffer_flush(tty, ld);
+ 			tty_ldisc_deref(ld);
+ 		}
+ 
+-- 
+2.43.0
 
