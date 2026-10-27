@@ -1,100 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.202
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793089292;
-	b=LPlSAZbk6/9L7K560sz1LDfBv5VjK8QZnEjzyVS+/irJfW3C6gAF3zkDPnNkwLM++UNx
-	 3Cq/QCmhjwscx/wUXp97FVM/FfBnG6eOpkj3mYPWdJ1+kpfprG/wba+sUrNWXKxfvxW+d
-	 8hBnNmulvnl8+THL9S10FoS9qBExAnDMVHyBAXSlVD5/QkPKYR4Yo7+fnvfhlncPkNPJW
-	 iYoaEIqIf3HLnArEOdYjXekJCmwr5n7C0HevCI6CVDlgvZ9GNbroL4EqWM5HoKPrXCOjE
-	 REcqs0ub7qiwcmx5E2XcTj2Cr9j5iY3I+udc1mWZI6cjqEwJq4eZM3c16ODbId7L0Gg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793089292;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.229.9
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793089460;
+	b=d8o1WikdjeLfjGqlOZcm/RIhvNbl9ruy2XIVdw+bmktT/fF4onADfKfP9uhPoKzfHJn3
+	 2lWwnci+yckFn3v3nJ8DcqoPxydYEZvO955XoUNdSbD9Dsgc4UlScgCMLhIWR2Mx7O6R6
+	 EjNAE0itDGwAaX0F8CkcWrSn7V2Hp+s0voht8WM+O6oOrH/RP72J/PGpYtguUhj0x/K62
+	 1oRbYwaFdTfPzd7qoaSwKhrJRrAKe3HHU3+h7N9Jmnv7zYJPdV7pPd910r6UhU4sRek9X
+	 1SD+YFOO7bc1JtL8xJ8UQZMrRH7luWj8Q77At8wiaA9mzBP1jaYMFFM3H9n50E3N/kw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793089460;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
-	b=rgOofjoN99bKQkA/40i5ljw4hchTNOdm5ZZveqLj2VKMX85/7yJetjMppVNWtr5aFcsM
-	 BCDA/zv0lxB+HbLiZMFq0CYkwwxe2nuZCEKP9NFozDlNcjfBDz2RSf6AsQYcix/wKiW+J
-	 zBnM/pijX2DFFDdg9FOyvTmo4z5Nkl0V7ms1jjt/E6wrd8ZFBqWuqxhfplIPi252wS5c/
-	 0qrgXk30Bg+tV+TMknEk5vtCcR7HjZEHdYg3MRwFnaZarh33CDL1J+wmqTrCzeeU1oP47
-	 G3axpSJlnu6rOTkkaglC5IjfR6w0rr99bhldSirk03X23vZfjvwUUX3wqOx6QCh8v/g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=dCICRK3Q2ogNqVz3yPrXVvctFjOQRKEefpiuJ5bCXJ8=;
+	b=IKiiXOc85G2sTkIIz3cXGDk2auBus/ZYHrNMkUH/6rhfpXpzN8IsTX3xkUp8X2+fLPYf
+	 JC7cK3VPV/DtleV2VTbpOesqXqcx/WQ3Cl2L7I4Dj8xN/Jn3IeIuIndtzGpFbFJ816l54
+	 AqwnReId4a57Ag8EIo4a2Tv3Yv5/KN/DIL+kZv8pHWafe/g+hucRd0jolf24bBTy/6+s9
+	 oGFAKhguzoarWF9Va0Oy6eUtCCzfILoPX++AJs2wOOlkw8FY8XfPdUyOzwvgZpM7Fh4Cz
+	 aqG/9766qPkKhMgEqtxWwGdSH27Dd2E3tfp45HlS32H1GhL8MWbQjkfV3nS6Op3aRNw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=JrJzxOmC;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.202
-Received: from mail-oi2-f10.google.com (mail-oi2-f10.google.com [74.125.231.202])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=rrpFqLRq;
+	arc=none smtp.remote-ip=74.125.229.9
+Received: from mail-dy2-f9.google.com (mail-dy2-f9.google.com [74.125.229.9])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43FDB606A31A
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 08:21:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43FDB606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E337F606A326
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 08:24:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E337F606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=JrJzxOmC
-Received: by mail-oi2-f10.google.com with SMTP id 5614622812f47-4f742fc5d09so1087781b6e.0
-        for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 01:21:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793089291; cv=none;
-        d=google.com; s=arc-20260327;
-        b=bJaIZpiZ83tMhXjzPW2d6UE565mjslBlEzz8nus2tBm9a6UQTEX+bB6M0Fq6YLRkqU
-         FpmpvLF8cYZnCtiBiPaTzF8+Ij18GEG6zle48mv49d9kTjDYmHdmcZFJqYjJTNlOniMN
-         FWwIBYu7jylXIiP5WGk70UnuX+mYUPREUShCs6sycUGGQKPK8TRTONZ6vpOXnOnCwF7m
-         3El0VoW9b3e2XDaeTkcJ6zeiJipzL/W9Jex3ngNTKoR/lW3C31Jiey2l1tV84JOkloi+
-         KIUd+cgijTQYftLBb9T7GEttLoyEZdzoJReb0FaEmneGXNwKsLq+wukcQ2T4tZ4cGlfL
-         08Cw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
-        fh=wnuZu36DwD6BPiYJmd4uMI588x5y3vF7ufwIJaP8AQI=;
-        b=qIU9ccCbXvHn9dFSS4no47pG1wRqLQePgu7OAVp72IWILTIjV8zJYsDYgrZwN6jc5F
-         aFXRVSHXIUd8zk+yswI8gw5tNFSmnEFWlxmNMtrGMUbgpb1dibLmdE9wiM9jwNuiHxJa
-         HKWEqls8/nTP8RUFM63A8MyfM/cfoaIGMF5qzbxaYlsnY9SkkkGyGhi+Xz+wi8wtVBiA
-         fmZ/vyVH6/vyQDmUpGcxztSDIw3sdYS4FNYVN+YQ6Co9OAKLmKq7Cd/9Y7RcV0dhC8vE
-         hoK9vgsY84H/EHbbZGV7qfgRW64744/avuvwMTYSHiUWoWnDYsLVFX6ex/h1muaZBMwf
-         3Dzg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=rrpFqLRq
+Received: by mail-dy2-f9.google.com with SMTP id 5a478bee46e88-34cbc588a31so2625476eec.1
+        for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 01:24:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793089291; x=1793694091; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
-        b=JrJzxOmCl/3md7/9Fi86tAUmHB4RjLyVlcTp7r1WUV1Es7K6QmrtvV+LVRO/jRwUKU
-         Du5QtEPYCrYPasuy58hmeSEBeVHBq4+N3JxHfmAC/Ba7MtDeveZmmmyESrELyXeF+51g
-         /LyjaXbvOpzBqoaiHABQwUCSmwQA/GcEiCc/PnBxy7xeSTDy3CJUkHewdZjOubSQP3Dd
-         M3Vo3r78VYIrYMZJicXHVHqZDbcOJWehlyjhjtgAdi2Q1ZuLfp4GNwzcQQz4tpGAMSzO
-         73AodoElXKdQ76NkpHuJYzmdN3y5YQ5abefMX9Wlo5DKQuiXCIcL7P636/qs0DDBpARG
-         OPNg==
+        d=gmail.com; s=20251104; t=1793089459; x=1793694259; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=dCICRK3Q2ogNqVz3yPrXVvctFjOQRKEefpiuJ5bCXJ8=;
+        b=rrpFqLRqQqvBTd3U1WEcu/ms1CK7EvAZFXuWlOfW30Ym1a68niK+tvLZbSbKQuGWJB
+         Mi7XdlfcXb1A0DmQ6lf6SGjyU/ljEeYdaBAV4HNw7MKYhqEES6amn0OInwODKIm/v/dI
+         6QEQjHtoikh8Jkg1E3Fo1vHoCAxSCQy4g2Gi3E3NKOGNrb4cuoQJEq0nq+dH0+prWYc6
+         djSikYcYT/1C+4LxVblB19Uw88FSehmWorXa0iRPqPSGL4u6wNtL5qbLlvo/wxUTkEgY
+         5LuXXdk1fo5o3NISg4PcyX8+Ok4RGYlDHxS2HAXkJG6ssQxlmdQg8QzCO21dADGV+zyA
+         4ktA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793089291; x=1793694091;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=9mn94YuDHCKNZzi8cPTFAQu9swr+S5PrYRBsfhBVEmA=;
-        b=fafKakMt0fH06MpmFZTB8e6tbenKYZv6NEA86MhbtHjYBSOl3+kWLonKH8qRn1n6uG
-         5UKns8JEIHzlrguHQLhFLwxoUhv6yg/7Oqbg3MFk8bBTWIBD57Qdw5PLYuokBhYqo2fb
-         6v26pApksHta6CF41CdW9cI+X6wV/Z93GmLDvsiZYSVy05+SCxl9rHjkBEgakAsv/B2E
-         Got8UhqBGuKXkfYqREC7n9rH6teVy9l5BWBh04zS5jv6h0jQSUfLnrlbGeHZXW9qVn+c
-         9wLe13q5Iy3ht3kvr0upsAJe6l4nVjzFDn2A1MpcrAk5rmraBQP5Fijm5Pw1Rw9Z7pD6
-         oegg==
-X-Forwarded-Encrypted: i=1; AKwUvBz1bgTQ+VWVyvlac8fT9lTgmvAjH0tYuGNAYd6U4vJQQwn7Nu2kxOwZF4c7wkJbokSIHhbr6BrGp2l9I3I=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKb0zLcvFqrmWMwdVxaaJTI/cuIjP4dhcDg74LqLyHvFOTiPYBM
-	HDJ/S5nn+UfqbseE/YXZBVEyNp3F88g9ZB/KrA+OHQ1bGb256iRMPo/QD7kmdQLsfqpi9EnRQWg
-	7Yj7/F2FMrP28VFSyvTTl6t7x/sIekg9bm1HRiogDYA==
-X-Gm-Gg: AYBFou2rB5egjKtArAZKp0YT33BfDU+ntuECFG6M6lqWQxrPSPxYvrwy5tuhi6Xue2m
-	GtFIs4eXOJ5FidM8GkDnHMkCEQrVsiwhbP+pAB3vATt532zlWCpyncoFEGc52WS5G3owzsuDwqF
-	ROYN8nQt6AToPiZ272dlfs4Xzb4wTz/6rOR6wcqF98DNnJ+xz35J5fxLUGZ2Nnk8t41aQMxJ1h7
-	QRZZYWiuBtptX9a2W3viZSmuZynxw1+fb10fi63dL/fdDpFSLO/KhhhkvWI+vh9iR/Ff5W00aWc
-	b/LYFP/Xts/rYiLYbVySd5mMAZpTFa24TkpyrR5lDEpD4nFX3DhLmzhbFSByq7nYQkR8Sp81Ia1
-	XNwvMukrbbjtSZXUaB8rBxbiu+6J3CvgSE4d2G/timABkXEaDQL5A8XS/+5fc5IzDf7lfdhozb4
-	bnIDBusZDlCWNG1Ff/
-X-Received: by 2002:a05:6808:198d:b0:4f3:68d6:f0dd with SMTP id
- 5614622812f47-55c002f88b2mr7047283b6e.38.1793089291107; Tue, 27 Oct 2026
- 01:21:31 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1793089459; x=1793694259;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dCICRK3Q2ogNqVz3yPrXVvctFjOQRKEefpiuJ5bCXJ8=;
+        b=2jdyNu2/1IvV0qASKMAsreAiOPGh+wBTrrMm7wy7XIYUNBbhrqc46dJpI/WyO5rDEe
+         P31slphAB8TXEpKvzoP8cOANhU2bjv9NtfmFT31x03He/KKD33FUMSlQTnfuZUZXmqz8
+         5CdmQu2z4hr3DpF0G0qmDGgjeQ60ZIFMkMXi0XSJiDBYjo4mpKapOfSvdtZDgDDoNw55
+         6Chmc1+KEoFqP9Qtzc11BpQxgpQBBeKoR9vesWS2edVJpulocF670GEUzkOXIeaICTeu
+         vc1kDioVxSOcFhMdpKbv3mAxqapKQLF5821Vg25xRxjL9AhXJyPxPr+XBm+0BU5SOlgi
+         4eGQ==
+X-Gm-Message-State: AFq9FYIR98kWdgao9uDzQ6Bgphioh7o9PQJcZJXjSIzJq4NkZ8CiQvqB
+	nZI37vleBhJ/FWXpPO6lskyrVtx0S6kul52iwnGyj4VJtHMoopNtnHh4
+X-Gm-Gg: AYBFou3EPzwYDQEmgdv6MLWZoF259JidfRZodM1oHB1mWWmAC10v+ZQZ6dzR5LUxQGm
+	WfwSFD7uvMsba0fotSG7gXvdCg7sv2GMaKNDr3crHzFVxHIcEaeM+CI+69+CQXRRJikS1PY+Csu
+	0MhGYSuQx7R0zt9HXZyLGFfZwha3hc9l6hChYjWhIFM1wtXuHfm8K+9TFojUq7eQ2RQmQTFrFR7
+	i9XpClyB9i9IV8h7cNIHfgdc8XpFCaXsMP2I1+NhujI414XOaFUP8mRScRecwLZLbnUuc/xYmY4
+	C1d7CFDBISyJFJoo0az0wMaA2kzDANIuyNgQrrR1ko4T1iP6QsSeDoYfYgnjG+mwH5cE2p9jO5f
+	TfKTT91ZMVT2ZsJDB5BVX8rVFH8lJMREC+GvhBJYejx754MX6+3SJYSvfL1UzhY/XFRp2+BYQ0h
+	Ypy75cU8D04YAlHDgWw6n0vGo74ml/1XMzF+DU9ojKTya/z52hijbeRdPI8OsYk+nLHWZ4XdX9N
+	J5R3qMdVfUC8MznLgDIEtHHhFNfDLBmtDEicmJFUmaYuyFw1iICXOdRF/xCXWbwrxyaP+jeE8NI
+	emZV560=
+X-Received: by 2002:a05:693c:87d9:20b0:369:987f:d15e with SMTP id 5a478bee46e88-369e8336389mr13936464eec.2.1793089458652;
+        Tue, 27 Oct 2026 01:24:18 -0700 (PDT)
+Received: from localhost.localdomain ([98.148.34.5])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a03bea5d4sm12404412eec.6.2026.10.27.01.24.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 01:24:18 -0700 (PDT)
+From: Hungyu Lin <dennylin0707@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sashiko-bot@kernel.org,
+	dennylin0707@gmail.com
+Subject: [PATCH v2] tty: discard flip-buffer input for TCSAFLUSH
+Date: Tue, 27 Oct 2026 08:22:36 +0000
+Message-ID: <20261027082236.56724-1-dennylin0707@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -104,29 +95,55 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261027054304.35543-1-dennylin0707@gmail.com> <2026102711-venture-amicably-24c7@gregkh>
-In-Reply-To: <2026102711-venture-amicably-24c7@gregkh>
-From: Hungyu Lin <dennylin0707@gmail.com>
-Date: Tue, 27 Oct 2026 01:21:20 -0700
-X-Gm-Features: AclHuK8mKEFqNZ6r-25CgQcNCoeN3KIl4Rlv2fmwKxPrps12_lcpFHKvKnkhJ5Y
-Message-ID: <CAGEkeHePGOKXsHg-bqkJH4Dpn=OSxTQx8z5vbjW18uSWHqrpWA@mail.gmail.com>
-Subject: Re: [PATCH] tty: discard flip-buffer input for TCSAFLUSH
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-> What commit id does this fix?  How was this tested?
+set_termios() handles TERMIOS_FLUSH by clearing only the line discipline's
+input buffer. Data already committed to the tty flip buffers can be
+delivered after that flush, leaving old input readable after a successful
+tcsetattr(TCSAFLUSH).
 
-The missing flip-buffer flush is already present in 1da177e4c3f4
-(initial Git import). I could not identify its original introducing
-commit.
+This can be reproduced with a noncanonical PTY: complete an 8192-byte
+master write, wait until the slave reports 4095 unread bytes, and apply
+TCSAFLUSH. The remaining 4097 bytes are still readable afterwards. Small
+amounts of pending input can also survive if they have not reached the
+line discipline yet.
 
-Tested on ARM64 QEMU: an 8192-byte PTY write leaves 4097 stale bytes after
-TCSAFLUSH before the fix, and none afterwards. Built the ARM64 Image and
-32-bit x86 tty_ioctl.o with GCC 13.3.0, W=1.
+Use tty_buffer_flush() with the referenced line discipline to discard both
+receive queues under the existing buffer lock. If the line discipline has
+a flush_buffer callback, also unthrottle the tty after releasing that lock,
+as TCIFLUSH does. Otherwise a paused input source or sleeping PTY writer
+can remain stopped after the queues are emptied.
 
-I'll send v2 addressing the unthrottle issue.
+Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
+---
+Changes in v2:
+- Unthrottle after flushing when the line discipline has a flush_buffer
+  callback, matching TCIFLUSH and addressing Sashiko's review.
+- Add local blocked-writer and serial-type N_TTY flow-control validation;
+  rerun the original functional and sudo/PAM tests. Test harnesses are
+  kept outside this patch.
 
-Thanks,
-Hungyu
+ drivers/tty/tty_ioctl.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 90c70d8d14e3..be764f04bf3a 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -496,8 +496,11 @@ static int set_termios(struct tty_struct *tty, void __user *arg, int opt)
+ 
+ 		ld = tty_ldisc_ref(tty);
+ 		if (ld != NULL) {
+-			if ((opt & TERMIOS_FLUSH) && ld->ops->flush_buffer)
+-				ld->ops->flush_buffer(tty);
++			if (opt & TERMIOS_FLUSH) {
++				tty_buffer_flush(tty, ld);
++				if (ld->ops->flush_buffer)
++					tty_unthrottle(tty);
++			}
+ 			tty_ldisc_deref(ld);
+ 		}
+ 
+-- 
+2.43.0
+
