@@ -1,54 +1,53 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793099436;
-	b=oOtK0BgCxpISZlRJcVcwzu/vKSl9M1XHTTI5QVYxtkvKAZpALDfyW19CTif03HQ/nMCI
-	 PiqZeMYlpMFt914eplVI9iLaPusy35r+L0+NSKhhSS60xhG+V37rFAW9RHS+yie3DhQkG
-	 oDjrJVgc83oWBqtfj1ZuHNZJRrQ32hjv+wEctyfUtui6w0kdvB3m2t2Ezhu2mWNE06Jgr
-	 H1Uaa4lJLkwY2rMH3qu4B+3bqpaabiLsGqitmhrYe/h3l3sFy3CAnv+164i1Vi/B6CpEI
-	 a3NkEEIDXBYeZYWqVzY04z3sXB77cRHWgEEUP+SNtLHtpTym07UWEMMGUKn/dClBo8g==
+	b=DI59vptgcURJEPyeQOVVup5XgOEZj3aJJdtkxi/G7n1Za3u7dpo/hFIkjDgOiLY6GO06
+	 M7OY030K8+RjAW3womyVG1F4bLKd7z6H5b5TR9LCmvfxyq/IlSVEeqL1Y5eJ/XH45baJV
+	 ptXmtiQRdKubwo5dFUvJCjASbnaWO5J9D43yvFu2uQCrGBdtAUZdJVhEENFy4aC3XBxyk
+	 EmLf+EMzFyxqGM21le4PmtBjHHxmbN+HE+8NmNO5yn+KwaJczm8BQTTUdNjjqcCcj7T6n
+	 kfD5MW6nGkqO7e8sXUS31DXC38ImHYwW0OWD2FMrrZ/bNsB9L6PrU/Z3z5Jlzi84l/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793099436;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=GaI/AWCP3GGtpNnI8+paEZfER2evw1y8OtVQ2DAfXi0=;
-	b=BQURMpk00EV50E6DCY/014Cv5FWJOmIy/usV6kNzUPnt2hZoRxDsW447pnIiQTDDPQrt
-	 kD7KzQNJ1nJpbzljb6ykcUFv3PdgZkiHm+1Zlf4Qg+VQ1BudNhsVtA6CKgtphmdXvvT7x
-	 8+8Xs87Ae3S81S3X3H0J3fKrTHOj0Tc0WkO9YeOWQbiuAlH1a8ws4taWkSjl7LyPngGdM
-	 KtORS1F/BlWq6c4WEcVoHQCA+MKcysHCe1ehJzVB1XR+502hDbqgnkEh50hnPjWqO+Zex
-	 VzYIgqmcIef+Fhf1lrAdsIQJ0yD3yomR3ZOZviCXjrk2wbZRQX0AM7U8vPivyLHN4cQ==
+	bh=xNggA4q+TpD/ZeSmFeFebi6vf/sK19VL0PRq6EaS6K0=;
+	b=A2BHDdsAhJfTGg8+W42bqkTzixePqNJF9OG0wgPGW81wkJZwuhwdJEPTb9i1Lp+zB7D2
+	 t1kfwbhBj1D/KXHLvJnBEXMFZWfnJTs5bC2DZowWEZosROCjgSxwaIXA46elaYiI6yigF
+	 UmMK3klPti2iaqTTIGzgvFs68Ko5S1zNIxSajCYyV+gbvhGn/VCPn6rF3MX8FBDNGxRoD
+	 9LcgTgaLHIWTHw7MfwW3IOoLoeTI5E9J3h1IiBGLLHn3A11GgI94YHs3HuLmFOkfwRogz
+	 uXbC0zh9XWL5qkC2YtAqi2/lhqT61jQL9TzPgdwKxU6GsCKzLIdirCeCkwIA3r9x13A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nXAue2Ff;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Oi3pIfyd;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C3C606A31A
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:10:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77CB6606A31E
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:10:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nXAue2Ff
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FAE81F01825;
-	Tue, 27 Oct 2026 11:10:35 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Oi3pIfyd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0821F01828;
+	Tue, 27 Oct 2026 11:10:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793099435;
-	bh=GaI/AWCP3GGtpNnI8+paEZfER2evw1y8OtVQ2DAfXi0=;
+	s=k20260515; t=1793099436;
+	bh=xNggA4q+TpD/ZeSmFeFebi6vf/sK19VL0PRq6EaS6K0=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=nXAue2Ffv/Yvz4sBHEm0+joVMord0sj7as2anFdJb4ubsRQp7WVGxOQKhAocAAkDi
-	 JA0/ttLan0lnXW8Q+DO+GZKMvbgthDZ53jo57J1vEtgh5t2y+ZjRVIV48G3/VDaWAv
-	 y4iapkcyXLG8afqWrC9ZXPpLl/fjijimwxNwpgQGA2J6slShRjqvQVqnKKOf4p50Ge
-	 QbltxW35PkZPkmAFjqKyW9vMhpSknjOBvAqURvni6q7MEnvrOE+7StNcGuHuPzOCza
-	 EqlZJ7CQC5x8xWfv6ch72hF5tbTTYywzya8IcwWxXaVc/3M9yBmS7Z8kjh4OuovBQC
-	 64AbcOQqwPjwg==
-Message-ID: <sashiko-outbox-186412@kernel.org>
+	b=Oi3pIfydi2YsS1/Nlw/WcBN38yEbO8Ykakx9k6mUoBeD90jGNoGjF2VkbmOZueLCB
+	 2gRCRHezfi4hgdcmhlGj5DyiojvbXbW1fSWKQAEOG4s4wQ5UVTfrh0/y8RpI3xS/Ri
+	 Ml02v0dv+R2Z+6OO+vh8jrNZRqJfjkgACTCUkcC5I+D+MDs4j2idh76gk19mbAmyNs
+	 LgkNUtP4lyLxBfVsZd8CozBf299GtVpq2F4XHW041sRJmkYxDPfzkVSQc4uVUEFdBb
+	 lqE2Gd2s1V3uNoNyGlo1h+wUg7oj+nU5qKK8q6LIPLYg9UqjR0DmUzTFvv9SSuQrkh
+	 zq114ii4U2guQ==
+Message-ID: <sashiko-outbox-186413@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 09/24] serial: 8250: 8250_bcm7271: fix DMA address
- truncation to 32 bits
+Subject: Re: [PATCH 20/24] serial: rda: free the interrupt on shutdown
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
+In-Reply-To: <20261027-tty-llm-v1-20-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
- <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-20-99b0202ae546@linuxfoundation.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Date: Tue, 27 Oct 2026 11:10:35 +0000
@@ -61,26 +60,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Joshua Rogers <linux@joshua.hu>
+> From: Josef Bacik <josef@toxicpanda.com>
 >=20
-> The local variable daddr is declared as u32 but assigned from dma_addr_t
-> fields (priv->rx_addr and priv->tx_addr), which are 64-bit on ARM64.
-> This silently truncates the upper 32 bits, causing upper_32_bits(daddr)
-> to always produce zero when programming the UART DMA descriptor high
-> address registers.  Change the type to dma_addr_t to preserve the full
-> DMA address.
+> rda_uart_startup() requests the interrupt, and nothing ever frees it.
+> It is not shared, so once the port has been closed, the next startup
+> fails with -EBUSY and the port cannot be opened any more.
 >=20
-> Cc: Al Cooper <alcooperx@gmail.com>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Free it in rda_uart_shutdown().
+>=20
+> Fixes: c10b13325ced ("tty: serial: Add RDA8810PL UART driver")
 > Cc: stable <stable@kernel.org>
-> Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadc=
-om.com>
-> Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> Cc: Manivannan Sadhasivam <mani@kernel.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: "Andreas F=C3=A4rber" <afaerber@suse.de>
+> Cc: Olof Johansson <olof@lixom.net>
+> Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-tty-llm-v1=
--0-99b0202ae546@linuxfoundation.org?part=3D9
+-0-99b0202ae546@linuxfoundation.org?part=3D20
 
