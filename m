@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793103521;
-	b=g4zr51NfWN5Rl9B9ekElB8ujwr0Ynav8QoSjmxhOSf2w4q93PB9TZ9faadUKvE0R6D7H
-	 e+xF+2fG1wRwKE1+HyGhGwP8Q6AqDoh/YtxJPFso/cF8Ge+c2jhBdx0TVcuEi0CsGse9f
-	 5pQW1DLS10rCp0b7StI3qWB0eoU8UL8zmxDMSRvqUe4Q5p7+LJiYMA7drxiapdhr96y8S
-	 hxvYOJ/4/DlSwkVQj64cbqY6574ThYTzY+Mvy1soa1QjWdWGIOlVUKja+uhx27rCQdfyx
-	 8ZeUpjMKan2JjT5WTaSU4KxyxoHMS7WrYqsgjMW2Q+Nx60zPanWKlGBPhn9ZPktHeJA==
+	t=1793103881;
+	b=1QhFxoOWMvqRo/pmH3IjgQxY2uuVUKaEnAnYG4rFi15KTWmUjZkJJHIxhMi9Iaxe0RGu
+	 FEBQNremOp9k0Pzfxbql+TG793bcWYGopMv0wTlfTz8/2oRWG0Gj2NCPaqTCR8HMyG7DC
+	 E6evBvI3WxOK0yy2mEeUVH3s4MJaIMwHy79mi8NUdyW4B8N6WweMjSN8vJffHrIJXTF/M
+	 GubybyIUkitpsGZ9k2d4+0GA4orMHmpdbyMcbmDMEhnYskT9Z9PEyyAjKTGXBw1nOzvFA
+	 a1IAIOfIjx1KSXy3ofj8oenBz50RRZFvMBJG7XZ/vpfPXB0sYb4FphImjzcDEVXnGyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793103521;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793103881;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:Date:To:cc:
 	 Subject:In-Reply-To:Message-ID:References:MIME-Version:Content-Type;
-	bh=DzCwZvkcLfqHWoI21xc5lzHJo5SMX3ZYwTKHsqRbRnE=;
-	b=kX11+xJ+SCh3pVe049z2AERPJrALKqBd85I01WgEbAKLDTtEbqIdZe2yUYIy9uOa/Dol
-	 N/ems61AZXdNakKf7fpQFaLG6NMl4oWZWJnOoc7+IE2ayZAzb/fzXwzBfJLTLEKtzD2js
-	 uVQak5HAhMmAKJg4g3Sdg5kggvXMsgBK3GxHOm54a/OG7Jkw4M3QccOqEkr02xxMukCam
-	 SxbcoG6sgRRVc+WJOTeyDpP/swD06/2K1V0MbTJ0qysBdA+oFdQH2O5ejJsV7/MeC2laY
-	 UBkpXN+j2EWih2IVdlnpUCQOKreAfPm2FfwF3UahssIopjZMWsBePD569hMOhWPPEKw==
+	bh=ho39qNMcC6CxFL1GKYAAhv8NSEftsaAoZOXWxRCx/rc=;
+	b=nI9MXZu1qwnIc9FGxbCAReekiaRGGQ4O1f3oKDsVFGQz5mDafc1U3+wVCRnZjqdx//pP
+	 Q1HPHTFUwL91mAJFFHKlPQkLI6tTgOU2WohdhJPdYKvlMB14hGvzNjbQtM0/hHEh6cqzn
+	 5wj8r8V5cZQC3qVm4Eu5qbeos/7aWEF8yJDmkGhRZff+kylHk4JVNRc21prrjnHXoEfkZ
+	 Ic9ucMmwXsXC2x2wV+uR3AOKCk557VcH9ts7FUrrT7HODBHzPZefdjzEXG6GPGeSDRf1c
+	 AGpJHCXZnDzMGRaxW8iqntQz5bPl4YnpvmGVYdgV662mio3r/rawOWfgELlW7BkQfQg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="X5R0/3XT";
-	arc=none smtp.remote-ip=192.198.163.9
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZStS2jf1;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBEFA606A32A;
-	Tue, 27 Oct 2026 12:18:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EBEFA606A32A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D377A606A322;
+	Tue, 27 Oct 2026 12:24:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D377A606A322
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=X5R0/3XT
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZStS2jf1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793103521; x=1824639521;
+  t=1793103881; x=1824639881;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=fF6s5/jC++0dI1mWo4+V0r+Q4t0noWQYlk+PHjFdPqg=;
-  b=X5R0/3XTigWXRRpFiXIRtRNigHus6HhZJP+bmIZaYNecPDPSBoygJuRd
-   3bv+/OFhJauUsLmIP+c5ZGx6U4WkdzSCJcxKDk1612imCXxkuiHpm57SD
-   4Y0rGElZXkWuW4FJLmjhhIl47FIuWardNL1JR7SSJq5Yy+V+o5NGtMzKl
-   mxtSzp4JEyTB1BJAyniM8qaGSButhim9BYQlgDfDFf1A1gDk4BSzNx/3f
-   kmqIMnMdcUFPxJla+LfumIXpba/H/XTTD9DaP4cei2q8FdPNwBY39OI9A
-   xvSxRKMxTjm28S75yJA77X/gkOoAjay5Gpl+UXiuXP44K3N82ss1VHRTV
+  bh=TWL5dN+mjyDzgMMQvDtI5ixkFxgDK/ODv4RJpZYzmtg=;
+  b=ZStS2jf1IzSM/x4QDmL4AWGYRsQRMeXHots6ieErgJbalHvdjVUiKKNz
+   4bLfzME2fwU5VroMBf33MWkdvRx6ffe6S2Pe44NDUOGMg8PPq5ZfT9mwx
+   nNcBC+BhwDDH7CUmf6rNq++O8sZ1vzOmyu15hBHBbyiisD+3ONS9VkPrb
+   IF1UBg1nM3vuzo26+1Cc6SjTB43Vm9tChupXLilJ/DA/luE0YmVr4XXaY
+   cnwI8O20g3RXekalLNsfapmjjy+ZWCcai+9t7+4QmuWsPol99teYlkwPW
+   bi4EY7vrgxgTIa6WgyrQ2N+jC4vU4M8p/9LiLceRp/Os6li8PCDqki64D
    A==;
-X-CSE-ConnectionGUID: 84n5gxZ4T5mVRUIaOXJLfw==
-X-CSE-MsgGUID: 7J2CGshJQiq0V6ipHBDSpw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1685373"
+X-CSE-ConnectionGUID: ZHMQuN/aTNWwF5sjzc98Ew==
+X-CSE-MsgGUID: pyA7aC27ScOM4+yImO3OxQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1809438"
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1685373"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 05:18:39 -0700
-X-CSE-ConnectionGUID: GFWnTKVEQgmpzpLI3xD0vQ==
-X-CSE-MsgGUID: vQ9sdgpxSAWym7zhX8OKwQ==
+   d="scan'208";a="1809438"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 05:24:39 -0700
+X-CSE-ConnectionGUID: KQo5JrzDSxuNpo56U58jeA==
+X-CSE-MsgGUID: 1P0QcvgdRL+cI+i1tXpdAA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="4911783"
+   d="scan'208";a="4436270"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 05:18:27 -0700
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 05:24:27 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 27 Oct 2026 14:18:24 +0200 (EET)
+Date: Tue, 27 Oct 2026 14:24:24 +0200 (EET)
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
     Chris Mason <mason@kernel.org>, Josef Bacik <josef@toxicpanda.com>, 
@@ -89,13 +89,15 @@ cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>,
     Andy Shevchenko <andy.shevchenko@gmail.com>, 
     Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
     Al Cooper <alcooperx@gmail.com>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, stable <stable@kernel.org>, 
-    Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
-Subject: Re: [PATCH 09/24] serial: 8250: 8250_bcm7271: fix DMA address
- truncation to 32 bits
-In-Reply-To: <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
-Message-ID: <f8867635-8f50-af88-dd81-4fba99f17e13@linux.intel.com>
-References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org> <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
+    linux-serial <linux-serial@vger.kernel.org>, 
+    =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+    Bjorn Helgaas <bhelgaas@google.com>, Lukas Wunner <lukas@wunner.de>, 
+    Marnix Rijnart <marnix.rijnart@iwell.eu>, stable <stable@kernel.org>
+Subject: Re: [PATCH 11/24] serial: 8250: cap OxSemi Tornado UART count against
+ BAR size
+In-Reply-To: <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org>
+Message-ID: <e407b362-1adc-b314-cd51-9fe2926411cf@linux.intel.com>
+References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org> <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -105,12 +107,12 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1814154233-1793103504=:1182"
+Content-Type: multipart/mixed; boundary="8323328-540446628-1793103864=:1182"
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-1814154233-1793103504=:1182
+--8323328-540446628-1793103864=:1182
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 
@@ -118,42 +120,65 @@ On Tue, 27 Oct 2026, Greg Kroah-Hartman wrote:
 
 > From: Joshua Rogers <linux@joshua.hu>
 >=20
-> The local variable daddr is declared as u32 but assigned from dma_addr_t
-> fields (priv->rx_addr and priv->tx_addr), which are 64-bit on ARM64.
-> This silently truncates the upper 32 bits, causing upper_32_bits(daddr)
-> to always produce zero when programming the UART DMA descriptor high
-> address registers.  Change the type to dma_addr_t to preserve the full
-> DMA address.
+> pci_oxsemi_tornado_init() reads the UART count from device-controlled
+> BAR0 memory without validation, allowing a malicious device to report up
+> to 255 ports. Cap the device-reported count against what actually fits
+> in the BAR using the Tornado register layout.
 >=20
-> Cc: Al Cooper <alcooperx@gmail.com>
 > Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: "Uwe Kleine-K=C3=B6nig (The Capable Hub)" <u.kleine-koenig@baylibre.c=
+om>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Marnix Rijnart <marnix.rijnart@iwell.eu>
+> Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 > Cc: stable <stable@kernel.org>
-> Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadc=
-om.com>
 > Signed-off-by: Joshua Rogers <linux@joshua.hu>
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/tty/serial/8250/8250_pci.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 >=20
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/=
-8250/8250_bcm7271.c
-> index 974d9af146a1..4fdd261e55f5 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
-> @@ -315,7 +315,7 @@ static int brcmuart_arbitration(struct brcmuart_priv =
-*priv, bool acquire)
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250=
+/8250_pci.c
+> index 1dda63be6b89..9919504334bb 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1083,6 +1083,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *=
+dev)
+>  =09u8 __iomem *p;
+>  =09unsigned long deviceID;
+>  =09unsigned int  number_uarts =3D 0;
+> +=09resource_size_t bar_len;
 > =20
->  static void brcmuart_init_dma_hardware(struct brcmuart_priv *priv)
->  {
-> -=09u32 daddr;
-> +=09dma_addr_t daddr;
->  =09u32 value;
->  =09int x;
+>  =09if (!pci_oxsemi_tornado_p(dev))
+>  =09=09return 0;
+> @@ -1095,6 +1096,15 @@ static int pci_oxsemi_tornado_init(struct pci_dev =
+*dev)
+>  =09/* Tornado device */
+>  =09if (deviceID =3D=3D 0x07000200) {
+>  =09=09number_uarts =3D ioread8(p + 4);
+> +
+> +=09=09/* Cap against BAR0 size (Tornado layout: 0x1000 + n * 0x200) */
+> +=09=09bar_len =3D pci_resource_len(dev, 0);
+> +=09=09if (bar_len >=3D 0x1000)
+> +=09=09=09number_uarts =3D min_t(unsigned int, number_uarts,
+> +=09=09=09=09=09     (bar_len - 0x1000) / 0x200);
 
-Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+IMO, these literals would be better written as SZ_xx + make sure you've=20
+the include for it if changing to that.
+
+> +=09=09else
+> +=09=09=09number_uarts =3D 0;
+> +
+>  =09=09pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
+>  =09=09=09number_uarts,
+>  =09=09=09dev->vendor =3D=3D PCI_VENDOR_ID_ENDRUN ?
+>=20
+>=20
 
 --=20
  i.
 
---8323328-1814154233-1793103504=:1182--
+--8323328-540446628-1793103864=:1182--
