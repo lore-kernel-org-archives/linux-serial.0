@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099260;
-	b=4wmMekPWHMi48kyd35mzQL8hwbI2INUp6MaiVSlSJ3fCyoil7AmPli/7K59o0prSkngi
-	 aA7b9uLiiyg72sJ6xzWwDDQHY1DQ0hPA6yMSPGdp83wAywf2MXQVTD+WKTipkwOrjdVJi
-	 MnbQO2ZQ8wNM8GJ9meXD1qfuXYsUMumPTgzUapP0rCJqWZ4LPdv2r7ZcnWXHvr88/bGjm
-	 VcGp8ZNuM6AcbsFJrM/CauWyBh9P7zVRyQ+Emw+WWFMPI1dSLWdoqM/wKA2DCdyUaQkrR
-	 Q1B/JCaXDxPVl3DIQfbOSAasxBsMW77UbbzWiIsUcKV+BjVSGpGWw/KZKLJqR9brKlw==
+	t=1793099262;
+	b=VM95deYVIJ57wo1RX+Fcdin4DSb9Ko0Pay3dwpt+4r6+SSnInz6gMlH1IUwpcz+pFrCp
+	 uCeb4opJJBXgofQ8QsAu9Z2DaliAf5pEP22FMBBR5svzLI7gWYLGL1poI5cLTr8BV7W4F
+	 7/driv3Z1MxhuNqAU84I9T3QpKyMErdRelrnOQG2kZ/64RwX8LoyQVhDV0sMiisNiyPH7
+	 k9hynW08fSXLtTDwlqEFTU4vWDdR9AaqlbNoTQLe7KZysljwgwwzQly+ZSP/6FiVD2/W0
+	 9ryJMIldRQ50cmrv5IPKgfLjHd5JJ93DlbyeVDtkI8aiTIQp97I1kybjrXnFh4tbwyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099260;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099262;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=dNl5ic2amd4z3lkcUUtwLKZNHP6Pu6cXCxhMSbp50xA=;
-	b=Ev0OlvXIFdDr7aSoA9CvTNYiqEN31JWmAyOExUDAEk7Wb8znVGFLMpkFRcRiw3KDFHLL
-	 RoN7yZu3XkzAjVxtwB9LKJerNPTj1Q479Uy4yMOW2thSNGkqO7gZapXxrHajpqYlZ0SRc
-	 hyeXDUU1pzu8Dpl8Z2hmYYtzDk6x5hKwWoEuGBz6RfxQGUeT0R162tjw3n1rbsI4juMdO
-	 9W9ap8KGaq2qw+yms1LGyphEju85ROIxYXxLZ+Bfq0/OqtnhRZlb4IDYBXeJFUOsz0zWY
-	 OTClVOY296zICYHIywGig4Ce9vd79EoTQWefNd8hqusDcxU6HZ0I/XGHOS0VejaMCBw==
+	bh=buI4Qt5MRZnNlVCTP2wVHcR3KhDDKPgLvdZ/HR1zU3I=;
+	b=W+zVaZrztdTVZrfkCfSol/jbJ7I9+MiwdAsJSfVse5q8HJK1lJsc8H3Oopgs1YRdRfNO
+	 gcuo2sweaEonQZaMiEa8gyDkAtel4nKTHcopQoD2jpfO0aBfr3r9Jd1vPigZXvDHJhx8W
+	 at+cauT2PeFTgO+7nn2/dhcoApQ3frAD9s9Y85NPPWvfmlvaH0bj5+Uq/JIYENblp1/O2
+	 IQ7l68bQWe/BVtXxGCHZMLJ50BhL3ujfUIqrBj//aTn1s0E4Mhm7ID7wp6eQcD/XlXoTq
+	 bS2Gl5RvivIhTC7ux6KeNMw/ZTr4FvnnLzprUgGcWMABPKr5NWtfi957ZTKveMUKiOA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=hX5C9xuN;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=FrqZA0mS;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A890606A9AF;
-	Tue, 27 Oct 2026 11:07:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944F3606E7ED;
+	Tue, 27 Oct 2026 11:07:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=hX5C9xuN
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08B0C1F01825;
-	Tue, 27 Oct 2026 11:07:39 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=FrqZA0mS
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C478F1F01829;
+	Tue, 27 Oct 2026 11:07:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099259;
-	bh=dNl5ic2amd4z3lkcUUtwLKZNHP6Pu6cXCxhMSbp50xA=;
+	s=korg; t=1793099262;
+	bh=buI4Qt5MRZnNlVCTP2wVHcR3KhDDKPgLvdZ/HR1zU3I=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=hX5C9xuNNaw47Cy0z1djiAIOS+OFgwDnL1OJHunbqFE/BuzztaruLk+por6gAM3my
-	 OUR7K+uAS3dPDwAh9YS+v2BB9tc/TnpiwchCHV4LKvu16vIn4o7miiPWMzxJILLM6A
-	 QgrmrG67SNZH6c35+ULo3PKMikw6RwQ/M+3H7Nm8=
+	b=FrqZA0mSpVqMgc6aD9WYenjHG2XSHA/FbVzzTQs1cXLK7Uc/fi3Jrc3Mcu7B3swQn
+	 iOHIzAaxk4faWR8CL7Dbr3931wFRuefKuVIttNnYAiRn6RdHCQ7UI2SMu0FLgKIUjW
+	 rs4JHBH2D3Pj3QqI7UJhVFHURZYkf0F/Jbx5ph+w=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:47 +0100
-Subject: [PATCH 21/24] serial: samsung: don't leak the tty on an RX IRQ
+Date: Tue, 27 Oct 2026 12:06:48 +0100
+Subject: [PATCH 22/24] serial: samsung: put the previous baud clock
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,7 +51,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261027-tty-llm-v1-21-99b0202ae546@linuxfoundation.org>
+Message-Id: <20261027-tty-llm-v1-22-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -84,64 +84,63 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1703;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1784;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=zUTDnaRvGyw7vfTWdI9Bk89WKI6qR559yEa3wVXeQvw=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvcnlftdszL/emBOwLMpS30kDr1rPzFX1eKQhMUSj
- xWBDpk1HbEsDIJMDLJiiixftvEc3V9xSNHL0PY0zBxWJpAhDFycAjCRvDiGBTcKlzFP5n39h0ch
- NrhdkMOmYeb5IoZ5mn2cG2/ULBb5M+X7yp5q3cseGg/cAA==
+ bh=/Wl84anFlTJD4CUqKP0cvUvUxS9O+Z37Q+o6ZWRmBdU=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvcHLN1XoiShLubLweMTol4TJMO53ifQ31H/Yv+zh
+ KD9Bic7YlkYBJkYZMUUWb5s4zm6v+KQopeh7WmYOaxMIEMYuDgFYCI/PzPMFfLYtjYySeGEe8tv
+ 20r9m88nff63kGHBJTuuP43nzxl2K0mse2FuZVxS2/YBAA==
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-s3c24xx_serial_rx_chars_dma() starts by taking a reference to the tty.
-If the interrupt is not a receive timeout, it switches the port from PIO
-back to DMA and leaves through the "finish" label, which does not drop
-the reference.
+s3c24xx_serial_getclk() returns the best baud clock with the reference
+which clk_get() has taken.  s3c24xx_serial_set_termios() stores it in
+ourport->baudclk and disables the clock which was there before, but does
+not put it.
 
-A port with RX DMA changes to PIO on every receive timeout, that is at
-the end of every burst of data, and comes back this way when the next
-burst starts.  So each burst takes a reference which is never dropped,
-and the tty structure is not freed when the port is closed for the last
-time.
+clk_get() hands out a new handle on every call, so the new clock never
+equals the old one, and every call of ->set_termios() leaks a handle: a
+struct clk and a copy of the connection name.  Whoever has the port open
+can repeat that at will with tcsetattr().
 
-Drop the reference on both paths.
+Put the old clock when it is replaced, and the new one in case it is not
+stored.
 
-Fixes: b543c301c2c5 ("serial: samsung: add DMA support for RX")
+Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
 Cc: stable <stable@kernel.org>
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
 Cc: Peter Griffin <peter.griffin@linaro.org>
 Cc: Alim Akhtar <alim.akhtar@samsung.com>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Robert Baldyga <r.baldyga@samsung.com>
+Cc: Kukjin Kim <kgene.kim@samsung.com>
+Cc: Thomas Abraham <thomas.abraham@linaro.org>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/samsung_tty.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 640f85e2d636..c9a870a8d155 100644
+index c9a870a8d155..f437f7363fd3 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -736,14 +736,13 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(struct s3c24xx_uart_port *ourport
+@@ -1501,11 +1501,14 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
  
- 	s3c24xx_serial_rx_drain_fifo(ourport);
+ 		if (!IS_ERR(ourport->baudclk)) {
+ 			clk_disable_unprepare(ourport->baudclk);
++			clk_put(ourport->baudclk);
+ 			ourport->baudclk = ERR_PTR(-EINVAL);
+ 		}
  
--	if (tty) {
-+	if (tty)
- 		tty_flip_buffer_push(t);
--		tty_kref_put(tty);
--	}
+ 		ourport->baudclk = clk;
+ 		ourport->baudclk_rate = clk ? clk_get_rate(clk) : 0;
++	} else {
++		clk_put(clk);
+ 	}
  
- 	wr_regl(port, S3C2410_UTRSTAT, S3C2410_UTRSTAT_TIMEOUT);
- 
- finish:
-+	tty_kref_put(tty);
- 	uart_port_unlock(port);
- 
- 	return IRQ_HANDLED;
+ 	if (ourport->info->has_divslot) {
 
 -- 
 2.56.0
