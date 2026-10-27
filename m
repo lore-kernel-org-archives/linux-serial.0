@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099208;
-	b=i7E11AnbjDH6yDZFRyODQBJ4y/9liWh/dUiYIej7mi21n/PU7LquWwATltzJtp5+7rYc
-	 fnBdrgpB6Im0Noxp76V93DRdoAPt5vDc1LDl3CnrlRT5eTk+w07hFHWK34+rx0eup1uj6
-	 yo8CAZZeH0gT0M5JpFE9j5SHdfwOxgfx79wcvClPQm1OwF6Us11eMFdI8CI+PypzT3Sj/
-	 KGEppR6VFCaycE9mK5nBb5NhKRkeow1f3MCqMLhVspJRIPoyPs9uMo1tIZ0UU5WPY6HSp
-	 euaccfC++M+PrHNUx1wZUyLqIdGEIsFsw9C9M77fcLV4u7XlXWP9X4xG1/6MHCYZJSg==
+	t=1793099205;
+	b=tb5Q6RLebHoRjIyx6rzw/t7XWSp6g5hDhb6N6074ik1Nb/NDqsBxviOih/H4Lrmoa4p4
+	 NKopoZNaDLfqhYHApRIDm6qqjQxldxHRar9qQi3htJlXV9aOctkccRuW1nOExnp/PcbzY
+	 iLvtQTVhxGF3s0/CJfqlbsHo7jbNaD/17T3JdE6U2rcVYh34nUKcS90DHxHLSf5hN1C/2
+	 Ppoa0zl8U9d4nhtdBvGUlEdhVGeEhM0m96L+IIBiHhBJAiJ8FN1ikUgg0Nh4boTdFkQjl
+	 f1IjOd8GThOc31RIoXWc5Qf9LpvDj9CtF2QWwY7dNwuxmiPjUHsXzegCgIVIJubxoGA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099208;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099205;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=tDSrtNyy80ZHqgKUCbvvGf79WJiCCW1Xhn9IVWO2gXc=;
-	b=hSJrz0jPfLofrZ0LRGgwhbOCp+MsKwVJ6XqCARCJnZKgYfKseSVKJul/14JaajZwW0UH
-	 LmECBVuZ0Ts40VekoaAZAJat4ji3+fffXmU8b6lhqGK9X1gyT2TUCrrC7LAToSS2Ae/lk
-	 oLyUgWzzrfCmGXQbjCEjnFbdY7vhtlcEjZ7FdF5bGbQv9G/aSEDT5JKIGfuOTgmtp3JgC
-	 3lTfuo+qEKzeoLnWo24AhaCI7tLuXAnZm2rC2CLfMWdWk5obi614gvKRhRIvagZmLDlVP
-	 FnFMq7MfVZYMzD+q79GHoGn82q6+PppiVrnR5Nm3RvCsAkJsVKV71sUoDXTs0R3eOYA==
+	bh=w9JLcxkekk0SoKUL41CSq+wR9dQesJmZqPkBcLIUo7E=;
+	b=anCkJz7WsGQgkclArJtIGKaLM8Nv/mU+kt0JBajjIe3DoMinyMeKj9ZZTSwLFRlvag7G
+	 1RUXzwzIRadgEjEg9v9ffiBShDKCwBX0PGIZGbwt01qE/FW/3AWR8G0ZFlj0tp6ODxtpa
+	 TjmBWrsiQY84E+/U4qJ32nX2tlQsRPTeMYXALAzjDHano+mCM1A/JDCtQIo+p/pbXj02E
+	 l6ImO8cLDuOCq+oF8Nz1eqD5d9zTxGqudbBnCfmtz+77NPu27h2MbPcC91vOa1B+a2e24
+	 5ihdBfahVJyT77291Yacn+fQnsYHkzLYBFqeRbAweiIkytqvRQIFN2nnpw0M1QdvfBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=Vyx6gPTz;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xZ2icfri;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0F9606A323;
-	Tue, 27 Oct 2026 11:06:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23021606A328;
+	Tue, 27 Oct 2026 11:06:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=Vyx6gPTz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC3C1F031F3;
-	Tue, 27 Oct 2026 11:06:46 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xZ2icfri
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E23491F031EA;
+	Tue, 27 Oct 2026 11:06:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099207;
-	bh=tDSrtNyy80ZHqgKUCbvvGf79WJiCCW1Xhn9IVWO2gXc=;
+	s=korg; t=1793099204;
+	bh=w9JLcxkekk0SoKUL41CSq+wR9dQesJmZqPkBcLIUo7E=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=Vyx6gPTzauVk+PfVw7hZNAGUO3dahjbYG2GlI5Sh7l+Z58MHpvigRWi6Vw90g3XNv
-	 1Yhor6znDQu68CHx6R5HEVj9gKGsEoxjHarEOt2Lv2Sgir2eRrsn9q/mRNdG/OFwHI
-	 bIQrq7SCkUgkwLW1lbq9O6jKgoH7oZRSBF403U0Y=
+	b=xZ2icfri0/AhA+F2EVSIvmG1mbhP38w//2Tqx2HRy57OSEAgIXcRPzdTqtf1ViRjc
+	 gny4BwNQV8hnjCBxfo0ZwI75Nsv5OXAcPbvD86McYna47PxbtOcdJ3NgcuvZh5+JPW
+	 uQn/bCnUh4xdFmndrfzEQpaNmCSDpPLrH7IEIx80=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:28 +0100
-Subject: [PATCH 02/24] serial: core: respect runtime PM when sending x_char
+Date: Tue, 27 Oct 2026 12:06:27 +0100
+Subject: [PATCH 01/24] vt: serialise the producers of the flip buffer
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -50,8 +50,8 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-tty-llm-v1-2-99b0202ae546@linuxfoundation.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261027-tty-llm-v1-1-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,123 +83,140 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
- Hugo Villeneuve <hvilleneuve@dimonoff.com>, Johan Hovold <johan@kernel.org>, 
- Karl Mehltretter <kmehltretter@gmail.com>, 
- John Ogness <john.ogness@linutronix.de>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
- Tony Lindgren <tony.lindgren@linux.intel.com>
+ Nicolas Pitre <npitre@baylibre.com>, Kees Cook <kees+treewide@kernel.org>, 
+ Helge Deller <deller@gmx.de>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Mingyu Wang <25181214217@stu.xidian.edu.cn>, 
+ Randy Dunlap <rdunlap@infradead.org>, Ronan Pigott <ronan@rjp.ie>, 
+ Liav Mordouch <liavmordouch@gmail.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3883;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4768;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=mbJElPrglA5NE/q+KI/GSecuTgZMKDwvUnzZsePFflQ=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWveyXj+q81l8QqTSwipH7R9vb3ZcszCZtf3RefnnB
- +TuJLdO74hlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJPLVhmO+9ddXqrJZ1awV5
- 3JfuXPguoEu4QYFhnv6vVweeTOnZrpJeefBlBa/thQ+7FgIA
+ bh=jR9+7jjCyJvPoC7RXU4XKwVay/7TvtwUACG4NhQYRPU=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvfGr0v/HfuyYm624k8h7V3pM+d7CkW9sQvPv+x7Z
+ 3sFS6dIRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEwkwpdhnnL/eUVlk9oF0yW6
+ 99epfss8HhUczzBPaWVhRpOydtLxCNVS8abqpedu+pcBAA==
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Chris Mason <mason@kernel.org>
 
-__uart_start() calls the start_tx operation only if the port is runtime
-active.  Otherwise it asks for a resume, and
-serial_port_runtime_resume() starts the transmitter.
+Typing on a virtual console while the console replies to an escape
+sequence can make the kernel write past the end of a buffer. A user who
+can write to the foreground console can cause this on purpose if they
+can also inject key events, through /dev/uinput or by writing to the
+/dev/input/event* node of a keyboard.
 
-uart_send_xchar() calls start_tx at once, under the port lock, whatever
-the state of the device.  With 8250_omap, serial8250_start_tx() then
-calls pm_runtime_get_sync() for a suspended device: that sleeps, and
-omap8250_runtime_resume() takes the port lock again.  A tcflow(TCIOFF)
-on an idle port is enough, if autosuspend has been enabled.  It was
-allowed as long as that driver used pm_runtime_irq_safe().
+Input for a tty goes through the flip buffer of its port. A driver
+inserts the data with tty_insert_flip_*() and then calls
+tty_flip_buffer_push() to pass it on to the line discipline. The insert
+functions take no lock: they check that the current struct tty_buffer
+has room, copy the data to offset ->used, and then advance ->used. So a
+flip buffer supports only one producer at a time, and a driver that has
+several must serialise them.
 
-Share the part of __uart_start() that deals with runtime PM.  A stopped
-transmission still does not hold up an XON or XOFF character.  Let a
-pending x_char count as work for serial_port_runtime_resume(), and keep
-the port from being suspended with it.
+Four functions feed the flip buffer of a virtual console:
 
-Fixes: 8700a7ea5519 ("serial: 8250_omap: Drop pm_runtime_irq_safe()")
+- put_queue(), puts_queue() and fn_send_intr() insert typed characters
+  and breaks for the keyboard handler. They run under kbd_event_lock.
+- respond_string() inserts the reply when a program writes an escape
+  sequence that requests one, such as a cursor position report. It runs
+  under the console lock.
+
+The keyboard handler gets its events from the input layer and feeds the
+foreground console. Key events that a program writes to /dev/uinput or
+to an event node reach it in the same way as typed keys.
+
+The keyboard handler and respond_string() share no lock, so they can
+interleave:
+
+    keyboard handler                respond_string()
+    ================                ================
+    room check passes
+                                    room check passes
+    memcpy() to offset used
+    used += len
+                                    memcpy() to offset used
+                                    used += len
+                                      /* used > size of the buffer */
+
+The room check subtracts ->used from the size, and both are unsigned.
+Once ->used exceeds the size, the result wraps, so the check always
+passes, and each later insert lands further past the buffer.
+
+Reproduced as root, with keys from a uinput keyboard and cursor position
+reports on the same console: KFENCE reported an out-of-bounds write
+1,024 bytes past the buffer in under 10 s.
+
+Fix this by taking port->lock, with interrupts disabled, around the
+insert and the push in these four functions. kbd_keycode() already takes
+port->lock under kbd_event_lock, so this lock ordering is not new.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable <stable@kernel.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Karl Mehltretter <kmehltretter@gmail.com>
-Cc: John Ogness <john.ogness@linutronix.de>
-Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
-Cc: Tony Lindgren <tony.lindgren@linux.intel.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Cc: Nicolas Pitre <npitre@baylibre.com>
+Cc: Kees Cook <kees+treewide@kernel.org>
+Cc: Joshua Rogers <linux@joshua.hu>
+Cc: Chris Mason <mason@kernel.org>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Ronan Pigott <ronan@rjp.ie>
+Cc: Liav Mordouch <liavmordouch@gmail.com>
+Signed-off-by: Chris Mason <mason@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/serial_core.c | 25 +++++++++++++++----------
- drivers/tty/serial/serial_port.c |  4 ++--
- 2 files changed, 17 insertions(+), 12 deletions(-)
+ drivers/tty/vt/keyboard.c | 6 ++++++
+ drivers/tty/vt/vt.c       | 2 ++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index c0deec0e6af4..b06d2649be34 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -135,17 +135,11 @@ static void uart_stop(struct tty_struct *tty)
- 	uart_port_unlock_deref(port, flags);
- }
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index ef4a19aeb3ce..f4b742e091fb 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -322,15 +322,20 @@ int kbd_rate(struct kbd_repeat *rpt)
  
--static void __uart_start(struct uart_state *state)
-+static void uart_port_start_tx(struct uart_port *port)
+ /*
+  * Helper Functions.
++ *
++ * A flip buffer allows one producer at a time, and respond_string() in vt.c
++ * feeds the same one under the console lock. So take the lock of the port.
+  */
+ static void put_queue(struct vc_data *vc, int ch)
  {
--	struct uart_port *port = state->uart_port;
--	struct serial_port_device *port_dev;
-+	struct serial_port_device *port_dev = port->port_dev;
- 	int err;
- 
--	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port))
--		return;
--
--	port_dev = port->port_dev;
--
- 	/* Increment the runtime PM usage count for the active check below */
- 	err = pm_runtime_get(&port_dev->dev);
- 	if (err < 0 && err != -EINPROGRESS) {
-@@ -164,6 +158,16 @@ static void __uart_start(struct uart_state *state)
- 	pm_runtime_put_autosuspend(&port_dev->dev);
++	guard(spinlock_irqsave)(&vc->port.lock);
+ 	tty_insert_flip_char(&vc->port, ch, 0);
+ 	tty_flip_buffer_push(&vc->port);
  }
  
-+static void __uart_start(struct uart_state *state)
-+{
-+	struct uart_port *port = state->uart_port;
-+
-+	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port))
-+		return;
-+
-+	uart_port_start_tx(port);
-+}
-+
- static void uart_start(struct tty_struct *tty)
+ static void puts_queue(struct vc_data *vc, const char *cp)
  {
- 	struct uart_state *state = tty->driver_data;
-@@ -718,8 +722,9 @@ static void uart_send_xchar(struct tty_struct *tty, u8 ch)
- 	else {
- 		guard(uart_port_lock_irqsave)(port);
- 		port->x_char = ch;
--		if (ch)
--			port->ops->start_tx(port);
-+		/* It goes out even if the transmission is stopped */
-+		if (ch && !(port->flags & UPF_DEAD))
-+			uart_port_start_tx(port);
- 	}
- 	uart_port_deref(port);
++	guard(spinlock_irqsave)(&vc->port.lock);
+ 	tty_insert_flip_string(&vc->port, cp, strlen(cp));
+ 	tty_flip_buffer_push(&vc->port);
  }
-diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
-index 2fc48cd63f6c..f2f7cdd3a54c 100644
---- a/drivers/tty/serial/serial_port.c
-+++ b/drivers/tty/serial/serial_port.c
-@@ -23,8 +23,8 @@
- /* Only considers pending TX for now. Caller must take care of locking */
- static int __serial_port_busy(struct uart_port *port)
- {
--	return !uart_tx_stopped(port) &&
--		!kfifo_is_empty(&port->state->port.xmit_fifo);
-+	return port->x_char || (!uart_tx_stopped(port) &&
-+		!kfifo_is_empty(&port->state->port.xmit_fifo));
- }
+@@ -587,6 +592,7 @@ static void fn_inc_console(struct vc_data *vc)
  
- static int serial_port_runtime_resume(struct device *dev)
+ static void fn_send_intr(struct vc_data *vc)
+ {
++	guard(spinlock_irqsave)(&vc->port.lock);
+ 	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
+ 	tty_flip_buffer_push(&vc->port);
+ }
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 8415e274e4be..5c2c761aa0c1 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1971,6 +1971,8 @@ static void csi_m(struct vc_data *vc)
+ 
+ static void respond_string(const char *p, size_t len, struct tty_port *port)
+ {
++	/* The keyboard handler feeds the same flip buffer. */
++	guard(spinlock_irqsave)(&port->lock);
+ 	tty_insert_flip_string(port, p, len);
+ 	tty_flip_buffer_push(port);
+ }
 
 -- 
 2.56.0
