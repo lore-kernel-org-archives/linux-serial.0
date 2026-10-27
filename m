@@ -1,46 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099246;
-	b=LvOegpBsvuu/hl8T6RkBdW9TDaaQ3Lp82pmjbdqBAi86Pcynf028iAoZVyEeMLOJPMw0
-	 6Nu2apzc//V2LEADY59jDWpMDeShs4oMKz0U49+u5/SLmBl6LLBU5fiexQB/w4GnjkcV3
-	 FDE0CWy1Yv3lRwBf27WOVQr827zU06uStfsIH1J43WZ9fgKTLbEpFjvcOfk7YKH2BedRN
-	 feDLrj8pDOh4vwAMotpdNmpS45XGjH+6VCwbzJTR15FOaljFUFpDLmMgqcc8rpZAsnBnf
-	 pSZMPaSJp3FKd2kJCYz4FBLfEW0FR1i6fZG34KDBuyB4L3O6TzBiRINOHk3rCrQ3xWA==
+	t=1793099251;
+	b=ElOauyuOqyVf/4PI7m7sDkPHgbtvQb2GA61a9Ww3eQSPW0NF9jrSX3c18IdbveEn63k8
+	 GFN/3ZIGJF/YpqqAuQPUkP/xB9cLuNfdQXp0DuWKT9ph9RnieWOwZ4J2Y6FKB+9GEd04q
+	 njH4+Hj2PAdofbfYOmJO7GdefhNqAmIiLIQuDsh1UWgBEMc90xriGAzrZ6JR3EYQJwjnn
+	 4w/ijIpQZ7EZsDYd4s8xe/vSvF6PIexVDYZIb0t9WLgls/PljoQznpx3FrYOyR9kbUZfI
+	 epEkeWKF1Aei6uK0/16GR2gyZqwPR9/MX2w6k0Qfj0eqbhkiOo/rY8wzhNIg5rVcskw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099246;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099251;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=wIurQG5CL8pfILwQzYuCqZXgCzYRK8kBT+Y7gR8unCE=;
-	b=RPhgYBJ5Q08g1abnFbW8mUc9ZWPaPo0auoR2qjTOFy/GhnEuzpZdqx1f6hTfegTF22X7
-	 RauRkv7tUDU9nTX4SiQRYvs4yegY9mb3W5y86ml6TQBRqccei5jHyfPn/xxt7IWCYHo/o
-	 cTylEDTJ/Id50XnVQMDY2MvmdKLHyriUuX+9Ah9A+RmF8j5ySXjIdH7qpAcvI6FVU/G7y
-	 Yqn573PXVHZnC0egC/Hs49H9YrgpO2wNEdXjGmrI2n7Haa0CDoqIaQSbJ+vU5WpUBldTh
-	 Ob0Bw3VrWc8orcebw4EJsITjPtVgAUPtNV8HzDsKF619/WiapHBe7GRgfMCOvfhzO4g==
+	bh=LmFYO9q8aHV3jXtCeg+1TpTcQaYP/vBmoA7b4hJD89E=;
+	b=DeqkNFspuGUDeYmSSySd0S0ZnxeCa9aVeXLNGXz0CwQP2sdpKOBbL18SHskBr6j8KWkk
+	 4AwnvZ0mcDBHGmgloa2nqgtv7MpVm/bVLoRkGLp0UsgLcJNOefaCfJWnWsK4oOkj+evmu
+	 VKx2StIeFosuAqmbjT7LgpEaOJKhCi0OZ39vLdnvOESRnhML89vXh4R1habVTHu+XpJn8
+	 HYIr420O7e7S1Wbord2NzDRE6CuThbs1WgHiRgYaJ+bMbBi0GCoXXWhKVKf/pYiho1fc8
+	 qsGuJ+U4Qycwj9CSRQ3WAf2Jydq9x15ibnV9Fd9Cn9ozs37yGbAK/kH7487IndFnaJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=ek8qYkgh;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=woku000l;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDE4860A3810;
-	Tue, 27 Oct 2026 11:07:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BA31606E7F8;
+	Tue, 27 Oct 2026 11:07:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=ek8qYkgh
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 198301F01289;
-	Tue, 27 Oct 2026 11:07:25 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=woku000l
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5581F031E6;
+	Tue, 27 Oct 2026 11:07:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099245;
-	bh=wIurQG5CL8pfILwQzYuCqZXgCzYRK8kBT+Y7gR8unCE=;
+	s=korg; t=1793099251;
+	bh=LmFYO9q8aHV3jXtCeg+1TpTcQaYP/vBmoA7b4hJD89E=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=ek8qYkghVAyS3dcPCEG2ifqOH5uz17uQKYxcNVs+mLdB5a7ESEM5MMPtUn8TYHsOa
-	 89XwMQChHIu9rQAFNRB5Px+Pa06tfA/rtCxvubsxoAVo5FAvhh5ZCHkns46kIRwqbr
-	 P3eb0OwX9tpG1otpPhPfhnLRAdTfpId2LcvU2poA=
+	b=woku000lxuAqiwy3NYW8oA1WWgEvS02a4ROvMSt1k95stU2lkkUhQ2o+nK2WW00PK
+	 Db1orD3M1O4a+Gt6Z1lViT1/KvP18yZ5cPHPzpCKxhI6KLjdn+UZX2X1GnUn3T+0dV
+	 umMZXvrdLLLm9rOukUb5w8Lau3h45fTt3QYNq1PA=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:42 +0100
-Subject: [PATCH 16/24] serial: 8250_lpss: don't divide by 0 above 6.25
- Mbaud
+Date: Tue, 27 Oct 2026 12:06:44 +0100
+Subject: [PATCH 18/24] serial: fsl_lpuart: fix tty ref of wakeup event
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,8 +50,8 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-tty-llm-v1-16-99b0202ae546@linuxfoundation.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261027-tty-llm-v1-18-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,68 +82,61 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
+ Peng Fan <peng.fan@nxp.com>, Shitalkumar Gandhi <shital.gandhi45@gmail.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2134;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1672;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=cAm9rzf2IQbswg0KNvU+2bU/r1ydYsREDFlJsexgviM=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvdNkNWfuyFTof5VxiPHzdf55RTK3tfUVcVLpT59p
- +PcmO/QEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABMpmMuwYFmRhdf2LWb8Xm1J
- XX1cM6LqA9q/MMyP9xbKZPq+k6Get9J1a/aWbI2jJxMB
+ bh=7PndLWziLhFxVf15LX4uO3S84WcvtpCFzOrbOnnsIEc=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvedW1TjGF3KsWPVrrnS4cwtnf+uPJnLF7/55bK9W
+ 97sC3nq1xHLwiDIxCArpsjyZRvP0f0VhxS9DG1Pw8xhZQIZwsDFKQATuV3BMM+2syirRiBvR5mg
+ ybVnshdjaw+mPGKYZ7ppnaDDFXPXW9urTkYHtzjz68xcCAA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-byt_set_termios() derives the clock of the UART from the baud rate in
-the termios, which nobody has looked at yet:
+To report a wakeup event, lpuart_resume_noirq() gets the tty with
+tty_port_tty_get() and never puts it: each wakeup by the UART leaks a
+reference, and the tty is not freed when it is closed.
 
-	fuart = baud * 16;
-	...
-	fuart *= rounddown_pow_of_two(fref / fuart);
-	...
-	p->uartclk = fuart;
+With no_console_suspend, the function also gets there for a console
+which is not open.  Then tty_port_tty_get() returns NULL, which is
+dereferenced.
 
-fref is 100 MHz. For a baud rate above 6250000, which BOTHER allows,
-fref / fuart is 0, and rounddown_pow_of_two(0) shifts 1UL by -1. On x86
-that is 1UL << 63, the product with a multiple of 16 is 0, and so is
-uartclk. serial8250_get_baud_rate() then passes 0 for both limits,
-uart_get_baud_rate() finds no rate which fits, WARNs and returns 0, and
-uart_get_divisor() or dw8250_get_divisor() divide by 16 * 0.
-
-Everybody who may open the tty can oops the kernel with one TCSETS2.
-
-Don't ask for more than fref. The limits are those of a 100 MHz clock
-then, and uart_get_baud_rate() falls back to the old rate as for any
-other rate that the port cannot do. 8250_mid, which has the same
-formula, treats this case separately.
-
-Fixes: 21947ba654a6 ("serial: 8250_pci: replace switch-case by formula")
+Fixes: 18bdfccf3c30 ("tty: serial: fsl_lpuart: Add missing wakeup event reporting")
 Cc: stable <stable@kernel.org>
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Frank Li <Frank.Li@nxp.com>
+Cc: Peng Fan <peng.fan@nxp.com>
+Cc: Shitalkumar Gandhi <shital.gandhi45@gmail.com>
+Cc: Sherry Sun <sherry.sun@nxp.com>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_lpss.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index f1b4b975571a..7e88f2b793b5 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -83,6 +83,9 @@ static void byt_set_termios(struct uart_port *p, struct ktermios *termios,
- 	/* Gracefully handle the B0 case: fall back to B9600 */
- 	fuart = fuart ? fuart : 9600 * 16;
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index c8575c965203..e54b4c44db42 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -3113,8 +3113,14 @@ static int lpuart_resume_noirq(struct device *dev)
+ 			/* check whether lpuart wakeup was triggered */
+ 			wake_active = stat & (UARTSTAT_RDRF | UARTSTAT_RXEDGIF);
  
-+	/* Fuart <= Fref: leave it to the core to refuse a higher baud rate */
-+	fuart = min(fuart, fref);
+-			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq)))
+-				pm_wakeup_event(tty_port_tty_get(port)->dev, 0);
++			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq))) {
++				struct tty_struct *tty = tty_port_tty_get(port);
 +
- 	/* Get Fuart closer to Fref */
- 	fuart *= rounddown_pow_of_two(fref / fuart);
++				if (tty) {
++					pm_wakeup_event(tty->dev, 0);
++					tty_kref_put(tty);
++				}
++			}
+ 		}
+ 	}
  
 
 -- 
