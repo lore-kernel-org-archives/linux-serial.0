@@ -1,69 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793105545;
-	b=uPSEticeoVNm6Mg/9bXoCLyFvSWDIgZU4prhgjhk4uxI0sdmLanRl4T8ILu0t2euYvtx
-	 d1QS1GdB+wHukGyihEOjcQzsbbqtSMOGbnQKvtCOBAo2tF8UbbMCwgw86y2clIB54YKmh
-	 9mhHfJ7IRjZwlUwn7JcrixGjc8IArISlsorOecawtjpIzg+wrXod/q66FO/A9A/frPeDe
-	 Yb8gGsvv/qAswIB3lUPEKN4byEBv88vspqgZGajLQmMN1OePq5aAKVN7HEDRREdu8FOl1
-	 xQmBjrmosbx7J8mb+VH1P2h4dMtEYJQw8/N+EgpqQvWXPkdFEzvT/0U/U5u3Qa6mQ3w==
+	t=1793106144;
+	b=18kJxNsyyQDSqA+pRiboTtTdPiHcALpW0IQfKbPzUzk7RAmJdvhdS1HdPgBhihDfr3Tf
+	 tW73o8bfWwZ3ygIEtOPVgJCJONRGUeMCmB8jf0z2VYavr8g1iOSW0PtNt9bnjY9froZdT
+	 26usPNpeg4kIiTkH++9jEiR52/IysO+gJV2lTgKvcc1osmMeS8b5gW9gTKPiT8ZPrUct+
+	 izMdGLTLE4imW+0SEJ7u68PHtquUa411foPFvBLnnPLfswhdn7EoyTll5kB9rZ7d5lvwd
+	 q5pRtlXPw27G2GO+uytm8N3PSRF9+q/iU/W1KEiDiyH7g6+xtRD5tHJmD8tXOTxpRyA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793105545;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793106144;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:Date:To:cc:
 	 Subject:In-Reply-To:Message-ID:References:MIME-Version:Content-Type;
-	bh=ynl4kyi4smNKu4WVF4RhIfR5dAfqlhGGue2tI306jGE=;
-	b=TRCOLUlAM5rbbpI+FKS9vJoq+pGJeW9VobbyZJMzvR0sQ1VVrg6v/YuxGHwmxCH1JRcF
-	 m3kHSasR6bTGvYWSlu467ZLlPY4Oy1le8PJ6WezCiB+T4GRQmIixU53mWdnv/Ddqry2Z+
-	 lxzHh8kzdc838WeXLUSbswN9+x+fBc+GLBB9inwn6L59wZAshx7x9fuxCZeG0oRTFsqhX
-	 jxNsoCh6U8s9OgECX1Xen3mVULRvwWHKSpJCjU+yIstApce9QK2oMBR+7TLqthfyrBIjP
-	 +7fNqmSmvz419KZkqwR77y+4pFrsOFG0fG/QToo2sgwnXfbzs87JJvSsErhXPuMm6Gw==
+	bh=QsIq+b+nVuNOBKkqFGt+6fJye72iwcODEcvP3kOjZcQ=;
+	b=NEaCXRpXsSOqpUU0VNnMIF6eakFFKVwlj3CNusfkAfw/bPzLp82zEGgvYOb40P12+Ka5
+	 eqkio1uDG/odoSqI3s5DDOBvPk6f2ivT+DtLs8bVbZDAglH2SbH+vN9yw1i/5ZHrgMNFA
+	 4CDIrT73rECr9adGoQERoK0wWVQjr80jH38bVDv+vQAy7gl4+VOmkG1kxIS0nDgqkgjUN
+	 BtzwfmroYqMOWiOVxzzVI0Y1zh6+j6G+IEiEsljvHf5nU526860RBe6Vmo47gJvtV4Fmg
+	 QVifwOTGfIeyeFBCKwy2LV/2IO8A7E+L4V/DGrwejmz80I7kgEKWmdGyEShstRLM/sw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jx2Bbg1+;
-	arc=none smtp.remote-ip=198.175.65.12
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FqY4LiyE;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2740F606A31A;
-	Tue, 27 Oct 2026 12:52:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2740F606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA9E0606A31B;
+	Tue, 27 Oct 2026 13:02:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CA9E0606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jx2Bbg1+
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FqY4LiyE
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793105544; x=1824641544;
+  t=1793106144; x=1824642144;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=BIzV3OYv0D2CnjwPNDXm6UrunwFITB8qninSmEMQYOs=;
-  b=jx2Bbg1+zvzJD4IcaJffJlUBmEliaWSD+dbggNFCQPhOrF7hp0rNBmDM
-   OaZLZDlPfDFBZw2HrBkaQZmJcRSEtcyKB1ZpW+9YL21HHwEvJxI4n2Jag
-   mOLCtx/k6lvEt5BOkc8mW8L6MCXCDwyjLCX5oqre+q31mCRF4Znm0Gozq
-   h/wWk3yK2+uztTIjpZ2/TUq2gxTcN1vwdHwcIc0yuMx/DTuKIcYkeROX9
-   CoF6Wti3fwIEYO2Zdkb5oDFhooaM4thDN0JanjqEQaxliOxoFIidSbiYS
-   qJ7OawxhnD+/BsjwQTF+vrXpLjmukZIIBaop1LgBYRdIM5vwjQysBGEO5
-   Q==;
-X-CSE-ConnectionGUID: fFIxBpp6TNSqR2tmAkAXzQ==
-X-CSE-MsgGUID: MPNw0JSpQBCQ/t9DAJBKBQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1687537"
+  bh=oUSs0MPKdaL1ffVF0pRa19PxPpMZnnSfYMznFsOG0aA=;
+  b=FqY4LiyELq+PO0YXiKKiNDwBNlLUHPmPa1Lds+vCMRV+ZFk1TNs+MhJR
+   oWB6g/1fXgIPhAFvsq8oIG4aEvpy4TobDDLO2rPa2eecCrpEeDNIItfcL
+   ynR6aVyBoXNDT3liZ1KiJa6SvJSIt2kTMb0gwfIKE/W+TDlQVUceg7Tz5
+   n7BzsWvm4YGXNsFq5E/CjIdPfQq48GAIotSWKMGnO6RXowL/gh0nLAwOo
+   sj5aR8azYh+3A3GhuJi5m7x8lYhvGLHJ41NZg/frrxs8kIwy+uMvKkjdj
+   zGQJsBBBte1HKYUKNHoPTUjbYuODyUfe+sPUoRE83hgXZ6/dFRY3rY7OJ
+   g==;
+X-CSE-ConnectionGUID: WzOrIVnEQzCdP9qxHZfsuw==
+X-CSE-MsgGUID: 5txX0X+zSLS3h5VoJO/9sA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1792049"
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1687537"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 05:52:23 -0700
-X-CSE-ConnectionGUID: K00W0eX6RlS216XLS/KgQg==
-X-CSE-MsgGUID: m+9uZ6GYSrqDFqMYOHeI4Q==
+   d="scan'208";a="1792049"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 06:02:23 -0700
+X-CSE-ConnectionGUID: FUeDrtKaSj65EplJX5DqFg==
+X-CSE-MsgGUID: E49Qn/k/RWaF4SRweWQF4Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="4538266"
+   d="scan'208";a="4875837"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 05:52:14 -0700
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 06:02:10 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 27 Oct 2026 14:52:10 +0200 (EET)
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    James Hilliard <james.hilliard1@gmail.com>
+Date: Tue, 27 Oct 2026 15:02:07 +0200 (EET)
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
     Chris Mason <mason@kernel.org>, Josef Bacik <josef@toxicpanda.com>, 
     Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>, 
@@ -90,13 +89,12 @@ cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>,
     Andy Shevchenko <andy.shevchenko@gmail.com>, 
     Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
     Al Cooper <alcooperx@gmail.com>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, Moteen Shah <m-shah@ti.com>, 
-    Kendall Willis <k-willis@ti.com>, stable <stable@kernel.org>
-Subject: Re: [PATCH 15/24] serial: 8250: omap: acquire rx_dma_lock in DMA
- completion callback
-In-Reply-To: <20261027-tty-llm-v1-15-99b0202ae546@linuxfoundation.org>
-Message-ID: <dbd0a484-7e1f-154b-fafe-acffd3bc4d4f@linux.intel.com>
-References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org> <20261027-tty-llm-v1-15-99b0202ae546@linuxfoundation.org>
+    linux-serial <linux-serial@vger.kernel.org>, stable <stable@kernel.org>
+Subject: Re: [PATCH 24/24] serial: stm32: don't report a wakeup to a closed
+ tty
+In-Reply-To: <20261027-tty-llm-v1-24-99b0202ae546@linuxfoundation.org>
+Message-ID: <aef066bc-1b1e-b1e8-97f5-6fa8c8d18940@linux.intel.com>
+References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org> <20261027-tty-llm-v1-24-99b0202ae546@linuxfoundation.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -110,54 +108,53 @@ Content-Type: text/plain; charset=US-ASCII
 
 On Tue, 27 Oct 2026, Greg Kroah-Hartman wrote:
 
-> From: Joshua Rogers <linux@joshua.hu>
+> From: Josef Bacik <josef@toxicpanda.com>
 > 
-> The __dma_rx_do_complete() helper requires priv->rx_dma_lock to be held,
-> but the DMA completion callback __dma_rx_complete() calls it without
-> that lock, only holding the UART port lock. This allows a race between
-> the callback and omap_8250_rx_dma_flush() which properly holds
-> rx_dma_lock, leading to concurrent tty_insert_flip_string() calls that
-> can corrupt flip-buffer state.
-
-When the commit message mentions flush and buffer corruption, I 
-immediately ask why James Hilliard needs so many lines to fix the flush 
-issues [1] while this change just wraps one call with a lock?? I'd tend to 
-think this change lacks most of the understanding for the relevant problem 
-space.
-
-I think this should be deferred to be part of James' series.
-
-[1] https://lore.kernel.org/linux-serial/20261024-submit-serial-8250-dma-cancel-v1-v6-5-6f366591f566@gmail.com/
-
-> Acquire rx_dma_lock around the call,
-> matching the established lock ordering (port lock then rx_dma_lock).
->
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Moteen Shah <m-shah@ti.com>
-> Cc: Kendall Willis <k-willis@ti.com>
-> Cc: Frank Li <Frank.Li@nxp.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> stm32_usart_interrupt() reports a wakeup interrupt as a wakeup event of
+> tport->tty->dev.  That pointer is only set while the port is open.  The
+> port of a console is not shut down by the last close: it stays
+> initialized, so the wakeup interrupt is still enabled on suspend.  If
+> the system is then woken up by the console, the handler dereferences a
+> NULL pointer.
+> 
+> Take a reference to the tty, and leave the event out if there is none.
+> 
+> Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
 > Cc: stable <stable@kernel.org>
-> Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Cc: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/tty/serial/8250/8250_omap.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/tty/serial/stm32-usart.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 07ebed6ac6c9..0afd648733da 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -975,7 +975,9 @@ static void __dma_rx_complete(void *param)
->  	if (dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state) != DMA_COMPLETE)
->  		return;
->  
-> +	spin_lock(&priv->rx_dma_lock);
->  	__dma_rx_do_complete(p);
-> +	spin_unlock(&priv->rx_dma_lock);
->  	if (priv->throttled)
->  		return;
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index ad06b760cfca..3bc2ce877585 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -872,8 +872,15 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+>  		writel_relaxed(USART_ICR_WUCF,
+>  			       port->membase + ofs->icr);
+>  		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_WUFIE);
+> -		if (irqd_is_wakeup_set(irq_get_irq_data(port->irq)))
+> -			pm_wakeup_event(tport->tty->dev, 0);
+> +		if (irqd_is_wakeup_set(irq_get_irq_data(port->irq))) {
+> +			struct tty_struct *tty = tty_port_tty_get(tport);
+> +
+> +			/* A console stays set up after the last close */
+> +			if (tty) {
+> +				pm_wakeup_event(tty->dev, 0);
+> +				tty_kref_put(tty);
+> +			}
+> +		}
 
+Could we like add a helper into serial core to do this tty wakeup dance? 
+It is duplicated in quite many of these patches.
 
 
 -- 
