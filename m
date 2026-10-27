@@ -1,76 +1,118 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.125.188.122
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793135623;
-	b=VqVnuTJsYqMOWNm5Qsye4M708u8PAmybX3xIemGgA4c0ZEBDtTNClJq1G4MfyWp1fQ4G
-	 UVzmn5XVM8f6OBK1joKcz9Mq2sq/9tsA5Mz+Imm9JFm6yyETJXRGILwnFlaSi8FFBPZ8d
-	 KS8BPd3rsK8oW8/vtYm3E3bIXmvU6M+FxsFgXl7l+BtVLtivn9pL60TOiSxezs5cy8csd
-	 SGXQa3SQUIb64h2kFsTW7IrzATboBq3wVXEE5YOhabpvHNOaGFgUf3iykDSkd/HcmyjAR
-	 M/Zaj0EQuzuc2um4eJIr1JyXuYEv5hpMXGjCiqBClWsgDTLE73ae+XBIBcLdBobH50Q==
+	t=1793137713;
+	b=neaQRF6RAH20kX4bHSWzFIvrRTcQm238csK06iFcfM/s1Q3Ym7mfY8uBQwl03HqPrBWS
+	 NEh1zIZZ2Uh0rpQUbFp+mr86Gj17wYdRzhafNry30S+/FdACQ6XKpjoVbYNohiiFm5AtV
+	 MjRR06mPE5MfGKtqFRjWd+x+Cx6GlNf8Hq1SexQBstA8B9h5LB6oi5nGywAARkRV3lJ4T
+	 vKlMYtdUAq/Uu4ylXO0rIC6FW28PD3CB9IrsmarloblwiowtdjTmYLEw2sHqajtCNsywe
+	 vcC1w3GXAkXQ5UF/ueTzZw0LcQp3fjjckefdQYVYPJ6mSvQj/c9s5iTjLAiJGr3R7ww==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793135623;
-	h=DMARC-Filter:Received:Received:Date:From:To:cc:Subject:In-Reply-To:
-	 Message-ID:References:User-Agent:MIME-Version:Content-Type;
-	bh=Fc3GYSRmt0+nbblkQ7aAwD4YrkOtstST5jptPmqJKHg=;
-	b=RnZws8crTRJt/Ozolwe3dKLzUMBM0BIm+5vWBxUFeKed9oFbE6x2HCfRCASm3oWYMqVO
-	 7/uPHAEHfhrJMfVM84a3JYjHPVsvSzR7jJgXtObmv9ezzqTt7LNTYxLBDV0s6nXBpbmmH
-	 VaghAQUv1QwNLU4qm7L5E9P2PI19UzSNgrR/XnQNe/chQ/SQKmDY8SKcxpExKPjWXabFQ
-	 n6XFYZQNjGBCARvUDC0RfUZoCdkd4Py7rRGFBp9ckg5LS++1U1s/VzBYrrkuyHDiqBWrB
-	 3RbN2zfE+vkN0uUV4ihzVfJkeonQO9alNOpabViR68nVaAxyhjT9MAsgCVHycFkZw4A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793137713;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:
+	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=R5y3TC+OxgWb2k2zCyoTeuDSWBjSf0l8Xg0k9asjKQ8=;
+	b=F+Jdh7ao/lFvbmRDZBFSIJ54KvBa/b2wMeqPRLggnMOZ9PuGxvlnJrqwKAWw2F6V56oz
+	 +haKTYc3jj83F+L6/TCipkhRuBvA3SC7De9j8SP0+f/wvy0Fm/dvIGw0mTtQZJCVQurKe
+	 RzcdsYjrjEV/rbd57jDPCMhRXvYfM/M1icKwNGga0PE4CJcjbcvgnzoMV0vEJsDlDDI1v
+	 qorYTLI4VPNu5Dq5dnLy9lt7tH4BXtvI8+5iOeWyzhE+G208xAU/zUdTFOjTfuSobUIPo
+	 vx7X5ZCJPSmSVbFEboDr4FSiiBZxccl2JVcRMr1/8NOa9JlP9g4Srn5aIqAYhwAc6KA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=orcam.me.uk;
-	spf=none smtp.mailfrom=orcam.me.uk;
-	arc=none smtp.remote-ip=78.133.224.34
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03727606A31A;
-	Tue, 27 Oct 2026 21:13:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 03727606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 7D10E92009D; Tue, 27 Oct 2026 22:13:39 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 75BE492009B;
-	Tue, 27 Oct 2026 21:13:39 +0000 (GMT)
-Date: Tue, 27 Oct 2026 21:13:39 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Cameron Williams <cang1@live.co.uk>, Jiri Slaby <jirislaby@kernel.org>, 
-    Joshua Rogers <linux@joshua.hu>, Chris Mason <mason@kernel.org>, 
-    Josef Bacik <josef@toxicpanda.com>, Tony Lindgren <tony@atomide.com>, 
-    Rafael Gago Castano <rgc@hms.se>, Florian Fainelli <f.fainelli@gmail.com>, 
-    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-    Peter Hurley <peter@hurleysoftware.com>, 
-    Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
-    Crescent Hsieh <crescentcy.hsieh@moxa.com>, Frank Li <Frank.Li@nxp.com>, 
-    Sherry Sun <sherry.sun@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-    Pengutronix Kernel Team <kernel@pengutronix.de>, 
-    Fabio Estevam <festevam@gmail.com>, 
-    Manivannan Sadhasivam <mani@kernel.org>, Olof Johansson <olof@lixom.net>, 
-    =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, 
-    Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
-    Peter Griffin <peter.griffin@linaro.org>, 
-    Alim Akhtar <alim.akhtar@samsung.com>, 
-    Robert Baldyga <r.baldyga@samsung.com>, 
-    Thomas Abraham <thomas.abraham@linaro.org>, 
-    Kukjin Kim <kgene.kim@samsung.com>, 
-    Patrice Chotard <patrice.chotard@foss.st.com>, 
-    Srinivas Kandagatla <srini@kernel.org>, 
-    Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-    Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-    Andy Shevchenko <andy.shevchenko@gmail.com>, 
-    Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
-    Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
-    linux-serial@vger.kernel.org, 
-    =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
-    Bjorn Helgaas <bhelgaas@google.com>, Lukas Wunner <lukas@wunner.de>, 
-    Marnix Rijnart <marnix.rijnart@iwell.eu>, stable <stable@kernel.org>
-Subject: Re: [PATCH 11/24] serial: 8250: cap OxSemi Tornado UART count against
- BAR size
-In-Reply-To: <auDB3QMuEGeNpaIk@ashevche-desk.local>
-Message-ID: <alpine.DEB.2.21.2610271928360.42255@angie.orcam.me.uk>
-References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org> <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org> <alpine.DEB.2.21.2610271300480.42255@angie.orcam.me.uk> <auDB3QMuEGeNpaIk@ashevche-desk.local>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	dmarc=pass header.from=canonical.com;
+	spf=pass smtp.mailfrom=canonical.com;
+	dkim=pass header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=NsnIF6s2;
+	arc=none smtp.remote-ip=185.125.188.122
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0AE6606A31D
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 21:48:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C0AE6606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (4096-bit key, unprotected) header.d=canonical.com header.i=@canonical.com header.a=rsa-sha256 header.s=20251003 header.b=NsnIF6s2
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 090DB3FBAE
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 21:48:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20251003; t=1793137710;
+	bh=R5y3TC+OxgWb2k2zCyoTeuDSWBjSf0l8Xg0k9asjKQ8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version;
+	b=NsnIF6s23mLz8NdigrB4LFVWsHXrAI2gv8c/0r4DaBDgi1/szzsT3mv4J1WQvsX7U
+	 zdzd/DmaabVx0WgdHBRtYbsUUXQfLEmyIpuGgKO5QETxu3kW2fIUwM5U7EAKh+CzyL
+	 Pp9eBfvo7+XiQGcCKx0ts23DJkfEFlO/G03UBIhkJasSzYcHH7IHNp5njCNmk+G+fX
+	 8D5ybftMkhFpOTqrB031ZTfloLSY5zbGBxPF3Pi4FrN6DTWkxAj/qZzzsg59AoaEST
+	 9SQcPFdyqRxu7i3MP42POw4BgRS9tkm1/JJA95eprKGqLI9+SH3EgE2aJ+83zzBQsH
+	 0BK2u573yl1ivql/6a50YiauLCYuvqU9yJpCciUGP6JfULI4OnQFcAEoLF8LQkShTJ
+	 C8pkCrsnxG0Ls3PJ67TagKG7PvFo6IabWsfM8+YMZ2fKbwt8i9URBHx+cOA+J+9wIB
+	 wjNDKJ+hHkZKc3fQAhVSzXiNzs1EkPR6BwsF+9hJgbaT19J/EoO76NQTPsQftvBV1S
+	 fue1T1CPnh3FP1giDmLPTaBIcypc/pNfudv+N/2IhOW/d7T1F9SgW+oVhU44HidGMJ
+	 +gSp4ue3iAgi/OMUiyJX881ZsA2MKWyhDgMtdfG/H//GT7I9gqPXcQFi3DcV1xLLUR
+	 +OW5JYCOTL41oZtLE0vGfUp4=
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-3ad94b96698so75842a91.1
+        for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 14:48:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793137708; x=1793742508;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=R5y3TC+OxgWb2k2zCyoTeuDSWBjSf0l8Xg0k9asjKQ8=;
+        b=H1TYo54ZL86kl+faggyzN0piqglY0e02HO8wgeOvDwd/dErSbPoMD43NjP8NfVyRnl
+         IBYROkNJOXnHY04ONappUzVHSWP43/2iT2KUgXISC3V5v64KHMf+UnuJx3N4Om+AhoJC
+         ydWPCFoh0eXn3V52QqWOlIbizRC+6ZvaNRjB3CKgYe9nPeOWJIhP0IQzWjRjpLcT/q+s
+         Mtmb+N/8Zeu+8x2p7/n8KLH3iqzJDZ331NwiwKz5GebI49UeHq0Mp2n0CziKKDGPHliK
+         5ISmzL0X7i++MI+nJPslumcKL9rlJfxUPHDTE+pRIicBDR89gAOwxgBMZFNyvDPJUsH1
+         92sA==
+X-Gm-Message-State: AFq9FYKmh79lBMaVEAdsKmAkGwl6JWe+Ue+XhIqNT5xEtoL543+/0cTx
+	sLGMnZtcMx225ciBktiqOoAEPsc2efpZ9iSwMvcgHwt/GbINoUNO1xnwYpDjcRqUhwekutGSMfd
+	nyNfSc71qXyYxybO6wIVAY7pLy752swjClNp3xUAOk88h7s9rbwzQa7BlQorFtTc5P9oXNixoKW
+	y0yGVwyA==
+X-Gm-Gg: AYBFou3kqhS/z+KzxHwH3GnhnPDZH/J4MpFEYqNITHs/BFMOw3C3WPEMdX7yv2pxgwJ
+	KITuv0awGDVtcpVNSthODPo1ZDz7opiEU6v2O4PyooVG1Epekv8XKrZvP+1L1cU3CTbCMKmKMPo
+	TvukE1vqiYSzIAhiO3bs7DIiVMdHkfk1T6rA5IEfIpHieFQC3zGnhE+OXKJ1iENwSbE2LcnSAUj
+	VWNPcnNrTEqfrhBDc/rveBAxrX6COvzpQKo0IvJF68aV3PtiCVocC7X/pwQ7lgEyqYi1gN9gTt7
+	SNhiM7mSun/Bh/P/OvT+vuEM47VhIcVxdnyFkFgIo36GGIXMlWZY8bB2rTPqhXyaBg/IfFfUcrV
+	7IZgtcC2z8LV33T/mycSOB63lUKy7UtG+LWIBgoWU+KArnkhzBfkhxsonPM4QNZ5yCd49K3E4wg
+	UHS3neotAcfltH8NLPFksP0IO4sDT6nmc1AGLLbu5poDw7g6KL5Wy3PbCVsXDeh+3Ah8KVaeSIe
+	jG4hx9e+ULor9a+PRhsYF//b2ViXVmWp179d6x5Gw==
+X-Received: by 2002:a17:90b:6d0:b0:3a6:e1d1:e511 with SMTP id 98e67ed59e1d1-3ae581402edmr428967a91.4.1793137708585;
+        Tue, 27 Oct 2026 14:48:28 -0700 (PDT)
+X-Received: by 2002:a17:90b:6d0:b0:3a6:e1d1:e511 with SMTP id 98e67ed59e1d1-3ae581402edmr428960a91.4.1793137708192;
+        Tue, 27 Oct 2026 14:48:28 -0700 (PDT)
+Received: from an-XPS-15-9520.buildd (2001-b011-2008-445c-fcc4-d427-0dad-9764.dynamic-ip6.hinet.net. [2001:b011:2008:445c:fcc4:d427:dad:9764])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae5a9a5e73sm37741a91.10.2026.10.27.14.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 14:48:27 -0700 (PDT)
+From: ChunAn Wu <an.wu@canonical.com>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: linux-serial@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	hansg@kernel.org,
+	ilpo.jarvinen@linux.intel.com,
+	mpearson-lenovo@squebb.ca,
+	derekjohn.clark@gmail.com,
+	Julia Lawall <Julia.Lawall@inria.fr>,
+	Nicolas Palix <nicolas.palix@imag.fr>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nsc@kernel.org>,
+	cocci@inria.fr,
+	linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH v6 1/3] serdev: handle devices without an ACPI or device tree node
+Date: Wed, 28 Oct 2026 05:47:42 +0800
+Message-Id: <20261027214742.3624605-1-an.wu@canonical.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <75e6d86340073638d966acb85465c28e6a08ceda.camel@posteo.de>
+References: <cover.1792856688.git.an.wu@canonical.com> <263a607c3602f31a3f6fdd245e3c2008cdf97abd.1792856688.git.an.wu@canonical.com> <75e6d86340073638d966acb85465c28e6a08ceda.camel@posteo.de>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -80,69 +122,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 
-On Tue, 27 Oct 2026, Andy Shevchenko wrote:
+On Mon, 2026-10-26 at 13:59 +0000, Markus Probst wrote:
+> Reviewed-by: Markus Probst <markus.probst@posteo.de>
+>
+> You should add the maintainers for the modpost scripts to To/Cc.
+>
+> $ ./scripts/get_maintainer.pl scripts/coccinelle/misc/of_table.cocci
+> scripts/mod/file2alias.c scripts/mod/devicetable-offsets.c
+> include/linux/mod_devicetable.h
 
-> >  Hmm, what is "a malicious device" supposed to be, a broken chip?
-> 
-> Carefully reconstructed malicious device in FPGA that gets connected via
-> Thunderbolt. This is real vector of attacks (assuming the Thunderbolt side is
-> misconfigured to automatically authorise anything connected to it).
+Hi Markus,
 
- Hmm, yeah, or ExpressCard.  I've thought someone could program an FPGA 
-this way, but what would be the purpose?  They'd still have to persuade 
-someone to plug such a EC/TB device in to their system and if you have 
-physical access, you can do all kinds of stuff of less finesse anyway.
+Thank you for the reminder. Adding the Coccinelle and modpost
+maintainers to Cc now.
 
-> IRL I don't believe it would ever happen as the result of this attack most
-> likely would be minor if any.
-
- Nod.
-
-> > 	if (!pci_oxsemi_tornado_p(dev) || pci_resource_len(dev, 0) < 8)
-> > 		return -ENXIO;
-> > 
-> > 	p = pci_iomap(dev, 0, 5);
-> 
-> Why not 8 instead of 5?
-
- This code only accesses offsets 4:0 while BAR sizes come in powers of 2.  
-I think the checks can be considered equivalent.  No strong opinion either 
-way.
-
-> > 	if (p == NULL)
-> > 		return -ENOMEM;
-> 
-> This is so interesting... For MMIO it gives a page, I don't see how it can go
-> outside the boundaries.
-
- I've double-checked the minimum memory space bus allocation size for PCI 
-and it is 16, so indeed the check for the size isn't needed (beyond 16 
-you'd have to validate so as not access another adjacent bus allocation, 
-possibly for another device).
-
-> For port based IO I think it can't be less than 4 for
-> sure (due to PCI bits to interpret) and most likely can't be less than 8. But
-> I have a weak memory of PCI specifications.
-
- Port space allocation can't happen with legitimate OxSemi configurations 
-as this code is only ever reached with the native UART chip configuration. 
-With the legacy UART configuration BAR0 only maps 8 conventional 8250 UART 
-registers, but this is handled elsewhere.  Perhaps we need to assert that 
-BAR0 is MMIO here before proceeding.
-
- NB it can go down to 4 for sure, no need to look far:
-
-07:00.0 Parallel controller: Oxford Semiconductor Ltd OXPCIe952 Parallel Port (prog-if 02 [ECP])
-	Subsystem: Oxford Semiconductor Ltd OXPCIe952 Parallel Port
-	Flags: fast devsel, IRQ 35
-	I/O ports at 1000 [size=8]
-	I/O ports at 1008 [size=4]
-
- Overall it seems to me a lot of noise for a highly unlikely corner case.  
-Most drivers have been written with an assumption that the device is 
-legitimate and don't make any sanity checks.  Do we want to review them 
-all now?
-
-  Maciej
+BR
+    An
