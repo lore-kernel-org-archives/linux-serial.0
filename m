@@ -1,47 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793095503;
-	b=DVoL5CEBWrP+9BLaZ2+u4bzC8gM/3ci+svf7JKW2PfcPpg2JxMJ7rg0BOdTjq2X3EX/M
-	 9n3N7qP5PlFJNo653p8ZgL14gOnqlBm9yqLb9v6SiT9r9wo1lfYQxkoxBpvmuZesVHGDE
-	 NZipkr4mAHkiz++6QpJCvy0awRzWuWI6cvwZlBVj8TcThMTic9fYKne8VmPJmAoiT8WWp
-	 ZOc3iwlxr5n4hoV08Wk1vz3pSL8PuoVGqTnmoHQ7ApwK0AfJAWsOZZzQtOUoQ7vFtLypu
-	 pi0Xvbrrk2NhtVctnDjVxK6HpnNJ/465CIilSwvrtkAsoTbmPraP8m6RhcWypRRMgIg==
+	t=1793099202;
+	b=b3cSFUmKFEuJWhKgLaF2buaqrsqaih3rojBGqDgGLejlkr4SWN25TXuLWOeoDS38ar1f
+	 +yFewX5gxaG4uHsn1XMz85dKjoXVuDb3Jf8CQAA5aXDnUY+pKNQmHgDO08VsEbSKcm0Ga
+	 vBhLgsnceGtDp3h4OV1IY2hI9veqIIAtpK3QdRARQJLaq9odfkmfem+/686ywZ5sl++v+
+	 6p6R2FSYY76y799UpnnO6LhXEGy5PHRyeJud5fZU+kXcdbCiTATfWyniCN14Mt5mhzU0F
+	 Y+skkZ313TE3lYqfn8einbipHkoao0wPKmZDInIC0xjE+NyrS5Tt/rqlYocBqMoSx3Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793095503;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=NrlJ8g/naw6YUTj7FVrYJREvO50cm+kmdHJ2AhA6rYI=;
-	b=jKqnzMp+JvALduA0ArRXLxvkB6kzKUwKu9XMjN3NMvyNgojFVshnVgkqHwQv6PRcjBbZ
-	 2qZ0S97Xk3w42ptiSHFSE5d2oZkuYsUtP6AJj/avhH2GN3PWGKZruEPywDrRK8Vtngy4C
-	 8WvZfb/CcqrfuZjuBNmnupCF3iaMqqwDdAT8NJF5sg4gsLxAVx1oAjlzXgBLJTcSl2idr
-	 CZgnh/dbs9cHAv2hhRFQ0RPTgUdWc5qEWo3hyPFTFgEkR3N1r3Qmw0MyN0va9cd2uTE9H
-	 jLqaxgR+xpANqucu9auHbHi5Zq7U0Wvir8AN4aAKzNDNDT7wGaslfpQxZRssTkAS4VQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099202;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=RE9r+EPMkqG9JguqfT6dRXgxJfABqUOB47pSYdQBeWc=;
+	b=kpeIRpjvVPRd01+22MpOmxcf/zhcZmhYtHiqXG+pyzjV48a1xJzF+9Qh9G8BzqkMPKTm
+	 4PDdxif5zXVlQR07N3FcFFyYkPEEVTB0+J3S3Y0MnvMySZTofi+Fx/hCepz90+ISERc+6
+	 uDq9+Tsllv/pUgrnGq/oKiVaQBPzcqme6S6yFe+E98mqrr6EFNISyUDu1ATf/dh192NDk
+	 r+Focu31ULKR9KB/vHClVl042n9Q/PzDN5DG1q/8BAFyERnzkia3mW60VNAq39n284TUz
+	 YivH1sqW+QRGn928IWVtGcW8ffM4+GasbsBrIaKH85JBVT1Gpnx9JNfA4qhhnraGqLQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZxUkj8uA;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=sWfLEp3V;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3805606A31B;
-	Tue, 27 Oct 2026 10:05:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 429CF606A31A;
+	Tue, 27 Oct 2026 11:06:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZxUkj8uA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09BE81F01825;
-	Tue, 27 Oct 2026 10:04:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793095502;
-	bh=NrlJ8g/naw6YUTj7FVrYJREvO50cm+kmdHJ2AhA6rYI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=ZxUkj8uAvhzv90m/WWnpIaqo0j6dCrI7HVMlrI/byqOBbcUEmbZpoNst7etZ/dU50
-	 XM3owOGBPvGE8tHc25pzvvt2u/sM1WcaWnhe4MuJNAuLBsuohOurFdbnVHed5V1/nk
-	 Uhd2VM58ttpXiQhPIlyxmDc4YepI99UteM0fTdSY8JP5DJQSDGkUWNBSFQxK9TxfMF
-	 m1Am8YAytta0EdjpCsUKuoLoFSS21qoyzDuKDpdJgVgaVl77V8dKqQHfZ1Fv2LW+V7
-	 GUCd07qF+yWULKrqSHTISsFEKXrQBb37YwgoFM9j4kI+CFEozXXtU0JglTK0YqDmPc
-	 2yTYzv46OkgBA==
-Message-ID: <18f1e637-48de-4962-8a13-65f6597eb2dc@kernel.org>
-Date: Tue, 27 Oct 2026 11:04:54 +0100
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=sWfLEp3V
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F33F1F01825;
+	Tue, 27 Oct 2026 11:06:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1793099201;
+	bh=RE9r+EPMkqG9JguqfT6dRXgxJfABqUOB47pSYdQBeWc=;
+	h=From:Subject:Date:To:Cc;
+	b=sWfLEp3VRf/4WrJfPYQKOCw4b8lRjdJvSfBzkqGLfFKO9rYddYseBi8+0wEqIdm1m
+	 PHL7tT+Qdn3ieb5HsAVGedrNBO88lc7nPHr1RiQMftIwIWdSGI6eaJ+ndcEMfCVWnc
+	 uREEHYWxettJYQ+sv/fEWRae2leB1hxzkdv72qDo=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 00/24] tty/serial: a bunch of llm-found fixes
+Date: Tue, 27 Oct 2026 12:06:26 +0100
+Message-Id: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,104 +50,141 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/4] dt-bindings: serial: snps-dw-apb-uart: add
- Allwinner H616
-To: wens@kernel.org
-Cc: James Hilliard <james.hilliard1@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20261024-submit-h616-uart-fifo-v1-v3-0-286fc1b8c3c1@gmail.com>
- <20261024-submit-h616-uart-fifo-v1-v3-2-286fc1b8c3c1@gmail.com>
- <20261027-nifty-reliable-octopus-6cbac5@quoll>
- <CADvTj4qrBYSyT39=xK3_oGgHdFoSH=oyDvTtLCSzW=F9KAgi3Q@mail.gmail.com>
- <3287a7db-fbab-4b23-9ee0-d40c52fe855a@kernel.org>
- <CAGb2v64Qr-XCRdgi+RNS2XkKUn=F8zW+8WUKaauM2PjzL2XgWg@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <CAGb2v64Qr-XCRdgi+RNS2XkKUn=F8zW+8WUKaauM2PjzL2XgWg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDAyNz3ZKSSt2cnFxdCyNzI9PEJNMkyyRjJaDqgqLUtMwKsEnRsRB+cWl
+ SVmpyCUi7Um0tAHBsGbhrAAAA
+X-Change-ID: 20261027-tty-llm-82725ab5b9b3
+To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
+ Chris Mason <mason@kernel.org>, Josef Bacik <josef@toxicpanda.com>
+Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>, 
+ Florian Fainelli <f.fainelli@gmail.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Peter Hurley <peter@hurleysoftware.com>, 
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+ Crescent Hsieh <crescentcy.hsieh@moxa.com>, Frank Li <Frank.Li@nxp.com>, 
+ Sherry Sun <sherry.sun@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+ Pengutronix Kernel Team <kernel@pengutronix.de>, 
+ Fabio Estevam <festevam@gmail.com>, Manivannan Sadhasivam <mani@kernel.org>, 
+ Olof Johansson <olof@lixom.net>, 
+ =?utf-8?q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, 
+ Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Peter Griffin <peter.griffin@linaro.org>, 
+ Alim Akhtar <alim.akhtar@samsung.com>, 
+ Robert Baldyga <r.baldyga@samsung.com>, 
+ Thomas Abraham <thomas.abraham@linaro.org>, 
+ Kukjin Kim <kgene.kim@samsung.com>, 
+ Patrice Chotard <patrice.chotard@foss.st.com>, 
+ Srinivas Kandagatla <srini@kernel.org>, 
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+ Andy Shevchenko <andy.shevchenko@gmail.com>, 
+ Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
+ Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
+ Nicolas Pitre <npitre@baylibre.com>, Kees Cook <kees+treewide@kernel.org>, 
+ Helge Deller <deller@gmx.de>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Mingyu Wang <25181214217@stu.xidian.edu.cn>, 
+ Randy Dunlap <rdunlap@infradead.org>, Ronan Pigott <ronan@rjp.ie>, 
+ Liav Mordouch <liavmordouch@gmail.com>, 
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>, Johan Hovold <johan@kernel.org>, 
+ Karl Mehltretter <kmehltretter@gmail.com>, 
+ John Ogness <john.ogness@linutronix.de>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+ Tony Lindgren <tony.lindgren@linux.intel.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>, 
+ Tate Whiteberg <whiteberg@arista.com>, 
+ Christian Marangi <ansuelsmth@gmail.com>, 
+ Fushuai Wang <wangfushuai@baidu.com>, Petr Mladek <pmladek@suse.com>, 
+ Moteen Shah <m-shah@ti.com>, Kendall Willis <k-willis@ti.com>, 
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
+ Bjorn Helgaas <bhelgaas@google.com>, Lukas Wunner <lukas@wunner.de>, 
+ Marnix Rijnart <marnix.rijnart@iwell.eu>, 
+ Danilo Krummrich <dakr@kernel.org>, 
+ Takashi Sakamoto <o-takashi@sakamocchi.jp>, Linmao Li <lilinmao@kylinos.cn>, 
+ Peng Fan <peng.fan@nxp.com>, Shitalkumar Gandhi <shital.gandhi45@gmail.com>, 
+ Robin Gong <yibin.gong@nxp.com>, Pan Chuang <panchuang@vivo.com>
+X-Mailer: b4 0.17-dev-e5168
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3409;
+ i=gregkh@linuxfoundation.org; h=from:subject:message-id;
+ bh=u1AOWKaeLw/J637Ut3krjBC+w7zgOqNgLCTwHfBX2wM=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvc2R7ty8nT7uovFiHv7bouUfuV5sJHZgT8sZFZQT
+ 8tfx0UdsSwMgkwMsmKKLF+28RzdX3FI0cvQ9jTMHFYmkCEMXJwCMJGzCxgWzNwc3tl9Rtfm1uMe
+ 9zIt6x6rJaF7GOZwLTi5uXFXbUW86ZT5W/ub+3SFPhgAAA==
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
+ fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
-On 27/10/2026 11:02, Chen-Yu Tsai wrote:
->>>>> +  - if:
->>>>> +      properties:
->>>>> +        compatible:
->>>>> +          contains:
->>>>> +            const: allwinner,sun50i-h616-uart
->>>>> +    then:
->>>>> +      properties:
->>>>> +        fifo-size:
->>>>> +          const: 256
->>>>> +      required:
->>>>> +        - fifo-size
->>>>
->>>> Why do you require fifo-size if is const? It is implied by the
->>>> compatible.
->>>
->>> H616 has a fixed depth, but other sunxi integrations have different
->>> depths between UART instances. For example, D1 has 64-byte FIFOs on
->>> UART0 and 256-byte FIFOs on UART1–5.
->>>
->>> Should I keep this explicit for consistency for all sunxi uarts?
->>
->> I am confused, there are no other instances here.
-> 
-> I think the point is that it is going to be needed in the future when
-> we add the compatibles for the SoCs that do have UARTs with different
-> FIFO sizes.
+Here's a series of some small llm-found fixes that have been sent to me
+recently.  Most of them are just minor bugfixes and locking cleanups,
+but they are good to have from what I can tell.
 
-Then we add it. We don't create code which is not used.
+Submitting them here to get a solid Sashiko run and some second eyes on
+them before merging if all goes well.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+Chris Mason (1):
+      vt: serialise the producers of the flip buffer
+
+Josef Bacik (12):
+      serial: core: respect runtime PM when sending x_char
+      serial: 8250: don't wait for the em485 timers locked
+      serial: 8250: don't report a wakeup to a closed tty
+      serial: 8250_lpss: don't divide by 0 above 6.25 Mbaud
+      serial: 8250_mxpcie: handle hangup during break
+      serial: fsl_lpuart: fix tty ref of wakeup event
+      serial: imx: fix the tty reference of the wakeup event
+      serial: rda: free the interrupt on shutdown
+      serial: samsung: don't leak the tty on an RX IRQ
+      serial: samsung: put the previous baud clock
+      serial: st-asc: don't report a wakeup to a closed tty
+      serial: stm32: don't report a wakeup to a closed tty
+
+Joshua Rogers (11):
+      serial: 8250: clear subdriver state on port unregister
+      serial: 8250: add bounds check for line array in setup_serial()
+      serial: 8250: hold hash_mutex across irq_info lookup and linking
+      serial: 8250: cancel overrun backoff work on port shutdown and unregister
+      serial: 8250: 8250_bcm7271: fix DMA address truncation to 32 bits
+      serial: 8250: pericom: validate port offset against BAR length
+      serial: 8250: cap OxSemi Tornado UART count against BAR size
+      serial: 8250: dfl: add bounds check for device-provided regshift
+      serial: 8250: dfl: validate MMIO resource size and regshift
+      serial: 8250: ioc3: store registered line number in driver data
+      serial: 8250: omap: acquire rx_dma_lock in DMA completion callback
+
+ drivers/tty/serial/8250/8250.h         |  1 +
+ drivers/tty/serial/8250/8250_bcm7271.c |  2 +-
+ drivers/tty/serial/8250/8250_core.c    | 41 ++++++++++++++++---
+ drivers/tty/serial/8250/8250_dfl.c     | 16 ++++++++
+ drivers/tty/serial/8250/8250_ioc3.c    |  1 +
+ drivers/tty/serial/8250/8250_lpss.c    |  3 ++
+ drivers/tty/serial/8250/8250_mxpcie.c  | 13 ++++--
+ drivers/tty/serial/8250/8250_omap.c    |  5 +++
+ drivers/tty/serial/8250/8250_pci.c     | 10 +++++
+ drivers/tty/serial/8250/8250_pericom.c |  3 ++
+ drivers/tty/serial/8250/8250_port.c    | 74 ++++++++++++++++++++++++++++------
+ drivers/tty/serial/8250/serial_cs.c    |  5 +++
+ drivers/tty/serial/fsl_lpuart.c        | 10 ++++-
+ drivers/tty/serial/imx.c               | 10 ++++-
+ drivers/tty/serial/rda-uart.c          |  2 +
+ drivers/tty/serial/samsung_tty.c       |  8 ++--
+ drivers/tty/serial/serial_core.c       | 25 +++++++-----
+ drivers/tty/serial/serial_port.c       |  4 +-
+ drivers/tty/serial/st-asc.c            | 11 ++++-
+ drivers/tty/serial/stm32-usart.c       | 11 ++++-
+ drivers/tty/vt/keyboard.c              |  6 +++
+ drivers/tty/vt/vt.c                    |  2 +
+ include/linux/serial_8250.h            |  1 +
+ 23 files changed, 217 insertions(+), 47 deletions(-)
+---
+base-commit: d135ab453a7400a34930bdda1ef4bdc8acfac80e
+change-id: 20261027-tty-llm-82725ab5b9b3
 
 Best regards,
-Krzysztof
+--  
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
