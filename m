@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099503;
-	b=eDVXk69kLnDY+qgCDOTwPD2SCe6bihg/eTJ70fNrwmp2h3Aihp7GyXvSKqCVf3BTPQEs
-	 3QdzZmn/VpHwdB0f2FKyHiyEp9RkXRrwat6/dnl9H9ArRxvG4diGixuDthvpbUL8wlu0s
-	 x9fLoOWD4+ImTxzAjBNqz8VLl9PAmgh41j07RbUxi96WYpHdEho858wQYkLUOQehu140I
-	 wZBGbQFIUdKXywj7zpWAwV2S0RFNzEf6Ofjw8xC0DH+pwPYnsVYlyyctVRnFwSgRu55Si
-	 mv4io4SimbOFBqy7lJO9xIoZtkEV9lfwEzAlCR+1hwLXrqDqRpyNiQaMwwUJp+81FaQ==
+	t=1793099518;
+	b=JVb5IqpMPB+ygXKrk1R1RDX46Xvv77bJqaZoU4dRqbHgZ2Q7HyPL776/K8GsAUDDVRLR
+	 hfbKEiHT1Q/rE0eKAeomYzupz3oTeWafmGcJwXlVQvNcWg520rySqCJIGJTyvS+7KMkE+
+	 nNec+dEgd1KvzKE6th10sojF3d/L62LhAt0PImCLgUu2X5ylBy6DPNrF6EOD6Uj9zSZq7
+	 kVQ7hLnKV8jplXE858NriqtJLg7PznDrSwKCsXD6U6+jzHtETQKQi9WoVA3ttuPD/ouS2
+	 MtZrYKpKQs1d77RqOQMi7UwZdHLARxg4geP4m5wlb6gbfUhtdavcm2zaMfblWCQgn0A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099503;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099518;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=08A7dV6H4uMwurtC8TdmFouTac4YCtJtJQ/aqzShEHc=;
-	b=QYBL4fi8UCzjiucE8YIsNk+B6tPXRuRBScMqxxxeYAs6Wp4QXU0Wp74XSpRv0uyEpptC
-	 szeiKIcWki2OJN144SCYItWYnTejselz4wqxDQ2TE+8TwfmeP1qWlbZJXNHJrp0CgoVp6
-	 d9hK32CwXZP0zIOKDJu2N+1udPcZ6ikW1GvqqFbR3I5sERyOVtd1dXQGyRKUbaL581ldw
-	 IEoRXpCUvZJSsTUnUU9s75w8kYchAuuu+Zs39mrmJkar2eY4LuPmx93iL6ZUdFMylKOp7
-	 0sR5glSeldt9eiIVrcKJr+/acmFNvjAeagm9yTJ38boeHB4K6JFPhX3N9Gdqf3EXRLw==
+	bh=MziFyfaCRHmzuO5Z+LBp0WgrdHZ9mJgVVfwHjCjUIrU=;
+	b=QXgk0ir2mDXaMVI92lYPFvZrogZ15uBckH5/S+5u9V/j4oh15aWpEsF/rYpf+HtC/VQk
+	 wKpP2eCTUJ3UoiPx8VPSXbQTVChf9Xaklsb0A1zu8/g32f2ot3nZplDaluOYnw7O9FA86
+	 Wdmi7CcmiHORhGKYhz4rMrSm+jXqH6KMPhLzEetzU2o341mYrbcE62dmqlI8awZZdBagh
+	 XTv2Is5VEV3mfuGSi36AgVKHBXWFGFsdiLEbqczKwWInhOo113eUv2f9BhpBipekJ9iGX
+	 0YHGmXtKiQXGtM8XzSl7FBnE8Zig5FQBTRo636OWVq8Xyl/cvLMD4HaondOpPs12eVA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aZ7i7ewr;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Si8m3p9N;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0555B606A32E
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:11:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A107D606A321
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:11:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aZ7i7ewr
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7295F1F031E5;
-	Tue, 27 Oct 2026 11:11:42 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Si8m3p9N
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6029C1F01828;
+	Tue, 27 Oct 2026 11:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793099502;
-	bh=08A7dV6H4uMwurtC8TdmFouTac4YCtJtJQ/aqzShEHc=;
+	s=k20260515; t=1793099518;
+	bh=MziFyfaCRHmzuO5Z+LBp0WgrdHZ9mJgVVfwHjCjUIrU=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=aZ7i7ewrdsbkIkygomafoKQg+x/vRl9A/fbI+oD6j0zQh9RntRxygYq6QkjQ7NiwF
-	 MuKcLa4h+AE0bunwQxg5pBQAlCC+bHXnU8DRez0+A+DrBvUB4moIwXohyZn3UnytE5
-	 y/00T11q6MAWV/YQoy+7mZjkgXhdFK4BUpdSw3+U2RGJ+DssNj8HDO9q+bYKxb47oD
-	 r/rWXX0UwbsiaAJoe+5BV5BwfSPbO3U+wP7RO/DV5RhAHVPs7xj9uz1y5xrREs2c9w
-	 Dy/0DguZA+wpAYJZ9ZsZb5c4NRZbA2jpjbAz7Y+6T16BATPTJLBIKsnoaOQfYG+iWH
-	 d3WTN9a3Lyiqw==
-Message-ID: <sashiko-outbox-186415@kernel.org>
+	b=Si8m3p9NgRppTRkXiDmhHkUmzfc1VyjghbQkcOBAU5ArSIYij+X4mrYybURmOGuyM
+	 FnTL5eyuNBkLYG8bcSnQ1mDGSmJjQI9m4wEg4Oqh99/5ub2LPhaIgTB5x13bBII4kB
+	 Wm2+soPailONNhV6pSL0/FwCXzQpKl3PxlzeEenindVK1pyVi0R+qpIsGl+S4VkvJo
+	 4j/sfwAWscl0hb6WUexS1EGircUEWpfBBUm22QuUd1ccyA0zMU/Uaw9XciJf7X71SI
+	 XPUBr5R/YCdRlNgNw6VenX/VBG44Jw5TAmZAISUHTViglsVLr3gmGnbsFKG1YStn9E
+	 57Qf6CA/5f50w==
+Message-ID: <sashiko-outbox-186416@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 21/24] serial: samsung: don't leak the tty on an RX IRQ
+Subject: Re: [PATCH 18/24] serial: fsl_lpuart: fix tty ref of wakeup event
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027-tty-llm-v1-21-99b0202ae546@linuxfoundation.org>
+In-Reply-To: <20261027-tty-llm-v1-18-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
- <20261027-tty-llm-v1-21-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-18-99b0202ae546@linuxfoundation.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 11:11:42 +0000
+Date: Tue, 27 Oct 2026 11:11:57 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -62,26 +62,22 @@ Precedence: list
 
 > From: Josef Bacik <josef@toxicpanda.com>
 >=20
-> s3c24xx_serial_rx_chars_dma() starts by taking a reference to the tty.
-> If the interrupt is not a receive timeout, it switches the port from PIO
-> back to DMA and leaves through the "finish" label, which does not drop
-> the reference.
+> To report a wakeup event, lpuart_resume_noirq() gets the tty with
+> tty_port_tty_get() and never puts it: each wakeup by the UART leaks a
+> reference, and the tty is not freed when it is closed.
 >=20
-> A port with RX DMA changes to PIO on every receive timeout, that is at
-> the end of every burst of data, and comes back this way when the next
-> burst starts.  So each burst takes a reference which is never dropped,
-> and the tty structure is not freed when the port is closed for the last
-> time.
+> With no_console_suspend, the function also gets there for a console
+> which is not open.  Then tty_port_tty_get() returns NULL, which is
+> dereferenced.
 >=20
-> Drop the reference on both paths.
->=20
-> Fixes: b543c301c2c5 ("serial: samsung: add DMA support for RX")
+> Fixes: 18bdfccf3c30 ("tty: serial: fsl_lpuart: Add missing wakeup event r=
+eporting")
 > Cc: stable <stable@kernel.org>
-> Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> Cc: Peter Griffin <peter.griffin@linaro.org>
-> Cc: Alim Akhtar <alim.akhtar@samsung.com>
 > Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Robert Baldyga <r.baldyga@samsung.com>
+> Cc: Frank Li <Frank.Li@nxp.com>
+> Cc: Peng Fan <peng.fan@nxp.com>
+> Cc: Shitalkumar Gandhi <shital.gandhi45@gmail.com>
+> Cc: Sherry Sun <sherry.sun@nxp.com>
 > Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
@@ -89,5 +85,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-tty-llm-v1=
--0-99b0202ae546@linuxfoundation.org?part=3D21
+-0-99b0202ae546@linuxfoundation.org?part=3D18
 
