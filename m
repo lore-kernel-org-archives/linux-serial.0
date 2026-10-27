@@ -1,90 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.195
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793079821;
-	b=YeQdduEFcwzpOJgjBF59T5ZUYv2BZ9Jm92touJNCzOJifn8pfgAUWjDKRcVOg+B8abWi
-	 ECGcD1jh9i8s3dLl/Md1sH+rjBqrOjIiV5up7SzF2BzIf6HS0cwEU1jgrg9pYXHUerChd
-	 L3SZxolZppRnpR7Ldly4GyTWsEm6ARr0BVuQK/GKVQh/Q8Mq6I05ODKOMSWqstcXs2TTe
-	 YDN++Fzt7A7HkFfJRIzVR6poFDRq5SY2jtc/n0gmqMAcvWtIeD7Sqias+UgeDQ2kgkVNv
-	 GhyIV6Z/Qaj97s7P1g5WIVD1GG11n1wovaFAM0VlNln8Hx3uF7+bMDNkSAeSdK/5d0g==
+	t=1793080614;
+	b=Z65jHKTuShnXYU0CGWETu98nJXihIHJInnueUUd5XiEjN7iDC4V719t7j3jsTYZfJY4S
+	 NTwQBvy7WNLOC8YUt2Sz0AdmCeSQPC52pO2U3bPMnLA56JVncB2kAZ62KtO8iqdZYFyCY
+	 /Tg7F6+vtt3w1g6YGSeOxuSO1+Xpy8/nInU+IaYkiIl2xfzoBfVJverms4l0YV2F9H4dy
+	 Fn3VjDb8wrK7VH1Hm+pKD0z26QYuwxR2NO0BuffaAsEqZIUH/9ugGTUGAOUu+wKjPFc/5
+	 rGj58rVAQ8mbOT7dsZArBcRjbPsiUR7jJpHBC4MBxSBwKOekqGVVNS3rJziopd9sl5Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793079821;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=FqWB2wVkmtIRr5mzG2098ehyTIGBIw8KJYdLx1Y6IvQ=;
-	b=WfSuLnjMYZP1vuQktPjDGMrSh1xgUJgiO/vDzX4qg809vdqxct30oKpmUGmKRo7OmAl3
-	 cBrwKTq1Jc9RxkKlFWpAub6FLMJXNlguf/neFjeVjsye16GWJKgzqzh5UgcBAOl3U5KW8
-	 yf6sOOjZf0+cOB8o5josxGmNh/EMySDpROFzWI77hBWg7trpPAsoiMNqBmQ9JIr5dOwqc
-	 mGmy9RwhWpCIFUhPPHHAdkpiH5mJjo5rCHCEXM62JyZkw8UgYBNupBJey9m3LdKeb6tft
-	 huBdtX3Y9s3Ycid0uwUNRuszf4qoVqN0y2UjedFxY6A5Lhq9DfMQS8jPKyCxB2qDV6Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793080614;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=QN8oxWLdLEw9peAXXsLw8QZSEZvNg90iKcaYq0zFZV4=;
+	b=Y343a8uqxjixa90fZBnhj6soDNZamj6bjGyoUd0H7IUHIiJsFlpSvfBFqASoPDETJ5FF
+	 1C67tELmGY5kIVGXGnvy3wmPxKr0G+O7mCOONbHzOxKFueM+/VYHjwpV0+cVZLVzQyFAf
+	 FwkDxh1+vhuApSdTdO43aNXTilvHV0ofUQQQT2VB0JX/h1Vx2kMIXRi7RAmBqKFAwcXZB
+	 ZscSIhyhwRcsPbOXaK0z7kUIxQbFGzwZXvcbmBkDJN4dXQ61fGMO0CAidHE2TiY81ns+m
+	 GOUSAitzydqWMuocrrCjQrLCB7S/RtCa9C0Gy5vS8WdCax3JTZZ7YGsfPF2a1Sw3hNg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UScxL+7p;
-	arc=none smtp.remote-ip=74.125.82.195
-Received: from mail-dy1-f195.google.com (mail-dy1-f195.google.com [74.125.82.195])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JnOG5Y1Q;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4878E606A31E
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 05:43:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4878E606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE4C2606A31A
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 05:56:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UScxL+7p
-Received: by mail-dy1-f195.google.com with SMTP id 5a478bee46e88-35d0be18c71so781236eec.1
-        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2026 22:43:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793079820; x=1793684620; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=FqWB2wVkmtIRr5mzG2098ehyTIGBIw8KJYdLx1Y6IvQ=;
-        b=UScxL+7pN50Cx5va0u4tF9i803tCUmr1fjXNMTJYSvUCBWs81tT39d6+7lEpMpfDuX
-         vRFAdOq0vqk3UgoucZaFTpIiZy6NJFjRBxS4KFUl4j4ibma2Bb21zSP2bi/allqV6elu
-         xcCe0RzlL6Sp1LMcLMhspT1e0k2odbEZ0I7T0BvnSOWF/oR9H1YO1B8L7MD2SEKSSuxZ
-         70GzDqIGlLZ9sciXG+dH6TyTZ+Ouo38rg8BZk1COix1B/Sza/xAHTv78dcPoKw6Tp4rG
-         TYol7YC7pY42JF8uhLOaWpob5I1ljDct2jINcFosy7JpQuQeKeODNoeMD9+guzOgxdPz
-         Se9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793079820; x=1793684620;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=FqWB2wVkmtIRr5mzG2098ehyTIGBIw8KJYdLx1Y6IvQ=;
-        b=ZIdhE6n5DKULtaymTKNYIjZZV44NPZZ6asbi9muXTKUmQa2+kJ0b+n+Y6tnNH+1pUI
-         /rUwmIvrgDRJJrJw0jxNC05zXBxPYV+3DL70vjlzYf9AlRyv18YWY5wJSfTZUNWbGhtj
-         fk0+UQt5sgtY2CJmtGFwWQUmnQDakZ2HhcDLhQC2UatfELSQ8rj0RtaLqXR0wwl5Y4fA
-         lGZSme40q9LFWYGpmicTNhy44fQvz4l6v8bi3u91/2EO6tSGlcwx7FWxIk0zEV+VaLMq
-         WeAz8frm3eX4q0NUAaVg7PiFmRKgE+lixwQ0wfL++Zh3w3yxmzey/msQXXmtruh//aVr
-         RSww==
-X-Gm-Message-State: AFq9FYJZc+hQsZGKMhBd13fsuxY7ZyYqykZBtHK2e0D1yDm3jLq6DNca
-	eM9ntAgQQEJqn35J5IE7mikXbm/TVY4ISWvkViyC92wYB6MSR+0+wd47
-X-Gm-Gg: AYBFou1BQ9WrOdID9DLAUrTXE5a5L3KpBxeY7rAVzpgp8vUgKGMKHoz0jR0lo5Nhp6G
-	XN7C0+6ApsGEX5glaw/BNBnKyxxxFB/l6lmFyxSMUz/EV8ogqLmFQFtfwn8uvup+4ETnh2LK/7K
-	QTY/g1fP1UPXftvYMhnCSZ76Or8QYFcBYuV0e9zo7BIU6vUDYCWDV8p1cpHSWyhuMO6UQr8iGW2
-	u4oqW3iPaCv5jub02ziqVSs5RwOYg2O6Afzlxb2zM6gSEdzUxTMPm9fl20kucVH4fNAhJxRWaZk
-	MlA17+3sRc6VAdllgdm6ICIGnSY/FszjgQVrBQMXiKYv+HdiTOEfjoB663azw/ADnuHymrWhu/D
-	MqLc4X9b/4Q9A1q4MKASqErsVDdkeV7GMapvlf+vLcqDBRXzdNAD3GkwmPKmYm9rycJvWDnIvbE
-	/l32NRucVUHRR7rA5iKt9wVFQ/12ZCInEWWUYZxZoYdv6fkJn3+barJAzv0VfaNPLw3ABjatw8I
-	NZ0Pq91wkPiM8DP1jN2qLxFPNFuxQrQhqH7+GLw/iyqMgMpOyIkRRn2vwM2K/WXEVInnfTsW3P8
-	JL1cqTJuKxWIMQNWaySU85cbnhYv
-X-Received: by 2002:a05:7022:2609:b0:159:d448:dd1c with SMTP id a92af1059eb24-1a3c904ca8dmr2950895c88.19.1793079820223;
-        Mon, 26 Oct 2026 22:43:40 -0700 (PDT)
-Received: from localhost.localdomain ([98.148.34.5])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-19894d59f90sm29033485c88.3.2026.10.26.22.43.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 22:43:39 -0700 (PDT)
-From: Hungyu Lin <dennylin0707@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	dennylin0707@gmail.com
-Subject: [PATCH] tty: discard flip-buffer input for TCSAFLUSH
-Date: Tue, 27 Oct 2026 05:43:04 +0000
-Message-ID: <20261027054304.35543-1-dennylin0707@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JnOG5Y1Q
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261A61F01828;
+	Tue, 27 Oct 2026 05:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793080613;
+	bh=QN8oxWLdLEw9peAXXsLw8QZSEZvNg90iKcaYq0zFZV4=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=JnOG5Y1QjmMWFuNFLX2nbe/1YRbY1u2cRQpLH/w+1ZwEA3sjqHtkTUORfh12bpH/d
+	 Hxm25A2DIlHqmuY1NnfbmIojavLJBknn4qV3UjpUJrmX2s56js2sRt1amNcnd9xx+4
+	 5F1itD5Hoib7sK2UPUKi1/aHvBjIWBxya6NbP2IrwWArI/b6aKdy9cZR6/CqHdFwbB
+	 4oJVnv2M4qTvAN6gxikn2gBrTK8Syiuol8ZXxSOKDLA4D21HKRZ4++fLZ0kyy1VcHq
+	 DNepGa/esz2fgtSfMS3JUNrBHtrR/kzmMZo1uLmNnm8fI8kHx1UQuia8J8evEETVzO
+	 kKH6LH+/lba3A==
+Message-ID: <sashiko-outbox-186146@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] tty: discard flip-buffer input for TCSAFLUSH
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Hungyu Lin" <dennylin0707@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261027054304.35543-1-dennylin0707@gmail.com>
+References: <20261027054304.35543-1-dennylin0707@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 27 Oct 2026 05:56:52 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -93,44 +58,91 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-set_termios() handles TERMIOS_FLUSH by clearing only the line discipline's
-input buffer. Data already committed to the tty flip buffers can be
-delivered after that flush, leaving old input readable after a successful
-tcsetattr(TCSAFLUSH).
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [High] tty: missing tty_unthrottle() in set_termios() on TERMIOS_FLUSH
+--
 
-This can be reproduced with a raw PTY: complete an 8192-byte master write,
-wait until the slave reports 4095 unread bytes, and apply TCSAFLUSH.
-The remaining 4097 bytes are still readable afterwards. Small amounts of
-pending input can also survive if they have not reached the line
-discipline yet.
+commit 757d2dda2b0d44401d4d977f6413afe8f7669c45
+Author: Hungyu Lin <dennylin0707@gmail.com>
 
-Use tty_buffer_flush() with the referenced line discipline to discard both
-receive queues under the existing buffer lock. The helper checks for the
-line discipline's flush_buffer callback itself.
+tty: discard flip-buffer input for TCSAFLUSH
 
-Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
----
- drivers/tty/tty_ioctl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This commit updates set_termios() to call tty_buffer_flush() instead of only
+invoking the line discipline flush_buffer callback when TERMIOS_FLUSH is se=
+t,
+so pending input in the tty flip buffers is also discarded on TCSAFLUSH.
 
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 90c70d8d14e3..45cb77185dbb 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -496,8 +496,8 @@ static int set_termios(struct tty_struct *tty, void __user *arg, int opt)
- 
- 		ld = tty_ldisc_ref(tty);
- 		if (ld != NULL) {
--			if ((opt & TERMIOS_FLUSH) && ld->ops->flush_buffer)
--				ld->ops->flush_buffer(tty);
-+			if (opt & TERMIOS_FLUSH)
-+				tty_buffer_flush(tty, ld);
- 			tty_ldisc_deref(ld);
- 		}
- 
--- 
-2.43.0
+> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+> index 90c70d8d14e3a..45cb77185dbb2 100644
+> --- a/drivers/tty/tty_ioctl.c
+> +++ b/drivers/tty/tty_ioctl.c
+> @@ -496,8 +496,8 @@ static int set_termios(struct tty_struct *tty, void _=
+_user *arg, int opt)
+> =20
+>  		ld =3D tty_ldisc_ref(tty);
+>  		if (ld !=3D NULL) {
+> -			if ((opt & TERMIOS_FLUSH) && ld->ops->flush_buffer)
+> -				ld->ops->flush_buffer(tty);
+> +			if (opt & TERMIOS_FLUSH)
+> +				tty_buffer_flush(tty, ld);
 
+[Severity: High]
+Should this path also call tty_unthrottle(tty) after flushing the buffers,
+similar to how __tty_perform_flush() handles TCIFLUSH and TCIOFLUSH?
+
+drivers/tty/tty_ioctl.c:__tty_perform_flush() {
+	switch (arg) {
+	case TCIFLUSH:
+		if (ld && ld->ops->flush_buffer) {
+			ld->ops->flush_buffer(tty);
+			tty_unthrottle(tty);
+		}
+		break;
+}
+
+When a terminal using N_TTY fills ldata->read_buf and queues additional byt=
+es
+in the flip buffers, n_tty_receive_buf_common() sets ldata->no_room and cal=
+ls
+n_tty_check_throttle() -> tty_throttle_safe(), which sets TTY_THROTTLED and
+throttles the underlying driver (or on a PTY pair, fills port->buf up to
+mem_limit so the master blocks on write_wait).
+
+Previously, set_termios() only called ld->ops->flush_buffer(tty), leaving t=
+he
+flip buffer data intact to refill ldata->read_buf via flush_to_ldisc(), so a
+subsequent n_tty_read() would still see input_available_p(tty, 0) and reach
+n_tty_check_unthrottle(tty).
+
+With tty_buffer_flush(tty, ld) now emptying both the flip buffers and
+ldata->read_buf without calling tty_unthrottle(tty), a subsequent n_tty_rea=
+d()
+sees no available input and blocks in n_tty_wait_for_input() before reaching
+n_tty_check_unthrottle(tty):
+
+drivers/tty/n_tty.c:n_tty_read() {
+		if (!input_available_p(tty, 0)) {
+			up_read(&tty->termios_rwsem);
+			tty_buffer_flush_work(tty->port);
+			down_read(&tty->termios_rwsem);
+			if (!input_available_p(tty, 0)) {
+				int ret =3D n_tty_wait_for_input(tty, file, &wait,
+							       &timeout);
+				if (ret <=3D 0) {
+					retval =3D ret;
+					break;
+				}
+				continue;
+			}
+		}
+}
+
+Can this leave a throttled serial/USB-serial device unable to receive new
+input to wake the reader, or leave a PTY master permanently blocked on
+write_wait after tcsetattr() with TCSAFLUSH?
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027054304.3554=
+3-1-dennylin0707@gmail.com?part=3D1
