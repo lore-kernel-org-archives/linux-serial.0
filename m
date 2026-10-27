@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099213;
-	b=5ktPKkoA4rO/qbrtEsOtcEi9diJ7nVxcCiRysGBhZHx0ss2J+9CdPxAFOjj8vlHetygj
-	 fXmYtRNEvYt96/2Z81JwftDR1hrtQrU/6qFOn5uLFQaDGa2xlNqAje9EgnuG2qbCat+HC
-	 nxd/mjdjkpqZQEfk+7dZ8QGM/+SgXp2QZ5gWJNoK5ZR1bcfvEgwX7Fe3sQaDJQXwpCzxd
-	 6kecS9Xxt3DASQkZiPtXNbEFd2g2VkgcNQCtg46ryfsKUScYgyUwN20Wx7aKss0pgo+bv
-	 DqkKXoj0JZB9y4qk0lf3SEo91vSO6m3/sIf0DGt+I6EUuewzkrART4AEFShYacme3hA==
+	t=1793099211;
+	b=R7EspexRP70X31kgktpNTsKDnplsnDmzP/41WFoMrTGB1piJ5Ja2Plq+BVf6qDbMbAv4
+	 6aH0sLQ5Lu+pR3aPUQrR8cFrnFu8AhiUnUUqL8H0WWol+2SWTEzgmjz9Gyjs3lMzHHXpO
+	 Bt6rs5v9JGG2mhpiE73B4zHbj8yPfQSo2q3Uw82RnjDeJAIudlMECDymfAjMDLooKem6e
+	 f6jVV85N1CEdmfb5nFT2q8K307tszwnjpXwV4fCQqjA2ouRqNzbiJrxjPmbCSvNbpnlqh
+	 gYpVje6YpW2btHGHz0f9X3VHi+m2gU0n3kdSJSKZYIE+9m5U8ytYG/HM2v8UPHXdNbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099213;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099211;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=7vSKGraoDM2QV0JPe83DnNyE1Tt9SqdSFkplucLdPI8=;
-	b=kPbWOVfF2s29ybh09/tyArtfj3iBjoO1BGgSCLtATrTWqs/HbrbJasxUpUbJBRjiNPFu
-	 oEAlNzZjcl7MkQ+a+GdkGm1c5HNNTKwkS6bLAV+2Iag/MN18UZ6NMMw+WfLTI9kyvpreY
-	 t/TUntAW2zK/115/eTXd2niwuYG84Gp5IaVHT7+877RPdyKHrBLcxjBcqfS3bFE9kSqim
-	 M6LROWWQ7yF3tKaD9OveDt0XjvmOr3ivEYOZfLv+P/QVii/3sfDb1yAUKv7omY1KX56LX
-	 7lORFXg6WaYTH5pYhhbO3Phqc3swK994Rb/Quyj9uKQnBwUfF7Omo0EYhFfM4X6dnZw==
+	bh=At0VEWVYKgYSpxjC/EKa7T6O3xE3CDtI5MHjGgMyTPo=;
+	b=0FWrMloJuBei4RvQbLn52JMdUd8UW75+pUnuOK0Wa+Bo2bjAbzHH8BezVeImxMGYQFuI
+	 yrv4aS1Nvs/ejT345qdBc7GJIn38R+5kHpeKhzZoWXk+DAziI62G07Oy5oAfeD9jocgKK
+	 31lIlEyHVEB/8ODYMBzR6AteTjkofTcme6X1XZmvHHpr/RBQHJy/7TzZ98gnJSk9HCc4b
+	 2gKaU75cpXcn41yGlcDIdfnE9u3AOmiqoNU0zvdbCkfXvQ7IrZTj/f3b59xMfQzdX+S7g
+	 fDUEn4I5qhtbMCWAI65gQWLqopbzkX5RdDAW5cwlSgam9WhxXy56k40gdyLo9+2BcTg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xHFzn6eh;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b="liEF/T38";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31ED8606A325;
-	Tue, 27 Oct 2026 11:06:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B88C3606A33B;
+	Tue, 27 Oct 2026 11:06:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xHFzn6eh
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81A5B1F01828;
-	Tue, 27 Oct 2026 11:06:52 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=liEF/T38
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C83F1F01828;
+	Tue, 27 Oct 2026 11:06:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099213;
-	bh=7vSKGraoDM2QV0JPe83DnNyE1Tt9SqdSFkplucLdPI8=;
+	s=korg; t=1793099210;
+	bh=At0VEWVYKgYSpxjC/EKa7T6O3xE3CDtI5MHjGgMyTPo=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=xHFzn6ehZOml2dVavmbMTSq/Q/Y4L1kSSMOD1LdcpGr+7nK3dDkAIMRyenaGBdBVO
-	 a8mMH7xCNxMfK8VXD0C8zYLUHM1TsVfG+CvPkSy16PV4etDd6Gh89NY9s+AQZbcFrt
-	 NbT4SWJv+f8RLWLoNEBerO5oD0tORD6YEiFRUUac=
+	b=liEF/T38Q1nEq5+z6GPvnuGjFidjM2uQ/wghKi08Tk/bvh8juxgE4Yk2MlwYlEKye
+	 73Z/gwbIJdus9HFxX3GOxgmwEPqGDTu2m+cmHCuCWJMhdLs8IWKQQjL97i22Xk0AaD
+	 OBxMnoJR8wA/MrAy3NQ1A4mEm0TbaWjpI0C92e94=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:30 +0100
-Subject: [PATCH 04/24] serial: 8250: don't report a wakeup to a closed tty
+Date: Tue, 27 Oct 2026 12:06:29 +0100
+Subject: [PATCH 03/24] serial: 8250: don't wait for the em485 timers locked
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,7 +51,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-tty-llm-v1-4-99b0202ae546@linuxfoundation.org>
+Message-Id: <20261027-tty-llm-v1-3-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,67 +83,207 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
- John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>, 
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
+ Andy Shevchenko <andriy.shevchenko@intel.com>, 
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+ Tate Whiteberg <whiteberg@arista.com>, 
+ Christian Marangi <ansuelsmth@gmail.com>, 
+ John Ogness <john.ogness@linutronix.de>, 
+ Fushuai Wang <wangfushuai@baidu.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2012;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=7319;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=T32sy9olc55qU8t6c7E4l3KE2wqdvMjDebtTtCJxGpw=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWve21YdGXy1qOZ0zNfGadv133VWmk/be/pu53Pdhf
- tOalH1NHbEsDIJMDLJiiixftvEc3V9xSNHL0PY0zBxWJpAhDFycAjCRg00McwWkha8ceZP0KFzq
- 1Oz21Jq7ZatYFjLM0zpwPzL/0S3mf9oZbyOsnxlsvhJzHAA=
+ bh=u8qM+wmnOTOaYappNa66NnJnJxJnW/rvs3r/WsWRAgY=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvfqaiz+VLzx0AUDnfl8wZ6V6R+1DooYM0zvVTpum
+ Pgu42NmRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEzkw22G+dGPVjP8/qqyYNqG
+ Ccx1hy+Uyp3262FYsIPt2k79f2dOiN1aPM3zeu6aO/OtHAE=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-If its interrupt is a wakeup source, serial8250_handle_irq_locked()
-reports the characters which arrive as a wakeup event of
-tport->tty->dev.  That pointer is only set while the port is open.  The
-port of a console is not shut down by the last close, so its interrupt
-handler goes on running without a tty.  If the system is then woken up
-by a character on the console, the handler dereferences a NULL pointer.
+serial8250_em485_destroy() is called with the port lock held and
+interrupts off, from ->rs485_config() and from
+serial8250_unregister_port().  It calls hrtimer_cancel(), which waits
+for a handler which is running, and both handlers start by taking the
+port lock:
 
-Take a reference to the tty, and leave the event out if there is none.
+  CPU0                                  CPU1
+  ioctl(TIOCSRS485), rs485 off
+  uart_set_rs485_config()
+    uart_port_lock_irqsave()            serial8250_em485_handle_stop_tx()
+    serial8250_em485_config()             uart_port_lock_irqsave()
+      serial8250_em485_destroy()            spins
+        hrtimer_cancel()
+          spins
 
-Fixes: 0ba9e3a13c6a ("serial: 8250: Add missing wakeup event reporting")
+All it takes is to turn RS485 off right after the end of a transmission,
+when the timer for delay_rts_after_send expires.
+
+The handlers do nothing unless em485->active_timer points to their
+timer, so it is enough to clear that pointer.  What cannot be done with
+the lock held is to free the structure: hrtimer_try_to_cancel() fails
+for a timer whose handler is running, even if it has been started again
+in the meantime.  So keep the structure in the port when RS485 is turned
+off, use it again when RS485 is turned on, and free it when the port is
+unregistered, where the timers can be waited for without the lock.
+
+A port on which RS485 emulation has been used once keeps the structure,
+about 150 bytes, until it is unregistered.
+
+Fixes: 6e0a5de2136b ("serial: 8250: Use hrtimers for rs485 delays")
 Cc: stable <stable@kernel.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: John Ogness <john.ogness@linutronix.de>
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Tate Whiteberg <whiteberg@arista.com>
+Cc: Christian Marangi <ansuelsmth@gmail.com>
+Cc: John Ogness <john.ogness@linutronix.de>
+Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Fushuai Wang <wangfushuai@baidu.com>
+Cc: Rafael Gago Castano <rgc@hms.se>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250.h      |  1 +
+ drivers/tty/serial/8250/8250_core.c |  5 +---
+ drivers/tty/serial/8250/8250_port.c | 60 ++++++++++++++++++++++++++++++-------
+ include/linux/serial_8250.h         |  1 +
+ 4 files changed, 52 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 21ed9c41b751..82a3b8359643 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -235,6 +235,7 @@ int serial8250_em485_config(struct uart_port *port, struct ktermios *termios,
+ void serial8250_em485_start_tx(struct uart_8250_port *p, bool toggle_ier);
+ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier);
+ void serial8250_em485_destroy(struct uart_8250_port *p);
++void serial8250_em485_free(struct uart_8250_port *p);
+ extern struct serial_rs485 serial8250_em485_supported;
+ 
+ /* MCR <-> TIOCM conversion */
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 42319843cb5b..0951d3e42e1f 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -947,10 +947,7 @@ void serial8250_unregister_port(struct uart_8250_port *uart)
+ {
+ 	guard(mutex)(&serial_mutex);
+ 
+-	if (uart->em485) {
+-		guard(uart_port_lock_irqsave)(&uart->port);
+-		serial8250_em485_destroy(uart);
+-	}
++	serial8250_em485_free(uart);
+ 
+ 	uart_remove_one_port(&serial8250_reg, &uart->port);
+ 	if (serial8250_isa_devs) {
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 3d47f535d6f1..4afebd96e062 100644
+index 36b2b0a2c05c..3d47f535d6f1 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1900,8 +1900,15 @@ void serial8250_handle_irq_locked(struct uart_port *port, unsigned int iir)
- 		struct irq_data *d;
+@@ -574,15 +574,22 @@ static int serial8250_em485_init(struct uart_8250_port *p)
+ 	if (p->em485)
+ 		goto deassert_rts;
  
- 		d = irq_get_irq_data(port->irq);
--		if (d && irqd_is_wakeup_set(d))
--			pm_wakeup_event(tport->tty->dev, 0);
-+		if (d && irqd_is_wakeup_set(d)) {
-+			struct tty_struct *tty = tty_port_tty_get(tport);
+-	p->em485 = kmalloc_obj(struct uart_8250_em485, GFP_ATOMIC);
+-	if (!p->em485)
+-		return -ENOMEM;
++	if (p->em485_idle) {
++		p->em485 = p->em485_idle;
++		p->em485_idle = NULL;
++	} else {
++		p->em485 = kmalloc_obj(struct uart_8250_em485, GFP_ATOMIC);
++		if (!p->em485)
++			return -ENOMEM;
+ 
+-	hrtimer_setup(&p->em485->stop_tx_timer, &serial8250_em485_handle_stop_tx, CLOCK_MONOTONIC,
+-		      HRTIMER_MODE_REL);
+-	hrtimer_setup(&p->em485->start_tx_timer, &serial8250_em485_handle_start_tx, CLOCK_MONOTONIC,
+-		      HRTIMER_MODE_REL);
+-	p->em485->port = p;
++		hrtimer_setup(&p->em485->stop_tx_timer,
++			      &serial8250_em485_handle_stop_tx, CLOCK_MONOTONIC,
++			      HRTIMER_MODE_REL);
++		hrtimer_setup(&p->em485->start_tx_timer,
++			      &serial8250_em485_handle_start_tx, CLOCK_MONOTONIC,
++			      HRTIMER_MODE_REL);
++		p->em485->port = p;
++	}
+ 	p->em485->active_timer = NULL;
+ 	p->em485->tx_stopped = true;
+ 
+@@ -604,6 +611,11 @@ static int serial8250_em485_init(struct uart_8250_port *p)
+  *	The function is supposed to be called from .rs485_config callback
+  *	or from any other callback protected with p->port.lock spinlock.
+  *
++ *	The handlers of the timers take that lock, so they cannot be waited for
++ *	here. One which is running does nothing, as no timer is active any more.
++ *	The memory is kept for the next serial8250_em485_init() and freed by
++ *	serial8250_em485_free().
++ *
+  *	See also serial8250_em485_init()
+  */
+ void serial8250_em485_destroy(struct uart_8250_port *p)
+@@ -611,14 +623,40 @@ void serial8250_em485_destroy(struct uart_8250_port *p)
+ 	if (!p->em485)
+ 		return;
+ 
+-	hrtimer_cancel(&p->em485->start_tx_timer);
+-	hrtimer_cancel(&p->em485->stop_tx_timer);
++	hrtimer_try_to_cancel(&p->em485->start_tx_timer);
++	hrtimer_try_to_cancel(&p->em485->stop_tx_timer);
++	p->em485->active_timer = NULL;
+ 
+-	kfree(p->em485);
++	p->em485_idle = p->em485;
+ 	p->em485 = NULL;
+ }
+ EXPORT_SYMBOL_GPL(serial8250_em485_destroy);
+ 
++/**
++ *	serial8250_em485_free() - release the rs485 emulation of a port
++ *	@p:	uart_8250_port port instance
++ *
++ *	Must be called without p->port.lock, as it waits for the timers.
++ */
++void serial8250_em485_free(struct uart_8250_port *p)
++{
++	struct uart_8250_em485 *em485;
 +
-+			/* A console goes on receiving after the last close */
-+			if (tty) {
-+				pm_wakeup_event(tty->dev, 0);
-+				tty_kref_put(tty);
-+			}
-+		}
- 		if (!up->dma || handle_rx_dma(up, iir))
- 			status = serial8250_rx_chars(up, status);
- 	}
++	scoped_guard(uart_port_lock_irqsave, &p->port) {
++		serial8250_em485_destroy(p);
++		em485 = p->em485_idle;
++		p->em485_idle = NULL;
++	}
++
++	if (!em485)
++		return;
++
++	hrtimer_cancel(&em485->start_tx_timer);
++	hrtimer_cancel(&em485->stop_tx_timer);
++	kfree(em485);
++}
++EXPORT_SYMBOL_GPL(serial8250_em485_free);
++
+ struct serial_rs485 serial8250_em485_supported = {
+ 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
+ 		 SER_RS485_TERMINATE_BUS | SER_RS485_RX_DURING_TX,
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index d91c0477be9d..0556bb722db4 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -173,6 +173,7 @@ struct uart_8250_port {
+ 	void			(*dl_write)(struct uart_8250_port *up, u32 value);
+ 
+ 	struct uart_8250_em485 *em485;
++	struct uart_8250_em485 *em485_idle;	/* kept while rs485 is off */
+ 	void			(*rs485_start_tx)(struct uart_8250_port *up, bool toggle_ier);
+ 	void			(*rs485_stop_tx)(struct uart_8250_port *up, bool toggle_ier);
+ 
 
 -- 
 2.56.0
