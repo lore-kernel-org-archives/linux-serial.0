@@ -1,56 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793134225;
-	b=5tjfx/sc5IXKxokWENW81d9gP9WDEp6ULNurDE0K6p9nrgHqEp8D4aEcBx/28dkQn1Xr
-	 q5ghPIMWKrcyzKT4nHsWs7PqxCcdCw3JxDY5bN//IDFwiVUdEb2l10+2eCXOwxKRd2IZI
-	 kIBPx1jB0Fsr/gn/Fo+X48ZGfVf4OZ005KLab4UKkcNzpXKJSRZixf+KHE/2df/+jOPvH
-	 bJGkBwrqNKg0VTj6wl8vR/nbjpuZWftypkrjZHe6fTHIajnz84GNQ5clC8luHpR+XePFO
-	 PE0jzEouBmLcDvmisFx6pvZ4lLLvyY1AW8cE9VgFGUG8618yuoNNlefJO6bQJVgolwQ==
+	t=1793134479;
+	b=4+49/4dTyahHh/zhujFZfOSSTEBX7GY/B7vVQarQ12YblKut4QmUjzC4T9JwtGBvb2Cg
+	 dX+y7EJsO/c5CcfQcchbM0mkqzav/aiAiNDJvCQZx8agQWJYD90KoPcBX6vbsCS9KKfZO
+	 xscpTjZLxxyErfQNZ3edjqwvCgrRVRyPS5mSBpjAvKM49q9EcwbSTAY6qvR2MJQFCRMv8
+	 DBcX60Ar4AcPE70XY6IUdSXhhlPrIQGD3DRJAmfbLrUxxqss9S734QfIU0pUQKCVxSoHr
+	 340vHnLiABVlyQ6fq/C5dk4GMpEh2eGq6KGLKfFLkLXHTET7qujdd959GGZN4CFsRlw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793134225;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=YH5RRD8j15nMtz0K3zJT2tNGN5ccwjSfz/vr8VVrF78=;
-	b=VKtWcajqy6S4zCyb5JtDCXD3CoVfBU/eFoUBLnQCsv91ER0oSLrslBpfLYOq961iFIqu
-	 l16sTNXltcMcvhEY1B28/hOxP/tg61qrJ9+LvuvjL1GNSWhBtApyqLMuLTOENlNhmxd/b
-	 VOreLUs6ZT4yB4WEZtcK2u/xk6Y6hvaY1rsFMtwJ1xhXRjhep8ZcLJlOr6VyLDjNnJotR
-	 hbDOoHOYyiUDCxVtIVeOrygRykhTBzVR+QNuFiRfClBlYazW84WImZouRWnuVJyTgtcs5
-	 vc9FsFl75wdOqXl3G05B9D+PT+QiBbW7IeddXPNypx08S3Cn3YHXoruF3P8IJShQGgg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793134479;
+	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=Jv6Xm4QeDgQX1/yKjenrXElUfoDNp2BHW9+LkfSflZ4=;
+	b=KUMsSp9iS3AMYgoqzK/3Ioky5egsHl9sy9Qls0a+YVHGP296bm83MY7D15F0HY+hTVrU
+	 02xjciGG45uPzFOo9uV9f/RliMMIu+9vCz7+tvJFlDFy6bKWEd2LU2oCkovfnMa8YF3hp
+	 1PesTPILH/xntCxzzat+bz7j9FZj51UUP1ky3fT7XcZI1NrirRdPJZlHPderWRYa+2poX
+	 YicFOyJVX8ZRUOqQyy9jtjW4mZIhKkpgLRJUh7f5J5x6Bu7kAdyYoa+dxbyLdPPLoa31/
+	 h98o3GJ754BAplbOp1ukFlIGMnJKNmEW9wzxO0QcwCfclgWhf4BX1p37Xzr3VAOXlaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KxfXrAUC;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=alien8.de;
+	spf=pass smtp.mailfrom=alien8.de;
+	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=iQKFrDh1;
+	arc=none smtp.remote-ip=65.109.113.108
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10EDD606A31E
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 20:50:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 917CF606A31A;
+	Tue, 27 Oct 2026 20:54:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 917CF606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KxfXrAUC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF3E1F01825;
-	Tue, 27 Oct 2026 20:50:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793134224;
-	bh=YH5RRD8j15nMtz0K3zJT2tNGN5ccwjSfz/vr8VVrF78=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=KxfXrAUCUXUI6cqSc4Vnz0IL/++Ml+2fnxFKS58V4PdTgJzXEVB7FQyyO5qglgUzK
-	 6j0grfnFjHzyurMjFfk7tT1mzxwwyiisdq+exLY00x2mEGI/4pPR39JKjwEPTSinWa
-	 8Y4INTxR0DJ5aIcdrcsbSCfsO/Q2avpj7/F6aa5dXGncJS1IXqhdIIhJ6GZhEsDxkp
-	 LFNWW4kTDKa+HKVvzgLdRPx/a+ZGAI4vGLGsF/BCDFZwMNuO6RT78jTpMKBKsqxFvY
-	 j5ENKGfxv3ZcmHgXrbWAqhBPmjIdwZwj5o+50tr0XWnh1O/+XsyWfC8omrD1aYEWRH
-	 kYrpDDgbP1gsQ==
-Message-ID: <sashiko-outbox-187100@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: qcom-geni: Set the serial engine up again after
- hibernation
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Birk Skyum" <birk.skyum@pm.me>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027203136.95971-1-birk.skyum@pm.me>
-References: <20261027203136.95971-1-birk.skyum@pm.me>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 20:50:24 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=iQKFrDh1
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id CA91640E040C;
+	Tue, 27 Oct 2026 20:54:34 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id 9Y0mcD_3xooN; Tue, 27 Oct 2026 20:54:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1793134471; bh=Jv6Xm4QeDgQX1/yKjenrXElUfoDNp2BHW9+LkfSflZ4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iQKFrDh10savfSi4autfYbAYUJBPgj99iPq05z/PLbkfPRI4132/EPDth0qM7+ged
+	 xUvLEsJHhxRj1uccvxBoqIi99obdCZwohAVNH2ONqyYKbMq4zc/C3vLsfZJxVScWOP
+	 T9yoyRgpajizThFIHSvqQEAB16Uqp3qe1YboMI/vXMF3A4HI9I0FH1ksZnTDEN9rSS
+	 2t/zti62tyjM69RskgGV5QjbeBqWsMOaqKKj834H2kDjHNAdUKV9Iumc0j6tyBEnHZ
+	 bw+gE/RWqC4xsHQBnijKehBawmLhtIiirnvtBWvSTuZgovoUoJLLIGyDMU6G0KvJ0E
+	 fFTO+gSikcIZzmMlGNb/57O7u0l6wK5YNmZQBvRAqAS3/rRIM/jm7r938CrwSiS9+I
+	 wcATOdPfb9iynzvF9SAEC082qt4ZSyYqwogKp/Db6fjoL1ZHrPn3KQdQzSSaM5HoJu
+	 UhPBZcTg6e+F0Xc00EGQKR5KSuoDQ+KJKg1iJI4ihURWZJ0v2NIIw38g1SNQIxLFry
+	 YJZDwSUjgw0rTotnzfT03wZGLnZo/tJYL0QQF96dM66LMiwQDz/igQYTqdmVErWc4D
+	 x5tjw3Y0DjBxgZIju4i0XXr4VKGbYwgIxSKqIHwPoDDZfWnSM554JkcGuCcL1pYF2h
+	 8X8eQI+GMiwdM6+MqUENuxaY=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::a])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 74C3F40E016C;
+	Tue, 27 Oct 2026 20:54:14 +0000 (UTC)
+Date: Tue, 27 Oct 2026 13:54:11 -0700
+From: Borislav Petkov <bp@alien8.de>
+To: Krzysztof Kozlowski <krzk@kernel.org>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	"biju.das.au" <biju.das.au@gmail.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Au Dang <au.dang.jx@renesas.com>
+Subject: Re: [PATCH v3 0/4] Fix transmit handling on SCI/RSCI ports
+Message-ID: <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
+ <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
+ <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+ <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,124 +95,63 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] serial: qcom-geni: unsafe console re-setup in qcom_geni_serial_res=
-tore()
---
+On Tue, Oct 27, 2026 at 10:34:24AM +0100, Krzysztof Kozlowski wrote:
+> Indeed that's x86 fault, so I don't get why Borislav complains.
 
-commit 987848026d2292ba1e5b2bfaa3e913a58fce2b92
-Author: Birk Skyum <birk.skyum@pm.me>
+Really, you don't?!
 
-serial: qcom-geni: Set the serial engine up again after hibernation
+Looks like your mbox can take more mail then :)
 
-This commit adds a hibernation restore callback that clears port->setup
-before calling qcom_geni_serial_resume() so that the serial engine is
-re-initialized when the port starts up after a hibernation power cycle.
+> They added such pattern, so get_maintainers indeed reports it when run on
+> the patches (not with -f):
+> 
+> 	Keyword:\b(tdx)
 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index bfdc155c128da..4e5b0e2473aa2 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -2131,6 +2131,20 @@ static int qcom_geni_serial_resume(struct device *=
-dev)
->  	return ret;
->  }
-> =20
-> +/*
-> + * A hibernation image is restored after a power cycle, which reset the =
-serial
-> + * engine. The kernel that loaded the image only set up the engines it u=
-sed
-> + * itself, so set this one up again when the port starts.
-> + */
-> +static int qcom_geni_serial_restore(struct device *dev)
-> +{
-> +	struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
-> +
-> +	port->setup =3D false;
-> +
-> +	return qcom_geni_serial_resume(dev);
-> +}
+Probably because all those folks here haven't been bitten by the imprecise
+regex issue:
 
-[Severity: High]
-Can clearing port->setup here and deferring qcom_geni_serial_port_setup() to
-qcom_geni_serial_startup() cause ordering and concurrency issues for console
-ports during hibernation restore?
+https://lore.kernel.org/all/97e322a3-0526-414d-a288-835d11ee2b1a@intel.com
 
-When qcom_geni_serial_restore() calls qcom_geni_serial_resume() ->
-uart_resume_port() in drivers/tty/serial/serial_core.c, the console
-restoration block runs before ops->startup(uport):
+and I think they have but they probably didn't realize that this pattern thing
+matches commit message text too.
 
-drivers/tty/serial/serial_core.c:uart_resume_port() {
-	if (uart_console(uport)) {
-		...
-		if (console_suspend_enabled)
-			uart_change_pm(state, UART_PM_STATE_ON);
-		uport->ops->set_termios(uport, &termios, NULL);
-		if (!console_suspend_enabled && uport->ops->start_rx) {
-			guard(uart_port_lock_irq)(uport);
-			uport->ops->start_rx(uport);
-		}
-		if (console_suspend_enabled)
-			console_resume(uport->cons);
-	}
+The below fixes this particular case but I can already see it is not enough so
+I think this pattern needs tightening and actually splitting it into several
+patterns for easier matching.
 
-	if (tty_port_suspended(port)) {
-		...
-		if (console_suspend_enabled || !uart_console(uport)) {
-			struct tty_struct *tty =3D port->tty;
+Probably something with a path separator in it:
 
-			ret =3D ops->startup(uport);
-}
+*./tdx(-[a-zA-Z]+/.*
 
-If the kernel that loaded the hibernation image did not initialize the
-console serial engine (for instance, when the driver was built as a module
-not loaded before restore, when the boot kernel command line did not enable
-the console, or on sa8255p where the power domain is powered off during
-quiesce), uport->ops->set_termios(), uport->ops->start_rx(), and
-console_resume() will run before qcom_geni_serial_port_setup() configures
-FIFO packing, watermarks, and FIFO mode. Furthermore, if
-tty_port_suspended(port) is false (no userspace tty open on the console port
-at hibernation time) or console_suspend_enabled is false, ops->startup(upor=
-t)
-is not called by uart_resume_port() at all.
+and so on.
 
-Conversely, when qcom_geni_serial_startup() does run on a console port with
-port->setup =3D=3D false (either inside uart_resume_port() immediately after
-console_resume() has re-enabled NBCON console output, or later when userspa=
-ce
-opens the console tty device), it invokes qcom_geni_serial_port_setup()
-without holding uport->lock (which serves as the NBCON device_lock in
-qcom_geni_serial_console_device_lock()) or NBCON console ownership:
+Yah, I was going to add them to Cc but the faulty pattern added them already.
 
-drivers/tty/serial/qcom_geni_serial.c:qcom_geni_serial_startup() {
-	if (!port->setup) {
-		ret =3D qcom_geni_serial_port_setup(uport);
-		if (ret) {
-			pm_runtime_put_sync(uport->dev);
-			return ret;
-		}
-	}
-	...
-	uart_port_lock_irq(uport);
-	qcom_geni_serial_start_rx(uport);
-	uart_port_unlock_irq(uport);
-}
+Pfff.
 
-Inside qcom_geni_serial_port_setup(), qcom_geni_serial_stop_rx(),
-qcom_geni_serial_poll_tx_done() (which can issue M_GENI_CMD_ABORT),
-geni_se_config_packing(), geni_se_init() (which writes FORCE_DEFAULT and
-clears all M/S IRQ status bits via geni_se_irq_clear()), and
-geni_se_select_mode() can then race with concurrent NBCON console writes in
-__qcom_geni_serial_console_write().
+---
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2b0d9a28bc85..e727db70a2f2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -30228,7 +30228,7 @@ L:      kvm@vger.kernel.org
+ S:     Supported
+ T:     git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/tdx
+ N:     tdx
+-K:     \b(tdx)
++K:     \b(tdx)\W
+ 
+ X86 VDSO
+ M:     Andy Lutomirski <luto@kernel.org>
 
-Should console ports instead be re-initialized in the restore path before
-uart_resume_port() (after runtime resume), or while holding the appropriate
-port/console lock before console_resume()?
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027203136.9597=
-1-1-birk.skyum@pm.me?part=3D1
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
