@@ -1,98 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.136
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793128692;
-	b=h3m3huA6eNRY1zxFT+7ovfvsilkm9c6XBasjYpZyWkMYF8DUM/p8FDTMNFkf+in6mSg9
-	 qJXgNbTnMHyz0wIvkKAlJVk2gbHXlRcLagGSpC996eN1m2vidl5RX2sZgBRitl+ujvQtv
-	 3swad2UqDywBm7hbT48loIj93HU2iftgf6fPZTFGKgmT6JZYM3x39A4gCT7WwsyqHRRDK
-	 gfD4Nd7YG7T5V1wYUImcm0xEdldedrkRmKsX79MTVO5vONMfXy0wBQ4x6hAdWWHt28LZf
-	 nYJpWeA8Qxn1ZVKsJB2MuAMqnzQbK9GixObTfCYGkl6fpe1fK0uLJsk8Evxbovx5g/g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793128692;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type;
-	bh=w6DfYLs1UPv+m99YHcAmjcczztFRxn51JTNHeUhcQnI=;
-	b=gHQY3LCCn0LI+Fu8/0RNg5C7ZJ6TX2rD8ODOFHXh+8g5cLQiibCT8itC8+L3DK79rZAK
-	 YLSPUcOU6KqLHINqv08T/SMRUQv+Ck4Mse82SHlm0Yq9q+c8ONkP7IAk34YOmWc79J0lU
-	 QOjiGI3FQWHTt4glYGKeUvNfzB8RROEbfuparZcc3WvHXnmUYXr+lcV1d46g/7pBBMBRQ
-	 hHF8WIApUvlJjs28i8gnHnlO0EaxOqn/nPtUR1w3IkjRp1a0BEqm7kHzHaZrdkZ1cnQUZ
-	 YUxBv3PD+yujTPrpC9rpEPudDDgzZOlT3TfC6pxylUz9eunNbz2Fb55DG/JZ+K3jBMg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=baLZvn2f;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.136
-Received: from mail-oo2-f8.google.com (mail-oo2-f8.google.com [74.125.231.136])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.116
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793133105;
+	b=SsHq4DMGOLzk8bNMDr0JS/36gJI+oWijTU+8l3cBE0VDWZmnO4fvG0RSvCgSCRQpPhuE
+	 nWEvp/zBgDr0emuEyRlyx4Qs426w7W0i9ooYt33ZZRrdMCAnB3StbWOCwfM+zDq0kty/U
+	 kRcF5QRSWCdvK/wW8WQ70kjnbaTPBvXTfIu0q/SkoFBQdPM+4eC8ZtmZrA/wlVrey33HZ
+	 2cDjVU6UHXljqsBC9vYIIUZEcIW7eN9/sZo18fumAKFmo10eBsdVIKmkg2vNpPUie3oCR
+	 gVSlAo87tpkhxnS5dTMsXIDCn8o5UdHEaErZUeD+tJ2zMrqvG3Ultnk1kNi0XqxSnKg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793133105;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
+	 Feedback-ID:X-Pm-Message-ID:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=ItOY3Vg5BOHo/uC07nNATgEJDvbeahAuY9/6a3jg9K0=;
+	b=MUvpIe56VR7seubUWSwRF3Ym2kR0wr5kgbrBWNAshq6PASu6d6yq0oumH3wecVo4TSlE
+	 jSwjeBoBQMtifY5m9Dr/TjzC2Sb3Z7ZHmL41jf+FIiGTEDGPlb6QfV/UQg4WoMLYigsXG
+	 yQBbZIJexxa/UGCWZwo7FxR/qpEsAUBElvKeDDZNk8P7Bukr9ofpfpHdryyorccWmI73C
+	 c+UYYvnWq15trz8fcMvL6Sp2WUFgG2FDsJfyL4OcbyHNfwHtM5KDMdlGYgdmUuN1CdudT
+	 w1ZD0WKR0qiqRHYuICCMbZPFHxxig41iMW7XTEON4AJmYRI1pH2VYXTQnUP1lZo/xRw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=pm.me;
+	spf=pass smtp.mailfrom=pm.me;
+	dkim=pass header.d=pm.me header.i=@pm.me header.a=rsa-sha256 header.s=protonmail3 header.b=TNP6XfRW;
+	arc=none smtp.remote-ip=109.224.244.116
+Received: from mail-244116.protonmail.ch (mail-244116.protonmail.ch [109.224.244.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C540606A31A
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 19:18:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3C540606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B22E9606A31E
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 20:31:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B22E9606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=baLZvn2f
-Received: by mail-oo2-f8.google.com with SMTP id 46e09a7af769-843c8bbfbc4so57886a34.1
-        for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 12:18:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793128691; cv=none;
-        d=google.com; s=arc-20260327;
-        b=kFh2AdjjNvMbTrDX1BNFbGNOnLGDI+JbDa+2yXouRVMox6A5mLopVig9d3LcAbn6qS
-         R9iZvT+hdxsfCBJQfBFdGQEUmnQ64yrLSo1CBKA53xUK/zmgxYHY27HNkDs7TWPQ/nsb
-         gV7HN+niQX0/ly9lEiXlkd7MTeU8EYLiM+9XxW2r66h7G8KZEDemnl/PJ6mI+8Ij4S8A
-         iLcvkdjkXJ01l1Ycgdqo1tWWndMZVJJ3jJrqoCavAFfN3sZ2LUYiFbZwhkpdSvwfb/Of
-         9QSQ+2r1UiWw4KhqRqqHWPbKRi6iY/nD7LKOEh5ynNM8M750naEIZ/Zbcmj/ttjI2gz+
-         pl1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=w6DfYLs1UPv+m99YHcAmjcczztFRxn51JTNHeUhcQnI=;
-        fh=tb4RWebslkagBd/oPyQT0jpei7N+v3V9o84BFm6nUaY=;
-        b=J6X9ULYAEO4ZtSlv3UlvFjE2AwaAVv8mNlZS3IGetvyC4zycpzX1Ev0L0BD5GipMic
-         BVDZOVN6cAXfHk+Vp5p79ZZ+z/pBPHFzek7w24ETAUT7r3ztx9uI0dWMR8KHQhPGwcvS
-         gAMF53X1UAMiuxqKnYn2tijrA/J2lnpIdvixeU5GQG4yzQjmM75wdV8k6UAR27oyPg50
-         Gt5v30dyc19bZLWufv34UA+iwaeGcKrrYPM9m7HlA4H2LOyQEBUhdOFGH5wwg8DV6N+a
-         LRdgAkRA0oLyAXxNf17FH8ub5jBbFkiLm5gzKDs9EXV0soIsvN/3P9Nq078eKIlMK6Ad
-         ijTQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793128691; x=1793733491; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=w6DfYLs1UPv+m99YHcAmjcczztFRxn51JTNHeUhcQnI=;
-        b=baLZvn2fpvO3qD3gDdl72ehJsNqPbkEh4qsrJhy4LfxIWvzPobzyQIq0z9hdZiVfkF
-         4WlZnT3NFrz3P3SQucv+hiLyjndF9TZHjJwNN0TYcDoDjvrxb2DZ9yz5W3EouncJGRit
-         kIf18mBMkKlaiwM9CfI0+2xMAfOv3mq7oZwOJebua9lL3JgOQ2t+iH7AOSrAemwTavQ1
-         VSkaDvByApNQ0gcC5pLMzZ6rhs+0LeVln0l3LTwbq2Fo8LObI9FVyh9YwcCbLANAum+8
-         1mzUZBFUJ774JewRyHDsWOiKQomHi/KREbtqSZy3sGVISfX8mxre8Budizbflh0PP8KT
-         mS0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793128691; x=1793733491;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=w6DfYLs1UPv+m99YHcAmjcczztFRxn51JTNHeUhcQnI=;
-        b=tEkekqOMAzpTi6ihoJG6y6A+JabZw5/hxfkrS8Vlr6AQbuGmolcUbsaxXkGJ+FU6On
-         4bkHUsZxusQ5bituif1V85ezhezFvo581o4DcK2RZrvFtNThovycMjKNZAMwUHYF34wK
-         dJqLlqzhOP8wy1W01ywE2wFb+vV/HKhycyOy9KBro/c6hsBnvlsLFLao76ZbiywHwBVh
-         NTzHVC3ojZEwAz4dvDv62e3t3ltts2gr5CctcnVjQMD+XeLG+LHuc1C4uON+9Eo6Ub9a
-         8LbQhP5GLc7+zIUTSZQ7+oG9bl3N6a0G5yKZToI4tc7g0q7onFdQYcNJTHEcCl18OPCp
-         2DIw==
-X-Gm-Message-State: AFq9FYI7HxwOjRrtsL7oXBkfmKYIwEoOWmH7FbUxSmG8mqg9K+HbmJmS
-	pbpqEGgisF3ylcjRNKY1ZUyL1l5BvKwmFkeRs7TnKVtbfU2dWy3KmJWUg9hYiBza1xk4yckXScS
-	HkIZa6Z3SmIJe6+F6AMNYllQOju/IMPc=
-X-Gm-Gg: AYBFou1g4f0qLKbjt3JX2+dPrQO8Vn1UisMLpf0M8943FVZjMk9+USAZ2VN/eRCFBuy
-	nQrRnlV0cnAxoN0mMlqd/a6zzFvsVp4QFfro9/aKWE16J0IsSYeL3vwQK6tcquzyZHqGYJDAp+x
-	c11vZcgGiGSXoMzfdSpyFqVuHlgwNc9T90CXN0NFXFXdrBSIcDjFyXXpkS5QVUZhmHfMwMcx99/
-	l9j6DEyBu4eEYMQvVNp3WDJTkFToe80gd4iihgvn5KOpcF6x6UE+XrY5ZpRwTbtFFgElLsZ/JQj
-	FMTj9FVcKUtixUbUsG/8aMm0x1QFUscG9Z4y4cjbx57//B7E63dJotnjRH0Mqt+apdKQJIZgVLA
-	y4XofxzHSwUpR+g0bft1tTLrDzqr5B3n6y+J8ATiV2kRCW1vSp/bAX36X1Vhxdi4n3Qy/Ynpz
-X-Received: by 2002:a05:6808:151e:b0:508:c44a:63f4 with SMTP id
- 5614622812f47-56382684c39mr91413b6e.35.1793128690829; Tue, 27 Oct 2026
- 12:18:10 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=pm.me header.i=@pm.me header.a=rsa-sha256 header.s=protonmail3 header.b=TNP6XfRW
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1793133102; x=1793392302;
+	bh=ItOY3Vg5BOHo/uC07nNATgEJDvbeahAuY9/6a3jg9K0=;
+	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=TNP6XfRW0r6Gi8+sA3NB85f8TvH3QXPO5o1Mv7fMSt+egBjOcM9z08uapPa+XPspm
+	 d+GWCir7eKtVZp2n7PQNehpQafWQxYCtp+qEKooSMo1pN4KMmCk67KnfgolvceSit2
+	 5oCdNk/1EQQnx0aXTbVmyODKAOd53WN9ACOcfmZKiWt/lX5sadx4RPIDsw4/oCpX/b
+	 hytZQm6y2CG/WlFQ6IiaycRIZRUT7uub04RMBPbZjc7JBCF3oerDzm9c3hYAqQdArC
+	 ZELVJI9sUGtm+AeLHodL1UkoqONE/9/DtbwH5YjLNTYGE1ysDwv6X9SyVmL7C9yYRx
+	 H6QvjUAesgakQ==
+Date: Tue, 27 Oct 2026 20:31:38 +0000
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+From: Birk Skyum <birk.skyum@pm.me>
+Cc: Praveen Talari <praveen.talari@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: qcom-geni: Set the serial engine up again after hibernation
+Message-ID: <20261027203136.95971-1-birk.skyum@pm.me>
+Feedback-ID: 21326998:user:proton
+X-Pm-Message-ID: 514362eb52f479d693c59884f7ec81f7766e91c6
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -102,22 +61,111 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261027082236.56724-1-dennylin0707@gmail.com>
-In-Reply-To: <20261027082236.56724-1-dennylin0707@gmail.com>
-From: Hungyu Lin <dennylin0707@gmail.com>
-Date: Tue, 27 Oct 2026 12:17:59 -0700
-X-Gm-Features: AclHuK972QVjxsr7ZPA1BMTiS7Y8E-jpvVDMCciChlRAHi-jepLN9cibkbn5rwA
-Message-ID: <CAGEkeHfWcuoCk3zvnpaSXKDduVB1UWAJtRGV-KjJmt7ws2gbBw@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: discard flip-buffer input for TCSAFLUSH
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	sashiko-bot@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-> I'm still investigating and don't have a replacement ready.
+A hibernation image is restored after a power cycle, which resets every
+serial engine. The kernel that loads the image only sets up the engines
+it uses itself, and on laptops the Bluetooth UART is opened from the
+root file system, so that kernel never touches it.
 
-Fixing this properly involves more changes than I expected, so I won't
-be pursuing it further. Please disregard both v1 and v2.
+The restored kernel still has port->setup set from before, so the
+startup in uart_resume_port() skips qcom_geni_serial_port_setup() and
+the port runs on an engine whose FIFOs, packing and transfer mode were
+never configured. On a Lenovo Yoga Slim 7x (X1E80100) the WCN7850's
+Bluetooth controller then never comes back: every setup attempt of
+hci_qca's error recovery ends in "command 0xfc00 tx timeout" and
+"Reading QCA version information failed (-110)".
 
-Thanks,
-Hungyu
+Clear port->setup in a restore callback of its own, so the next startup
+sets the engine up again. The other system sleep callbacks are
+unchanged.
+
+Signed-off-by: Birk Skyum <birk.skyum@pm.me>
+---
+Tested on a Lenovo Yoga Slim 7x (X1E80100) with 7.3 and the other
+hibernation fixes for this laptop, which are in review:
+
+  pinctrl: qcom: Restore the pin configuration after hibernation (v4)
+  https://lore.kernel.org/all/20261021210425.57066-1-birk.skyum@pm.me/
+  PCI: qcom: Power the controller down when hibernating (v2), on top of
+  the v6 series "PCI: qcom: Implement shutdown() to avoid SMMU/NoC
+  errors on reboot"
+  https://lore.kernel.org/all/179181074907.22199.10556821368232442334@pm.me=
+/
+  soc: qcom: smp2p: Start over after a restore from hibernation
+  https://lore.kernel.org/all/179158127177.70185.5691100900886332545@pm.me/
+  Bluetooth: hci_qca: Reset the in-band sleep state on power off (v2)
+  https://lore.kernel.org/all/20261014180201.57109-1-birk.skyum@pm.me/
+
+The test kernel had a switch for this change, so both ways ran on the
+same build, each a real hibernation with a power-off from a fresh boot:
+
+  without   restored after 112 s, Bluetooth never comes back
+  with      restored after 89 s, hci_qca's recovery sets the controller
+            up about 18 s after the restore and a scan finds devices
+
+pm_test=3Dcore and test_resume pass with it as well; there the port is
+restored without a power cycle and is simply set up a second time.
+
+7.3 does not have the console pm_runtime_resume() that tty-next adds to
+the resume callback. The port here is not a console and this laptop has
+no serial console, so console ports were not exercised. For those, the
+kernel that loads the image sets the engine up itself when it
+registers the console, so clearing port->setup only repeats that at the
+next startup.
+
+Built with W=3D1 and sparse on tty-next with hibernation on, with
+hibernation off, and without system sleep.
+
+ drivers/tty/serial/qcom_geni_serial.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qco=
+m_geni_serial.c
+index bfdc155c1..4e5b0e247 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -2131,6 +2131,20 @@ static int qcom_geni_serial_resume(struct device *de=
+v)
+ =09return ret;
+ }
+=20
++/*
++ * A hibernation image is restored after a power cycle, which reset the se=
+rial
++ * engine. The kernel that loaded the image only set up the engines it use=
+d
++ * itself, so set this one up again when the port starts.
++ */
++static int qcom_geni_serial_restore(struct device *dev)
++{
++=09struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
++
++=09port->setup =3D false;
++
++=09return qcom_geni_serial_resume(dev);
++}
++
+ #if IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE)
+ static const struct qcom_geni_device_data qcom_geni_console_data =3D {
+ =09.console =3D true,
+@@ -2168,7 +2182,12 @@ static const struct qcom_geni_device_data sa8255p_qc=
+om_geni_uart_data =3D {
+ static const struct dev_pm_ops qcom_geni_serial_pm_ops =3D {
+ =09SET_RUNTIME_PM_OPS(qcom_geni_serial_runtime_suspend,
+ =09=09=09   qcom_geni_serial_runtime_resume, NULL)
+-=09SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_suspend, qcom_geni_serial_resume)
++=09.suspend =3D pm_sleep_ptr(qcom_geni_serial_suspend),
++=09.resume =3D pm_sleep_ptr(qcom_geni_serial_resume),
++=09.freeze =3D pm_sleep_ptr(qcom_geni_serial_suspend),
++=09.thaw =3D pm_sleep_ptr(qcom_geni_serial_resume),
++=09.poweroff =3D pm_sleep_ptr(qcom_geni_serial_suspend),
++=09.restore =3D pm_sleep_ptr(qcom_geni_serial_restore),
+ };
+=20
+ static void qcom_geni_serial_sys_shutdown(struct platform_device *pdev)
+--=20
+2.56.0
+
+
