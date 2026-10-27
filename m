@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793113873;
-	b=SI4oxTDAR+UepNNC5Pl3lDCTAscsV9gm0lf3g/acNSR4kFQNUsNsPjPc7hhFq1+8LbU+
-	 Sjtlq5NRmmuKnVQ+/QTpdM6/Jj1RCd3oDgqyJ876xf/mVMpY01Y4yGaSI2iwCh80v/cmv
-	 yB+PvaiGh4ES8G3yFg7GSf+6ZjcM9MDCWDgez2dVJkyMQZlNZ6GZn0EcX8CJpU6VwKneb
-	 BGrOyhf3nC5jvp+X5+KdXxoW2mQl1TXkX4F7AK0xpDC5d7O5pAQAczIMq9WsgEh8P5sfZ
-	 Umka/HCx68beRiZX+be+IsvW5UxdNAAqshk5p/ww1gyHTQxc52BALrPF23HfwO0O1nQ==
+	t=1793114035;
+	b=aL8S/i7A8o91JrYPz3MJzY47HaV0wfDRpgxoIClKl6D6km8jLN34nSo+JyAp+r47vbe3
+	 Qbytrdl7AY6vvzb8yFylqdL/o8PmBe5aKsl1+psgZS0zWO6NDxMC/NZy6/UPHHYxyur7t
+	 LN1TzVZ9NdRWiqN4h34U9NFwl+SWiJTIXLLNs7/A5A96upedCcDVKZBYgdXnVOajugc0o
+	 qlVpdbEzmWI4Wff0LFloaqDQA2MyX52OZ/ciOC6ZGDGALTAqyLwKqjgwWuu3+v656dSDo
+	 E5Fqb8RFq4mPn4S8du4x+jAc5dv/2u7x9mrVz2jAgGVlXrGNNcpfXxyp+QpOO0Vnriw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793113873;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793114035;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=jqoascS4J1xrxtLwHHAIg2Izm1gSs4oGkns3pfwc1iQ=;
-	b=BBExqtjJ4siXVU8d476/az9xf6K+9fvFrwHL9b0L34lSSYJctjfpxWXsPvozrCyrNPl7
-	 fVuNULGS4RgH6Cd8MVwyfpJvneWEqinwrTrGxW3GyQ6HIJ0S7VVf389nACiqZTGOtgEcM
-	 sEzAziKJ20KoCXvMVgD44uBuCUFsrls47zYwzKBYQiZS3jUXymbT3qL/9qDlX3y6is0i/
-	 SDGFYi82v+83rXELeFayrG4HFpbwfsjzp2ebHT+OSi1YNzYQEzy+4++h+DkKVzfmC0Wou
-	 GiGV0af+k/1czJfAamnJetLq+TGBLuTdv7l3mr+0c+hb/8wSyCywQsD8idlmbbaciWA==
+	bh=TYOVvhZyaUbVZFgAIc/egQ1z+khkcesoyhUa579dsZ8=;
+	b=JmZ4h6P/1eN5rPIc4sqV4LWaqY7w6Ufx0dgjKujmJl3CKk+Zg1o4zvEOsZUe0pfzuHSC
+	 OIb2ua+36cWvp0hrLKUu9uYlPFWMs11ZIlawj7Mxk1k4ysqx21nXAfgRjHZlbCl4EDzhc
+	 V5PlTApJGBEUUQmnxCue+7xrV13O2+i8SnWQtpnT6gmP/IhAHl5uuHicrn4GeHvux8ioz
+	 AAjJkVI7DcmlLwuARyRX2JVn6s395FeOxiTTYEFdyEsnj0cyzCzpjnSE9Eco2eb56Xixj
+	 qMMcsWWTOUTzvtY6mxlpabUhO43NNQpagwkIwEw15hb8zjJXWtv4rTTzqg6CNR/NKBg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NkaS4vQ1;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bU2jy0ce;
+	arc=none smtp.remote-ip=192.198.163.16
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C54A4606A320;
-	Tue, 27 Oct 2026 15:11:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C54A4606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 846E2606A31F;
+	Tue, 27 Oct 2026 15:13:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 846E2606A31F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NkaS4vQ1
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bU2jy0ce
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793113873; x=1824649873;
+  t=1793114035; x=1824650035;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ht+lWxjxFQjahKK+nQbRKL3Gie3yJ91mjgPB+kUqqEE=;
-  b=NkaS4vQ1Fmf6xT6cU1mld9yT3APIdNP+k7vk91xsRbfO+6Ca/mtyHhWO
-   n+r+/7XQ2cQg2LpWMomdOJ4Tb46C8SMsZFWhXDgm6KpC2pcCXxguEeEzh
-   zcOqOPgLwOfHC20GF9e6kWKlULolFh/b5KmfQ5jAzKI7D+52KTgfEJt68
-   Zg/NGGIvgCWFQhV9YZ9RrqJrLWBQhE3CnYIlVwmM7yb8yZP5LC90V/uJz
-   V1uNEIEvqN1ffP0IEDG7w8JzR8eJTSGnq0w+qLfTKpiY7tWSALCsMhlH4
-   ZyIHqRGOafkSkG/LOeli0J6FKbD6kWtLyvvqqKif6cpX8GJdrH4HLBkzI
+  bh=nRi+oew+ldnegelRFFSjs3YHGuqmu3x5mEIberG1vWs=;
+  b=bU2jy0cePFOrDtJQq2Vp9gSku8uNQ6r5TH5HbpTPbG+QYH8qRkhCuvEy
+   aZeBR3bSo9KN7tjZVk8/Ju1KMGEbJQAxOuE7rk84Ct8N33Q6MR2qS3Qll
+   PjZeEEV5WhfeqRwk9k9+6N9vSIbo14JNW2ZnG1qP+zSkKlRkkPHjLaSbZ
+   64pxFBN13Oh+dgcjLgJffRxjaLAmLs7OarVDwv91/BJcnoNIRv5DDbgs5
+   TJHoD7FysUYbP+NCUHTUK0oR0ocfMBY28W3+DWUHvDINNO0lr0ngyY1eF
+   luHOXMw04uhd7vz/qBioAyfpQJCfzPBn51z+BPFQfh1FCCUw36+T8S3QR
    A==;
-X-CSE-ConnectionGUID: hQB9p/FyQMOjTrU8KPmQTQ==
-X-CSE-MsgGUID: Q9vDurQoRP61KqkkNMiHJA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1905840"
+X-CSE-ConnectionGUID: fqo/QmdUR8+2daesaCIIpQ==
+X-CSE-MsgGUID: 6hYJEHNdRpyP9+S7llsr+g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1829010"
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1905840"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 08:11:06 -0700
-X-CSE-ConnectionGUID: vV+TPVzvRguZxExWATLPmA==
-X-CSE-MsgGUID: XZ1cYataRoiIvngmHg9Owg==
+   d="scan'208";a="1829010"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 08:13:54 -0700
+X-CSE-ConnectionGUID: kh/UND/zTOijhbG1BjDaRQ==
+X-CSE-MsgGUID: KbuS6scPQWKi92eahLZ93A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="4904054"
+   d="scan'208";a="4608083"
 Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 08:10:57 -0700
-Date: Tue, 27 Oct 2026 17:10:55 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 08:13:46 -0700
+Date: Tue, 27 Oct 2026 17:13:44 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>,
@@ -93,13 +93,12 @@ Cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>,
 	Andy Shevchenko <andy.shevchenko@gmail.com>,
 	Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>,
 	Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, stable <stable@kernel.org>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
-Subject: Re: [PATCH 09/24] serial: 8250: 8250_bcm7271: fix DMA address
- truncation to 32 bits
-Message-ID: <auC-_1Er0Kp-Wq76@ashevche-desk.local>
+	linux-serial@vger.kernel.org, stable <stable@kernel.org>
+Subject: Re: [PATCH 10/24] serial: 8250: pericom: validate port offset
+ against BAR length
+Message-ID: <auC_qCiP6qQtlLMq@ashevche-desk.local>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
- <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-10-99b0202ae546@linuxfoundation.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -111,21 +110,29 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
+In-Reply-To: <20261027-tty-llm-v1-10-99b0202ae546@linuxfoundation.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 27, 2026 at 12:06:35PM +0100, Greg Kroah-Hartman wrote:
+On Tue, Oct 27, 2026 at 12:06:36PM +0100, Greg Kroah-Hartman wrote:
 > 
-> The local variable daddr is declared as u32 but assigned from dma_addr_t
-> fields (priv->rx_addr and priv->tx_addr), which are 64-bit on ARM64.
-> This silently truncates the upper 32 bits, causing upper_32_bits(daddr)
-> to always produce zero when programming the UART DMA descriptor high
-> address registers.  Change the type to dma_addr_t to preserve the full
-> DMA address.
+> The fourth port on 4-port Pericom devices uses offset 0x38 instead of
+> the linear 0x18, but maxnr is computed assuming uniform 8-byte spacing.
+> A malicious PCI device with an undersized BAR could cause I/O access
+> outside the assigned resource. Check that offset + 8 fits within the BAR
+> before registering each port.
 
-Since this value goes to HW, it should be u64. Even on 32-bit machines there
-are possibilities to cover a bigger address space / DMA space.
+...
+
+>  		unsigned int offset = (i == 3 && nr == 4) ? 0x38 : i * 0x8;
+>  
+> +		if (offset + 8 > pci_resource_len(pdev, bar))
+
+For the consistency's sake 0x8?
+
+> +			break;
+> +
+>  		uart.port.iobase = pci_resource_start(pdev, bar) + offset;
 
 -- 
 With Best Regards,
