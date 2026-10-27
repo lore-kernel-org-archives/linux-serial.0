@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099971;
-	b=cSNpHl53sD1Oxq8MdVafWDDafE5GqHJboFbCJh+XK/fC+v+1CzOrMGLyaarDCc7il9C9
-	 ircAd0kAuZ+DP+HiCQGDOlqysDRG8a/j/gFTlqtmNG0VtP2ml0heWy5jP6obES+pBM2mx
-	 TmkYqwM914z//WJQQDIH7itRj3F3v3AaetK/5mhMiN0Pt+g+XW0aU4YjGO6y8j4tHuu/o
-	 W+HO9Z4nkYEeAK86VousNoP0I7nbHQY5qHVIGrOeSdL2j7G43IoMA4z43/onpfGQNmH6S
-	 7TKJt+wzy1DJ4NdIEgwCZWJTvlwweRPXop4g2UinUZzw53rRyP1lAhvAfrzq11hM1ng==
+	t=1793100205;
+	b=XPMk3PvYoKLQHs8FQoqRiiM5V/2zIFWSpdKe066ZRmnS31iUuMxAJEon9muQyXyi7xRz
+	 Hb289cU6oTNFHuqlJzmNzO1wre4aa0pN1Ucs3p9j4HSseEs5RmlrNklDvA4VDbglg9VMr
+	 yujWOV+xF9PnlDNZlG9gSwXN33c8u6L91CxLmeK9Tz7/F0iyeaT+ZC5YFoEi8/qMHZbgJ
+	 cju8lhXLqjq8WiQ6+JjUVVPgsxdjGIZEaEzcmbByB4Xvw8D24nmV8lT9t5Vu5YbL/mdHK
+	 /YnMkWrMJmkGS+D/DRlSak3lE3wTGfjmC5t86UOmQDpCuH0YhXY+82NmVjL8gYrPRUQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099971;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793100205;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=A7yFeNmixC1qpGLop/XKM8z6oKyDB+AHSkeaELStkWg=;
-	b=y4+bRKElGB5PXbCpOVghwTEZiaNUFxEGetpjr6mfjvZ9OPKDqVSAWG07cnwDlUmVc0na
-	 dHdrcpYIm1TyD+sggMUWEooK11tmSHqQWc7AB5JR6Pd95f9NYrZjm/6WDd5L6vkqiJ6Nr
-	 OqW62k+/GdLbbX+pTVAj+k05zINVyQ7AfTSdZZlTSUOc9Ttc3Yqv6LiOP/zeV4pRuG0G6
-	 ybmCuWeHcfaJrJpyc0hBdz6nrKHOCBignQxDt4jwRnONYGhUdoRR8JNllD1heGRF4NA+g
-	 G/IYMgNhifeVJr5gV7RKZ6/D5YdFG6TDegOAYnPmvHCS00ISDl/JxWhMv2e+NPtn35Q==
+	bh=ZL//RQzqhSPDr1a37l52tGV4TWlxdO+0hTSVKLkxguQ=;
+	b=Ck7S8u+8qfs3jfRJTtjmLBqGTlqYhl1fH6bpU4YCtKCSYGy7l0vsnrANn6nsGX5Abf9z
+	 FSN2zW3S+HlJBIEc5TOKhFk8+HPFKSv0bi8dgxs/hoO/msIWR4HbZjR+iA7cms3/OEKTC
+	 /cMDNF9taR89zOlhJPeWYmd3G4S19Ppf+g6Lq6xIGoRx6qoXFS9ppNNtcyKNtSzpgRB82
+	 jQM3ZQyOK96KYWIA5LCDPuMP0eOG3IFZB9blpSFIeJXyNTiPRSAVC0D3ayr4vrijRukOv
+	 f91cVBt/2NnnYg+bEi5W/u2jLx2VQ3E+U0icD3K7cnaCm1cA8q+3U6nlY0gqFKImq4g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T7H5vjk6;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HPsqgnxg;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A840606A31B;
-	Tue, 27 Oct 2026 11:19:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F69606A31F;
+	Tue, 27 Oct 2026 11:23:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T7H5vjk6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B53A1F01825;
-	Tue, 27 Oct 2026 11:19:30 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HPsqgnxg
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3CA1F01825;
+	Tue, 27 Oct 2026 11:23:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793099971;
-	bh=A7yFeNmixC1qpGLop/XKM8z6oKyDB+AHSkeaELStkWg=;
+	s=k20260515; t=1793100204;
+	bh=ZL//RQzqhSPDr1a37l52tGV4TWlxdO+0hTSVKLkxguQ=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=T7H5vjk6gpsyNRrD/1XAIooRwghIE0RHIJz1VjipAohsRN1z6ZlOvOoFafSs4CNr4
-	 BVuIswLDUcrFYnqbuod7qyqyM2dQditzlV25/lv+oldQO/8cNOO0whC/sc4X12B4vB
-	 Bsp4L8MCbQv2DdQ6pISwEy0/b8NpUJ0WU/Jve4gl7HTh50PlZs5fU2ztFl+HIvIimA
-	 WFfyDiJLpOeWJ3dKUtOXLAtr+7gNvdmfNbsBxI5hwrGzLeVSNut8uloG9zqZmfx5io
-	 dkRdK57KqNt0DnbrDmjkc8hmYBfEv/6tfyapSWVP+u5L3INa+Y8M/kkUT+AEYlStJj
-	 CCg77t0vGxDTA==
-Message-ID: <69b980a0-8499-45aa-b112-76d3739a5e11@kernel.org>
-Date: Tue, 27 Oct 2026 12:19:28 +0100
+	b=HPsqgnxg7k0E5/PQf/2frljxN8LMVdhJcWD7/aT8dpueEmC9wJ8cfpWJ04epQlo8x
+	 q6g9tUOl5XG1ZWHF1gq24YTcU/ZwD3GHhqpdZAfZRikWKqBUbacDKDlfXc9Lkb05To
+	 mLDUZZzIp297CZiE0ZchLPFH1lH356iEu2pvRyoTgUa2DG44QJuvKqsiZjr0TxYwTO
+	 iRTm2cpcJDXiNPu+Mdx212zU5VmVWKj0I2Dzwr/zVHXvp8qQ6Jq6VfvjpdSFO/9WY0
+	 xeuaR0c2v5A1QBrUMbZaQ0eA5bpmHqIOEy7mcY27hRCfzx81k833y934TXTwiRoU/K
+	 fQPzLevN3roqQ==
+Message-ID: <10465f24-0d87-48f8-9684-302434b456fc@kernel.org>
+Date: Tue, 27 Oct 2026 12:23:14 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -52,14 +52,42 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 06/24] serial: 8250: add bounds check for line array in
- setup_serial()
-To: sashiko-reviews@lists.linux.dev,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
+Subject: Re: [PATCH 11/24] serial: 8250: cap OxSemi Tornado UART count against
+ BAR size
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Joshua Rogers <linux@joshua.hu>, Chris Mason <mason@kernel.org>,
+ Josef Bacik <josef@toxicpanda.com>
+Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Peter Hurley <peter@hurleysoftware.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Crescent Hsieh <crescentcy.hsieh@moxa.com>, Frank Li <Frank.Li@nxp.com>,
+ Sherry Sun <sherry.sun@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Manivannan Sadhasivam <mani@kernel.org>,
+ Olof Johansson <olof@lixom.net>, =?UTF-8?Q?Andreas_F=C3=A4rber?=
+ <afaerber@suse.de>, Arnd Bergmann <arnd@arndb.de>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Robert Baldyga
+ <r.baldyga@samsung.com>, Thomas Abraham <thomas.abraham@linaro.org>,
+ Kukjin Kim <kgene.kim@samsung.com>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Srinivas Kandagatla <srini@kernel.org>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>,
+ Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
+ <u.kleine-koenig@baylibre.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Lukas Wunner <lukas@wunner.de>, Marnix Rijnart <marnix.rijnart@iwell.eu>,
+ stable <stable@kernel.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
- <20261027-tty-llm-v1-6-99b0202ae546@linuxfoundation.org>
- <sashiko-outbox-186417@kernel.org>
+ <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -104,60 +132,66 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <sashiko-outbox-186417@kernel.org>
+In-Reply-To: <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 27. 10. 26, 12:12, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> - [Low] serial: 8250: build failure in setup_serial() due to non-existent info->line
-> --
+On 27. 10. 26, 12:06, Greg Kroah-Hartman wrote:
+> From: Joshua Rogers <linux@joshua.hu>
 > 
-> commit a2e0e82dd3bc2dcce54251c9832007f4a9e30584
-> Author: Joshua Rogers <linux@joshua.hu>
+> pci_oxsemi_tornado_init() reads the UART count from device-controlled
+> BAR0 memory without validation, allowing a malicious device to report up
+> to 255 ports. Cap the device-reported count against what actually fits
+> in the BAR using the Tornado register layout.
 > 
-> serial: 8250: add bounds check for line array in setup_serial()
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Marnix Rijnart <marnix.rijnart@iwell.eu>
+> Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+> Cc: stable <stable@kernel.org>
+> Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>   drivers/tty/serial/8250/8250_pci.c | 10 ++++++++++
+>   1 file changed, 10 insertions(+)
 > 
-> This commit adds a bounds check in setup_serial() to prevent out-of-bounds
-> writes when registering serial ports for a PCMCIA card.
-> 
->> diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
->> index 5dcd1544e478d..8bd88f3d6d865 100644
->> --- a/drivers/tty/serial/8250/serial_cs.c
->> +++ b/drivers/tty/serial/8250/serial_cs.c
->> @@ -349,6 +349,11 @@ static int setup_serial(struct pcmcia_device *handle, struct serial_info *info,
->>   {
->>   	struct uart_8250_port uart;
->>   
->> +	if (info->ndev >= ARRAY_SIZE(info->line)) {
->> +		dev_err(&handle->dev, "no room for more serial ports\n");
->> +		return -EINVAL;
->> +	}
-> 
-> [Severity: Low]
-> Does this break the build when CONFIG_SERIAL_8250_CS is enabled?
-> 
-> Commit d6a0791098be ("serial: 8250: make port operations work on struct
-> uart_8250_port") replaced line[4] with uport[4] in struct serial_info in
-> drivers/tty/serial/8250/serial_cs.c:
-> 
-> struct serial_info {
-> 	...
-> 	struct uart_8250_port	*uport[4];
-> 	const struct serial_quirk *quirk;
-> };
-> 
-> and updated setup_serial() to store the registered port in info->uport:
-> 
-> 	info->uport[info->ndev] = serial8250_register_8250_port(&uart);
-> 
-> Because struct serial_info no longer has a member named line, referencing
-> info->line in ARRAY_SIZE() fails to compile. Should this check
-> ARRAY_SIZE(info->uport) instead?
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 1dda63be6b89..9919504334bb 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1083,6 +1083,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+>   	u8 __iomem *p;
+>   	unsigned long deviceID;
+>   	unsigned int  number_uarts = 0;
+> +	resource_size_t bar_len;
+>   
+>   	if (!pci_oxsemi_tornado_p(dev))
+>   		return 0;
+> @@ -1095,6 +1096,15 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+>   	/* Tornado device */
+>   	if (deviceID == 0x07000200) {
+>   		number_uarts = ioread8(p + 4);
+> +
+> +		/* Cap against BAR0 size (Tornado layout: 0x1000 + n * 0x200) */
+> +		bar_len = pci_resource_len(dev, 0);
+> +		if (bar_len >= 0x1000)
+> +			number_uarts = min_t(unsigned int, number_uarts,
+> +					     (bar_len - 0x1000) / 0x200);
 
-ACK, it should
+Is the _t variant necessary? Both are unsigned (int and u64).
 
-thanks,
+> +		else
+> +			number_uarts = 0;
+> +
+>   		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
+>   			number_uarts,
+>   			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
+> 
+
+
 -- 
 js
 suse labs
