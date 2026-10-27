@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099219;
-	b=oAo2w31a8EcUE9OQv24LFsrgq71IorinTy4YzJ1mBg1qtkp26icfh0yk/RgKyZiB2IPH
-	 E2RQH7Ir2SzxJBVDQlSWHEBF5ctB1Zb9u6UxBqW89yEaXiu5IzPeijolbCOFSQmLLCOCy
-	 ozoWYa5o7aaHJ2hx9nCuRH0vZSE/0GNb8tr2gL++i2AuuBjJPdxhGhlTU3yTp/fOH9R6O
-	 gJAoYySg4PYS5wOGGL7cCjQkplni4QThXHIxJWXIUjhwSzEONOiFxKZ0aF1wW38JZqb5D
-	 1pm85pPXkc1TmMw4PozSaEqqbpgtxVMGWxP8w9A9ZmsOvC5vDb5Gs+EE/wUocnJDEDg==
+	t=1793099227;
+	b=dicG8AWa09EA7Rnw4mRRUe2rydlXXMRCIh8iDAtUi8dkOEi8rSgwIJu0nfZwDvzL0tGK
+	 fs+CLDZFGU5Y6RGsyLrEgSUaJE2mCucGOyJ/uHEyt6C3p4XfxrGW//WeWM37yeSdwoA97
+	 jpRBK3K1S3ElHtV2LPlFCaVVPmIGkgalqvMCrj1u2AuAw+oc6c6Vwr+5cZIUtAnuwrEfp
+	 b+jndj5pfJSxnhQ8HLtN0grqiFc/oTkWSBiyr4IT/utm5aHLHsqakTvwsAjCrWzaQm2Ze
+	 nGI5OFbXK5O4popuGBtJ3QEf6XjoD19DEzzj3LH593NOuHwssysTzgdmjHg2STAYFwQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099219;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099227;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=807vVk1Em6DmnTdIAZ39Jr5T9z6xCDFeE3y4cfBZDYA=;
-	b=b2tGD5PEl+cMGKGUkfj+Cm3qW4h4x3WnmXSyJSLG5N8HuMcyl+9rmH5mncdBboTpd02i
-	 eraIiWrOkSFUla7Odi5Vp9jAi0GjsTk5xfbmBvzcyBeIiYoVGK5Gq5LYUb2j7SzHhiNNA
-	 eBgjAwVnL3iP6bWM4ARkd1CXnobftGHbYKvnyHTSXhsihIdH+fIJbgunVdmTICwfOSwKV
-	 5KDpkyrfpbSyxkf7rRldMViQY5y+Xwrv6ooihOiFVLOGD+E+piShWB1x1zc4NFvPdZWVu
-	 G0RXhFLUlaQwsCiH8VaR3JZAyxD/5IKlCHIA8BgTaPD4z0pEX2Tg+5oEzUWpx1vteOA==
+	bh=QtL11rxVJmAwnbel7IAtr9pOF3JZyhp6lXqBMk4rHx8=;
+	b=39dZaQbUCgIRJk7xDkOqktZRiHLHJ/8KoilkDfA1SDsAvoB5dhRc+4EJULGu7cyHJbf4
+	 BwGLOnt50gK1w3eEwBEfsOg1LLsx7Oli1QxGxjJ6MU9/fP/U8yZKf3PLXWUidIxbYb88r
+	 vsaZ31NOujEAUWWXa3pJflRHxKqQU6wsYqSHBZFybqwKZs0kobjQen3gn81jjt6JEe4+X
+	 J4n0NCG/6G+yAnTWQEXpsbCUUcOuuc00kYvAzt0j3xOsG0DcEp1fJmwI5cBSL2hjW9pHF
+	 3PTuRhCrQt/ulyUE9qfYGAtbodn8NYJ0ZG/xzZS5D9Hnoha+nMhOnfVyCAMO4g+gXzQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=crQTGDUj;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=0VbrqGLE;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05E2060A262D;
-	Tue, 27 Oct 2026 11:06:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110F260A5BDC;
+	Tue, 27 Oct 2026 11:07:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=crQTGDUj
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCB831F01825;
-	Tue, 27 Oct 2026 11:06:57 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=0VbrqGLE
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7641F01284;
+	Tue, 27 Oct 2026 11:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099218;
-	bh=807vVk1Em6DmnTdIAZ39Jr5T9z6xCDFeE3y4cfBZDYA=;
+	s=korg; t=1793099226;
+	bh=QtL11rxVJmAwnbel7IAtr9pOF3JZyhp6lXqBMk4rHx8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=crQTGDUjdfLUJ4xCja81GhOAbGVCi0dmviLViqkHbIhfw8mwobXWS+h5lMCU2zlwe
-	 xgdrN+nTDoMB7QbA+/2zdk/NLYcZc7xnLZg6duvX9XJyr+8NGHf9NXEM/KoMqJj2Tb
-	 7WPm2b+ERD/NHbmhhoMuDa7OQFGsx2uwEGez7ICE=
+	b=0VbrqGLENzXe1DsYCc5sVFIRG4Rw1K93WsLR8B7JM8SWAi6cfZvY5E6zQheLTk28d
+	 TgSNXtfzFAx+harEejRV8I2TA9nykcTl1DR6aXSH3LWH/RN2AyiBwkFoNYYfgShfp1
+	 XMWF7A37I7NTl4M1vxgfsQ1j0SXoHYsW5kcCT+cQ=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:32 +0100
-Subject: [PATCH 06/24] serial: 8250: add bounds check for line array in
- setup_serial()
+Date: Tue, 27 Oct 2026 12:06:35 +0100
+Subject: [PATCH 09/24] serial: 8250: 8250_bcm7271: fix DMA address
+ truncation to 32 bits
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -52,7 +52,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261027-tty-llm-v1-6-99b0202ae546@linuxfoundation.org>
+Message-Id: <20261027-tty-llm-v1-9-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,48 +83,50 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, 
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1159;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1255;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=uFMpIpem0yn/U2ZVTv2senN+dTEV+Lanv8xcnEbXLQs=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWveuOvVSeF/UiUdlFfdly5bFHOoNv1XF3GOgHr/vl
- c/sOnaejlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZjInRkM8x3ydryJmzDt0SSb
- U2qm0maqXxOYNBnmp7Ec27QsxNXN47rg5LPLZ16L5toVAQA=
+ bh=LUfnWxBJ9SNJuBB9QAlOBS65F4TRPtf13AE27ythx8A=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvfl3lm1UnNxmZFQ2YY6zbpHX7WbYz/2bGAL1Qw+e
+ Ixpc9KxjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZiISTzDgunhe+pj+ubERT+p
+ Xd9Vd3T7yzWHgaK7Lq3oM6n66DRJTvaqZaTqpW/LvrACAA==
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Joshua Rogers <linux@joshua.hu>
 
-setup_serial() writes to info->line[info->ndev] without verifying that
-ndev is within the array bounds. A malformed PCMCIA card with a large
-I/O window can cause info->multi to exceed 4, leading to out-of-bounds
-writes past the line[4] array and corruption of adjacent struct members.
+The local variable daddr is declared as u32 but assigned from dma_addr_t
+fields (priv->rx_addr and priv->tx_addr), which are 64-bit on ARM64.
+This silently truncates the upper 32 bits, causing upper_32_bits(daddr)
+to always produce zero when programming the UART DMA descriptor high
+address registers.  Change the type to dma_addr_t to preserve the full
+DMA address.
 
+Cc: Al Cooper <alcooperx@gmail.com>
 Cc: Jiri Slaby <jirislaby@kernel.org>
 Cc: stable <stable@kernel.org>
+Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
 Signed-off-by: Joshua Rogers <linux@joshua.hu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/serial_cs.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index 5dcd1544e478..8bd88f3d6d86 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -349,6 +349,11 @@ static int setup_serial(struct pcmcia_device *handle, struct serial_info *info,
- {
- 	struct uart_8250_port uart;
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 974d9af146a1..4fdd261e55f5 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -315,7 +315,7 @@ static int brcmuart_arbitration(struct brcmuart_priv *priv, bool acquire)
  
-+	if (info->ndev >= ARRAY_SIZE(info->line)) {
-+		dev_err(&handle->dev, "no room for more serial ports\n");
-+		return -EINVAL;
-+	}
-+
- 	memset(&uart, 0, sizeof(uart));
- 	uart.port.iobase = iobase;
- 	uart.port.irq = irq;
+ static void brcmuart_init_dma_hardware(struct brcmuart_priv *priv)
+ {
+-	u32 daddr;
++	dma_addr_t daddr;
+ 	u32 value;
+ 	int x;
+ 
 
 -- 
 2.56.0
