@@ -1,57 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793115916;
-	b=gw2kP7zjo1ux3tkvUOlbXN6neA7ST7SGxi4LVjD8UjAawVED0m3LlXK+lKG7g/EohqD7
-	 lcxIioAStgukUyxvmhKULpIn5OhDX/IZ/A4r8uSN8I4RuzgUTaZFvnKX+87N+NnwzWBIn
-	 UgFmZps1ibJTglcr6JeyMYGs1oGwuRviqnfrnk+QT/vBIUbKZMBnyEDcnG3DFZW3OZado
-	 emtzmqOuVxRTy6erj59/nvKhidO/hrDQxyp364YEy1UC4ktJLNlWW/I+gA0uzqbWocQQ1
-	 i+XdqK8ybjQrGw9TGwruaCxaj89YmRXseX3aI2bFlCZHptwOTd/jMWSI+DejtvFSdXw==
+	t=1793116032;
+	b=1DSQOZ6N57EKJ8Do4Yv0mRD+XT8v1m5l34ZsePtmV24DFAekMVfZJ0EXJgYlJ/1+AaF1
+	 ReXohh9QicpJGGrTpDGHVapePmdY+UffMhNqUnGl2mE21btOGtPWUM+BNthUOnfJy7lBz
+	 qybPH5fBWz1pSiTwYnHmxMJR/fhlAultAdVxRau7zY3X/QfwHZIozPuqJfNqx9tZoiYt3
+	 tCzI+InkDmuYkAa9/S4OdvuL8yBs5gYM94ToNEeM/ZOqHqj5PSChqE0rLujfRKd622hjF
+	 AY7pxvqWtttp9GXeWQw5KlnqM1QBs1eSsgixqyoTARhqp+MfwF+nFtp4gIC9/NgszwA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793115916;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793116032;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=UNQl46VMsStUFN+cofYraOxa7DqEK5OrJRlhwOKz1Gg=;
-	b=xnDIev2c5V+0FBZpkYrnzxplZcbpvNhDWt3Ei6zDFm5ixAA9svqE679U6tM3G2fI3B1A
-	 LuzprEyLHywK8k+JV8x9E/jDd9qLaH6t+GMISm8TWx6EYPCb6PTkxaFXiBpssxuMdzH9G
-	 0Wu/ssnr8c9RIvpiuypGpJMNJ/nsy8jI3liHWZzFyeoVkTL414Fp8GxG/miiXpo/aHvxW
-	 9y5zTZ8qUZQOQMcurOzrZ1ueHXYVzMa/yqwqGjmp2EIou4+SOmirdj9UTN5KbnHtTDbc4
-	 aB9vhMbowMI+8OOVnIMy9+LY+UoN57QeGoyWNg+QSDvvFVyJUIz03kNV8HmxdSdwYhQ==
+	bh=Lx1QzhL8oSAjTBMk18zFvS+L8M2dmvxDmLt+JDG8SDs=;
+	b=MLVLUSoSLG30uOj3eyQ02eKQahmS4r37K5tPKSqGgPvAuR5F3vquqtwztINzMrQfsGa1
+	 eVTAzmRgv66Rd8O382J1q79dc/sO0BC5p9nPApJGeneowzQBeGQBwT2LkmvWeMOBjoVOY
+	 BIYe5SzwSGw5XaQmuukX9k3d755TUwze9cc7SXAcXhF/0O43oCAJaHvvgoqgghQBIeb2a
+	 R48Ew1cmiFFXrTk5G/G7rGG50qF1jPRAM+NlIOy9cA1huQ+YQg2e+kSMnNaEtPomwORYE
+	 IKYbyZgSR5+APo1kr9gTFW0oRkCaDXvnY0lLNgB8f9un6irJ5iDvesZ62xYqkmgSJyg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Os4o6LBB;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="ib7K+W/0";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77124606D942;
-	Tue, 27 Oct 2026 15:45:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FCFF606C82A
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 15:47:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Os4o6LBB
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA32A1F01825;
-	Tue, 27 Oct 2026 15:45:15 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ib7K+W/0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2DF41F01178;
+	Tue, 27 Oct 2026 15:47:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793115916;
-	bh=UNQl46VMsStUFN+cofYraOxa7DqEK5OrJRlhwOKz1Gg=;
+	s=k20260515; t=1793116031;
+	bh=Lx1QzhL8oSAjTBMk18zFvS+L8M2dmvxDmLt+JDG8SDs=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Os4o6LBBlz9jrvmLgc5vX2uUW82XtoT3JjD9MW1UWlLHudZkwMTorHDSj7jUC+seJ
-	 6oo7S1QMiSQDh5Hw1cDgLlezWVdZ0d2JZowyr8JgivCJ5eLzg06VlvyU++BJype0zR
-	 Tt/z4O9OTqnktDt/q+rMxD47NNoAQEVDT6b/yGzxFVs4RDOzKuBrtwUvHfF92KNgQ4
-	 YZ3eUrMJgltM0eVz2HOj8glHMtwYjBzl5aRb8fZzJH0qrTwecDx759/PSn1YlcFlsk
-	 qnilsN07uke2g1UGZUNhEvNxzs6Pc4n4t1f28YwcbWSv3UdUMogvwa2PNyNdvadKAC
-	 c7XiIE36jVf+w==
-Message-ID: <sashiko-outbox-186865@kernel.org>
+	b=ib7K+W/0/FQ1o6xhPk+zQrYYQb+jIIgnX8V4POElvZJAYanb9RxAVHG24gJ3Bia3A
+	 xchH8H8CZmeXFkjyiJo49GUkZ6dwFdcVi4h2VA5AtyTUn0mMpzByFjOdI649QqfvU0
+	 jTbFVFPNMN68ORwhwxCDeWV4Zce0Z97r+iBAiNfPHoTUeKdaFb5QYG7NoQv47njxGP
+	 xexy6yXPQUznAAs9jbL8xNBazpWVSU8Qtr3aBurVDjv4rL32HlUcbet6Vx6mtnYCmI
+	 zqyj4N5D7lmcpuAe2UtnwrNQFuFVdn7ZvHKEQaKJ1ou1P0Px0QkZboSZih2a8kbtgx
+	 IlhoKNGJIz5bw==
+Message-ID: <sashiko-outbox-186867@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 04/18] dt-bindings: mailbox: add the A210 AP to E902
- doorbell
+Subject: Re: [PATCH RFC 07/18] pinctrl: zhihe: add A210 support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Han Gao" <gaohan@iscas.ac.cn>
-Cc: devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20261027-a210-scmi-v1-4-74d58ce85bd8@iscas.ac.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261027-a210-scmi-v1-7-74d58ce85bd8@iscas.ac.cn>
 References: <20261027-a210-scmi-v1-0-74d58ce85bd8@iscas.ac.cn>
- <20261027-a210-scmi-v1-4-74d58ce85bd8@iscas.ac.cn>
+ <20261027-a210-scmi-v1-7-74d58ce85bd8@iscas.ac.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 15:45:15 +0000
+Date: Tue, 27 Oct 2026 15:47:11 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,138 +60,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Medium] dt-bindings: mailbox: zhihe,a210-ap-mailbox models software SCMI=
- usage in DT
---
+> From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+>=20
+> Add mux and pin configuration support for the four A210 pad controllers,
+> including the shared PERI3 SDIO mux and suspend-state restoration.
+> Release the optional pad controller reset at probe.
+>=20
+> Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> Co-developed-by: Han Gao <gaohan@iscas.ac.cn>
+> Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
-commit e3663120f1bca9d6b72ccfedb9289dcb341101ef
-Author: Han Gao <gaohan@iscas.ac.cn>
-
-dt-bindings: mailbox: add the A210 AP to E902 doorbell
-
-This patch adds the Devicetree binding schema for the Zhihe A210 application
-processor to E902 doorbell mailbox controller.
-
-> diff --git a/Documentation/devicetree/bindings/mailbox/zhihe,a210-ap-mail=
-box.yaml b/Documentation/devicetree/bindings/mailbox/zhihe,a210-ap-mailbox.=
-yaml
-> new file mode 100644
-> index 0000000000000..4541750223eb2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mailbox/zhihe,a210-ap-mailbox.yaml
-> @@ -0,0 +1,76 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mailbox/zhihe,a210-ap-mailbox.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Zhihe A210 application processor to E902 doorbell
-> +
-> +maintainers:
-> +  - Han Gao <gaohan@iscas.ac.cn>
-> +
-> +description: |
-> +  The A210 exposes a bidirectional notification channel between the
-> +  application processors and E902 firmware. Payloads and transaction
-> +  completion are managed by the client using shared memory. The firmware
-> +  initializes the remote endpoint before the application processor binds.
-> +  When firmware manages the endpoint clocks and keeps them running, omit
-> +  clocks and clock-names to avoid a dependency on services using this ma=
-ilbox.
-> +
-> +properties:
-> +  compatible:
-> +    const: zhihe,a210-ap-mailbox
-> +  reg:
-> +    minItems: 2
-> +    items:
-> +      - description: Application processor interrupt status and control
-> +      - description: Remote E902 notification channel
-> +      - description:
-> +          E902 to application processor channel data, which identifies t=
-he
-> +          channel that raised the shared interrupt
-> +  reg-names:
-> +    minItems: 2
-> +    items:
-> +      - const: interrupt
-> +      - const: tx
-> +      - const: rx
-> +  interrupts:
-> +    maxItems: 1
-> +  clocks:
-> +    items:
-> +      - description: Application processor mailbox clock
-> +      - description: E902 mailbox clock
-> +  clock-names:
-> +    items:
-> +      - const: local
-> +      - const: remote
-> +  '#mbox-cells':
-> +    const: 1
-> +    description: |
-> +      Channel index. Channel 0 carries requests to E902 and their comple=
-tion.
-> +      Channel 1 receives E902 notifications and requires the rx region.
-
-[ ... ]
-
-> +examples:
-> +  - |
-> +    mailbox@321000 {
-> +        compatible =3D "zhihe,a210-ap-mailbox";
-> +        reg =3D <0x321000 0x1000>, <0x311000 0x1000>, <0x320000 0x1000>;
-> +        reg-names =3D "interrupt", "tx", "rx";
-
-[Severity: Medium]
-Does this binding model software-specific SCMI usage and driver probe
-workarounds rather than the physical A210 ICU mailbox hardware?
-
-Looking at the example and the corresponding driver in
-drivers/mailbox/mailbox-a210.c alongside drivers/mailbox/mailbox-th1520.c, =
-the
-A210 uses the ICU mailbox architecture where 0x320000 (size 0x1000, the rx
-INFO registers from E902) and 0x321000 (size 0x1000, the AP interrupt statu=
-s,
-clear, and mask registers) are adjacent 4 KiB slices of the same local AP
-mailbox peripheral starting at 0x320000, while 0x311000 (size 0x1000, tx) is
-the remote E902 ICU slice for the AP.
-
-By splitting the contiguous local AP mailbox region out of address order and
-placing 0x321000 first so that 0x320000 can be an optional third reg entry =
-via
-minItems: 2, the node unit-address becomes an interior offset (mailbox@3210=
-00
-instead of mailbox@320000), and a physically present hardware register bank
-(0x320000) is marked optional depending on whether a client uses channel 1.
-
-In addition, the description and #mbox-cells properties define the mailbox
-channels in terms of SCMI shared-memory protocol roles (channel 0 for reque=
-sts
-and completion, channel 1 for notifications requiring the rx region), and t=
-he
-description instructs DT authors to omit clocks and clock-names when firmwa=
-re
-keeps the clocks running to avoid a circular dependency on services using t=
-his
-mailbox.
-
-If those clocks are controlled via SCMI over this mailbox, referencing them
-from the mailbox node creates a circular dependency that cannot resolve bef=
-ore
-probe; if they are physical SoC clock inputs, they are fixed hardware
-connections that should not be conditionally omitted based on OS probe
-ordering.
-
-Should the binding instead describe the physical hardware layout (starting =
-at
-0x320000 with non-optional physical register regions) and hardware channel
-endpoints without encoding SCMI client protocol behavior or clock omission
-workarounds?
+Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-a210-scmi-=
-v1-0-74d58ce85bd8@iscas.ac.cn?part=3D4
+v1-0-74d58ce85bd8@iscas.ac.cn?part=3D7
+
