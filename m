@@ -1,84 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793085959;
-	b=Oye1UzhGtQUhZ/BqYjI1j0uV02NP1eOtIZeJmO1G4aMu5YnY6VCYiSLwvIecA7Wrie1D
-	 u1tf0/H76Ml/JynGr7onmTVl5DLtkCkrgYkn4NWP1D6XdwjIAWNtRFjfvKwEAN85k3Wnd
-	 pySefbv6itc32FRoFjPjogWXuds/UjWfHikS2tAfAecAq24YdiOaXPv/sUTvQMC1RGb81
-	 2/JGuEtLx7zV0GuEAc7mqaXiBQ73oSIUlSVIyR9uqyHjC0+07NF+Kn6qxCJAGu8WZI0AS
-	 YGhzzYFsy5gPJqpfNMxDvtR5S61rPuvS2QFiQl1cJWEc6/bpn2WvRznC6al7fHQkZWA==
+	t=1793088127;
+	b=TH5z0dgxTJtQL+5WV4KWrR6AhapLG7Cu21aABuFSWP9D/wSyMWVu5GN7vz0jKH1l+AET
+	 E1i1itDqnOO8sDbDKSO7zPICaAqI5MBb86QdbHm9+GvWbZk+SNQ3gEkljg1hO68Wd60Uz
+	 MCOI5CtDX8/DQ0BiPoLAIhx1gkGSdWSx4ekK91N3rWypTHkXnKLYx1rPB+irJgdzGKFh7
+	 HLq16sHjLeoVuOXK95V9inuIZoSIrDgQ0yGmSNEncZXtdl+8xJSAD7Eeall7S/UXlRgMO
+	 3Qpizd1pPIZr9HyU3azonfL6kDDUbMT8ukg+d+hcF7/GK42RKkA/u3Gmp2TVljLqHdA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793085959;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=Qd/5lb2CY+C9moNEfnfMYyvO1d2LW0AM03zWz1R1+xE=;
-	b=LIboGECGpeDAyD62945ZsI3GL7csHtbjhlU0zyp7c2mOBjNdBh2sEtyj2qCdk9j+47WX
-	 8iAIBC3HQW+quMXW2KFmIbXYvIO2IEssn22G1FX9PJ0DRCoscLh1e/Icz4cKNfETmivAD
-	 h0Ak2IaQGfvWm8JAOuBBexUXGjl6vgaNlreTePCsVy7Zd2asL5bxlz2eI5iY+PS+hoYWG
-	 BaEE1XhLck78mgZn8Gd7Nyw9QLvrPn/IsuX5q/TFiCmBc9UhMV+0dkqE382N4ghhQk72g
-	 /7q00x/i0oRi+zLKZg5XNbmut8li4htWcHmqujw0DDX0GKIw64I1O1qFOuiOx+mgtRA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793088127;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=BsTtHMn7/Bq0A/1jvysGVk9cJngoUv9+EZ/xJZLo98o=;
+	b=zd1gj4PWJJJtAU3pHHPFStlLkqnhtvCzY6+++TiENWB+btwWcD0676HXoUHq3gBPbh3P
+	 xbSuiYFSNPkMs0TMyJg2QYmEyWLzIEaI+dYGl+UaO0h6gLomW/cy6mcxLmcZfsro5o8zQ
+	 zJ+TyH6yRZQgmRGNWYR6VXemiWFTn3yraZ4+dHmYiQ9GEF3+W6Vnx1oVDfEBDYmT5xHVe
+	 UbSI+EM3b2wQD3q3LW8yQHsUkE6swplyjI5cib0c1QF2WWPUXi7tXO/7tY17JFYIX0MRO
+	 it5+zN9BH7HIEH+fXYG7Vymvm7HRtR1bFGaYlF+9XmZuDyRPSlcX30umizJT+UcT6Lw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aR058ypB;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="M/p3r4pf";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B104C606A31A;
-	Tue, 27 Oct 2026 07:25:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B104C606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DA9E606A31B;
+	Tue, 27 Oct 2026 08:02:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aR058ypB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793085959; x=1824621959;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=r5hxiYwKE4osvI84HGJH8mSrHPipdV0Nlqi1ddY2Xq4=;
-  b=aR058ypBCFeh8Y2hYdevopotXh9BeaO7CAJwb+ox1lvMUr/vnbaIwsOu
-   iYk1Gi+w8PzJfMwPu8BguK0Te82XtD9QNoNiOA9N/kMSj5OYONqX6rJmS
-   +yM+gI9dMiHM/gbyoq73aAUkB69EfvoJ2vUxzufdQftheGvu3DnPCalJV
-   u6a/TB0wwZwIxEgdO73HxmFU0Uta76DGIrXiprRT1bNiXaKFxumpUNL5Q
-   zAdb+KYr0p+/z8vjcszZU11mZ0Y+J8Y6Fphr7+cpWinOPVRZFAAyKt6Rr
-   w9HtWpTmgjr9SNlzx2PJxrcA0jHg3gFHzREzixO1K/vZUW/1P2WmV+88u
-   A==;
-X-CSE-ConnectionGUID: SCifjgGpQdGTiupuGT5gNQ==
-X-CSE-MsgGUID: VSBFPnPpS56laz7k5uvVNg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1674371"
-X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
-   d="scan'208";a="1674371"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 00:25:58 -0700
-X-CSE-ConnectionGUID: Op8EKmWpTe2Dg6J55hx/ZQ==
-X-CSE-MsgGUID: PTuUsTGxS7CobRS55FyWEw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
-   d="scan'208";a="4431277"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 00:25:54 -0700
-Date: Tue, 27 Oct 2026 09:25:51 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M/p3r4pf
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5531F01825;
+	Tue, 27 Oct 2026 08:02:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793088127;
+	bh=BsTtHMn7/Bq0A/1jvysGVk9cJngoUv9+EZ/xJZLo98o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=M/p3r4pfigJ7VF+xQ0guSGeBUGwLd64vkoeDEiXMbpltCsl9kIARqtyP5zs+5LJha
+	 Dwjr6VP1tBEIK1fHQCUZJO45RR3Iyf0I77avSMKMt+k9fvOm+SWpUQHql6Yy+dUK1r
+	 UxaLx9qeY9mxHdCigK8e7b2Z4a1x5qR+6UrVoEf/ni3psUBCTB7vx2Yl6842504Zh9
+	 0ySfbkpAJKZhQVDAw4qMMoHOByorG/qzjR4YV/ybSyoIbnm5d27zjGLKqrr0exTZMO
+	 koEuEpeep51+fCr+T6Kj2scDB2u/QEycVZ3blpmviHRc17/MwsmvyJNTtciBGiamsY
+	 zBpYxE8Ttyp7A==
+Date: Tue, 27 Oct 2026 09:02:03 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
 To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v3 3/4] serial: 8250_dw: configure the Allwinner H616 UART
-Message-ID: <auBR__5g021tMvQR@ashevche-desk.local>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v3 2/4] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner H616
+Message-ID: <20261027-nifty-reliable-octopus-6cbac5@quoll>
 References: <20261024-submit-h616-uart-fifo-v1-v3-0-286fc1b8c3c1@gmail.com>
- <20261024-submit-h616-uart-fifo-v1-v3-3-286fc1b8c3c1@gmail.com>
- <auBRD7Ny6u_a9X7p@ashevche-desk.local>
+ <20261024-submit-h616-uart-fifo-v1-v3-2-286fc1b8c3c1@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -88,61 +64,69 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <auBRD7Ny6u_a9X7p@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20261024-submit-h616-uart-fifo-v1-v3-2-286fc1b8c3c1@gmail.com>
 
-On Tue, Oct 27, 2026 at 09:21:57AM +0200, Andy Shevchenko wrote:
-> On Sat, Oct 24, 2026 at 02:22:25PM -0600, James Hilliard wrote:
-
-...
-
-> > +static int dw8250_sunxi_set_rxtrig(struct uart_port *p, unsigned char bytes)
-> > +{
-> > +	struct uart_8250_port *up = up_to_u8250p(p);
-> > +	unsigned int i;
-> > +	int ret;
-> > +
-> > +	/* Use the nearest lower threshold, as the generic 8250 implementation does. */
-> > +	for (i = 1; i < UART_FCR_R_TRIG_MAX_STATE; i++)
-> > +		if (bytes < dw8250_sunxi_rxtrig_bytes(p, i))
-> > +			break;
+On Sat, Oct 24, 2026 at 02:22:24PM -0600, James Hilliard wrote:
+> The H616 UART has 256-byte transmit and receive FIFOs, but its DesignWare
+> component parameter register does not report the FIFO depth. Its optional
+> register layout also differs from the generic DesignWare integration.
 > 
-> Can we provide an array of the possible values and deduplicate this loop?
+> Add a specific compatible for the integration and allow the standard
+> fifo-size property to describe the capacity. Require the documented
+> 256-byte size for H616, retaining snps,dw-apb-uart as a fallback.
 > 
-> drivers/tty/serial/8250/8250.h:
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> ---
+>  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml    | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
 > 
-> static inline int serial8250_bytes_to_fcr(unsigned char *rxtrig_bytes, unsigned char bytes)
-> {
-> 	for (unsigned int i = 1; i < UART_FCR_R_TRIG_MAX_STATE; i++) {
-> 		if (bytes < rxtrig_bytes[i])
-> 			/* Use the nearest lower value */
-> 			return (--i) << UART_FCR_R_TRIG_SHIFT;
->         }
-> 
->         return UART_FCR_R_TRIG_11;
-> }
-> 
-> drivers/tty/serial/8250/8250_port.c:
-> 
-> static int bytes_to_fcr_rxtrig(struct uart_8250_port *up, unsigned char bytes)
-> {
->         const struct serial8250_config *conf_type = &uart_config[up->port.type];
+> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> index e2ca126d58ba..0f8fd0485879 100644
+> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> @@ -13,6 +13,18 @@ allOf:
+>    - $ref: serial.yaml#
+>    - $ref: rs485.yaml#
+>  
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: allwinner,sun50i-h616-uart
+> +    then:
+> +      properties:
+> +        fifo-size:
+> +          const: 256
+> +      required:
+> +        - fifo-size
 
->         if (!conf_type->rxtrig_bytes[UART_FCR_R_TRIG_BITS(UART_FCR_R_TRIG_00)])
->                 return -EOPNOTSUPP;
+Why do you require fifo-size if is const? It is implied by the
+compatible.
 
-Even this probably should be moved above as well.
+> +
+>    - if:
+>        properties:
+>          compatible:
+> @@ -60,6 +72,7 @@ properties:
+>            - const: renesas,rzn1-uart
+>        - items:
+>            - enum:
+> +              - allwinner,sun50i-h616-uart
+>                - anlogic,dr1v90-uart
+>                - brcm,bcm11351-dw-apb-uart
+>                - brcm,bcm21664-dw-apb-uart
+> @@ -120,6 +133,10 @@ properties:
+>        - const: tx
+>        - const: rx
+>  
+> +  fifo-size:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: Transmit and receive FIFO capacity in bytes.
 
-> 	return serial8250_bytes_to_fcr(conf_type->rxtrig_bytes, bytes);
-> }
+Drop property, not used by any of the devices here.
 
-> (this split should be done in a separate preparatory change).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+Krzysztof
 
