@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793115614;
-	b=E19KuOSEdrTj/hZBzCjvzlvxP7bXDTyoKUoTDaoIRnuNow4PImwIdrVzz1xcc+9fSiUD
-	 oxqZaspzjlmYsDfAGdBLLDdf1WikiavPmN9wx4Ee8+qHRb9dOSUY3CYMsev8/0cTGTwgp
-	 DE/niwGmiLoquCj7LRwqaGGdrshKA0PripR5Kfn/jtWO4EBTG3WM8TDhNS3pnPwq8yp+r
-	 CrF1i+Px0AAFzdCBafIBFbkDnDDnBy+MOiZtLTZDDQmyLTMH/vL7sL+Mt6i7ygKIxBmTc
-	 IHWcCmJQMgLU1Y8ErBkaKgk4PI6G+qaZjtpPhRNImthKkcWKtSpOo+T4RPouDUIJMrA==
+	t=1793115630;
+	b=AteGuodf68Cm2BNH0xbRUPLojdm7ydzlQ1s/xZIUT7M2/sJ35Z4Y4f6tgWik+Y9YMpow
+	 McBTVc8YiVpYzZri5hZJsrAGVaBy4UPH0NGrr4rAlhJj1mBb7eXQAogQ1yTLRz7er1DBE
+	 Xuk8t+2Y56DRTSifUNRQjYvC5yXrQYBnAD6KQzcvCLWhpM6rOEX/tOZGrcFMNv8zVSh91
+	 C/zGg5uezvyeI0SGWnBcg0iDjPplczZg5BvIjhGA9kqSfzhfvlxMwBiXFieP877E2jSQ+
+	 AaWPSM8rgFEQ+JpwUS600C6b70r6iqLfquD0NhHi8nC3acdGUq8OS6+JF5rbnU6w2pw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793115614;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793115630;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=4vCHhbbp3jdRiGTErhK1XH17SWQDhBX+YdDWWVP6Ey8=;
-	b=R6zKhP+GK3MFxD9vmlRGyucakc+4lXO1JtX3tqqRnc7B0SC0cGcky9T31BS7La4fBNM8
-	 xxsm2P99E9YF4X4bA7a2iOGDssLS9fx/QHqHRydWlbXVkJGX1rPM1R/4YnNUBzrq8aVXg
-	 zW/HuA0P1ERtUXAVmjxQzkbiDj2jc2MBlt6hsHqSs40WaGuC7kL8DPZw6hV3VGSaFhhYO
-	 mMHIGbeau5bmTWb+sR6pK0hWQKp6YFGYmjCdOc+GbV1M28F09dD16OYJ6LSOxTf4NIl+E
-	 fTooLLmRTcrO8zoBfstFW5KG1agGAOiTOO4/A25zr3+iPofthE74fA0EauC1odgGMjg==
+	bh=vlXBwk0gQBlukAaX+Yl9r7idzSj877xHssPDdjS3ALA=;
+	b=5GLgyS4O+pDeHog4PjnwsudJ341igIfLVFYXfInKsxb0ygzr6SkIzfD99uXjsACGzOzb
+	 VFXgxcv7Xmt+9Xn0vDRCq7kHQ5V+/vxGsicxC6dH74Qh+tIyq5bnTUBNYHUH3YyLcZGmL
+	 dT9sjZRqRrHfbT/DCiQ8Kbwo+hjPXEmDf2Zi3tzZ7hQpNccn3/jq/nWDTTxiiZ29LKV/X
+	 ibpGwlbEO2mWPHjD0DwqjmyPLCyvxt25/yoWTKJbh3kjRV275RG6BB++taXmpaa8AmvHw
+	 IIVApuEZtV3PohW2+jxc3WCLKxTquQwL4NEqbpHg4L9ahNN+wIUwjRDnRcMehcwEkDw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e9WWT597;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MWthJRGk;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6801A606A31B
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 15:40:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 263E6606A31D
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 15:40:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e9WWT597
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1E1B1F01825;
-	Tue, 27 Oct 2026 15:40:13 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MWthJRGk
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 872F91F01825;
+	Tue, 27 Oct 2026 15:40:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793115614;
-	bh=4vCHhbbp3jdRiGTErhK1XH17SWQDhBX+YdDWWVP6Ey8=;
+	s=k20260515; t=1793115629;
+	bh=vlXBwk0gQBlukAaX+Yl9r7idzSj877xHssPDdjS3ALA=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=e9WWT597ZN0rhI3uiivSh0XHyTyICsHiUx6JMTDq5ypzoZd8enkVa8U1B/ZNolMYi
-	 6bh+2dkyjRKdSzH/JoHtETJWEaknDZts6lDgUw0AbzSA2ZW4eG0wk0ZDP+5HXj8zQw
-	 ba0DTbvLyUQHsqqaRlaYHC21fWaF1kP+zB3N8IuOQxoL+3G3LSzb64MZEroCx+i3Zf
-	 tOnAV5FR+M7ogXUHCrPTQr52cvaeTL5fcLQne35oSMwiDHNrFBeU6+Pcat1yHtVq1e
-	 8174g6DzqgdByGoag4orOsXadWHKn7Wf+zFVm4vlvY0r7/kMT9VQtRZHd6dG7cXXCW
-	 N7u0sl9cJ6qVA==
-Message-ID: <sashiko-outbox-186854@kernel.org>
+	b=MWthJRGkrffb9DFI54/25/s6FMfV7IcwQ2wSdrVHGSF0/L3g8MDog+NcJPUZTPClf
+	 n52NaNmYb/+AM85mmoNuLMYx271yK6n2rSuaTk853IcRGfTADO7pHpnKZ8xqtrB5Bp
+	 OFmwGFXSk4peU7e4umQhKMlnkjfNPR5TUBdVWvZl4CZezkc/Djy9IlM4+Qo4nSKNgC
+	 tSa+XUm1IAy+lH58jBI6oGhSg5chcPsUe3foukNcZXsOHY38dmEsjq4spSLWC+FnFd
+	 iALTV+fRP57tkIBXBPJdDZVXGdmyUKegXXJgcHkgopVRluKATBUbel5df+q+38/jL+
+	 P7E1CCxa3gHkA==
+Message-ID: <sashiko-outbox-186855@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 16/18] riscv: dts: zhihe: add Melon Pi V1 and V2
+Subject: Re: [PATCH RFC 09/18] dt-bindings: riscv: add Melon Pi V1 and V2
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Han Gao" <gaohan@iscas.ac.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027-a210-scmi-v1-16-74d58ce85bd8@iscas.ac.cn>
+In-Reply-To: <20261027-a210-scmi-v1-9-74d58ce85bd8@iscas.ac.cn>
 References: <20261027-a210-scmi-v1-0-74d58ce85bd8@iscas.ac.cn>
- <20261027-a210-scmi-v1-16-74d58ce85bd8@iscas.ac.cn>
+ <20261027-a210-scmi-v1-9-74d58ce85bd8@iscas.ac.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 15:40:13 +0000
+Date: Tue, 27 Oct 2026 15:40:29 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,16 +60,18 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Han Gao <gaohan@iscas.ac.cn>
+> From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
 >=20
-> Add Melon Pi V1 and V2 with the UART4 console on GPIO2_0 and GPIO2_1.
-> Use serial aliases to preserve physical UART numbering.
+> Add bindings for Melon Pi V1 and V2 with the A210 module. V3 uses the
+> same board compatible as V2.
 >=20
+> Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> Co-developed-by: Han Gao <gaohan@iscas.ac.cn>
 > Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-a210-scmi-=
-v1-0-74d58ce85bd8@iscas.ac.cn?part=3D16
+v1-0-74d58ce85bd8@iscas.ac.cn?part=3D9
 
