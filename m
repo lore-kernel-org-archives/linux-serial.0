@@ -1,46 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099202;
-	b=b3cSFUmKFEuJWhKgLaF2buaqrsqaih3rojBGqDgGLejlkr4SWN25TXuLWOeoDS38ar1f
-	 +yFewX5gxaG4uHsn1XMz85dKjoXVuDb3Jf8CQAA5aXDnUY+pKNQmHgDO08VsEbSKcm0Ga
-	 vBhLgsnceGtDp3h4OV1IY2hI9veqIIAtpK3QdRARQJLaq9odfkmfem+/686ywZ5sl++v+
-	 6p6R2FSYY76y799UpnnO6LhXEGy5PHRyeJud5fZU+kXcdbCiTATfWyniCN14Mt5mhzU0F
-	 Y+skkZ313TE3lYqfn8einbipHkoao0wPKmZDInIC0xjE+NyrS5Tt/rqlYocBqMoSx3Q==
+	t=1793099208;
+	b=i7E11AnbjDH6yDZFRyODQBJ4y/9liWh/dUiYIej7mi21n/PU7LquWwATltzJtp5+7rYc
+	 fnBdrgpB6Im0Noxp76V93DRdoAPt5vDc1LDl3CnrlRT5eTk+w07hFHWK34+rx0eup1uj6
+	 yo8CAZZeH0gT0M5JpFE9j5SHdfwOxgfx79wcvClPQm1OwF6Us11eMFdI8CI+PypzT3Sj/
+	 KGEppR6VFCaycE9mK5nBb5NhKRkeow1f3MCqMLhVspJRIPoyPs9uMo1tIZ0UU5WPY6HSp
+	 euaccfC++M+PrHNUx1wZUyLqIdGEIsFsw9C9M77fcLV4u7XlXWP9X4xG1/6MHCYZJSg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099202;
-	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=RE9r+EPMkqG9JguqfT6dRXgxJfABqUOB47pSYdQBeWc=;
-	b=kpeIRpjvVPRd01+22MpOmxcf/zhcZmhYtHiqXG+pyzjV48a1xJzF+9Qh9G8BzqkMPKTm
-	 4PDdxif5zXVlQR07N3FcFFyYkPEEVTB0+J3S3Y0MnvMySZTofi+Fx/hCepz90+ISERc+6
-	 uDq9+Tsllv/pUgrnGq/oKiVaQBPzcqme6S6yFe+E98mqrr6EFNISyUDu1ATf/dh192NDk
-	 r+Focu31ULKR9KB/vHClVl042n9Q/PzDN5DG1q/8BAFyERnzkia3mW60VNAq39n284TUz
-	 YivH1sqW+QRGn928IWVtGcW8ffM4+GasbsBrIaKH85JBVT1Gpnx9JNfA4qhhnraGqLQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099208;
+	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
+	 X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=tDSrtNyy80ZHqgKUCbvvGf79WJiCCW1Xhn9IVWO2gXc=;
+	b=hSJrz0jPfLofrZ0LRGgwhbOCp+MsKwVJ6XqCARCJnZKgYfKseSVKJul/14JaajZwW0UH
+	 LmECBVuZ0Ts40VekoaAZAJat4ji3+fffXmU8b6lhqGK9X1gyT2TUCrrC7LAToSS2Ae/lk
+	 oLyUgWzzrfCmGXQbjCEjnFbdY7vhtlcEjZ7FdF5bGbQv9G/aSEDT5JKIGfuOTgmtp3JgC
+	 3lTfuo+qEKzeoLnWo24AhaCI7tLuXAnZm2rC2CLfMWdWk5obi614gvKRhRIvagZmLDlVP
+	 FnFMq7MfVZYMzD+q79GHoGn82q6+PppiVrnR5Nm3RvCsAkJsVKV71sUoDXTs0R3eOYA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=sWfLEp3V;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=Vyx6gPTz;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 429CF606A31A;
-	Tue, 27 Oct 2026 11:06:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0F9606A323;
+	Tue, 27 Oct 2026 11:06:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=sWfLEp3V
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F33F1F01825;
-	Tue, 27 Oct 2026 11:06:40 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=Vyx6gPTz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC3C1F031F3;
+	Tue, 27 Oct 2026 11:06:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099201;
-	bh=RE9r+EPMkqG9JguqfT6dRXgxJfABqUOB47pSYdQBeWc=;
-	h=From:Subject:Date:To:Cc;
-	b=sWfLEp3VRf/4WrJfPYQKOCw4b8lRjdJvSfBzkqGLfFKO9rYddYseBi8+0wEqIdm1m
-	 PHL7tT+Qdn3ieb5HsAVGedrNBO88lc7nPHr1RiQMftIwIWdSGI6eaJ+ndcEMfCVWnc
-	 uREEHYWxettJYQ+sv/fEWRae2leB1hxzkdv72qDo=
+	s=korg; t=1793099207;
+	bh=tDSrtNyy80ZHqgKUCbvvGf79WJiCCW1Xhn9IVWO2gXc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc;
+	b=Vyx6gPTzauVk+PfVw7hZNAGUO3dahjbYG2GlI5Sh7l+Z58MHpvigRWi6Vw90g3XNv
+	 1Yhor6znDQu68CHx6R5HEVj9gKGsEoxjHarEOt2Lv2Sgir2eRrsn9q/mRNdG/OFwHI
+	 bIQrq7SCkUgkwLW1lbq9O6jKgoH7oZRSBF403U0Y=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 00/24] tty/serial: a bunch of llm-found fixes
-Date: Tue, 27 Oct 2026 12:06:26 +0100
-Message-Id: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
+Date: Tue, 27 Oct 2026 12:06:28 +0100
+Subject: [PATCH 02/24] serial: core: respect runtime PM when sending x_char
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,11 +50,10 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzNDAyNz3ZKSSt2cnFxdCyNzI9PEJNMkyyRjJaDqgqLUtMwKsEnRsRB+cWl
- SVmpyCUi7Um0tAHBsGbhrAAAA
-X-Change-ID: 20261027-tty-llm-82725ab5b9b3
+Content-Transfer-Encoding: 8bit
+Message-Id: <20261027-tty-llm-v1-2-99b0202ae546@linuxfoundation.org>
+References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
+In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
  Chris Mason <mason@kernel.org>, Josef Bacik <josef@toxicpanda.com>
 Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>, 
@@ -85,106 +83,124 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
- Nicolas Pitre <npitre@baylibre.com>, Kees Cook <kees+treewide@kernel.org>, 
- Helge Deller <deller@gmx.de>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Mingyu Wang <25181214217@stu.xidian.edu.cn>, 
- Randy Dunlap <rdunlap@infradead.org>, Ronan Pigott <ronan@rjp.ie>, 
- Liav Mordouch <liavmordouch@gmail.com>, 
  Hugo Villeneuve <hvilleneuve@dimonoff.com>, Johan Hovold <johan@kernel.org>, 
  Karl Mehltretter <kmehltretter@gmail.com>, 
  John Ogness <john.ogness@linutronix.de>, 
  =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
- Tony Lindgren <tony.lindgren@linux.intel.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>, 
- Tate Whiteberg <whiteberg@arista.com>, 
- Christian Marangi <ansuelsmth@gmail.com>, 
- Fushuai Wang <wangfushuai@baidu.com>, Petr Mladek <pmladek@suse.com>, 
- Moteen Shah <m-shah@ti.com>, Kendall Willis <k-willis@ti.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Bjorn Helgaas <bhelgaas@google.com>, Lukas Wunner <lukas@wunner.de>, 
- Marnix Rijnart <marnix.rijnart@iwell.eu>, 
- Danilo Krummrich <dakr@kernel.org>, 
- Takashi Sakamoto <o-takashi@sakamocchi.jp>, Linmao Li <lilinmao@kylinos.cn>, 
- Peng Fan <peng.fan@nxp.com>, Shitalkumar Gandhi <shital.gandhi45@gmail.com>, 
- Robin Gong <yibin.gong@nxp.com>, Pan Chuang <panchuang@vivo.com>
+ Tony Lindgren <tony.lindgren@linux.intel.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3409;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3883;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=u1AOWKaeLw/J637Ut3krjBC+w7zgOqNgLCTwHfBX2wM=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvc2R7ty8nT7uovFiHv7bouUfuV5sJHZgT8sZFZQT
- 8tfx0UdsSwMgkwMsmKKLF+28RzdX3FI0cvQ9jTMHFYmkCEMXJwCMJGzCxgWzNwc3tl9Rtfm1uMe
- 9zIt6x6rJaF7GOZwLTi5uXFXbUW86ZT5W/ub+3SFPhgAAA==
+ bh=mbJElPrglA5NE/q+KI/GSecuTgZMKDwvUnzZsePFflQ=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWveyXj+q81l8QqTSwipH7R9vb3ZcszCZtf3RefnnB
+ +TuJLdO74hlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJPLVhmO+9ddXqrJZ1awV5
+ 3JfuXPguoEu4QYFhnv6vVweeTOnZrpJeefBlBa/thQ+7FgIA
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
-Here's a series of some small llm-found fixes that have been sent to me
-recently.  Most of them are just minor bugfixes and locking cleanups,
-but they are good to have from what I can tell.
+From: Josef Bacik <josef@toxicpanda.com>
 
-Submitting them here to get a solid Sashiko run and some second eyes on
-them before merging if all goes well.
+__uart_start() calls the start_tx operation only if the port is runtime
+active.  Otherwise it asks for a resume, and
+serial_port_runtime_resume() starts the transmitter.
 
+uart_send_xchar() calls start_tx at once, under the port lock, whatever
+the state of the device.  With 8250_omap, serial8250_start_tx() then
+calls pm_runtime_get_sync() for a suspended device: that sleeps, and
+omap8250_runtime_resume() takes the port lock again.  A tcflow(TCIOFF)
+on an idle port is enough, if autosuspend has been enabled.  It was
+allowed as long as that driver used pm_runtime_irq_safe().
+
+Share the part of __uart_start() that deals with runtime PM.  A stopped
+transmission still does not hold up an XON or XOFF character.  Let a
+pending x_char count as work for serial_port_runtime_resume(), and keep
+the port from being suspended with it.
+
+Fixes: 8700a7ea5519 ("serial: 8250_omap: Drop pm_runtime_irq_safe()")
+Cc: stable <stable@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Karl Mehltretter <kmehltretter@gmail.com>
+Cc: John Ogness <john.ogness@linutronix.de>
+Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
+Cc: Tony Lindgren <tony.lindgren@linux.intel.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Chris Mason (1):
-      vt: serialise the producers of the flip buffer
+ drivers/tty/serial/serial_core.c | 25 +++++++++++++++----------
+ drivers/tty/serial/serial_port.c |  4 ++--
+ 2 files changed, 17 insertions(+), 12 deletions(-)
 
-Josef Bacik (12):
-      serial: core: respect runtime PM when sending x_char
-      serial: 8250: don't wait for the em485 timers locked
-      serial: 8250: don't report a wakeup to a closed tty
-      serial: 8250_lpss: don't divide by 0 above 6.25 Mbaud
-      serial: 8250_mxpcie: handle hangup during break
-      serial: fsl_lpuart: fix tty ref of wakeup event
-      serial: imx: fix the tty reference of the wakeup event
-      serial: rda: free the interrupt on shutdown
-      serial: samsung: don't leak the tty on an RX IRQ
-      serial: samsung: put the previous baud clock
-      serial: st-asc: don't report a wakeup to a closed tty
-      serial: stm32: don't report a wakeup to a closed tty
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index c0deec0e6af4..b06d2649be34 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -135,17 +135,11 @@ static void uart_stop(struct tty_struct *tty)
+ 	uart_port_unlock_deref(port, flags);
+ }
+ 
+-static void __uart_start(struct uart_state *state)
++static void uart_port_start_tx(struct uart_port *port)
+ {
+-	struct uart_port *port = state->uart_port;
+-	struct serial_port_device *port_dev;
++	struct serial_port_device *port_dev = port->port_dev;
+ 	int err;
+ 
+-	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port))
+-		return;
+-
+-	port_dev = port->port_dev;
+-
+ 	/* Increment the runtime PM usage count for the active check below */
+ 	err = pm_runtime_get(&port_dev->dev);
+ 	if (err < 0 && err != -EINPROGRESS) {
+@@ -164,6 +158,16 @@ static void __uart_start(struct uart_state *state)
+ 	pm_runtime_put_autosuspend(&port_dev->dev);
+ }
+ 
++static void __uart_start(struct uart_state *state)
++{
++	struct uart_port *port = state->uart_port;
++
++	if (!port || port->flags & UPF_DEAD || uart_tx_stopped(port))
++		return;
++
++	uart_port_start_tx(port);
++}
++
+ static void uart_start(struct tty_struct *tty)
+ {
+ 	struct uart_state *state = tty->driver_data;
+@@ -718,8 +722,9 @@ static void uart_send_xchar(struct tty_struct *tty, u8 ch)
+ 	else {
+ 		guard(uart_port_lock_irqsave)(port);
+ 		port->x_char = ch;
+-		if (ch)
+-			port->ops->start_tx(port);
++		/* It goes out even if the transmission is stopped */
++		if (ch && !(port->flags & UPF_DEAD))
++			uart_port_start_tx(port);
+ 	}
+ 	uart_port_deref(port);
+ }
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+index 2fc48cd63f6c..f2f7cdd3a54c 100644
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -23,8 +23,8 @@
+ /* Only considers pending TX for now. Caller must take care of locking */
+ static int __serial_port_busy(struct uart_port *port)
+ {
+-	return !uart_tx_stopped(port) &&
+-		!kfifo_is_empty(&port->state->port.xmit_fifo);
++	return port->x_char || (!uart_tx_stopped(port) &&
++		!kfifo_is_empty(&port->state->port.xmit_fifo));
+ }
+ 
+ static int serial_port_runtime_resume(struct device *dev)
 
-Joshua Rogers (11):
-      serial: 8250: clear subdriver state on port unregister
-      serial: 8250: add bounds check for line array in setup_serial()
-      serial: 8250: hold hash_mutex across irq_info lookup and linking
-      serial: 8250: cancel overrun backoff work on port shutdown and unregister
-      serial: 8250: 8250_bcm7271: fix DMA address truncation to 32 bits
-      serial: 8250: pericom: validate port offset against BAR length
-      serial: 8250: cap OxSemi Tornado UART count against BAR size
-      serial: 8250: dfl: add bounds check for device-provided regshift
-      serial: 8250: dfl: validate MMIO resource size and regshift
-      serial: 8250: ioc3: store registered line number in driver data
-      serial: 8250: omap: acquire rx_dma_lock in DMA completion callback
-
- drivers/tty/serial/8250/8250.h         |  1 +
- drivers/tty/serial/8250/8250_bcm7271.c |  2 +-
- drivers/tty/serial/8250/8250_core.c    | 41 ++++++++++++++++---
- drivers/tty/serial/8250/8250_dfl.c     | 16 ++++++++
- drivers/tty/serial/8250/8250_ioc3.c    |  1 +
- drivers/tty/serial/8250/8250_lpss.c    |  3 ++
- drivers/tty/serial/8250/8250_mxpcie.c  | 13 ++++--
- drivers/tty/serial/8250/8250_omap.c    |  5 +++
- drivers/tty/serial/8250/8250_pci.c     | 10 +++++
- drivers/tty/serial/8250/8250_pericom.c |  3 ++
- drivers/tty/serial/8250/8250_port.c    | 74 ++++++++++++++++++++++++++++------
- drivers/tty/serial/8250/serial_cs.c    |  5 +++
- drivers/tty/serial/fsl_lpuart.c        | 10 ++++-
- drivers/tty/serial/imx.c               | 10 ++++-
- drivers/tty/serial/rda-uart.c          |  2 +
- drivers/tty/serial/samsung_tty.c       |  8 ++--
- drivers/tty/serial/serial_core.c       | 25 +++++++-----
- drivers/tty/serial/serial_port.c       |  4 +-
- drivers/tty/serial/st-asc.c            | 11 ++++-
- drivers/tty/serial/stm32-usart.c       | 11 ++++-
- drivers/tty/vt/keyboard.c              |  6 +++
- drivers/tty/vt/vt.c                    |  2 +
- include/linux/serial_8250.h            |  1 +
- 23 files changed, 217 insertions(+), 47 deletions(-)
----
-base-commit: d135ab453a7400a34930bdda1ef4bdc8acfac80e
-change-id: 20261027-tty-llm-82725ab5b9b3
-
-Best regards,
---  
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+-- 
+2.56.0
 
