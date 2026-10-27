@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099205;
-	b=tb5Q6RLebHoRjIyx6rzw/t7XWSp6g5hDhb6N6074ik1Nb/NDqsBxviOih/H4Lrmoa4p4
-	 NKopoZNaDLfqhYHApRIDm6qqjQxldxHRar9qQi3htJlXV9aOctkccRuW1nOExnp/PcbzY
-	 iLvtQTVhxGF3s0/CJfqlbsHo7jbNaD/17T3JdE6U2rcVYh34nUKcS90DHxHLSf5hN1C/2
-	 Ppoa0zl8U9d4nhtdBvGUlEdhVGeEhM0m96L+IIBiHhBJAiJ8FN1ikUgg0Nh4boTdFkQjl
-	 f1IjOd8GThOc31RIoXWc5Qf9LpvDj9CtF2QWwY7dNwuxmiPjUHsXzegCgIVIJubxoGA==
+	t=1793099213;
+	b=5ktPKkoA4rO/qbrtEsOtcEi9diJ7nVxcCiRysGBhZHx0ss2J+9CdPxAFOjj8vlHetygj
+	 fXmYtRNEvYt96/2Z81JwftDR1hrtQrU/6qFOn5uLFQaDGa2xlNqAje9EgnuG2qbCat+HC
+	 nxd/mjdjkpqZQEfk+7dZ8QGM/+SgXp2QZ5gWJNoK5ZR1bcfvEgwX7Fe3sQaDJQXwpCzxd
+	 6kecS9Xxt3DASQkZiPtXNbEFd2g2VkgcNQCtg46ryfsKUScYgyUwN20Wx7aKss0pgo+bv
+	 DqkKXoj0JZB9y4qk0lf3SEo91vSO6m3/sIf0DGt+I6EUuewzkrART4AEFShYacme3hA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099205;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099213;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=w9JLcxkekk0SoKUL41CSq+wR9dQesJmZqPkBcLIUo7E=;
-	b=anCkJz7WsGQgkclArJtIGKaLM8Nv/mU+kt0JBajjIe3DoMinyMeKj9ZZTSwLFRlvag7G
-	 1RUXzwzIRadgEjEg9v9ffiBShDKCwBX0PGIZGbwt01qE/FW/3AWR8G0ZFlj0tp6ODxtpa
-	 TjmBWrsiQY84E+/U4qJ32nX2tlQsRPTeMYXALAzjDHano+mCM1A/JDCtQIo+p/pbXj02E
-	 l6ImO8cLDuOCq+oF8Nz1eqD5d9zTxGqudbBnCfmtz+77NPu27h2MbPcC91vOa1B+a2e24
-	 5ihdBfahVJyT77291Yacn+fQnsYHkzLYBFqeRbAweiIkytqvRQIFN2nnpw0M1QdvfBw==
+	bh=7vSKGraoDM2QV0JPe83DnNyE1Tt9SqdSFkplucLdPI8=;
+	b=kPbWOVfF2s29ybh09/tyArtfj3iBjoO1BGgSCLtATrTWqs/HbrbJasxUpUbJBRjiNPFu
+	 oEAlNzZjcl7MkQ+a+GdkGm1c5HNNTKwkS6bLAV+2Iag/MN18UZ6NMMw+WfLTI9kyvpreY
+	 t/TUntAW2zK/115/eTXd2niwuYG84Gp5IaVHT7+877RPdyKHrBLcxjBcqfS3bFE9kSqim
+	 M6LROWWQ7yF3tKaD9OveDt0XjvmOr3ivEYOZfLv+P/QVii/3sfDb1yAUKv7omY1KX56LX
+	 7lORFXg6WaYTH5pYhhbO3Phqc3swK994Rb/Quyj9uKQnBwUfF7Omo0EYhFfM4X6dnZw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xZ2icfri;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xHFzn6eh;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23021606A328;
-	Tue, 27 Oct 2026 11:06:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31ED8606A325;
+	Tue, 27 Oct 2026 11:06:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xZ2icfri
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E23491F031EA;
-	Tue, 27 Oct 2026 11:06:43 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xHFzn6eh
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81A5B1F01828;
+	Tue, 27 Oct 2026 11:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793099204;
-	bh=w9JLcxkekk0SoKUL41CSq+wR9dQesJmZqPkBcLIUo7E=;
+	s=korg; t=1793099213;
+	bh=7vSKGraoDM2QV0JPe83DnNyE1Tt9SqdSFkplucLdPI8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=xZ2icfri0/AhA+F2EVSIvmG1mbhP38w//2Tqx2HRy57OSEAgIXcRPzdTqtf1ViRjc
-	 gny4BwNQV8hnjCBxfo0ZwI75Nsv5OXAcPbvD86McYna47PxbtOcdJ3NgcuvZh5+JPW
-	 uQn/bCnUh4xdFmndrfzEQpaNmCSDpPLrH7IEIx80=
+	b=xHFzn6ehZOml2dVavmbMTSq/Q/Y4L1kSSMOD1LdcpGr+7nK3dDkAIMRyenaGBdBVO
+	 a8mMH7xCNxMfK8VXD0C8zYLUHM1TsVfG+CvPkSy16PV4etDd6Gh89NY9s+AQZbcFrt
+	 NbT4SWJv+f8RLWLoNEBerO5oD0tORD6YEiFRUUac=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 12:06:27 +0100
-Subject: [PATCH 01/24] vt: serialise the producers of the flip buffer
+Date: Tue, 27 Oct 2026 12:06:30 +0100
+Subject: [PATCH 04/24] serial: 8250: don't report a wakeup to a closed tty
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -50,8 +50,8 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261027-tty-llm-v1-1-99b0202ae546@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20261027-tty-llm-v1-4-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 In-Reply-To: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
 To: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>, 
@@ -83,140 +83,67 @@ Cc: Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
  Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
- Nicolas Pitre <npitre@baylibre.com>, Kees Cook <kees+treewide@kernel.org>, 
- Helge Deller <deller@gmx.de>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Mingyu Wang <25181214217@stu.xidian.edu.cn>, 
- Randy Dunlap <rdunlap@infradead.org>, Ronan Pigott <ronan@rjp.ie>, 
- Liav Mordouch <liavmordouch@gmail.com>
+ John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>, 
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4768;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2012;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=jR9+7jjCyJvPoC7RXU4XKwVay/7TvtwUACG4NhQYRPU=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWvfGr0v/HfuyYm624k8h7V3pM+d7CkW9sQvPv+x7Z
- 3sFS6dIRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEwkwpdhnnL/eUVlk9oF0yW6
- 99epfss8HhUczzBPaWVhRpOydtLxCNVS8abqpedu+pcBAA==
+ bh=T32sy9olc55qU8t6c7E4l3KE2wqdvMjDebtTtCJxGpw=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPWve21YdGXy1qOZ0zNfGadv133VWmk/be/pu53Pdhf
+ tOalH1NHbEsDIJMDLJiiixftvEc3V9xSNHL0PY0zBxWJpAhDFycAjCRg00McwWkha8ceZP0KFzq
+ 1Oz21Jq7ZatYFjLM0zpwPzL/0S3mf9oZbyOsnxlsvhJzHAA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
-From: Chris Mason <mason@kernel.org>
+From: Josef Bacik <josef@toxicpanda.com>
 
-Typing on a virtual console while the console replies to an escape
-sequence can make the kernel write past the end of a buffer. A user who
-can write to the foreground console can cause this on purpose if they
-can also inject key events, through /dev/uinput or by writing to the
-/dev/input/event* node of a keyboard.
+If its interrupt is a wakeup source, serial8250_handle_irq_locked()
+reports the characters which arrive as a wakeup event of
+tport->tty->dev.  That pointer is only set while the port is open.  The
+port of a console is not shut down by the last close, so its interrupt
+handler goes on running without a tty.  If the system is then woken up
+by a character on the console, the handler dereferences a NULL pointer.
 
-Input for a tty goes through the flip buffer of its port. A driver
-inserts the data with tty_insert_flip_*() and then calls
-tty_flip_buffer_push() to pass it on to the line discipline. The insert
-functions take no lock: they check that the current struct tty_buffer
-has room, copy the data to offset ->used, and then advance ->used. So a
-flip buffer supports only one producer at a time, and a driver that has
-several must serialise them.
+Take a reference to the tty, and leave the event out if there is none.
 
-Four functions feed the flip buffer of a virtual console:
-
-- put_queue(), puts_queue() and fn_send_intr() insert typed characters
-  and breaks for the keyboard handler. They run under kbd_event_lock.
-- respond_string() inserts the reply when a program writes an escape
-  sequence that requests one, such as a cursor position report. It runs
-  under the console lock.
-
-The keyboard handler gets its events from the input layer and feeds the
-foreground console. Key events that a program writes to /dev/uinput or
-to an event node reach it in the same way as typed keys.
-
-The keyboard handler and respond_string() share no lock, so they can
-interleave:
-
-    keyboard handler                respond_string()
-    ================                ================
-    room check passes
-                                    room check passes
-    memcpy() to offset used
-    used += len
-                                    memcpy() to offset used
-                                    used += len
-                                      /* used > size of the buffer */
-
-The room check subtracts ->used from the size, and both are unsigned.
-Once ->used exceeds the size, the result wraps, so the check always
-passes, and each later insert lands further past the buffer.
-
-Reproduced as root, with keys from a uinput keyboard and cursor position
-reports on the same console: KFENCE reported an out-of-bounds write
-1,024 bytes past the buffer in under 10 s.
-
-Fix this by taking port->lock, with interrupts disabled, around the
-insert and the push in these four functions. kbd_keycode() already takes
-port->lock under kbd_event_lock, so this lock ordering is not new.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 0ba9e3a13c6a ("serial: 8250: Add missing wakeup event reporting")
 Cc: stable <stable@kernel.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Nicolas Pitre <npitre@baylibre.com>
-Cc: Kees Cook <kees+treewide@kernel.org>
-Cc: Joshua Rogers <linux@joshua.hu>
-Cc: Chris Mason <mason@kernel.org>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Mingyu Wang <25181214217@stu.xidian.edu.cn>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Ronan Pigott <ronan@rjp.ie>
-Cc: Liav Mordouch <liavmordouch@gmail.com>
-Signed-off-by: Chris Mason <mason@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: John Ogness <john.ogness@linutronix.de>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/vt/keyboard.c | 6 ++++++
- drivers/tty/vt/vt.c       | 2 ++
- 2 files changed, 8 insertions(+)
+ drivers/tty/serial/8250/8250_port.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index ef4a19aeb3ce..f4b742e091fb 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -322,15 +322,20 @@ int kbd_rate(struct kbd_repeat *rpt)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 3d47f535d6f1..4afebd96e062 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1900,8 +1900,15 @@ void serial8250_handle_irq_locked(struct uart_port *port, unsigned int iir)
+ 		struct irq_data *d;
  
- /*
-  * Helper Functions.
-+ *
-+ * A flip buffer allows one producer at a time, and respond_string() in vt.c
-+ * feeds the same one under the console lock. So take the lock of the port.
-  */
- static void put_queue(struct vc_data *vc, int ch)
- {
-+	guard(spinlock_irqsave)(&vc->port.lock);
- 	tty_insert_flip_char(&vc->port, ch, 0);
- 	tty_flip_buffer_push(&vc->port);
- }
- 
- static void puts_queue(struct vc_data *vc, const char *cp)
- {
-+	guard(spinlock_irqsave)(&vc->port.lock);
- 	tty_insert_flip_string(&vc->port, cp, strlen(cp));
- 	tty_flip_buffer_push(&vc->port);
- }
-@@ -587,6 +592,7 @@ static void fn_inc_console(struct vc_data *vc)
- 
- static void fn_send_intr(struct vc_data *vc)
- {
-+	guard(spinlock_irqsave)(&vc->port.lock);
- 	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
- 	tty_flip_buffer_push(&vc->port);
- }
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 8415e274e4be..5c2c761aa0c1 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1971,6 +1971,8 @@ static void csi_m(struct vc_data *vc)
- 
- static void respond_string(const char *p, size_t len, struct tty_port *port)
- {
-+	/* The keyboard handler feeds the same flip buffer. */
-+	guard(spinlock_irqsave)(&port->lock);
- 	tty_insert_flip_string(port, p, len);
- 	tty_flip_buffer_push(port);
- }
+ 		d = irq_get_irq_data(port->irq);
+-		if (d && irqd_is_wakeup_set(d))
+-			pm_wakeup_event(tport->tty->dev, 0);
++		if (d && irqd_is_wakeup_set(d)) {
++			struct tty_struct *tty = tty_port_tty_get(tport);
++
++			/* A console goes on receiving after the last close */
++			if (tty) {
++				pm_wakeup_event(tty->dev, 0);
++				tty_kref_put(tty);
++			}
++		}
+ 		if (!up->dma || handle_rx_dma(up, iir))
+ 			status = serial8250_rx_chars(up, status);
+ 	}
 
 -- 
 2.56.0
