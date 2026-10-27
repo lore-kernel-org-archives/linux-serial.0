@@ -1,92 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793134479;
-	b=4+49/4dTyahHh/zhujFZfOSSTEBX7GY/B7vVQarQ12YblKut4QmUjzC4T9JwtGBvb2Cg
-	 dX+y7EJsO/c5CcfQcchbM0mkqzav/aiAiNDJvCQZx8agQWJYD90KoPcBX6vbsCS9KKfZO
-	 xscpTjZLxxyErfQNZ3edjqwvCgrRVRyPS5mSBpjAvKM49q9EcwbSTAY6qvR2MJQFCRMv8
-	 DBcX60Ar4AcPE70XY6IUdSXhhlPrIQGD3DRJAmfbLrUxxqss9S734QfIU0pUQKCVxSoHr
-	 340vHnLiABVlyQ6fq/C5dk4GMpEh2eGq6KGLKfFLkLXHTET7qujdd959GGZN4CFsRlw==
+	t=1793135226;
+	b=ecFBWfBinUBcZZpqm+9n1TRzybevpHqAaYoUUelEqKfohIZgoHoKOWTXrqVkIODd5/fi
+	 W3dC0MOt9j0hDly2bdlU8qSu2RNvJ+e8NJMLBzaoezNfT7hI89ZNrh5z8/yLj7EbtO9Y2
+	 LMQIHN//Ga8zzv2vYpOW4IX+AOwuA4pyFNjs3HBkFNnGlmyS6VCQqj0nhyt5o0CWREJr/
+	 ElTccXTygwxftv8wIg6paKoM2htML0+UOv2YnZ/yCvRLbyYfSb5sRQ36LfI1y+xRy1uq9
+	 gv3FN0+tu8lzekCxy9BS4lUMSoVLgjs/fIiLHqhSZP9u4FYludKzkl/ic9S3Ej/3t1w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793134479;
-	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=Jv6Xm4QeDgQX1/yKjenrXElUfoDNp2BHW9+LkfSflZ4=;
-	b=KUMsSp9iS3AMYgoqzK/3Ioky5egsHl9sy9Qls0a+YVHGP296bm83MY7D15F0HY+hTVrU
-	 02xjciGG45uPzFOo9uV9f/RliMMIu+9vCz7+tvJFlDFy6bKWEd2LU2oCkovfnMa8YF3hp
-	 1PesTPILH/xntCxzzat+bz7j9FZj51UUP1ky3fT7XcZI1NrirRdPJZlHPderWRYa+2poX
-	 YicFOyJVX8ZRUOqQyy9jtjW4mZIhKkpgLRJUh7f5J5x6Bu7kAdyYoa+dxbyLdPPLoa31/
-	 h98o3GJ754BAplbOp1ukFlIGMnJKNmEW9wzxO0QcwCfclgWhf4BX1p37Xzr3VAOXlaQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793135226;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=dhiQkFXajssFfdQm0/XVZOyaTKHqLvZL8I8B+3smf8I=;
+	b=FZXWG6cOEpSHiNsTWT8KzisXUd8ap8lcc4EuG79Z4OUO0fFyk9ZnnZXPsPVYgsMMVnsy
+	 EAzAR4ZJJBh3KYu1NjfSphOCSb2TMw47dBU56DuUyH1HVjdsqQsBUSLGk1PYbtpGHlZ9/
+	 wBKW8t8s0PBxbwbBEpQRfJEh20N6GHp1ysAz1DKDk5OY+QsvAZsPRlS3slQsYdG+CboMM
+	 uaLxS8GwuW5KLUXeDxCCT2M8kWmcdR7/yj1t86Ly5AAbI0zeukEyJ/rviFkVRD8kaSG8y
+	 tXi6flaDJHYB7RliFm7gYtgwrlr+A3d2ORuAKAIQO3h+flAMjzj9wZUiM6AAal1Thhg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=alien8.de;
-	spf=pass smtp.mailfrom=alien8.de;
-	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=iQKFrDh1;
-	arc=none smtp.remote-ip=65.109.113.108
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ggcFAE+1;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 917CF606A31A;
-	Tue, 27 Oct 2026 20:54:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 917CF606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73EBD606A31F;
+	Tue, 27 Oct 2026 21:07:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=iQKFrDh1
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id CA91640E040C;
-	Tue, 27 Oct 2026 20:54:34 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 9Y0mcD_3xooN; Tue, 27 Oct 2026 20:54:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1793134471; bh=Jv6Xm4QeDgQX1/yKjenrXElUfoDNp2BHW9+LkfSflZ4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iQKFrDh10savfSi4autfYbAYUJBPgj99iPq05z/PLbkfPRI4132/EPDth0qM7+ged
-	 xUvLEsJHhxRj1uccvxBoqIi99obdCZwohAVNH2ONqyYKbMq4zc/C3vLsfZJxVScWOP
-	 T9yoyRgpajizThFIHSvqQEAB16Uqp3qe1YboMI/vXMF3A4HI9I0FH1ksZnTDEN9rSS
-	 2t/zti62tyjM69RskgGV5QjbeBqWsMOaqKKj834H2kDjHNAdUKV9Iumc0j6tyBEnHZ
-	 bw+gE/RWqC4xsHQBnijKehBawmLhtIiirnvtBWvSTuZgovoUoJLLIGyDMU6G0KvJ0E
-	 fFTO+gSikcIZzmMlGNb/57O7u0l6wK5YNmZQBvRAqAS3/rRIM/jm7r938CrwSiS9+I
-	 wcATOdPfb9iynzvF9SAEC082qt4ZSyYqwogKp/Db6fjoL1ZHrPn3KQdQzSSaM5HoJu
-	 UhPBZcTg6e+F0Xc00EGQKR5KSuoDQ+KJKg1iJI4ihURWZJ0v2NIIw38g1SNQIxLFry
-	 YJZDwSUjgw0rTotnzfT03wZGLnZo/tJYL0QQF96dM66LMiwQDz/igQYTqdmVErWc4D
-	 x5tjw3Y0DjBxgZIju4i0XXr4VKGbYwgIxSKqIHwPoDDZfWnSM554JkcGuCcL1pYF2h
-	 8X8eQI+GMiwdM6+MqUENuxaY=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::a])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 74C3F40E016C;
-	Tue, 27 Oct 2026 20:54:14 +0000 (UTC)
-Date: Tue, 27 Oct 2026 13:54:11 -0700
-From: Borislav Petkov <bp@alien8.de>
-To: Krzysztof Kozlowski <krzk@kernel.org>, Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	"biju.das.au" <biju.das.au@gmail.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Au Dang <au.dang.jx@renesas.com>
-Subject: Re: [PATCH v3 0/4] Fix transmit handling on SCI/RSCI ports
-Message-ID: <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
-References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
- <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
- <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
- <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ggcFAE+1
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84D71F01828;
+	Tue, 27 Oct 2026 21:07:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793135226;
+	bh=dhiQkFXajssFfdQm0/XVZOyaTKHqLvZL8I8B+3smf8I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ggcFAE+1D+RSsplxMrMS76Sbh4+yrOX72umRosL+KKVrS/wlX5TU/oJg3TTlBuH+Y
+	 VGeQcDauUe4Yw7kK1twxV5Cna3gpWDuRHffkmswPkqD+fJwJ/KQftNRjyafciIJvzB
+	 0ynSl4kEgnA6tAWrpYMwwqVRzn6TcqiPILynqSS+IFdQHPu37QmqzNXgLkS2zoL5Li
+	 CxFZaJMfz38KwoKsAP7OAyLMOJBVZaSyYTFG4ZFxh7omeyoRfKVJM0SMxI2nZ2Iv+V
+	 DZpZEp3YUJcE5XDiUfxZbR1huCJauGytyeSeaTMbCqD1v571LDKgZ+vsu8IkCiS8ND
+	 CDg93Y0e2cqCQ==
+Date: Tue, 27 Oct 2026 16:07:02 -0500
+From: Rob Herring <robh@kernel.org>
+To: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 4/5] dt-bindings: serial: create binding for mcf-uart
+Message-ID: <20261027210702.GA948124-robh@kernel.org>
+References: <20261013120831.1046590-1-gerg@linux-m68k.org>
+ <20261013120831.1046590-5-gerg@linux-m68k.org>
+ <20261014-expensive-shrewd-nautilus-abcab6@quoll>
+ <d256f39c-6ed5-409a-a7ed-224165d00521@linux-m68k.org>
+ <CAMuHMdUcGt7RBc0d1A-8O1Dt71RL=epPgmnetj_4NGCPvCj9LA@mail.gmail.com>
+ <73a8df68-17da-4275-bb9d-8a6272b754e6@linux-m68k.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -96,62 +63,79 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+In-Reply-To: <73a8df68-17da-4275-bb9d-8a6272b754e6@linux-m68k.org>
 
-On Tue, Oct 27, 2026 at 10:34:24AM +0100, Krzysztof Kozlowski wrote:
-> Indeed that's x86 fault, so I don't get why Borislav complains.
-
-Really, you don't?!
-
-Looks like your mbox can take more mail then :)
-
-> They added such pattern, so get_maintainers indeed reports it when run on
-> the patches (not with -f):
+On Thu, Oct 15, 2026 at 11:14:26PM +1000, Greg Ungerer wrote:
+> Hi Geert,
 > 
-> 	Keyword:\b(tdx)
+> On 15/10/26 19:19, Geert Uytterhoeven wrote:
+> > On Wed, 14 Oct 2026 at 14:56, Greg Ungerer <gerg@linux-m68k.org> wrote:
+> >> On 14/10/26 21:24, Krzysztof Kozlowski wrote:
+> >>> On Tue, Oct 13, 2026 at 10:07:02PM +1000, Greg Ungerer wrote:
+> >>>> Create documentation for a new binding to support the Freescale ColdFire
+> >>>> UART hardware block. This is found on pretty much all variants of the
+> >>>> M68K derived Freescale ColdFire family of System-on-Chip devices.
+> >>>>
+> >>>> It is not compatible with any other known UARTs.
+> >>>
+> >>> You never tested this, so limited review.
+> >>
+> >> It is tested. It is working and running on multiple ColdFire platforms.
+> >>
+> >>>> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+> > 
+> >>>> --- /dev/null
+> >>>> +++ b/Documentation/devicetree/bindings/serial/fsl,mcf-uart.yaml
+> > 
+> >>>> +properties:
+> >>>> +  compatible:
+> >>>> +    const: fsl,mcf-uart
+> >>>
+> >>> What is the SoC name? MCF? Compatibles must be specific (see writing
+> >>> bindings doc).
+> >>
+> >> Yes. MCF = "Motorola ColdFire". It is the SoC prefix used for naming of all
+> >> ColdFire parts (which is dozens of variants):
+> >>
+> >>    MCF5206
+> >>    MCF5208
+> >>    MCF5307
+> >>    MCF54415
+> >>    etc
+> >>
+> >> Even when Motorola became Freescale they stuck with MCF on all ColdFire parts.
+> > 
+> > I guess you want:
+> > 
+> >     items:
+> >       - enum:
+> >           - fsl,mcf5206
+> >           - fsl,mcf5208
+> >           - fsl,mcf5307
+> >             [...]
+> >       - const: fsl,mcf-uart
+> > 
+> > As no new (possibly incompatible) Coldfire parts will appear, a generic
+> > fallback looks reasonable to me.
+> 
+> It will be a long list of variants - thanks Freescale. Quite a few of the SoC
+> parts have sub-parts with different single digits, for example:
+> 
+>     mcf54410, mcf54415, mcf54416, mcf54417, mcf54118
 
-Probably because all those folks here haven't been bitten by the imprecise
-regex issue:
+I imagine all of those are just package or marketing differences. 
+Freescale did not have the money to tapeout 5 different parts. Just 
+using one compatible for all of them is fine. 
 
-https://lore.kernel.org/all/97e322a3-0526-414d-a288-835d11ee2b1a@intel.com
+> At a quick count I can see about 42 variants. 
+> I don't mind adding the full list if that is preferred.
 
-and I think they have but they probably didn't realize that this pattern thing
-matches commit message text too.
+Just add what you care about or know people use. I imagine that's a much 
+smaller subset.
 
-The below fixes this particular case but I can already see it is not enough so
-I think this pattern needs tightening and actually splitting it into several
-patterns for easier matching.
+Probably not many users today of the 5272 I worked on which was designed 
+for ISDN modems.
 
-Probably something with a path separator in it:
-
-*./tdx(-[a-zA-Z]+/.*
-
-and so on.
-
-Yah, I was going to add them to Cc but the faulty pattern added them already.
-
-Pfff.
-
----
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b0d9a28bc85..e727db70a2f2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -30228,7 +30228,7 @@ L:      kvm@vger.kernel.org
- S:     Supported
- T:     git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/tdx
- N:     tdx
--K:     \b(tdx)
-+K:     \b(tdx)\W
- 
- X86 VDSO
- M:     Andy Lutomirski <luto@kernel.org>
-
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Rob
