@@ -1,47 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793100432;
-	b=0hi746EAaDxaJZ0NXhWl16MRmnSRGD85Uu/MZlsUUbkbqB9uLJi+FclsNIrW0Y+jibH0
-	 ybYyufag3OD4iUSliEA9pfT4hU83U6ILhnMHMROI5NQKAh/TxqLtC4Y7zeZFe7dRgOcgo
-	 OWIaJjNK5Q2utpKAKFw37fSwyUB6SpzeTZYWsEIsfF/DNyV8IDutMAzKuogM/wqK+vAqU
-	 oiVZQlSfU5/JvbTvz6t3ez5NSBiGg56fdzIivipJgDfxrj7ZRx6fQcq+TjKXHQZ8GR5gI
-	 7+kbjF0aVfLjdEvPIwqmPrgstLK/qTxj05ZTQ9VEgbUvKJKsh9dTImzSxmeXWfXFScQ==
+	t=1793100469;
+	b=L7EfvxOkjgB7rHIMGpa/gfTlcO1SVDS15YQF2wmfo058o/p5wxPukIbJJ5EpJhgE3QRO
+	 vG++pn/9Yv4r96VyCfX48Lgzuy8F/whvs7kcfOp2WxFN/vOfYzYXPrHEKR+1i3KXqiZxf
+	 1UFwLSgNZsXx/4VghGc3kvc07fQHCzhJ6F/51ed/bqLVmD37Tzf40ZngITDv3hGPMuC39
+	 4gGLGtn9SPHLj84pXIukUoWutRG0kjreFnLRMJgHWw5mlmiII1aCWza4ExT+uR6+U/rlU
+	 ZZR8WWbWYbxM8ClrZNOsAcK6iukNyhaM3csz5Pd/hxFrTyj7iH0RUPV/GfX0Db2YS2w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793100432;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=GbQ0MT6Xqpot2fekosyGQ6/rCmYxlnIL0o9qnEGTdeY=;
-	b=Ek2Y8WuuHtBnwmYca/hsmhcX1AZ3CXQhauNGGs6/PXg9h9gPM+qxJ2V+MWJVnRddCFlu
-	 9VH7YacGblKqqbHtNn6LS6LtxutJKf0SAy5eI4/EguVzSQXXXQghcb+dhqZKaG6nTIgwJ
-	 GOct9kYDPvZNePYdhgcSnypP4TV9GBbZCx1AGt8L2TbWhP0rY+DwQ+qUxnb5XwvwBF8MP
-	 MdWBLl3ZRTPJRzvdL0GVvYduPrbMJWgp56Po3zWUUaej8UxYuovJ39XWApnu1UN+/zgEz
-	 nSSCAtQzNxf4zaXinIrOJzJOHzNCMLhqnVv7TZORYDCjxJF6+Fb7ouM5/8EgptoG3ZA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793100469;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=48QzCh9o95pMJJVcSE1w4N3eswsieHxCakj7OfTn4Og=;
+	b=gM+1FW9QymW1b2reL59MUAJKiWxi575vKfG1weaCNGxi93fKlBtyP2uG/82odlV5SUtj
+	 3T1qOxwA/YI0K6I9jMozMAwYyrdB0wFQnCCAIz/ppNSTIahwzn+Ci2VH6PuqaQQ7PAbfL
+	 4jdaSLCBHpB+PgRc8sOOMSOtfOl/fXGC3GQxVo1F2qGvEBKyUmKXo07orjQDPaFq9pyjw
+	 /qWy+f9I/8i8xNZLQctCnMf4JLgJbuqdBAURGHTnUsMhQjhdV7b/1jqur61KA2ybs99pw
+	 5LdBAkjn9jYQzERuoky/+HxOqVaxkS0iZ/t/L46HtQPG1ajoYCotX54QLJ3ATO4KX2g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RrPot6Og;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B5qo2Nyv;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFAFC606A336;
-	Tue, 27 Oct 2026 11:27:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 598A8606A31D
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:27:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RrPot6Og
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC97D1F01825;
-	Tue, 27 Oct 2026 11:27:10 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B5qo2Nyv
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD211F01829;
+	Tue, 27 Oct 2026 11:27:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793100431;
-	bh=GbQ0MT6Xqpot2fekosyGQ6/rCmYxlnIL0o9qnEGTdeY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=RrPot6Og8C+qKJM4R9pkgT6wVuQmvbG4jKmBzTVk1CCz2mqWPsWPXvzOm2Yj17brv
-	 IoXQJf0vefmP/TPNz5OZqwOrfLEwpucaWatI+NpQFj3jTvzd7Og8owID/ajakn+3O0
-	 AQnS9zRU+Nj6zY0skMkm+5Iy5WbVKPjVDsJ103e/A0NW6GWcaQtEGkMjJ66cBVWaZj
-	 +LBlhRzDRw+sCDqGeAm0fd8YRjfJe4O+soo6T8TF6usyyorMyjRb2NGozs86heRLVA
-	 EZtrEWFkjdHvlHbPx7tksxLg+gQwSkAzHeYyiwLz4eN6CPCrs41t+3IYz95dy24DKn
-	 jWtww4NLJVvkw==
-Message-ID: <614ae12a-4ac2-4a3d-a49e-78b69d457915@kernel.org>
-Date: Tue, 27 Oct 2026 12:27:09 +0100
+	s=k20260515; t=1793100469;
+	bh=48QzCh9o95pMJJVcSE1w4N3eswsieHxCakj7OfTn4Og=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=B5qo2NyvE0uCJEvBNCs24uJxjM3kSu9n9/64MK8x7axt/sXl9d9G1z2Vwq4txxSfY
+	 MrPpvW1yVWxhor8ZPMbYIrhq4NxGxAHLhd1a5s7oAHjoC/zHVvct+noEcGx18fxZ6X
+	 5u0CxvzyBgPfYGxcsELpnzoHMO+J35fR0681JkhpCGQL7+5sW9fVBMQ8yOKCJeHW3N
+	 s6rrr1Khh2K3uFFgW2kpvh9dFU6qee/siZ6UOvYZvB949t4CTrEq8cq8Pi8CZgXxeg
+	 xSMRLBzJre8HvSgxTF6FRgU5omOtpzcSKjkxZriUoaZMRo5wVzNVBTJBy/ayU1tkxQ
+	 cGsixi+jakHPg==
+Message-ID: <sashiko-outbox-186441@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH 08/24] serial: 8250: cancel overrun backoff work on port
+ shutdown and unregister
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261027-tty-llm-v1-8-99b0202ae546@linuxfoundation.org>
+References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-8-99b0202ae546@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 27 Oct 2026 11:27:48 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -50,127 +60,196 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 14/24] serial: 8250: ioc3: store registered line number in
- driver data
-To: sashiko-reviews@lists.linux.dev,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
- <20261027-tty-llm-v1-14-99b0202ae546@linuxfoundation.org>
- <sashiko-outbox-186414@kernel.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <sashiko-outbox-186414@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 27. 10. 26, 12:11, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> - [Low] serial: 8250: ioc3: undeclared identifiers in serial8250_ioc3_probe()
-> --
-> 
-> commit 42c7c91e0766573099398067e430ef38776baba0
-> Author: Joshua Rogers <linux@joshua.hu>
-> 
-> serial: 8250: ioc3: store registered line number in driver data
-> 
-> This commit attempts to save the registered line number into data->line in
-> serial8250_ioc3_probe() so the remove path unregisters the proper port.
-> 
->> diff --git a/drivers/tty/serial/8250/8250_ioc3.c b/drivers/tty/serial/8250/8250_ioc3.c
->> index 088242de2eff9..3ab50e04be451 100644
->> --- a/drivers/tty/serial/8250/8250_ioc3.c
->> +++ b/drivers/tty/serial/8250/8250_ioc3.c
->> @@ -63,6 +63,7 @@ static int serial8250_ioc3_probe(struct platform_device *pdev)
->>   	if (IS_ERR(uport))
->>   		return PTR_ERR(uport);
->>   
->> +	data->line = line;
-> 
-> [Severity: Low]
-> Does this break compilation when CONFIG_SERIAL_8250_IOC3 is enabled because
-> neither data nor line is declared in serial8250_ioc3_probe()?
-> 
-> Prior commit d6a0791098bede ("serial: 8250: make port operations work on
-> struct uart_8250_port") refactored drivers/tty/serial/8250/8250_ioc3.c to
-> remove struct ioc3_8250_data, data, and line:
-> 
-> drivers/tty/serial/8250/8250_ioc3.c:serial8250_ioc3_probe() {
-> 	struct uart_8250_port *uport, up;
-> 	struct resource *r;
-> 	void __iomem *membase;
-> 	int irq;
-> 	...
-> 	uport = serial8250_register_8250_port(&up);
-> 	if (IS_ERR(uport))
-> 		return PTR_ERR(uport);
-> 
-> 	platform_set_drvdata(pdev, uport);
-> 	return 0;
-> }
-> 
-> and updated serial8250_ioc3_remove() to pass uport directly to
-> serial8250_unregister_port():
-> 
-> drivers/tty/serial/8250/8250_ioc3.c:serial8250_ioc3_remove() {
-> 	struct uart_8250_port *uport = platform_get_drvdata(pdev);
-> 
-> 	serial8250_unregister_port(uport);
-> }
-> 
-> Since the driver now stores and unregisters uport directly rather than
-> tracking a line number in data->line, is this change obsolete on top of
-> commit d6a0791098bede?
+Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+s) to consider:
+- [High] serial: 8250: overrun_backoff work re-enables UART_IER during shut=
+down
+- [High] serial: 8250: omap_8250_shutdown() cancels backoff work before IRQ=
+ sync
+- [High] serial: 8250: serial8250_unregister_port() cancels work before por=
+t removal
+--
 
-It is. And I did not notice this bug prior to d6a0791098bede, so there 
-is no "preparatory" fix before that commit. Therefore, this might be a 
-fix for older (stable) kernels, actually.
+commit b6ddb65f5590db91bc37f52c6acea3923b0b8f2e
+Author: Joshua Rogers <linux@joshua.hu>
 
-thanks,
--- 
-js
-suse labs
+serial: 8250: cancel overrun backoff work on port shutdown and unregister
+
+This commit adds cancel_delayed_work_sync() calls for the overrun_backoff
+delayed work in serial8250_do_shutdown(), omap_8250_shutdown(), and
+serial8250_unregister_port() to prevent the work callback from firing after
+port teardown.
+
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/825=
+0/8250_core.c
+> index 5730ef97f836e..af94ed4e633eb 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -950,6 +950,9 @@ void serial8250_unregister_port(struct uart_8250_port=
+ *uart)
+> =20
+>  	serial8250_em485_free(uart);
+> =20
+> +	if (uart->overrun_backoff_time_ms)
+> +		cancel_delayed_work_sync(&uart->overrun_backoff);
+> +
+>  	uart_remove_one_port(&serial8250_reg, &uart->port);
+
+[Severity: High]
+Is cancel_delayed_work_sync(&uart->overrun_backoff) called too early here,
+before uart_remove_one_port() shuts down the port and quiesces its IRQ?
+
+Callers such as of_platform_serial_remove() in
+drivers/tty/serial/8250/8250_of.c call serial8250_unregister_port() directly
+without shutting the port down first. An open port is only shut down and its
+IRQ synchronized inside uart_remove_one_port():
+
+uart_remove_one_port()
+  -> serial_ctrl_unregister_port()
+    -> serial_core_unregister_port()
+      -> serial_core_remove_one_port()
+        -> uart_shutdown()
+          -> uart_port_shutdown()
+            -> uport->ops->shutdown(uport)
+            -> synchronize_irq(uport->irq)
+        -> uport->ops->release_port(uport)
+
+Similarly, in omap8250_remove(), omap_8250_shutdown() only masks the IRQ
+with disable_irq_nosync(port->irq) and relies on uart_remove_one_port() to
+run synchronize_irq(uport->irq). Because cancel_delayed_work_sync() runs
+before uart_remove_one_port(), any overrun_backoff work scheduled while the
+port is still active or before synchronize_irq() completes will not be
+canceled after uart_remove_one_port() unmaps and releases the port.
+
+Also, when serial8250_isa_devs is non-NULL right below,
+serial8250_unregister_port() resets the subdriver-owned fields on the shared
+serial8250_ports[] entry and re-registers it as a placeholder port:
+
+	if (serial8250_isa_devs) {
+		...
+		uart->gpios =3D NULL;
+		uart->dma =3D NULL;
+		uart->rs485_start_tx =3D NULL;
+		uart->rs485_stop_tx =3D NULL;
+
+Should uart->overrun_backoff_time_ms also be reset to 0 there so the
+recycled port slot does not retain the previous subdriver's backoff setting?
+
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/825=
+0/8250_omap.c
+> index 29a203ed93fd8..07ebed6ac6c91 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -786,6 +786,9 @@ static void omap_8250_shutdown(struct uart_port *port)
+> =20
+>  	disable_irq_nosync(port->irq);
+> =20
+> +	if (up->overrun_backoff_time_ms)
+> +		cancel_delayed_work_sync(&up->overrun_backoff);
+
+[Severity: High]
+Can an in-flight omap8250_irq() handler on another CPU schedule
+up->overrun_backoff after cancel_delayed_work_sync() returns here?
+
+In omap_8250_shutdown(), disable_irq_nosync(port->irq) masks the interrupt
+line without waiting for an already-executing IRQ handler on another CPU to
+finish (whereas serial_core only calls synchronize_irq(uport->irq) in
+uart_port_shutdown() after uport->ops->shutdown(uport) has already returned,
+and uart_suspend_port() does not call synchronize_irq() at all).
+
+Meanwhile, in drivers/tty/serial/8250/8250_omap.c:omap8250_irq(), UART_LSR
+is read before acquiring port->lock, and schedule_delayed_work() is called
+outside port->lock even if UART_IER has already been cleared to 0 by
+omap_8250_shutdown():
+
+	if ((lsr & UART_LSR_OE) && up->overrun_backoff_time_ms > 0) {
+		unsigned long delay;
+
+		/* Synchronize UART_IER access against the console. */
+		uart_port_lock(port);
+		up->ier =3D serial_port_in(port, UART_IER);
+		if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
+			port->ops->stop_rx(port);
+		} else {
+			/* Keep restarting the timer until
+			 * the input overrun subsides.
+			 */
+			cancel_delayed_work(&up->overrun_backoff);
+		}
+		uart_port_unlock(port);
+
+		delay =3D msecs_to_jiffies(up->overrun_backoff_time_ms);
+		schedule_delayed_work(&up->overrun_backoff, delay);
+	}
+
+If omap8250_irq() is past the UART_LSR read on another CPU when
+omap_8250_shutdown() runs, couldn't it call
+schedule_delayed_work(&up->overrun_backoff, delay) after
+cancel_delayed_work_sync(&up->overrun_backoff) has already completed,
+causing serial_8250_overrun_backoff_work() to fire after the port is shut
+down or runtime-suspended?
+
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 4afebd96e0621..710d2a28b9182 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2497,6 +2497,9 @@ void serial8250_do_shutdown(struct uart_port *port)
+> =20
+>  	synchronize_irq(port->irq);
+> =20
+> +	if (up->overrun_backoff_time_ms)
+> +		cancel_delayed_work_sync(&up->overrun_backoff);
+
+[Severity: High]
+What happens if serial_8250_overrun_backoff_work() is already executing when
+serial8250_do_shutdown() (or omap_8250_shutdown()) clears up->ier and
+UART_IER?
+
+Both serial8250_do_shutdown() and omap_8250_shutdown() clear up->ier and
+UART_IER under port->lock and then drop port->lock before calling
+cancel_delayed_work_sync(&up->overrun_backoff):
+
+	scoped_guard(uart_port_lock_irqsave, port) {
+		up->ier =3D 0;
+		serial_port_out(port, UART_IER, 0);
+	}
+
+	synchronize_irq(port->irq);
+
+	if (up->overrun_backoff_time_ms)
+		cancel_delayed_work_sync(&up->overrun_backoff);
+
+In drivers/tty/serial/8250/8250_core.c, serial_8250_overrun_backoff_work()
+unconditionally re-enables RX interrupts under port->lock:
+
+static void serial_8250_overrun_backoff_work(struct work_struct *work)
+{
+	struct uart_8250_port *up =3D container_of(to_delayed_work(work), struct u=
+art_8250_port,
+						 overrun_backoff);
+
+	guard(uart_port_lock_irqsave)(&up->port);
+	up->ier |=3D UART_IER_RLSI | UART_IER_RDI;
+	serial_out(up, UART_IER, up->ier);
+}
+
+If the delayed work timer expires just before cancel_delayed_work_sync() so
+serial_8250_overrun_backoff_work() is waiting on up->port.lock while
+shutdown clears UART_IER (or starts running during synchronize_irq()), it
+will acquire up->port.lock as soon as shutdown releases it and write
+UART_IER_RLSI | UART_IER_RDI back into up->ier and the hardware UART_IER
+register.
+
+cancel_delayed_work_sync() will then wait for that callback to finish and
+return, leaving UART_IER_RLSI | UART_IER_RDI enabled on the shut-down port.
+Furthermore, in serial8250_do_shutdown(), the IRQ handler (such as
+fsl8250_handle_irq()) remains registered until up->ops->release_irq(up) at
+the end of the function, so a subsequent overrun interrupt before
+release_irq() can fire and call schedule_delayed_work(&up->overrun_backoff,
+delay) again after cancel_delayed_work_sync() has already completed.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-tty-llm-v1=
+-0-99b0202ae546@linuxfoundation.org?part=3D8
