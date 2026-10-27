@@ -1,56 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793099518;
-	b=JVb5IqpMPB+ygXKrk1R1RDX46Xvv77bJqaZoU4dRqbHgZ2Q7HyPL776/K8GsAUDDVRLR
-	 hfbKEiHT1Q/rE0eKAeomYzupz3oTeWafmGcJwXlVQvNcWg520rySqCJIGJTyvS+7KMkE+
-	 nNec+dEgd1KvzKE6th10sojF3d/L62LhAt0PImCLgUu2X5ylBy6DPNrF6EOD6Uj9zSZq7
-	 kVQ7hLnKV8jplXE858NriqtJLg7PznDrSwKCsXD6U6+jzHtETQKQi9WoVA3ttuPD/ouS2
-	 MtZrYKpKQs1d77RqOQMi7UwZdHLARxg4geP4m5wlb6gbfUhtdavcm2zaMfblWCQgn0A==
+	t=1793099534;
+	b=GaO/Fqp1X3bjtrV3RiA66UBRe5ctxWXifkGWimjcbVahmJK+gQQ/Uv6tlO7XxanHB17m
+	 4VzA75pwX3uA5Dgf5Nv4f/wWtFg3M5ZLa9UY3r1+6aaZ4vpINKLHfxi6gqTqp4tOf0tKm
+	 Pa177HKtf9Cp8Z0vzlHG0JcYRzER/NY0y85GKG2sl6hvBGznQS00vt542VVvBYd4GaoYA
+	 0YvLp0UxAQ7csFFpob9iAorkOpDsiK7+fsBv20B/pTcmX7sPbbOmWayOEUDefvV1Bg8cd
+	 0CBiF8vyGEHvQ4JH4e+JNEEtK0DaBjyi2GqHowOZdQafF18wvC4bqf34Q3SnfRqWogw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793099518;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793099534;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=MziFyfaCRHmzuO5Z+LBp0WgrdHZ9mJgVVfwHjCjUIrU=;
-	b=QXgk0ir2mDXaMVI92lYPFvZrogZ15uBckH5/S+5u9V/j4oh15aWpEsF/rYpf+HtC/VQk
-	 wKpP2eCTUJ3UoiPx8VPSXbQTVChf9Xaklsb0A1zu8/g32f2ot3nZplDaluOYnw7O9FA86
-	 Wdmi7CcmiHORhGKYhz4rMrSm+jXqH6KMPhLzEetzU2o341mYrbcE62dmqlI8awZZdBagh
-	 XTv2Is5VEV3mfuGSi36AgVKHBXWFGFsdiLEbqczKwWInhOo113eUv2f9BhpBipekJ9iGX
-	 0YHGmXtKiQXGtM8XzSl7FBnE8Zig5FQBTRo636OWVq8Xyl/cvLMD4HaondOpPs12eVA==
+	bh=dsBnn+wtvt9Mw7+Sxw/AlEucg77MfZZGXKibEYI0YCk=;
+	b=sEu+06ufeuuDZgCwjELf7VRo65TyQllZc1lmzzytG2w6S1lalxBTFU5cdB18Lk1VwcIQ
+	 CSFDohPYhUgggonalBJlnxNgaubPNrUxPAHG+1MsrmzCXZx/2GmiRYO9YBK6kqJVpyDot
+	 6JcKl2NbPhXCesMDltXp2QpQoSYoyIu94w1gTuPDbbc1CVKzma9lRVyQFZ5uoIW0UzaAm
+	 xCGEBySGFg5bRwcTrra863/zwQB7LSU6n4chUkspNQjm/RBxX1yl1RVtegyEGJZ27fkd1
+	 erzolUGDWeEY6VsDeEY1zMXpFC0gMvziX+FBLlms1MicaFz0rpKlDrA7hOw+cbFq8gg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Si8m3p9N;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEzRMvqy;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A107D606A321
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:11:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9961A606A31F
+	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 11:12:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Si8m3p9N
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6029C1F01828;
-	Tue, 27 Oct 2026 11:11:58 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEzRMvqy
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0958F1F01825;
+	Tue, 27 Oct 2026 11:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793099518;
-	bh=MziFyfaCRHmzuO5Z+LBp0WgrdHZ9mJgVVfwHjCjUIrU=;
+	s=k20260515; t=1793099534;
+	bh=dsBnn+wtvt9Mw7+Sxw/AlEucg77MfZZGXKibEYI0YCk=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Si8m3p9NgRppTRkXiDmhHkUmzfc1VyjghbQkcOBAU5ArSIYij+X4mrYybURmOGuyM
-	 FnTL5eyuNBkLYG8bcSnQ1mDGSmJjQI9m4wEg4Oqh99/5ub2LPhaIgTB5x13bBII4kB
-	 Wm2+soPailONNhV6pSL0/FwCXzQpKl3PxlzeEenindVK1pyVi0R+qpIsGl+S4VkvJo
-	 4j/sfwAWscl0hb6WUexS1EGircUEWpfBBUm22QuUd1ccyA0zMU/Uaw9XciJf7X71SI
-	 XPUBr5R/YCdRlNgNw6VenX/VBG44Jw5TAmZAISUHTViglsVLr3gmGnbsFKG1YStn9E
-	 57Qf6CA/5f50w==
-Message-ID: <sashiko-outbox-186416@kernel.org>
+	b=IEzRMvqyjqu/Pu2uG5g3mvePnuOumdRR0D7FyV5zr5VOr0oaGzwLlstDg0Uj4nEiY
+	 QNG0uL0YGBtG47dxh+xJo5JV8kAQqdAtyYNz6LCvYCm2rbCEBmbjRKO+U3A7kb5DSp
+	 Noz+hsL6tzZ2f/IAu0kS8R5hyfFgtu8jm27bwd9bcP2wD9S13zQdEfHYZLEDeBjhkO
+	 dTiSHfCasfl7tkivxJO9d7A94+OU0sKrpyfGxkgw1oKb6SrIlLGBe3qw6izMpHjGnj
+	 Y8GVMuXU7wamTT2Lxw00ght1z/J5sPN2mK7TwOGV1fmZ6i4TU/LmFET7SECfK4NEYH
+	 P6UT+nhqT3ucg==
+Message-ID: <sashiko-outbox-186417@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 18/24] serial: fsl_lpuart: fix tty ref of wakeup event
+Subject: Re: [PATCH 06/24] serial: 8250: add bounds check for line array in
+ setup_serial()
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027-tty-llm-v1-18-99b0202ae546@linuxfoundation.org>
+In-Reply-To: <20261027-tty-llm-v1-6-99b0202ae546@linuxfoundation.org>
 References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
- <20261027-tty-llm-v1-18-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-6-99b0202ae546@linuxfoundation.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 11:11:57 +0000
+Date: Tue, 27 Oct 2026 11:12:13 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,30 +61,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Josef Bacik <josef@toxicpanda.com>
->=20
-> To report a wakeup event, lpuart_resume_noirq() gets the tty with
-> tty_port_tty_get() and never puts it: each wakeup by the UART leaks a
-> reference, and the tty is not freed when it is closed.
->=20
-> With no_console_suspend, the function also gets there for a console
-> which is not open.  Then tty_port_tty_get() returns NULL, which is
-> dereferenced.
->=20
-> Fixes: 18bdfccf3c30 ("tty: serial: fsl_lpuart: Add missing wakeup event r=
-eporting")
-> Cc: stable <stable@kernel.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Frank Li <Frank.Li@nxp.com>
-> Cc: Peng Fan <peng.fan@nxp.com>
-> Cc: Shitalkumar Gandhi <shital.gandhi45@gmail.com>
-> Cc: Sherry Sun <sherry.sun@nxp.com>
-> Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+- [Low] serial: 8250: build failure in setup_serial() due to non-existent i=
+nfo->line
+--
 
-Sashiko has reviewed this patch and found no issues.
+commit a2e0e82dd3bc2dcce54251c9832007f4a9e30584
+Author: Joshua Rogers <linux@joshua.hu>
+
+serial: 8250: add bounds check for line array in setup_serial()
+
+This commit adds a bounds check in setup_serial() to prevent out-of-bounds
+writes when registering serial ports for a PCMCIA card.
+
+> diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/825=
+0/serial_cs.c
+> index 5dcd1544e478d..8bd88f3d6d865 100644
+> --- a/drivers/tty/serial/8250/serial_cs.c
+> +++ b/drivers/tty/serial/8250/serial_cs.c
+> @@ -349,6 +349,11 @@ static int setup_serial(struct pcmcia_device *handle=
+, struct serial_info *info,
+>  {
+>  	struct uart_8250_port uart;
+> =20
+> +	if (info->ndev >=3D ARRAY_SIZE(info->line)) {
+> +		dev_err(&handle->dev, "no room for more serial ports\n");
+> +		return -EINVAL;
+> +	}
+
+[Severity: Low]
+Does this break the build when CONFIG_SERIAL_8250_CS is enabled?
+
+Commit d6a0791098be ("serial: 8250: make port operations work on struct
+uart_8250_port") replaced line[4] with uport[4] in struct serial_info in
+drivers/tty/serial/8250/serial_cs.c:
+
+struct serial_info {
+	...
+	struct uart_8250_port	*uport[4];
+	const struct serial_quirk *quirk;
+};
+
+and updated setup_serial() to store the registered port in info->uport:
+
+	info->uport[info->ndev] =3D serial8250_register_8250_port(&uart);
+
+Because struct serial_info no longer has a member named line, referencing
+info->line in ARRAY_SIZE() fails to compile. Should this check
+ARRAY_SIZE(info->uport) instead?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-tty-llm-v1=
--0-99b0202ae546@linuxfoundation.org?part=3D18
-
+-0-99b0202ae546@linuxfoundation.org?part=3D6
