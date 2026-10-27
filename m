@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793081350;
-	b=LNKQ+DDmH2KPTgbUw2qMa+BYvG1piZB9Ku/YwjNEdCRdfpz2+ZeosjHt+ZHPHkcmkaNU
-	 sexlXUoMvL/Y0VXN7eyTVqD/fR3KjehkaI95Qvae8NCOu+bUr9QokUHtWUr6xhBWDVfxo
-	 pIt+mPZeSCZbFBm2cmSZJlYzgyo6nJKMnxWoSOG7RioARCoeG6jcrGTn/RAHgtDCHS0fh
-	 a5Kwxs92yWR2mcjvgpy3eT3bbk4mDa6OopThcCeBPW15epGgNnU5PZDVgL1Zfc15TrhJM
-	 gKEX3Dtgkjx8uYGymlUuhOQf7/dr33uL7hTOCYFwnoprQv/1ygtg9/zUrpxxsMtF+2w==
+	t=1793081773;
+	b=NAcx4tyTbg/WS9yE1p7sg9TzK8mhKuYyEYjZehwxYTc9nQK5P5a7mkycr4c+C6w91Pay
+	 16d/9tlvc+g1fswZDnZCsOixU48VSNjEQPH8dQv0a98lJ4iGucewpFFBrvNIXaH9psD3w
+	 6h4aExALSx54zfUdsDwtWKQ4ZMvF/ZPgNPGQlQ2zXMvNxdqhdELOUoBWYySx4HqxSVtxc
+	 S41E3KahSRjgninNQlgeV59MJEf3Zpb3LTx06uXzBNXycDkYaz3Myshu33DXKAFCVjBK2
+	 UVpw7W6ARfEn3Xn70s8+Ky/lniincxBxyWvUJ2BrggLQr3+wKr7QOSZupJhwCua7r5w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793081350;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793081773;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=PvUfohqTveZnoV3DgFtksSsIE02EL0Iiz/+3F4CWDFk=;
-	b=W1NUrD3wzlHv6oSGVq/zjq9XnGsyPOmhQWLOHlmWZzRyfa9S16i+H9JzXl65tgW94Nka
-	 dBkDXDoyAzUxtwJ8Ind+YLv93ch2ME/nFYWLtlvNhGG0nWhPCZxpLPha46p/9xL7NHo5m
-	 Bu8oKFprN1xutZ6oY/MZGhL2DTZ7h0vmSHJyYdQjf+o3nh9ItP1yo+sy/FUlU1ErNXswu
-	 PW9Ug2D8qXyyXpkqOxnDO3ab1GHAnQrrv5kcEZAAAMpR5Z7LcgJ2cVLiDx3T62U8Wl5F5
-	 eQpzEG07qI6ytGOkYj3o7KIhz0wLiF1coccP0dyE9SCmy7JiS/nBhSYB4sJbROHBWBQ==
+	bh=uvoFAdGfaZ4vmb8FThF11NeU4sr1Yi3mbqW/0R0Xc/4=;
+	b=tdo4Fn9dN8CSQe5tfs80oH2inW1e0XgHHk9Vyw0+ghQCuVgqy7DjOIbv2DUXkVXfrHWB
+	 /v1EIFg/PpoIGz8XFllJPkLXfwTrlSxHH876Gb8NXQX4iLaQKE7frclUh946a9X93UmA6
+	 7EeOzc7UWBu6NETswaf+SGbGaE7nscKKXMY91GqJ8yBiFpbqQ8h5T6Ndr7g2dCXq7QFVT
+	 Apfl4fpFvb6jgFJF4+8mXp8n28YV9RHoc6kZOErdSFkgTQg3hGUpw+Th70vGh0ozAvKr/
+	 gslTe7HY3hySn6jo4pF7g6mT9WnweBmDRa9XPItbBWTxkZzRvambag4iuUo2Ddyn4Yw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZY62ca9F;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gNl64iyI;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 235F2606A31A;
-	Tue, 27 Oct 2026 06:09:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EA07606A31A;
+	Tue, 27 Oct 2026 06:16:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZY62ca9F
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C75C1F01825;
-	Tue, 27 Oct 2026 06:09:07 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gNl64iyI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1361F01825;
+	Tue, 27 Oct 2026 06:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793081349;
-	bh=PvUfohqTveZnoV3DgFtksSsIE02EL0Iiz/+3F4CWDFk=;
+	s=k20260515; t=1793081772;
+	bh=uvoFAdGfaZ4vmb8FThF11NeU4sr1Yi3mbqW/0R0Xc/4=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=ZY62ca9FjdH0FUeYesY6VkwRjc+4tmxUFt0orOxyEXsd2joZPCANqPk2eZR7MseYl
-	 S8jLo+ASnLYPll5PcE7izn+lKIMotVAEiPe0Sr4iUJM3115VYr+2rBc7Y2ZELbwLhV
-	 GBWwgH+UPmjiDEZIJzvs5wxfG/gcxmOdRS/WpqRJSPQOy+8tHK5EnC7tm/DgFK7U5G
-	 pB8dRRp5oi9b7OzppcZ9SaNQdsOOB7z4BFEpsaLOjMhcz3h3eBdOwLSXjz61k0QY12
-	 PYHDQCkFMnMvA2AgQozqJ5NmIW3N2v2Wqnq4y8GWRXC0mYAVxfBJttA1HFgaloaFze
-	 dTLE02M93gWlQ==
-Message-ID: <53624662-e94e-4fcb-9902-7fa4143c7689@kernel.org>
-Date: Tue, 27 Oct 2026 07:09:05 +0100
+	b=gNl64iyIyZ4W8GCcXum/V4JdJxjcGeaRNkWl7qKsaRp/BFaacPW33xuthTBsNIuYC
+	 NrhSYSSjYD4iOKkYysX4kfSyrQ+AbHDwYohMoK7vccm6mARdHkB9C5XM3pGSUpHSG2
+	 1CJpfcUzrsMbsSYE/53UAbKFFvbAITf3JlYdlo5xeFLH/N8hlVWz0eH/l/JgzvLVta
+	 T3/rBMXkprZ4qwOSnFmQzVABINNXqc4NIgitAENXIUbOnH7E3/DtQkzQ0Zu5t3Cf0K
+	 0tNREa0hYCgFMyXZE+oqEpjtP832mky/A7AbpGVTAZE0qtTRvEPUQ0XZWq9h0V+NKI
+	 miHlkUNqsHI8g==
+Message-ID: <66361595-cbda-413f-9559-9fae22001bbd@kernel.org>
+Date: Tue, 27 Oct 2026 07:16:08 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -52,15 +52,20 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250: clear RX trigger callbacks when removing a
- port
+Subject: Re: [PATCH v3 3/4] serial: 8250_dw: configure the Allwinner H616 UART
 To: James Hilliard <james.hilliard1@gmail.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261024-submit-serial-8250-rxtrig-lifetime-v1-v1-1-731b78d5003d@gmail.com>
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev
+References: <20261024-submit-h616-uart-fifo-v1-v3-0-286fc1b8c3c1@gmail.com>
+ <20261024-submit-h616-uart-fifo-v1-v3-3-286fc1b8c3c1@gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -105,63 +110,94 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20261024-submit-serial-8250-rxtrig-lifetime-v1-v1-1-731b78d5003d@gmail.com>
+In-Reply-To: <20261024-submit-h616-uart-fifo-v1-v3-3-286fc1b8c3c1@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 24. 10. 26, 22:05, James Hilliard wrote:
-> serial8250_unregister_port() removes the device supplied by a driver and
-> normally re-registers the persistent slot as an unknown legacy port. The
-> slot retains its RX trigger callbacks and sysfs attribute group, so the
-> replacement rx_trig_bytes attribute can still call the removed driver's
-> code. Unloading that driver leaves the callbacks pointing into freed
-> module text.
+On 24. 10. 26, 22:22, James Hilliard wrote:
+> H616 has 256-byte transmit and receive FIFOs, but its optional DesignWare
+> component parameter register reads as zero. Generic 16550 probing leaves
+> the port using the 16-byte FIFO configuration and its trigger-level table.
 > 
-> Clear both callbacks after uart_remove_one_port() has drained the old
-> sysfs users and before registering the fallback port. Its RX trigger
-> attribute then uses the generic handlers, which reject a port without
-> FIFO capabilities.
+> Keep PORT_16550A and preserve the FIFO size read from firmware by
+> uart_read_port_properties(). Use it for the transmit load and derive the
+> receive thresholds from the documented 1-byte, quarter-full, half-full
+> and FIFO-depth-minus-two mapping. On H616 these are 1, 64, 128 and 254
+> bytes; the normal 16550A half-full FCR setting selects 128 bytes.
 > 
-> Also copy the callbacks unconditionally during registration. A replacement
-> port without custom handlers must use the generic implementation instead
-> of inheriting callbacks from the previous owner of the slot.
-
-I don't understand why this is a problem only for the two callbacks. 
-Care to elaborate?
-
-> Fixes: 8a6c543cf8b3 ("serial: 8250: allow UART drivers to override rx_trig_bytes handling")
+> Serialize trigger changes with termios and hold a runtime PM reference
+> while programming FCR, preserving the FIFO contents. Propagate runtime
+> resume errors before changing either the FCR shadow or the hardware.
+> 
+> Advertise automatic flow control so CRTSCTS enables MCR.AFCE. The
+> DesignWare termios path selects hardware CTS handling, so the capability
+> must be present for the corresponding hardware control to be enabled.
+> 
+> Select the fixed configuration through the platform setup callback.
+> H616 has debug-divisor and RS485 control registers at the offsets used to
+> detect DesignWare hardware RS485 and fractional-divisor support. Avoid
+> those probes and retain the BUSY-safe integer divisor hook and software
+> RS485 handling.
+> 
+> Use the existing SKIP_SET_RATE quirk to keep the UART clock enabled during
+> termios changes. Its clock is a gate on the shared APB2 source, rather than
+> an independent baud-rate generator.
+> 
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 > ---
->   drivers/tty/serial/8250/8250_core.c | 9 +++++----
->   1 file changed, 5 insertions(+), 4 deletions(-)
+>   drivers/tty/serial/8250/8250_dw.c | 75 +++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 75 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 42319843cb5b..c638e10c43e2 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -830,10 +830,8 @@ static int __serial8250_register_8250_port(struct uart_8250_port *uart,
->   		uart->port.get_divisor = up->port.get_divisor;
->   	if (up->port.set_divisor)
->   		uart->port.set_divisor = up->port.set_divisor;
-> -	if (up->port.get_rxtrig)
-> -		uart->port.get_rxtrig = up->port.get_rxtrig;
-> -	if (up->port.set_rxtrig)
-> -		uart->port.set_rxtrig = up->port.set_rxtrig;
-> +	uart->port.get_rxtrig = up->port.get_rxtrig;
-> +	uart->port.set_rxtrig = up->port.set_rxtrig;
->   	if (up->port.startup)
->   		uart->port.startup = up->port.startup;
->   	if (up->port.shutdown)
-> @@ -953,6 +951,9 @@ void serial8250_unregister_port(struct uart_8250_port *uart)
->   	}
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 9c171c5775a6..557832254c37 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -19,6 +19,7 @@
+>   #include <linux/io.h>
+>   #include <linux/lockdep.h>
+>   #include <linux/module.h>
+> +#include <linux/mutex.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/pm_runtime.h>
+>   #include <linux/property.h>
+> @@ -648,6 +649,73 @@ static void dw8250_setup(struct uart_port *p)
+>   	dw8250_setup_dma(p);
+>   }
 >   
->   	uart_remove_one_port(&serial8250_reg, &uart->port);
-> +	/* The fallback port must use the generic RX trigger handlers. */
-> +	uart->port.get_rxtrig = NULL;
-> +	uart->port.set_rxtrig = NULL;
->   	if (serial8250_isa_devs) {
->   		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
->   		uart->port.type = PORT_UNKNOWN;
+> +static unsigned int dw8250_sunxi_rxtrig_bytes(struct uart_port *p, unsigned int trigger)
+> +{
+> +	switch (trigger) {
+> +	case 0:
+> +		return 1;
+> +	case 1:
+> +		return p->fifosize / 4;
+> +	case 2:
+> +		return p->fifosize / 2;
+> +	default:
+> +		return p->fifosize - 2;
+
+These constants are counterintuitive. Can you pass the fcr masked, 
+unshifted and do:
+case UART_FCR_TRIGGER_1:
+   ...
+case UART_FCR_TRIGGER_4:
+   ...
+...
+instead?
+
+> +	}
+> +}
+> +
+> +static int dw8250_sunxi_get_rxtrig(struct uart_port *p)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(p);
+> +
+> +	guard(uart_port_lock_irqsave)(p);
+> +
+> +	return dw8250_sunxi_rxtrig_bytes(p, UART_FCR_R_TRIG_BITS(up->fcr));
+
+Here:
+up->fcr & UART_FCR_TRIGGER_MASK
 
 thanks,
 -- 
