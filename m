@@ -1,102 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.217.47
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793093998;
-	b=plqM6OhB4qYs/pxWlaB0J8ZAtq04gOgs9543rHnDT/tV0RaYSHBMatqqFh10ShgXdw0Y
-	 k6uc+J/C9CQ73PC3q1/8oG3iWOCKRMFe+7uTBLOSnv6qY66PkM0CiV5qVWh30J9SZneNj
-	 Hdpd3yNYRtiZL93Uf/cFwjnAmxcW5Ap57A9wmLwciESLHazN6z9l7iO89pMtrcvsIZ2k0
-	 8mhHnQ3UyORPijy6nn1mdsBdxp4yA1DRUaB4hhuaDaxccvQy8HQz1XpvUJcdQzIjvrv85
-	 bRsgskeym5dJcm/1Aa0jOZ4itqL0Wd9yEUj9QboTld2n8X0Rwv4PSulo71x5ikD0yLg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793093998;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=4X+P1B6aE29va33Y1nOTBGckjA6+hBF4dxDZ8irecEY=;
-	b=AhFk6vkuxE8wEyi2z2hDa6swuYZoOWRx2qNApoIRWkU6IZxET+fXoO9z4cuOo86BBaTI
-	 XhEQp7krIwoi1Wxh5wv3EFbAK4U/Rp6DvmFOE8Gp2BW6vr68Dnea4+/o+UGmUj6FfTQwn
-	 QvY1IjOmoNa5F+OYxajlHvghvv8qAHHMB+6Z06JIpHU1avqyzR5jWaiRRiegHFmQVPIJN
-	 jK3YcDs8e85tUuofyW90/vP7UWM0lesSvcwS7yd7W62ZoUyDs3s2taezdSxnJ7CNqaJk3
-	 WuDSaMa+rfJ6J3MmQOaISqxWbLPqhdqIBvoXtpjHRZFBltz2qR0w4/IfQLXlGWlUsXg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=jbgipqXk;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.217.47
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793094971;
+	b=CCmT4QKv5qRmdQ7RjSh090oQTKTuqhCBWfdopUcu/B49GCcxGTFKL1dRo4Ov2MzddQbr
+	 cbIIl1aox15ctfAQSIKYVvPLcqpI8uSUYrUJwJOSIdWqS+ens5AdC7b197zyiszEukim0
+	 BbpsqaE4Xs2vWXX2YPY9i5ozd7yyqmsWVN2PT40M6rAJs2fxTseEIUJa32TKKZGKcoG61
+	 rbMsyCtCA3EXl4JdGebAWRbI54rUfF3RSneNLIEyzznvY2xXyoUNIZqqgWi1IkMxgDo2W
+	 nmU+PA/MYu0Iw+nSpeSVqMrjDiQl7GR2EfY3uNlEYmAMDkSpcQMk/q9gDZc3V+j6zdQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793094971;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=xG04b/pMlxUdyEELh4CAqRO0ERstFWipTHgPIUgZB3M=;
+	b=Ej9tUFFtVZ1zlAknVVj0NxvszAcDPKo/Z4R6Ubk0+7N7IysuY8tIZ9qXhr+mk/FEVuz3
+	 pgW07rk97B4p6B9l2QHR73DEKjie9D50MfDWZ2XXCAR3ZtHqGsXBpUNoHEosAEN4Acljs
+	 B/BYkVKNq2R1VQVv8PBKZhLQWn1Fi0QBGwWa9h0NJ+QR3DdXQ99f1iCUKW1KM/FrLi4Xe
+	 bUJUvgbQY22l7L6N8E6zPLAkz3nDziRfWWnaxZXEz+xXHecXQC4IEvnEGhmsLmqRJP/j/
+	 UVlnO/3Qq8yByCJ7h8AQk0I0GDvAxEA4VVceGeTtcI5T82OTgX9h/NEwpx1PxxJlmpw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FUAGOVkK;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34382606A320
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 09:39:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 34382606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79478606A31D;
+	Tue, 27 Oct 2026 09:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=jbgipqXk
-Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-7c3b75caad1so2447533137.0
-        for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 02:39:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793093997; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Q0bHUOT6z8vK+zICmevz/ExjsQ4I+t2u0uTdM/ZwLg5s8K4Jjo/XG124pBoC7crGi9
-         ur+ww/2Ggrlo2zt9o9JTL9/G586eZy9NuSFLkL6DT5Vrp/ZgsfOWzc398EqeaUqiZcQF
-         f3Om0JtJGaUcz3BuqNq0tF8i4YlsE1dHeNMdyWtRHYl2xfgUQOTkT3V7lcB0Vss6O959
-         jnx8B8aS/lfksMBxlzPLexOcpUqB6MOQ69WfjeDrqxwW6fQiurvvpiEIcJ6xHgpOeaXd
-         XoHFYN1B7BE3rspaWo8rnNspTCAfQ1+boDWF5Gx2bLPm8ngam/knd+5GooCxWsGPQwL/
-         7Xsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=4X+P1B6aE29va33Y1nOTBGckjA6+hBF4dxDZ8irecEY=;
-        fh=O/pi0C+MSddbo7Wf7GXqwTfIKfgby5I7IzuokuT58Vw=;
-        b=VLkvTTVLK0Mt/1t+KTUACrW6r8TX5Zht6l9ft4gC+m4jgfVmnQX31tHY6jf34m0rVo
-         41ebqtNNhRVCq34iqklpaCtp87mWdDlI3wTsonoHINLVTrMZmasckiQjv7vrY63U9zfu
-         BN+vfLsik9oGpetl7rJzqNcsosn/SKkUVTFpYRbdXrd9nWZm78gBeKv7QEoCU120e8Nz
-         9wnO2oMnBdLiT+TH9Ywt9hVhl544ZUKnubs7C1hkuOMzYv0LVGzZZKGd8mf9z2RjPjuc
-         bBJsxVjMYky9PwEOtAZZebsCErHNUVHChENuxl5WHQCm0JA8kSreEIJiiXraVNk4I+2U
-         sKfw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793093997; x=1793698797; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4X+P1B6aE29va33Y1nOTBGckjA6+hBF4dxDZ8irecEY=;
-        b=jbgipqXk/6TNxEbvLlNc6gdZFS7gSzHiaIXUNfVVdN3q94F07nj9GzMabdiRQsRP+F
-         o/XOGFypEw+wijhGjN7sQwjWm4BFklcLI3EBtfWyHhpoHYyUZDxdDMQdWr4JXihw3R58
-         aHsrl0M0NfG9pSxGqRcD/Nj5Z+tc0m1rfTN0Y2sd+xO8Kck0FHRfCAXgRO8+J2Q0vNrS
-         2iExoS6IytX97KV5mB7bJwKQm8JXIZn1GzCAUfz82AMiashJtm976jYvCEHFiaX2Zinr
-         8VHyvlk4eUGocaj55+e67vOmZIT54wKJpIJJmqyE8/3zevjyHZDXFpv8mqRRBPiZ/LsY
-         +WKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793093997; x=1793698797;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4X+P1B6aE29va33Y1nOTBGckjA6+hBF4dxDZ8irecEY=;
-        b=czCMKrCnUeuDeQLH39Ocl/sKPnJLTdbkvJThXDK2LGh6EYNjU1gSZaDQrVZ5qpLiU+
-         mWsMdpY5p7VLjgFUulo4KGoeouifz0sm/+tR1VwaFgaodZp3H6griQZFZC1Sd2bAjYhv
-         7jQ+KAHFw+fDA4IPAbYPQjgf61yr21zbsvJBFVI0RB5BDB9a3MOw0v44z8AqAODhy6N+
-         V0Hary/YaCR9usZJ2SH4lULnVuugANH1M36kdOMSDsUEyz7CukAZaQm9pebJ+w/pAFXO
-         6rd2ekJ4HUygnhin8DJOskuLyZ6u0sB78FuY+fyk1+A+kokGiXP2WDxipf/AeaAs6lus
-         g42g==
-X-Forwarded-Encrypted: i=1; AKwUvBxS/gyIs2rzpLhxZq4OOcmIaXCaUu+rgQl9079LAMfCeLt7sb98zHyKDIKyUiOQxwFMZWPKf5MOk09v2Z8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYILIZDvLaR+qppHvASZsQFs74jiWGif9EGPmHFGubvNQD7lO+k0
-	Bz2ycRkZJ2cAaqJgC6y30py8t9KzDNgVvLRJF3ANF42iJaF/tdsNFrctLzf3Xh+BaL/+EIxdxkr
-	Bb/cVjQAxkaSqJx1M6PNbu5uiQRUdaCG5ULK/0j0=
-X-Gm-Gg: AYBFou1xMbRLwLYJwSFEFlph2GWLjO62crzOZskUgxTW2yr8q9GhA5Pjx1FMFX+PCZF
-	paZtDefyrWdyqGaPzeLc+46/ST2nCRjglMwPYDGlA0tR6yiM6QqqEik4ZMmWTIeOQ8LmPNJrU5j
-	wUNKsI5udEnfFNbRZqjUZ57FRqgH72R35UYr0ANlqLxAbNtmPbsSRCpljSXYNYCXsWDsLeriEMZ
-	4EKuYwdNk9BFWL7IJeMDn9dqL92ZxQPGfBoDnc7bo+AzHxvOrBpff0NKCy/cOIoKwXrMCVRK+Rr
-	QNQNUbfWUXyaoNEI0CNJtTRW+phl9/yDIJnHDF+AZr9yMEp5VG+D//cW95PnK2E42vtGQRF/cXX
-	QbbCKtYfHj6ZqAtaNonyHvyM889pJqGgTtp+hqNYVP6sKZo9NnDuVNJJL4PH8v1duTp984MjEMv
-	LHzUVaWU2mncDD07f31l7Akr/7tKjmewFl++XvlY4u1SRVMhVo/S8L0MVoqJmhHzaYTAbJQ4q2l
-	X3zFPUwF7WhzOn76plNj6XgA1/tzw==
-X-Received: by 2002:a05:6102:c8f:b0:7c0:4d52:8cc9 with SMTP id
- ada2fe7eead31-7ce5cc8d55dmr2986698137.14.1793093997186; Tue, 27 Oct 2026
- 02:39:57 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FUAGOVkK
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB1F01F01825;
+	Tue, 27 Oct 2026 09:56:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793094971;
+	bh=xG04b/pMlxUdyEELh4CAqRO0ERstFWipTHgPIUgZB3M=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=FUAGOVkKXkI4UsW3wrFBYTCA0kqbRMh+Qb22fLxWLeyLXvR5AmqQ8iUsfC2KNhdKi
+	 GLER+hHxYpCkJx2sagTG7Qj29Vzo3XGG4xciuElBW1QgjfKfTr2djVEDdxCvQmjebW
+	 w5NFysCQvmFJMbNBCsnzIlls7keuOehiWC+eh3/jv2m2oL2LKe/aW5K2q6kR8Mf5JD
+	 8tKWjOm7ql6eWIQH12Vn0AHFuIm3ejrsiwqNyv+I6GwQe81PcbkeGJlsf/IRHunm9y
+	 NyxQ1fKER+4r5Ebr7izwizSYKQVHKF6Ogm7obIrwBEE9LBWflint7YM6VS1gi88i4L
+	 Lj+3CcR/62pWg==
+Message-ID: <3287a7db-fbab-4b23-9ee0-d40c52fe855a@kernel.org>
+Date: Tue, 27 Oct 2026 10:56:02 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -106,100 +51,119 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261024-submit-h616-uart-fifo-v1-v3-0-286fc1b8c3c1@gmail.com>
- <20261024-submit-h616-uart-fifo-v1-v3-2-286fc1b8c3c1@gmail.com> <20261027-nifty-reliable-octopus-6cbac5@quoll>
-In-Reply-To: <20261027-nifty-reliable-octopus-6cbac5@quoll>
-From: James Hilliard <james.hilliard1@gmail.com>
-Date: Tue, 27 Oct 2026 03:39:45 -0600
-X-Gm-Features: AclHuK-P2vZ9SIQ1kD5xtHOmSa1lugBkFh7TQdGZgeHlLBc3Sp6mnxkEd0joV1c
-Message-ID: <CADvTj4qrBYSyT39=xK3_oGgHdFoSH=oyDvTtLCSzW=F9KAgi3Q@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3 2/4] dt-bindings: serial: snps-dw-apb-uart: add
  Allwinner H616
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20261024-submit-h616-uart-fifo-v1-v3-0-286fc1b8c3c1@gmail.com>
+ <20261024-submit-h616-uart-fifo-v1-v3-2-286fc1b8c3c1@gmail.com>
+ <20261027-nifty-reliable-octopus-6cbac5@quoll>
+ <CADvTj4qrBYSyT39=xK3_oGgHdFoSH=oyDvTtLCSzW=F9KAgi3Q@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <CADvTj4qrBYSyT39=xK3_oGgHdFoSH=oyDvTtLCSzW=F9KAgi3Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 27, 2026 at 2:02=E2=80=AFAM Krzysztof Kozlowski <krzk@kernel.or=
-g> wrote:
->
-> On Sat, Oct 24, 2026 at 02:22:24PM -0600, James Hilliard wrote:
-> > The H616 UART has 256-byte transmit and receive FIFOs, but its DesignWa=
-re
-> > component parameter register does not report the FIFO depth. Its option=
-al
-> > register layout also differs from the generic DesignWare integration.
-> >
-> > Add a specific compatible for the integration and allow the standard
-> > fifo-size property to describe the capacity. Require the documented
-> > 256-byte size for H616, retaining snps,dw-apb-uart as a fallback.
-> >
-> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> > ---
-> >  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml    | 17 +++++++++=
-++++++++
-> >  1 file changed, 17 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.=
-yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > index e2ca126d58ba..0f8fd0485879 100644
-> > --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > @@ -13,6 +13,18 @@ allOf:
-> >    - $ref: serial.yaml#
-> >    - $ref: rs485.yaml#
-> >
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            const: allwinner,sun50i-h616-uart
-> > +    then:
-> > +      properties:
-> > +        fifo-size:
-> > +          const: 256
-> > +      required:
-> > +        - fifo-size
->
-> Why do you require fifo-size if is const? It is implied by the
-> compatible.
+On 27/10/2026 10:39, James Hilliard wrote:
+> On Tue, Oct 27, 2026 at 2:02 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>> On Sat, Oct 24, 2026 at 02:22:24PM -0600, James Hilliard wrote:
+>>> The H616 UART has 256-byte transmit and receive FIFOs, but its DesignWare
+>>> component parameter register does not report the FIFO depth. Its optional
+>>> register layout also differs from the generic DesignWare integration.
+>>>
+>>> Add a specific compatible for the integration and allow the standard
+>>> fifo-size property to describe the capacity. Require the documented
+>>> 256-byte size for H616, retaining snps,dw-apb-uart as a fallback.
+>>>
+>>> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+>>> ---
+>>>  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml    | 17 +++++++++++++++++
+>>>  1 file changed, 17 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+>>> index e2ca126d58ba..0f8fd0485879 100644
+>>> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+>>> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+>>> @@ -13,6 +13,18 @@ allOf:
+>>>    - $ref: serial.yaml#
+>>>    - $ref: rs485.yaml#
+>>>
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          contains:
+>>> +            const: allwinner,sun50i-h616-uart
+>>> +    then:
+>>> +      properties:
+>>> +        fifo-size:
+>>> +          const: 256
+>>> +      required:
+>>> +        - fifo-size
+>>
+>> Why do you require fifo-size if is const? It is implied by the
+>> compatible.
+> 
+> H616 has a fixed depth, but other sunxi integrations have different
+> depths between UART instances. For example, D1 has 64-byte FIFOs on
+> UART0 and 256-byte FIFOs on UART1–5.
+> 
+> Should I keep this explicit for consistency for all sunxi uarts?
 
-H616 has a fixed depth, but other sunxi integrations have different
-depths between UART instances. For example, D1 has 64-byte FIFOs on
-UART0 and 256-byte FIFOs on UART1=E2=80=935.
+I am confused, there are no other instances here.
 
-Should I keep this explicit for consistency for all sunxi uarts?
-
->
-> > +
-> >    - if:
-> >        properties:
-> >          compatible:
-> > @@ -60,6 +72,7 @@ properties:
-> >            - const: renesas,rzn1-uart
-> >        - items:
-> >            - enum:
-> > +              - allwinner,sun50i-h616-uart
-> >                - anlogic,dr1v90-uart
-> >                - brcm,bcm11351-dw-apb-uart
-> >                - brcm,bcm21664-dw-apb-uart
-> > @@ -120,6 +133,10 @@ properties:
-> >        - const: tx
-> >        - const: rx
-> >
-> > +  fifo-size:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    description: Transmit and receive FIFO capacity in bytes.
->
-> Drop property, not used by any of the devices here.
->
-> Best regards,
-> Krzysztof
->
+Best regards,
+Krzysztof
