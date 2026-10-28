@@ -1,83 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.171
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793220534;
-	b=qCO0yfsLU9+DkFuKgbEWX2HShRrsAGMPseO43hoDwmTEEJa9vR70xnkZ9vvKLBRPvPgy
-	 zBbeIVEiAES2IaUOK78/nwlYqbiACzDHV+DTqP2IMBzZxR+kgP3AUjRqjSDFoBGzjI2kq
-	 nKVd4vzD/qjRD573VOSv7l0kyBEv0cnlNI5xCJw0cLW1jwOH9NOO0B6tAV0aVMfqa8zq3
-	 d2bBTwpFeng14Hmua09O7e3vOrwrp+v4nfpoPpn+c8VY/EAt6cwTtRQjn+lMdAwYEGLRe
-	 dN+KcBX2ANBHT3K2FI6r7wxHv0nHyIP9/QYFANXDqVR0FeibRo5vPPIDj6VtJjjjWaQ==
+	t=1793220536;
+	b=4b4eQTlEAhDmc0rs3+1sKtWOJFogynABY15TkxRFA4l5BnoSlKZUahSrpd4/lEUsMTxl
+	 gk63dahS9YP+pK3j3zsGFeEklik6FPdM+sBsWvDnmluWrQGLvHv2snoJqh0vGqe7L//23
+	 Aqwx75QFXbpNVUWskfex8FYTGpIYpmi1dAvs6Zj19I7nMKm7nBCImLBkRqp0SW6iCk/kz
+	 1a2vErUO5Z2gUTlkD2N7mbbTWLdsjhR+1Lcj1XoOwAgMm83wrJTlVq+/G2ZYvgAKISmwE
+	 gD8go+SHQ6QC1uIYF4GDAcK5se1FSvaW15pTNnZHfu40kmQLkMzlYwuuJkj/6nA6Few==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793220534;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793220536;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=KlFs5O5F58aRmAuOBc20ZN5pSWMjbwV9elx9B8mpSCE=;
-	b=mrnS0MidVmAGsIkqxZvHzxlvg/iO2Jx2ulU5EJrXaxi51iW9TzZMdEATNjp5Q/ZuiHJy
-	 3GbwRadPHGfMS1P06aFsLfjy1jSb0+IJOb469mqkKXM+wYUzkDsBTiBZk6fdXV7jcIpiH
-	 WaT4F3E5ppHijSAmLa7gkqm+7hAQJ1kLsXmwrLOxUAjOktqtSuVlP6pTY5YzAKDB7xYQe
-	 HT34ScO9QhvhCiKKWmn4U7f2KNPdgFMXd1+EbEHLVJhfDeILE09bwJKbBC1Kh8ZmfSzlM
-	 OsrbQphkjguYaAwinm0fwHGYi2JP89XT9ROoab0VXDbyoIXZPELt7vGTRWWca6IzPyw==
+	bh=vc9uFw9UVF1A8RYaaUz33Ia3H+vJB3EZ/DUe+0FMK90=;
+	b=lmljFp6QCJejuMsMnrmZ88I0Aj7XXnFKrTistIloMlmnxX/s80Oq5MvYR4l0R7vSO8im
+	 Th9Mntf+CZrTPVxOf8kRZZGLl9pBVI7GM8u6OBUCz/vu7ZOTw2dkvZMkDj0gRUcukyPBH
+	 p5nzD7Ct8ykf3jbxCQPGiZGghVARlacvZ5w3FAUO561e5+yeQBRRpZNdsere49zVHXoy+
+	 HvOr+BySfls/v2xueCuAvNqdom5qtAJVL07Bsx0cV0Y3r6ZvSNpdo4/zM4zFX1j63bz3n
+	 CsPpKLjO4BxhVqYV204F8jE+rGNzrWLrMEvaOt4vt+soEZJ70cDSwZEr8t/rC/UyE/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=chromium.org;
 	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=UJmEjCNw;
-	arc=none smtp.remote-ip=209.85.167.174
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=kSLGHIJq;
+	arc=none smtp.remote-ip=209.85.167.171
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE696606A32F
-	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 20:48:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DE696606A32F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B54F7606A32F
+	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 20:48:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B54F7606A32F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=UJmEjCNw
-Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-53ec2cc397aso969874b6e.1
-        for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 13:48:53 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=kSLGHIJq
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-4b28d7c729fso813286b6e.0
+        for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 13:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1793220533; x=1793825333; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1793220535; x=1793825335; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=KlFs5O5F58aRmAuOBc20ZN5pSWMjbwV9elx9B8mpSCE=;
-        b=UJmEjCNwH0eXXFRY+rzERh00mhJ8UM+qtWMshC2fkVmbjNm87fx0j2kuFLS+4sJTiZ
-         exfv28jgUUV3E0xDyPqFmVPOWPKhC23AxWz+5bS81J3PqvZHaFZhUNPAGWDyX8vSLXvs
-         1h0s2rJsmBR0IhwHDSjBEMx8KeXim6wOp+CYA=
+        bh=vc9uFw9UVF1A8RYaaUz33Ia3H+vJB3EZ/DUe+0FMK90=;
+        b=kSLGHIJq8n1yNc5ysWmES9Ntc1ov/5WFPhTdXo+jUEFD5soxrpRLj/9bztaAoSd0MY
+         BeuEUfDzpjOx0AfwrLFqw3ouH/CxFYtKhUAsM5GsOXFz0M2zTsUVcefIWYRS6fAg/liZ
+         QfbLkf5hTHyRQ6imAGkUgzqoFthCTPz+egmEo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793220533; x=1793825333;
+        d=1e100.net; s=20260707; t=1793220535; x=1793825335;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=KlFs5O5F58aRmAuOBc20ZN5pSWMjbwV9elx9B8mpSCE=;
-        b=N6Wftpx3hvpMLGHlT2vfLSWbPYFOJtcdlvbbeVvQ5UO68ADlPVV24yntiwwEXPXg2j
-         JhsTKsNHrpxa2aeIYXK98wlParDwAv8rLHuf45BMpJINqjpq6WW8ARZVmy8VZ4wdRExG
-         eEDXrk7qIib2Uo3VZ1RZRKPsW7NkcXZPyH5W2A8b5s39SFKDL0C+kCxCemCTRjuEFImc
-         HGTNus87BbG8Qh7CSU/adP9mhinFpC/JAL6mSBRefNL/QJ6B0XXGPc+7o3B+dKpk3eab
-         murOUwbZq6h7Phq6RtuMfxMS2AYT4kNWT94uvod/y27OV90PP+JCkkOG0PPGw/ZP7pAY
-         qsWA==
-X-Forwarded-Encrypted: i=1; AKwUvBxAXPn398nDWIuwlq3BR02GDg/r90SrbNBRYNCv/aCQ9MWtdt7hqMldUejj1i60CUqKq4egB0VYBgH82W0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYI94Y4aePotsHyE5U2H9yiPqmw8p/+LUYVLVcDJNehdWEXgJcGn
-	cJdsH701VUL8p+et87/VMUUwHcVHAzizfTl/qwS669fl5xihk72sfYrzgvhLZdKI0K2a7xozvpZ
-	6v8s=
-X-Gm-Gg: AYBFou1XKf92mByUrunMvsDCrAAQqBkuq/2kw83ccZYFwREAe3Nt7g7iCg7PB8U2MqE
-	F/YwY+Ld+SeKAbfr4hz2/52wGpyU637df8jMfDIcxMBkHH/WUqGVWA1Juc7PMReVsDz1GG0HwAP
-	dYAjzZA2JZhLes/EYKF8akRa131I/xcxL44V/ViJnQd8WkLaXCUMF3XNV4X5GYJXMwuqpTvAcQh
-	LPuOq4L5EXi2mklAgDxRNRfl6kAX8Y6Kaih12Or/mRhq0EFxxqkzdUqhLEjadGjkULAf10sNehd
-	RCmceXvv2ftMD5EDIS9pNod6YL94/vcwBIUO2shSXz7ctBTqM7r35wlq1z8LvWJpvgHcMU5VKpj
-	Axsfl4VoM4lOhKnRBKU7u+9AxgXuhtmH+VytUCywf0KsgShW+YOHJgegD6I/iyG71DX4oFGfpQI
-	TXXQXMeh1LZ08iqp70hpeWuEkwocItWDpEdzV4YLZcnYSHaK4rCaVGo9L9ZzexH0dJZR/xlIOrz
-	LmREoIVFCSLrTgSbQiYpZx42fGRCp7MZPtW7OV0FF3qKaw8s53XdacTwiQyZzzdpOQX82SiWxxW
-	N8MVQVFbGuim10OTrMRvLZnlh0op96mgsCl6ApNjCCthRlqlJVJ7/SkRRV3pui3OHm25YOGp7c7
-	+5oLTqKzWBI65rlK7gQ==
-X-Received: by 2002:a05:6808:4fe6:b0:4d6:90d3:e18b with SMTP id 5614622812f47-56383e93e14mr3396274b6e.52.1793220532771;
-        Wed, 28 Oct 2026 13:48:52 -0700 (PDT)
+        bh=vc9uFw9UVF1A8RYaaUz33Ia3H+vJB3EZ/DUe+0FMK90=;
+        b=UXzF61Z+DE7NZ77jyKXvLgVfH+NLdG0GRSBabzUOAQ46xCogeArmI0wBkgL6QpVfDr
+         z5kQO/W7LOTH9SW+1x5VE/Zs2tl/8pGRqzKdCFUydij5GnUoPWSyEm89Ebhxwvc54kRF
+         ZHoml9ss4BZztBV7EeZTFsCSyNCEaDcul1NL3OAnfpeSgSOP4NuYl/NXrAZ3YPCBx7RB
+         7zi5pTp8bb1UF5l+SoaNfHQkZoZ1aLX8acWXEstTv9pPI0f2jEy5vWwjzrynir5Cmy5A
+         5P7gtGo2Lgl8YUSJJGtYajK9t00OKYPn7GrHdurS5UJTmcIaiwjWghhWn5w2KmsdpCEz
+         TAbA==
+X-Forwarded-Encrypted: i=1; AKwUvBzJ6UKjW8zng8rfnwxhUTEHy5sxH7ZWlpEpC1TDj338vGZ3UOEtP7nDhUhaQaWylBbhgPawreaKOxpU6UQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLD2O68Mp2igAQk7i3qweuB0p/0rD+epqEJw7VwofI6B+f2J4Vq
+	oSm5F5UKNtM3p5sjnwkHbO+WEhHL7XTeafsB7MPEemXAEK1GZMEbyLawkoqCh2z6Xg==
+X-Gm-Gg: AYBFou3ecMUEuAYgDg2IusWtsZcTqqjfe6x1REIytoaeMiESWEudCuRpy3nhX3X9U8p
+	0KE8H9DNGlXiwWLW85vi3lTJarE+284nIFRYwOJTfpfkJmm3ue9KJDlP/nIoyIb6ocSisUQTxzU
+	lqYfDWnNScWoOO39nkihSAEzHZMoyBVhIvhR11rsRn9FjaBhenVuHIt0JISqoBHcODawaviwTjw
+	DommoA58so4rLnkKRQ4I7hlyu9l1VE6KiZDg3uFAu3hFhkzsvCeD3OqE3ykr/VhRxq5StV6VHW6
+	U5klsEllYSAMzoVEitnETQdOstIdxU8m2DdxjXy44BueGMEpuEKVMqz+Mh2MFpHEnrpHVNIhj56
+	h0fwWcLeMbfvylH8rc4lqq7iZtUBCOiPOlKr8shTZyKLfVWUuNFjr63zVHSeYxuz/AAB8eBtWqK
+	+u/bVnAMN+zCUtCRFqDR44U2o+6Vpb4m40YDMQLV67/ecVOz3yJeNcJg31osMpMkdb3yxLlo+ao
+	D5Z7r3cYFKHjN9LnFWg5xFfqZlU7e+UfoC/gX4bDYSt6jg+An6d5PxlOM/l3D7IfdSAbiPaOqwT
+	YCBp4ydOBH6hBDj+YgIqapdn6slElZTpFCJbU4WICyCwjkFzYfYbNm/loastZUR2pjOozUfqsOr
+	K2SDoL8HKpUBQp6TtvQ==
+X-Received: by 2002:a05:6808:5090:b0:4c3:9892:96c3 with SMTP id 5614622812f47-56385c45dbbmr2597003b6e.22.1793220534711;
+        Wed, 28 Oct 2026 13:48:54 -0700 (PDT)
 Received: from rrangel.c.googlers.com.com (202.168.136.34.bc.googleusercontent.com. [34.136.168.202])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-563c363902esm2281137b6e.2.2026.10.28.13.48.50
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-563c363902esm2281137b6e.2.2026.10.28.13.48.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2026 13:48:52 -0700 (PDT)
+        Wed, 28 Oct 2026 13:48:54 -0700 (PDT)
 From: Raul E Rangel <rrangel@chromium.org>
 To: James Hilliard <james.hilliard1@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -105,12 +104,12 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-arm-kernel@lists.infradead.org,
 	imx@lists.linux.dev,
 	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v7 4/5] serial: 8250: drain canceled TX DMA before reusing its buffer
-Date: Wed, 28 Oct 2026 14:48:46 -0600
-Message-ID: <20261028204847.3471382-2-rrangel@chromium.org>
+Subject: Re: [PATCH v7 5/5] serial: 8250: retire canceled RX DMA before reusing the receive buffer
+Date: Wed, 28 Oct 2026 14:48:47 -0600
+Message-ID: <20261028204847.3471382-3-rrangel@chromium.org>
 X-Mailer: git-send-email 2.56.0.212.g129ede20d9-goog
-In-Reply-To: <20261027-submit-serial-8250-dma-cancel-v1-v7-4-985a023ba4b4@gmail.com>
-References: <20261027-submit-serial-8250-dma-cancel-v1-v7-0-985a023ba4b4@gmail.com> <20261027-submit-serial-8250-dma-cancel-v1-v7-4-985a023ba4b4@gmail.com>
+In-Reply-To: <20261027-submit-serial-8250-dma-cancel-v1-v7-5-985a023ba4b4@gmail.com>
+References: <20261027-submit-serial-8250-dma-cancel-v1-v7-0-985a023ba4b4@gmail.com> <20261027-submit-serial-8250-dma-cancel-v1-v7-5-985a023ba4b4@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -125,58 +124,51 @@ Content-Transfer-Encoding: 8bit
 
 Hi James,
 
-> @@ -37,26 +40,35 @@ static void __dma_tx_complete(void *param)
->  	struct uart_8250_port *p = param;
->  	struct uart_8250_dma *dma = p->dma;
->  
->  	guard(uart_port_lock_irqsave)(&p->port);
->  
-> -	if (dma->shutting_down)
-> +	if (serial8250_tx_dma_blocked(dma))
->  		return;
-> -
-> -	if (!dma->tx_running)
-> -		return;
-> -
->  	serial8250_tx_dma_complete(p);
->  }
+In serial8250_rx_dma_flush():
 
-Removing `if (!dma->tx_running) return;` and relying solely on
-dmaengine_synchronize(dma->txchan) to drain completion callbacks breaks on
-DMAengine drivers used with 8250 UARTs that do not implement
-.device_synchronize (where dmaengine_synchronize() is a no-op), including:
-- drivers/dma/sun6i-dma.c (Allwinner H616, cited in the commit message)
-- drivers/dma/dw/core.c (dw_dmac)
-- drivers/dma/pl330.c
-- drivers/dma/mediatek/mtk-uart-apdma.c
+> +	ret = dmaengine_pause(dma->rxchan);
+> +	status = dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> +	/* A completed transfer may reject pause before its callback gets the lock. */
+> +	if (ret && status != DMA_COMPLETE)
+> +		goto recover;
 
-On those controllers, if Transfer #1's completion tasklet (vchan_complete,
-dw_dma_tasklet, or pl330_tasklet) has already dequeued the completed descriptor
-on another CPU, dropped the channel lock, and is waiting on port->lock at the
-start of __dma_tx_complete() when uart_flush_buffer() ->
-serial8250_tx_dma_flush() runs:
-1. serial8250_tx_dma_flush_work() calls dmaengine_synchronize() (which returns
-   immediately because .device_synchronize is NULL), acquires port->lock,
-   clears dma->tx_terminating = false, and calls serial8250_tx_dma_complete(p)
-   -> uart_xmit_unblock(&p->port).
-2. If no new transfer has started yet (dma->tx_running == 0), Transfer #1's
-   in-flight callback acquires port->lock, sees !serial8250_tx_dma_blocked(dma),
-   and runs serial8250_tx_dma_complete(p) a second time even though
-   dma->tx_running is 0.
-3. If a writer has already started Transfer #2 (dma->tx_running == 1,
-   dma->tx_flushed == false), Transfer #1's stale callback runs
-   serial8250_tx_dma_complete(p) while Transfer #2 is still active in hardware,
-   syncing tx_addr for CPU, advancing xmit_fifo by Transfer #2's tx_size, and
-   submitting Transfer #3 concurrently with Transfer #2.
+Checking `status != DMA_COMPLETE` assumes that whenever the hardware DMA channel
+has finished transferring the buffer (causing dmaengine_pause() to fail because
+the channel is no longer active), dmaengine_tx_status() will already return
+DMA_COMPLETE.
 
-In addition to implementing .device_synchronize in the affected DMAengine
-drivers, __dma_tx_complete() (and omap_8250_dma_tx_complete() for symmetry)
-should keep `if (!dma->tx_running) return;` and check
-`dmaengine_tx_status(dma->txchan, dma->tx_cookie, NULL) == DMA_COMPLETE`
-(matching dma_rx_complete()).
+However, dma_cookie_status() only returns DMA_COMPLETE after the DMA driver's
+interrupt handler has called dma_cookie_complete() / vchan_cookie_complete().
+Because serial8250_rx_dma_flush() runs under uart_port_lock_irqsave() in the
+UART ISR, if the RX DMA transfer finishes in hardware just before
+dmaengine_pause() is called (or while local IRQs are masked on the same CPU
+before the DMAC hardirq is serviced):
+- On dw-axi-dmac (drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c, used with
+  8250_dw), hardware clears CH_EN in DMAC_CHEN when the transfer completes, so
+  dma_chan_pause() times out polling DWAXIDMAC_IRQ_SUSPENDED and returns
+  -EAGAIN, while dma_chan_tx_status() still returns DMA_IN_PROGRESS because
+  dw_axi_dma_interrupt() has not called vchan_cookie_complete() yet (and
+  dma_chan_tx_status() also reports state.residue = length for non-cyclic
+  transfers until dw_axi_dma_interrupt() runs).
+- Similarly, tegra_adma_pause() (drivers/dma/tegra210-adma.c:696) returns
+  -EBUSY and omap_dma_pause() (drivers/dma/ti/omap-dma.c:513) returns -EINVAL
+  if the hardware channel cleared CCR_ENABLE before the DMA ISR ran, while
+  dma_cookie_status() still returns DMA_IN_PROGRESS.
 
-We modeled the v7 TX and RX DMA cancellation state machines in TLA+ to verify
-both the counterexample traces above and the fix:
+In that window, `if (ret && status != DMA_COMPLETE)` jumps to `recover:`,
+dropping up to 4 KB of received data and permanently disabling RX DMA
+(dma->rx_err = true) on a normal transfer completion.
+
+Also, on a related shutdown note in drivers/tty/serial/8250/8250_omap.c:
+omap_8250_shutdown() (line 775) still calls omap_8250_rx_dma_flush(up) before
+taking port->lock to set up->dma->shutting_down = true and clear UART_IER = 0
+(lines 783-786). Because __dma_rx_do_complete() clears
+UART_OMAP_IER2_RHR_IT_DIS and dma->rx_running = 0, an RX interrupt or callback
+in that window can see shutting_down == false and restart RX DMA right before
+serial8250_release_dma(up).
+
+We also published the TLA+ model and TLC counterexample trace
+(Serial8250RxDmaV7_HwDoneBeforeIrq.cfg) here:
 https://github.com/ismell/linux-8250-dma-tla
 
 Thanks,
