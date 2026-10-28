@@ -1,62 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793193748;
-	b=QPGCvkDgcGvi3uJiyv8Bew/TkePrnOIB7+0LPnLcKzZoGzB702yvFX/zI82mQD48tzFb
-	 ed1NhQL3rO04irbqSXeQx7LOEnNhNPmetL0Y9lu2uBBWk+nBrOLM70emRkVZVkiOYDwbw
-	 sqCWFyj81/0eOLd01/HxTEMIge/px1LD6x+e/BlAgZ+8GgW8+35IkBzP3yfQcm45lq3w0
-	 veml7z08UkDs0HSklhzT1ttCqbhhJRMan36p9lN/XwgcGcbwXjv5NRP+Ra2Z+C36mbabO
-	 Vmj9gF30KjqwLn2pOKGfegT791ZhtRzxo0vydjumonhu5lyzEFddM9Xa50HNNWIdu+Q==
+	t=1793193967;
+	b=FWIG6hfElvhv1J9qV65tNi9x/LzeT9mshyo7+wcx5n7Ez/Ina+1Ppw1560/lh5/PTKhu
+	 7Tz2wArT33nIUSStXQc0byNhwvotJ4V9/dnI5sMhftkfHT6B+LtgdfRZGUApuUpNyiQOo
+	 Z1ORbTB9484qKFLdzWh5JxiM7NUwrqEEUtSXT5+M39MbcaE2fjkX+yJE7T0C14s/qbFC5
+	 rDLtxFi38NHor0g0I56GXcGlOWuy2ty1qw9y5Mee47mGGwC0ydMIV1FtooU0Vbbxpw3eA
+	 Cse0H0kiVzracGDtsx0RkvoN3Nf8yGPbHqlbGXGdZkfyJtJgC4zOxtzU5V8DREY6ISQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793193748;
-	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-ID:
-	 X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=yhDLlLsOvouwfc6IjVkEz3nLAwJ8aknGVp4Fj47waDc=;
-	b=av9yzgrZzLfg1L2aDV/USEWXF7YsVQHvMgyLmYMjdDGldYiSZnGQOgESU+mqOnj1LT/2
-	 joTxVBxpMpzMeGhxNVrEXIDqQFYV12zvVzTKDA+CqWCnOpYNAiPT4gSyJZzKoRjTg+8iZ
-	 50rwY5VIEQ+xJ7O5FDBt4+Lh1t8nSRaVdtXCLk/MgZeVgk4+AlsvmcnFtYKYhe8/mPurj
-	 S6DkBUmU06IRp+cePWLmacDlWdOXxnlzxHu0FQs94kZt77lvrWOJss4LGTEkTz1kvOp9W
-	 rhjDlslDYrEmM40eh43YROabU7UJbatKVD2kf7LWv0KM/Kt0J36uo7kmQxnfW3NeN9A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793193967;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=Xrum32E3qbWebDt+IgnN2hplWJ9Jesx8oLmN3LzLD1k=;
+	b=SH8/xeVRN/CNA6izG0XkLOl2cW85P2OPCzWwzkDsw9FybdITHD1WnK+n3391R0aB9G7k
+	 71wsb1WHCIADq6j0QXeEXA1oA89Gh6x8WHhp3qV3yFvHcdXB8dMl4lJc7sRoJ/8mv3AoS
+	 aPpl57W9KDnqsLNoRJXNmgU+/ebSyJVqkDFAspsVOsHFOZEHyZkPSdUFWygOTZebpDGJl
+	 D7kpiqEV+Eb+QFfZK7hHstU/RpqZwj8jM2FRO56p04onR7xkSruXvnV/3+2GwgjeL4k8v
+	 PfpBxad4vchMr4rxI1EiZtdeRnN3+n6a4xeov90Q3lAb9Qp2avbNtM8L9St8MaYoaqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=md9hrAVI;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M6wCNkjv;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0733E606A31F;
-	Wed, 28 Oct 2026 13:22:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD544606A31A
+	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 13:26:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=md9hrAVI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D6451F01829;
-	Wed, 28 Oct 2026 13:22:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M6wCNkjv
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5911F01828;
+	Wed, 28 Oct 2026 13:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793193747;
-	bh=yhDLlLsOvouwfc6IjVkEz3nLAwJ8aknGVp4Fj47waDc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=md9hrAVIUAKTN/SW6oGFgBPihZGkNvy1xdgx2oySyWWfYUjk7ghKIeL6Fo+8n0DJX
-	 x0kRHgX00JAMP64bkmvfmE8Yqw5icZ4j6PE2nyJmN2Xxz/OtzzBf1APoroU0D6V3TO
-	 BHtDvF1dFuaVVHCKKFZvRN452BL+DtYniztDcYQBO/Yk4vSkr1JC4Aqel8V5FrMPL2
-	 3VOHxxVGckrOTcHhXF0jyTfFI7quFOf14MK9DDxUcrBTH/q+0RAQqZty1PxvMhkXWC
-	 5An6Vrn5pcvzJHVFPz9bp7JfHLZii3AQTL88PZj1GJPI8BVeWq6bvu1CBJgUyibojx
-	 PODZaoSjn4nNA==
-Received: from johan by xi.lan with local (Exim 4.99.5)
-	(envelope-from <johan@kernel.org>)
-	id 1xM3bl-000000033X7-2Yvc;
-	Wed, 28 Oct 2026 14:22:25 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/3] tty: n_hdlc: fix missing write() hangup check
-Date: Wed, 28 Oct 2026 14:20:47 +0100
-Message-ID: <20261028132049.728457-2-johan@kernel.org>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261028132049.728457-1-johan@kernel.org>
+	s=k20260515; t=1793193966;
+	bh=Xrum32E3qbWebDt+IgnN2hplWJ9Jesx8oLmN3LzLD1k=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=M6wCNkjvL9NFI7YpYqjy8v75DQvR7NWdGM88QQueg3PMyZXS//0pE4Jq4BuEWLws1
+	 mn1stfJAg74I+2wcBygbNguuQSZVWzqGl4ruzePkQvbHkTT+C1n2NCEY/zcXKB8OHU
+	 oym6QfaobUqf6VWL/cGossiZYKVl1AnJznEF4lO3KuoWs9szvARwBk5hLSqVLR99/Q
+	 gjyOB9xONpsUAtAKSlqxQC0XKNpfp5WI7LJjt0UomI+Lf0xdhjbIF5mF/Sx2P5S8GP
+	 Yc40gzRfk20LK7P58gijw0pjkID4cltBXyLxCHwJ/kWyKQXr2fnpyAcx0mVIDRxLJK
+	 QM15ZC+rSIyiw==
+Message-ID: <sashiko-outbox-187910@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH 2/3] tty: n_hdlc: fix read() hangup race
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Johan Hovold" <johan@kernel.org>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261028132049.728457-3-johan@kernel.org>
 References: <20261028132049.728457-1-johan@kernel.org>
+ <20261028132049.728457-3-johan@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 28 Oct 2026 13:26:05 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -65,42 +59,24 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Add the missing hangup check to the n_hdlc write() wait loop so that
-hangups are detected and -EIO is returned as expected.
+> Make sure to set the task state before checking the break conditions in
+> the read() wait loop to avoid missing a racing wakeup.
+>=20
+> Note that before commit c96cf923a98d ("tty: Don't block on IO when ldisc
+> change is pending") a racing task hanging up the tty could get stuck in
+> uninterruptible sleep when there are blocked readers, but since then
+> read() incorrectly returns -EAGAIN instead.
+>=20
+> The false-positive stuck hangup issue was flagged by an LLM.
+>=20
+> Fixes: 1035b63d3c6f ("n_hdlc: fix read and write locking")
+> Cc: stable@vger.kernel.org	# 2.6.38
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-Note that before commit c96cf923a98d ("tty: Don't block on IO when ldisc
-change is pending") a task hanging up the tty would get stuck in
-uninterruptible sleep when there are blocked writers, but since then
-write() incorrectly returns -EAGAIN instead.
+Sashiko has reviewed this patch and found no issues.
 
-The false-positive stuck hangup issue was flagged by an LLM.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/n_hdlc.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-index 895b850a5950..0fbc44968a44 100644
---- a/drivers/tty/n_hdlc.c
-+++ b/drivers/tty/n_hdlc.c
-@@ -529,6 +529,11 @@ static ssize_t n_hdlc_tty_write(struct tty_struct *tty, struct file *file,
- 	for (;;) {
- 		set_current_state(TASK_INTERRUPTIBLE);
- 
-+		if (tty_hung_up_p(file)) {
-+			error = -EIO;
-+			break;
-+		}
-+
- 		tbuf = n_hdlc_buf_get(&n_hdlc->tx_free_buf_list);
- 		if (tbuf)
- 			break;
--- 
-2.55.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261028132049.7284=
+57-1-johan@kernel.org?part=3D2
 
