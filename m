@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793193967;
-	b=FWIG6hfElvhv1J9qV65tNi9x/LzeT9mshyo7+wcx5n7Ez/Ina+1Ppw1560/lh5/PTKhu
-	 7Tz2wArT33nIUSStXQc0byNhwvotJ4V9/dnI5sMhftkfHT6B+LtgdfRZGUApuUpNyiQOo
-	 Z1ORbTB9484qKFLdzWh5JxiM7NUwrqEEUtSXT5+M39MbcaE2fjkX+yJE7T0C14s/qbFC5
-	 rDLtxFi38NHor0g0I56GXcGlOWuy2ty1qw9y5Mee47mGGwC0ydMIV1FtooU0Vbbxpw3eA
-	 Cse0H0kiVzracGDtsx0RkvoN3Nf8yGPbHqlbGXGdZkfyJtJgC4zOxtzU5V8DREY6ISQ==
+	t=1793193993;
+	b=YqBxAGhIZhJheb3pllk6/GDk9S6aasQ38YJdunWX9ArRqacJjcj+6Y2fmT0bA4eEy79V
+	 M5mOW7ReKWwv4cEZGs5cP5mO8562esxBvC5N2a3L+2OqMPb4BI0cfdndwIPNlkl6cxi12
+	 YBu9tam6DBwadUsyHoSXnO7aKsaR+q7X+pweSsb9zJpb1yAwlfm29RfMcUdWs7uxxpo96
+	 u9ovWzHA48AsDsFrNwv/LauslDfiubYgVV6CuaA1iauOpOAkKiKROUec1kgisWID2z65S
+	 vz34fWryivgM5/LJ2lBoniCjgKcxGdd2WFPOvEF3ebX8jxZxYi67NemX/y8jPbIwBTw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793193967;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793193993;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Xrum32E3qbWebDt+IgnN2hplWJ9Jesx8oLmN3LzLD1k=;
-	b=SH8/xeVRN/CNA6izG0XkLOl2cW85P2OPCzWwzkDsw9FybdITHD1WnK+n3391R0aB9G7k
-	 71wsb1WHCIADq6j0QXeEXA1oA89Gh6x8WHhp3qV3yFvHcdXB8dMl4lJc7sRoJ/8mv3AoS
-	 aPpl57W9KDnqsLNoRJXNmgU+/ebSyJVqkDFAspsVOsHFOZEHyZkPSdUFWygOTZebpDGJl
-	 D7kpiqEV+Eb+QFfZK7hHstU/RpqZwj8jM2FRO56p04onR7xkSruXvnV/3+2GwgjeL4k8v
-	 PfpBxad4vchMr4rxI1EiZtdeRnN3+n6a4xeov90Q3lAb9Qp2avbNtM8L9St8MaYoaqQ==
+	bh=/Abi2u37G8TEmhd6+WDTiY9N4U1qhPNiLyOcBhaYFhA=;
+	b=CJ1Cfqcx+/1mhg4+mFoXrSLNCSFns6EcHDCDfRGMPy2XfUdMR6TnXcyJI8H/w8dDz5ie
+	 Tyyf4/vSPKNWNy5iWdVkoNW/SdBLlWXPXU3ShdYc7AxU+o7ITqGdSSqyK3DwXC5FxfxD1
+	 wFpDfKgWpujWSfNh3MOz62Q0fRQP583+heTXr88wVzMDG1AIwgeiyn+PmYI4BGGP2KvKj
+	 fpRu4TihUQB71SfdBvzgZ91PV0j2O3NVykuWAXldxn6KWBQf7nH9s2b+ztBCbfYQh+wFo
+	 6dNC9IorFCOMUUenn46cxvIOHiV8H9WLwGI3skC+MFqHcXRyzI0YUitx+lyrzjtqfJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M6wCNkjv;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=otc99l1V;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD544606A31A
-	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 13:26:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7BE5606A329
+	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 13:26:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M6wCNkjv
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5911F01828;
-	Wed, 28 Oct 2026 13:26:06 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=otc99l1V
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D835C1F01825;
+	Wed, 28 Oct 2026 13:26:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793193966;
-	bh=Xrum32E3qbWebDt+IgnN2hplWJ9Jesx8oLmN3LzLD1k=;
+	s=k20260515; t=1793193992;
+	bh=/Abi2u37G8TEmhd6+WDTiY9N4U1qhPNiLyOcBhaYFhA=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=M6wCNkjvL9NFI7YpYqjy8v75DQvR7NWdGM88QQueg3PMyZXS//0pE4Jq4BuEWLws1
-	 mn1stfJAg74I+2wcBygbNguuQSZVWzqGl4ruzePkQvbHkTT+C1n2NCEY/zcXKB8OHU
-	 oym6QfaobUqf6VWL/cGossiZYKVl1AnJznEF4lO3KuoWs9szvARwBk5hLSqVLR99/Q
-	 gjyOB9xONpsUAtAKSlqxQC0XKNpfp5WI7LJjt0UomI+Lf0xdhjbIF5mF/Sx2P5S8GP
-	 Yc40gzRfk20LK7P58gijw0pjkID4cltBXyLxCHwJ/kWyKQXr2fnpyAcx0mVIDRxLJK
-	 QM15ZC+rSIyiw==
-Message-ID: <sashiko-outbox-187910@kernel.org>
+	b=otc99l1V5REQljo1ep/pw6H9HY5CE+JEW2DIzXnHeG9AUnrUY4sdS7vwq/yZ7dLH+
+	 2OoA7bT3zOLOrwa/MPGnyHKG7j5IeSg+DuNQuVwSX+Jadkw1WpmMtkl3aQo3XE3upj
+	 33M7popBG1sqTjFm836jzm7AYB6HI+8hUuzjWeTPXUHIF81153qZZlPwR3OSFIRi6D
+	 mcqo4D/jgQgPYUWxJSgNOhv9dKWUnAtDZKd23devSo0WGrhTErg5L85pubm0Udy+R0
+	 jDABIAysUCL7nJYNhCcsqIIkGLM/zWTfAGK+jVgOmmThJKJomuzANaUXJYDEna36R/
+	 2UlIZZEIMiUpw==
+Message-ID: <sashiko-outbox-187911@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/3] tty: n_hdlc: fix read() hangup race
+Subject: Re: [PATCH 3/3] tty: n_hdlc: fix read() hangup check
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Johan Hovold" <johan@kernel.org>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261028132049.728457-3-johan@kernel.org>
+In-Reply-To: <20261028132049.728457-4-johan@kernel.org>
 References: <20261028132049.728457-1-johan@kernel.org>
- <20261028132049.728457-3-johan@kernel.org>
+ <20261028132049.728457-4-johan@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 28 Oct 2026 13:26:05 +0000
+Date: Wed, 28 Oct 2026 13:26:31 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,15 +60,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Make sure to set the task state before checking the break conditions in
-> the read() wait loop to avoid missing a racing wakeup.
+> When a tty is hung up, the file ops are generally set to
+> hung_up_tty_fops, but this is not the case for, for example,
+> /dev/console.
+>=20
+> Make sure to check the TTY_HUPPING flag so that a hangup is detected and
+> read() returns zero also with /dev/console (as is done for n_tty [1]).
 >=20
 > Note that before commit c96cf923a98d ("tty: Don't block on IO when ldisc
-> change is pending") a racing task hanging up the tty could get stuck in
+> change is pending") a task hanging up the tty would get stuck in
 > uninterruptible sleep when there are blocked readers, but since then
 > read() incorrectly returns -EAGAIN instead.
 >=20
 > The false-positive stuck hangup issue was flagged by an LLM.
+>=20
+> [1] 28b0f8a6962a ("tty: make n_tty_read() always abort if hangup is in pr=
+ogress")
 >=20
 > Fixes: 1035b63d3c6f ("n_hdlc: fix read and write locking")
 > Cc: stable@vger.kernel.org	# 2.6.38
@@ -78,5 +85,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261028132049.7284=
-57-1-johan@kernel.org?part=3D2
+57-1-johan@kernel.org?part=3D3
 
