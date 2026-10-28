@@ -1,61 +1,125 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793182572;
-	b=DOX5PqO+G9EpV3YebB9r4b0wHQ6WNvkKe3ehPbATYRkbV0Pax7pBP3G2QzKuBTibxsm1
-	 bMYormlptgOC7UBPk4z3309k76hur/J016a3v6opS2Vgkj4VsAybrGuvshGAmjwPGhShP
-	 ARZMXcLa6UhkNGmRrVb5yBNFhg1gD/ZVq1F5+pOVDCAifnqvuKAvUz0WuCYvW82invINK
-	 GH8Pmjev6WpYvRalIhuuRUWfp1azTy8fFc8XUVnlZ4S54tT3KaROFW4POhOdieLEudlu2
-	 hXEHGoz2oM4baU0JqTG1UUN/GS1+IcV6hVgKtVWpC5cSKy8r6N1tmCI1MDsfqHn3gew==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793182572;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:Received:Received:From:In-Reply-To:
-	 MIME-Version:References:Date:X-Gmail-Original-Message-ID:
-	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type;
-	bh=bjLe+3f9gc9bVK8rm2L9uAXKG4i5uaLi17dzEkbJ/vQ=;
-	b=QdA7IIgNej5NOQI6u7UyiGVPSnLxHddXEFScnT/m6p9Mn1FpPJ0f9IoS+sWFEmiFVf5s
-	 alazrfbvsf4BBB+nBtYGzImicTJnA/iJ6c4xRLEcX/lqAH0q7s0m6YW+OpaooM3q4RgMY
-	 SQ3+kiWrkpkr757wl/d52+7lzdyKcn2hLP9cwPYfe5rku5DNJ+eIVFDe59ghGq8OFdXOp
-	 U8fIcyuaJ2kW+t/96kTPVts8/BBvXFtvED5CDvNeXaOO7ALkiCl6D8nTC/QS1ln5e4fmR
-	 K3cId2qyIUjlWNXnw6NCLpq8Z2q5wQiSv7tLHE7ZwQN0trwAmKxDcIkXwvXAzNb71LA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fcejuAl6;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.35.78
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793184738;
+	b=CP+FrARoLa72SnMrTpw39gU8Sy2whHaiSZHcjbP/Gf1RsD6l9iRR7bloc/Tn+3oz2KSg
+	 hpEFX1Xoj3wZ9eJSMivlAdZnB2TOVgW7X+CmkLOfQ+cE9YWcaExNJCC2H7SUDOl13nVfE
+	 XXkIshxYFlzS93OgPyInLTwanNaJue9fA73UZ3cnPc1DpTxDabjq5bFmafNWvl/QS49SB
+	 L9XH/m6hQAeuMDEwBm22yWehIsBKg4fwtYykzyBfEM2zjIYlQFBg5khy9TOB747OeAwuH
+	 k9c4gVxmn6NHrcpVAZg6F/7HbLBFmatMLE61pdRySwgq2en+9fxVmgpya3kkUk5ZzJw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793184738;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
+	 X-Microsoft-Original-Message-ID:MIME-Version:
+	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=B0PJLIg8RnihUxg8nTzahYsJs7Xlu6ICEYUDTi5NmPE=;
+	b=qAV7ZhwN0vzY/oQHTmpMIqX82by6xbL5aOEwrXYxz/YrgVRkxy2srC41/zADfT1IZc1R
+	 N9OVluXZEd9RnIOvswYht5nNa6banFY31BRIFUTRpHhouX7Hj97Ar6BDidZ4AlihSLVzH
+	 Kdp89J/ugnd2MX68aOv673oPoKE7dYop33oyyykQCvNMDBGK9YMQO9xE8s/7fZh7ZKVO+
+	 NYJ7NadruQTo2k3GkhoGDf21/NT1u/x208MK0IQT7GnSTOpHDVdXN+XekEF5PL3DkZQD+
+	 dMWtT9hVbdHx2VCuT6M12ftn6qD3pQsElRykQ+y1Xg/7ipviTASqxL3nXZkEM9mpVWQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=live.co.uk;
+	spf=pass smtp.mailfrom=live.co.uk;
+	dkim=pass header.d=LIVE.CO.UK header.i=@LIVE.CO.UK header.a=rsa-sha256 header.s=selector1 header.b="rD/dR9By";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.35.78
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazolkn19013078.outbound.protection.outlook.com [52.103.35.78])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A04DB606A322
-	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 10:16:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50955606A31A;
+	Wed, 28 Oct 2026 10:52:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50955606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=live.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=live.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fcejuAl6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 436401F031E3
-	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 10:16:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793182572;
-	bh=bjLe+3f9gc9bVK8rm2L9uAXKG4i5uaLi17dzEkbJ/vQ=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=fcejuAl6E4+V7xpS9ChrGL6mM/mq7hcNzQluumHdQux62jySqCF1hHjVt/inV4WhP
-	 YkcxJallI2I9HjuB/SJN2TuKyWpXcDGV4NliF2UVO51IilJkj69fziE8klAjqeYvXI
-	 vd9eDg5YAMfF/eITBfogHCsQQ1vYLNJJO4+W7vRR08b80LRqLo4CPFjsJT3a32j+gm
-	 SwRXbA0YlETrDg8O/K+RHgvR1z9WcTv0QMUqmoxsjzShDw3RGZFmuZvUFke+pixq+R
-	 e+KvpTllvcCmHmKZ34vI7UCecYUU6kY0r8RzZzoh15qsAzAVg8GC2B8EwKsT9IZirE
-	 20hYSGa0G2pag==
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-3a9841363b5so6454151fa.2
-        for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 03:16:12 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvByN9J48PgMz2prS5/PlocAQ4AqKJiYR9rv89VLHRg6gitbyRelfuhpDQn3vlR1IyRAdYGHSnoqumgfnLh0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJhWOUbloR4hHNRYQv8d5ZQbe7ZW6ZedNKjEQvWE7GgD8drksxI
-	Tqa70xDyABzQetN4LqeXOTZZNrSGWYPVndD7M1EdOQpOYyQLBuatXdofcwWmOMRvpEcXMIu9rxa
-	pcmfOphWR5uM0pyBj7SOB5OUgjQlHZzi3Rm/dYh28ZA==
-X-Received: by 2002:a05:651c:509:b0:3ab:37ee:aab6 with SMTP id
- 38308e7fff4ca-3ac9cf6327cmr3565321fa.17.1793182570561; Wed, 28 Oct 2026
- 03:16:10 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 28 Oct 2026 03:16:09 -0700
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 28 Oct 2026 03:16:09 -0700
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20261022-add-board-ok3572-c-v1-9-0b0fd85a31ee@qq.com>
+	dkim=pass (2048-bit key, unprotected) header.d=LIVE.CO.UK header.i=@LIVE.CO.UK header.a=rsa-sha256 header.s=selector1 header.b=rD/dR9By
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dH62boSj1lP+pzFlYJtuB8lFt6WZpv0418ELiSZ4KL76yZMmPIb+mqKwPE7bz03sIC1bRcJFZcsMKHkawGZqaRUmef2CPAZuIUKFLgDo6bJm6iyj6LUdikeUX9zi0/DJj5rhRt4uYe7gTzoUH2D96YCuSPcQhhw+NNlagrsPi/eDGWrr68zf+TYgECZ+RsEG0BUdwocrNPcPQhjCiwdaJrkCyXQsiEzLkD7DU1SCYXKQeAYVuod5Ug0WtGtqbXch9Bdv6B+VWyUpI4X2vnwCeshi6fXCJBGkendy4fp8t373oO0vDbvPQLrH0ZdmV9GTP5gjeDvIB8xX+JiHjG9UMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B0PJLIg8RnihUxg8nTzahYsJs7Xlu6ICEYUDTi5NmPE=;
+ b=FyQ3bybcxqAMDzst224WIXfW2w9BuMKXe+SuaRMb+aC2BW5VLzXBz0Fh5gQE5b7GkXuJaQ6kYHzYzvD6RZVo5xLjnTI8rjioiPAhvMu5fbud1120kDFmZtZ3r6GGkc6D3keSK0JAVtoguGumyuwmNnQDgkmASnR5GKViMYhwt0IlxBHalREnCKexl9obxzgWEgd7Vd18rzDfNhwemqg3MlKShubrZxjqah/3znhnJs4iZcmdLNKLX96v/LyOVN44Opt4QAn882dyf4e1HzroTSy+UGIkzH/bcZMEPfBP0H3AmWfJk7hIsx+jOI9d85bjBXN4e1TG/k8W/EJo9MEDmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=LIVE.CO.UK;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B0PJLIg8RnihUxg8nTzahYsJs7Xlu6ICEYUDTi5NmPE=;
+ b=rD/dR9ByVfE/G85m2rXlnBLf52WQVo3ppmOpjLmkODPxFUWqWk3tC7ek0ZBN+sMweil7zEJrm9lSaN0sW26gH/3q6tKkAo6ckNp6v6QpBJgRgB4vAiKLhIurn5Drl3xKEPT3c4HN978rlFt18nnFkg0cZ+Y/FuI8wOB8IUp6knmDBHekvhp6LY2MAQBDxrfOypvIMbVRnaJa8BOvcJyarXBtoKz5qUR5sQOXyBjXJll6861BEb/V2w4vFhHnh/i4kCCU4Ra2vShrBRKOrhchIR3d51tczB8hnqAlN9nmnQZ3gISQD1v/nxHAcmGvZIQh7XWg5zfbvOtyMAEZgm/3GQ==
+Received: from GVXPR02MB12019.eurprd02.prod.outlook.com
+ (2603:10a6:150:30f::19) by AS8PR02MB7127.eurprd02.prod.outlook.com
+ (2603:10a6:20b:2ea::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.8; Wed, 28 Oct
+ 2026 10:52:13 +0000
+Received: from GVXPR02MB12019.eurprd02.prod.outlook.com
+ ([fe80::d5ec:2c8c:3d7:fdf9]) by GVXPR02MB12019.eurprd02.prod.outlook.com
+ ([fe80::d5ec:2c8c:3d7:fdf9%4]) with mapi id 15.21.0569.007; Wed, 28 Oct 2026
+ 10:52:13 +0000
+Message-ID:
+ <GVXPR02MB12019B3EB555B0F744F294A3EC46F2@GVXPR02MB12019.eurprd02.prod.outlook.com>
+Date: Wed, 28 Oct 2026 10:52:10 +0000
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 11/24] serial: 8250: cap OxSemi Tornado UART count against
+ BAR size
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Joshua Rogers <linux@joshua.hu>,
+ Chris Mason <mason@kernel.org>, Josef Bacik <josef@toxicpanda.com>,
+ Tony Lindgren <tony@atomide.com>, Rafael Gago Castano <rgc@hms.se>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Peter Hurley <peter@hurleysoftware.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Crescent Hsieh <crescentcy.hsieh@moxa.com>, Frank Li <Frank.Li@nxp.com>,
+ Sherry Sun <sherry.sun@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Manivannan Sadhasivam <mani@kernel.org>,
+ Olof Johansson <olof@lixom.net>, =?UTF-8?Q?Andreas_F=C3=A4rber?=
+ <afaerber@suse.de>, Arnd Bergmann <arnd@arndb.de>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Robert Baldyga
+ <r.baldyga@samsung.com>, Thomas Abraham <thomas.abraham@linaro.org>,
+ Kukjin Kim <kgene.kim@samsung.com>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Srinivas Kandagatla <srini@kernel.org>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>,
+ Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
+ <u.kleine-koenig@baylibre.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Lukas Wunner <lukas@wunner.de>, Marnix Rijnart <marnix.rijnart@iwell.eu>,
+ stable <stable@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-11-99b0202ae546@linuxfoundation.org>
+ <alpine.DEB.2.21.2610271300480.42255@angie.orcam.me.uk>
+Content-Language: en-GB
+From: Cameron Williams <cang1@live.co.uk>
+In-Reply-To: <alpine.DEB.2.21.2610271300480.42255@angie.orcam.me.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO6P123CA0036.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:2fe::10) To GVXPR02MB12019.eurprd02.prod.outlook.com
+ (2603:10a6:150:30f::19)
+X-Microsoft-Original-Message-ID:
+ <57f91aaa-b275-421c-ac08-0beac1b902dd@live.co.uk>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -65,287 +129,180 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com> <20261022-add-board-ok3572-c-v1-9-0b0fd85a31ee@qq.com>
-Date: Wed, 28 Oct 2026 03:16:09 -0700
-X-Gmail-Original-Message-ID: <CAMRc=MeNF_=T2Yb6wzsQFFcpO+w7sLgaKR=sZhZRzRDFcpgumw@mail.gmail.com>
-X-Gm-Features: AclHuK_BQRJk4TIxkYuHqPCftlY-tqaqteyj8aBVDFPyNxJaNTje36_cX4YFAeQ
-Message-ID: <CAMRc=MeNF_=T2Yb6wzsQFFcpO+w7sLgaKR=sZhZRzRDFcpgumw@mail.gmail.com>
-Subject: Re: [PATCH 09/27] gpio: rockchip: Add RK3572 GPIO support
-To: 1579567540@qq.com
-Cc: Cunhao Lu via B4 Relay <devnull+1579567540.qq.com@kernel.org>, linux-clk@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
-	linux-usb@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>, 
-	Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Richard Cochran <richardcochran@gmail.com>, Ulf Hansson <ulfh@kernel.org>, 
-	Andi Shyti <andi.shyti@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Jisheng Zhang <jszhang@kernel.org>, 
-	Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	David Wu <david.wu@rock-chips.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
-	Lukasz Luba <lukasz.luba@arm.com>, Maxime Chevallier <maxime.chevallier@bootlin.com>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
-	Manivannan Sadhasivam <mani@kernel.org>, Thinh Nguyen <Thinh.Nguyen@synopsys.com>, 
-	Jaehoon Chung <jh80.chung@samsung.com>, Shawn Lin <shawn.lin@rock-chips.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GVXPR02MB12019:EE_|AS8PR02MB7127:EE_
+X-MS-Office365-Filtering-Correlation-Id: cb041c7e-9870-4c8d-9231-08df34e18641
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|41001999006|25010399006|4140399003|19110799012|8060799015|25031999004|5072599009|6090799003|15080799012|23021999003|55001999006|39105399006|24021099003|40105399003|31055399003|18071099003|440099028|3412199025;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?WVBidkt6ZEovSTAyS0lJSGdTQWhoOEd1Q09DdEJYVnUra2oybjd3QTB5Ui9u?=
+ =?utf-8?B?cjZoZTlFNW9adkZ2dUo1RXBGZUo1aHhONEZSUW8ySE8wR1RQSlphaGYyazdI?=
+ =?utf-8?B?Y0lqeXMxR0x0aDJHMkYyVW03VTdSdzUyeUVuZU42S3JzRDZ6b1JLMkVERkhY?=
+ =?utf-8?B?aHpnZ2FjKzk0SG83L1Y2b3dvWjlNbllpZVkrVldFSmNHZi9JczFUTEZhNkZ6?=
+ =?utf-8?B?Mm1QcERoNlFHdk5wNXdIWkhaVmNFUXhuNHdzUGpMMFdjdmhNVWV5K2J4TXZr?=
+ =?utf-8?B?SnZCcEtSM3pUc1lzY3FXWjdnMlFucG4vcTh2eEZSaC9ybXlmQngvQkd4TS85?=
+ =?utf-8?B?U1Nva3lvb0dvSDdVMXF3bEdGemtlcFdadmpCbUppT1dROUxpMnVNMFVuY3p1?=
+ =?utf-8?B?Y3lWb2cyeCtvaDZsYS9BVWFEOE5xdG5WSlZtSVN2MlpxT2Rrb3RFUXBvK2Na?=
+ =?utf-8?B?TVN5NnV6T1B0RUNabHVybmZlWWJXNlhPbHAwUXRFdEZWWUJJcktCNFdtUzB5?=
+ =?utf-8?B?b05GeHUvUW13andaTzJ0ckE5SlBsb2JLV1RxSnpLOXBDWG5ONzZLTE5hekFk?=
+ =?utf-8?B?N0pCbWdsOXNEeUNBRldPU2JoVkQ3T1VQbFRqWlMrZ0xoTVdxZDJwczJBREd3?=
+ =?utf-8?B?Vm5CckRYVXFZQmlQUWlnUnFXY0J3S1ZuM0laTjBOZGthb2s0QVpZazhIdmp1?=
+ =?utf-8?B?UlFXZHlwNXVXQUxSZ3MxQW5tc1JOS1ZFb20vVUZhak5CWnpyamFBRjdsMWw5?=
+ =?utf-8?B?OCswaHJsZ1VONlEzMzBQSk9kNkQyRXVWclRhL0Y2d0xBYmh6dC9iV0VhS015?=
+ =?utf-8?B?Q2tOamlraFNuSGRnNkpoK2RIZE1pMVU5QXVhVlU0RTAzUjBiNy9kUmJ1NXl0?=
+ =?utf-8?B?SjFWenpmMGVvd2ROQkdHNUV3QkhvbVB2YWQ1NmRNcTBaUWhjZUUvTFgwNmlM?=
+ =?utf-8?B?a1VXcXA0SC9ZVW5oVkpDOXQzanJ4cC9XdGRNVWhFdTFGVHZZSTFHMUU2RnhF?=
+ =?utf-8?B?YUxUZStGN21oTW50TFk3TkZnemtDN1hoa3kzZ1I2K3J0SkZicXNLMWxmWW12?=
+ =?utf-8?B?QVlVckZaTzhjb25JMFl0alF6S25Gbk4wVE9PcVpONjVIb2ZHUG5CaEUzMy9k?=
+ =?utf-8?B?SWxzWUZ6WUpSenFjb1ZkdnFpSllYSjJMeUcwN3RubTNqZ1k0VDRKL0JXdS9k?=
+ =?utf-8?B?bE8rK0VNc3Y0Qjl2OHdXak5BVHJVeUhZMGlSbGx5V0pMNFJpWmZPQ3ZlMXhC?=
+ =?utf-8?B?bm0vSVhzeWkxUjVCMW45cWNJMWs5UUxLdlRKVnZobCsxc1FEQmhhZkY3aytC?=
+ =?utf-8?B?Nmh3NjI2bVh0dHpEK1FEbTE3YWFQWUxCQzdYL3RtdWd0eDRqeW1ZVmlkRHpt?=
+ =?utf-8?B?a0Y3UUY3Y3J4dG1EN3JPMTAwM0hHVENSdG1la0RGUjZyYTVJZ1dmUE44d3ZH?=
+ =?utf-8?B?OFZZRXdiaExVWXVUbVNPR0VQeU1LU2dMOXRWUllmWlRFU2lFZGRseEs2V2dV?=
+ =?utf-8?Q?QbjAsJnpSjKlSZHW0o0xcXBh/U/?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RWdFL0Z2R2JOdGF3bVc4WkJVazNhZ0o0OUVabzM2c0FsK3BaVTJIYnNDTlU5?=
+ =?utf-8?B?NThqdENMVU5pMmM5YWJVSi95VnliLzVwU3JkUkVobGxHTjlBazJmN0RPU1h6?=
+ =?utf-8?B?RmJoNEZyL2RUNFVvUERXSWVQQWlJTUlqb3d6ZklQVDNid3Z2VXJFZFZCWlpY?=
+ =?utf-8?B?Tnd2bkZOS1ZGMFN0Vm1kcHBVUC9SNldmTUkwMUNIR1ZkNjQ4UmUvU1ZZT21p?=
+ =?utf-8?B?Si9IaFJCV0RDeEw3RHdSd0g4Q1paK1JXQlJSaU9OOTdhNVlrcVAzRXdBcVlJ?=
+ =?utf-8?B?a0tZV1paQzNBT0VDOEt1LytOdmZ4ZzNCUnpwRis5UDUwZkhuTHh1Z2ZCazdt?=
+ =?utf-8?B?NVZ5bjZ2WXZNZVlQMk5mbXFPUUJZOG5oeHlHYXd1UEVBZFJSWTVxWjhObEVU?=
+ =?utf-8?B?ZVRlRGdMWHpTSGRDbXhYSVhFODVQdWdVbEdFRWZJb0VrYnFaUXVKNFA4dHJB?=
+ =?utf-8?B?Qyt6TXJwTFBHVmVjLzNuR2x6NlJ5a0ZrZC9LMmI4TVYyWnE1SjlBdm1MbHFn?=
+ =?utf-8?B?L1VLczFYYTVhY2VyTzV0NERtUkZzTERtUGVJVHdqRUFJWTA4UWxLU0h1bTUx?=
+ =?utf-8?B?TWtQU1hWR0RjempSWWRwMytndFNwWkl6emFFMnVDRzQ3Uk1JQzFUWVc3c2hM?=
+ =?utf-8?B?RDFKQnNxWmNVL1dOWmdoTTVWbGVFTW5XdHZOZCtHRGs2R3BNOWdFN1BHQTM1?=
+ =?utf-8?B?cjRnYUhVL1prNWlubmVGaWpQSVVwdzdsWTJXSmgxVHA5VnVrV1ZiOUNYT2Rv?=
+ =?utf-8?B?b3E1dFV2a3pQeExoZWIrcmc5Z0pHRlpEdDIxWmNCcVBRTmZhempua0RSUmZW?=
+ =?utf-8?B?NmRpYjRKZGltTi9uMm5SVEV0VTZBdW44ajFPaVdvNllWV0pDaTd0OTBVWW1P?=
+ =?utf-8?B?ZlhUcTV4OHNyZ3NmNENaNWVKQmFPYytLSmpvVTgzMEVZekx5RDB1MlpjSEZ3?=
+ =?utf-8?B?cmpQUDBwZ2Z0Z0c0M2ZDZktUQUZ0ekJ4TUJJU1gzMUpZOUY3N3J5TWMyTlVI?=
+ =?utf-8?B?S053Uk5yanVheWUyMDNoMWhMQXdacVBnYXlQa1VsTjFsYUZJT3ZvNTJ5eC92?=
+ =?utf-8?B?bXl0WG8yRTFHRFRTVC9lRHM3Ym5nMkJYQXI1VmEwUDJBSU54Nm13STNGYW9D?=
+ =?utf-8?B?cTBmNkswb0dHOTJPMHNTL2psYURSK2RDS2hTV0xoVnZHYi8xZTVYVVcrcmNi?=
+ =?utf-8?B?Y3k2WkVCZUpWY3lTUllUOXJDSlpPS2dIaWo5WHpPT0tKZXp5NmFaSHg5Q2dt?=
+ =?utf-8?B?TjJLbUEwdUNzNXkrSzVIV1B0a3cyZ2hpUmNpR2ZHUXdpd2p3TWFlK0ZUZGJJ?=
+ =?utf-8?B?UnNPZU4xQ293OEZXcVJ3bkJqQStqZFppdUhPZVNMMkhVbisrSmpnWW83RGVW?=
+ =?utf-8?B?U29FR3EwaUlOdWk1cDlUTjljUWFjVTNWUEZuSWZ0djdGWkdCM3QvaktIcGFV?=
+ =?utf-8?B?Tm5nUG05RnNHYzlDbkptTE5UYWhaNllYLzIrK0ZhVERzc1NRbFlPOHo4SVVa?=
+ =?utf-8?B?c3FzZVpwaFpaWWdGYzg0Nkx1ekl1YThndDMyQzZsWXBXcG43ZnNEU0h2VEt3?=
+ =?utf-8?B?V3QwMk5zc2ZneXFlYXorWjFMQnlZRjB4TytCNTVOYzUwL2RxV0lVVzBrT2tr?=
+ =?utf-8?B?dUI0dG8wSDVOMnprZkVTNjRTbE92KytIeTdxb2tvN1ptOXcrZEhFT2l5VmVV?=
+ =?utf-8?B?amJsSXpxSE5PZDBaY25WU2pTYTlXNjY0aFpkcDZnMkNsSU1BLzJCZ01Ta250?=
+ =?utf-8?B?ZnRodjRkdjNQR2NLTmtOUlNvcmV5bGQ4Vk9lMVIwRGpFOUpvdGRFbUR4aGUx?=
+ =?utf-8?B?Z1ZZLzFTeEtqQWI4YWhRbEhBZmJnbTJ1OGdpRm5DeVArWWtjUXRSNUo4UTlu?=
+ =?utf-8?Q?EuZbzzPYhcJT2?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-9f624.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb041c7e-9870-4c8d-9231-08df34e18641
+X-MS-Exchange-CrossTenant-AuthSource: GVXPR02MB12019.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2026 10:52:13.6495
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB7127
 
-On Wed, 21 Oct 2026 18:11:06 +0200, Cunhao Lu via B4 Relay
-<devnull+1579567540.qq.com@kernel.org> said:
-> From: Cunhao Lu <1579567540@qq.com>
->
-> Support GPIO V2.7, four parent interrupts, and firmware-provided
-> interrupt-group masks. Keep all pins on the primary interrupt when group
-> queries are unavailable.
->
-> Signed-off-by: Cunhao Lu <1579567540@qq.com>
-> ---
->  drivers/gpio/gpio-rockchip.c        | 91 +++++++++++++++++++++++++++++++++----
->  drivers/pinctrl/pinctrl-rockchip.h  |  8 +++-
->  include/soc/rockchip/rockchip_sip.h |  5 ++
->  3 files changed, 92 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-> index 77b239a9a601e..35894a68b5446 100644
-> --- a/drivers/gpio/gpio-rockchip.c
-> +++ b/drivers/gpio/gpio-rockchip.c
-> @@ -6,6 +6,7 @@
->   * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
->   */
->
-> +#include <linux/arm-smccc.h>
->  #include <linux/bitops.h>
->  #include <linux/clk.h>
->  #include <linux/device.h>
-> @@ -21,6 +22,7 @@
->  #include <linux/pinctrl/pinconf-generic.h>
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
-> +#include <soc/rockchip/rockchip_sip.h>
->
->  #include "../pinctrl/core.h"
->  #include "../pinctrl/pinctrl-rockchip.h"
-> @@ -35,6 +37,7 @@
->  #define GPIO_TYPE_V2		(0x01000C2B)
->  #define GPIO_TYPE_V2_1		(0x0101157C)
->  #define GPIO_TYPE_V2_2		(0x010219C8)
-> +#define GPIO_TYPE_V2_7		(0x01074D2E)
->
->  static const struct rockchip_gpio_regs gpio_regs_v1 = {
->  	.port_dr = 0x00,
-> @@ -209,12 +212,27 @@ static int rockchip_gpio_set_debounce(struct gpio_chip *gc,
->  	if (bank->gpio_type == GPIO_TYPE_V2 && !IS_ERR(bank->db_clk)) {
->  		div_debounce_support = true;
->  		freq = clk_get_rate(bank->db_clk);
-> -		max_debounce = (GENMASK(23, 0) + 1) * 2 * 1000000 / freq;
-> -		if (debounce > max_debounce)
-> -			return -EINVAL;
->
-> -		div = debounce * freq;
-> -		div_reg = DIV_ROUND_CLOSEST_ULL(div, 2 * USEC_PER_SEC) - 1;
-> +		if (of_device_is_compatible(bank->of_node, "rockchip,rk3572-gpio-bank")) {
-> +			if (!freq)
-> +				return -EINVAL;
-> +
-> +			div = (u64)(GENMASK(23, 0) + 1) * USEC_PER_SEC;
-> +			max_debounce = div_u64(div, 2 * freq);
-> +			if (debounce > max_debounce)
-> +				return -EINVAL;
-> +
-> +			div = (u64)debounce * freq * 2;
-> +			div_reg = DIV_ROUND_CLOSEST_ULL(div, USEC_PER_SEC);
-> +			div_reg = div_reg ? div_reg - 1 : 0;
-> +		} else {
-> +			max_debounce = (GENMASK(23, 0) + 1) * 2 * 1000000 / freq;
-> +			if (debounce > max_debounce)
-> +				return -EINVAL;
-> +
-> +			div = debounce * freq;
-> +			div_reg = DIV_ROUND_CLOSEST_ULL(div, 2 * USEC_PER_SEC) - 1;
-> +		}
->  	} else {
->  		div_debounce_support = false;
->  	}
-> @@ -342,6 +360,12 @@ static void rockchip_irq_demux(struct irq_desc *desc)
->  	chained_irq_enter(chip, desc);
->
->  	pending = readl_relaxed(bank->reg_base + bank->gpio_regs->int_status);
 
-Please sprinkle in some newlines for readability here...
 
-> +	for (unsigned int i = 0; i < bank->nr_irqs; i++) {
-> +		if (bank->irqs[i] == irq_desc_get_irq(desc)) {
-> +			pending &= bank->irq_masks[i];
-> +			break;
-> +		}
-> +	}
+On 27/10/2026 14:29, Maciej W. Rozycki wrote:
+> 
+>   So I think overall this ought to look like (unchecked):
+> 
+> static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+> {
+> 	u8 __iomem *p;
+> 	unsigned long deviceID;
+> 	int number_uarts = -ENXIO;
+> 
+> 	if (!pci_oxsemi_tornado_p(dev) || pci_resource_len(dev, 0) < 8)
+> 		return -ENXIO;
+> 
+> 	p = pci_iomap(dev, 0, 5);
+> 	if (p == NULL)
+> 		return -ENOMEM;
+> 
+> 	deviceID = ioread32(p);
+> 	/* Tornado device */
+> 	if (deviceID == 0x07000200) {
+> 		number_uarts = ioread8(p + 4);
+> 		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
+> 			number_uarts,
+> 			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
+> 			"EndRun" : "Oxford");
+> 		if (number_uarts < 1)
+> 			number_uarts = -ENXIO;
+> 	}
+> 	pci_iounmap(dev, p);
+> 	return number_uarts;
+> }
+> 
+> with the FL_REGION_SZ_CAP flag set for the relevant entries, and possibly
+> setting ->num_ports to 0 too since we need to determine that at run time.
+> 
+>   Not sure how this interferes with Brainboxes devices, support for which
+> seems not to have been fully merged given that pci_oxsemi_tornado_p() does
+> not let PCI_VENDOR_ID_INTASHIELD devices through.  Cameron?
 
-... here ...
+The Oxford cards all work even though not explicitly mentioned in 
+pci_oxsemi_tornado_p(). The cards all report 16K for BAR0, so I would 
+assume this patch should not cause any issues?
+See lspci -nnvvv output below for a 4-port card (PX-420). This should be 
+OK? Thanks for checking in.
 
->  	for_each_set_bit(irq, &pending, 32) {
->  		dev_dbg(bank->dev, "handling irq %d\n", irq);
->
-> @@ -568,8 +592,9 @@ static int rockchip_interrupts_register(struct rockchip_pin_bank *bank)
->  	rockchip_gpio_writel(bank, 0xffffffff, bank->gpio_regs->int_en);
->  	gc->mask_cache = 0xffffffff;
->
-> -	irq_set_chained_handler_and_data(bank->irq,
-> -					 rockchip_irq_demux, bank);
-> +	for (unsigned int i = 0; i < bank->nr_irqs; i++)
-> +		irq_set_chained_handler_and_data(bank->irqs[i],
-> +						 rockchip_irq_demux, bank);
->
->  	return 0;
->  }
-> @@ -645,6 +670,36 @@ static void rockchip_clk_put(void *data)
->  	clk_put(clk);
->  }
->
-> +static int rockchip_gpio_read_irq_groups(struct rockchip_pin_bank *bank)
-> +{
-> +	struct arm_smccc_res res;
-> +	u32 assigned = 0;
-> +	int status;
-> +
-> +	for (unsigned int i = 1; i < bank->nr_irqs; i++) {
-> +		arm_smccc_smc(ROCKCHIP_SIP_GPIO_CONFIG, ROCKCHIP_SIP_GPIO_GET_GROUP,
-> +			      bank->bank_num, i, 0, 0, 0, 0, &res);
-> +		status = (int)res.a0;
-> +		if (i == 1 && (status == SMCCC_RET_NOT_SUPPORTED ||
-> +			       status == ROCKCHIP_SIP_RET_NOT_SUPPORTED)) {
-> +			/* Older firmware leaves all pins on the primary IRQ. */
-> +			dev_dbg(bank->dev, "GPIO group query unsupported: %d\n",
-> +				status);
-> +			break;
-> +		}
-> +		if (status)
-> +			return dev_err_probe(bank->dev, -EIO,
-> +					     "cannot read interrupt group %u: %d\n",
-> +					     i, status);
-> +		bank->irq_masks[i] = res.a1;
-> +		if (assigned & bank->irq_masks[i])
-> +			return -EINVAL;
-> +		assigned |= bank->irq_masks[i];
-> +	}
+02:00.0 Serial controller [0700]: Brainboxes Ltd PX-420 3 + 1 port 
+RS-232 card [135a:4011] (rev 02) (prog-if 06 [16950])
+         Subsystem: Brainboxes Ltd PX-420 3 + 1 port RS-232 card [135a:4011]
+         Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- 
+ParErr- Stepping- SERR- FastB2B- DisINTx-
+         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- 
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+         Interrupts: pin B routed to IRQ 16
+         IOMMU group: 12
+         Region 0: Memory at 70800000 (32-bit, non-prefetchable) [size=16K]
+         Region 1: Memory at 70600000 (32-bit, non-prefetchable) [size=2M]
+         Region 2: Memory at 70400000 (32-bit, non-prefetchable) [size=2M]
+         Capabilities: [40] Power Management version 3
+                 Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=55mA 
+PME(D0-,D1+,D2+,D3hot+,D3cold-)
+                 Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+         Capabilities: [70] Express (v1) Endpoint, IntMsgNum 0
+                 DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s 
+<128ns, L1 <2us
+                         ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset- 
+SlotPowerLimit 25W TEE-IO-
+                 DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+                         RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                         MaxPayload 128 bytes, MaxReadReq 512 bytes
+                 DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- 
+AuxPwr+ TransPend-
+                 LnkCap: Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, 
+Exit Latency L0s unlimited, L1 unlimited
+                         ClockPM+ Surprise- LLActRep- BwNot- ASPMOptComp-
+                 LnkCtl: ASPM Disabled; RCB 64 bytes, LnkDisable- CommClk+
+                         ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt- 
+FltModeDis-
+                 LnkSta: Speed 2.5GT/s, Width x1
+                         TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+         Capabilities: [b0] MSI-X: Enable- Count=16 Masked-
+                 Vector table: BAR=1 offset=001b3000
+                 PBA: BAR=1 offset=001b2000
+         Capabilities: [100 v1] Device Serial Number 00-30-e0-11-11-00-02-00
+         Capabilities: [110 v1] Power Budgeting <?>
+         Kernel driver in use: serial
+         Kernel modules: 8250_pci
 
-... here, etc.
+> 
+>   NB BAR0 size is 16k by the spec and the maximum # of UARTs is 16, for a
+> dual-OXPCIe958 master/slave setup, still leaving 4k of the available space
+> unoccupied.
+> 
+>    Maciej
 
-> +	bank->irq_masks[0] = ~assigned;
-> +	return 0;
-> +}
-> +
->  static int rockchip_get_bank_data(struct rockchip_pin_bank *bank)
->  {
->  	struct platform_device *pdev = to_platform_device(bank->dev);
-> @@ -654,10 +709,23 @@ static int rockchip_get_bank_data(struct rockchip_pin_bank *bank)
->  	if (IS_ERR(bank->reg_base))
->  		return PTR_ERR(bank->reg_base);
->
-> -	ret = platform_get_irq(pdev, 0);
-> +	ret = platform_irq_count(pdev);
->  	if (ret < 0)
->  		return ret;
-> -	bank->irq = ret;
-> +	if (ret != (of_device_is_compatible(bank->of_node,
-> +					    "rockchip,rk3572-gpio-bank") ? 4 : 1))
-> +		return -EINVAL;
-> +	bank->nr_irqs = ret;
-> +	for (unsigned int i = 0; i < bank->nr_irqs; i++) {
-> +		ret = platform_get_irq(pdev, i);
-> +		if (ret < 0)
-> +			return ret;
-> +		bank->irqs[i] = ret;
-> +	}
-> +
-> +	ret = rockchip_gpio_read_irq_groups(bank);
-> +	if (ret)
-> +		return ret;
->
->  	bank->clk = devm_clk_get_enabled(bank->dev, NULL);
->  	if (IS_ERR(bank->clk))
-> @@ -669,6 +737,7 @@ static int rockchip_get_bank_data(struct rockchip_pin_bank *bank)
->  	case GPIO_TYPE_V2:
->  	case GPIO_TYPE_V2_1:
->  	case GPIO_TYPE_V2_2:
-> +	case GPIO_TYPE_V2_7:
->  		bank->gpio_regs = &gpio_regs_v2;
->  		bank->gpio_type = GPIO_TYPE_V2;
->  		bank->db_clk = of_clk_get(bank->of_node, 1);
-> @@ -797,7 +866,8 @@ static void rockchip_gpio_remove(struct platform_device *pdev)
->  {
->  	struct rockchip_pin_bank *bank = platform_get_drvdata(pdev);
->
-> -	irq_set_chained_handler_and_data(bank->irq, NULL, NULL);
-> +	for (unsigned int i = 0; i < bank->nr_irqs; i++)
-> +		irq_set_chained_handler_and_data(bank->irqs[i], NULL, NULL);
->  	if (bank->domain) {
->  		irq_domain_remove_generic_chips(bank->domain);
->  		irq_domain_remove(bank->domain);
-> @@ -807,6 +877,7 @@ static void rockchip_gpio_remove(struct platform_device *pdev)
->
->  static const struct of_device_id rockchip_gpio_match[] = {
->  	{ .compatible = "rockchip,gpio-bank", },
-> +	{ .compatible = "rockchip,rk3572-gpio-bank" },
->  	{ .compatible = "rockchip,rk3188-gpio-bank0" },
->  	{ },
->  };
-> diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-> index 553197f6dc690..058b58dcde404 100644
-> --- a/drivers/pinctrl/pinctrl-rockchip.h
-> +++ b/drivers/pinctrl/pinctrl-rockchip.h
-> @@ -302,7 +302,9 @@ struct rockchip_drv {
->   *	    bank has its own IOC block
->   * @clk: clock of the gpio bank
->   * @db_clk: clock of the gpio debounce
-> - * @irq: interrupt of the gpio bank
-> + * @irqs: parent interrupts of the GPIO bank
-> + * @irq_masks: pins assigned to each parent interrupt
-> + * @nr_irqs: number of parent interrupts
->   * @saved_masks: Saved content of GPIO_INTEN at suspend time.
->   * @pin_base: first pin number
->   * @nr_pins: number of pins in this bank
-> @@ -331,7 +333,9 @@ struct rockchip_pin_bank {
->  	struct regmap			*regmap_ioc;
->  	struct clk			*clk;
->  	struct clk			*db_clk;
-> -	int				irq;
-> +	unsigned int			irqs[4];
-> +	u32				irq_masks[4];
-> +	unsigned int			nr_irqs;
->  	u32				saved_masks;
->  	u32				pin_base;
->  	u8				nr_pins;
-> diff --git a/include/soc/rockchip/rockchip_sip.h b/include/soc/rockchip/rockchip_sip.h
+Acked-by: Cameron Williams <cang1@live.co.uk>
 
-The changes in headers in other subsystems should be in separate patches.
-
-> index 501ad1fedb201..984272ede3baf 100644
-> --- a/include/soc/rockchip/rockchip_sip.h
-> +++ b/include/soc/rockchip/rockchip_sip.h
-> @@ -20,4 +20,9 @@
->  #define ROCKCHIP_SIP_CONFIG_DRAM_SET_PARAM	0x07
->  #define ROCKCHIP_SIP_CONFIG_DRAM_SET_ODT_PD	0x08
->
-> +#define ROCKCHIP_SIP_RET_NOT_SUPPORTED		-2
-> +
-> +#define ROCKCHIP_SIP_GPIO_CONFIG		0x8200002c
-> +#define ROCKCHIP_SIP_GPIO_GET_GROUP		0
-> +
->  #endif
->
-> --
-> 2.34.1
->
->
->
-
-Bart
