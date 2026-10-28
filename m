@@ -1,83 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793185536;
-	b=BcyAnnC9Omj98eyP8H0l1LdVJu8m88RBfpR3bYhKVQ26V5B7DkLwR3z+Abbg4cBb/Z7R
-	 HsJuFvYhlBWUb2wWDJ8I7/n+xdvZJPXfwuFbu0ECeLhomnyf3zV/Wz++NUOB8FXsXhdoH
-	 rpYC+hhmZrNx49O3w0FIEbHsRPZjfzNjTSpWo5mz0YMc4J7spw8c1sYHv2gKWw8m3IPiX
-	 qmbMKpeYbFUPDt8FSiMFC5NHJIDWoEI6iP1mFF8S7GNxKniUZyZJkn6qdw/q2z6ZtBAVU
-	 ikmgvXcBpj+5sVXZDuUgmeKnN/X9MT97n08A9nsCQvqghn3bZWNSR0U2+iCH+PjiZRQ==
+	t=1793193748;
+	b=LM5NsPk6ZsoriPXAXQTd/hkkgvV/Fwn3DKxg0WeugT0WzLFFbYdU9hrK8G5nvQssjjYg
+	 K7mUpwEGFhwSPdzO0MgeTUGG26pfbr52fiE32o4JNKlLEsp6efWbkmApu7HcpH8GH8lUm
+	 zXov0Ih8Phwo73cXZKpeZpMEhMHhQX7ZULBWY8ZPLFdgveXXIXLJFCFh9esMFfv/RxNs1
+	 trynjtZa3mzttaQSoCOfELDu7o9A2wxtWO3c+DvZ6mQysOyuKg5FHGtcZcj5VJLm1hy6R
+	 6E7j4DH1mPQu+n8cuUveMiPptg8dWFS4YITTP0CWSNf13mjwB46pnW2kt2H6+wTTA8Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793185536;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=SIbHIkb59pVcJng8sKHppF6ubVcQlFLsBLXS2eUuU34=;
-	b=otJU0Hebd9hsk5PL55LlPId4jD1xeG0eqeeiDFr+u5zyaLDmmg+JSlr1N+E0FxDj8oba
-	 JAL75mEgRY4BFckRr4E6vhvqCHLbJTBI+24T0GChGX9R2tyL+13nK4JyUB7dr+QePunHC
-	 QRDCy3t9PbEnw8sGK3z6Y54cjhgHd1a4124EPwlj3J2zwMeoXlt6zj3ZR6RW+Zcr93ssj
-	 RkCQxktIMgOveXEfgAJlU0fANUjH//cL4D+aAlGpDa4+RgQkYdjMYx9EwQrN+7LFbYTJh
-	 rRa1WbSqSC11u+rFk5GXhnovmvQUsgrnZ3qLsXA7Ag/nPx7Iqin0kv3pBRFkK4B7uHQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793193748;
+	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-ID:
+	 X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=UAl0HEQZXwmaIz1J8l8z7zHm6iuvqiJoeALAbI0gpRQ=;
+	b=dZNRmvzPPYG7eCwlu8bQIdtM4xRaIZqU30mHDvkRdi66WEk8UgQEuI2TX8F8yt6A1o9o
+	 pUNXbLiowF7eFAXOBpOQj5C47SkoZFb7j8r3VGQtUh+Kn7g9KJ4yqXqhawqsKOE3jZGr/
+	 BA+EJi/B1LLUORTSLZ/HX/5ZOIj2XtueJ9fCoSCnAYLx3zEBXf04OYOnuJ37NaokEYy6P
+	 gwQHlig5MMRh/pE2llLRAwPKdFBKeFc23v5djOfPQFjDz8xFtrdkHrt1FGBc+4iVGsWXp
+	 joyVLwotZiYLN3ikGGXcxKnZkLARov/hc4KAFWfhrQGa+b+lKHODl2xFyXEYtozKu9w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kNfg2tbk;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OuABEHMR;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06395606A31A;
-	Wed, 28 Oct 2026 11:05:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06395606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07114606A31C;
+	Wed, 28 Oct 2026 13:22:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kNfg2tbk
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793185535; x=1824721535;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WX9L8EGH4Oa0aoSnq/yMQj4iV1Wl9LjJdHrn7K6+r08=;
-  b=kNfg2tbkeBmEZ3FkWPr8LYjfGqlgWSdB8abutFhf+gdGwx7dS4Im1DV3
-   qVsDKEWDIfb+X6A7GcmHtCpVgYM6TlEe6ehpMtuFyi4uzS7RLtyuS0k0b
-   2fuC5QlmFig5uJCACucoiqwTtefHOm+XqavGzyiURI/YRA2cZwNAo89WY
-   LqJO0r0RT6+culU0YC49iIAwsm0oOcWMo7FM8C6njR3YXjFAqnWuwTXd5
-   LSSo8SiXoMA/vg2ZycTjsAGeuNNrLv49v4yL4Fnw8qzwW18qdLYfNPT2d
-   vcSiu/K5fUo4WJW/gQbkGNUaYqVqc9GiNzgPSosMjHDTkyFpDw+wtZPpG
-   g==;
-X-CSE-ConnectionGUID: 927sMKw2Qyy1/ynXMQPydg==
-X-CSE-MsgGUID: 0GPVma3nQDGg/3sQwCFygw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1994121"
-X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
-   d="scan'208";a="1994121"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2026 04:05:34 -0700
-X-CSE-ConnectionGUID: 5CMJ/braQgCTYNPfY2aNKw==
-X-CSE-MsgGUID: lH3Shlv+T+2rHVEDZRl8rw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
-   d="scan'208";a="5184240"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2026 04:05:30 -0700
-Date: Wed, 28 Oct 2026 13:05:26 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v4 4/5] serial: 8250_dw: configure the Allwinner H616 UART
-Message-ID: <auHW9nkDqZUXeHNZ@ashevche-desk.local>
-References: <20261027-submit-h616-uart-fifo-v1-v4-0-d37e018fd0a6@gmail.com>
- <20261027-submit-h616-uart-fifo-v1-v4-4-d37e018fd0a6@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OuABEHMR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862551F01825;
+	Wed, 28 Oct 2026 13:22:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793193747;
+	bh=UAl0HEQZXwmaIz1J8l8z7zHm6iuvqiJoeALAbI0gpRQ=;
+	h=From:To:Cc:Subject:Date;
+	b=OuABEHMRKq5cRYV+lLjjOKFkVhtHFMev1nlU6GKMb4K6BnJJDPccJiOQxzlc9bvzG
+	 nppde+U1pAFXuFMXctyZP2RzicDccAvdvw2tHZy15vaUnuS+M5lFpSzPhPPs+avwrE
+	 E1QQ93XXgv+8ajUMAfS8bslEsj+MIyVHheR9PuqosUWDDoJlr4JXUamX3ak22R8MLw
+	 yrEw+c7Ptiyo3hD5TUvHCH8ib8tOrzZ62J/AE/YNhNoYSkvzAzB+z8rwePZc2YVg/9
+	 ssVEHc68npeqMd5SOypFX4aHL4w/5GqQPp3l6IKiRJbACmNsiHhjyMNCq29hlA4erC
+	 zsjUI6/jtQlXw==
+Received: from johan by xi.lan with local (Exim 4.99.5)
+	(envelope-from <johan@kernel.org>)
+	id 1xM3bl-000000033X5-2TB6;
+	Wed, 28 Oct 2026 14:22:25 +0100
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>
+Subject: [PATCH 0/3] tty: n_hdlc: fix hangup handling
+Date: Wed, 28 Oct 2026 14:20:46 +0100
+Message-ID: <20261028132049.728457-1-johan@kernel.org>
+X-Mailer: git-send-email 2.55.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -87,80 +62,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261027-submit-h616-uart-fifo-v1-v4-4-d37e018fd0a6@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 27, 2026 at 05:05:32PM -0600, James Hilliard wrote:
-> H616 has 256-byte transmit and receive FIFOs, but its optional DesignWare
-> component parameter register reads as zero. Generic 16550 probing leaves
-> the port using the 16-byte FIFO configuration and its trigger-level table.
-> 
-> Keep PORT_16550A and describe H616's fixed 256-byte FIFO depth in platform
-> data. Use common Allwinner setup helpers to configure the transmit load
-> and receive trigger table from that depth.
-> 
-> Derive the receive thresholds from the documented 1-byte, quarter-full,
-> half-full and FIFO-depth-minus-two mapping. On H616 these are 1, 64, 128
-> and 254 bytes; the normal 16550A half-full FCR setting selects 128 bytes.
-> 
-> Build the threshold table during setup and use the shared 8250 conversion
-> helper to select the nearest lower threshold for sysfs writes.
-> 
-> Serialize trigger changes with termios and hold a runtime PM reference
-> while programming FCR, preserving the FIFO contents. Propagate runtime
-> resume errors before changing either the FCR shadow or the hardware.
-> 
-> Advertise automatic flow control so CRTSCTS enables MCR.AFCE. The
-> DesignWare termios path selects hardware CTS handling, so the capability
-> must be present for the corresponding hardware control to be enabled.
-> 
-> Select the fixed configuration through the platform setup callback.
-> H616 has debug-divisor and RS485 control registers at the offsets used to
-> detect DesignWare hardware RS485 and fractional-divisor support. Avoid
-> those probes and retain the BUSY-safe integer divisor hook and software
-> RS485 handling.
-> 
-> Use the existing SKIP_SET_RATE quirk to keep the UART clock enabled during
-> termios changes. Its clock is a gate on the shared APB2 source, rather than
-> an independent baud-rate generator.
+An LLM incorrectly flagged three hangup issues in n_hdlc as leading to
+hangups stuck in uninterruptible sleep.
 
-...
+This used to be the case before commit c96cf923a98d ("tty: Don't block
+on IO when ldisc change is pending") which incidentally fixed the stuck
+hangup issues by turning tty_io_nonblock() into an indirect hangup
+check.
 
-> +	unsigned int fifo_size;
+Since then read() and write() can return -EAGAIN also for files opened
+in blocking mode on ldisc changes, which looks questionable. This change
+was added to address a regression introduced by a series adding missing
+locking to tty_reopen() but should probably be reconsidered. [1]
 
-This is should come from DT (based on the property or compatible),
+This series addresses the underlying hangup issues and incorrect -EAGAIN
+on hangup meanwhile.
 
-...
+Johan
 
->  	u8			no_int_count;
-> +	u8			rxtrig_bytes[UART_FCR_R_TRIG_MAX_STATE];
 
-Why do you need it here? Can it be provided via driver_data?
+[1] https://lore.kernel.org/all/alpine.LRH.2.02.1809191330590.19146@file01.intranet.prod.int.rdu2.redhat.com/
 
-...
 
-> +/* The trigger is the masked, unshifted FCR receive trigger field. */
-> +static unsigned int dw8250_sunxi_rxtrig_bytes(struct uart_port *p, unsigned int trigger)
-> +{
-> +	switch (trigger) {
-> +	case UART_FCR_TRIGGER_1:
-> +		return 1;
-> +	case UART_FCR_TRIGGER_4:
-> +		return p->fifosize / 4;
-> +	case UART_FCR_TRIGGER_8:
-> +		return p->fifosize / 2;
-> +	default:
-> +		return p->fifosize - 2;
-> +	}
-> +}
+Johan Hovold (3):
+  tty: n_hdlc: fix missing write() hangup check
+  tty: n_hdlc: fix read() hangup race
+  tty: n_hdlc: fix read() hangup check
 
-You don't need this, just provide a set of numbers directly.
+ drivers/tty/n_hdlc.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.55.0
 
