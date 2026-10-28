@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793145318;
-	b=jNfVITVZTLLlTImlu9OHSi/I5OLlafqLCbzeMudMCYD5PsmRU0jjLA6wRxnEfxgmgwJu
-	 9XZxw15PmO58NoiUPkr6rcqJClPrj/8zshupliV554z5q6pC7TTdl3d8mjDFQdpCCpjqf
-	 cKM8/FzeZruLt1nmD1ogXEIbu0n9eF9We2pD6zJ+GDmymY5GWNyOL8HVgiKeqcoUPCJEn
-	 XhPL1cIvBEgaMEFfX1bo4XO3voj8kKDa78LtIOKzW2uUbuLZ1nnW32bsXpX9m/dJ3H6CG
-	 x7v6IMF/QryuKwgQTt8rV429ux+sZsXC/n8MgDfqsyJGXPI+L68pLNzJDlBHz0/+Y0w==
+	t=1793145797;
+	b=ByW4C+C6QE2ijVRFjorwOffHA6hOZ8aXsGJ9rWtywsXyAnsCJYgfiMkCpqh06nM/7Oya
+	 KR1uZPMufjqwznDsM3Eu6EdaxdE3XewtBudNgQDuEnN5bqG5trTQmd7Xllko7PStHr3Md
+	 XqfPoCe4EdJJNUZwy2Ib8zyzaG9P+58ibvG91MUKZP88rN1hu1DeWjYmy4hLQhzeR9OZc
+	 FWV7byjkOMdKYnoufU5zcTlbVQNTM5v1HB9qXi3tHEHDNwJMmyk8WX6137mGiiX2vskGg
+	 D+OuTqtfviNTL71kD6H4nFAY6jPaLEuOsia3YVzuFUardNs5o6KEz2b+j7NLBa5I4gg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793145318;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793145797;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=X7JNDN9taOHLQvGKpIRpHJCLa88pjttdoNY9nZVoivk=;
-	b=Ho3i84zyBsu2btO9hg0tjQWjySbHeuhERKPi6GoVd0GgkjE0Tki30VL/dou8ATXLEuNA
-	 Q5Pfv5A77Kbbl+fHvW9aMHPuwAHPRpTrXZWrU6nxqoLaAD0HYUMvgxP3xnbRmhhhTxMQ9
-	 06XGxDPiprHK+Qlh5+/Ua+RK77an+LQiYU9/zL4gjQMCPrPEjYvZ6YY8YfKetq0xzmF5h
-	 7mPtFpU/Rvn1Ea2a+MpcZygpWljP0c+bo9q6iBvfOfimBL+sYYXa1AnEK6ZwprJEdOiO8
-	 oguksrUxuGIgKcSLwV2DpTiw6lh/uap9uH8L0hsuzLuzlZBfHlowEMUWxGxHvIgqNOQ==
+	bh=JtozCj7kGaWzgsGlt9NqLNmI/z3InruJxiV4sibxWRU=;
+	b=PHPrwqVyNOWkBIqecMnMDsA0DFF//nO2h4gz0GnPaSijVZp/ulFefoIea0mVjd/rfm5s
+	 wuRibAd/3s+sh7uYwhoBK7HK25Hrne94QcrHQ2YL8UgHMrTUvTRCOlcP3a0AKhenmo0o7
+	 l629D+EwL3hoMZEHhj27o3tG71z7vGeewLnD8LQFyVVa/9nqVJJe7mNDC6+I7rx2vTMLw
+	 p6o0x53/s/N2+KN73Iqx/0SEtvM7RMlKOR2gWyuRB2mC5dyjoAO8HVP8QQzPEoR2fappI
+	 VPY6NlNKt26oCyB7lrULCD4GVuIjwnViYaTG9OJ5kVSOjegXx8Xst8PiasFWkIv+iHw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B0DoZvbE;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MjJW0OIn;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60E5606A31A
-	for <linux-serial@vger.kernel.org>; Tue, 27 Oct 2026 23:55:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8FD3606A31A
+	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 00:03:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B0DoZvbE
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38B861F01825;
-	Tue, 27 Oct 2026 23:55:17 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MjJW0OIn
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA1E1F01825;
+	Wed, 28 Oct 2026 00:03:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793145317;
-	bh=X7JNDN9taOHLQvGKpIRpHJCLa88pjttdoNY9nZVoivk=;
+	s=k20260515; t=1793145796;
+	bh=JtozCj7kGaWzgsGlt9NqLNmI/z3InruJxiV4sibxWRU=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=B0DoZvbEeMBwiSQtKuIFkj7sX+dWkIfECATxwuo0AA+WzmrZWcniNDwi+Eb++sXnH
-	 g7vy9Q1S6lWDclXZSLTOcMh/J6QO/kdknmXZgz5ALZWWHgsAdwQ7oM0ep5r3DDn2nU
-	 guSFQIoLkl+8F0HDx1056f1eAKQRViHM1QQrA6ZhcBCB3BcOs7ApD8TB8EPW1H2HXk
-	 n5xm0iF1onmUcot8f1bKjuEjJPO3GI+8M7+kMRCBQUbpRgZ5eVqQloZgvIeVm26Tq9
-	 Xh7ASDH5A8ggMwt/EXRFXiNfyRO7HrwEqZIZjrZy4ObemeUx7M5WSoFyHogZuTEBsd
-	 FXMHBiOgQUpUA==
-Message-ID: <sashiko-outbox-187243@kernel.org>
+	b=MjJW0OIncGXTm3CTa8X6h05p0Cz5q9RtkuPTd5s2mKLUo5xlF/SYkU7N0Nb7JJAyF
+	 d0cOES1X6ya3gayg+PvnY3SZriyeHH2lkSFEBmVdlOFWedAdXSiQhX7zfUwFZjym4V
+	 GvvQX0kKkezRVcoj9Qv8LPRNJTHRTiMAGNRlsWvNXzQeptFuMSrY8Ymjh7R411ip+J
+	 +eJLOdz7euzPW2TMcs2TgWXIu7zE1lKyebrkvj1QjeB3hxovNh5NY5e6R7PRBYSCEE
+	 runCHaO9xe69m6l1V7yk5fnCifulxYTHQlTjJUbZF3ztbrJXqbtlAnBQ8A2iS55zLx
+	 qgA78lsgi2q2w==
+Message-ID: <sashiko-outbox-187247@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v7 5/5] serial: 8250: retire canceled RX DMA before
- reusing the receive buffer
+Subject: Re: [PATCH v7 3/5] serial: core: allow drivers to reserve flushed
+ transmit storage
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261027-submit-serial-8250-dma-cancel-v1-v7-5-985a023ba4b4@gmail.com>
+In-Reply-To: <20261027-submit-serial-8250-dma-cancel-v1-v7-3-985a023ba4b4@gmail.com>
 References: <20261027-submit-serial-8250-dma-cancel-v1-v7-0-985a023ba4b4@gmail.com>
- <20261027-submit-serial-8250-dma-cancel-v1-v7-5-985a023ba4b4@gmail.com>
+ <20261027-submit-serial-8250-dma-cancel-v1-v7-3-985a023ba4b4@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 27 Oct 2026 23:55:16 +0000
+Date: Wed, 28 Oct 2026 00:03:15 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,31 +61,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The RX timeout path pauses a transfer, copies its data and terminates it
-> asynchronously. Clearing rx_running at that point lets another receive
-> reuse the buffer and cookie while the old callback is still waiting for
-> the port lock. Inspecting the new cookie cannot distinguish that callback
-> from the completion of a new transfer.
+> uart_flush_buffer() resets the transmit FIFO before calling the driver's
+> flush callback. An asynchronous DMA transfer can still access that storage
+> after the callback returns, while a new write can immediately reuse it.
 >=20
-> Reserve the receive buffer until a worker has drained the canceled
-> callbacks. Keep FIFO access separate from callback retirement: after a
-> successful pause and termination, clear rx_running while rx_terminating
-> prevents another descriptor from reusing the buffer. Deliver the paused
-> data before allowing the interrupt handler to drain the FIFO through PIO.
-> Normal retirement only releases ownership and leaves subsequent receive
-> handling to the UART interrupt.
+> Add uart_xmit_block() and uart_xmit_unblock() so a driver can reserve the
+> flushed storage until its transfer and completion callbacks have retired.
+> Serialize the reservation with FIFO producers using the port lock.
 >=20
-> Preserve the normal completion-path LSR read and gate DMA resubmission on
+> While the storage is reserved, write_room() reports no space and write()
+> and put_char() accept no data. Defer write-ready notifications until the
+> reservation is released, preserving one-shot TTY wakeups. Keep the flush
+> wakeup under the port lock so it cannot race another reservation.
+>=20
+> Suppress ordinary TX starts while the FIFO storage is blocked. Preserve
+> high-priority flow-control characters, which use separate storage.
 > [ ... ]
-> provider still cannot terminate the channel in process context, retain
-> its buffer and leave receive interrupts masked.
+> Publish resume readiness under the same port lock as the TX restart,
+> without clearing any reservation. A concurrent flush can then reserve a
+> new transfer without resume releasing its storage prematurely.
 >=20
-> Fixes: 9ee4b83e51f7 ("serial: 8250: Add support for dmaengine")
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261027-submit-ser=
-ial-8250-dma-cancel-v1-v7-0-985a023ba4b4@gmail.com?part=3D5
+ial-8250-dma-cancel-v1-v7-0-985a023ba4b4@gmail.com?part=3D3
 
