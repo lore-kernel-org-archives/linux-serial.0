@@ -1,55 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793172197;
-	b=3Hi46/bdm7ErYOx+BmKBgnqp7N6y4pOY993qHRdIH+OB8VCevEosDbf58GNaoOjJtave
-	 K33jwo+NGdjcYOPoSzrW8KHcyGZZKLwTItgJQVG8Sp1g1/ioUlZoF8koCnCCO1dPgo2PA
-	 Y7Hh36Q6jUrfEM9V0eEuOUSI3ll35jbIY48Chn1PK/mdnE96nX/HjXy+5Kfe8eSse56p8
-	 ZeQvpehw2/VNoy0ULujfOLM112jmaA+toXWgwGq5ouaJan7s+1i0DGatFxzJXdm7HDiQt
-	 bj/rBaHH1n2phkcgfswMq5lA6rP7VP4/7nxUyencQr3AyXNsYMfRkC4IN6QasbfX8Tw==
+	t=1793174823;
+	b=0S3Fyn0DxnB+g0KOESXwr8UfA0y9pmsq/ynxms7zeyUsv92n8aDpCgB49sIll1U2/bhP
+	 eSHHLD/i63c7JDGswZ7g7t2NXnbzyPOa3kXvtihNSokFCHAB9zAD1Oo1mIi5Xaqr8JnxJ
+	 jXlCg4pBaXqi/4QOrM3tIrYwNxmhRN8IO9EghdcXGuP0UeQ+MakcwMxBd1ZzcrYf7SWBl
+	 gXh7MaNFMRAReTuTU4PPCizxfne/tS21gvNvMoHpM/2HOJSPuZkQGrLE6fpcoDr4YqJNh
+	 EZ3f/kzT97rHFGbI1fERobY0U0ysOwo5NZc0QY9lZRx87lJWzqYtIMxBfsK2WWfuN6Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793172197;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=qnOlG2pOr/qQbPu63jLwX68UGGKr9Rw9UPpEccC9NY0=;
-	b=1yRSNvMvROI0QpT/fm/kr2SJT1GrGl+NMqUQ3hbPbl5fHXM++zzdqzvQbq90uT8f/xml
-	 ek8p03Y6WzkbxmmJtat4zOYR4A7oVofjHyP1pUkS3l6LQxncuGJwv2dx4LadTNcOVdqP4
-	 Kr7OjM6jXK/Wvh/NfX6/1D9tbo4jYp5cA3AD0G8hcnKpcqYyAG9ubnYLAtv9NGESjH6Pr
-	 YB/3YLoKodZbyp+Y6XotmPPR/a726hBFIHqtYExMQUhPExBnpRSbMhm619sy0efDB2IrN
-	 t59pQmcWRt+R/BmTKDpXUYG1bPjr07EhDVn4K9p32FJslKMKxrESMBYzDDT1+2MkbFg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793174823;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=airiPRPpuqyAkl18ksOwT7H/2GRUZL6k3C4fmXWBz90=;
+	b=TgShj9MWebtA3sLRaWyxSb2/zTVtAYodfWBMO2OcUeDiSA1tuXiA3FhMdpK9FgmAFhMh
+	 fDS3dUEnv1K2mP1n90N0dL1Eekr8OVhG/9Hs3qjlWRbrL+MGR20n2oEi38nnf24+KLL1v
+	 L2FG3b98O9w6AxW55+1+eZBBE2/cEi73CcXQ2Upg9s6dyx/B8ZA0pjpnlIuxAK5U4p8tE
+	 nMkBhrnR8A0cn6oBuXB1dcvdc9huT9nERSsQUXY6kRnQIFi7cLq20TBPdBnQXRLKed38O
+	 ueVL1fG3H0aiyIDB/NVIae5s7D8P4+MUppXEImyBZLrrdR1Lswk6NK/LWRkdajlEXWg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WEuNLnpZ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AYA5luYs;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86EEF606A31E
-	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 07:23:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E4B7606A331;
+	Wed, 28 Oct 2026 08:07:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WEuNLnpZ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD241F01825;
-	Wed, 28 Oct 2026 07:23:17 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AYA5luYs
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CACDD1F031E0;
+	Wed, 28 Oct 2026 08:07:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793172197;
-	bh=qnOlG2pOr/qQbPu63jLwX68UGGKr9Rw9UPpEccC9NY0=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=WEuNLnpZThyZTMipNtKgrGIKc0RDp61R6Dld1nKTPHFd9UfajaylrOBhS5q5EMRGI
-	 nxR+SdixaRr6ZLCSFqM2skQiA3n1mzGlmhTpFS1NGivlfH3zZUm2ZMXGp48+LHUrNA
-	 yGmxL7b14hUu6qkEQiphyvi1+driSFZWujD0O605iiN87UYwe/ymZQcImKA+dxQ0wg
-	 +n/jrhUXnS4RuLVEFMCP3Ij/TCJLUKHuL/0X/dD2mHLX2PycDddU/U/H3a82JwxWbt
-	 1YTAfHpMQje4hxpUUh7+tYphXfLXFVslfJdE8FII9A5YU5Ocq3pUYeu8AviTI4AQSL
-	 mrc3sx9fr5ifw==
-Message-ID: <sashiko-outbox-187576@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] Input: serport - defer write wakeups to a worker
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261028-submit-serport-write-wakeup-v1-v2-1-c05d96259985@gmail.com>
-References: <20261028-submit-serport-write-wakeup-v1-v2-1-c05d96259985@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 28 Oct 2026 07:23:16 +0000
+	s=k20260515; t=1793174822;
+	bh=airiPRPpuqyAkl18ksOwT7H/2GRUZL6k3C4fmXWBz90=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=AYA5luYsWX5COUjONr/9aduLv234Wnz8XwLP3+qiIf5Bzc+E3dV26Px0QSluE9VeI
+	 ooIb5mlRz6iOWo3SULHaNXYArpAvJsz/ddEhmzbSTkwWv6gvffJT2pqKsQrxyOxuVO
+	 OFkw+1gGSEjFLrcKup2C5ELqqb1xR4MaUxXPdM549SKW/1Q3YwI3dUNqlVwn6mRrWm
+	 4IwAiw+HhH8jZfnharzZ5og3XhsKOS2CF2C0l59lcXxZJJYJn2umkngWToLE5LrX28
+	 6Rh5mCw/mCe9DG8kIH0WtNZCe4HZQ9qEgo1DMOhuhnsq0gCE9WIW5YimmfX9/xrEoc
+	 Yw2x4aWUXkCYA==
+Date: Wed, 28 Oct 2026 09:06:59 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v4 3/5] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner H616
+Message-ID: <20261028-durable-merciful-caribou-1f3da7@quoll>
+References: <20261027-submit-h616-uart-fifo-v1-v4-0-d37e018fd0a6@gmail.com>
+ <20261027-submit-h616-uart-fifo-v1-v4-3-d37e018fd0a6@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -58,35 +63,26 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261027-submit-h616-uart-fifo-v1-v4-3-d37e018fd0a6@gmail.com>
 
-> UART drivers can invoke the line discipline's write_wakeup() callback with
-> their port lock held. serport forwards the notification directly to the
-> serio driver. I-Force's callback can transmit a queued packet through
-> serio_write(), which calls back into uart_write() and tries to acquire the
-> same port lock. A notification after I-Force queues a packet but before it
-> sets IFORCE_XMIT_RUNNING can therefore deadlock.
->=20
-> Defer the serio notification to a work item, as required for transmitting
-> from a line discipline's write-wakeup path. Initialize the work disabled
-> and enable it, along with TTY_DO_WRITE_WAKEUP, only when a serio driver
-> with a write_wakeup() callback opens the port.
->=20
-> Clear TTY_DO_WRITE_WAKEUP and disable and drain the work when that driver
-> closes the port, before the serio driver and port can be torn down. This
-> allows the worker to call the driver without holding serport->lock,
-> breaking the lock ordering cycle with input event callbacks that write
-> to the UART.
->=20
-> Also clear TTY_DO_WRITE_WAKEUP and disable and drain the work on hangup,
-> before waking the reader to unregister the serio port. The additional
-> disable keeps the work disabled even if a driver opens the port while
-> hangup is in progress.
->=20
+On Tue, Oct 27, 2026 at 05:05:31PM -0600, James Hilliard wrote:
+> The H616 UART has 256-byte transmit and receive FIFOs, but its DesignWare
+> component parameter register does not report the FIFO depth. Its optional
+> register layout also differs from the generic DesignWare integration.
+> 
+> Add a specific compatible to identify this fixed configuration, retaining
+> snps,dw-apb-uart as a fallback.
+> 
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-Sashiko has reviewed this patch and found no issues.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261028-submit-ser=
-port-write-wakeup-v1-v2-1-c05d96259985@gmail.com?part=3D1
+Best regards,
+Krzysztof
 
