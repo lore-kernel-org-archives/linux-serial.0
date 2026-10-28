@@ -1,102 +1,165 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.177
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.125.7
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793178300;
-	b=roSuxWzUiCgpmqtQsUixml8fspqVO7a6xC62wvIHr/+08k4pEDvJ4nSYVFwfavZPl4PZ
-	 a+sTLuCVizno6Q7mIlhDYihpPfDt9Jnm5OhOsXmmmgs2RmaFtQKFVSy1F6vzBMwVrmMc/
-	 xNLb824ullZC3joZNq70/JYVN3WhAOE9/jnbR/GjiM4zDiYSDIMayG1s65SuQdW9/4fIQ
-	 OnQQBpy/4yB8gAR69X1TcDb9bBaC66qdeMbLVxgvstNMWSqRS099tQC8H5Qx2DPPjn8Qe
-	 muhelfDF1l2XsVP7KLV+c8rllp7Vfn9Ts2K8GIQHEj9HM+DBB9P9BVEBq+p0SIXlIJQ==
+	t=1793178827;
+	b=bUZxROI2bCmEOtPTzGB+l0RJIU3tPux7MdyajMAi4ClR4DG+4u25GUjhMft83hrH1MAT
+	 nLvgmVTTniJq7emm/7HanfmPxfZX401TT+QRsdoi1HuYszsSyXbS8w8D1tyrJPrnevOHL
+	 uZ3eKA0iAxwwXGOY3s7wYFyvcSzl21M+ANU6VRr9nHh52r5tgnKwy2mnKyp0p1rvVtoMr
+	 X/xJDFKEvx1e/FoUvjZNd97WEWuHhJ0WTQuCClwHHftcoiWQ2Gms4l41oGTr54CCU/e7B
+	 4aiMo99YGfUUhWKaUr0DHD00d3B0x0dzT5UueEaZHTJlV8Og1bb1raVX8Cj4YW/zcWQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793178300;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=YMPvQ0y2/UErW4qcLjewTviEOS5UzV5x/LnfQYGS5D0=;
-	b=zvTX+96Zby8w7SvZf+W9qGaLhlLaoowLb/++O/CZAuE2XODn9p0FhfWIedGXObDRLo11
-	 yYHkZzzpTOj3k3Z2FdrxMtcjhMz0GHyLT+kEmWOvJRAx4+XoPyC/tX5w9YrMcDlDlBKDQ
-	 fr/yWLF6xf3bd9iOZqz6jnucleXAcTg8HflJsECERfp0AfaBtYHVp/z1DBPCw1WxXmFYi
-	 dKDCOee21hhFJNUOaNdHiWq8zH+yZ+B30MOqAvFTjK1VLozSspZHhtEdG323zV+TmOw9n
-	 vZHNubjlxxOa6okU3hKtsEhtCpLiwrzCjNG+cL3/5Mlz/N4Me6EgUD0Avtw+Q4wlQPg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793178827;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ld-processed:
+	 x-ms-exchange-senderadcheck:x-ms-exchange-antispam-relay:
+	 x-microsoft-antispam:x-microsoft-antispam-message-info:
+	 x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=Yhs42nOYjKAS86cfq/S0ymBJ2RNrwHTemf2nelSZ97Q=;
+	b=rKVtwZvGMyA8QaDyITOt+KdxohbPzI1bkgq18hEytvNwTBOZmUikAl9Z32RMqSejjoO0
+	 0Wko1sPQ/Q4NQiLqIMPm59QiNoUhqFWyko1FwhtgfkzpZWE8SqCDExF+dqnsyCQBA1Hzi
+	 t/YlgqK+UvyYtpaGjqG43JjldWSfJMLTVtTsrQi2Pkb3Su1ybVjBad+eU6tJacr8EQLvA
+	 lzwIUBnZZMPbi/yd9sWA5qmWaXBOaiHrA0AxcYwwrHSx1qiOhPaAduxPLkQ5fAKKBxyfy
+	 aPl4fHd7yh3uiFQAfIrSelxUytR+dsx7N9r9CqtjzLVbwmWiYuJrAPx/uyBo7BOfq8w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="Zv/eaVA6";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.177
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=bp.renesas.com;
+	spf=pass smtp.mailfrom=bp.renesas.com;
+	dkim=pass header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=fsfWyvoN;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.125.7
+Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011007.outbound.protection.outlook.com [52.101.125.7])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3854D606A31E
-	for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 09:05:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3854D606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA99A606A31C;
+	Wed, 28 Oct 2026 09:13:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AA99A606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Zv/eaVA6
-Received: by mail-vk1-f177.google.com with SMTP id 71dfb90a1353d-5eaa5e03c47so1536414e0c.0
-        for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 02:05:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793178299; cv=none;
-        d=google.com; s=arc-20260327;
-        b=ZnRrBCzI/fEVBJsVoByAfeu15P43adi8fORkGC9Z7gEcQrsxmzo+WrTSVOlIig+Ju+
-         R7tCAZpslc+g9LbbhkmdNvMG07QvqB6Mr17ljGFmNR2Wz2vuf/6zpe7f/ofVp3OUztkc
-         E07NZzSYxhIcNozz52k/P5EQ7Cm40ZoxyhyknJikwD75x7qgVNHh/QXfqOQQkPcpwdLn
-         3uZCKIzrgZvCi2uK3bU+BV4svOdpiU+Es/PaoZzgnYiNSVktB/3KnJMrRw1Po+zs0+SK
-         xqbGbZ3y+WHfR056Ox0zujVuWmQaQkS1085P7+Am7Eej0EmYDzfcn3v/YqXyVB/xsmzs
-         azHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=YMPvQ0y2/UErW4qcLjewTviEOS5UzV5x/LnfQYGS5D0=;
-        fh=GbshSB8EFMSYnbxm2RyaPRTpCjQzKnhBAtCUlPAH2wA=;
-        b=sD0rkOTg6Tc0pfq7Sp/eHfUc2NTDjglU1avIoidL77cm56bYuXKDWTKxwF0yBggeLa
-         DZzKaudR+/iUr50prWq1l4VIPLSsw+KqxGR+yMvMAnWmvYrrft77b5A3kyXAS5w6m1eq
-         VrA8hSZbXfRRA6R0Ecm+i3Xf56ZWDoOzoPFXYUCs4cyZXFfy49TEm0BtsmFs/R2AGNFN
-         0CABwc4LC9w6mov7h1DgwQMROcUg9KgSLv3YYUAW3CN4X0rfvljWbBV/1OCbDTX2hoCp
-         g+FIR5KW0RfmYMpgZSIvx+QGRr6lT/+ATM//7pY+lXHTtEqNedO1fleZliC44W54/H+S
-         3ySw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793178299; x=1793783099; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=YMPvQ0y2/UErW4qcLjewTviEOS5UzV5x/LnfQYGS5D0=;
-        b=Zv/eaVA6lrScHL0q/Ho4LyoktOdLdPByjB2bkcl06fB/h4jrdPpHRQn4RynI0+1vbm
-         D608JUJSXkkjPmHjkN3xUz/Qkn9L7ybWzyU1M7GphHIut/eiffBKweAlIujSMiMXcl0Q
-         kshmlA/BuKTG0gjOgHX22dv12nDGGvfGWLpoqTECiH7jFdZ7zNrCM6eLeGBJmO/XIthK
-         QuaImLqrlR1dzi5MSG26GJXW8YTU829VLyctOC52BFf2xgZm/o/mFR/JpzebWFU64weD
-         MZMgys49V0tVh2K+uzJphy1r1Gtxc9ufNvmdUP4mrgiph/INC6Ft/KLMMJ19EA7gY0UB
-         f6Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793178299; x=1793783099;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=YMPvQ0y2/UErW4qcLjewTviEOS5UzV5x/LnfQYGS5D0=;
-        b=gcZI2/vZsVFAFLY/aHNs/r4V240opxzwRjISvG1+tLTcJsFF/mpOeca0kOKWHVIvDz
-         PItm/+rL62mwH5dfoRbNVT/aUHxCs//2UBt9TCpLOPuTCYskY+Q08JT4zSQ8okgiDTAb
-         wqUMZrGbvL07iIUeL1QALEIVDw944aBFxv+sEX3C5AbIspLW6KyzjrlxqIiiSNZYyRht
-         zjKlsRq0p3lxKYoI3wsq1999LDKU60UEaoUwrwHOH+yMP1kV9Zosi1T2fmROUOo01qCq
-         Pqw5tM2Ob5VRLN7hM/2wv+3+9BsxD+R92i4WNYB98f6W8DjJfH9/L5+ry1HLaTGpcvFE
-         hRvw==
-X-Forwarded-Encrypted: i=1; AKwUvBwWMZdrKvWSAJAPF0ndLhh/gg4Ag4wJ91zJsMSARlbchw/Q2qpH40PwzxZElTs83cMpoewKvToxILSARRQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJ6qD7UmBegmDdsdbBc9c+zX5QtclmbGSwbp7mHUq2WryPp4Lve
-	yFyI2NAXCGiQheYPUnesNQIGaoYKD+Jj9COib2sw84wkeeah0v2EpIDkOAi6MeZ2Bxhg+Kq84ZZ
-	OU7GFgRm+B/8GcDje3XWZ7IlpB1Es/xHLBDLt
-X-Gm-Gg: AYBFou0LRtISNuUnK7guZ5aGgTXePvdMuyMv+sPRLSczPyIuTstONlkL8wNU6/ad37y
-	8q/cho1KEd+5plB9hSHX9M25tbHaoi8ibObiPT0mT/3XVlkUdsz0ZxEjVXhIKojt9o+EKQicl88
-	FfCkd/vFGMJsa07w03P0Mt+HOhwRskPL0v2tvC2NRXB7owtLwsCKs3RrQ3RP9DAUwx47NNIXpzc
-	7Wuf/WpwrnIRTkc2rEqzTl6dBUfwKUadejaDYfApNpNjLGy9byPp0eOa8Ic1jFiRKTqYD9wyBuU
-	IR26qR0pXECTn6qzm4YZml6GqhrbZdRV/EAQqT9bAkc8CEdAeZFaZ1CZqItdkTMI5+HXAYeD+U4
-	J+48HBoTmgpfOhUCKnnOTXfjq4usbl3U2yFHnWimqgfkcgGBXjrOS6X6ssBRFfvN5gaqlFaxHJZ
-	i0p963q+S3oaa17xAultoyO8TaZSvytP/+U1hXlYryyW3MRnNKhWWkkEyjFBh6wvZbC7QCaywQk
-	ME1gzsD/KsSmW2WLicGeGjzBSMHDA==
-X-Received: by 2002:a05:6122:3a11:b0:5e9:5e79:aa5 with SMTP id
- 71dfb90a1353d-5ec4fffa0b3mr263672e0c.7.1793178299127; Wed, 28 Oct 2026
- 02:04:59 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=fsfWyvoN
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=WNnO1VGNddZqh9Pu+bl00oCufjLlEO2a08BF872CkATWMZ3ZimXNhzAOQpuvwnPNCa/7l7A8ZJRcUgG8hzEhOb9XdYzHpeExavKl+2fqhFeYLe4g7TPWlm34Y/iT7BwzBwi4fkXmBe3mHknaC9f//nhoTVriUTwh193QadR5qIltY2PwdSu0VcWUESo7OZrmgXn2J5JyHRT1W3HLjPolaXKIyGVc505rmf/z7cTXaDR79dDXD+U9YhvoszLjZDWsmDi31aNTUMgl0BaOaS5aI+ljOT5R7UzWf+vNJHimnLkxL1GP1hsyfI902w4zz3ifnDg9/PnAOkJxVKA6TnRimA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Yhs42nOYjKAS86cfq/S0ymBJ2RNrwHTemf2nelSZ97Q=;
+ b=L+BqA9aYdXJoKf+EYmm1lYl6eD7sjmTNgiDtW/mZrag3eTwIK2bpFaRAYO/U/fR6flBji+Xrdq9+LZ2bA0/UVevux7tZRgtWbQAn18F0CD5GEG3P/OSMNFVTLJ5Uf03Pr7sHgF4HKwW20DCSvX/jFdZxe/vJn0Zogb3WmpesRRTyUlvkxwfSetrVVO/w6h09zusF0b+atIjEh7JqCFGK/dT3UYPZt717L5DAUBgO059e6yAjL2cT66xrz6yY5cAlXfa9NAIpm4FQGwYpQHv9zBKMuUXrN1irOaspKR7CTEEp6VCgrBIAzYXHM1mM1f12IUKusuL3bEkWmnwD5n/xYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yhs42nOYjKAS86cfq/S0ymBJ2RNrwHTemf2nelSZ97Q=;
+ b=fsfWyvoNwIXLx3yGGQjvjDKWrVGNea7LycMoPJRayLgNNqSAWiRnUtKyzTqkxvfzzjBEcPODtuoSOtEokPyoD+m5W93mkZIKtO7YFPmyUkfEzdqhwK6u77kjpVm2oHbgQGXZz26VI3lAGuNePTw/0kZQYWRHEgFfEDDJpesZ2oM=
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com (2603:1096:400:3d0::7)
+ by TYRPR01MB16231.jpnprd01.prod.outlook.com (2603:1096:405:2e8::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Wed, 28 Oct
+ 2026 09:13:41 +0000
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de]) by TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de%6]) with mapi id 15.21.0546.021; Wed, 28 Oct 2026
+ 09:13:41 +0000
+From: Biju Das <biju.das.jz@bp.renesas.com>
+To: Borislav Petkov <bp@alien8.de>, Krzysztof Kozlowski <krzk@kernel.org>,
+	Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
+	<rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>
+CC: "biju.das.au" <biju.das.au@gmail.com>, Krzysztof Kozlowski
+	<krzk+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
+ Slaby <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+	<linux-renesas-soc@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Au Dang <au.dang.jx@renesas.com>
+Subject: RE: [PATCH v3 0/4] Fix transmit handling on SCI/RSCI ports
+Thread-Topic: [PATCH v3 0/4] Fix transmit handling on SCI/RSCI ports
+Thread-Index:
+ AQHdZTx0nCl6r9+vN06096idU3GgbbcQ5bkAgAAVSvCAAAKsAIAAExbwgAARdgCAAL3ugIAAzkGA
+Date: Wed, 28 Oct 2026 09:13:41 +0000
+Message-ID:
+ <TY3PR01MB11346987E93BF871BC27E2836866F2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
+ <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
+ <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+ <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+ <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+In-Reply-To: <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TY3PR01MB11346:EE_|TYRPR01MB16231:EE_
+x-ms-office365-filtering-correlation-id: 9e63ba76-0562-48aa-b3a3-08df34d3c240
+x-ld-processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|23010399003|1800799024|7416014|376014|261009223027099003|261022105027099003|10067099003|56012099006|261026121527099003|22082099003|18002099003|4143699003|261026140227099003|11063799006|38070700021;
+x-microsoft-antispam-message-info:
+ VcDcqq+PcMFQ8KaY7DKoMxz3zTHNilBENr7V/HLEAeXj3Qc06EAhz5/xJL9+3Wx2lyJFCKemGi3Z8vvhpeo22CeOoVdQlSBwM0vePrLlDe5O0uX3PCy9K+XZTOxOcnFigoP9KlE2dEDj7Xn+Ae7y0rfqFrXqNkYsuIliDEhNHQVX/iSQ4ONJ1TyCX0AhNf+/CeNwwY5SXlA/PTXNVjTfXTs7KWgayagmfD+s7aBGEcvQp/kv9I0NsNO2wMsGNiUvJ+QxUSb/YG4NyzpH6InJdnU48Vy9y8mTiAV9f/UEVJfg6XT4lJsl/iRpkMQlubqdEmAS5o0DjxLdZFZh11+OSOJqTz65Uv5UlTFOTutJcc4Gb0iGMWVidI8rltQtI1PoD7GJXrTKapdK1i2VL1XJYhjeWMjSondq/aRx7m3Y+3RKy+RIzopWXIv6U8aEVchZrOHYkhlipI2fSjMoU9JoMS7Nk576HR+2WtifqQ/nlIoBItvq7Ws4vP+W2OVFM6tJAxGpVHcwuQMfXdpHT3wlUeSEn1VIWOCwi2HtLkAv5tsPNhqTTbnqb1883KQ96Vux859DVn0kmivPBQpWduZliRSdYPi2sET/sBOEuZ4UVmBP1PR/Gw5ubpE8Ne4opcGqWk0txQROq7QQzO0RAmoibRAog/PezYeAf36XGe5iI1Q=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB11346.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(7416014)(376014)(261009223027099003)(261022105027099003)(10067099003)(56012099006)(261026121527099003)(22082099003)(18002099003)(4143699003)(261026140227099003)(11063799006)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?T1lVdnhvSzU5UEVkSGRXUWt2YzlWbHZlZEdBWFAvWHc0VkplR2NsQ0hZclpM?=
+ =?utf-8?B?ZjA0RVA4M0N5ODFZaHVhdlVRVXpIVDhGRFE0ZnZGY0NHTkJaNElEM1ZoczN4?=
+ =?utf-8?B?VDhXNk9xeTJtZ3lGRjN6NisxU1pnK2ZoTmRpTy91QUM1TzBucnB6bjJwdjJF?=
+ =?utf-8?B?b0JGb1cxS1JoRForY2JyeXl2NFFxYVpFZWhpLy9OQkd1bHZaMlNKK2hJd3lH?=
+ =?utf-8?B?V2UzVXNuVlduQk9PeUlTMG1iSDBTalZUSXRISHFpazhzUjBNMVduMFNVZXNs?=
+ =?utf-8?B?REY5WC95ZHNPR2ZVVEUvTlQ2bkQ2SVIycUZsZHN0NjJnVWxqdE55UUtvUC9p?=
+ =?utf-8?B?NmZLckh0ODJvWW9CYzZkNlVSMjBuenZ3TVJ6eHRGZCtTRWYxZnd4Vlp0YzQ3?=
+ =?utf-8?B?QzJaV1RFVVFuK0JmZWRNenhubjBseDVMNUhhNElmcVU1UkVyUWV1ak9zN3Qz?=
+ =?utf-8?B?Z3J2dkZWaUxaV0dFQXNONHZ6TEVYZlA3c0d1Y0JyUDJFNUpQSnlXZFg3UU5q?=
+ =?utf-8?B?U3hrWFJvbW1oTjgzZHIzUDIwYkVyaUpMenIrWDBoODJ0R1VrYVROMllkYnNX?=
+ =?utf-8?B?SERmb1Z2OFNzM25oUmd5VUpJMTZPb0NzbjErWnhTQVhzdmxobm94U0RwaGtH?=
+ =?utf-8?B?MEdhZWZldlE4NWdPYUIzWEgzVjFySDdlY1F0R0lUOXdLak9GdGNZeVU4NW1O?=
+ =?utf-8?B?V0xkQ2tUNzdQTXN2M1F4YkluWG80TVM2MEZrbzViNkVCZTRMRVBxdHNPMU5y?=
+ =?utf-8?B?VFowTXdTZVpvMnlaK251UXpiL0hwQjNYdXpTL2k0elY2Zkt0bUQrZFltOFpn?=
+ =?utf-8?B?LytJY01Ua3VYMkxHQjhLRDcvdjBxdEU4c1Q3TkhaZ25KYzNzV3ZqY0FwK2ho?=
+ =?utf-8?B?Z2hoSXl4dmtySkYweVl2Q296ZDVoQit6N3Z1SmRlNHZIYk5rNkZHMnZ3dlJp?=
+ =?utf-8?B?ZjNTU3BiYXB5Z0RKbVI5V0lIenh6QXlUNmtVUmQ2aUZ5bWsrajZ1ckN3Q3BJ?=
+ =?utf-8?B?UHlaNWk0L3Vud085NjJQWFBKbVZ6b0Jvc3dBOXo1RHc4MGZ4VHNYSTR2aUZF?=
+ =?utf-8?B?VWFtRkRMMWhRU1NHeTZtQUVTbjBwN0pnS0lNTnJjajZLZzRZMm4wWjFadVpk?=
+ =?utf-8?B?eTB0NC9lSkxpQWI1L29RV1lFUnczTVVHSnlDR1lDemcxZmxqb3hXb2Jxd0lU?=
+ =?utf-8?B?ellKVWd1SWhOUzlqdkRqQUxlZG5tY05GWkVNRCtrcDRWQ2pMRzJPS2JYZ3VT?=
+ =?utf-8?B?NWxxTDJSVXhKUGM4MHUwSFNHcnJtSk4xcmRsOUNlbHkra1VmdWZqRXVXZTVt?=
+ =?utf-8?B?YnVwTFQzczNDa2U3Y2lCNDc2WUs1TUhjbW1YSWI2bXpWNEo0MFoyV29wclBN?=
+ =?utf-8?B?UHFsZmNXNndDWXdXeUh1OEhQOWZmcGhHWWMyODRsOTJncHFBNkNvcHRvTUU3?=
+ =?utf-8?B?VXZDMVJUK1l5d2FNVndiNFdva0htZGxPamFJdDA5VE5od3V2Q2N5NTJCT2Nx?=
+ =?utf-8?B?b21SMVJTMWJPS1ZlWFpRcytpQlpNS1BvOEF5b3hTMWMrT0VxdlBpWkNTcWw0?=
+ =?utf-8?B?UWtqM24rdGdyelA0YVB0ZjhPc2hBZzRjbkp5UG5neGxPQlRsYmVMU2Z2azd1?=
+ =?utf-8?B?bXczV3RycmJRbEo0TnJTODI5UGRFbk11ZTdrSGo0RzVlQjZ2Nzd1Zi9EWHo4?=
+ =?utf-8?B?aTFUYmRpMlA2SDFhWWZDaGczWHVtMm5obkZiU2l4allaaWlmckpUa2poNk9O?=
+ =?utf-8?B?SmlOaStMV3NURTdkbHhFdndIOVlKRVNTTE4rMy9DT09uMlQ2aTJsekhCVHM1?=
+ =?utf-8?B?NUUxWFZabmZ1alJTZlVsSHMzb0QzMzlWSk10NG5kUU41aEUzeW9pQmZiNVBo?=
+ =?utf-8?B?NUJESHFaTHVmRVNlRUFobTEzbys2UUV3NzhNTGNjN0IyNnJHSjhCNXZla0Vi?=
+ =?utf-8?B?cjhUSW9IbG5sS2dJYlQ2UklDTEcvS25TWlRkR1ZUbHJwVHpEVUoxYUljTGtv?=
+ =?utf-8?B?K1pOZm1hU01waWxrODZVaEorelJoQW9CY0ZHN2x4RGwyZ0tFNk1JT1F4RWRF?=
+ =?utf-8?B?RkRBb21ON2hnQkl5MnUxSkZXaHpLTDJ3VE9PWjlEVU9wT2FzOTVCY1ZqWGJn?=
+ =?utf-8?B?bVE5RGovaVJCVG5MWXZwS212V2o4anN5WGw3Mm5LaTJZZVNGQ1ZMSEV2d3Vh?=
+ =?utf-8?B?b1hWK2F4RzZUWWFwdTliNkZSRWlYemdzT21wb004VXExamZRY3cvdUozVGdK?=
+ =?utf-8?B?b3Nnd1huUjFQeTJVcWZaL2VQUW9JZkd6aGRQckZ6M041MjV5YUFRZTdvd0l1?=
+ =?utf-8?B?NXlrS21RVU54andGeGxtRHJFZDB0akNOaEphMStDREdzM2FSTVFnUT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -106,185 +169,48 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261027-submit-h616-uart-fifo-v1-v4-0-d37e018fd0a6@gmail.com> <10f350ff-8f82-4a3c-beea-4a02d0d179f9@arm.com>
-In-Reply-To: <10f350ff-8f82-4a3c-beea-4a02d0d179f9@arm.com>
-From: James Hilliard <james.hilliard1@gmail.com>
-Date: Wed, 28 Oct 2026 03:04:48 -0600
-X-Gm-Features: AclHuK-gFIc4OLdQpz2xuDakOfWjCmV7F0pKVxznmCh4UQXGFX7ZPx8S3KT4ikY
-Message-ID: <CADvTj4oSo7gXsqoLndTChgC0oaUGB9SB-4B4a1gEkx6XDFD7Tg@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] serial: 8250_dw: describe the Allwinner H616 UART configuration
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB11346.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e63ba76-0562-48aa-b3a3-08df34d3c240
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2026 09:13:41.1573
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: k5vT0tCS87Lh9uVDid3+O1ifpNWwTmL4DByJIkuv9pLQ3zdCxSM1lRzEthFyAI0e6EJkA06zSjj9yHgZVm46MvjQFImDn1bTL8LbWTRy0OU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYRPR01MB16231
 
-On Wed, Oct 28, 2026 at 2:57=E2=80=AFAM Andre Przywara <andre.przywara@arm.=
-com> wrote:
->
-> Hi,
->
-> On 10/28/26 00:05, James Hilliard wrote:
-> > H616 has 256-byte UART FIFOs, but lacks the DesignWare component parame=
-ter
-> > register used to discover their capacity. Its debug-divisor and RS485
-> > registers also overlap offsets used to probe optional DesignWare featur=
-es.
->
-> that affects almost all Allwinner SoCs, not just the H616, so should be
-> solved universally, not just for one SoC.
-
-Some Allwinner SoC's can read fifo size from a non-standard
-register from the looks of it.
-
-This approach at least allows for just adding SoC appropriate
-compatibles with their fifo-size tied to the compatible. Or the
-fifo-size can be pulled via that FCC register on the fly and
-reuse the code paths here probably by tying that logic to
-the compatibles as well.
-
->
-> IIUC Chen-Yu has a patch to attribute the right FIFO size, in each
-> .dtsi, which I consider the best solution to this problem.
->
-> I'd say we wait for -rc1 and then work on top of his patch.
->
-> Cheers,
-> Andre
->
-> >
-> > Add an H616 compatible for the integration-specific setup. Keep the
-> > existing 16550A port type and describe its fixed FIFO depth in platform
-> > data. Use common Allwinner helpers to configure the transmit load and
-> > receive thresholds from that depth. Configure automatic flow control,
-> > preserve the BUSY-safe integer divisor path and keep the UART gate enab=
-led
-> > during termios changes. The H616 configuration uses PIO.
-> >
-> > The series first introduces platform setup callbacks and a shared RX
-> > trigger conversion helper, then adds the binding, H616 setup and SoC DT=
-S
-> > changes. Based on tty-next at 6b4b543fa187 with the posted RX
-> > trigger callback-lifetime fix [0] and DW BUSY-safe divisor fix v4 [1].
-> > Platform setup runs before installing the BUSY-safe divisor setter.
-> >
-> > [0] https://lore.kernel.org/r/20261024-submit-serial-8250-rxtrig-lifeti=
-me-v1-v1-1-731b78d5003d@gmail.com
-> > [1] https://lore.kernel.org/r/20261027-submit-serial-8250-dw-divisor-v1=
--v4-1-41714a75e15a@gmail.com
-> >
-> > Assisted-by: Codex:gpt-6-astra
-> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> > ---
-> > Changes in v4:
-> > - Introduce common Allwinner setup helpers with the fixed FIFO depth
-> >    supplied by compatible-specific platform data.
-> > - Rebase onto tty-next at 6b4b543fa187 and the posted DW divisor v4 fix=
-,
-> >    installing the BUSY-safe setter after platform setup.
-> > - Use an early return for FIFO-less DMA setup, following Andy's review.
-> > - Default to generic setup when platform data has no setup callback.
-> > - Select Octeon's optional-register discovery with IS_ENABLED() in its
-> >    setup helper, preserving the existing 32-bit and 64-bit behavior.
-> > - Extract the shared 8250 bytes-to-FCR conversion, including the
-> >    unsupported-table check, into a preparatory patch and use it for
-> >    H616, following Andy's review.
-> > - Set the fixed 256-byte FIFO depth in H616 platform data and omit
-> >    fifo-size from its binding and DTS, following Krzysztof's review.
-> > - Precompute the Allwinner RX thresholds during setup and retain the
-> >    sunxi FIFO-depth helper for filling the table. Use named FCR encodin=
-gs
-> >    in the helper, following Jiri's review.
-> > - Share threshold-table initialization and callback assignment through
-> >    a sunxi RX trigger setup helper.
-> > - Group and comment the H616 trigger and RS485 setup.
-> > - Link to v3: https://patch.msgid.link/20261024-submit-h616-uart-fifo-v=
-1-v3-0-286fc1b8c3c1@gmail.com
-> >
-> > Changes in v3:
-> > - Introduce a platform-data setup callback in a preparatory patch,
-> >    replacing skip_autocfg and preserving the existing Octeon setup.
-> > - Describe each H616 UART's FIFO capacity with the standard fifo-size D=
-T
-> >    property and use the value already read by uart_read_port_properties=
-().
-> > - Derive the Allwinner RX trigger thresholds from the FIFO depth.
-> > - Use an unsigned trigger index and conditional runtime PM guard,
-> >    preserving error propagation when the device cannot resume.
-> > - Rebase onto tty-next, replacing the earlier DMA prerequisites with th=
-e
-> >    posted RX trigger callback-lifetime fix.
-> > - Separate DMA enablement into follow-up work, retaining PIO operation
-> >    for the H616 FIFO configuration.
-> > - Link to v2: https://lore.kernel.org/r/20261023-submit-h616-uart-fifo-=
-v1-v2-0-af0593504635@gmail.com
-> >
-> > Changes in v2:
-> > - Keep PORT_16550A and set the FIFO size, transmit load and capabilitie=
-s
-> >    during setup, following Andy's review.
-> > - Select H616 setup through the matched platform-data pointer and remov=
-e
-> >    the type and DMA burst-size platform-data members.
-> > - Use get_rxtrig/set_rxtrig for the 1/64/128/254-byte receive threshold=
-s,
-> >    with port locking and runtime PM around register updates. Keep the
-> >    standard half-full FCR default, selecting 128 bytes on H616.
-> > - Advertise UART_CAP_AFE so CRTSCTS enables hardware automatic flow con=
-trol.
-> > - Rebase onto next-20261023 and declare the posted sun6i pause/lifetime
-> >    fixes and their prerequisites for DMA enablement.
-> > - Link to v1: https://lore.kernel.org/r/20261023-submit-h616-uart-fifo-=
-v1-v1-0-e4a3bae2eba8@gmail.com
-> >
-> > To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > To: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> > To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > To: Jiri Slaby <jirislaby@kernel.org>
-> > To: Rob Herring <robh@kernel.org>
-> > To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> > To: Conor Dooley <conor+dt@kernel.org>
-> > To: Chen-Yu Tsai <wens@kernel.org>
-> > To: Jernej Skrabec <jernej.skrabec@gmail.com>
-> > To: Samuel Holland <samuel@sholland.org>
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: devicetree@vger.kernel.org
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Cc: linux-sunxi@lists.linux.dev
-> >
-> > ---
-> > James Hilliard (5):
-> >        serial: 8250_dw: select port setup through platform data
-> >        serial: 8250: share the RX trigger conversion helper
-> >        dt-bindings: serial: snps-dw-apb-uart: add Allwinner H616
-> >        serial: 8250_dw: configure the Allwinner H616 UART
-> >        arm64: dts: allwinner: h616: describe the UART integration
-> >
-> >   .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
-> >   arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi     |  12 +-
-> >   drivers/tty/serial/8250/8250.h                     |  16 +++
-> >   drivers/tty/serial/8250/8250_dw.c                  | 138 ++++++++++++=
-+++++++--
-> >   drivers/tty/serial/8250/8250_port.c                |  12 +-
-> >   5 files changed, 151 insertions(+), 28 deletions(-)
-> > ---
-> > base-commit: 6b4b543fa18757297ac756a6fe6e64f506b7844a
-> > change-id: 20261022-submit-h616-uart-fifo-v1-c5afcdfe5cb0
-> > prerequisite-message-id: <20261027-submit-serial-8250-dw-divisor-v1-v4-=
-1-41714a75e15a@gmail.com>
-> > prerequisite-patch-id: d8219673210dac82d3adab41578ff2f76f5862c9
-> > prerequisite-message-id: <20261024-submit-serial-8250-rxtrig-lifetime-v=
-1-v1-1-731b78d5003d@gmail.com>
-> > prerequisite-patch-id: 9a9395c715c2bf7bbcae5bdd16a339d7f2af6269
-> >
-> > Best regards,
-> > --
-> > James Hilliard <james.hilliard1@gmail.com>
->
+SGkgQm9yaXNsYXYgUGV0a292LA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZy
+b206IEJvcmlzbGF2IFBldGtvdiA8YnBAYWxpZW44LmRlPg0KPiBTZW50OiAyNyBPY3RvYmVyIDIw
+MjYgMjA6NTQNCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MyAwLzRdIEZpeCB0cmFuc21pdCBoYW5k
+bGluZyBvbiBTQ0kvUlNDSSBwb3J0cw0KPiANCj4gT24gVHVlLCBPY3QgMjcsIDIwMjYgYXQgMTA6
+MzQ6MjRBTSArMDEwMCwgS3J6eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4gPiBJbmRlZWQgdGhh
+dCdzIHg4NiBmYXVsdCwgc28gSSBkb24ndCBnZXQgd2h5IEJvcmlzbGF2IGNvbXBsYWlucy4NCj4g
+DQo+IFJlYWxseSwgeW91IGRvbid0PyENCj4gDQo+IExvb2tzIGxpa2UgeW91ciBtYm94IGNhbiB0
+YWtlIG1vcmUgbWFpbCB0aGVuIDopDQo+IA0KPiA+IFRoZXkgYWRkZWQgc3VjaCBwYXR0ZXJuLCBz
+byBnZXRfbWFpbnRhaW5lcnMgaW5kZWVkIHJlcG9ydHMgaXQgd2hlbiBydW4NCj4gPiBvbiB0aGUg
+cGF0Y2hlcyAobm90IHdpdGggLWYpOg0KPiA+DQo+ID4gCUtleXdvcmQ6XGIodGR4KQ0KPiANCj4g
+UHJvYmFibHkgYmVjYXVzZSBhbGwgdGhvc2UgZm9sa3MgaGVyZSBoYXZlbid0IGJlZW4gYml0dGVu
+IGJ5IHRoZSBpbXByZWNpc2UgcmVnZXggaXNzdWU6DQo+IA0KPiBodHRwczovL2xvcmUua2VybmVs
+Lm9yZy9hbGwvOTdlMzIyYTMtMDUyNi00MTRkLWEyODgtODM1ZDExZWUyYjFhQGludGVsLmNvbQ0K
+PiANCj4gYW5kIEkgdGhpbmsgdGhleSBoYXZlIGJ1dCB0aGV5IHByb2JhYmx5IGRpZG4ndCByZWFs
+aXplIHRoYXQgdGhpcyBwYXR0ZXJuIHRoaW5nIG1hdGNoZXMgY29tbWl0IG1lc3NhZ2UNCj4gdGV4
+dCB0b28uDQo+IA0KPiBUaGUgYmVsb3cgZml4ZXMgdGhpcyBwYXJ0aWN1bGFyIGNhc2UgYnV0IEkg
+Y2FuIGFscmVhZHkgc2VlIGl0IGlzIG5vdCBlbm91Z2ggc28gSSB0aGluayB0aGlzIHBhdHRlcm4g
+bmVlZHMNCj4gdGlnaHRlbmluZyBhbmQgYWN0dWFsbHkgc3BsaXR0aW5nIGl0IGludG8gc2V2ZXJh
+bCBwYXR0ZXJucyBmb3IgZWFzaWVyIG1hdGNoaW5nLg0KPiANCj4gUHJvYmFibHkgc29tZXRoaW5n
+IHdpdGggYSBwYXRoIHNlcGFyYXRvciBpbiBpdDoNCj4gDQo+ICouL3RkeCgtW2EtekEtWl0rLy4q
+DQo+IA0KPiBhbmQgc28gb24uDQo+IA0KPiBZYWgsIEkgd2FzIGdvaW5nIHRvIGFkZCB0aGVtIHRv
+IENjIGJ1dCB0aGUgZmF1bHR5IHBhdHRlcm4gYWRkZWQgdGhlbSBhbHJlYWR5Lg0KDQpUaGFua3Mg
+Zm9yIHRha2luZyBjYXJpbmcgb2YgdGhpcyBmYXVsdHkgcGF0dGVybi4NCg0KQ2hlZXJzLA0KQmlq
+dQ0KDQo+IA0KPiBQZmZmLg0KPiANCj4gLS0tDQo+IGRpZmYgLS1naXQgYS9NQUlOVEFJTkVSUyBi
+L01BSU5UQUlORVJTDQo+IGluZGV4IDJiMGQ5YTI4YmM4NS4uZTcyN2RiNzBhMmYyIDEwMDY0NA0K
+PiAtLS0gYS9NQUlOVEFJTkVSUw0KPiArKysgYi9NQUlOVEFJTkVSUw0KPiBAQCAtMzAyMjgsNyAr
+MzAyMjgsNyBAQCBMOiAgICAgIGt2bUB2Z2VyLmtlcm5lbC5vcmcNCj4gIFM6ICAgICBTdXBwb3J0
+ZWQNCj4gIFQ6ICAgICBnaXQgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJu
+ZWwvZ2l0L3RpcC90aXAuZ2l0IHg4Ni90ZHgNCj4gIE46ICAgICB0ZHgNCj4gLUs6ICAgICBcYih0
+ZHgpDQo+ICtLOiAgICAgXGIodGR4KVxXDQo+IA0KPiAgWDg2IFZEU08NCj4gIE06ICAgICBBbmR5
+IEx1dG9taXJza2kgPGx1dG9Aa2VybmVsLm9yZz4NCj4gDQo+IA0KPiAtLQ0KPiBSZWdhcmRzL0dy
+dXNzLA0KPiAgICAgQm9yaXMuDQo+IA0KPiBodHRwczovL3Blb3BsZS5rZXJuZWwub3JnL3RnbHgv
+bm90ZXMtYWJvdXQtbmV0aXF1ZXR0ZQ0K
