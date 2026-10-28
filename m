@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.19
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.48
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793204244;
-	b=Dlq+M0m9T2Qh2Rq03vqqSF/eYjPGWRn55n8EiWI7TdtDvE3S8BKIVt5QQ+uuoOYrFG6Z
-	 kUmxKUVTNnTw21ADs1gZr2iVDcUkuajXCuDcIxtQzDxzI1Hp1l2D+9in5R3K7JyhPCICW
-	 6lzXW16fG8GbqHe1zFjNe4LcBoVeioD6lilNB6EwuWTJO1FfT2hbl8RvAsBO8qSjzVdLS
-	 MvXbWmly6DAWidKqmLOA/rAijRCe5laJKSdzsXtRTD0qerbcdmHQZcWHsG2/XnX8dtelx
-	 FEhiyISKaR2TbV+aH+aHxiO5Ta2pjieMsxpcts9cVp0owUd5svh3bKHRwKe6zxgxQ/A==
+	t=1793204659;
+	b=lVahR8VsnE0xkLXuvKLxMQgALFYXe6yM2aVmiCCptI+41jpiZrN2467/3petWrWeLYnp
+	 BzQceyZ9OHv1GaW4gzTSNsOjvuppv4UQBhvWRFjxvrdkfa5UL+UD/jyXxQwNSdgyDbhz5
+	 NwhgK0ZRTs1X1WEIW+DM2GWy0Mj1yb3fhyrNIn+bqht7/vQy/SGZdP93e2Ye8sI6Szz7b
+	 1j2dr6+nvrXrRBJCUTg4VFwvUFRnosAPv+tJscKr+mYGTnw2nHKWQVAl9pG96hmZr3OiG
+	 n5kvk99UpCf7j5PsB37U0quj7Ctz+PPEB590wq/VYteZIgOgBv2E7Fkq9BS6ApYLlCA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793204244;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793204659;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:Content-Type:Content-Disposition:
 	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
@@ -24,55 +24,55 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=AlIg+kAiB08Dl1qg5i3P0kJ+PmJNs61K6y8+fHcujg0=;
-	b=AZwPIm4Atw1WqZIYIBXLrz9lbJAwgISdS/Dn2991kOnZmW4yKMsRNAdcjsSEwzP1pI/Y
-	 R5FKz5lol3kdjBagjPEgk90oeSXSTSM4SVcIu93PxroiKSt7EN/SX/qEWKkKYC05U/SRy
-	 OW4DJ5eHZIql3dcY73hW3SdSm26/5xPiGv5DOB3oipnIU8UrRUW74yKKideW+k+VXNii/
-	 LJktN/e146z013GnM9f4X8mdNgyI0yK6m8lPemNPNfC4jdpWqavNMaaiKRSQ68RAgG/Hx
-	 1XNxmxclsgIEMHMnivfzVohc7AnJ7ylUspGI8RmaxZHT/aKtpFfOLKDAEfhtRwW2p4w==
+	bh=RzghwIJywr9/TH2WGtcNN2E1NcXxjM7oYHv5o8xHrP4=;
+	b=t4LJ/HhMwthe+tvZxiPC17QBCvYUus4jsY528L798bc/Uutvaf3oBYM8FY5D+sYStEQl
+	 GpueEGSp3iZwyF85zFZCz97ZKFHnj1ofs3tgbF0YB/afM6MMB9uMcYnVLxIX8UOwTs66h
+	 bTJuNojSoJnIKeioya2UE4gG2lsuBX11b7boYSVVJyUGMEI/tPiXo/Too86xIBN6AiO17
+	 6dESCqre2rFKStNDRhbzmSZ0dWvvssSxgLLgLVgGazlJGdizNIsjEgCtNpwz8emgqxuK3
+	 MqBqDhEntfw9kNu3wD849SkliOqXYLgJkqsluwETHszSjWoX25ZQpcKeofNHMC9LtTQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=oss.nxp.com;
 	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b="AURQ/z3E";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.19
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013019.outbound.protection.outlook.com [52.101.72.19])
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=EHEeAMSZ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.48
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013048.outbound.protection.outlook.com [40.107.159.48])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95439606A31A;
-	Wed, 28 Oct 2026 16:17:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95439606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D094606A31A;
+	Wed, 28 Oct 2026 16:24:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D094606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=AURQ/z3E
+	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=EHEeAMSZ
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vFCIPijhYR69EMWZobZYeCDJF3TTIHnIohPQkSyQfwTFzT6blk5+2xTAq3nM1HLFafpJp0d+F2fWRBHIYOyHfwn1uIq+LYdOd/JoeCeqEMLmDX2wVwmSHzPfex2IUifItAA1N4KBlBp9GTrhVE0L9U8bxx5I3NDoAnILCqSp1Yv54gGjayQ3A2LHcZWn4AFzkJYr/YLDi44G7xbvRZWnfYWdOiWT7FeWKKw7ZpI6yqGaq8SDT0cKFvNSq+pRjOJA/Pe/RYI7kPYNRimXTeo9+/W3giJ5TqUWZi/jrv+vlfhf0NI0lj/4QpnbuTA9rZnzvxb3hAgEF2MDrtoc1WldcQ==
+ b=HI/qAxPqMsq0mOlKLWjWXSM0oohfWvaFIr8P/S9DTQbBq2gCh5AsomyIKJqBD1/bwtNmaCXlB0/U8NzFYrjz0IdELQczkGyx5T6dd6GXWSCygZNoJ2QHeOQbXAHGFes0uXQtwXh+AX8RYE2VnnoHmGocUycXidxm5igZFXgLNZCUjEpPLfRMzsu06pPJ0nbcevvu5b5gVa0x7zFsHO//QsJDNQhTz6wKsFXlrF8OrEPX2olbLspzgVGq1rh0rc0MwOAb/uzQQ4PkDwJRu9BEiwai3vArEEMP9Jf6YrZ3vxN9yOGvtMuj/Ye7vUJemkd62Y+QrebP70o7ufftjswKEw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AlIg+kAiB08Dl1qg5i3P0kJ+PmJNs61K6y8+fHcujg0=;
- b=PNVHRHIITIPMCmXlyUt7hqLkJNAY9C3saokW2hUbge8SPu54B+fAeBQWkHeBlRO19wve6IVALHfxOdh4bos+MekisOGVkFaydjqBF3gRZ1Xtj7M2PWupLnwC4mmEGVbfw9onXY0yLzX33A+YBgy4pLSd+vn4UHxzIIvJ5XiCF5qhnaL2VFLtLkHQ7JkIesuZcMHX/6ILheZAVCv8k2S85io7+1efXN7b6KuVuZZ3jhNhiPNmZhX1ufLPJhBqC1oHqLJKNoAS+9zROwlg+WcArWtVUSVmvxSNHHsNIsgAwMN6g/hDMCjN9knKLQrNS9I0f9fkzAw0mo7iUAUYWozvzQ==
+ bh=RzghwIJywr9/TH2WGtcNN2E1NcXxjM7oYHv5o8xHrP4=;
+ b=u85YvlTgZNirZejLXdtrQcJ3hwQa9ktE5AH5oF0DIAGpGoC8tbIG1Baba3C8vFoZ4te4J108U2vHT03l7ul/jFMxiB3HGBaLf5vEmCJJLCWo6QdXVxK7kO+CgpnXNrKzRKImenSHfGCGyRdd4D6ug/LA1P81SHZI8EcbuifKuueGiIyIDDfx9iTKFF0wvuEe7TxKIOcDZ6O7zrC/3wNTwt56U3+yqB+01jfUJfz7BzzzkdmWujw4y0j+WN4omye4S5REYQjw405U7Of/yT6g9QlbBhccR2N1CgsFs+CHzBpWwfD/XbV0aC2k6C89lOQja1wwwBDxIffoHGcM9zJOWg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AlIg+kAiB08Dl1qg5i3P0kJ+PmJNs61K6y8+fHcujg0=;
- b=AURQ/z3EvXupAFcXHutgXglBtaDAjYJcQm/6blUluZxNtFXefVW1fxuy59hea08X9dqeqYaRR79AhhFNK1TZJeNPYiDh3jp/SKOFM7kiIMm8vDlFmo38agFWbwqDy/lCVCWX549PY48g5Djic9udgq/X3kXVGVb01c8NGqkTjZznPPFIvoT5jleMDbcAagaD4UiIgkYDTKkvV4TI+UYXyHrosDCSj6w0guopXThNHiDc1VBUigjiohilFqltvIfk9SUWflclLK19yE2L6lKRvjtnu2ht87hV6h+umPAmtTVEh3Wy2OBgLXbviTTEoi10FdE4oSdH4Id/cBDByl0DeQ==
+ bh=RzghwIJywr9/TH2WGtcNN2E1NcXxjM7oYHv5o8xHrP4=;
+ b=EHEeAMSZ4rt5aZvZ+hRaf0WLttqRJpsCZTUlSnEB70W+7srOuc1H9s6S4W9KTnuwkCXLmDT0V9AhMMynXchyixkO6gMoT01XLFgRC501nroYWxMJEwJ/5hEoN1HEQXMV0rdgwvmDfPV1srXHTjobCUBJn3gXFz7AFxSNmmtoHdysJnFsuNv+un8mOWIOs4sMW6e7+HKc9GH1zcAaptwnA0OtLA/V0+sNckvUE3xZkXsGQAur6JlQ/PF8VzE1KjEGKNUq4AztzEhHZn9eRVIhiVnAy3kyL8GtZL+hIxwqdlpsOshfwohelkuglBL6AThbpOn1DuAP93QknEk1lVu95Q==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=oss.nxp.com;
 Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
- by PA1PR04MB10985.eurprd04.prod.outlook.com (2603:10a6:102:48a::8) with
+ by MA9PR04MB203935.eurprd04.prod.outlook.com (2603:10a6:250:110::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Wed, 28 Oct
- 2026 16:17:20 +0000
+ 2026 16:24:16 +0000
 Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
  ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
  ([fe80::c715:c32:8bb1:b70b%6]) with mapi id 15.21.0546.021; Wed, 28 Oct 2026
- 16:17:20 +0000
-Date: Wed, 28 Oct 2026 12:17:11 -0400
+ 16:24:15 +0000
+Date: Wed, 28 Oct 2026 12:24:06 -0400
 From: Frank Li <Frank.li@oss.nxp.com>
 To: James Hilliard <james.hilliard1@gmail.com>
 Cc: Viresh Kumar <vireshk@kernel.org>,
@@ -88,16 +88,16 @@ Cc: Viresh Kumar <vireshk@kernel.org>,
 	dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>, stable@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] dmaengine: dw: Fix XFER bit set, but channel not
- idle error
-Message-ID: <auIgByiiQNwtr1WK@lizhi-Precision-Tower-5810>
+Subject: Re: [PATCH v3 2/4] dmaengine: dw: serialize error recovery with
+ channel termination
+Message-ID: <auIhpgXNseoUh6an@lizhi-Precision-Tower-5810>
 References: <20261023-submit-dw-dma-synchronize-v1-v3-0-c62bf048f5ce@gmail.com>
- <20261023-submit-dw-dma-synchronize-v1-v3-1-c62bf048f5ce@gmail.com>
+ <20261023-submit-dw-dma-synchronize-v1-v3-2-c62bf048f5ce@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261023-submit-dw-dma-synchronize-v1-v3-1-c62bf048f5ce@gmail.com>
-X-ClientProxiedBy: PH7P221CA0009.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:510:32a::28) To MI3PR04MB12438.eurprd04.prod.outlook.com
+In-Reply-To: <20261023-submit-dw-dma-synchronize-v1-v3-2-c62bf048f5ce@gmail.com>
+X-ClientProxiedBy: SJ0PR03CA0202.namprd03.prod.outlook.com
+ (2603:10b6:a03:2ef::27) To MI3PR04MB12438.eurprd04.prod.outlook.com
  (2603:10a6:290:76::14)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -109,227 +109,140 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|PA1PR04MB10985:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4b061b37-0659-4005-de50-08df350ef16f
+X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|MA9PR04MB203935:EE_
+X-MS-Office365-Filtering-Correlation-Id: 311f3561-b313-4e71-d7f4-08df350fe8e5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|366016|376014|1800799024|23010399003|7416014|261028144727099003|261026140227099003|11063799006|5023799004|4143699003|56012099006|261021123027099003|261026121527099003|261009223027099003|261022075727099003|261021121427099003|10067099003|261022105027099003|22082099003|18002099003|6133799003;
+	BCL:0;ARA:13230040|19092799006|7416014|366016|1800799024|376014|23010399003|22082099003|18002099003|261028144727099003|261026140227099003|10067099003|261021123027099003|261021121427099003|56012099006|4143699003|261009223027099003|261022105027099003|11063799006|261026121527099003;
 X-Microsoft-Antispam-Message-Info:
-	0MJDLyX95JNV/vhZ08t0lQpMzw0Csrb9NcS/wcHMPtuS1/mjJ2ni2qh0JI4HMx77ePsJ6/FHJSSGs08IBCTXWLbOYBMlQXG20yfkJYFH5NqveMDT9USUloTTmhL8k1CgjI/AZTABKsAzCvM6bno8++EhsLZa4Su77SW2I6/20OOOWFarSfpSw3RvWoCrAK6Vmky3HMSu+WQ1JgOxZpMxHEcl3J8EIbFQjVht1ygnSQiXfSN0A0ZrDml4YmqDLZP8WzN8+yYGMQsUw9UJAt11n9VnsrLxsVpA/CqvvLFysaqFTvrgnOl9cwBY9jU9dg/j7OPmyO/CIgB7qR2MvuD+owsh3JhY9HQcgfuNijGqaPLjb9T2K9Dben4tz8Cgpj5ZLJI+atz0yHahlZzNoQyYvs92Dumzk1fAotuScYIrJyHx/is8RmVKKtjc8finErTeTozFSi6szDzK0EMZn7u0yHHc/8jEiz9fgB+HzTdXxZXhm1AhbOtaynuZ08dkYindxzolCi8q7Lx2KLYN6QOLZj+lTssQf7psu4lmT78SdfNp2FSdao4EOqwVp7ZfsKmUMt/MwYzMmIPVPZ+K+uMsp8gSn0jgUze0QGVM7KnbTKYpjhwBe2015TwC3JukF2KR1C8cOO2g3Tg4RETfrsIzt64cu/N8YUGm1sip5j0KlQ4=
+	Zr+FRimxpm0VfikD0081C56mro6fbfD8tX3ZwwlmvMTqIHNmwlzMGSxiLC4Bl1xEsfrOJlcn6DwJOZjQdh79CfPwRWUW5aGZOvVsm9oBDxd904cw7E8J8CbzN52IKwv/v7rjrbby8z86F85eI7AniW4TR4jCcOrYZbf0ZONtynRmore9dVoPm7A2TI1AU9a7s4xNcCLhg8M8li1xqgATBt+XG/ePc3dVbBPUfQZcrK60VW/0hy64QdMbuvoTdIj3SX3xTbP4qOFuayCyeWaXrqEdjw3VOIhYHcKgy0cKm6NQXXofxx+Q3zIgs2MPhFqWJJVfycNhqVLDzF4kJXGNysQsXC+DNNWy79wk0gHiwe6K1weQaKjJsaBzLNKwhPuMQ/XCIgvlfxXt8yY27GVI0XXAS6HDhOXiNLa6zyrwagq6naqdjl9vUbQ6Bon73WtpXLC/cZzE7yIKMhvzo6Q+xi6ZAZ8Bf52cSzeqAqsoKIv2hYpVIL/8XjTq2x5k3gqzuI9JRzPGKISuQcJyOa+kQ6zo00q74GxNu5dQhUcCj0Q5cb7vrtFwwRlQk8OrlX8aSX6Na79X8Pw8qXfCwdWKJzsbCEpdqRGTDRBp3jz2fXzhiK92UQvu8FPKw5QikVSosSgb/3K/MTrh/vt897MThRbdy03x3Nk0VA7TvQkObso=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(366016)(376014)(1800799024)(23010399003)(7416014)(261028144727099003)(261026140227099003)(11063799006)(5023799004)(4143699003)(56012099006)(261021123027099003)(261026121527099003)(261009223027099003)(261022075727099003)(261021121427099003)(10067099003)(261022105027099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(7416014)(366016)(1800799024)(376014)(23010399003)(22082099003)(18002099003)(261028144727099003)(261026140227099003)(10067099003)(261021123027099003)(261021121427099003)(56012099006)(4143699003)(261009223027099003)(261022105027099003)(11063799006)(261026121527099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?hHY6pv0lRGJw8pmTIHs/0VVOLVfN80LEfJUCd6lSDm2F1Ovf28DdArWF78Cj?=
- =?us-ascii?Q?J8377RttRnOVxkWKWkR5s0w66np603N+jDRSLTOlhWGg24aI+4t31tw7XsCq?=
- =?us-ascii?Q?vxVv/Dpy9LJFkGrK+dpBfZCjth+Zc58rqjURrRHhBj0fTUJUe24CKd9oUfPX?=
- =?us-ascii?Q?/kmUJILHpu3JyAfb5PKBF2eeMIbYotxNQr17ND/IKDp5s4RFLFSjxe0ym4r1?=
- =?us-ascii?Q?XGlhxjLdKYxwh6Yj2CSFPGX/FQQDzqh+QTC4T1FUpzNrV+JFERgzD01+gAaB?=
- =?us-ascii?Q?s8ZrrmiKGc7zs87ceawTrBKI+n7ASH8WCVkTWej6KYxR+1HP2oaQjEAW6bU3?=
- =?us-ascii?Q?tHT4CGGdb0rGcDYavmhU6sJYyohf2z7+Mh847ufXktmo4ND4qNH8puNPbbeg?=
- =?us-ascii?Q?3WiVZDLvXtUnwhqYBaX0/4m8rQEMi5Zu9OLKJIALfoF4RP7TO6J27DjmUXr6?=
- =?us-ascii?Q?ND6z/0baiMm3GNuKOqIVTBllOE7YoZzJ42Tda+9eBf4g3nMnbOqpRlq4YZFN?=
- =?us-ascii?Q?DdnuxBcz6lDIOH69OkI74W/N1lV/NjeKQ1bIUwD5m3jrGTKJGcHJ4FtcGd6Q?=
- =?us-ascii?Q?3XzFnLruau5m01r5DHKiZFsy3vwtY4gCSXENW2bMSMDvKUS1fvhx2xuu2ci1?=
- =?us-ascii?Q?l2K8GnVlKpmdWfzuJh0LsldFHcZggjRD4GLrj2xrvCtTUkdwWbdFzxqfmjrB?=
- =?us-ascii?Q?VUMaJznjfkKxoYAHRjQOF1e2HaZ0xUv8dnILED5zOS2iJN8oOvf2IGQB4rix?=
- =?us-ascii?Q?TwIfUifqU6GWJ9318xcqWSquSpA8oVAXhnKb8SFEpBJBjNT74oM07MtdJUSe?=
- =?us-ascii?Q?XtMa25sFYtz3iiEUjFYDHaOEwOgcGU7AGOc8Ym+XDdE1sfBKEWSh4nGETbLj?=
- =?us-ascii?Q?wqt4gSGpLHF5dZ8MOIZqmslk3wUbj6/jzVcK4r8ALUV8VP/nkvGkVGcucf28?=
- =?us-ascii?Q?L1NlD/fE+DOdLjZi8YLE8qDqW2T9Thv4g3DJ10K2qDQI39FriuV615fZXN4M?=
- =?us-ascii?Q?K6210K3540hnhD1hu3Z6jAnrYbfVYsYAZpxtcXbP6yNy+mu/gcngEQXYqBtS?=
- =?us-ascii?Q?qOWfHyFDItvklKMVMBgn135/buR12SIS8zQJCVh33i03LhsASdoCIkO0EPYd?=
- =?us-ascii?Q?uleWeEqvNSf0rrNtdj2E8zdFHnGjSNuXJON+J2dNDvUMmxfxiwveXuNf17ad?=
- =?us-ascii?Q?dH+Zkh+a239Ql9udPOI/NoffHWbDEHrrbX3MlUDn2u34ZM59EjkfU7RDu9To?=
- =?us-ascii?Q?YdojZm/7J9fti62FT4uOH+mjm0nWkiTZQF31mB+P1CY/5hSPcfd62WtC6486?=
- =?us-ascii?Q?CpQTRMiIvsAhEWLl5VjvMbvOwzouRxQfezVOyMS3TW5hSa/RZCn7tjgbKnxg?=
- =?us-ascii?Q?b0AkC0MdC5oqr0Lw+sIo9HoUunLGk7jPOS5TzWk4bIHsZ7or6I7wTzRNT1FL?=
- =?us-ascii?Q?71R+qgE5cjoVXRR5Z9NtOLz8znMc12HxgnSFVUjE75i5lCwuL6MjjxcX+K8Q?=
- =?us-ascii?Q?0GvsNuiLFc4Znl1fSrO35XsgsQ2N3mGU9b7scfEy9go2VYGZXycUTfWgLRPQ?=
- =?us-ascii?Q?QsiR7XGo4QljU55EZn/RPRxCgNIYSi3XsUelFWy1U3Q6jbI8MTfp760RE6h3?=
- =?us-ascii?Q?ZDnx8GBG8fLM5U46l36PH/vf7AQqeVFu/R5bb5QE+aUaCXEo7a02TippElaP?=
- =?us-ascii?Q?hd7XwtERAzQ2MPvWSoJlAKlKyR7prGbX74v28/wjOIF72LnRjiW9OCmm/cso?=
- =?us-ascii?Q?nT0nuO2ppMxN5/Z2i5qdEPhfRPxTUDqMN+wNC4OEqK5ctE1+RXtN?=
+	=?us-ascii?Q?B3DE4JC4KuBfhE4SwrENK9nTViNQmlhVgecMCme9gXivZ4MvCJAdDgjBK3Fs?=
+ =?us-ascii?Q?Od/W5Nrj77G2j7/7ERAAPP79LvksGVeoGzfvGKA4MzD393xEeFcDhtQ3Ugey?=
+ =?us-ascii?Q?oenh3Nl0bc0yhdfkp8nT6XKoYRtn60kMdROkN4RqUcyWEE3H0t4xtaanghzO?=
+ =?us-ascii?Q?EG1Cli7mHC9gBYrwmxp8jQ0/hOwQbJT3DNm2uJ8Q40E1VxO+HH32vsvApDvS?=
+ =?us-ascii?Q?4B0sLolSeZc6fHDNM+/JV7nlivE02iT8ogEeK7M6lZRL4NKbVOYOiOSRSAzO?=
+ =?us-ascii?Q?/S1Mv4qZdRFpsyGTLHT0A1G83A7AkHclOaKe1mJ9S5FR/vUxaU1Tc4urNFjj?=
+ =?us-ascii?Q?mLbrxK/f0q1YRW5vHE4qyk4tXfq1eykrCTk5RJvF/kX/4aeRR3sYD4Rsf1mV?=
+ =?us-ascii?Q?dTjQ1ji0iUw87yF+vzNohM0ZseUZjYhbG+GMHjbMDUQHBB7LiJKbn5nALscK?=
+ =?us-ascii?Q?cunWubzWkCYbKbLE2X7qEE3jh3YuqqHjY/Za/C6UuV1ma/iqRmMbuGCt4ZtC?=
+ =?us-ascii?Q?udu+GxkUD80Tcre9KOVMBWOYWr7jvZXjErv9Ym9otWjOg140YisuNrGWlVd/?=
+ =?us-ascii?Q?zOQx3yT7ZXtOxR9Dy2ppuhuEhSFwTrNKDfrx8JtnfcQ7G20NyOH01s09QEbt?=
+ =?us-ascii?Q?s7Lg/OM9sJr5djyar5MRAOms4/1AQIYiqPuLqLZRCyxx5MYd1ErrgC4vqGYV?=
+ =?us-ascii?Q?NmfDOjMo4HtNyO0cbE3UrpKn2YTLKc75wB9jFN20S8YuR6eS0GRG+PEg6tkj?=
+ =?us-ascii?Q?dxb7Xhlf1a2EYOtQyS2pn1/Q/aWwgCK4J002VAFDMDRGaa7XRlw1qLcMwzhn?=
+ =?us-ascii?Q?g0iwGFocv9LmKubfyB+68lEucmduMw4hqleteINWc0Zn0ZU98VgPEivGOTHH?=
+ =?us-ascii?Q?fOV9DxyhXGAKkOezAC0A+aMKJfyIksFde7/h323XAQ/yq4TxnMreEgcCwAe+?=
+ =?us-ascii?Q?jyMIIuRO5KkSSs0ulrNuQDuou/XAaLtVU9D/qLwsrqY3PRlUr6dT4y+kJc/z?=
+ =?us-ascii?Q?AISU6PpLJPMMhknyXs7Ovz4O9lNrk8DJASS4VEXa/khnH2D2tcDBWHAn1yeZ?=
+ =?us-ascii?Q?KIuASrlXPIZ3cR5A9wsDQPGKev4IW4As/t1/WDOs8XvAa+kkRe1uBxRCihS1?=
+ =?us-ascii?Q?0WYIjUuPXei3t33zwlX0WimRNNKf86KAZEVcpZ7dhi7oEc/AXs1jTWtrYSvI?=
+ =?us-ascii?Q?vVYlKA3eiKrsffyz3I5qqVaIRD+WpRzvZYWldfGDmOpkDEA9HBVzhq4KSu6Q?=
+ =?us-ascii?Q?f60MXT+3fmfdlUjacX/3o4LycAYRugaGYMOeQeUfGEelxO74+9wBFgS0WpvK?=
+ =?us-ascii?Q?gytO7NpWcI3yiBM0P6H0/92WykqU/Gp/2T1B+sXtC1l5TyaaAhuvDgoxdTYO?=
+ =?us-ascii?Q?E0Ut1ygGBiURc9EQfUEzwoGSWpg0lU5waclfoGvCoQkuXJoE+6MeCs/T4+2+?=
+ =?us-ascii?Q?CMfT9MWoLEgG37jTojxdoCCyejIDxbFITOlctNUCfWnGkfH0AHQimWkkVorP?=
+ =?us-ascii?Q?EuHPPlhEh4aeMB5KDlHA1pKuaIDEa99Y7YZ0wo31mNmrDuVo3RNxlr+5iEib?=
+ =?us-ascii?Q?rgrCyhX3i8+eQh7XQku1bKuI/s/lUiYE9q7yULJyNi1DW5HTzNDqchObqZiD?=
+ =?us-ascii?Q?JUtk8RKf4v+/l3FxAVTWRzjTH3MIXkeST6ljXw9j81dnX+CQNRrw81syDi5G?=
+ =?us-ascii?Q?eGuFGb5yutf518+cSd/mk0rJBkyydw3n0aItK3NBZbpYg8L7GDNF3kt4WVqF?=
+ =?us-ascii?Q?PA5NTUB3o6dN3Z5VrquoYVbgJGml4fY0ETNa6MTUU/MoUeRhmUaH?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b061b37-0659-4005-de50-08df350ef16f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 311f3561-b313-4e71-d7f4-08df350fe8e5
 X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2026 16:17:20.7184
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2026 16:24:15.8783
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yNyJRBLdP5N+L1ujKWi0AJYX8+tQ2cRlUwHTteMPsSZTRhrugpXeYlrC/3CRp6U5J8TlPrO+qFoILPnKVglru2Wz+lwvnIW3GSUzRvWqFVAm34590+Fg5bKlw5WRmaOK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR04MB10985
+X-MS-Exchange-CrossTenant-UserPrincipalName: jCckQtI9UWByRNrQ7oMzPbFMRhCB6zFII2YaqQqf8FPddePjVhJ2nRj9FJBh/fZSLWDy79q9NqrcSmyK0o3dbChZ6z4z6Og9EKIbVSpdmFiXXfNU3gyNcweUNq2UTLHn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MA9PR04MB203935
 
-On Fri, Oct 23, 2026 at 10:27:22AM -0600, James Hilliard wrote:
-> From: Serge Semin <fancer.lancer@gmail.com>
+On Fri, Oct 23, 2026 at 10:27:23AM -0600, James Hilliard wrote:
+> The tasklet samples RAW.ERROR before taking the channel lock. A
+> concurrent termination can empty the active list before dwc_handle_error()
+> uses that cached error to select a descriptor. The list head is then
+> interpreted as a descriptor. Even with an active descriptor, moving
+> queue.next unconditionally can put an empty queue's head on the active
+> list and pass it to dwc_dostart().
 >
-> If a client driver gets to use the DW DMAC engine device tougher
-> than usual, with occasional DMA-transfers termination and restart, then
-> the next error can be randomly spotted in the system log:
+> Recheck the error status under the channel lock and stop the channel
+> before selecting its failed descriptor. Only one transaction is issued
+> at a time, so take that descriptor directly instead of scanning for
+> completions first. The scan can otherwise complete it and start queued
+> work before the error handler has identified the failed transaction.
 >
-> > dma dma0chan0: BUG: XFER bit set, but channel not idle!
+> Detach the failed descriptor under the same lock and use the queued-start
+> helper, which leaves an empty queue alone. Clear the software-LLP flag
+> before restarting so a failed multiblock transfer does not prevent the
+> next transaction from starting. Keep the completion callback outside the
+> lock, with the detached descriptor owned by the tasklet.
 >
-> For instance that happens in case of the 8250 UART port driver handling
-> the looped back high-speed traffic (in my case > 1.5Mbaud) by means of the
-> DMA-engine interface.
->
-> The error happens due to the two-staged nature of the DW DMAC IRQs
-> handling procedure and due to the critical section break in the meantime.
-> In particular in case if the DMA-transfer is terminated and restarted:
-> 1. after the IRQ-handler submitted the tasklet but before the tasklet
->    started handling the DMA-descriptors in dwc_scan_descriptors();
-> 2. after the XFER completion flag was detected in the
->    dwc_scan_descriptors() method, but before the dwc_complete_all() method
->    is called
-> the error denoted above is printed due to the overlap of the last transfer
-> completion and the new transfer execution stages.
->
-> Clear the channel interrupt status when stopping it, and keep the XFER
-> check, descriptor detachment and queued-transfer restart in one locked
-> section. An empty active list needs no completion processing.
->
-> When the locked XFER recheck finds no event, only update residue. A stale
-> tasklet snapshot may belong to a terminated transfer, and a zero residue
-> only means the source has been read, not that destination writes have
-> finished. Requiring RAW.XFER also prevents the fallback scan from freeing
-> a descriptor still linked on active_list.
->
-> Fixes: 69cea5a00d31 ("dmaengine/dw_dmac: Replace spin_lock* with irqsave variants and enable submission from callback")
 > Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA controller")
+> Fixes: f336e42f73d9 ("dw_dmac: Move single descriptor from dwc->queue to dwc->active_list in dwc_complete_all")
 > Cc: stable@vger.kernel.org
-> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-> [james: require a locked XFER event and handle an empty active list]
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 > ---
 
 Reviewed-by: Frank Li <Frank.Li@nxp.com>
 
->  drivers/dma/dw/core.c | 70 ++++++++++++++++++++-------------------------------
->  1 file changed, 27 insertions(+), 43 deletions(-)
+>  drivers/dma/dw/core.c | 22 ++++++++++++++--------
+>  1 file changed, 14 insertions(+), 8 deletions(-)
 >
 > diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-> index dd75f97a33b3..07a5f5105787 100644
+> index 07a5f5105787..51c5460b4670 100644
 > --- a/drivers/dma/dw/core.c
 > +++ b/drivers/dma/dw/core.c
-> @@ -141,6 +141,12 @@ static inline void dwc_chan_disable(struct dw_dma *dw, struct dw_dma_chan *dwc)
->  	channel_clear_bit(dw, CH_EN, dwc->mask);
->  	while (dma_readl(dw, CH_EN) & dwc->mask)
->  		cpu_relax();
-> +
-> +	dma_writel(dw, CLEAR.XFER, dwc->mask);
-> +	dma_writel(dw, CLEAR.BLOCK, dwc->mask);
-> +	dma_writel(dw, CLEAR.SRC_TRAN, dwc->mask);
-> +	dma_writel(dw, CLEAR.DST_TRAN, dwc->mask);
-> +	dma_writel(dw, CLEAR.ERROR, dwc->mask);
->  }
->
->  /*----------------------------------------------------------------------*/
-> @@ -257,34 +263,6 @@ dwc_descriptor_complete(struct dw_dma_chan *dwc, struct dw_desc *desc,
->  	dmaengine_desc_callback_invoke(&cb, NULL);
->  }
->
-> -static void dwc_complete_all(struct dw_dma *dw, struct dw_dma_chan *dwc)
-> -{
-> -	struct dw_desc *desc, *_desc;
-> -	LIST_HEAD(list);
-> -	unsigned long flags;
-> -
-> -	spin_lock_irqsave(&dwc->lock, flags);
-> -	if (dma_readl(dw, CH_EN) & dwc->mask) {
-> -		dev_err(chan2dev(&dwc->chan),
-> -			"BUG: XFER bit set, but channel not idle!\n");
-> -
-> -		/* Try to continue after resetting the channel... */
-> -		dwc_chan_disable(dw, dwc);
-> -	}
-> -
-> -	/*
-> -	 * Submit queued descriptors ASAP, i.e. before we go through
-> -	 * the completed ones.
-> -	 */
-> -	list_splice_init(&dwc->active_list, &list);
-> -	dwc_dostart_first_queued(dwc);
-> -
-> -	spin_unlock_irqrestore(&dwc->lock, flags);
-> -
-> -	list_for_each_entry_safe(desc, _desc, &list, desc_node)
-> -		dwc_descriptor_complete(dwc, desc, true);
-> -}
-> -
->  /* Returns how many bytes were already received from source */
->  static inline u32 dwc_get_sent(struct dw_dma_chan *dwc)
->  {
-> @@ -302,6 +280,7 @@ static void dwc_scan_descriptors(struct dw_dma *dw, struct dw_dma_chan *dwc)
+> @@ -408,10 +408,17 @@ static void dwc_handle_error(struct dw_dma *dw, struct dw_dma_chan *dwc)
 >  	struct dw_desc *child;
->  	u32 status_xfer;
 >  	unsigned long flags;
-> +	LIST_HEAD(list);
 >
+> -	dwc_scan_descriptors(dw, dwc);
+> -
 >  	spin_lock_irqsave(&dwc->lock, flags);
->  	llp = channel_readl(dwc, LLP);
-> @@ -310,6 +289,10 @@ static void dwc_scan_descriptors(struct dw_dma *dw, struct dw_dma_chan *dwc)
->  	if (status_xfer & dwc->mask) {
->  		/* Everything we've submitted is done */
->  		dma_writel(dw, CLEAR.XFER, dwc->mask);
-> +		if (list_empty(&dwc->active_list)) {
-> +			spin_unlock_irqrestore(&dwc->lock, flags);
-> +			return;
-> +		}
 >
->  		if (test_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags)) {
->  			struct list_head *head, *active = dwc->tx_node_active;
-> @@ -341,9 +324,23 @@ static void dwc_scan_descriptors(struct dw_dma *dw, struct dw_dma_chan *dwc)
->  			clear_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags);
->  		}
->
-> +		if (dma_readl(dw, CH_EN) & dwc->mask) {
-> +			dev_err(chan2dev(&dwc->chan),
-> +				"BUG: XFER bit set, but channel not idle!\n");
+> +	/* Termination may have cleared the error since the tasklet sampled it. */
+> +	if (!(dma_readl(dw, RAW.ERROR) & dwc->mask))
+> +		goto unlock;
 > +
-> +			/* Try to continue after resetting the channel... */
-> +			dwc_chan_disable(dw, dwc);
-> +		}
+> +	dwc_chan_disable(dw, dwc);
+> +	clear_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags);
+> +	if (list_empty(&dwc->active_list))
+> +		goto unlock;
 > +
-> +		/* Detach the completed transfer before starting queued work. */
-> +		list_splice_init(&dwc->active_list, &list);
-> +		dwc_dostart_first_queued(dwc);
->  		spin_unlock_irqrestore(&dwc->lock, flags);
->
-> -		dwc_complete_all(dw, dwc);
-> +		list_for_each_entry_safe(desc, _desc, &list, desc_node) {
-> +			list_del_init(&desc->desc_node);
-> +			dwc_descriptor_complete(dwc, desc, true);
-> +		}
->  		return;
->  	}
->
-> @@ -389,22 +386,9 @@ static void dwc_scan_descriptors(struct dw_dma *dw, struct dw_dma_chan *dwc)
->  			desc->residue -= child->len;
->  		}
->
-> -		/*
-> -		 * No descriptors so far seem to be in progress, i.e.
-> -		 * this one must be done.
-> -		 */
-> -		spin_unlock_irqrestore(&dwc->lock, flags);
-> -		dwc_descriptor_complete(dwc, desc, true);
-> -		spin_lock_irqsave(&dwc->lock, flags);
->  	}
->
-> -	dev_err(chan2dev(&dwc->chan),
-> -		"BUG: All descriptors done, but channel not idle!\n");
+>  	/*
+>  	 * The descriptor currently at the head of the active list is
+>  	 * borked. Since we don't have any way to report errors, we'll
+> @@ -419,12 +426,7 @@ static void dwc_handle_error(struct dw_dma *dw, struct dw_dma_chan *dwc)
+>  	 */
+>  	bad_desc = dwc_first_active(dwc);
+>  	list_del_init(&bad_desc->desc_node);
+> -	list_move(dwc->queue.next, dwc->active_list.prev);
 > -
-> -	/* Try to continue after resetting the channel... */
-> -	dwc_chan_disable(dw, dwc);
-> -
-> -	dwc_dostart_first_queued(dwc);
-> +	/* Residue describes source reads; only RAW.XFER completes a transfer. */
->  	spin_unlock_irqrestore(&dwc->lock, flags);
+> -	/* Clear the error flag and try to restart the controller */
+> -	dma_writel(dw, CLEAR.ERROR, dwc->mask);
+> -	if (!list_empty(&dwc->active_list))
+> -		dwc_dostart(dwc, dwc_first_active(dwc));
+> +	dwc_dostart_first_queued(dwc);
+>
+>  	/*
+>  	 * WARN may seem harsh, but since this only happens
+> @@ -443,6 +445,10 @@ static void dwc_handle_error(struct dw_dma *dw, struct dw_dma_chan *dwc)
+>
+>  	/* Pretend the descriptor completed successfully */
+>  	dwc_descriptor_complete(dwc, bad_desc, true);
+> +	return;
+> +
+> +unlock:
+> +	spin_unlock_irqrestore(&dwc->lock, flags);
 >  }
 >
+>  static void dw_dma_tasklet(struct tasklet_struct *t)
 >
 > --
 > 2.53.0
