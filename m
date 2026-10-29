@@ -1,88 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793250372;
-	b=sl3VHX1IS8sMd2S/ltLtgQrqhmpA+ZKirPrgU1n60KEJ9Lc0W/9Wq+wk8Rm7m7omW6eT
-	 yH6pk3f7K05yEQvk/fPtoWCH+/ry9t3S28kHDlU/zKIaePEtrsJIA9h0WbwhfV0ZKVFMl
-	 N0fWISJjL59OQQX/1d35NuhHk9vHf+7u5OY7t5s/zMz9kvcEj+6IqLuxugPC6sMBHY5jy
-	 zEMI7TDOPRzbU390OjBtQRccQqopWhPGRoReF3QocadGvJErsX6q0VSyqZjoK4u/XeGdZ
-	 Sre3fZgFQLjbHzrPavi/hjhggDY8LEvj2Xda65Tio8HI8k/Kme5tUrLlQHWnZ5/gYkg==
+	t=1793250381;
+	b=StuRAoxtX5xOEnt3cG0bDpjggU71xHKMPMdkq3bHq/PW/Tx9jiG3uoTEiP0ZGhCQvXjr
+	 EVIn1eT4M/xfIhZ7f8bCId0AAIoBxKklMCn2uGa3q9r+Q8IZzxbma+RYWgxu5HOo/O3RP
+	 JEThf91AzEftgLHzxCZYvMc7cZ2XXiCdmOhlccpuQAqdjgAm7SONP425YOpc5wL6s+lbk
+	 V+c6g1Za0WQvNBIjeBDy4ZsNUeTuaIktfndiGIOQhy/UWPqk+xQBIEze6eTQgXFP3QiFi
+	 Ckwkp4o6Oq+aEUgwX3WGUu9vxiErmHbL0pzyyix0JKga5IG826v5DZD5qGsLcBi4oMg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793250372;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793250381;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=JRnZbRztbK3uQmcjPiHrls6jXuhvcHYv7zJm0Q9BEjQ=;
-	b=pvvnngd30ofksLSFWRWkbfUMeHQTHR7IA/plDJRur+P8dNg83uiT7YbC/0rOOTOhghWT
-	 xKuMGXd6+gdkpkVjbe3Bt6JwjF/HK8mrpabPgeGPorzbZYlwdaxvNVLwBYB1e9oRkWs3y
-	 YixhPUSekO5pz7QjaEI6hLSSNtJW5Qel9raabphaUUfTC9zyn4PJIc/0Za4BPjXhhGtYi
-	 +e+2eiWjeb1SNigZC0RrDthoQDFhGHsH7+vjLgTI2MTf/QdoZhxl3/KZxRItQtcTxjEb4
-	 b56xY22MfvZo3DhEBU3SPAmHLxcjldkQTiHpLk7AwHgsBdOFQr23iGRVZkZbTcdqxPw==
+	bh=4pcGqj7EcqEBhg8rTi3U2rPWxfkoRdeov/It4k+I+Yk=;
+	b=dGvXhkzaxjyMwURq3ptgJD+kbu8Gd3NRjBLd2F+/REpPTHh77zX5B4U8k+hlaARHigyf
+	 Ek4uHbnUbF2GCpIUiFBfm5cuEoN1KEGbtlJ0wkn/CPAKfLOnB0pclyusAakR329BrnsOZ
+	 Vm5m4sh4mSQ6MqWFj9eVA9PG+1aVCkH3KxV4MmjqRaB7u/S2pNQ9Nnno6S5Vx82/i0uls
+	 fFrS6GKyMIPORZB4sF2WxbYLIlSgyCV+uTMxkhgMSvOGNF4DVX7wZ4ZAt762q1OZbFyNs
+	 tzXk1DOIBsX8G1jBBO4Diyv/K6xvb9XY9axuGe8OUCX14FQ5yOOojpDp8SFqWxdNY4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=G8fxqTXT;
-	arc=none smtp.remote-ip=209.85.214.178
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=z+O8EIyU;
+	arc=none smtp.remote-ip=209.85.214.179
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 253F3606A31E
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 05:06:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 253F3606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30429606A31E
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 05:06:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 30429606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=G8fxqTXT
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ea94541adbso7636895ad.2
-        for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 22:06:12 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=z+O8EIyU
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2ea138a3497so9966895ad.2
+        for <linux-serial@vger.kernel.org>; Wed, 28 Oct 2026 22:06:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793250371; x=1793855171; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793250380; x=1793855180; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=JRnZbRztbK3uQmcjPiHrls6jXuhvcHYv7zJm0Q9BEjQ=;
-        b=G8fxqTXTTNESyQXKDfIY5Xm8WthtTd3j5AumXbjcPreruRzIvJMDLop8TkQXZylU3o
-         IlEvSfcyGjWpqG5HLBexfP/zaWk5YYU3eDReWFuHsG3VrgOxLwqzhNxYvrFdaiwvtCbt
-         /arHNvx02yfHlnSJ1jjO/tDYf/1o3w6+RJ7pGCPCqu3JILVZ05QQ83cPE61xNQHWd5nC
-         HFBB2Q17w4/zRv+jCWFodkiXb3OrHw8kVX9cxRCiYzEr3xxF9zkYljFcUt2R/Yjqq8dg
-         M2CFYURtpKrc4PkoREBYRaO4xVAgS3cWp7BxSi2Uy9RCLdpmE0h3DIPREbo3dcklQkFQ
-         V76A==
+        bh=4pcGqj7EcqEBhg8rTi3U2rPWxfkoRdeov/It4k+I+Yk=;
+        b=z+O8EIyUDM3BtcD1Yx+C7oAh11I9nR0MCUlgL3ALaofjFPr87O3qwTHMb0KwOteZ9R
+         0cwM3kRXpkcEfO6qrZAvwIAcuKigraV94opIHJDWIKiTMpviMPbYON3NUoFaY+WaQP93
+         6PEyAtpOt5C+yA0/Gg/CqAGt4oydFJKCV6/vsqxNYhjRfM6RBgikOTsAIR22StKRpk+x
+         Amjxt+VRUPM2Zaz2nCnjzuWiAvSwLW5LyYUB+YrvkWE7Az61qyadK+F9l1psyB+MPrZW
+         zdutJqgc+QZFFjS19kim6bzhO5GYFyUkwhFHVTGrPerT+qmNxMQFykUbqErajqkROqvM
+         bF/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793250371; x=1793855171;
+        d=1e100.net; s=20260707; t=1793250380; x=1793855180;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=JRnZbRztbK3uQmcjPiHrls6jXuhvcHYv7zJm0Q9BEjQ=;
-        b=MR138CnJft2FjktqF3jMRByV8HKHL/RU8uVEkCV1KbP7+yEwPrSEdklu+YYfY4OozE
-         p8P3X66i+A/KSv6BYAD2uR98ipld4T64cWxhkcig3DJmGadvlP6lO1/upcmw59cCCQfH
-         SSbq4Wx17u1MHYqBLFU4qLO4CYB2pXvHUUsbBALYWdwgmhBeXYsZMCNg+YavzMS8nYVh
-         7pqIYlknoejjlEfNcBWyn/ME24TDbGi/2d3Fuumpw1NJmASmoo/e3eNB5vVCzdPjdpYd
-         dD3iZVf+EQNV7xDsbydXnzhx9voeGgo9IFNIfpHkwQsN2haROox1gHL1VtEY8twQZJTb
-         ikzw==
-X-Forwarded-Encrypted: i=1; AKwUvByV9LEFZEVjCRKUxrwKfDQFdzks3AaZmpvxf4+2YhEKSlqJDwImPyMTYrhBbenC+FOkIw7kHLg8ZYnRLX8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYI8TXfTPsH6Knu8WUIr2T7HWI8nW8zaRaSxhttjvzvD89u8tjpO
-	hkh7oqvWfllBU155pAh8WxZhBsXfri5XrWzyiOK4bogzXV5ELubsHCM/
-X-Gm-Gg: AYBFou3Qq2tQ1p0R6BSMbrKR7GDp08edoO9rUfuDeyUhFSfPXki3xxjJIcmoHznEnut
-	MsqQEIWWoB8QVQnjdZwZMuHT7EIzaM/r9nI0fkQIbmKaJABK8BZLVa+v0I7JjSpdOXvrKVnJqOi
-	AxAADvHwFH6+9Wwy+UT//KJwajyL7qMWTLSiGbUlcA3bxCHEycfkzCxmOZQ+Kt42kN8mUeTmZLz
-	dddSYEFO430z/7xvuUFfudiUeH1N8/JI1lJlsoXwh8jYPboKzpuTmJ0eGHx2wb0cey50irKNxTU
-	FAaGvzfZWJbQuwGfw06ZHbZPJVDpWsG+3XTfMpISAAwGPvC3SE0Mr3eXmcHf6OTSGIsTPNDShoh
-	8MMIwf76YS/ZgQQ+o9dGH8cjRso99s3C8NrjFDiie2D/C9olyBK1kAHbBSIm16md9XbRaOHssNp
-	slpAv6zyS7hkMEEfpbWFJqnhFAzgffuxgcxWdcrcU9krYBd3Yys0L/LXiLmq4Czzqog93fxc4Ap
-	RBSSyk8/3bf4w7wVNkx99BXP7ukeFmODu4PeJ/h/rS1HWeZrMFpCJnYmY2wTRPkz/575kBd+mhA
-	w/LuZnQyOgH3AsaMI5RDztEM1YHTHg==
-X-Received: by 2002:a17:902:c950:b0:2e9:61bf:6591 with SMTP id d9443c01a7336-2eb0058dfa6mr43576915ad.45.1793250371450;
-        Wed, 28 Oct 2026 22:06:11 -0700 (PDT)
+        bh=4pcGqj7EcqEBhg8rTi3U2rPWxfkoRdeov/It4k+I+Yk=;
+        b=zeLS5R7db0aQYukHL4WbCiDs25CM867y9okOoMToqchm6a2ZcKJAoRbAukaUfot9JW
+         MtgQb6QJtYoDTVNkBy6e8HwD0PdayIvSctWRdTOcsJUyicZppqTa0ImmgsYBk8uZrJxG
+         UCEv6YKyU/QFCVZfULXftGcVVM5dYKzcUFmTziIWdmk09235lpms1k5iOaf7kMrh7TQ4
+         kq5kylCNcyAQ/d4rM8lhjoO9HfCHQGoYSnFpqJEKMtiiN5oSZ5RqnkUDbo8DfNev8wmg
+         tLYMseQD4gURaF+ONGmvbfnVSKLHpP/KckByRfyAAEnNY7QJVdnpMob39zY7Nfj6EtxJ
+         Uq8g==
+X-Forwarded-Encrypted: i=1; AKwUvBwfP6DTvrwOd+EbX6sCs0LSmd+DBan0XiFRML9cVFdbYQn+OPWHh/s32HXpN7Q2K0mBhuQP5P/hGn+AoZ4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJvsFSvOP8v0KCZzB05MUGXAiuEz9LT6v5euPf8qtdz7OFZ7Qn2
+	WKgJsxwmxS510VVWEtP9+bEtqLn8j1vIPppkJD6orMzi2mRmbBnE94B2
+X-Gm-Gg: AYBFou0AgzXm+RdormZyWQlw/ZsPNQznTu2IuZ1Zz4uYc3oadpQ0dIaaoA/jdqwLfQw
+	C/1IAcFLAz2kG/VYKPYxSAeH/d7Y5lcgs7D6aFYsTHhjLfzlWQZdjnUCNjflYVjLM6D2ei8LgEF
+	jUfseoZoRZ7+Jjg7SOs8yyscdrliCYjzNwUzDLcByKMAoc129XmHxhJgDhOar/EjmcLNCFn4yHs
+	vRpru0A3vPUpARJJaBJ3Yj6/aErDmR4SKDmx+Z0ArabjpIcokN2S86LE/GLS1VUbWq/lTAo+8JC
+	lQbTKCq9bkG9zzcBh+jYCPpYjZKMY2O9KYqUV4slkDx0YftI7v6YNcYruAeROqGJjn3+eRWqM/B
+	8FE3KdLe2TDAPuosPfcmNs1hn09n372xTbSm7Cj0oQ1t7Mh474y8FSUTphMJmZq1odTZWDCuBK5
+	tvsB3use1fY/9g11NyW5t7gb1dOnQSceLzMdPnrvlEF9O7wmz2VNOwbLbJPUZGYsFdXI/4B4FV7
+	9X5ztF6dhnlt8vq6EkVs+Xh604zpd3jWAcG8d1tS8Dypzb/iLJeehiwD/fbNp2Ei25dcnGXyq0C
+	pSIdtcPY/HZSl9hdtD5mt7UaeISo
+X-Received: by 2002:a17:903:380b:b0:2e9:9c65:1aff with SMTP id d9443c01a7336-2eb0041ee21mr39673785ad.45.1793250380523;
+        Wed, 28 Oct 2026 22:06:20 -0700 (PDT)
 Received: from [127.0.1.1] ([169.211.140.146])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2eae6c9d2cesm28159685ad.65.2026.10.28.22.06.02
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2eae6c9d2cesm28159685ad.65.2026.10.28.22.06.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2026 22:06:10 -0700 (PDT)
+        Wed, 28 Oct 2026 22:06:19 -0700 (PDT)
 From: Kwanghoon Son <asdfkwang@gmail.com>
-Date: Thu, 29 Oct 2026 01:05:43 -0400
-Subject: [PATCH RFC 02/12] dt-bindings: interrupt-controller: Add BL808
- PLIC
+Date: Thu, 29 Oct 2026 01:05:44 -0400
+Subject: [PATCH RFC 03/12] dt-bindings: timer: Add BL808 CLINT
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -94,7 +93,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261029-rust-bl808-console-v1-2-b736ee920078@gmail.com>
+Message-Id: <20261029-rust-bl808-console-v1-3-b736ee920078@gmail.com>
 References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
 In-Reply-To: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -121,26 +120,27 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
 X-Mailer: b4 0.14.2
 
-Describe the BL808 D0 PLIC as a T-HEAD C900 implementation. Its
-interrupt specifier includes the source number and trigger type.
+The BL808 D0 processor uses the T-HEAD C900 local interruptor. Add its
+SoC-specific compatible with the existing thead,c900-clint fallback,
+which accounts for the lack of a memory-mapped MTIME register.
 
 Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
 ---
- .../devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml      | 1 +
+ Documentation/devicetree/bindings/timer/sifive,clint.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-index cde4bb6918978b40037774269cee85212d39d4aa..9c625dff1968ae6267b0ab65ed8d4e771c70c3ec 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-@@ -72,6 +72,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+index d53f52e80d887b40c0d20049d86867c8a5b6fae2..3934c0842751e02174c1be6074548e3e1e8f11fd 100644
+--- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
++++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+@@ -49,6 +49,7 @@ properties:
        - items:
            - enum:
-               - allwinner,sun20i-d1-plic
-+              - bflb,bl808-plic
-               - canaan,k230-plic
-               - sophgo,cv1800b-plic
-               - sophgo,cv1812h-plic
+               - allwinner,sun20i-d1-clint
++              - bflb,bl808-clint
+               - canaan,k230-clint
+               - sophgo,cv1800b-clint
+               - sophgo,cv1812h-clint
 
 -- 
 2.47.3
