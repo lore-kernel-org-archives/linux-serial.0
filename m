@@ -1,81 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793301686;
-	b=MjVA49mb7c5oTy7RYqrQPCGpxPPf0aVQq/WqWqjo9gedkT4Jb7nsxdexGQlGULzGwRYx
-	 iVonTDy6WUGZwVlLD9om8pQcfOPlde5UY5oRaMDZIl3utt3MoPKT9IXR59fj3xBXlJazs
-	 p5/0tVtaKKWnebGCgQgGqC+ZaPRXXJEZwT7XPLDrDdKBGpwIE3aX6rK7o3MGedr8JJ2NG
-	 Zq+j/W+qg4zSL1plpedD6s0SHKG3GhurCAaPLYLhjImoo2gdyUYWabIYSkrItXZKOE+UK
-	 6p7Y9+VsR1Ix5jva8hndGVAgOs35Rn8Y3m1QY7uSgxC7pN43SUHs8SSxq3dm/nst31g==
+	t=1793301740;
+	b=rW3EBoM6BtelxY7cXuLvQVVOrKvBugAWDPyFBUvp8MLBBgc4BkakJ6vAlTjMS5AAWZOJ
+	 c7v6hZcVv3aBCJ2KOJgkP60tuT74g4zHR+o6ZU1ZULVD9tDTCgmnVSCrrzM/i5+OLDe/4
+	 whnjK52QMSNwsham90UoZ644Ufp8hAmNK5nSj/+Ro0oQRNyvAggRfvxvMWVXGNe7rAH5K
+	 Z0iWNlVgyTOtxns0MgRLSFmWsraI1NkiZGY5DraeCFOGAXHO5m9zBG0xSfwLyPqU0J8gV
+	 frMKCDMfWGDdgAntDBxuIdfNDUkigf4jDsw4N7TMv/pb1tcNfwKdGdKCe0TWHw0jv2g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793301686;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=mB8QQ9/vuRBF76kR+CudZygjTkN8E4l9aL3S24NkFsU=;
-	b=F+x1kn9Dam9+H5mJgzYo6N5jT5OIU1kmazsWHYGzitFedYNfiscEFHaKWe0Mr5BVMUG3
-	 H7AMT2meFq7n/CCx2mGi5cxZao8cTYXRcAuEJLmVuPAr7Ok1OK1gRBU5KvuSgRUu8as6S
-	 oKNcoMzfiPFEd7st1LeFS6+SOgEioQXTWQ+A03Dh9HK2g65ircIYNb9v8uAwHbBQ80lAE
-	 OkCDXcIuPHM0otmTKOdxnuIwNdK3O2NvzpIZg7wP5QX3cAjrAbA1IcxOO/Rlk1AEt7+cW
-	 QSc/EyHLnPt1rGr3jftDZ60JXBGmagdExhrygSDUOSegw5J6jB/LdrNECKLjRXclrLQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793301740;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=erdn56FlWdw5dHZbEBIhxWfrYwYRtU14HbfYZwG9QKQ=;
+	b=or2GB93k9DFUMe5O7mRJjcyAeFh+rt9BhEIOsszMjKovmZPXapqBL5OTtbSxJedzV8Ie
+	 VLrhF0aLXCR63acRBMLh7lUSMKx+JpPhkO5atoA4lU5k+i88NyMkUQDP0T53TCkmDkukP
+	 VyWleYNj/5JCRhwRubUpZ3HL0DMucg/6XcKnWB/v5wSB5ZxBCGUmwKO5NJcM/3va7rBfm
+	 ryoMTIzf+h7Wv8ltLL4g/IJ+bfCmWa76x7qfw1d7xBdp39Lq7pPQcIoICGT0OKSrc/YxX
+	 jhUTHA6al0QFDI0i2EXZ8pr8e7p7xmb9Eomr8DmV1B9XUnFxjKT/bBMDiJ8X6nex05w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XAuzTLXi;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=duL65NIr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6508606A31A;
-	Thu, 29 Oct 2026 19:21:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F60D606A31A
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 19:22:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XAuzTLXi
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5314B1F01816;
-	Thu, 29 Oct 2026 19:21:18 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=duL65NIr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87BE71F01816;
+	Thu, 29 Oct 2026 19:22:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793301685;
-	bh=mB8QQ9/vuRBF76kR+CudZygjTkN8E4l9aL3S24NkFsU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XAuzTLXiGvC8VQP+nWevpaO+TsHjId4xLBvJWdQcv63R3x9XoN+Q/vGXj4CVBc57I
-	 pC5q33SQ0UrPpJ1emPMBwAXIwrB8UexTYCEbNzxV37Ssahkr6ehEcyJU04FsmfLkYI
-	 fe3vP4rgoJ4SnriSyUAoZ2v8mH8VIpTcj95TJalpCKYqaf9JiXglZfxreTyyjVku5v
-	 UzebI4qJiXKPLFsg0hsAIlqFX7reNKWjEQuqgiHmG1dDsqeUY+cYAWmoINte08cOoH
-	 r5U+rE8gAv4g2hVhVCGijCSqa7pUL4JR0vuQj1cEujEepOxfKU5rTzXL4CtaA+1ZtS
-	 cKUispFNm1INw==
-Date: Thu, 29 Oct 2026 19:21:16 +0000
-From: Conor Dooley <conor@kernel.org>
-To: gaohan@iscas.ac.cn
-Cc: Sudeep Holla <sudeep.holla@kernel.org>,
-	Cristian Marussi <cristian.marussi@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Anup Patel <anup@brainfault.org>, Stephen Boyd <sboyd@kernel.org>,
-	Brian Masney <bmasney+clk@redhat.com>,
-	Jerome Brunet <jbrunet+clk@baylibre.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Drew Fustini <fustini@kernel.org>, Icenowy Zheng <uwu@icenowy.me>,
-	Inochi Amaoto <inochiama@gmail.com>,
-	Vivian Wang <wangruikang@iscas.ac.cn>, Yao Zi <me@ziyao.cc>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>, arm-scmi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-gpio@vger.kernel.org,
-	Paul Walmsley <paul.walmsley@sifive.com>, linux-clk@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 08/18] dt-bindings: interrupt-controller: add Zhihe
- A210 PLIC
-Message-ID: <20261029-untimely-zeppelin-b623272dac92@spud>
-References: <20261027-a210-scmi-v1-0-74d58ce85bd8@iscas.ac.cn>
- <20261027-a210-scmi-v1-8-74d58ce85bd8@iscas.ac.cn>
+	s=k20260515; t=1793301739;
+	bh=erdn56FlWdw5dHZbEBIhxWfrYwYRtU14HbfYZwG9QKQ=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=duL65NIre21jRCYU2Nut+03J0ebAsf6Bb6SVtV3WAO7bP8GP4CK9sb3rE+DVCvdIH
+	 UAvUowGNBy5vRRUgbMANzmBaW5UY7MpxsyNb3857hth+KPkEOiYkzbNPOuK9mkK9cy
+	 xVZtyCwkHzORa7r7cBHq6qz2YlcLLHO99MvvSRvq+7oiQEWeiiFRMJxi96A3BrPK/+
+	 bASVqgvTHqnFuF7r4ffZeWsvDX5Qc6RypBA+0wPwgcPfg2AwyPPqETT6KX5JQdY63M
+	 x0NcgijaxxdEzs36ht4+NvETWI7YkAXPTl1o1yCZyumPbPL+wP9AGrmi6cO17eYSaD
+	 7sQGPcq29OaPw==
+Message-ID: <sashiko-outbox-189868@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v5 6/8] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner A523
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "James Hilliard" <james.hilliard1@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261029-submit-h616-uart-fifo-v1-v5-6-53b433aebbf8@gmail.com>
+References: <20261029-submit-h616-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com>
+ <20261029-submit-h616-uart-fifo-v1-v5-6-53b433aebbf8@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 29 Oct 2026 19:22:19 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,28 +60,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="xQea4YahfBZW6fDj"
-Content-Disposition: inline
-In-Reply-To: <20261027-a210-scmi-v1-8-74d58ce85bd8@iscas.ac.cn>
 
---xQea4YahfBZW6fDj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> The A523 UART integration has different FIFO depths across its controllers
+> and reports each controller's depth in the FIFO Clock Control register.
+> Its receive thresholds are fractions of that depth, and its optional
+> register layout differs from the generic DesignWare integration.
+>=20
+> Add a compatible for this integration, also used by A527 and T527, with
+> snps,dw-apb-uart as a fallback.
+>=20
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+Sashiko has reviewed this patch and found no issues.
 
---xQea4YahfBZW6fDj
-Content-Type: application/pgp-signature; name=signature.asc
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261029-submit-h61=
+6-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com?part=3D6
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauOcrAAKCRB4tDGHoIJi
-0lkuAP4j1Syr4NaSYo5EgKM2vK/7/8yKlgaO3jdnsqLsLpiHOgD/UFmkhvm6cmzg
-4hrX0XP8cpTtSUPiXYnApAVxiVf1CgM=
-=4vU2
------END PGP SIGNATURE-----
-
---xQea4YahfBZW6fDj--
