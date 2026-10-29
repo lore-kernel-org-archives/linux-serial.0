@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793250673;
-	b=jVUT9lxSc+i/DkYm3EYEr04wdC4UhYOhhuHWH6lU++YF6er+0mYXUpS2KgUd+Ev/QEwB
-	 wMaI8bP8wjcIIuCQCATTBcFutDIg954Vs2ssfr9UaagMUeyVmqYLbvlCX/qum9gXXdsWs
-	 QZAHLjaNMOLo/UP3ZLDha66Z122rFfefD6IVL3ZRQ7kEmBjZzHPweXbTO4tul9dA6AY62
-	 DFSTPxUYKwIlvNR2wZXFL2JQHWlglg40fs2+W1DS1Fi2U2G89fe8rGqRUjEkrX/0FXPlm
-	 BY31CUMrl7ZKEkfhnyReNglkMHGQAy9lmj1LiCDH6czrIwvQjLxINHmuAguGNIxg+cQ==
+	t=1793250734;
+	b=0Gt2dZhS3b147MrftA3PJcsGETMLS55bfJqVXDeGE1jXuZMlG5Tz21WYXBSIIKGFs2s/
+	 TJ7V3aBK0x58NTBBHYe4ogT2SrzK81lMM+DzDt9VNmMcHw7c8gXufQbzuo2Oge1yVmnnK
+	 47Z8UNkrus8TyeEnyGveyKSnVxSbyQc2qrOD7QXW55KkcUoD09TtetNjgCHXeZA844l4k
+	 FjLHpcPIgVr5AImTf3gkPLNmjS0THFnIbOaA7Qw74rF6HdXnwIoDaGN5rIwOGq7UWsthn
+	 WPPLOwzvVeLLaGGrumHOpxebbPP/dVDDm9ouOousjeOjD4D86olJdv2RjoplQPwCyCQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793250673;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793250734;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=zotH/EtlVVB7Sgp5JQ9JIUWC/SNxPkHOC7W4mNOMjFQ=;
-	b=Y/f0198cK/AxYyaCB39hO6qqPDNl22koFF+NqibPgiPFzlitU04C2yZG0Cu4tQ+OmO/r
-	 x4+wbR5O/hx1VHlJdn3XQDXkTxDmaosPfZUD4k1cMtKoIfK1keRUTYe7c9GWYEPN0rmYs
-	 sO5VCvtxnujAkgneG3my6ziYIPPEXrZi4YAW7BisD+aBveqekpOwxEUHh3DvdAwMBPnRr
-	 kvULUWufhzuSJq8H5+NdkT5GPkFj/mtNOalcb15/puFcgJuSPl7mTZa1D+VMf0VsG7TX7
-	 82JfpRJa/gdAPhRWMc9zYIOf94kuer5ar/i7Usy43cady8DNOh8phl0qAHZ7uhFSJpw==
+	bh=MNXwWYDqxgDR44R16sIUkDdxaB9tTjg219I/Y3aGJyc=;
+	b=pfRshL3T2rB7OqHrw8I+B/z+Is9ydFv+vzOlmJaUu0qWn9na9t8EsBnjnPD6OfCzHZn5
+	 fKOPkAJaf12a2Z/9aEusLJ/8SUj3pjNNbErubswjkQJQVlnBrcOWBpH6CG3c0NyVoMKy9
+	 R2fNiwr4ePv8alSeRl9ACdjEL4t/51PUQKqD5g1W5V/jSGGQxmJMP2FmpQBke5tHlwuLs
+	 a0SDm7Eb+d17m4Dp2a2+5tE2ZfMmat1/APXMm5a8POWMSbBJVAyJ+3fgfThrJfzztqeeg
+	 5/nPcQ0EvbHheflTH+P655ieHRkQzs3xeNxYlBMag7xZEh4D8Y0QgA+lntN6nOC0+hw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RKFgqvoY;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bJabexoO;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47EAD606A31D
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 05:11:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 099BD606A31A
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 05:12:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RKFgqvoY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D971F01828;
-	Thu, 29 Oct 2026 05:11:12 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bJabexoO
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C3351F01828;
+	Thu, 29 Oct 2026 05:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793250673;
-	bh=zotH/EtlVVB7Sgp5JQ9JIUWC/SNxPkHOC7W4mNOMjFQ=;
+	s=k20260515; t=1793250733;
+	bh=MNXwWYDqxgDR44R16sIUkDdxaB9tTjg219I/Y3aGJyc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=RKFgqvoYM8NoIVaerJrb68In2jk2sVzLfOH1BoFsBm68d1Py60pvj7EZc1fnbS7T8
-	 Wq1D7uwXvUnVvX4G1Gw0489SI3usEXMGueT2UxRAUj/sGN7DFD1QYZMbf9U6m2iV/k
-	 SywSCP4UdnMsKED/R2GnnApeTgsIbgr8QCY0wqqG8f9ZZPl80OHa/4T40VdaQK7ovK
-	 bD1LZrYnCrGP8GZITpJYMV3TTZ96BKFRE2UTB1fDYFWht4awxGQFProF+cQrUM5yGR
-	 sNc8NzyS5aTFhml+IVXS/GCoPOZKJgT4AtC+VR5BLeIwS1TjmOAOnUKiA2ZQOx/dW0
-	 edIkFa4jsI1RQ==
-Message-ID: <sashiko-outbox-188738@kernel.org>
+	b=bJabexoO0ZJMmyNWQKzj0OjqnVyA8hwcHOAFTJJJQdYswAmu87ouMks0zODBl5HAd
+	 Wz+SEOcvRhPo5wQ3m9ANrWPQC9gt4tc2Xmp26jDiOkkf/TOPRE3IuuwheosAvn7oV8
+	 1mfFewcL9A7+hKmek5eDsaXey0cThi4b9pguYjiaMzBpyoaSibraApPBhzYrGBpaEi
+	 cgQnDwctsSHuI0IbvFGhIGgORahE+iZSEeOsx2WFAdB77So0ozkXokC/IY49+NNxLD
+	 KL7/lTed/Ykm4BSe3Ts8EUkDrWYmZcjhy9ZAq5T4ZCTCS8bm+fty4FX5DxRCsDl39M
+	 fWOmw8mxIdypA==
+Message-ID: <sashiko-outbox-188739@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 04/12] dt-bindings: riscv: Add Bouffalo Lab BL808
+Subject: Re: [PATCH RFC 03/12] dt-bindings: timer: Add BL808 CLINT
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Kwanghoon Son" <asdfkwang@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261029-rust-bl808-console-v1-4-b736ee920078@gmail.com>
+In-Reply-To: <20261029-rust-bl808-console-v1-3-b736ee920078@gmail.com>
 References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-4-b736ee920078@gmail.com>
+ <20261029-rust-bl808-console-v1-3-b736ee920078@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 29 Oct 2026 05:11:12 +0000
+Date: Thu, 29 Oct 2026 05:12:13 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,10 +60,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Describe the Sipeed M1s Dock carrier, M1s system-on-module and BL808 SoC
-> compatible chain. Initial Linux support targets the 64-bit D0 processor.
->=20
-> Use the bflb vendor prefix shared with Zephyr.
+> The BL808 D0 processor uses the T-HEAD C900 local interruptor. Add its
+> SoC-specific compatible with the existing thead,c900-clint fallback,
+> which accounts for the lack of a memory-mapped MTIME register.
 >=20
 > Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
 
@@ -71,5 +70,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261029-rust-bl808=
--console-v1-0-b736ee920078@gmail.com?part=3D4
+-console-v1-0-b736ee920078@gmail.com?part=3D3
 
