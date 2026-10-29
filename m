@@ -1,90 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.161.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793299659;
-	b=PXLCOxLSnQUCliqFcba7uU+gaCVaKBed1Xi9vc/JawyrTSQVAUrhDpK51P3JH4uEeCVj
-	 WCaZk+6Cld3V3ihq2VCyYZoSM3DDRM0ld91ayoZYAxSxNo6tAuqBG/xgGZn5Usw5qgh4V
-	 TdfKf2i9ZFkms1z83r9/L53hWjtI7b/nWKuCoTnK3nQtPwF9yPpH4Zf8ZmHEy2c9xlILB
-	 F+VtsZ/lq9ya17Mqfo/RwkpKpArGzB03qiJaB2QdLMDsE6+O/HoaI8gtAmniUUtfbqE+e
-	 x1S31orT0ndoZH+m9HFVeNLpsJq5XDV7AmPpwChN+0z9eQfaJDpQS7MFIPwXuRojY0w==
+	t=1793299660;
+	b=l1zrN602gvPQI0gM+Hpr2U0Vv51F7OsI7vV/3QSndfTliMhGqlRQrTcjeGar9GnQ1fNp
+	 1V/DHapyvfkdNvnaPGQ20ezGYvd0IozVU2FquSnkEVFletXvQHV6pb2QLVzWb+sZgQAiB
+	 9YiCRCtrYmX2K4SHXbVu52rZoKpNKQuijtQ9cNrVFpzFmUOr16tPub84qLOzVX5ogjE4w
+	 Bw5rcbvqPJVA4V5Mk6w0kXoxVOpWHQN+baIVQFcam9pnIk0/VbCEvo1ETeN3lCw5Q8zRy
+	 gOfWRwKPIVr5LxRvCo5bHFWAu5YptVkKzKl/2LdCmXyA65QLcdx7njiHTJNmkTnO0hA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793299659;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793299660;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=DRBWX4J/Ak94TbpMM7HoAnpLEmSCyB3p+1+fdXZAg3w=;
-	b=ObffZAradym+FtfMq3bxUVEsiP4t9n25mm9PmI2JSJ3whhADwK8kV0Iqbfic8q1qaJVs
-	 1+65kaAHQDUwPQl7nYQ1+K75j8zeCTEe8aFbRRPir0fxCUgiEHZOpBbmh9T9BZX3HXAxU
-	 5uIc8MU2kPje6AedbYeKoUN1sJTwpDxrGQIfFTbghKmbN6rSlcMfrOZbBjTKi8jMo6oDD
-	 Q5zoGfMYPTpi92yXgbRQv24L+OsTdFRnyJyMelHs8y5kfLaN8iCedinG0pVkxKiOquZyp
-	 iUf5+GFKspTyExwd7Kf0x+8xDfjHzLChavhAcTsf4aluZOvq7/weavswk5iTX66M9gg==
+	bh=ZiExINcBxtPR/Qkmd5Xw5xLQgpBI2Y90lv+3jQt1oog=;
+	b=yl5w6S39Xv+KWKQbjVdKYk3HYnSzdMCEE7lsmo6R5/SqeBVFuxGpHVVswNrc30F0USfL
+	 +Z3xG0VB0guah7godEbIIlmCJx1SGsbWYatFfnO1JkIokhHwis0kHCGBl9DUwlzCScRAE
+	 Hx8QYdqcfDf+ROKoaOukDSniH9+jsQ3y6giuoSxeMsH1jstz0P1yfGS5m88yufLwv28pR
+	 dwKPxyQxT6RpM3WDISp3Uth+08tlaOG3GnPuC1zpSbr+JQvP15k+2xoE5l7qjZKHIsZaV
+	 fs8V3C/jIyjGjblpcpGf8rZAfDif/TcdSDH979dNtDfmyH1AhHH0mGRVV0zu84r++6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hXQJRQj9;
-	arc=none smtp.remote-ip=209.85.161.47
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=H3l0uMc8;
+	arc=none smtp.remote-ip=209.85.210.49
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 599E760A2636
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 18:47:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 599E760A2636
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7055460A2615
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 18:47:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7055460A2615
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hXQJRQj9
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-6de1fd5f572so1224124eaf.3
-        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 11:47:39 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=H3l0uMc8
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-843b6f8e2c7so2775249a34.1
+        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 11:47:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793299658; x=1793904458; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793299659; x=1793904459; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=DRBWX4J/Ak94TbpMM7HoAnpLEmSCyB3p+1+fdXZAg3w=;
-        b=hXQJRQj9rDCCM54LxLJ0O0GcaUqZZ1vbaf5ccd7XzTXCcm8o5nGy6Yj3i6MRM2zDbs
-         Tt/NJX9+NBWqKZlukA/OBfyPR9mRBJOoBoljBFdXLsS9JPCZLf1a9mTy1FHcgcPrTbqa
-         TQSEbJo3AD7U3WXbfzRQmvfJ0g5CSN2ixjJPG7nxPDJ7fhItwAHIZqA2ZQW1hKQ97XyJ
-         PsQIKLyCbU85mm7xGRHOsZruQYUjZJk/rFe3agJ9uS3l+4VtC+BFK1RP1lx0KdiQGpR6
-         SYDXeEH6YhKijleqGgsdlQs6Xh1Icotrg14Ukr6vyk33OZiok526+TaFA4MegRsvIjma
-         +gJg==
+        bh=ZiExINcBxtPR/Qkmd5Xw5xLQgpBI2Y90lv+3jQt1oog=;
+        b=H3l0uMc81HJcpPRBsywanbMbUnGdCuNIr2O7sufq6Z8PqEpFB5X0btCbPE/TdARDBh
+         9kSGajs9GDRZXaveRdkg/z63lGQOMQNGajXTe39Orx2zN3WUYlrc6EcS38zyMhEnzFeX
+         WTDpQ4quOeVVTFbep6szXGXMMlLIjs2mGrFz7yTe4i61t7yLR3iUWF6HnExXc5OiPEv2
+         yT6PXCxybLvwe8InLzlvztmydU+pJlQtQcqsUhz4vbALr6kC9FsqlEuEc9rUOUuKspjZ
+         8DcLmRVSKZszIIGaBLRToY1a4gQhkQRPhU/Taw6JiPqyeZrc+WnVuRAB+VB9EbqjvmMd
+         i78g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793299658; x=1793904458;
+        d=1e100.net; s=20260707; t=1793299659; x=1793904459;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=DRBWX4J/Ak94TbpMM7HoAnpLEmSCyB3p+1+fdXZAg3w=;
-        b=FKigIh5H9UUuN82aH+eTSLdQFeO6DJOig2VDJPuPxNtnG1s0Q3uUuTZzZEA+HvyXsk
-         66tFuicbxTKut75LFQwa89CHNdWDiE7oxcH2OmHylXhRHQ+1DC6v0+C+Vu0ntjHLYWX8
-         1TySj6n7Yq3PzCdj3qlQmiHwVM56Iud1pW9j+rxMmKZthwdeVsWbdWVf0aFRoTigC9Ga
-         PzW+YsOs1AwCzgBMnSlSOreEcgFjhUkFvHWZOCDYbhDQnukRrfD65cvxrFLvxE+Cbnaf
-         Il4iuGs0GQBh8sfi5let6Cs0nhspRYrplanWBO+CU6vIDLiOMIbioLySD1hhGMzLfXVp
-         vBVQ==
-X-Forwarded-Encrypted: i=1; AKwUvByck9wzlKsOK3iEy/pYs7sy5rkZPmjaoDujObjg8NFgvw0scdvnqFjfLd1xjNek/hBpyW7Us+lbXji2jMk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLxQJqUNrnnGfMpr15FyX3O/RmbqSfj1rJ9TsUicUNIZTKXfGUW
-	HYCPoHQwZnFowN2kBuLp3j9Hu85s89wkHHHpuwb6GkkeLmqVQR8FvKNA
-X-Gm-Gg: AYBFou3geCsCiMMRzxGSvQDzJYG/tSmKYBr9PXfUacm+R8EcEyY0pjyQSXI9sKZd2Nb
-	jLvHVguQ5LNzf/YnciJ3iqZjmRf0FQisoC7A1O4fvXt8l6wQ9mOBcdHw0DRaVxWoIMGErQsEcGH
-	YN0DY3rTywjBT3TgsPSn8D8tlARE3uiximtlAs9RHLE1OP98HUwa2Yw+OavHIu3nd+vSwxLuXY6
-	yQBIVI30IOTnPYXPk2BYAQNpVVKRAyT1KPbLYGxRKNGeq69Td24dWZ8j2npxj1djTAYZiPZcpN1
-	HAP5cvcKnSwOXH4jH34qnG8EOEU9aAsaVN6JscOdAylYKSFV1VhuPW3RigBMMo+sTGo6wdke8wz
-	cdpPIVfDMvg6vcM9+kr8JcQKVhRI89H2wOT0uXmvMzLvlkIZwjcmZ6DyowBu0BA/2PpL9NPNUzH
-	6V+lFib2WCkRgcW/TJbfCNIOvZ9PTaLNfzTQLBZKNkJH1LKZ0ZQ37p7V9tcofRnPag3NHnX/YSv
-	pWqVwDbiG0vzjGa5qbsC/j2IAHgRMocL0aT6MnOd83bwiVxpgfSYuY8uX9LTcMqC32mcgqWicSw
-	96Cse4Wj4sIhRp5QCikKwVyfVbuqEHTPpMrNprjqhQvido+f4RYig2VCsCBFQH8EC1ZbefZ0dHN
-	YrtpBjb8t0SHgiAcv8IfvCZmaU/og8JX9Em9GVLE5pIB4dZ2oMCWytYcxODKy+3gKX5yRzhJh/n
-	xBA7M+NL//rAbf7M81GQcD/xc8JOoIW107oDPLTNyan7f3WFAKj3rPRYsByhkfoWrzOw1xoQOG
-X-Received: by 2002:a05:6820:c44b:10b0:70e:1dd8:6712 with SMTP id 006d021491bc7-714f29f3ee8mr66212eaf.72.1793299658351;
-        Thu, 29 Oct 2026 11:47:38 -0700 (PDT)
+        bh=ZiExINcBxtPR/Qkmd5Xw5xLQgpBI2Y90lv+3jQt1oog=;
+        b=DZl+6Qxt2pLxZOMvLNMjLNaAnuqPjuGo/pYaPTSeAnPabdCZN1+gWkdk6QsfLDrILW
+         cdFqSTRmeusEu7XBUc3muAcHW1hOM/8a3D6KYDEKxOowLHLBYdA3mdg28bzfAHF1dyJc
+         2dygBeSDZcuhr8Uw8xR8GrZ2k80aSV9AAjk+1216ejPpoXl55v3z5YQcvPZ8iCUuUvfP
+         nKYGxcOltGA5Y384R9rZ/iAbKFhpp49sTuRY8+XStGtVNjlhpA5Kvqee4JHG4OSBe6j2
+         W/WZjw3Hr7oQEy88cFJHDLY2nOhpjWLZ6iLTE4ajrURgF6CRLUxGWCYaObk6ONx1pYy1
+         34dQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxz+S6kW1EgjerNWNoxzbc1TWB0jFjOWSDsPi2oY2z31tJiM6lI6WJRBc83wN6UXK/b0Ru/+9RAKJ+JeQY=@vger.kernel.org
+X-Gm-Message-State: AFq9FYISYp2Pa15YqWXr45uVulgGL7FtNIjGV5rwGzBnHmyPn3qqy02s
+	yTBNUvUcewzuNj/VDIPf/JLL9cgoCY11Q2q9v1GMjK994CG1dZTAmU0V
+X-Gm-Gg: AYBFou1lEZQ+L3bzwYQxEPjlODlDY1gpBzjDn9TdLOXO7gZMXP1eN6VtyClAxCYf8Rm
+	muQ3wmHmaj8jhxX756oSCEG5U+rmM/rHetLXH/8v3xLqhcPVO4xzSqPl1n3CCOjN3u6oL7/RkyJ
+	IxdAhlWKmn40UwpDDIgJVeLMJ9oJ1mX017LyqaO+mIny2zTbyofH5halJSvh5vbEUuSvQ8bmK62
+	xvweV+K5cCHK7EzdJ/8MQ/e/1sHwNSG4PxG1tpwnKG8395v1e9+MZePZyhAvs8YtuzltXo50+J2
+	HGl8rMlF0ALJyvCnsGX0OBSM+ia9HWlxYcUo9qpdox7JhfitlsHNAioXgzgjcEPy4CyXoM/9Xga
+	zDfMUv6x2ZrwnBck4GIw4jiisfXIfU9KVU0nb9EshNdka7iokdDl2mLk0H485CzWIPYaT0imL+b
+	3mi2FSb7W3r1Njp7tDJ2f2Y/uREsBV/QFcUpg9QQ65bputUK5fEO79SKC/oJQ+KyLOlfi6KkMir
+	ISvf7dT0yY69WpCbDOpTnA0b59IOBEmBj3k5ufsaXX6DC7AQ7+0DwBEDqEpPSe+cuWQLqyauvtN
+	z7MgoTNv2sLivO0xoDn8LAibjrMf70RIoZ8zCOOxAGIpmXh3VKALt0lU0OWo06MdvplpKlANrD+
+	0cUYInwXerrJ9wb723gPGj3chJSLBtT/Vmc9VKBDBDYEksMQNuwYpPWybKOadja3Y9ZXezAjzmg
+	PJr5/y/4hVLuEtKZjlbZMehVg98I09tp976NPJMmVWVb5QioPcTlw=
+X-Received: by 2002:a05:6830:3153:b0:830:43b8:72db with SMTP id 46e09a7af769-85d365ca9a6mr29214a34.24.1793299659371;
+        Thu, 29 Oct 2026 11:47:39 -0700 (PDT)
 Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-85d354cfb83sm221871a34.14.2026.10.29.11.47.37
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-85d354cfb83sm221871a34.14.2026.10.29.11.47.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 11:47:37 -0700 (PDT)
+        Thu, 29 Oct 2026 11:47:39 -0700 (PDT)
 From: James Hilliard <james.hilliard1@gmail.com>
-Date: Thu, 29 Oct 2026 12:47:26 -0600
-Subject: [PATCH v5 5/8] arm64: dts: allwinner: h616: describe the UART
- integration
+Date: Thu, 29 Oct 2026 12:47:27 -0600
+Subject: [PATCH v5 6/8] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner A523
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -96,7 +96,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261029-submit-h616-uart-fifo-v1-v5-5-53b433aebbf8@gmail.com>
+Message-Id: <20261029-submit-h616-uart-fifo-v1-v5-6-53b433aebbf8@gmail.com>
 References: <20261029-submit-h616-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com>
 In-Reply-To: <20261029-submit-h616-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
@@ -112,76 +112,31 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  linux-sunxi@lists.linux.dev, James Hilliard <james.hilliard1@gmail.com>
 X-Mailer: b4 0.15.2
 
-Identify the H616 UART integration on each of the six controllers. The
-specific compatible describes the fixed FIFO capacity, register layout
-and receive-trigger mapping.
+The A523 UART integration has different FIFO depths across its controllers
+and reports each controller's depth in the FIFO Clock Control register.
+Its receive thresholds are fractions of that depth, and its optional
+register layout differs from the generic DesignWare integration.
 
-Retain snps,dw-apb-uart as the generic fallback. H618 includes this DTSI
-and uses the same UART integration.
+Add a compatible for this integration, also used by A527 and T527, with
+snps,dw-apb-uart as a fallback.
 
 Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-index c6b3a3f8359a..b4b2f85726e0 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-@@ -550,7 +550,7 @@ mmc2: mmc@4022000 {
- 		};
- 
- 		uart0: serial@5000000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
- 			reg = <0x05000000 0x400>;
- 			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
- 			reg-shift = <2>;
-@@ -563,7 +563,7 @@ uart0: serial@5000000 {
- 		};
- 
- 		uart1: serial@5000400 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
- 			reg = <0x05000400 0x400>;
- 			interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
- 			reg-shift = <2>;
-@@ -576,7 +576,7 @@ uart1: serial@5000400 {
- 		};
- 
- 		uart2: serial@5000800 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
- 			reg = <0x05000800 0x400>;
- 			interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
- 			reg-shift = <2>;
-@@ -589,7 +589,7 @@ uart2: serial@5000800 {
- 		};
- 
- 		uart3: serial@5000c00 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
- 			reg = <0x05000c00 0x400>;
- 			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
- 			reg-shift = <2>;
-@@ -602,7 +602,7 @@ uart3: serial@5000c00 {
- 		};
- 
- 		uart4: serial@5001000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
- 			reg = <0x05001000 0x400>;
- 			interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
- 			reg-shift = <2>;
-@@ -615,7 +615,7 @@ uart4: serial@5001000 {
- 		};
- 
- 		uart5: serial@5001400 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
- 			reg = <0x05001400 0x400>;
- 			interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
- 			reg-shift = <2>;
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index fc1289073241..ea6ce99178e3 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -61,6 +61,7 @@ properties:
+       - items:
+           - enum:
+               - allwinner,sun50i-h616-uart
++              - allwinner,sun55i-a523-uart
+               - anlogic,dr1v90-uart
+               - brcm,bcm11351-dw-apb-uart
+               - brcm,bcm21664-dw-apb-uart
 
 -- 
 2.53.0
