@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793250785;
-	b=wQjCHGrfn7w++OSyfLxSEdBki6Nj7Puc4YcY/nO0dOzcfFYr7qQhYratsxuO/9OsBGyT
-	 bG8aQwEHapYn/YQtH09nRM0qIspxH2lsF8ZTfLKyR0F4I1vgUV+5OZ4m1vkwEWH1YZDSG
-	 IbqmLv6uvdS18YIOjoMoijCl/oNbEv6TkoDO8Q8Le4Cd3TZ20HQxJRvVxkUg2JbyKkmHN
-	 T1pL8SUlGJT7eY6FG6Oc2UNYA2GNAX7cTiemQJiQMKkAuPe0N7khqD3kHaBUMGgGOC7A4
-	 ObjnZkg3FDV5vlIslaCYDKX/SUTdOXmIvgJlbqY1KKE5bPR7hjNpJY/DHVto5YwDSJg==
+	t=1793250862;
+	b=P1JH4w2nfwFi6tlOMAPMTiKHmI6KolNcbbvMs0d5r/YnIrLTTDKQJtQ913U5npEPlDb0
+	 cpqys1OD1y9VOeuhzzaSZuag8oNs6OSBr/SYVyCUpDtHpiAzBIBf8vx+AYJoq/d5wI3+r
+	 lqRaDbAVo4mpNnJ2mE7eKFCefK5XznMuktgBqi3BcfU5KKU2rFmqsu/NSF95X8/b/Ccbs
+	 IWp83NcLtDiIYXiHnHKXsHpXZHSN7Ci+JIREkMoejtnSOPeb8j50KNGmIeRULvNAoTi2b
+	 wKO+4PAmykTYi+EP6iBEBRCf8ss3Y9ebTW8kvgOu51u0bar8pZMNdsf1ohkxuf9BM5A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793250785;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793250862;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=6HGvkp9T1qOIR6TNrkel0RlyMfKvP+RafWLtLrD9OE4=;
-	b=CMUdl2YCRdsmsRbHw1BFd9Ujbuwc1o1xuvbySuwKOkK50eEG/9raSyL+/gkfB52cUqKE
-	 w6MEmnKLX/ExXvVirryl9eI8w8hqB+h3H/2LQEmwhUXqidVyo3jc/duV0lApBwwd6E5vZ
-	 8Cxq31Q2jKiPNrYtoC18jtP2nKIIfwPBTV0Z0tKt1z65LyBTN11+SboGnfuV+ZZS6Ty8+
-	 Oo+3+JghXzyllWmmioJ3876gTJYe0obMMksQiHM4VAldua7x58jqPcXlinTh//4itirfc
-	 YAxQbfYoVwqv3uOBmqDcG+mqQlfUfNgPrUTJNM4pPDzwjTXNcEBiYVZm7ON3erFISNA==
+	bh=omiRTUTlFVjglWv/Io0mr75+Rahowk30lESPXj5/SBM=;
+	b=Co/FRYSxK2kFWW5rye0d6CB4WMQ1hfnZlV+ZjgOOcqMedy1BDXqj07h8nUQgllv4zlC/
+	 iorebKnRV1pU0Qz4tsjRj+SKvo7ejIoHBRl3CKkdb7TgN6qWBei7q9R4GNieEmgqz7vHq
+	 kNPySjvdSk5EkFlho3TyMmFO1MDNz6k+/jnBxSHR4wiqpO3M3NxE9M0g86iXuqhJto2rJ
+	 E8v08mLUkEIaWM8vH2gEzGASu1XOm4WTJm+BueNJm5zDVr10sdTBwuHVXyKoeuPX/j79W
+	 2HX4+MSmK2URWmHpmT/XS26vRgSd0SJQCsWSTp8LBn9VYKmHwQqZaVx8lTtptm/K08A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G3qH9Nr0;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oXCtSPmm;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DD6606A31A
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 05:13:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9048C606A31A
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 05:14:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G3qH9Nr0
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11CD21F01825;
-	Thu, 29 Oct 2026 05:13:05 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oXCtSPmm
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 456081F01825;
+	Thu, 29 Oct 2026 05:14:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793250785;
-	bh=6HGvkp9T1qOIR6TNrkel0RlyMfKvP+RafWLtLrD9OE4=;
+	s=k20260515; t=1793250862;
+	bh=omiRTUTlFVjglWv/Io0mr75+Rahowk30lESPXj5/SBM=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=G3qH9Nr0eTIOV14RZcIBMM2ymPsoeJ5fNCsjnzZM3v6bmJrB92q7J/DkjZpAd/Y5N
-	 UISwnULfiznxMmwG/S2oWzvYm4N83gjLKNmLVOZhNBEVxJohN6tyoIYOIp3blGMaRZ
-	 l7tNjG4AprA1LZGZEtkptpWQBWXnGFW2Dss9A+lxBz+PvsVZHRv2Xujmb0BkDyzeEP
-	 rue4ppw6qRgoILt8N2XDVtx6FIff7T61VbmBgjo1ZmS30GA80x/7QtDLIgqIh7M0ed
-	 ugdiohhRoO0mjBqPpKUFY3WMVO4yxCpgX8Tj3onc4z1fEd2rQPcdYNBuMH8BhUeYkv
-	 bhBF+V0vIICfw==
-Message-ID: <sashiko-outbox-188741@kernel.org>
+	b=oXCtSPmmU5wRnKtCsOBF4A4ojZ+AEg/WFuXWk6C6inCt6VnWEek06cKHt+LVNouHv
+	 vfIRba5SMd4K71WTSZ63bz9nU8HqqRzyzstD42+EU8pGFgr3LApKeXer3LPirg7JHY
+	 OdHi/JGoejR7xQ1oZ9H71UnfXb7XaAKML8DnmI3MUrM19ELnCYV4dqzoFqbnHCGSC+
+	 D8eIX4cwSlYcsTE0IdN+8WkqlEMQ70wJ3yX9wTeZUQNdtSDFArk5KnQtnGoFFEYavV
+	 JN4P5IgAs5JsVsu37yftb+xj/t5NFZO+XESqX5soPEFnRfyAbGdG6BeDdpJPvSy6k2
+	 FGb2V8rDgTErg==
+Message-ID: <sashiko-outbox-188746@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 11/12] riscv: defconfig: Enable Bouffalo Lab SoCs
+Subject: Re: [PATCH RFC 08/12] riscv: Add Bouffalo Lab SoC selection
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Kwanghoon Son" <asdfkwang@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261029-rust-bl808-console-v1-11-b736ee920078@gmail.com>
+In-Reply-To: <20261029-rust-bl808-console-v1-8-b736ee920078@gmail.com>
 References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-11-b736ee920078@gmail.com>
+ <20261029-rust-bl808-console-v1-8-b736ee920078@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 29 Oct 2026 05:13:04 +0000
+Date: Thu, 29 Oct 2026 05:14:21 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,9 +60,8 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Enable support for Bouffalo Lab SoCs in the default configuration and
-> build the BL808 device trees. The Rust UART driver remains an explicit
-> configuration choice.
+> Add a platform selection for the BL808 64-bit D0 processor, including
+> the T-HEAD errata and common clock framework used by its UART.
 >=20
 > Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
 
@@ -70,5 +69,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261029-rust-bl808=
--console-v1-0-b736ee920078@gmail.com?part=3D11
+-console-v1-0-b736ee920078@gmail.com?part=3D8
 
