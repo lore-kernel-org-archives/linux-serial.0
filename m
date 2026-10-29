@@ -1,99 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.200
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793260391;
-	b=ZhpRvmdEmA7VmFMYx/H+lxGZRt3mYxSdfhWdE4wlK9OHtKsZd7/v1TTdve8HiV2bZ/5C
-	 hjUlPJEqMD7KunGYnVXym38zvTgPwiH2Oet33gVMBK0fNl/vraxyjdqU4WUBDqxqXQRP+
-	 rmHLQi1KYbcIY76gh8UFoWxcCenzC71JbEkoK+GtywnNmbE/9d44Zdgl3+QTw+kDd7MDE
-	 tlZ3VoOLeGoDU4VyGTgu142YmW0u4+FZxVmlt6sz/TwRhdx83dHfd9v2+yNMh/k42cvWU
-	 oJ7SsvzZ/O4TUQmIgYa4Bb3KccMzGSodZb0vM5y6YrTLlF673VSmBdGmoQcvbpbmoFA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793260391;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=kUc17Gyf3nvifNnB1KWpHD2qqumkD79iYmF/XwTcUzk=;
-	b=P3KjVL7E63QZcbm+++wDPgKUhzBNh7v6+1KXPqF0xCYR2dxOZuMmYjP5ff+sBea5bWcn
-	 pxYnEWwkrJlL5ueT3IguheIvD0ClCCrLskYaoEyVUZRGSTaPMK6uYdAg8bWvxROh6jhlV
-	 LhhXyuP3Yf6rN2v70sUi6Gs1pJ8bSKT5lFnfsTUkkUVJ/+JzgkwQRxfizZ0dI8KIqoC8c
-	 ej53IqzBm/T25kby5HGUbG4RhHUMBeGlDJIJ1itT8U35FeBpkuqQzk1Gwtb2LHD2oQPbj
-	 GhmBS/V8Bwvgj83g8XwmIdboT19MooPYH5+0Jo8Zq9YfE0vXq2nwaxn+QLv2xJIoqtg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=mml8OJiu;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.231.200
-Received: from mail-oi2-f8.google.com (mail-oi2-f8.google.com [74.125.231.200])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793261220;
+	b=Id1vzpesJhwXkNHIJUlLnrJdQmxoYnoRlt1vMEHtJ/S+tM4x34gahbttaWDcc6eHxbv/
+	 ewjVM+y72jyxV/BL0oU96seqoXwtv8uE5a7G3xzx02kCHB2+9qA3dOzXNQtZtwNC6YMLo
+	 29fhFWal5IRuVt7FqLR87bncV4gDOpv3TJ6K+v8CQOFvFBZOigiUEpIKmlVYhtEuYmecQ
+	 MGc10B2sA1+LPN2BuAzz2mwWiDZCB1jfxpcv1ckrV5Z4ulfbX6P6+PSO+vHv30jHXG82i
+	 4qA1oo5FxYRQ7H6b5h9RPID3giFLwzlLdmHFhjgKRaiWf0tph3dZQ7f8cC6ogDVoIpA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793261220;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=ws0wmsu8MwZXjRuDGVq8XFSZI1ucban0G0LDxPDtq2E=;
+	b=jjBNiBigiMsZEZRTYBSh7+JfRL7kA6/kBlOJCrwKifdJ+zJ+y9EoGTY9epuqt9FMNEy1
+	 GbcGR26TKDXmuc/eIgGpxK3OatYbr1f1fwDsJhIcqi1fSQ3wMIpltgmE9cVftMDugbjaF
+	 5gxPj2mYlr9rGe4b8TB5aYAG/dbSezy4vtvyVmSl5llwFOxiK03DKckjQrUZJEQMHjhZV
+	 wYsVD/lPwgNvoA4B1DV9qruQioD1XjU01niiSR7rDHDBi0hyv3NaXpLgOTaGTZOvO7mXU
+	 giyySjSTdnqm9t4dR0q8feTJv070NThO53uTlufeqWSyYDKTby8V7yk1UYasX+KUWhw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hj0mQuIC;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79345606A31A
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 07:53:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 79345606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2764606A32D;
+	Thu, 29 Oct 2026 08:06:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=mml8OJiu
-Received: by mail-oi2-f8.google.com with SMTP id 5614622812f47-5187c752f46so810880b6e.1
-        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 00:53:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793260390; cv=none;
-        d=google.com; s=arc-20260327;
-        b=itiYc4CnN98M/7zi5FOaZhlc42jUctOAN3hzPuah/GAuAJVgTEIcBvQGekmVUw8ZAX
-         AK8m8bFhf5aj0z10iEJzgvUbh4cBN4F0XgRCDC2BBXV3QAcnL0Dz5bCl2b0cNWMQOD5x
-         ZsY0XFP0IfxwSQg5vrGHkIyfiPSUs7Q5snbZ5Kd0zfzIsaLXJfJaEFCeZynWMgP2PC4K
-         RaPv0smwWTWERPArEodsXRlsRRWr4vi2VrstW8aEOFQhHKMyDEd3cwUhsQ5E3dz+Atsq
-         fxLGbDJ/nCQrZwqWpNnBNjHqMlXg7xofbsONYqELOp233pbzX98F/ce4CA2qOKU+Os/Z
-         PIxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=kUc17Gyf3nvifNnB1KWpHD2qqumkD79iYmF/XwTcUzk=;
-        fh=xVpdNYd318p56AjVGTKvmYLfBHu5QZRQ9untIUf/6AM=;
-        b=TCY8Vj7+uESdzm9AwayKgGA3cu/56+UlCVoBVkOeGdQpWVYghgBZlEbW+b8M+iuPvq
-         SL7EwzeTQrIGhw15Tfqs4YMLGF6huaJG6CqDPF+qzkvn0Mx2v8eT/8rmpYfkLxUaUSVm
-         vEXFGpdGiLkYBze+nAy4MGyoMUXwxwh/Aw3XI7moux804TNdlsRv4Ygl1oWSmkrcfLN0
-         8uueBk3q4+DHmF1rjsorWMuFWvClVQyih5apPbTh+kOUR7QrLq3g1d9icym5w/4Roza8
-         L8DZ2OHE2fkb2QEwuKAkKE2rbOvgl1E+6QuDbpCmZ+JLgHIc5IieeUBOJTcUG1RtCNcN
-         rArQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793260390; x=1793865190; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=kUc17Gyf3nvifNnB1KWpHD2qqumkD79iYmF/XwTcUzk=;
-        b=mml8OJiuTmVOXInxSBsTu3NToV8noLYGsPtTfZHP0vaDh3gz0bd0TFs81P27gH5O9O
-         QPB9BaBvPWExsZEkTvysVmwlbl/tXiLLSGtxJN2k1BslC5QwcNLCet8P0Ttbf2K9R59w
-         JC446ZKD0o3BMscpP4MZmJ3R6K+tm2viSMEAIAJLw849Xrb8ORrQ8ssI21h0Ol7vdk1a
-         B3OEZQWBLtf/0ej8asKTmp84TaesJWhbzflfjs+Osf3Bio+PaLab/9/IFBnLIb8dM79V
-         4lMG7iuxM4+Wb4iLujg5jy0MRqhQDMKu/joYpQ5/cW71Ks0i/JWsz0injqpUWxfFXllI
-         +OXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793260390; x=1793865190;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=kUc17Gyf3nvifNnB1KWpHD2qqumkD79iYmF/XwTcUzk=;
-        b=vGWDz5LRzK3gtap7S4YSV71AwwvwosQSssR/R+zaTHlpvgccy2qXf2lVZ9HkNHJvib
-         bMURNfsxcJwr0cZqCCksnjtWzCwlK1WLKjyoL/HUGChpEskWOpUxlDdBl3ZMOYlOm4Su
-         6LNFvOYW9hwJEfZvABwDUoEtchlg2kGFBfhCGM7EeyiKYXIH6rkW4I8yUPTXCrWmWL4H
-         9nag3EzATb9CDpl0WMRzcVOothNykikMRRk4U6g4iemL6+p+3oogKUaCJc+FyFbqGdxp
-         NSWFXOTIyfMrYnI/5jIf3YdN8Bg8Ssw5Nc5Ojy/1ebeqQkE4roHwvVhq8WVwfHD3ASC9
-         BVsg==
-X-Forwarded-Encrypted: i=1; AKwUvBwdVVtYoIxL0sHXR2t+9oqWu3gffx3o+Dgn1Z2OysKetoub+N8gFLT/RZoUaLUDUDBTU5BM6H1EthPPlh4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJn2dx9XAA4NgSf+8EvBF7nNAzxoo/sdLymMvdY34qDrDF5wL6b
-	Kukldlsb+lCstKdNakFyvQVgt4DAm4bzAnn44G2gJ5AqGhi2Zo+DQH2beLv2u15NgFeESc4mEnK
-	HbQ+bHrELZW/CIVFKY4aXlESddHjcF34oulTOWn3c/w==
-X-Gm-Gg: AYBFou15CcN4ijZBQpcxAEKkCvlT+s4nGucp+4OjZI8yzjihZ5jrzRE9uBEqxoMTj7v
-	qncZtZ+4LH1g+B8YI2fjQ9LS55n6fkSR1ArxYHG5FHmaKogoIacFs/VPyM2l3IWGKdM+EerC13o
-	qFd778slbzf7biMmldNaJSnIuHrYNKI76Lr0tCCNGfHa5rHU3dwO+QiNoNKxRgszBwWkFUu+ISo
-	a83VoxXuPxtojaIHKV+NXJYZTq2wGN/W9DAWFGBPAYNf5huZ2/ih2WRZpGFswMLlBR0uN7DuaBK
-	RdTeV+5d4avpX3mLBpwV33BPO+drOeSV0xNq2ttaQsHSVMVr/NJumTuZ6lW9bNxZray5lidP9qx
-	u664We5H/1NsDB3nOAyqOuHX3oyydSzWgJ6T6VfrIDxPfNvN9y8dXZJ4RtUtCmcNrZ4qPlio=
-X-Received: by 2002:a05:6808:23c2:b0:4fc:3dc7:66af with SMTP id
- 5614622812f47-56383482f5amr2991341b6e.10.1793260390312; Thu, 29 Oct 2026
- 00:53:10 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hj0mQuIC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F33F1F01825;
+	Thu, 29 Oct 2026 08:06:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793261219;
+	bh=ws0wmsu8MwZXjRuDGVq8XFSZI1ucban0G0LDxPDtq2E=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=Hj0mQuICaLYkuPbbiCiTQ8y8rOWgeTlpfX5D6x13I3DZHr4yEX1/nz8OboXjeb12d
+	 TKK6lzjdQXPs/bKQFcq0Eyxqa+FWZABWON9PdE04h9qpgPxaFs8iIFB86Qmkg2UiXt
+	 pvH1ynVeNYTAsIQ35RAzBegMjRwUikbYnZVRGuJmhd4H9p2RmF7fME0yBQSlEL/Io/
+	 tICuZdqmHaxIB8SDmXy1TfRb3xJp7xxBziTvQdj0vCRiYd5suTmO9JctuYHlmFTbBQ
+	 zgFUew+cuESdGkoNj5tYn83jqL63ATu0JWZ7b9mvsQkhL5nqnX6dXXP/SVO72rwZ/Q
+	 Kh/VM/X3XuMiw==
+Message-ID: <sashiko-outbox-188946@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v8 3/6] serial: core: allow drivers to reserve flushed
+ transmit storage
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "James Hilliard" <james.hilliard1@gmail.com>
+Cc: linux-serial@vger.kernel.org, imx@lists.linux.dev, Frank.Li@kernel.org
+In-Reply-To: <20261029-submit-serial-8250-dma-cancel-v1-v8-3-3fd56ba352ed@gmail.com>
+References: <20261029-submit-serial-8250-dma-cancel-v1-v8-0-3fd56ba352ed@gmail.com>
+ <20261029-submit-serial-8250-dma-cancel-v1-v8-3-3fd56ba352ed@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 29 Oct 2026 08:06:58 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -102,36 +60,144 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-References: <20261029002052.54117-1-dennylin0707@gmail.com>
- <2026102957-suitable-gesture-be83@gregkh> <CAGEkeHft5gqu1Kq0saC1O0hg+ZE9AEO1tOgeXmd-g10uk2obgQ@mail.gmail.com>
- <2026102930-underwire-manmade-8083@gregkh>
-In-Reply-To: <2026102930-underwire-manmade-8083@gregkh>
-From: Hungyu Lin <dennylin0707@gmail.com>
-Date: Thu, 29 Oct 2026 00:52:59 -0700
-X-Gm-Features: AclHuK8eIF8y_uq-0haaIwCtaPGzrYPOasOKqF8SErkDCEeB0RjNpkjMoQKSoxE
-Message-ID: <CAGEkeHfTRiRmb-SpLUZeBkUrmRmq-bHLhD=CWnqsrvpbnymuYQ@mail.gmail.com>
-Subject: Re: [PATCH] tty: n_tty: convert the full VTIME interval to jiffies
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 
-> Ok, and has it ever reported problems with this rounding error?  This is
-> very old code, changing it needs to be done only if an issue is actually
-> noticed as it might be relied on, right?
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [High] serial: core: lockdep assertion failure in uart_write_wakeup() via=
+ asc_startup()
+- [High] serial: core: lost tty->write_wait wakeup on flush when xmit is no=
+t writable
+--
 
-I don't have a report from users of those systems. I found this by
-inspection and reproduced the early timeout using PTYs under QEMU.
+commit 887d77aad417709eb7acabd98bee111266577f06
+Author: James Hilliard <james.hilliard1@gmail.com>
 
-For comparison, FreeBSD's original VMIN/VTIME code keeps the timeout
-in microseconds and rounds the remaining interval up when
-converting to ticks:
-https://github.com/freebsd/freebsd-src/commit/d32198f15b39a0f6dc29229ba4925d67d136956e
+serial: core: allow drivers to reserve flushed transmit storage
 
-I understand that this doesn't rule out applications depending on the
-existing Linux timing. Would you consider the conversion correction
-worthwhile on that basis?
+This commit adds uart_xmit_block() and uart_xmit_unblock() so serial drivers
+can reserve flushed transmit FIFO storage until asynchronous DMA transfers
+have retired. It also gates writes and write-ready wakeups on port readiness
+and storage reservation state under the UART port lock.
 
-Thanks,
-Hungyu
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index c0deec0e6af41..11bd1260cdc63 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -100,6 +100,11 @@ static inline struct uart_port *uart_port_check(stru=
+ct uart_state *state)
+>  	return state->uart_port;
+>  }
+> =20
+> +static bool uart_xmit_writable(const struct uart_state *state)
+> +{
+> +	return state->xmit_ready && !state->xmit_blocked;
+> +}
+> +
+>  /**
+>   * uart_write_wakeup - schedule write processing
+>   * @port: port to be processed
+> @@ -114,15 +119,79 @@ static inline struct uart_port *uart_port_check(str=
+uct uart_state *state)
+>  void uart_write_wakeup(struct uart_port *port)
+>  {
+>  	struct uart_state *state =3D port->state;
+> +
+> +	lockdep_assert_held_once(&port->lock);
+
+[Severity: High]
+Can this trigger a lockdep warning when opening or resuming an ST ASC serial
+port?
+
+During port startup or resume, uart_port_startup() and uart_resume_port()
+invoke uport->ops->startup(uport) with port->mutex held, but without
+port->lock held.
+
+In drivers/tty/serial/st-asc.c, asc_startup() calls asc_transmit_chars()
+without holding port->lock:
+
+drivers/tty/serial/st-asc.c:asc_startup() {
+	...
+	asc_transmit_chars(port);
+	asc_enable_rx_interrupts(port);
+
+	return 0;
+}
+
+asc_transmit_chars() calls uart_port_tx_limited(), which expands
+__uart_port_tx() in include/linux/serial_core.h:
+
+	pending =3D kfifo_len(&__tport->xmit_fifo);
+	if (pending < WAKEUP_CHARS) {
+		uart_write_wakeup(__port);
+
+Because pending is below WAKEUP_CHARS on startup, __uart_port_tx() calls
+uart_write_wakeup() without port->lock held, hitting the new
+lockdep_assert_held_once(&port->lock) assertion and reading
+state->xmit_ready and state->xmit_blocked unlocked.
+
+[ ... ]
+
+> @@ -682,8 +762,9 @@ static void uart_flush_buffer(struct tty_struct *tty)
+>  	kfifo_reset(&state->port.xmit_fifo);
+>  	if (port->ops->flush_buffer)
+>  		port->ops->flush_buffer(port);
+> +	/* Serialize the wakeup with reservation changes, including another flu=
+sh. */
+> +	uart_write_wakeup(port);
+>  	uart_port_unlock_deref(port, flags);
+> -	tty_port_tty_wakeup(&state->port);
+>  }
+
+[Severity: High]
+Could replacing tty_port_tty_wakeup(&state->port) with uart_write_wakeup(po=
+rt)
+here cause threads waiting for the transmit buffer to drain in
+tty_wait_until_sent() or set_termios() to miss their wakeup and hang?
+
+Waiters in tty_wait_until_sent() and set_termios() sleep on tty->write_wait
+until !tty_chars_in_buffer(tty), which checks kfifo_len(&state->port.xmit_f=
+ifo).
+Previously, uart_flush_buffer() emptied xmit_fifo via kfifo_reset() and
+unconditionally called tty_port_tty_wakeup(&state->port), which woke
+tty->write_wait.
+
+With uart_write_wakeup(port), the wakeup is skipped whenever
+!uart_xmit_writable(state) (when state->xmit_ready is false or
+state->xmit_blocked is true):
+
+1. If uart_flush_buffer() runs while the port is suspended
+   (state->xmit_ready is false), kfifo_reset() empties xmit_fifo so
+   tty_chars_in_buffer(tty) becomes 0, but uart_write_wakeup() returns early
+   without waking tty->write_wait.
+
+2. If port->ops->flush_buffer(port) calls uart_xmit_block(port),
+   state->xmit_blocked is set to true and uart_write_wakeup() suppresses the
+   wakeup in uart_flush_buffer(). If the port is subsequently shut down or
+   suspended before the async transfer retires (via uart_shutdown(),
+   uart_tty_port_shutdown(), or uart_suspend_port()), state->xmit_ready is =
+set
+   to false before uport->ops->shutdown(uport) runs:
+
+drivers/tty/serial/serial_core.c:uart_shutdown() {
+	...
+	if (uport) {
+		scoped_guard(uart_port_lock_irq, uport)
+			state->xmit_ready =3D false;
+		serial_base_port_shutdown(uport);
+	}
+	...
+	if (tty_port_initialized(port)) {
+		...
+		uart_port_shutdown(port);
+	}
+}
+
+   When uport->ops->shutdown(uport) then retires the transfer and calls
+   uart_xmit_unblock(uport), uart_write_wakeup(uport) sees state->xmit_ready
+   is false and returns early again, permanently losing the deferred wakeup
+   for any drain waiters on tty->write_wait.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261029-submit-ser=
+ial-8250-dma-cancel-v1-v8-0-3fd56ba352ed@gmail.com?part=3D3
