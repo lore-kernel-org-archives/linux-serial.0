@@ -1,57 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793252262;
-	b=a3ti5btE8AL2jDbvpf8j5JoNiqiP/QqUPXUSSEQ3tX2cQLWq1EJI80i7e5QvRSeN8Tfb
-	 tXqmxQs7TrwidO5hwlUiBIK3jl1/SYR4s+bUgjPj54VFwCIQBjtmCqKgUE7JQIE7zUe5r
-	 +eAg5wBfB2+DGGBuiNZAHTlxofiLtxTMWB/FzYM3ZBJL4BxmYMW8kvztjmpqa1PMYj159
-	 2SoniB5TgDDcSlBSFolTcL+92TjdhsWMOu+jS9RBX3drBWSFp4p5541iX31l6i034tERa
-	 iIM3mYkt04XlNKse8GXPatq0gsUuLrwD76aW+3zcyACVpZYdyq4nWMsuyDxr4yBAWNQ==
+	t=1793253300;
+	b=tfMKFBvvqUVH3kAmFl+HDtK07M3qJsI4cE8B30vbsOnRKHz8w0YYOnVGvGYY3YqhZyzn
+	 jGsq6IyzfZ+E8IevZhFQY6ppZWeCD1OKS4dq5cfu5VuOawmXd4S+FBwFqkozjVc565cGT
+	 f53nmdlwnAfRzZpXLd7TRmNIcxw5LgVu9RMkt7UvK2qOSiZHFcY8WNevyVk+4s9H4UwRU
+	 W6003zZTIHJ9Xxrz8VMNImBFzTU1U6THPLYnRSWjK87VGyPv/1a6IdY50tHVtGKxk9LE5
+	 UW0VQPS80exFp4/9RgQGGxcFC9WxXAzdB3JW3Q1S738uLGfWoLRMZRwxIWRKVd1PkrA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793252262;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=8/XVliNYGNf9Vr27hCG2GokMpwv3zf1D7CGTaejWL3U=;
-	b=hNoiH4Zz2B5INrCX+K0pgm5y5H64vqdV1OktVnUZ25hDHmQHZEfjC4y8IX8dc1kstuVI
-	 mseuHUSEKp756xdwstvJyDJ9bi99BmOALLYF7J7wEr1lLnTe17Kwr+0wX4uY8s0Red1kO
-	 KQnKDZ6GLpc7ZLIPgRkT0b9wUuGpgkEBPWJb3k3bob0WV2u6s0jpJXY3g2TrO4IA71WGo
-	 nLwq5tyrX5sVKCFhAAVCSlJbPGjPof+zKoudDoRb/YDwqe3fmZDMzdQSX0QyQ9j/NG/Mr
-	 wOlV0RhSCDOHjGqk91nOcR2RxGljjHWpHXaHUP9818R4T9N8nTvudIJFtkViRUhO0mg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793253300;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=n00JStMcnluxyqd3reCV9Ishhs7tY4ywa3Yb3VgX2sU=;
+	b=PzFJcwjfy+bRYgd2Df5bwL6S4dkDD7yIZES+Uu0E1mIA0kcAhZaO9DNeqmDT1MqcIDPh
+	 WAm/S/B/PX4cFgAJOfqXCjv9sZWNtevruhdVxdgKOx9nBl2I0XboGn5ZFIsDx4nYTFQRW
+	 Ol4SzjdpeB5VAvoQrqo5XWlYd5aEq5Twk+q/FriUVumq1wG1JFrLY1m5ytr81K4wLngrI
+	 VjgfvM4KiUI+KRO7HK9O+1n8CRM8YbLiBZxswIDfashO1vmQhwRlNMx/PlcSBImd2SgP7
+	 NxUYDAKDs/BTp7F6HsTagkGS7Zu7trIfKGwPDJhhqMYNoHt3n0xVumNyxmIm0livUnA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E6LF2nw7;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HoO53HLV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9457C606A31A;
-	Thu, 29 Oct 2026 05:37:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9774C606A31C;
+	Thu, 29 Oct 2026 05:55:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E6LF2nw7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD03D1F01825;
-	Thu, 29 Oct 2026 05:37:40 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HoO53HLV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E30F11F01825;
+	Thu, 29 Oct 2026 05:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793252261;
-	bh=8/XVliNYGNf9Vr27hCG2GokMpwv3zf1D7CGTaejWL3U=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=E6LF2nw7FqMqiZ4oWjs7vFT3p3ywtjM8yVBk18nfQF2mzLxSYNDV4QPc5GqQ1PBNL
-	 7/lM7dojeqpYTDZ2JCoIMUbH4Xt7H8A0xRetzeopO41iLfo6e4j+JvMdlVTCZ18nG3
-	 4fgT+lgC2wnloI1PHuSsTbvJz8YcbTwEHJaALVSv6lqAFsHMV1HuBahhs9UX/bRWXG
-	 RkhJRmWtWybFGhJx4yUcGItWAnxKz7LdMXRQyeUIWS1AMAtPrq8a4YfQf8b6YFu+kV
-	 1HTptMaytWpB2Z1p2Jl0RsOmKMs9qY9aDOkGYjQKcREaD0f5tcbaLFxsX4grnLX4JY
-	 +ldwUj0m+IRzg==
-Message-ID: <sashiko-outbox-188759@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 06/12] rust: serial: Add minimal serial-core polling
- console support
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Kwanghoon Son" <asdfkwang@gmail.com>
-Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, ojeda@kernel.org, gary@garyguo.net
-In-Reply-To: <20261029-rust-bl808-console-v1-6-b736ee920078@gmail.com>
-References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-6-b736ee920078@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 29 Oct 2026 05:37:40 +0000
+	s=k20260515; t=1793253300;
+	bh=n00JStMcnluxyqd3reCV9Ishhs7tY4ywa3Yb3VgX2sU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=HoO53HLVqnRolvxFBkvTDB7ShFr9ZcofgrNWBiv1xxcAOc4+l0hz/PeTPF2S8+xCS
+	 /l/GMCPvA2EF1h/jEzlf8CrdxpWHFah1Tx7xF9+DOQkq8feLFfT/m/EHxoLlrdIqfX
+	 MT6NFpV1V7Tu27HoROr4CrlKd/V3reteHqnwAhkyz9xyARJbLUp38BflRxQ9JOvzWI
+	 JEbmgGoqv6/bQ+97Vh6xve0QeNm0gIkBVSd0X32361/tOmsdnub6Qm6BFieJAxTveA
+	 IlI1w7LsB6BANlK9YKiScq/oSN0olZHqcCvcTLsm1AW7OdbYmLy0kQDndnsdmud82E
+	 UpTXh+oe0r2Lg==
+Message-ID: <74e02b49-f596-4433-a132-7799029db2a5@kernel.org>
+Date: Thu, 29 Oct 2026 06:54:50 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,387 +50,142 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 24/24] serial: stm32: don't report a wakeup to a closed
+ tty
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Joshua Rogers <linux@joshua.hu>, Chris Mason <mason@kernel.org>,
+ Josef Bacik <josef@toxicpanda.com>, Tony Lindgren <tony@atomide.com>,
+ Rafael Gago Castano <rgc@hms.se>, Florian Fainelli <f.fainelli@gmail.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Peter Hurley <peter@hurleysoftware.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Crescent Hsieh <crescentcy.hsieh@moxa.com>, Frank Li <Frank.Li@nxp.com>,
+ Sherry Sun <sherry.sun@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Manivannan Sadhasivam <mani@kernel.org>,
+ Olof Johansson <olof@lixom.net>, =?UTF-8?Q?Andreas_F=C3=A4rber?=
+ <afaerber@suse.de>, Arnd Bergmann <arnd@arndb.de>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Robert Baldyga
+ <r.baldyga@samsung.com>, Thomas Abraham <thomas.abraham@linaro.org>,
+ Kukjin Kim <kgene.kim@samsung.com>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Srinivas Kandagatla <srini@kernel.org>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>,
+ Al Cooper <alcooperx@gmail.com>, LKML <linux-kernel@vger.kernel.org>,
+ linux-serial <linux-serial@vger.kernel.org>, stable <stable@kernel.org>
+References: <20261027-tty-llm-v1-0-99b0202ae546@linuxfoundation.org>
+ <20261027-tty-llm-v1-24-99b0202ae546@linuxfoundation.org>
+ <aef066bc-1b1e-b1e8-97f5-6fa8c8d18940@linux.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <aef066bc-1b1e-b1e8-97f5-6fa8c8d18940@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 5 potential issue(=
-s) to consider:
-- [Critical] rust: serial: use-after-free of uart_state on Driver::drop() w=
-ith open tty
-- [Medium] rust: serial: xmit_buf memory leak on TTY open when startup() fa=
-ils
-- [Medium] rust: serial: console_setup() and configure() corrupt console->i=
-speed
-- [Low] rust: serial: missing INVARIANT comment in PortData::with_port()
-- [Low] rust: serial: missing #[inline] annotations in serial abstractions
---
+On 27. 10. 26, 14:02, Ilpo Järvinen wrote:
+> On Tue, 27 Oct 2026, Greg Kroah-Hartman wrote:
+> 
+>> From: Josef Bacik <josef@toxicpanda.com>
+>>
+>> stm32_usart_interrupt() reports a wakeup interrupt as a wakeup event of
+>> tport->tty->dev.  That pointer is only set while the port is open.  The
+>> port of a console is not shut down by the last close: it stays
+>> initialized, so the wakeup interrupt is still enabled on suspend.  If
+>> the system is then woken up by the console, the handler dereferences a
+>> NULL pointer.
+>>
+>> Take a reference to the tty, and leave the event out if there is none.
+>>
+>> Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
+>> Cc: stable <stable@kernel.org>
+>> Cc: Jiri Slaby <jirislaby@kernel.org>
+>> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+>> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+>> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+>> Cc: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+>> Cc: Peter Hurley <peter@hurleysoftware.com>
+>> Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> ---
+>>   drivers/tty/serial/stm32-usart.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+>> index ad06b760cfca..3bc2ce877585 100644
+>> --- a/drivers/tty/serial/stm32-usart.c
+>> +++ b/drivers/tty/serial/stm32-usart.c
+>> @@ -872,8 +872,15 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+>>   		writel_relaxed(USART_ICR_WUCF,
+>>   			       port->membase + ofs->icr);
+>>   		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_WUFIE);
+>> -		if (irqd_is_wakeup_set(irq_get_irq_data(port->irq)))
+>> -			pm_wakeup_event(tport->tty->dev, 0);
+>> +		if (irqd_is_wakeup_set(irq_get_irq_data(port->irq))) {
+>> +			struct tty_struct *tty = tty_port_tty_get(tport);
+>> +
+>> +			/* A console stays set up after the last close */
+>> +			if (tty) {
+>> +				pm_wakeup_event(tty->dev, 0);
+>> +				tty_kref_put(tty);
+>> +			}
+>> +		}
+> 
+> Could we like add a helper into serial core to do this tty wakeup dance?
+> It is duplicated in quite many of these patches.
 
-commit b586ab9682dee028e1eb2b244ed7a9b0fb3bdd94
-Author: Kwanghoon Son <asdfkwang@gmail.com>
+Likely. Or use scoped_guard(tty_port_tty) at minimum.
 
-rust: serial: Add minimal serial-core polling console support
-
-This commit adds serial-core abstractions in Rust for memory-mapped, two-wi=
-re
-polling console drivers, including Driver, SerialOps, Port, LockedPort, and
-Termios. It manages port lifetime via devres and provides callback adapters
-for console output and termios configuration.
-
-> diff --git a/rust/kernel/serial.rs b/rust/kernel/serial.rs
-> new file mode 100644
-> index 0000000000000..f24c685d8592f
-> --- /dev/null
-> +++ b/rust/kernel/serial.rs
-> @@ -0,0 +1,505 @@
-
-[ ... ]
-
-> +#[pinned_drop]
-> +impl<T: SerialOps> PinnedDrop for Driver<T> {
-> +    fn drop(self: Pin<&mut Self>) {
-> +        // SAFETY: Registration succeeded and every port holds an Arc to=
- this driver.
-> +        unsafe { bindings::uart_unregister_driver(self.inner.get()) };
-> +    }
-> +}
-
-[Severity: Critical]
-Can dropping Driver<T> after port removal cause a use-after-free of
-drv->state when a TTY file descriptor is still open?
-
-Driver::new() registers a struct tty_driver via uart_register_driver() and
-sets console.device to uart_console_device, while register_port() publishes
-the TTY device via uart_add_one_port(). Although SerialAdapter::startup()
-returns -EOPNOTSUPP, uart_port_startup() in drivers/tty/serial/serial_core.c
-turns a negative return value into 1 when capable(CAP_SYS_ADMIN) is true:
-
-drivers/tty/serial/serial_core.c:uart_port_startup() {
-	...
-	retval =3D uport->ops->startup(uport);
-	if (retval =3D=3D 0) {
-		...
-	}
-	if (retval && capable(CAP_SYS_ADMIN))
-		return 1;
-
-	return retval;
-}
-
-uart_open() -> tty_port_open() -> uart_port_activate() -> uart_startup()
-then converts that positive return value into 0, allowing open() to succeed
-with TTY_IO_ERROR set. When console_on_rootfs() opens /dev/console at boot,
-or when a privileged userspace process opens /dev/console or the TTY device
-node, it obtains an open struct tty_struct with tty->driver_data =3D
-&drv->state[line] and tty->port =3D &drv->state[line].port. Even for
-unprivileged callers, tty_init_dev() attaches tty->port before uart_open()
-fails and tty_release() runs.
-
-Because uart_register_driver() leaves tty_driver->owner set to serial_core's
-THIS_MODULE rather than drv->owner, open TTY file descriptors do not pin the
-driver module or Arc<Driver<T>>. When a device unbinds and Registration::dr=
-op()
-calls uart_remove_one_port(), serial_core only calls tty_port_tty_vhangup()
-(which does not free open tty_struct instances and skips /dev/console
-redirected files) and waits on state->refcount (which only tracks transient
-uart_port_ref() sections).
-
-When the last Arc<Driver<T>> is then dropped, Driver::drop() calls
-uart_unregister_driver(), which immediately frees drv->state:
-
-drivers/tty/serial/serial_core.c:uart_unregister_driver() {
-	...
-	for (i =3D 0; i < drv->nr; i++)
-		tty_port_destroy(&drv->state[i].port);
-	kfree(drv->state);
-}
-
-When the open /dev/console or TTY file descriptor is later used or closed in
-tty_release() -> uart_close() and release_tty() (which sets
-tty->port->itty =3D NULL and calls tty_buffer_cancel_work(tty->port)), won't
-the TTY layer dereference and mutate the freed drv->state memory?
-
-[ ... ]
-
-> +    /// # Safety
-> +    /// `ptr` must be a PortData<T> port in a serial-core callback. Regi=
-stration
-> +    /// owns its allocation until uart_remove_one_port returns; removal =
-waits for
-> +    /// console_srcu readers and serial-core users before this port is f=
-reed.
-> +    /// Other device-managed resources may already have been revoked.
-> +    unsafe fn with_port<R>(
-> +        ptr: *mut bindings::uart_port,
-> +        f: impl for<'a> FnOnce(&'a Self, &Port<'a>) -> R,
-> +    ) -> R {
-> +        // SAFETY: The private_data type is fixed by Driver<T>/register_=
-port<T>.
-> +        let state =3D unsafe { &*(*ptr).private_data.cast::<Self>() };
-> +        f(
-> +            state,
-> +            &Port {
-> +                raw: ptr,
-> +                device: &state.device,
-> +            },
-> +        )
-> +    }
-> +}
-
-[Severity: Low]
-Since Port<'a> declares a type invariants section in its documentation,
-should this Port construction in PortData::with_port() have an // INVARIANT:
-comment explaining why raw and device satisfy the invariants?
-
-[ ... ]
-
-> +    // Required TTY operations remain inactive for this output-only cons=
-ole.
-> +    extern "C" fn inactive(_ptr: *mut bindings::uart_port) {}
-> +
-> +    extern "C" fn startup(_ptr: *mut bindings::uart_port) -> i32 {
-> +        EOPNOTSUPP.to_errno()
-> +    }
-
-[Severity: Medium]
-Does returning -EOPNOTSUPP from SerialAdapter::startup() leak
-state->port.xmit_buf whenever the TTY or /dev/console is opened?
-
-When a process opens /dev/console (including console_on_rootfs() during boo=
-t)
-or the registered TTY device node, uart_open() -> tty_port_open() ->
-uart_port_activate() -> uart_startup() -> uart_port_startup() allocates a
-page for state->port.xmit_buf before invoking uport->ops->startup(uport):
-
-drivers/tty/serial/serial_core.c:uart_port_startup() {
-	...
-	retval =3D uart_alloc_xmit_buf(&state->port);
-	if (retval)
-		return retval;
-
-	retval =3D uport->ops->startup(uport);
-	...
-}
-
-Because SerialAdapter::startup() returns -EOPNOTSUPP, uart_port_startup()
-returns a non-zero value without freeing state->port.xmit_buf. In
-tty_port_open(), a non-zero return from port->ops->activate() causes an ear=
-ly
-return before tty_port_set_initialized(port, true) is called:
-
-drivers/tty/tty_port.c:tty_port_open() {
-	...
-	if (!tty_port_initialized(port)) {
-		clear_bit(TTY_IO_ERROR, &tty->flags);
-		retval =3D port->ops->activate(port, tty);
-		if (retval) {
-			mutex_unlock(&port->mutex);
-			return retval;
-		}
-		tty_port_set_initialized(port, true);
-	}
-	...
-}
-
-Because tty_port_initialized(port) remains false, neither
-tty_port_shutdown_locked() on close nor serial_core_remove_one_port() on po=
-rt
-removal calls uart_shutdown() to free state->port.xmit_buf:
-
-drivers/tty/serial/serial_core.c:serial_core_remove_one_port() {
-	...
-	scoped_guard(mutex, &port->mutex) {
-		port->console =3D false;
-
-		if (tty_port_initialized(port))
-			uart_shutdown(NULL, state);
-	}
-	...
-}
-
-And when Driver::drop() later calls uart_unregister_driver(), drv->state is
-freed without freeing state->port.xmit_buf.
-
-> diff --git a/rust/kernel/serial/console.rs b/rust/kernel/serial/console.rs
-> new file mode 100644
-> index 0000000000000..3562191eb7a93
-> --- /dev/null
-> +++ b/rust/kernel/serial/console.rs
-> @@ -0,0 +1,107 @@
-
-[ ... ]
-
-> +    /// # Safety
-> +    ///
-> +    /// Console core must hold console_list_lock and supply this driver'=
-s live
-> +    /// console. `options` must be null or a valid NUL-terminated option=
- string.
-> +    pub(super) unsafe extern "C" fn console_setup(
-> +        console: *mut bindings::console,
-> +        options: *mut crate::ffi::c_char,
-> +    ) -> i32 {
-> +        // SAFETY: Console core holds console_list_lock; serial core has=
- published the port
-> +        // before registering this console. uart_set_options calls our t=
-ermios adapter.
-> +        unsafe {
-> +            let port =3D Self::console_port(console);
-> +            if port.is_null() {
-> +                return ENODEV.to_errno();
-> +            }
-> +            let mut baud =3D (*console).ispeed as i32;
-> +            let (mut parity, mut bits, mut flow) =3D (i32::from(b'n'), 8=
-, i32::from(b'n'));
-> +            if !options.is_null() {
-> +                bindings::uart_parse_options(options, &mut baud, &mut pa=
-rity, &mut bits, &mut flow);
-> +            }
-> +            bindings::uart_set_options(port, console, baud, parity, bits=
-, flow)
-> +        }
-> +    }
-
-[Severity: Medium]
-Can ConsoleAdapter::console_setup() and LockedPort::configure() lose
-config.default_baud and overwrite console->ispeed and console->ospeed with =
-0?
-
-First, if non-null console options do not start with a positive baud rate,
-uart_parse_options() calls simple_strtoul() and sets baud to 0, overwriting
-the initial value read from (*console).ispeed rather than preserving
-config.default_baud.
-
-Second, uart_set_options() in drivers/tty/serial/serial_core.c constructs a
-zeroed dummy ktermios and calls port->ops->set_termios(port, &termios, &dum=
-my):
-
-drivers/tty/serial/serial_core.c:uart_set_options() {
-	struct ktermios termios, dummy;
-	...
-	memset(&termios, 0, sizeof(struct ktermios));
-	memset(&dummy, 0, sizeof(struct ktermios));
-	...
-	port->ops->set_termios(port, &termios, &dummy);
-	...
-	co->cflag =3D termios.c_cflag;
-	co->ispeed =3D termios.c_ispeed;
-	co->ospeed =3D termios.c_ospeed;
-
-	return 0;
-}
-
-When a driver's set_termios callback calls LockedPort::baud_rate() with an
-out-of-range baud rate (or baud =3D=3D 0 from uart_parse_options()),
-uart_get_baud_rate() falls back to the old termios (&dummy, which has baud
-rate 0), encodes 0 into new.0, and clamps its return value to at least 9600.
-
-When the driver then passes that non-zero baud rate to
-LockedPort::configure(), the check:
-
-    if bindings::tty_termios_baud_rate(&new.0) !=3D 0 {
-        bindings::tty_termios_encode_baud_rate(&mut new.0, baud, baud);
-    }
-
-sees tty_termios_baud_rate(&new.0) =3D=3D 0 and skips encoding the actual b=
-aud
-rate into new.0. uart_set_options() then copies termios.c_ispeed (0) and
-termios.c_ospeed (0) into co->ispeed and co->ospeed, so any subsequent
-console_setup() or port resume reads (*console).ispeed =3D=3D 0 instead of
-config.default_baud.
-
-> diff --git a/rust/kernel/serial/termios.rs b/rust/kernel/serial/termios.rs
-> new file mode 100644
-> index 0000000000000..449662d9b6b5e
-> --- /dev/null
-> +++ b/rust/kernel/serial/termios.rs
-> @@ -0,0 +1,104 @@
-
-[ ... ]
-
-> +    /// Whether parity generation and checking are enabled.
-> +    pub fn parity_enabled(&self) -> bool {
-> +        self.0.c_cflag & bindings::PARENB !=3D 0
-> +    }
-> +
-> +    /// Whether odd parity, or mark parity in mark/space mode, is select=
-ed.
-> +    pub fn odd_parity(&self) -> bool {
-> +        self.0.c_cflag & bindings::PARODD !=3D 0
-> +    }
-> +
-> +    /// Whether two stop bits are requested.
-> +    pub fn two_stop_bits(&self) -> bool {
-> +        self.0.c_cflag & bindings::CSTOPB !=3D 0
-> +    }
-> +
-> +    /// Disables mark/space parity without changing parity enable or odd=
-/even selection.
-> +    pub fn disable_mark_space_parity(&mut self) {
-> +        self.0.c_cflag &=3D !bindings::CMSPAR;
-> +    }
-> +
-> +    /// Disables RTS/CTS hardware flow control.
-> +    pub fn disable_hardware_flow_control(&mut self) {
-> +        self.0.c_cflag &=3D !bindings::CRTSCTS;
-> +    }
-> +
-> +    /// Data bits per character.
-> +    pub fn char_size(&self) -> u32 {
-> +        // SAFETY: c_cflag is a valid termios control flag value.
-> +        unsafe { bindings::tty_get_char_size(self.0.c_cflag).into() }
-> +    }
-> +}
-> +
-> +impl LockedPort<'_> {
-> +    /// Selects a supported baud rate using serial-core termios rules.
-> +    ///
-> +    /// Returns `None` if serial core fails to select a rate. Termios ch=
-anges
-> +    /// made by serial core are preserved, including on failure.
-> +    pub fn baud_rate(
-> +        &self,
-> +        new: &mut Termios,
-> +        old: Option<&Termios>,
-> +        min: u32,
-> +        max: u32,
-> +    ) -> Option<NonZeroU32> {
-> +        // SAFETY: The port is locked, and the termios references are va=
-lid for this callback.
-> +        let baud =3D unsafe {
-> +            bindings::uart_get_baud_rate(
-> +                self.raw,
-> +                &mut new.0,
-> +                old.map_or(core::ptr::null(), |t| &t.0),
-> +                min,
-> +                max,
-> +            )
-> +        };
-> +        NonZeroU32::new(baud)
-> +    }
-> +
-> +    /// Updates serial-core timeout and the actual console baud rate.
-> +    pub fn configure(&self, new: &mut Termios, baud: NonZeroU32) {
-> +        let baud =3D baud.get();
-> +        // SAFETY: All port fields are accessed under the UART lock. new=
- is exclusively borrowed.
-> +        unsafe {
-> +            bindings::uart_update_timeout(self.raw, new.0.c_cflag, baud);
-> +            if bindings::tty_termios_baud_rate(&new.0) !=3D 0 {
-> +                bindings::tty_termios_encode_baud_rate(&mut new.0, baud,=
- baud);
-> +            }
-> +        }
-> +    }
-> +}
-
-[Severity: Low]
-This isn't a bug, but should the small accessor methods and C binding
-wrappers in the kernel crate (Termios::from_raw, Termios::from_raw_mut,
-Termios::parity_enabled, Termios::odd_parity, Termios::two_stop_bits,
-Termios::disable_mark_space_parity, Termios::disable_hardware_flow_control,
-Termios::char_size, LockedPort::baud_rate, and LockedPort::configure here, =
-as
-well as Port::device and LockedPort::device in rust/kernel/serial.rs) be
-annotated with #[inline]?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261029-rust-bl808=
--console-v1-0-b736ee920078@gmail.com?part=3D6
+thanks,
+-- 
+js
+suse labs
