@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793300098;
-	b=lPGerbqlSoNqrFdL8XICDgwL/S/fzzcCew9VFqItMO5ESjdldCOcNO1uFMfvCZGqEoxP
-	 Zn1IcIBMqs3YJAM+eUxklO+QGWxzlhzRJfKJnUgeZv0LvRgF6fkeq7cJYPyjVBFb1L7Jc
-	 ZL3h939V0p2Qj3Sjd5tQH16h57/JVW1N88QxunvkO0sYcIvu5QvAGTknae7YDB4Y2+Umo
-	 a6e4w1MSmDpNG6fFWhePNVxPEhlxdJM2d/u7WFfG/VlZs7Gz0iLWgck4wm+wt0fLxut+3
-	 T30RTcRKppnuycAPshJMkdpCkrwNffIuvejQj5wJI0KErPxrToa8UIXi1ReEkOKyMww==
+	t=1793300330;
+	b=NUVjjlUIyB3Z7Z5qZjtVtcEsLyMdNRnbvP+NbMLxP6N934SBmRReARTUkDhVWAX8pViF
+	 CQvB2wt5jLvH7mSLYi1Yrww8jTrAoC6PLVzZAcZdMIBhZk0ZyU+r79vaF3kcNHJ9RQ4cx
+	 fjHBjI16mNC9kaZ7RXg3d652D8V0E5K0hTsLiPcveVHnBaSnbwSgxyfAAMXkafkUARZef
+	 YAfAIYL/CE6wzZ2ZonqhxVVeJ/j52aip8VZpL9EuWf5LdPp0iwWiRGeYNKCIyf/m4+ppm
+	 1PBNZbrbGWPNIJgyi6nae5ixTgB8xN2qItejg+CbsuDajtWDhvYO0NalW54hNriuvEA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793300098;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793300330;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=wEgbHVoAVDi5POFLCru0ShT3/K2/8OJVSBqmnEGYSeo=;
-	b=aiF4YXgUd29Z+i3sLfthLEkwqe41fo7KkaPt+geh0fVckrGZzHg2/nF/c0tjcmcubBfe
-	 8MbIyscAMXYt1P9hNQQQlKpzok37oHLcpn72RO3KAuQmtRtYuokHl4vx7KcKM4NvzAPnL
-	 x59pp1s1XiMN6qSba5LCjTRf//El2kNXYJ7s8IVcGOFnlSeE+SyA/48vcQVUwqsNreah4
-	 EG+5282Mzm41FhSZivbR/iEpEAneTX5g2tfnyqAi3IoN4kuuRVtV2dn1n8ellOt2hnMiJ
-	 Hkyle+ykJ3lL9Nnwv/mypMoCebLwjy6lti2OwazAynebHOXn4pgPo1kYb4MHHkYxFZQ==
+	bh=KHONBBdjh7iQh0mapfdJy3cnY06ZDJP4tujkx2v2Pl4=;
+	b=CgXWs0zks73ZCePPazNoDGcCh49JjoKSWKrww8hvnB3u6LNFPizLEl1o0rmq5sl+WELN
+	 lf0HkhisjabFTDgt6JO0gEpXVyUkoP4na4IURFINdzf9rXG1mMQPGFHofhoSgdlw5VBUw
+	 Rqawnr/IZCrh9SO0hmG4s4FHa6wPTN2G9DYfvQEb/WZxkJxx3aroDU1bqEXO5+deIxPPd
+	 O1niC6CfGywGnk8kqk3BmEHDQzfLP+WdfGsbRCwwdS2qLSFgEqMKB7S9P3zCZBHQzNsjV
+	 O+BsYw2Qavt5TpFE0tiZZv2p1LaYFfzG4sqEO/IkQ2CPtR9E3Bkhy+aSwb0CqvboOFA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ETFMsP8s;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KD1wJEbK;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17AE606A31A;
-	Thu, 29 Oct 2026 18:54:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 394F4606A31A;
+	Thu, 29 Oct 2026 18:58:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ETFMsP8s
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B621F01816;
-	Thu, 29 Oct 2026 18:54:50 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KD1wJEbK
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCDA51F01300;
+	Thu, 29 Oct 2026 18:58:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793300097;
-	bh=wEgbHVoAVDi5POFLCru0ShT3/K2/8OJVSBqmnEGYSeo=;
+	s=k20260515; t=1793300329;
+	bh=KHONBBdjh7iQh0mapfdJy3cnY06ZDJP4tujkx2v2Pl4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ETFMsP8s7BqWCCvKeR8RYN4ZbgkNL97EI1G0cfCpGTNPDTtpy+LJHIkygumdQSR6Z
-	 YZoiaI0cRVFxac43T+75VHxazwRUFK/rY9SRmpVzb2r3Gc1Gm6bcMYPXKN0TFXXG7F
-	 D8d0zAbx/00vMCVqqSrjDgZty6kFK5ropSwVzkmzlGVaVUGj7BYoE0bL1UPUCAlO6F
-	 clg3Vh4cSWhi5hgmrwheRXHYVWmGRMaJna6/glQxmbmR4pCC4SED8hlOFty84skrfZ
-	 OQC1MBwEg9bofBa/HM61P1HBpEBb1daP/Q08BXjHuua7zqnkA8DQlKeRkN9FyM4Yho
-	 1AUknEPd2kX4g==
-Date: Thu, 29 Oct 2026 18:54:49 +0000
+	b=KD1wJEbKIuWT4XOC8ifnI/94JBSzXbzTjHdfbSPYxot9vTldReA0Qgz8lBQYeUvb7
+	 LskigVpp9/BJotoFwQWnCc7p6Qq0AuSfzVWr/4CuGKDg5Z60HOZf864RjkLRy0YC/Y
+	 tYdvmLF6KkManvmNbqWJ6c5kyZUf6QOaZNTSftjTiDHcpCXPKPGSpjK5OPVbgktAnM
+	 NQL75YZUQPanIt1Le4tXrnNgdy/clqaa06SMG4He+ms6Gy6HInIpaipN/i30VANb84
+	 acKccbgk/3BtPJtoyHLvY8KgotLiBR7og+PkZ3nw4y3EZWctu3Y3gooBOrxpkroLXS
+	 pCzj+mcF+5OGw==
+Date: Thu, 29 Oct 2026 18:58:41 +0000
 From: Conor Dooley <conor@kernel.org>
 To: Kwanghoon Son <asdfkwang@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -66,10 +66,10 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
 	Paul Walmsley <paul.walmsley@sifive.com>,
 	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 05/12] dt-bindings: serial: Add BL808 UART
-Message-ID: <20261029-pouch-enunciate-e74cf84e42a7@spud>
+Subject: Re: [PATCH RFC 08/12] riscv: Add Bouffalo Lab SoC selection
+Message-ID: <20261029-urging-dimly-3747c8bb9b1f@spud>
 References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-5-b736ee920078@gmail.com>
+ <20261029-rust-bl808-console-v1-8-b736ee920078@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -80,116 +80,66 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="F1Dhg2KrVTCkSmmT"
+	protocol="application/pgp-signature"; boundary="TJwnwN6dd3J6z/rc"
 Content-Disposition: inline
-In-Reply-To: <20261029-rust-bl808-console-v1-5-b736ee920078@gmail.com>
+In-Reply-To: <20261029-rust-bl808-console-v1-8-b736ee920078@gmail.com>
 
---F1Dhg2KrVTCkSmmT
+--TJwnwN6dd3J6z/rc
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 29, 2026 at 01:05:46AM -0400, Kwanghoon Son wrote:
-> Describe the UART register range, interrupt and baud clock input.
-> Initial Linux support targets the BL808 32-byte FIFO and reuses
-> Zephyr's bflb,uart compatible. UART3 is D0 PLIC source 20.
->=20
-> Link: https://docs.zephyrproject.org/latest/build/dts/api/bindings/serial=
-/bflb,uart.html
+On Thu, Oct 29, 2026 at 01:05:49AM -0400, Kwanghoon Son wrote:
+> Add a platform selection for the BL808 64-bit D0 processor, including
+> the T-HEAD errata and common clock framework used by its UART.
 >=20
 > Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
 > ---
->  .../devicetree/bindings/serial/bflb,uart.yaml      | 57 ++++++++++++++++=
-++++++
->  1 file changed, 57 insertions(+)
+>  arch/riscv/Kconfig.socs | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 >=20
-> diff --git a/Documentation/devicetree/bindings/serial/bflb,uart.yaml b/Do=
-cumentation/devicetree/bindings/serial/bflb,uart.yaml
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..df29d258f0a1c6d7bb283cf19=
-c4157436991b64b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/bflb,uart.yaml
-> @@ -0,0 +1,57 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/bflb,uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Bouffalo Lab UART Controller
-> +
-> +description: |
-> +  UART IP used by Bouffalo Lab SoCs. Initial Linux support covers the
-> +  BL808 controller with a 32-byte FIFO. The compatible follows Zephyr.
-> +
-> +maintainers:
-> +  - Kwanghoon Son <asdfkwang@gmail.com>
-> +
-> +allOf:
-> +  - $ref: serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: bflb,uart
+> diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+> index cecbce0c498384d3283ed23cbf2514391eee361d..ea4667da7716a9a8d2ae156c4=
+22b277064b42530 100644
+> --- a/arch/riscv/Kconfig.socs
+> +++ b/arch/riscv/Kconfig.socs
+> @@ -12,6 +12,14 @@ config ARCH_ANLOGIC
+>  	help
+>  	  This enables support for Anlogic SoC platform hardware.
+> =20
+> +config ARCH_BOUFFALOLAB
+> +	bool "Bouffalo Lab BL808 SoC"
 
-This needs to be a device-specific compatible - please just use the
-binding already reviewed and agreed upon in Jisheng's 2023 series.
+Ideally, this should be more generic because it would eventually include
+other bouffalo devices.
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Baud rate generator clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: baud
+> +	depends on 64BIT && MMU
+> +	select ERRATA_THEAD
 
-Drop this clock name, with only one clock there's no more need for it
-than the interrupt-names or reg-names that you do not use either.
+> +	select COMMON_CLK
 
+This is not needed, there's a select of COMMON_CLK at the arch level.
+
+> +	help
+> +	  This enables support for Bouffalo Lab SoC platform hardware.
 > +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    uart3: serial@30002000 {
-> +        compatible =3D "bflb,uart";
-> +        reg =3D <0x30002000 0x1000>;
-> +        interrupts =3D <20 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks =3D <&uart_baud>;
-> +        clock-names =3D "baud";
-> +    };
-> +...
+>  config ARCH_ESWIN
+>  	bool "ESWIN SoCs"
+>  	help
 >=20
 > --=20
 > 2.47.3
 >=20
 
---F1Dhg2KrVTCkSmmT
+--TJwnwN6dd3J6z/rc
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauOWeQAKCRB4tDGHoIJi
-0uKtAP0ejRfkQ6TQ/zZ8dEodbmT5akOou9YEluj6A8bUEGnyQgEA1uS4y7a9YWeA
-TkOZjaMll9OgIUH9gJmfHcwWaiRo2Q0=
-=y6XU
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauOXYQAKCRB4tDGHoIJi
+0m4+APwLLXxq0bZ7C1Uz5V8JPQ30iBNkzxhYIBytaujWnKP6mQEAjbdFyjoBSugn
+VC4kWUeUZlKq+dktIimVpN1lv8AjaAE=
+=5lfT
 -----END PGP SIGNATURE-----
 
---F1Dhg2KrVTCkSmmT--
+--TJwnwN6dd3J6z/rc--
