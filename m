@@ -1,57 +1,76 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793301643;
-	b=2DN56LyrRrOD3p/uMVat96Doldl1RT1sqiDPViA7/GmcrDGhh6AgaFsEpT0JJmqVppN5
-	 sHYouH6IPuIw9l85vhTe7HDzXI6gFG0PPlcMaqGWgKlOsEIas4kUgZHjoraYW+B37SVF1
-	 ROwszRt8JPV05zZPl8Ei54mZgz0aJjnUok/vv0Rp5NZ8/U01WcRgl94v/pHuDkSdB/vFU
-	 8QLwPVBGkkk6F1hMBTyiZ0YisSaDGxeXlWLdUi10czSYExkCQxngwEKISB5ia75F/DqYf
-	 8sGCqTmH3TNpz/N9MBLz/huH51WCjo5nI7WxMafO08T++kQKA6H3ZwskTJ+EKlsA5aw==
+	t=1793301657;
+	b=nX0fb7qPxQTDQIoUvsw7ufDcWnsDFioXMgRLqcZtM48SR1M7gq2n+U0TPkbR7PsUCq+K
+	 6Tl2B0M74XSPrCys/KrB2b9Tf4N3fUBLlL1Y3qjGGR5EEtXRKBjkdXJNQpg+TVxAjGtiq
+	 S/EVZxKobc8Dd0Ug83bm9/J+r/Ezav+avSXpBZvEntt4MJBMaR6PlHSUu8qEK1uuuh5y1
+	 L1YTHuh6mBhz6BpYEihDvqez5mizlCZyZtmhpFKEeKLWKbb8JjSH+divuYZPrlefM3m+3
+	 ofTR2OFMJaL6WNqAHrOkjjlhjOe08dA8+kmQLI4ptiHlh8yADxBSJNM14mphdF33XdQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793301643;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=UnBbFNnT6qaH4zjhxV0w0THHTNwXNtUqtCm4qVti1JY=;
-	b=zxuK0jpvgpIVmUE61fw0Jc2Jr/dsJIKedkq0rD9pPrRpDFBYlJ4SujCodIjr5RIVd2Zb
-	 JQon+X7WxYyFmqdxYtuKgHmVTsKeN8mhjeO0qxtvA+JYLQa9wmh92hEP1PaLwWheV/3qY
-	 Ksjqyb1yk1epsc+Rx4LXc1+kuvEF6cys0MpBqUzDPM+wwteuACqJHbcAlwOtOlAjPKrnh
-	 GVRkklXRWP1zTO0kWeftvLXrgPzl12eHEQFTeU1F6/1IvfDtz9QR1Zo4n+Tt+ZMJ5KKTY
-	 hrgNwm1hHUnSo9TKPbszhAolZ8IuJgIKQ7zNIgG/XYfFqhDwH9LDH57pBOS0ddXiBDQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793301657;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=6cRbs5oqkT6KWm1ocQa4weQvb7ZtTfs7ITLdAIDLxX8=;
+	b=u2r0Ew+hA73hKXg7i0Jn/5jJ2IJ/C0m1ltvglTvC/kMekyG6GDAmkVqWHR4IVPJurJIR
+	 D7lf++8JBeFqPvZkTt7t7dkjtW0fGNmVzRDpm6i8NPIEPA0aBuiRtF8X4XprDW+X/WZwv
+	 VJYvNJhswbFVCmDldjTfUPDhlfcCmS7FP9rio70BEE9l22zzUNAVE3VYKcHLlHQDH6N6D
+	 s5aqmY6dxVNnO+jml8XPoD23FXJqVR6noei5jVrw1MiioDKw52SNISuKqjlwf35jmZGYd
+	 zw3nOFFFD6J+r0DhMqq3mPnnExJzYBBmwfDNnlWB5azPsTZS5KqpIfRopu5DPGYQjJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kt4nZ9EN;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Dn26AmIH;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33331606A330
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 19:20:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 778ED606A33C;
+	Thu, 29 Oct 2026 19:20:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kt4nZ9EN
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DBEB1F01825;
-	Thu, 29 Oct 2026 19:20:42 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Dn26AmIH
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32A211F01824;
+	Thu, 29 Oct 2026 19:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793301642;
-	bh=UnBbFNnT6qaH4zjhxV0w0THHTNwXNtUqtCm4qVti1JY=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Kt4nZ9ENp3+sKYC8CqJ3C8a0HuVCuLUgo6v9k/5PmUCDjIXAbdbsVvD7y0kKRrPNR
-	 oxyKKuYShJldGLkmazmq2Y3+l1gfGBauF6wneCECOsjiOCk6tLNhiDVko2IAp6GXT6
-	 1dKdbdVY9qRjW9MexZrM+2ax5VnREuCJv6YFVsaO4+9+F0xUBp5LiaI4lQLmyISteA
-	 OdC17nMJEpzbFUh2WdVEgAe4dX74LThATu3xK9vxGGFufARTD6y2DiD7kMUNEjU6im
-	 BsqvTjSEsIC5xXf4KWm5Rityr6zNByQL1WvvYdZeHqT5ja0fsS6FyLeSS9Smmfwe0a
-	 6+oZYc5GQO38w==
-Message-ID: <sashiko-outbox-189867@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 5/8] arm64: dts: allwinner: h616: describe the UART
- integration
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261029-submit-h616-uart-fifo-v1-v5-5-53b433aebbf8@gmail.com>
-References: <20261029-submit-h616-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com>
- <20261029-submit-h616-uart-fifo-v1-v5-5-53b433aebbf8@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 29 Oct 2026 19:20:42 +0000
+	s=k20260515; t=1793301649;
+	bh=6cRbs5oqkT6KWm1ocQa4weQvb7ZtTfs7ITLdAIDLxX8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Dn26AmIHNql4k0vIhoTKyGSjVJ4cgpmGwE2pX2CE4VKQsm6Aexk95CuLDLOIYVU0F
+	 dG8fIXm2p+2PJFCUzbUmZr5GOw8cxUaUmNM23yD2hphNspemteyEWIW/MC4Sy9KDE3
+	 SexvEyi1ceDvbO+PdJ1eiePZ1xsHiGMc3+rH8c5x3NB5CXsBj4+KT3cHsM8+QqvFWn
+	 n1l65j/tMmv2hvUkghE7K8NY9edNcBbAz9AnLDeq0cEXSWI3z5TwslHlT+sQbbJ4K8
+	 nWprPv/+kXp+D0rD60DtBZxyT3Bp70dJ+EK7ZFm7SF0RNJbQintERb8KV5No3StC9G
+	 1vSTaxHQy7IMQ==
+Date: Thu, 29 Oct 2026 19:20:41 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Kwanghoon Son <asdfkwang@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
+	Paul Walmsley <pjw@kernel.org>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Anup Patel <anup@brainfault.org>, Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH RFC 12/12] MAINTAINERS: Add Bouffalo Lab BL808 support
+Message-ID: <20261029-amuser-savior-6a6ab062f471@spud>
+References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
+ <20261029-rust-bl808-console-v1-12-b736ee920078@gmail.com>
+ <20261029-spyglass-evasion-772697094cb9@spud>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,19 +79,84 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="FP9ChwAHSeteGPVI"
+Content-Disposition: inline
+In-Reply-To: <20261029-spyglass-evasion-772697094cb9@spud>
 
-> Identify the H616 UART integration on each of the six controllers. The
-> specific compatible describes the fixed FIFO capacity, register layout
-> and receive-trigger mapping.
+--FP9ChwAHSeteGPVI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Oct 29, 2026 at 07:08:56PM +0000, Conor Dooley wrote:
+> On Thu, Oct 29, 2026 at 01:05:53AM -0400, Kwanghoon Son wrote:
+> > Add a MAINTAINERS entry for the Bouffalo Lab BL808 platform, device tre=
+es
+> > and Rust serial driver and abstractions.
+> >=20
+> > Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
+> > ---
+> >  MAINTAINERS | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> >=20
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 801f964899ba790a8f71fe61f9b3777a494dabd5..b76d3e168468bf6139c958a=
+81b626c73b422c0d4 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -4926,6 +4926,19 @@ S:	Maintained
+> >  F:	Documentation/devicetree/bindings/iio/imu/bosch,bmi323.yaml
+> >  F:	drivers/iio/imu/bmi323/
+> > =20
+> > +BOUFFALO LAB BL808 SUPPORT
+> > +M:	Kwanghoon Son <asdfkwang@gmail.com>
+> > +L:	linux-riscv@lists.infradead.org
+> > +L:	linux-serial@vger.kernel.org
+> > +S:	Maintained
 >=20
-> Retain snps,dw-apb-uart as the generic fallback. H618 includes this DTSI
-> and uses the same UART integration.
+> Missing git tree, unless you're expecting me to apply patches for the
+> platform for you?
+
+Additionally, are you actually going to add wider scale support for this
+device? Like a clock-controller driver and the various other
+peripherals, or is this really just a vehicle to support your rust
+serial driver work?
+
 >=20
-> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> > +F:	Documentation/devicetree/bindings/riscv/bflb.yaml
+> > +F:	Documentation/devicetree/bindings/serial/bflb,uart.yaml
+> > +F:	arch/riscv/boot/dts/bouffalolab/
+> > +F:	drivers/tty/serial/bflb_uart.rs
+>=20
+> > +F:	rust/helpers/serial.c
+> > +F:	rust/kernel/serial.rs
+> > +F:	rust/kernel/serial/
+>=20
+> These should probably not be maintained under the arch support since
+> they're not platform specific.
+>=20
+> > +
+> >  BPF JIT for ARC
+> >  M:	Shahab Vahedi <list+bpf@vahedi.org>
+> >  L:	bpf@vger.kernel.org
+> >=20
+> > --=20
+> > 2.47.3
+> >=20
 
-Sashiko has reviewed this patch and found no issues.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261029-submit-h61=
-6-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com?part=3D5
 
+--FP9ChwAHSeteGPVI
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauOciQAKCRB4tDGHoIJi
+0kaYAQDe/U5aSNMnBN+gfEYMXHcowI6WsE/iqPlFmGa663zB1gEA7nC4tnTPdBIy
+gnEMK9pC2q6MB8djjcDHvekkukxybgc=
+=vdAX
+-----END PGP SIGNATURE-----
+
+--FP9ChwAHSeteGPVI--
