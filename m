@@ -1,90 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793312995;
-	b=Hpm17DvkG2Wgfquk5mGHoDraAbpc48bPxA+dIDcXko1ddXbv/YohBuuPHaVuJZGQ3C48
-	 WGfGxJzivCoe0uWAcYYIKzPVjxzVJHah9+EbLOmIjKTzafUPz3K3O9dLoa7cdbzP+UikH
-	 r03zIjiVPSiaLp+BuUqRMXpHZeLNjMHsaAW2YCSX8noTh3BKiciG+/Pl0BB1IMN+YXDRS
-	 H4edHFA/65KXYc9Zm3gMVWxVHoAC+zHh5v9ouPG1op4CTz0Or4qsxQwrbLYSWkTmMNOJC
-	 8Vtu0aorbsQBvJQ0NIHQpWCvN1xe7pJ6XK2zH6mwSj1FubPfX0FMFIgvwWD/VI158jQ==
+	t=1793312996;
+	b=zuDkyeQFRr9OawEDuvlyXWn0XkdZ7C2rqhOX9M0XZpIMX9EYc0xvHOaNB1VSpjCOwgfz
+	 uJGbiqOR3rq23DZMGkCl3Y0Uwgj+yQTq7NHfYhm8PTedQAToAuwoF+KxbcICiXlubaA6t
+	 uBHE6Vrg3JgA4zsdyaTDi2iMA560GQeyxQvFMTtzUdKc4o7jqOyGDclYziNtpUeIrT0Q2
+	 HPjckTmZcoNDoDLFArjgmztJ9IVEyihjfu5QK48ar82swn9rz+OP0HsNtwakr4DV4oH6c
+	 EhUfIpnVL5so/9yEso9Lmy3+VRj3ZaGo+cF27icDicZit3R6KHg2qkvgzvf+JeAjv9Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793312995;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793312996;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=94WZMClHJfI/hK5hnDLaJYjY1fIJ24YVjNi0D7Blgz4=;
-	b=33IjWxg3mrV9VGzn5lPE0umNrxx6AukrK11n7mpAtMEhT8io0oMr4QyyLBgo9l5wOC4z
-	 ss4Kg7k5sI5MP34r8v+r/Brd7nemy+wKUMswzVKTGXupBPK85sWa2Zx294RPUThA4E1ht
-	 9kM3P2Vg+Ppqyl83lnFmhEQ6W6zdq82X1r+3kHzOrBA8OKEAzHa+E9kGcecs5ittwXubY
-	 0i/TiEiZbTNeQxQS/0bcf8uiM2VkrXDR1ypHLg+qQ3RvGbwCbmFeOXt1IoYhQ695NHW1L
-	 yW0j1Osj0yNGlKIfjqsQeOhBzfgUHxk4r80kH8v8vVBIXg5v3PPXG/zA+bpqCPM2NGw==
+	bh=wkIhisdDZBkDpi2Ngf0GdoFEgXXogA5sytIiQ5NQ4z8=;
+	b=FcSTaDLvcCQck4jl7puc3vkjtdE/xMNmVmrMtKE6STGLeOM28RjrF7Px7VVtTqqp8PNz
+	 zJ5F5p146iXyqgEKiO3B3+81dpAXG3FirBpwmzo9fezvyDhuMB3xEUT0VfIcVHjbumiN/
+	 Jyg5Fmael7VcHBR90QhSyWB7h5OBZXlLGNd0cP5Pc7yNvKzfU+UYEPf5fJip4LFh6kv7k
+	 cxze1qM8NMVefW9tCNIDiMiKd/XR4PH7iBSZNJYqkeFk8e/zUp/q0Wr0+JJL76p0dv0lT
+	 bgYyF+JT+9OPiNb3AcybQ3xJklxEVVIEQKR4SjMRG7m3iTx6ZC11BKNLcyX+y47uq3A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JcfI8QcX;
-	arc=none smtp.remote-ip=209.85.210.50
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RNR9Efno;
+	arc=none smtp.remote-ip=209.85.167.172
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEEC7606A31F
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 22:29:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AEEC7606A31F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE28A60A2619
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 22:29:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BE28A60A2619
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JcfI8QcX
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-84a248254f4so122254a34.0
-        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 15:29:54 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RNR9Efno
+Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-4b21f71613fso74545b6e.2
+        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 15:29:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793312993; x=1793917793; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793312995; x=1793917795; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=94WZMClHJfI/hK5hnDLaJYjY1fIJ24YVjNi0D7Blgz4=;
-        b=JcfI8QcX0MkbuJpYSDzzNklIPIfn0nH7EJu8TYdFgebu+YQVrQhDw+mvk1wGbaKMGq
-         xXY8+WzzD737OMw3GX0zgsKKqQ9YH4TuqEoT1YoDbARN6o1chKnJcJoPFErnm+vJ+FSm
-         mZ9oUf/MyGxkQ7u9HVFZdxFYzHEVrB9+L31XZQKFeX/f1nZAj+yXbzHI+oWBCQBke45s
-         ceFmyKnZfwWgN3YGJP+6huiuqz8HgijQwNUpOeyOEvATYJyRFxub0h0P59AjByjU3Sxg
-         /sfcdJ/FPTo+xawFPEj749PiJlPbsg9E3yRB4iGMhZpW/uN7xGBhaqqoCq4yVJUqjKXs
-         hntw==
+        bh=wkIhisdDZBkDpi2Ngf0GdoFEgXXogA5sytIiQ5NQ4z8=;
+        b=RNR9Efnolrr+Tv9pm9QqjboB94rb3QbKuu+iJXO4ui75czgSEYX97arGLUAsN9mwo2
+         B50CHn1wvxCqxQCsXAFdR+7ydwiXXqH0SYNxsKZp6tGp+lzWZBCuGO7d6NaT6SWqAah/
+         4oh5JKgWkM6Mn4xhGHrO/636qy3uWRezfa2BPyUK2oVVonW2O/EQe5p0bOJ0CI9J0n9B
+         uKvmM+L6elc+Qm+WjsLg58z2wgo/+S2tZiMvIJAPe+Dgz8dWV8WyL/smx5HUOKvydH3w
+         lowo1cfPCa8eR5h8J4jeIoEziEYkFV7djX03DDN1ASjBCGAAarILZr7aTW+aQ25QklH9
+         dMJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793312993; x=1793917793;
+        d=1e100.net; s=20260707; t=1793312995; x=1793917795;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=94WZMClHJfI/hK5hnDLaJYjY1fIJ24YVjNi0D7Blgz4=;
-        b=Ah5HGUnTakFS08cK5UfWWm1pOY7dV0X9e/4tG/fgS4ovdy9XUjtvnBDU1EsXy8Zx/r
-         J6gKBjlYR7+/nW9N4Qr2JgldNVL30/m6pt/GoXtKCaa8hlfVwwbcxSBJanw/dI0pQ7L7
-         OcM94VQRc+WQFRKTyyEEwn2tHvNTH//UyiWeHXezqC0aIFfzIcFkX3/75X3D27P9lWbT
-         kZnybt44VPwUhh+q8ybJfYoIn7Gwv3jt9mLS392vTVMlbTqjt+kHaLnj5p+XQB0OfP5Z
-         g88CzMi+o7IpBzDoEwJtKiU1mXEsIrSobwpEebRQFyXhPuKwnpW9cmoKIPc+4/pIf19/
-         dMHA==
-X-Forwarded-Encrypted: i=1; AKwUvBzpRxLNdvDlN0CfjNF6SBx7M6OrFsH1j70gBFcJ6YaPDPzxQeM9UDjlhX5BrIYthDow8vG+siLQqYeJY3A=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJFu+7IcfYZUPpGwSDzDz+hnCcUuEx4X+RVjG3z82JSOyKDzX/T
-	aeO506vVf671j1QLFR07DCmDGwG26f3Zm4a9vrvB9mAEWyuyeHosEOO0
-X-Gm-Gg: AYBFou1brTMlZoS5P0EwPmpPXlkZNx7K9JZ1+XRsdQfkXrGLYzVWdRRoVz2jp+Nv6if
-	EQ056yeai2cnghLHBuEakop9p+V7eOEekEDBiYpHqjNFSMpjkzW9KNeiMQc3RSlAzAxT3rPrncF
-	3Kw/CVqsjQbwt1xqlTu3z4TjlKujjMOXMQRbe8q+eOOI2+ZtnYZCk6O1U0Bmj7JBE9Kv4ilRJzY
-	S8YauT6Oqoqtyk/mbDeWgL++NklcJEjOlfMGSG8Rlc9e1EIFl2huAvQJl7I4xME53Xqa4YtAMrT
-	0zaXg6xmHs7/KFYCQQAgxJOh+n95ylwQj8Vr3w0VyfG3DFYGw/uZNgkIt5NxSsTL1/zR2ub2KI5
-	kbG07SsreStptE/PCgGe0hYKS+m1fXrnMzH4CcaThsLddHsqWGvyxikoI/uKqIK195Pr720p6hR
-	5SMuQadZwbrTOv7G8kL25b7prUt/QZFGT730/v3Lf/5/H9zxt8qukkgHmuPcV+Ru3z1N59KMEr8
-	I5sT9JOjOHNLRi/NzvyRRieqMNLHXREytciYqxAhFhsCZ4ag5O5KTHv5IzmHMokozUDt0WkJfcd
-	7bWrfZHpZQ8Nl+pHTlfdOI2DW5synC/MKiyV0mmNiaTAkCzEtmKjymgcabHIPzgSE9f1JK4nAyR
-	54/YYA2mS9H17VQYxDrre0x4lKDIRYGcb1CigHjMqiYcYnJ/e8qNu+RzYR4kWiECKcB86+wYlDq
-	uq1AZzDSC0kMCvRlNFG1z8MHcyP5OM8uRI8KUVeVFOLUrvyNhoDSfF
-X-Received: by 2002:a05:6808:1244:b0:510:7dc8:5ff7 with SMTP id 5614622812f47-5640deea651mr505285b6e.19.1793312993474;
-        Thu, 29 Oct 2026 15:29:53 -0700 (PDT)
+        bh=wkIhisdDZBkDpi2Ngf0GdoFEgXXogA5sytIiQ5NQ4z8=;
+        b=Aek4WIErULYiL555dV4ys93kLdq4SmYDShBFP9bTUlUY6dpY2uaeVGNKEk5nlemSjN
+         uIuNuS4+sHAjS3ndGxQxiJgPkCFPsYYTVBEWnxLa3Gk49XqIGzSU0dW78AI2fff6vxXc
+         S9LROtJjNON0B0MBLeH7eGhcLMMhWwPvJ09SePtXsPS54z071njPmU6Z+xJlLmv7AKMQ
+         KbJhJoC7cm27pzU67ejTTG9/HLpcbM2fept/WaiTW8bXVRXjeRvVKh3tyL8CVI0vtLbj
+         t8jnMQSNiufnn48jVHrNpcUi1zbSa0/6PA/PEYDbGDN2OpACSjrp+uaRQn3JvQBwVkBG
+         0vHw==
+X-Forwarded-Encrypted: i=1; AKwUvBz5nSuYHEeBzXKPI38H2HYrYhp8NvebF85d5xckgos+izHOyZ+iTJqqqdXjdPR+PMzTLysBGt9hsYBvnow=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJzyVWEY/QXNH7BmRPCppF8K7OZ9bjOeO6gIpPOMCHwf3QsoMzZ
+	PeW3WmExLGeW1jkBimJldU2ZmyXMXLgb9zY5Oq0EyKKEV2X/xjcgNjyE
+X-Gm-Gg: AYBFou38JVzGhfORwzDo7QSZcO62UXVQh7xX6OzJqM6//Og6udSgDe3PcxvgJIgfBoW
+	ymYhgRt+qrs5p/lybd2985CntsmQjjySmB0lkzZXaaNFhdv8Hm26Hka0VIjX0gu8AdxyUWlpa1e
+	qzdB9mIs2R0eeqzEym1hoVKGgZWVZL+6eT4Ll1M/lzpSWrH9aaozgLYyOt/OtEX3IuphB1rQq7o
+	5ekMWPBh831uQMBayu9pbj4KZ5275BpSn5tzKnZXqUhJ4N1Wm5SfB1beYeNw77OSulFZfBhNFpi
+	5wWSyMwGDGBGQWiNpsFm5eByuDoTdcg0W4J2I/n4+SIUTHaUgDWXv4JT6tuQTQmLWRjpXmK+ydw
+	RhL+vNmh6Lb/um8JvNb+1I0/5tlzRrQJgu4D5rbwS222F5O+GNIa+D6XvyXtgsmpxctR9XHw01S
+	lLgbtj3cfWmkrEo2M6VE42JAD1Zz+WG6XlrNTrmacJwVyVpea4DnRDlxpbe67fFXH98RnucwHqm
+	SoJBQ5SOD/G52zC6YiscFGVdW1h5nkoiNv1LmO0BfN6FH2Krylh5dGlMxhBbdxUClmk7I5zLdzk
+	nNEgb9ho6Q/gCjCaUCKzObeOeQkrMiQd4DbzxjMauP3p49fVXiNm8z5JBeIuo7ChE16eqGzmDKs
+	1ffkLpAthMQk04ELRD3JxQdXf6pm/03MsP53JAKolcMFmyD80tg5RKFkh7FYaVWNSDj+VZH+Pgm
+	kG2sStdudi4A16M+WrQ/cmUHBxIMJXLTY7dLH5FrSsxS0EVPLbZE1J
+X-Received: by 2002:a05:6808:1383:b0:4e7:3fd7:2752 with SMTP id 5614622812f47-5640e02af93mr409218b6e.54.1793312994747;
+        Thu, 29 Oct 2026 15:29:54 -0700 (PDT)
 Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-5640fc49880sm236130b6e.2.2026.10.29.15.29.52
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-5640fc49880sm236130b6e.2.2026.10.29.15.29.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 15:29:53 -0700 (PDT)
+        Thu, 29 Oct 2026 15:29:54 -0700 (PDT)
 From: James Hilliard <james.hilliard1@gmail.com>
-Date: Thu, 29 Oct 2026 16:29:39 -0600
-Subject: [PATCH v4 5/7] dmaengine: dw: drain the tasklet before releasing
- channel resources
+Date: Thu, 29 Oct 2026 16:29:40 -0600
+Subject: [PATCH v4 6/7] dmaengine: dw: synchronize completion callbacks
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -96,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261029-submit-dw-dma-synchronize-v1-v4-5-fea447d9f285@gmail.com>
+Message-Id: <20261029-submit-dw-dma-synchronize-v1-v4-6-fea447d9f285@gmail.com>
 References: <20261029-submit-dw-dma-synchronize-v1-v4-0-fea447d9f285@gmail.com>
 In-Reply-To: <20261029-submit-dw-dma-synchronize-v1-v4-0-fea447d9f285@gmail.com>
 To: Viresh Kumar <vireshk@kernel.org>, 
@@ -110,59 +109,72 @@ Cc: Serge Semin <fancer.lancer@gmail.com>,
  dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, 
- James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org
+ James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org, 
+ Frank Li <Frank.Li@nxp.com>
 X-Mailer: b4 0.15.2
 
-The controller tasklet invokes callbacks after dropping the channel lock.
-Releasing a channel can therefore clear its configuration and disable the
-controller while that tasklet run is still using them.
+The controller tasklet can detach completed descriptors and invoke their
+callbacks outside the channel lock. Terminating the channel does not wait
+for those callbacks, and there is no device_synchronize hook. A client can
+therefore reuse callback state or release its buffers after
+dmaengine_synchronize() while an old callback still uses them.
 
-Disable the tasklet before clearing channel resources and re-enable it
-after updating the controller's in-use mask. This waits for an executing
-run while preserving pending schedules for the other channels. Have a
-pending run return before accessing registers when the last channel has
-already been released.
+Disable and re-enable the controller tasklet from device_synchronize,
+outside the channel lock. Disabling waits for an executing tasklet,
+including descriptors it already removed from the channel lists. After
+termination, a later tasklet run cannot acquire another descriptor from
+the terminated channel. Clients must continue to exclude new submissions
+on that channel until synchronization finishes.
 
-Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA controller")
+The tasklet is shared, so other channels may schedule it while this wait
+is in progress. Preserve those pending runs: tasklet_kill() temporarily
+owns the scheduling bit and can consume a concurrent scheduling request,
+leaving controller interrupts masked. The disable/enable pair leaves the
+scheduling bit and pending tasklet queue intact. Other channels' hardware
+transfers continue, though their callbacks may be briefly deferred.
+
+Fixes: b36f09c3c441 ("dmaengine: Add transfer termination synchronization support")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Closes: https://lore.kernel.org/r/sashiko-outbox-180707@kernel.org
 Cc: stable@vger.kernel.org
 Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Reviewed-by: Frank Li <Frank.Li@nxp.com>
 ---
- drivers/dma/dw/core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/dma/dw/core.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 1d6419e1cd3c..3bda85adbeee 100644
+index 3bda85adbeee..66065d7b26ae 100644
 --- a/drivers/dma/dw/core.c
 +++ b/drivers/dma/dw/core.c
-@@ -398,6 +398,10 @@ static void dw_dma_tasklet(struct tasklet_struct *t)
- 	u32 status_err;
- 	unsigned int i;
- 
-+	/* Channel release may have drained a polled completion before this run. */
-+	if (!dw->in_use)
-+		return;
-+
- 	status_xfer = dma_readl(dw, RAW.XFER);
- 	status_err = dma_readl(dw, RAW.ERROR);
- 
-@@ -1067,6 +1071,8 @@ static void dwc_free_chan_resources(struct dma_chan *chan)
- 	struct dw_dma		*dw = to_dw_dma(chan->device);
- 	unsigned long		flags;
- 
-+	tasklet_disable(&dw->tasklet);
-+
- 	dev_dbg(chan2dev(chan), "%s: descs allocated=%u\n", __func__,
- 			dwc->descs_allocated);
- 
-@@ -1092,6 +1098,8 @@ static void dwc_free_chan_resources(struct dma_chan *chan)
- 	if (!dw->in_use)
- 		do_dw_dma_off(dw);
- 
-+	tasklet_enable(&dw->tasklet);
-+
- 	dev_vdbg(chan2dev(chan), "%s: done\n", __func__);
+@@ -902,6 +902,19 @@ static int dwc_terminate_all(struct dma_chan *chan)
+ 	return 0;
  }
  
++static void dwc_synchronize(struct dma_chan *chan)
++{
++	struct dw_dma *dw = to_dw_dma(chan->device);
++
++	/*
++	 * Termination removes the channel's descriptors from the lists, but a
++	 * running tasklet may still own a completed descriptor and its callback.
++	 * Wait for that run without losing schedules from the other channels.
++	 */
++	tasklet_disable(&dw->tasklet);
++	tasklet_enable(&dw->tasklet);
++}
++
+ static struct dw_desc *dwc_find_desc(struct dw_dma_chan *dwc, dma_cookie_t c)
+ {
+ 	struct dw_desc *desc;
+@@ -1295,6 +1308,7 @@ int do_dma_probe(struct dw_dma_chip *chip)
+ 	dw->dma.device_pause = dwc_pause;
+ 	dw->dma.device_resume = dwc_resume;
+ 	dw->dma.device_terminate_all = dwc_terminate_all;
++	dw->dma.device_synchronize = dwc_synchronize;
+ 
+ 	dw->dma.device_tx_status = dwc_tx_status;
+ 	dw->dma.device_issue_pending = dwc_issue_pending;
 
 -- 
 2.53.0
