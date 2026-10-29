@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793300719;
-	b=ffUh9eUqJZDyYTx4VmWqfUNqK/FtJUQoCnfaSWu/4xrS1n5Svr/ekhv6lQhOLD4fL4jI
-	 LzjBjRw4bliKXTtGwINhgAybXNNYByMNWoAIoyrKwS2j7TTCdDrWku3wBmYPijArTUFSa
-	 I34/JkOIJ/XYq1JwK4m68UOoTS/Yind40VH3MtAlWKF1v9jwVEzY5yINgtQSqo1mDs7pH
-	 HFudRQZIa5ZhgTyw9wFhKzO9ZsFUHxSNM3OIAGDkLpC0CtY7ao1ZuXjZmveENDh477FFu
-	 LzcY2ki+AMeelSchl/32aqvOgcWAi409MiPONHa2cBPMLKWHx+kwca0X2l9MHt3AkJg==
+	t=1793300829;
+	b=ig6g0uPbMrCTBKPQ0xX2RsT9UXlMM+DAJmue1GcOpzt+eH6oeijDnI6pJpkQ7lSu6Jgg
+	 INfoWc+InkwHH08voZ+VZQ/oFbUPmIY1lCpuGN7VIILSjK1G3NMezg8A89fVji2MysHnW
+	 TZy/XCTF8IxR6Ns3M0Sqkeafh4fzgX4xNN3VR1qIUvs6mVN/f/9uaJDYi7/ecAXBuj6xJ
+	 SbISwaKmIC9eo1jvlAQa50KHl1YXpA08+4FJPcT3gs9gpfWuouFs7dfbzPOot7kwQZvaQ
+	 io2zDNALuf0ZlzzxDT7bHarvnt1mPC0RDOhvoxD5IoinFclnOhwmSFi1paBvCiSmhBg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793300719;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793300829;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=ZIrKddf6pvxQavxN4Amy5fMjCUZq8twVYnoaojmCO50=;
-	b=w1QJfx7mhwQUqahjspTe0TwNjGlEqzcs8JG8epC0eGDkE36/Bx1NyiJ4Xp/kaRD2D66n
-	 +PI2eERyR85hPSDxbSEu2b7a0fdVubcRXSY70TfMX6ybJ7G8ZBxI44ZvZP46/QuuXZnC9
-	 XI4AsyLsL99bZi1AD3x3cit4pDjiKGJ9j2q/yc1M5jx4WBwerNbvLsAGV1UFOZC4LdHuB
-	 bn5gjmH+uPFe+8aSN22OSUtnq8JICAhRddMO6eAxKgcqtVOOuQd1LKyQeB0zpyuwRKoRo
-	 ehvbUOG41jhRtL9qH1zJqaxJIkxAGnvpZPlrSspw2L/YkGPTIPNZuJLBqKyIPwOOKLA==
+	bh=Q/k77D2FVuph6npJ0a+RTbXmZgoRa6iV3ban8Ate6SQ=;
+	b=KXrbqO8lPvAFT58iZkbos/upFS8NnYDoqGOS72sK9CYvtheolScMDRQ4iT9uBbZ+J1QP
+	 x/WpIQaJPGJT166urL5FILU5WQVvpl4wtnCFuE5Rj/7v3M4qdV34pfPA5GCICYuXoh4zL
+	 ldeeNSfH+2oc1An+15XKLFUQtx7MfYb706kG+5MCMdbYnPDklxBPo9d/wRPIHb7SbsDq/
+	 O1HD+x/EfLj2alhEbqUOXAIJwqBU0w36Qr5wPr6YHL3u0UIVQo+PcrG+0ntP6Fklkf/bS
+	 MuK34zl6oKB74/2pAenMl71Fux/xpIp4m81fw++Tg1V2VPADMNUS+/xdeSbhnjABM5Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Pui3m9Aj;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C4nsDuHy;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0FC3606A31E;
-	Thu, 29 Oct 2026 19:05:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23FC1606A31A;
+	Thu, 29 Oct 2026 19:07:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Pui3m9Aj
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 747CA1F01816;
-	Thu, 29 Oct 2026 19:05:12 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C4nsDuHy
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7E831F01816;
+	Thu, 29 Oct 2026 19:07:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793300718;
-	bh=ZIrKddf6pvxQavxN4Amy5fMjCUZq8twVYnoaojmCO50=;
+	s=k20260515; t=1793300828;
+	bh=Q/k77D2FVuph6npJ0a+RTbXmZgoRa6iV3ban8Ate6SQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Pui3m9AjSPH1MZlpcaehf1JH5eg/ZnS7g/erGiLGLK4BqVVBUQtlnOkYVhg5IENyl
-	 TJqWo6nwpnO27pqSFlm4w+r4s/rg3NBrFhOJReBK9LK+wzY0RvRduLQaMqRgDc6d1S
-	 zm0uDg3CaFEOQjDcJrgihZwxjE8a8GML5q/e1susNgAdpcFvbPPmc3YJvbf2sx1iDM
-	 n+Hkt1rSjyDElXicwNDqQ0JGnCtVzVEEq7ERoTZZFeo2MAkvudTi8lAznndem5DQ/A
-	 4Fh62FFYdq8oh4cXpBPjFaHUH2PTJR27Cz5SDtgnQHgLobCmyPcU+1IoO2GjIzPAPN
-	 zifHWKznRsZ3g==
-Date: Thu, 29 Oct 2026 19:05:10 +0000
+	b=C4nsDuHyQXW1fnF05v4Ne8m9yjO9uZCBOH8EBKrlr1y0AX998WQEcdzrtKr1gUXuT
+	 znDGwOjXUkl7D4e2nYf09JZcN/aTd6egr2sfvCIbSILDQlaP2UIuf41s/zsres0t+k
+	 Dx60kUSfUpKOuU2ueNsrg3YlDXMrivcBVKEIKPhRg+5TkXrnhnTKOE6YtssTLz4BVg
+	 KroXqcjbrcX/OPe5PMWekwiFWUxwOHvqsXn1Yqj1Dsv78v6EFh7DFPpJcHItUYCUdt
+	 HhJX9kMFOHO8+BRtJwuGKqShYs1P+fsjAhtpVCicwAUMrYNFPvMWHLmEidb64xY67f
+	 8zViiAWgtKrkw==
+Date: Thu, 29 Oct 2026 19:07:00 +0000
 From: Conor Dooley <conor@kernel.org>
 To: Kwanghoon Son <asdfkwang@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -66,10 +66,10 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
 	Paul Walmsley <paul.walmsley@sifive.com>,
 	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 09/12] riscv: dts: bouffalolab: Add BL808 SoC
-Message-ID: <20261029-rimless-could-7b96455c785b@spud>
+Subject: Re: [PATCH RFC 10/12] riscv: dts: bouffalolab: Add Sipeed M1s Dock
+Message-ID: <20261029-pork-resonant-fb692b84bef7@spud>
 References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-9-b736ee920078@gmail.com>
+ <20261029-rust-bl808-console-v1-10-b736ee920078@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -80,126 +80,133 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="9JO81ZQA/u1VUulC"
+	protocol="application/pgp-signature"; boundary="J9vR3WpxbNmjOFyr"
 Content-Disposition: inline
-In-Reply-To: <20261029-rust-bl808-console-v1-9-b736ee920078@gmail.com>
+In-Reply-To: <20261029-rust-bl808-console-v1-10-b736ee920078@gmail.com>
 
---9JO81ZQA/u1VUulC
+--J9vR3WpxbNmjOFyr
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 29, 2026 at 01:05:50AM -0400, Kwanghoon Son wrote:
-> Add the BL808 D0 CPU, PLIC, CLINT and UART3. Leave UART3 disabled for
-> boards to enable. UART3 connects directly to PLIC source 20; firmware
-> sets up UART clocks and pins.
+On Thu, Oct 29, 2026 at 01:05:51AM -0400, Kwanghoon Son wrote:
+> Add the M1s SoM memory and 40 MHz crystal, and enable UART3 on the Dock
+> with a direct stdout path and 115200 8N1 settings.
+>=20
+> Boot firmware initializes PSRAM, UART pads and shared PLLs. The tested
+> firmware configures D0 TIME at 320 MHz / 380, represented as 842105 Hz.
+> Firmware using another timer configuration must fix up timebase-
+> frequency. The declared 64 MiB PSRAM range must retain firmware
+> reservations or be narrowed by firmware when memory is assigned to
+> another core.
+>=20
+> The stdout path selects the native polling printk console; userspace TTY
+> I/O is deferred.
 >=20
 > Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
 > ---
->  arch/riscv/boot/dts/bouffalolab/bl808.dtsi | 70 ++++++++++++++++++++++++=
+>  arch/riscv/boot/dts/Makefile                          |  1 +
+>  arch/riscv/boot/dts/bouffalolab/Makefile              |  2 ++
+>  .../boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts    | 18 +++++++++++++=
++++++
+>  arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi | 19 +++++++++++++=
 ++++++
->  1 file changed, 70 insertions(+)
+>  4 files changed, 40 insertions(+)
 >=20
-> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808.dtsi b/arch/riscv/boot=
-/dts/bouffalolab/bl808.dtsi
+> diff --git a/arch/riscv/boot/dts/Makefile b/arch/riscv/boot/dts/Makefile
+> index 69d8751fb17c803f0efb8003e111ee24144c222b..294f9c119f8f1d608c878ca1f=
+95891843301f07e 100644
+> --- a/arch/riscv/boot/dts/Makefile
+> +++ b/arch/riscv/boot/dts/Makefile
+> @@ -2,6 +2,7 @@
+>  subdir-y +=3D allwinner
+>  subdir-y +=3D andes
+>  subdir-y +=3D anlogic
+> +subdir-y +=3D bouffalolab
+>  subdir-y +=3D canaan
+>  subdir-y +=3D eswin
+>  subdir-y +=3D microchip
+> diff --git a/arch/riscv/boot/dts/bouffalolab/Makefile b/arch/riscv/boot/d=
+ts/bouffalolab/Makefile
 > new file mode 100644
-> index 0000000000000000000000000000000000000000..c739c77960c4578b87fcf2bc0=
-96ef7c8cda089bd
+> index 0000000000000000000000000000000000000000..4d63365edc095fbe9df31c4b1=
+2e29c4b624cbd1f
 > --- /dev/null
-> +++ b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> @@ -0,0 +1,70 @@
+> +++ b/arch/riscv/boot/dts/bouffalolab/Makefile
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +dtb-$(CONFIG_ARCH_BOUFFALOLAB) +=3D bl808-sipeed-m1s-dock.dtb
+> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts b/=
+arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..c719a53c6e2de45f3718b48ba=
+2116e99c70e559b
+> --- /dev/null
+> +++ b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+> @@ -0,0 +1,18 @@
 > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 > +
-> +#include <dt-bindings/interrupt-controller/irq.h>
+> +/dts-v1/;
+> +
+> +#include "bl808-sipeed-m1s.dtsi"
 > +
 > +/ {
-> +	compatible =3D "bflb,bl808";
-> +	#address-cells =3D <1>;
-> +	#size-cells =3D <1>;
+> +	model =3D "Sipeed M1s Dock";
+> +	compatible =3D "sipeed,m1s-dock", "sipeed,m1s", "bflb,bl808";
+> +
+> +	chosen {
+> +		stdout-path =3D "/soc/serial@30002000:115200n8";
+
+You should be able to do this normally, with an alias. Why are you not
+just using what Jisheng did?
+
+> +	};
+> +};
+> +
+> +&uart3 {
+> +	status =3D "okay";
+> +};
+> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi b/arch=
+/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..ae54e6e301ed2c5a1448d52c5=
+30c5074515ee38c
+> --- /dev/null
+> +++ b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
+> @@ -0,0 +1,19 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +
+> +#include "bl808.dtsi"
+> +
+> +/ {
+> +	compatible =3D "sipeed,m1s", "bflb,bl808";
+> +	memory@50000000 {
+> +		device_type =3D "memory";
+> +		reg =3D <0x50000000 0x04000000>;
+> +	};
 > +
 > +	cpus {
-> +		#address-cells =3D <1>;
-> +		#size-cells =3D <0>;
-> +
-> +		cpu0: cpu@0 {
-> +			compatible =3D "thead,c906", "riscv";
-> +			device_type =3D "cpu";
-> +			reg =3D <0>;
-> +			mmu-type =3D "riscv,sv39";
-
-> +			riscv,isa =3D "rv64imafdc";
-
-Please drop this property, there shouldn't be any part of the stack that
-needs it anymore.
-
-Cheers,
-Conor.
-
-> +			riscv,isa-base =3D "rv64i";
-> +			riscv,isa-extensions =3D "i", "m", "a", "f", "d", "c",
-> +					       "zicsr", "zifencei", "zicntr", "zihpm";
-> +
-> +			cpu0_intc: interrupt-controller {
-> +				compatible =3D "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells =3D <1>;
-> +			};
-> +		};
+> +		timebase-frequency =3D <842105>;
 > +	};
+> +};
 > +
-> +	xtal: clock-xtal {
-> +		compatible =3D "fixed-clock";
-> +		#clock-cells =3D <0>;
-> +	};
-> +
-> +	soc {
-> +		compatible =3D "simple-bus";
-> +		#address-cells =3D <1>;
-> +		#size-cells =3D <1>;
-> +		ranges;
-> +		interrupt-parent =3D <&plic>;
-> +		dma-noncoherent;
-> +
-> +		uart3: serial@30002000 {
-> +			compatible =3D "bflb,uart";
-> +			reg =3D <0x30002000 0x1000>;
-> +			interrupts =3D <20 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks =3D <&xtal>;
-> +			clock-names =3D "baud";
-> +			status =3D "disabled";
-> +		};
-> +
-> +		plic: interrupt-controller@e0000000 {
-> +			compatible =3D "bflb,bl808-plic", "thead,c900-plic";
-> +			reg =3D <0xe0000000 0x04000000>;
-> +			interrupts-extended =3D <&cpu0_intc 11>, <&cpu0_intc 9>;
-> +			interrupt-controller;
-> +			#address-cells =3D <0>;
-> +			#interrupt-cells =3D <2>;
-> +			riscv,ndev =3D <82>;
-> +		};
-> +
-> +		timer@e4000000 {
-> +			compatible =3D "bflb,bl808-clint", "thead,c900-clint";
-> +			reg =3D <0xe4000000 0xc000>;
-> +			interrupts-extended =3D <&cpu0_intc 3>, <&cpu0_intc 7>;
-> +		};
-> +	};
+> +&xtal {
+> +	clock-frequency =3D <40000000>;
 > +};
 >=20
 > --=20
 > 2.47.3
 >=20
 
---9JO81ZQA/u1VUulC
+--J9vR3WpxbNmjOFyr
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauOY5gAKCRB4tDGHoIJi
-0msBAP4795/OI4/Z/fe0Yr9RRuYypthWWhBXNyzAEDKFE8sLdQEAtwkfNDEfXRMn
-ii8vn56yY4seLAp/qcClM7GtoSAN2Ak=
-=DS5v
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauOZVAAKCRB4tDGHoIJi
+0hefAQCx6AghS4pcdmANbBU2tVNMmclGvVSFzmC/lcvaVeI8XQD+LPMSJc5dKINU
+zz5nZFMqfz/eATnkpvTcsHFkGQ/XgQU=
+=IKb1
 -----END PGP SIGNATURE-----
 
---9JO81ZQA/u1VUulC--
+--J9vR3WpxbNmjOFyr--
