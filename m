@@ -1,115 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793312864;
-	b=rhcurANb3qwS2T45ZGGT6x6MqfvcWCcguedLEtOw96WqVe2C0RBOV3LyTNxbEVyY49We
-	 gGpTB1lGhyGEhoC3nKmS6jqZGGfqqzbTQtLFW/7TjR16ASiOjjtFQA1Jc6aiSLphLfVhV
-	 GQz8Iirh56NvIztiguOYgnsCqUhEqAwoNCaMFMybBF/+9ITGB0rTIuqu8vNCBns0GyRpA
-	 yUf47N29Xcvz3mx9GQiRsI5GQA2pT4hDB4DFnlgopthJ1GZS7JfmC2ceucs0Qyd222xaO
-	 e0kFE1v9C0TTwmbbLhZZ39QRyAo3ykD6W24Dwd2V1CO2qPDW5c1sbRd7grMiCoqvSGw==
+	t=1793312989;
+	b=fbO4PEvZ/HbHDLHU3mkDKpRTpX2UdyeRHUXG8KNXysQ41g0Y4Ja/quDgDwaUJfFYhBdK
+	 d7qLwzbuGrj4NYqIPG/HEb2g/F4uKUQIaqVB8kX3ajgyk5KIEPg3xlMVfXhAT6Z7K0tOQ
+	 6MeLoaXIJvvOn8ohACECGU1BS0DxenBnw9BVGGRKuDRY1+QIBPTQxiGXIxTSKp2hJilDc
+	 J1uGOPcnLLhZaZhfWVkz7zS7lbQgjL4piOJBwf5TLvQMFmcHHuJ1CXlbIjttoUH2ib4Gr
+	 K9e+U9zITEt5PjlPOri4xqBTv1g+xJmZ2F+SYPnDidQcALGSSFP1keOyBpWY3+5LpUA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793312864;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793312989;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=sXO3ewVqFwoOGcXfkU3q3dcDer2CaAHOZmthFd8gt1s=;
-	b=QL9upD+kYXZLIJ/MizcIUJpVGuDHuWmGU4ElNeWAVSXfQIP+cLR+1N+AtE64uSKaMOr9
-	 BXlUG93/9dFnh8WudglVq55QFL8hqTL6sY7JOMEqGtcZKTOloxKI/F7f6MUjuMX7j1Hrt
-	 g/mPpBZhc0R8LjyZChx9hkhqa4svMLc20se78GDRYpCwl0Kb4y3xaStC7Ec+nx4Bbi6VJ
-	 BlGG7Tx9hzwZIPOOfHa23ZzAnuwZLkuiO2aOinauAT+f3AhWlwbvJcz8l7W3oPqkiJwx7
-	 G1yrkB5P3EjfWCZEKLEf3L9tCxotBsqGU6W6ZKEVpRUUpFf4q9qqIpeJNUGr4KZrYiw==
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=l+Nd+2nznLFpAVzQLOmxyyP0XOy5YVodggakhVQWjxo=;
+	b=IwUKcxRHCUS/2dA6iooTRN/JDbsDNSjnGmt7feAb4iRNCbRUQHe4FD48CZSzg1BioXts
+	 o72yWHlE7zCHz5KhcHgyGPy28OP0S7l34aXrqC7YdpQSH0KQ3rc+7IsuGNBDxrxJ+5vza
+	 txDQ+6bhrwmWVqSaP6rYt0SGv/wjSG/GTU9N7efdQMfB9W97IzlF602ajrE1MuW/NP70c
+	 0scduFxDHYkf0R+wzkYbBiHyNjx1BVOi770FmKYoFc1VkqIvupvetYtNAtTDBJ3p1Qqig
+	 Yv+G0LvAkM9rzcFyUVti1VdE45fM2e+mjZFIgHWxeVgcBoFp3ruAzXT7z9pJZ8uIhWw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=LgbIvAP6;
-	arc=none smtp.remote-ip=209.85.210.44
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HZ49YWc1;
+	arc=none smtp.remote-ip=209.85.210.49
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BE6A606A31D
-	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 22:27:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5BE6A606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A28606A31D
+	for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 22:29:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E4A28606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=LgbIvAP6
-Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-84a248254f4so121439a34.0
-        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 15:27:44 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HZ49YWc1
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-825b40f8a26so95474a34.1
+        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 15:29:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1793312863; x=1793917663; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=sXO3ewVqFwoOGcXfkU3q3dcDer2CaAHOZmthFd8gt1s=;
-        b=LgbIvAP6Xc+OIRRd087wBSrpkSpFf5dO+GjsHu/al6RAz98XL7Uy6xc+47Xjk0sgw7
-         19tUaKX0LpqbEddYjEgqYwjLX/uAMwPqCJ1FekM38Mrg3PNoTnxo1j11ktpKfsjW0iRJ
-         pe+lAAr0XU8xkbm6SoBK6bfsX+zlXINoj1vpY=
+        d=gmail.com; s=20260707; t=1793312988; x=1793917788; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=l+Nd+2nznLFpAVzQLOmxyyP0XOy5YVodggakhVQWjxo=;
+        b=HZ49YWc122jtmUgRFpQogXEHF6w5RZ2gntHef3yrssXUttq1Z9ksdhU/Gy1NT5AkWC
+         IhNquALQrI5sQjMu4GQ64LyIeg9+JCxlO19Ikt55Mi9aDc0OecuYI/JuyQNlrDhcbOwU
+         wfXXMmRahf5Bp4VBE0IhBGnDOolKp/SPNyYB5Y4Zv8MmkxW6IL7b6TpmGxLXyt5GEGPr
+         w+qbNCjVBH+yAFUzj2ddwqdK0bVetrJZ8wYXB29ZXP3x/G1jYVYejrLC74F1Cjqm9XF2
+         d81fDnBxGNWhm3M0ktWqzHOKkF6gyUVKJsaa6Y23oBI43w09ve4Wdgl0ATI4tvq6P7Sl
+         VTpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793312863; x=1793917663;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sXO3ewVqFwoOGcXfkU3q3dcDer2CaAHOZmthFd8gt1s=;
-        b=s4oBjoz+i4Y2YDqOyPrcd1rkxSO2mbVtZhzPd/bUV1NynzNec++qPnDWePUFF7ETXm
-         Z7Wsf3rZptW2IJcMwrGLMbQzSeekhB6G+BnTN0guaNwqwxPJrxfChzAnnpkMyAG8k3+w
-         Z0FHPPibiY2EtkYrO2xaOyE8+Yfd1FiKcr5NRORWtaubdJGkE1WgBCB/OKCGeachMCdn
-         NB5NJ3mOUwLC1I3aSoxoL0goWmK6AisCFfQUa3/QiTUuIjnERzZqnNq4y2ynNExXVGIY
-         WvKbhSDSR5tstPopl7pdU7vYiRBqwdmSx4CfKCebF55mozbPp+S12Yt8xneXwJ5jSiO/
-         VJ4Q==
-X-Forwarded-Encrypted: i=1; AKwUvBzCVhggqPmfEho0K59JF1zmEskzgLGdQYVoFRI58W7oRI9ovqyWCIh8ZmIp6DP/9aWYYXNDVCGZti85pDE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJngmtiLuG4HOfiSlLxlW/20Vf+BjxyLVX2feV0E0sxutmtmOcV
-	IdIzN6I4FqNHHwDtLsoIeDlnZoLjnNO+8DpcsQNtXugzbWI/vgU0RlmtEbsyS2VtjQ==
-X-Gm-Gg: AYBFou33tQ7oZHLqt14ZOi9w8K9fvWN6pF4s/+4t5IkmgjBWZBkJ3C2MUIJ9eJhq192
-	RHu/jkWlYoIaXVGodpdXt61kl7c/K4w81TWYchdLQ7QtUaqIjTA/X6VURx+mBn7Ymr+WZBggzbg
-	ZoUVwyhdLm6P0IJG1eWhcaGxGSo6Di02AhbMTL92bPRRdBm4lMOQ50H3e6h8ULmWME0Pmj/5X6N
-	6otf9wKjhT2JiK4gJbw8GTLlp/DDe1f5UDzC++fs4bYQrlPx8dKbUFIhHKsJAYDr9luWIoOA59i
-	KY0Tdd3k+fgAAVu2RrhwFDEOfOLaORkntIuXw0BaMeyCvg3vj0Ey05yT1hOmQMvKEBnsmq8+yIF
-	UBWQf72hYkq5I3sOkuD2O4tTg02sJ+0rMrqMoGZVioMeqtZkH3C031xy85MTS1Qh6SwhE+pVVY/
-	gqH/Q3H9KnBO0h9HZhnzmBHPGEJGKlv9VQuMZgCpBKF7WAep/VhYih+igTrz9QucGRAy5g1WjP7
-	2HGSEutvqwiJQua0dVZwbSvUSL9YaiWitkWZHWu07Q3yYOPgopw+dkiiuXDQe9BT3YBYhDhe42u
-	ZZBfkJFniTeFieBS1BpJJ07qkZylFAewjyF7fJCg3A3s3f2l8SbmIrRMpbFyTQFkTx7nTDY83Pu
-	MUzvmKoi9ppLUuvQ=
-X-Received: by 2002:a05:6830:25c6:b0:81f:827a:b1cf with SMTP id 46e09a7af769-85d3644f500mr541370a34.22.1793312863265;
-        Thu, 29 Oct 2026 15:27:43 -0700 (PDT)
-Received: from rrangel.c.googlers.com.com (194.246.27.34.bc.googleusercontent.com. [34.27.246.194])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-85d3545b89asm718163a34.6.2026.10.29.15.27.40
+        d=1e100.net; s=20260707; t=1793312988; x=1793917788;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=l+Nd+2nznLFpAVzQLOmxyyP0XOy5YVodggakhVQWjxo=;
+        b=rCiyRLHACVA6dnf3jKt9D5A2OszJ05X705kZET7y64RYjUU0Aij8PkqSj0EGl5PzuS
+         x4KAZpz7SyrmD8r+WGZeyjw9iG13SIrXnxdWvkKREhs+9U+Yar5405yQTIUimeKo4XHa
+         30nXbZ6hRzICrzXssyYa91vdL9t3Wf1zMCEBpP4E+LLti/R2G0vzUcdq+Tb9ndt9GNc4
+         8nJibNmh8MhPD/sZggXvkUp7n9ntfkr/cys/ybPyYZtkS4GWYrU7P6yyYuBTbHyK9nav
+         H/vvHS+U1ef0ls8grYdXRMMw49sBd/dB8pBmcEV0ZCk/iozV6g1LfHmomJS2ld0+rLYA
+         hu1g==
+X-Forwarded-Encrypted: i=1; AKwUvBy4kdh5WcyYH/zeycWqToNCDSvUITnbS7QeCImSM+0pzxaoiw/Izxwxu5b+L4+5ILaReMopmmjaCmT8nec=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLPP6bKIVs9x5dhxB1hc+K+u6vPt2oKV0zK/IjE83iR7QqVd8Sb
+	kqWs0hTYQys47ool0Btgwh0//5BrZuZCunDJEse8ePrtVVrwnnOS33PA
+X-Gm-Gg: AYBFou1od8QI4PsYsOl3JoKKrEwjYiFjP3/WZDywTnwUFFWTFKD5cnWEjOxhXIrdBg6
+	1ySD1ibdhoahvFagBx9bKqIPGTf8n7cHNfwiezkmDNya9BwUFfbD7XiROaxD/lMkm+COVRvjlaZ
+	Kyqcl5fS9vDwvAB+rLZhA9kVINvTl9GMnKHCIC/OXiKUUYn6BBCaslKdZRzArlYmrT3b/Gn7xdr
+	JHR+GVGWSUlo3zXJRAezp3WApe4m1E+hdOcBP3vKt6awQcNSZVIQqO2uEqdhGJz51SiYGRKQVow
+	TnH4NawlY3iiENX8cviF/fb2zV/dRUrU6ZciWFJlPbfqWeBvlvnQVMcYgDD87FWuU2Veq6tAllh
+	M62em/SE0zLMQltbgsHa9I4B5M0gSkw/W/CBNasMs/03TyvALDM6A5hghUkLV7lLUmTK1yarBrW
+	PMDwPvcOO5ZKMAyfDIROr+AXMg48J57KcMJqQPRpxiNX4q6MmAdo176+Td5jmEsCjnwS8jChfw0
+	4ogtvtfdEIwfVOAyIDa0fzyRRYMe6slIU20Iixkb11np1wwzM5ABxDjuhJNPgr5syrV3Ia7xBsg
+	c6mJUxuVHuydAK981te4wFOnG9maSGcQ1DD5IJPs92R0oM82Xbrwy+MrWSZH/aE15pajGPgdqgb
+	GFeo+SnI1wp15uofoiD/Umu07ByXRXKNuam7qvgTAnLimeKPdISheLKwJWRwhe5BK3e455siUJ2
+	Is5HsWZkX/H2dMByVK/zq6QS7wBdnjaIm3hsZlJrSldHc7u44QEQ1+zaALpEcuJ2aqD9pGMHPTM
+	g==
+X-Received: by 2002:a05:6808:199a:b0:4f7:a3f2:d8b4 with SMTP id 5614622812f47-5640de44246mr458040b6e.65.1793312987766;
+        Thu, 29 Oct 2026 15:29:47 -0700 (PDT)
+Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-5640fc49880sm236130b6e.2.2026.10.29.15.29.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 15:27:41 -0700 (PDT)
-From: Raul E Rangel <rrangel@chromium.org>
-To: James Hilliard <james.hilliard1@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Richard Genoud <richard.genoud@bootlin.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>,
-	=?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>,
-	Timur Tabi <timur@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	imx@lists.linux.dev,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v8 6/6] serial: 8250: retain DMA resources when termination fails
-Date: Thu, 29 Oct 2026 16:27:34 -0600
-Message-ID: <20261029222734.3086943-2-rrangel@chromium.org>
-X-Mailer: git-send-email 2.56.0.212.g129ede20d9-goog
-In-Reply-To: <CADvTj4pOg4w5LpFW_E3qzP7FZDnDgpB8LyR9xxhT_mZre21vFw@mail.gmail.com>
-References: <20261029-submit-serial-8250-dma-cancel-v1-v8-0-3fd56ba352ed@gmail.com> <20261029-submit-serial-8250-dma-cancel-v1-v8-6-3fd56ba352ed@gmail.com> <auNW_Oc-Ao5Iw-Gw@ashevche-desk.local> <CADvTj4pOg4w5LpFW_E3qzP7FZDnDgpB8LyR9xxhT_mZre21vFw@mail.gmail.com>
+        Thu, 29 Oct 2026 15:29:47 -0700 (PDT)
+From: James Hilliard <james.hilliard1@gmail.com>
+Subject: [PATCH v4 0/7] dmaengine: dw: serialize completion and termination
+Date: Thu, 29 Oct 2026 16:29:34 -0600
+Message-Id: <20261029-submit-dw-dma-synchronize-v1-v4-0-fea447d9f285@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -119,71 +94,122 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43OwW7DIAwG4FepOM8bEGBpT3uPaQcCJvG0kAqyb
+ G2Vdy+0l2iXTvLlt+xP/4VlTISZHXYXlnChTFMsQT3tmBts7BHIl8wkl0ZwKSB/dyPN4H/Ajxb
+ yKbohTZHOCIsA1JoH9Rq88JYV4pgw0O+Nf/+45/L/iW6uZr3obEboki1MXRUTY08RX+5/5WKgP
+ E/pdGu4iCr9s0wZAcaGVjvpTTD7t3609PXsppHVMovcYvIBJoGDlkrhXnlnW/cXa7ZY8wBrCua
+ M7AJXbdAOt9i6rle5PqIClgEAAA==
+X-Change-ID: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
+To: Viresh Kumar <vireshk@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
+ Dan Williams <djbw@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org, 
+ Frank Li <Frank.Li@nxp.com>
+X-Mailer: b4 0.15.2
 
-On Thu, Oct 29, 2026 at 11:19 AM James Hilliard <james.hilliard1@gmail.com> wrote:
-> On Thu, Oct 29, 2026 at 8:24 AM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > > +	while (rx_ret || tx_ret) {
-> > > +		dev_err_ratelimited(p->port.dev,
-> > > > +				    "DMA termination failed: RX %d, TX %d; retrying\n",
-> > > > +				    rx_ret, tx_ret);
-> > > > +		msleep(100);
-> > > > +		if (rx_ret)
-> > > > +			rx_ret = dmaengine_terminate_sync(dma->rxchan);
-> > > > +		if (tx_ret)
-> > > > +			tx_ret = dmaengine_terminate_sync(dma->txchan);
-> > > > +	}
-> > >
-> > > Huh?!
-> > >
-> > > This is unacceptable. Sleeping is okay, but value should really match the
-> > > baudspeed and other parameters of the transfer.
-> ...
-> Regardless of the retry interval, shutdown cannot release the buffers
-> until the provider establishes that DMA and its callbacks have stopped.
+Keep client callbacks in the controller tasklet while preserving polled
+completion. Serialize descriptor ownership across completion, error
+recovery and termination, and wait for callbacks before a client reuses
+its resources.
 
-Agreed that if dmaengine_terminate_sync() fails, shutdown must not free
-dma->rx_buf, unmap dma->tx_addr, or kfree(port->xmit_buf) while hardware
-or a detached callback may still touch them.
+The first two patches serialize channel-completion and error-recovery
+handling with termination. The next two complete cookies under the channel
+lock and separate residue calculation from completion processing. Channel
+release and device_synchronize then gain tasklet draining before the final
+patch adds the deferred completion list and tasklet-only notification.
 
-However, because serial8250_release_dma() runs under port->mutex in
-uart_shutdown(), uart_tty_port_shutdown(), and uart_suspend_port(), an
-unbounded `while (rx_ret || tx_ret) { msleep(100); ... }` loop means that
-if a DMA provider returns a persistent error from dmaengine_terminate_sync()
-(-ENOSYS, -EINVAL, -ENODEV, -ENXIO, -ETIMEDOUT, or a wedged controller),
-close(), hangup(), and system suspend will hang forever in
-TASK_UNINTERRUPTIBLE while holding port->mutex (triggering hung_task_panic
-after 120 seconds).
+The series adapts Serge Semin's channel-restart and callback fixes [0-2].
+Polling continues to advance cookies and software-LLP blocks, while client
+notifications run from the controller tasklet. Synchronization preserves
+pending tasklet runs from other channels.
 
-Would it make sense to satisfy both constraints (no UAF on buffers/callbacks,
-and no infinite sleep in close()/suspend()) by quarantining/leaking only the
-failed channel's resources instead of looping forever? Specifically:
-1. Bound the retry loop in serial8250_terminate_dma() (or do not loop on
-   non-transient errors, checking `if (dma->rxchan)` / `if (dma->txchan)`).
-2. If rx_ret or tx_ret is still non-zero, warn once (`dev_err` / `WARN_ON_ONCE`)
-   and intentionally quarantine/leak only the failed channel's resources:
-   - If rx_ret != 0, leave dma->rxchan non-NULL, keep dma->shutting_down = true,
-     and skip dma_free_coherent() / dma_release_channel(dma->rxchan).
-   - If tx_ret != 0, leave dma->txchan non-NULL, keep dma->shutting_down = true
-     and state->xmit_blocked = true, skip dma_unmap_single() /
-     uart_xmit_unblock() / dma_release_channel(dma->txchan), and in
-     serial_core.c:uart_free_xmit_buf(), skip `kfree(xmit_buf)` if
-     `state->xmit_blocked` is still set.
-3. For a subsequent port reopen after a quarantined failure:
-   - Remove the redundant `up->dma->shutting_down = false;` in
-     serial8250_do_startup() before serial8250_request_dma(up) (which already
-     clears shutting_down under port->lock), and have serial8250_request_dma()
-     return -EBUSY if `dma->rxchan || dma->txchan` is still non-NULL so
-     reopen falls back cleanly to PIO (`up->dma = NULL`).
-   - Guard the DMA completion callbacks (`__dma_tx_complete`, `dma_rx_complete`,
-     `omap_8250_dma_tx_complete`, `__dma_rx_complete`) with `if (!dma || ...)`
-     so a late callback after `up->dma = NULL` is ignored safely.
+[0] https://lore.kernel.org/r/20240911184710.4207-1-fancer.lancer@gmail.com
+[1] https://lore.kernel.org/r/20240911184710.4207-2-fancer.lancer@gmail.com
+[2] https://lore.kernel.org/r/20240911184710.4207-3-fancer.lancer@gmail.com
 
-That way, neither hardware nor a detached callback can ever UAF rx_buf or
-xmit_buf, while close(), system suspend, and subsequent PIO reopen all
-complete cleanly without an unbounded msleep() loop.
+Assisted-by: Codex:gpt-6-astra
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-Thanks,
-Raul
+---
+Changes in v4:
+- Split v3's callback-deferral patch into cookie accounting, residue
+  calculation, channel-release draining and callback-deferral patches,
+  following Frank's review. The resulting seven-patch series preserves
+  v3's final implementation.
+- Place device_synchronize before callback deferral so clients can drain
+  deferred notifications when the completion list is introduced.
+- Carry Frank's Reviewed-by tags on the unchanged channel-completion,
+  error-recovery and device_synchronize patches.
+- Link to v3: https://patch.msgid.link/20261023-submit-dw-dma-synchronize-v1-v3-0-c62bf048f5ce@gmail.com
+
+Changes in v3:
+- Order channel-completion and error-recovery locking before callback
+  deferral, retaining four patches.
+- Require a locked RAW.XFER event before retiring a transfer; zero source
+  residue alone cannot establish destination completion.
+- Preserve polled completion and software-LLP progress in tx_status(),
+  queuing client notifications for the controller tasklet.
+- Serialize cookie updates with termination and report queued residue.
+- Drain deferred notifications on channel release and let a pending
+  tasklet return without MMIO after the last channel is released.
+- Adapt Serge's two patches and retain his authorship and revision notes.
+  Drop the Tested-by tags that covered their earlier implementations.
+- Identify the introduction of the synchronization API in the final
+  patch's Fixes tag.
+- Link to v2: https://patch.msgid.link/20261022-submit-dw-dma-synchronize-v1-v2-0-5244e94dca8c@gmail.com
+
+Changes in v2:
+- Carry Serge Semin's two posted fixes before the synchronization change,
+  preserving his authorship and revision notes. Add the requested stable
+  Cc trailers and Andy Shevchenko's Tested-by tags to those unchanged fixes.
+- Add a separate error-recovery fix for stale error status, empty channel
+  lists and software-LLP state when terminating or restarting a channel.
+- Use tasklet_disable()/tasklet_enable() instead of tasklet_kill() so
+  synchronization preserves scheduling requests from other channels.
+- Explain descriptor ownership during termination and acknowledge the
+  shared-tasklet scheduling race reported by Sashiko.
+- Link to v1: https://patch.msgid.link/20261021-submit-dw-dma-synchronize-v1-v1-1-6af85c2d6f69@gmail.com
+
+Revision history from Serge's series:
+
+Link: https://lore.kernel.org/dmaengine/20240802080756.7415-1-fancer.lancer@gmail.com/
+Changelog RFC:
+- Add a new patch:
+  [PATCH 2/2] dmaengine: dw: Fix XFER bit set, but channel not idle error
+  fixing the "XFER bit set, but channel not idle" error.
+- Instead of just dropping the dwc_scan_descriptors() method invocation
+  calculate the residue in the Tx-status getter.
+
+---
+James Hilliard (4):
+      dmaengine: dw: serialize error recovery with channel termination
+      dmaengine: dw: complete cookies before releasing the channel lock
+      dmaengine: dw: drain the tasklet before releasing channel resources
+      dmaengine: dw: synchronize completion callbacks
+
+Serge Semin (3):
+      dmaengine: dw: Fix XFER bit set, but channel not idle error
+      dmaengine: dw: calculate residue separately from completion
+      dmaengine: dw: Prevent tx-status calling DMA-desc callback
+
+ drivers/dma/dw/core.c | 307 ++++++++++++++++++++++++++------------------------
+ drivers/dma/dw/regs.h |   1 +
+ 2 files changed, 160 insertions(+), 148 deletions(-)
+---
+base-commit: 93f51579e7df248780214094418f205253383cc5
+change-id: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
+
+Best regards,
+--  
+James Hilliard <james.hilliard1@gmail.com>
+
