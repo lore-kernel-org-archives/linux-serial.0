@@ -1,74 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=216.40.44.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793389220;
-	b=uo7eZhaTCGyopknbFtnhLuAziDPzHfFEST5mAo/rGVV0VpiaVtQcAWNGYy+X5GF2HgCG
-	 gzSMu71so+RwH/0fFy3kwWGI13IP2Kj4M2xXseWzyfa4tjA4jfbaorOxeqgDRIEuy7L7z
-	 vxmeCTZ5L+9nsEDD/SvwbIF3rHZkt+SbzKbfT8Fv56807J4o6pHgxmXMOpSRtOyMvvXv2
-	 DU+jMAhoWYLOUVct6BMMari2Ebehf6WUGiVSLeo1W4ckFNG+BuxtBk7BuXWAvlumFWh0s
-	 68o0DjaX46xg8vJogMXINq0vaUxMNzIhKVg9JcCCYFJnFYrqAnRvYlTANf/XGEGJDkw==
+	t=1793389820;
+	b=rUrJu7jY+vXpUHBGPDSLhZw/dKob/AH0SYFwwOQtAlQgCdOHp1kAbZzKIWeycFURUyZc
+	 cYC8FpJ5f/syxlYO96or6RpVgc9V/bvDPRx78bNiN1bLzzx8XDvs1vIBcwZzP9uNoOqhI
+	 rjEpkFNnWHG7K+XIuttzFN6hROjY+WfRi6f8Zm5EikZ1U42jt8tQldz2xgYdIMnRR3vID
+	 ncLPOPGVcebQR5aT2qXLTu97kCfcD4+K+jXibXnW/upaxHZm/VURGlEs2M7nELNFi6fMs
+	 P18xSSuUdlmhnpbFGme3i/USOMylmPRX7TZ+aQmupau4sZH/DzNjJJj9HpdkOSLtGIA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793389220;
-	h=DMARC-Filter:Received:Received:Message-ID:Subject:From:To:Cc:Date:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
-	 User-Agent:MIME-Version:X-Rspamd-Server:X-Rspamd-Queue-Id:
-	 X-Stat-Signature:X-Spam-Status:X-Session-Marker:X-Session-ID:X-HE-Tag:
-	 X-HE-Meta;
-	bh=tB3wDibpkEIsc1D1uRR5wCOBeM1B+5vNvLuHqpwTlCA=;
-	b=Tkjqu9WF39ganH5PsNrQ0IepfSFhPrdj56Oir0ixSYQjHNQ1ui8A/Swf8NNLKtAZHnei
-	 2roCaS/K0T8XI469ixJokFyUlCDQtcM1ef370pVhk2iuCesylJWmsLRxN83MSb/qaUsHV
-	 QDLajNQqOIzLHKeovy39sBIlUD4VV3XecQXmjFdEvpa49GIsi/gsw84Ueblj9iHXTvry4
-	 O5aS03+vaSljkhE36pg64N3eAm1RIky6eiUT/hRcqpV0fqL4LGFfVWHBavUoLlw05t3Dz
-	 l0TvfNHETR47wdTB4lL+WHRkgUPAfBvLp/tJGxr0myTuqNgEbzXdjuNAIfyDc+5sEtw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793389820;
+	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=sEaAj7L7ItwQxArcMJg/ysXYsqtPbJ9UNO11ET+2E+g=;
+	b=JMMo2i82CD4oFV/EbqgwEANG6DLK/q2qYA596cOwg1tmuNgvO8r791eIsZSlLSF6daWz
+	 g/IVs84z1gxGVhx4idUA75nAoS8nxSlBBhQR+MZN1+eZXF7gAnUrhvUhAwfsQTRE9238l
+	 iuVote//4Sjl7fvqMJU1z54E30Bxry+BX8saluQA82tqSiij24zK+H9PWEU12Ov5pkGyy
+	 HwzHCWKGHMOWjquLb3eSBKFjHKhjxQezFx+sK141wA34Jg0Sw13eQKvBa1FeicCFRy5E2
+	 YbNz49rAOGfXAHPFV04ybF3cycjc+hII5+r0m+lJoHml4LgUt9OPpjDUjGrV85HxiXA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=perches.com;
-	spf=pass smtp.mailfrom=perches.com;
-	arc=none smtp.remote-ip=216.40.44.17
-Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
+	dmarc=pass header.from=alien8.de;
+	spf=pass smtp.mailfrom=alien8.de;
+	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=XJp6JKJy;
+	arc=none smtp.remote-ip=65.109.113.108
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D52B606A31A;
-	Fri, 30 Oct 2026 19:40:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D52B606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=perches.com
-Received: from omf06.hostedemail.com (lb01a-stub [10.200.18.249])
-	by unirelay06.hostedemail.com (Postfix) with ESMTP id A094BA8586;
-	Fri, 30 Oct 2026 19:40:11 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id D04412000F;
-	Fri, 30 Oct 2026 19:40:06 +0000 (UTC)
-Message-ID: <f0bbfcecd63e11fedc4a745aa357fd8c529df097.camel@perches.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E51A606A31E;
+	Fri, 30 Oct 2026 19:50:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0E51A606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=XJp6JKJy
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id DCA2140E03BE;
+	Fri, 30 Oct 2026 19:50:17 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id BWhGogmD7hSx; Fri, 30 Oct 2026 19:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1793389814; bh=sEaAj7L7ItwQxArcMJg/ysXYsqtPbJ9UNO11ET+2E+g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XJp6JKJyqgvz0ecw98cfcEZk49v6hdXNUj7ge7teuEu+TL25s3vUwNdmhs0OqcQsJ
+	 Ej+1WU7hhZKyYZZEPXWqsbKqforvRvs6tPqDkCK3f0jeWJYELj5Z6m0c+CzyxYdnEL
+	 1srqs8AqGzjlat5zA+DDfI/KA+suUXQf0yW08sSFxBcqT0YHUMNq0UKagg5ygeyP2n
+	 yVZfbr7oV0O45RjO+DMMRumpJGmSPH5S2N/+rppol15KnxGr0nARD7UaAoA3vybGns
+	 EFICC/6X2EUdLm/nwhK/RQHVGjqf5zys6O0UwWfPrXMl0pLSYqeeY6zLazpYmCYiAk
+	 Na+COgsVUPX+dkqD6WR12vgKzc8ZgCbLVV22k/+HqeFi2xdFiTqsy/BA9mdgfOsffp
+	 nvNSNG78osxwqNIHw3Edb3YoVpuaOXp6kup0cDpIA9xLDXdxxF/v0uThh7qKfbVDUW
+	 Dtb0xSlHI0+O5eijPY9u5jRBi/iiHIy0O8uc82Bfkvk1/zFStKe/1NbQcoiqk1Opsm
+	 nKl+vPDm173jGUP6QCN5dmCh/gidr2ozAyPNfyt1biD1DDTW5w3GnDEF/ezy3SX4HB
+	 cxfb8hYkycI4AH/QMMeEGENLkmp6XD5UazcdK1eQ2Mewoo5+G6giP9oZ2sVMH4SpgK
+	 Imk18ki9Gq0fUbtHjJPXIR7g=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3893140E02B7;
+	Fri, 30 Oct 2026 19:49:57 +0000 (UTC)
+Date: Fri, 30 Oct 2026 12:49:53 -0700
+From: Borislav Petkov <bp@alien8.de>
+To: Joe Perches <joe@perches.com>
+Cc: Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	"biju.das.au" <biju.das.au@gmail.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Au Dang <au.dang.jx@renesas.com>
 Subject: Re: [PATCH] MAINTAINERS: Fix Intel TDX kernel file patterns
-From: Joe Perches <joe@perches.com>
-To: Borislav Petkov <bp@alien8.de>
-Cc: Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe	
- <rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, 
- Krzysztof Kozlowski	 <krzk@kernel.org>, Biju Das
- <biju.das.jz@bp.renesas.com>, "biju.das.au"	 <biju.das.au@gmail.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
- "linux-kernel@vger.kernel.org"	 <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org"	 <linux-serial@vger.kernel.org>,
- "linux-renesas-soc@vger.kernel.org"	 <linux-renesas-soc@vger.kernel.org>,
- "x86@kernel.org" <x86@kernel.org>,  "linux-coco@lists.linux.dev"	
- <linux-coco@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, 
- Au Dang <au.dang.jx@renesas.com>
-Date: Fri, 30 Oct 2026 12:40:05 -0700
-In-Reply-To: <20261030182031.GAauTf71ujnYNQPluW@fat_crate.local>
-References: <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
-	 <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-	 <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
-	 <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-	 <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
-	 <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
-	 <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
-	 <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
-	 <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
-	 <7d35e2db2da34735760a08a6f103abee075413c8.camel@perches.com>
-	 <20261030182031.GAauTf71ujnYNQPluW@fat_crate.local>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-2.fc43) 
+Message-ID: <20261030194953.GEauT04SAhyseued3N@fat_crate.local>
+References: <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+ <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+ <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+ <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
+ <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
+ <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
+ <7d35e2db2da34735760a08a6f103abee075413c8.camel@perches.com>
+ <20261030182031.GAauTf71ujnYNQPluW@fat_crate.local>
+ <f0bbfcecd63e11fedc4a745aa357fd8c529df097.camel@perches.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -78,41 +102,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: D04412000F
-X-Stat-Signature: wkcp5ff7qj9ftg3f5hfh8x3ibujhqfgd
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18MClqx0jSvr36hEcX/6cU4hJ/gcfU5s1s=
-X-HE-Tag: 1793389206-130397
-X-HE-Meta: U2FsdGVkX1+bis/K6Jvejfrw3OxHiUz+/eHYnGFdduYgMGW84zDkju7YEB2ispdporcrRtwLuBMUWaJJSr5WG2JFmt7Kl2xftjhbrrvKKGpPan1w9dEeVAhOEuB9LLRQrRlJGBVcpHPnB6tXwSSdxf7ICDDEFHONn3jrjIPVdiQlcie0Wqw7tkcpYtoibfn+b43zNZiyfh/8cOsu5hDdtcwKVnvchcBH3SU9s3Dm0gqw1L0TuvoLDIjp4stCLYs7J2jcnp9M2712pYYETSsa2vWHqFe89wksKpxG2k2fYz0ymeiBBie2D1mCkZ9DLSC2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f0bbfcecd63e11fedc4a745aa357fd8c529df097.camel@perches.com>
 
-On Fri, 2026-10-30 at 11:20 -0700, Borislav Petkov wrote:
-> On Fri, Oct 30, 2026 at 10:16:46AM -0700, Joe Perches wrote:
-> It's probably better to use F: and not N:
->=20
-> The reason being?
+On Fri, Oct 30, 2026 at 12:40:05PM -0700, Joe Perches wrote:
+> 	   scripts/get_maintainer.pl has different behavior for files that
+> 	   match F: pattern and matches of N: patterns.  By default,
+> 	   get_maintainer will not look at git log history when an F: pattern
+> 	   match occurs.  When an N: match occurs, git log history is used
+> 	   to also notify the people that have git commit signatures.
 
-From MAINTAINERS:
+Aha, ok. Will change.
 
-	F: *Files* and directories wildcard patterns.
-	   A trailing slash includes all files and subdirectory files.
-	   F:	drivers/net/	all files in and below drivers/net
-	   F:	drivers/net/*	all files in drivers/net, but not below
-	   F:	*/net/*		all files in "any top level directory"/net
-	   F:	fs/**/*foo*.c	all *foo*.c files in any subdirectory of fs
-	   One pattern per line.  Multiple F: lines acceptable.
-	X: *Excluded* files and directories that are NOT maintained, same
-	   rules as F:. Files exclusions are tested before file matches.
-	   Can be useful for excluding a specific subdirectory, for instance:
-	   F:	net/
-	   X:	net/ipv6/
-	   matches all files in and below net excluding net/ipv6/
-	N: Files and directories *Regex* patterns.
-	   N:	[^a-z]tegra	all files whose path contains tegra
-	                        (not including files like integrator)
-	   One pattern per line.  Multiple N: lines acceptable.
-	   scripts/get_maintainer.pl has different behavior for files that
-	   match F: pattern and matches of N: patterns.  By default,
-	   get_maintainer will not look at git log history when an F: pattern
-	   match occurs.  When an N: match occurs, git log history is used
-	   to also notify the people that have git commit signatures.
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
