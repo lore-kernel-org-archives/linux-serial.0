@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793399848;
-	b=AnJ0AdaF3peIvE3d3QnO4YT/CsiN/65qt3ybWZuvyNqrwTjuS0t7Bk5TseGj2PTC9/At
-	 sltSNZakQNd0OEU4WaQqBFtQ2CtJwvAjFCg6Hxff7Ca8A+evXpcy+TdFCQowGNOuOWnfr
-	 ba+xWFlhazuHXPO+btT3BtF1aSbNeXKZXnn90WwJlEJQoxemBALUFR+W0M/924GsOX/76
-	 Gtwj6F1McY9t95HIM2eFzKs6kq9flxnkMZEyzKYLpjfaAkkvTP7Br/SB95SoOTfQqcfNd
-	 9mDg/C3YJaN2FnuSesCSOOE6vutRCcu0v160r8U0EE2Qt0FuQDBFZ/xmmITjd6Afdog==
+	t=1793399850;
+	b=mVCFMNOzJl+R266PbaYvUc2jcRdDjc0sdArwIhCXarx3TKljqnF6QhrvaWeZveG5LcD7
+	 Aw9gnytiuYWohubf7/63pzTXStxiWWajk/rFpFgOxl/u9Khjd/eVSqQfmTjhRe2YRgvfQ
+	 cN4jiGPfkfpjg5FLbZ0vkLX25qtw7RogNKU/iWB/1f66lOI6LHyviiDpv1byb9Bjr95HZ
+	 XOrLlIfOniai0hacUp2WL9c7WlTzXWYxqDLE3XM+zVh7LgAkMpumwnClRSsH/oOtpDsz5
+	 Psz5A4KRXYtNrehGCEGRNqqOmkAuni7gKBzRX2QC/w9eE60hDVVDzr4FiaJ1yjquQOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793399848;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793399850;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=smxd6atDvW+XcNIEKcY809Fe9dqPoq4HuHxsaG6+qd0=;
-	b=dbvoYeQpSMrtCEaKwIfwHDj/pdtVSwKyTzm2N1h/71RapxGu0x9kpNjfVI8o0Tp7OasP
-	 XEnuF0KCuivMZSTZHkZ1hB0okfRJ6hebGtDxS3bcSG0LWXojNnp400aYZF+nGaRN/Qs7x
-	 rr7Y0O/eR9KMJLD0iwcQgqDEbxcXmTiBqRKM1dYNiRyoorLyMBchZSAkNm8GhHrNK4adE
-	 vJcpuOnbpPDhxuBxuO+q4bC1WzUwGdouCMnV8/u5cZdmG8QKQfIOMm9QsQ2GT3EqfGdeI
-	 pqD2T4r2a58xOgZ/2PWJCb4OuHbqiOZFIjrtMRq92CXCQYr7mwbUpcTrFj0w3BRZj+A==
+	bh=fU5eVFfcbBj5t8UtgLFsfacRqMKeyGT7y6OrNdnpgM0=;
+	b=iRtjGbArD97H3CO92v9d/n0TeJWR7SCbmAw9vXAZtuYT23CrIzdYdYBUW0SALeKYBVpy
+	 N74+3iIwff1n5dwRuSLkBn5CluVVRrwUAPGfn+Qap3VoZCgSnZpTejpYm4eQnyIrjCv2o
+	 03O9cJnLTwuNYohJHdAu6lUDgXRF9Fr8qguR/GCT5FdpL50xmPKPEyn9qrDCu24xDL9gN
+	 oOMnH8sJKrr0Q5yE2V6zu/ZGmsQODKxr388WtWMiLtbyxSGIS3xQzszvPueOH3Zxr3cff
+	 NBm++qNi+hAaiQcOpKFraZGk7iS8EkeGJjQBBdxMbDiM+lWOSdJSuOoEdcFSvdMPv6A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=M2I9t4hp;
-	arc=none smtp.remote-ip=209.85.128.51
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OlQQps6H;
+	arc=none smtp.remote-ip=209.85.128.52
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A0360A3806
-	for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 22:37:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59A0360A3806
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6846760A5BC7
+	for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 22:37:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6846760A5BC7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=M2I9t4hp
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4ac95761c85so7166425e9.2
-        for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 15:37:28 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OlQQps6H
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4a5177d78c7so12764705e9.2
+        for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 15:37:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793399847; x=1794004647; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793399849; x=1794004649; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=smxd6atDvW+XcNIEKcY809Fe9dqPoq4HuHxsaG6+qd0=;
-        b=M2I9t4hplWMbO8tPuee3YyWYgEo3wyjcr0/4BG4YKzu3NCWdVKYAMmKMUvw6UbDvx8
-         BcX4QsuLLNI3QShg+6TAx6QfEBf68vsNfxrxlN8naod6hf6myRsr0HkCry0hYrdWCcus
-         L64wCfLUnofWYSxXo2tF9h41gd2jGhtnHCcBjBz2pmOic55Yq+F+E3fJFGdlUWdZDvrt
-         NdJEUlNXC79r72UKiAgOBXdnjy7b/kw1mYOjqhjZ7J7DbLKb3GW+cm14TLJfWP5er6Km
-         7tPZrlHXLlrek2xUExAq6V6GQVUhH0faZ0GJK/JU8xJwzv0Fg0PINfnJnb6sHm94jy1q
-         eZ4w==
+        bh=fU5eVFfcbBj5t8UtgLFsfacRqMKeyGT7y6OrNdnpgM0=;
+        b=OlQQps6HfJ5IqFc8Mpj1yKcd1VMIXM7AnBE/wDZykR1J1RQXDuytx4PrSHL+vLxH4U
+         fCSNLbo8nGNbx3D2GwQtwZdO14J2sPp+wr744WAnGN3q7GgeECUYdbgByij7xnOetg8q
+         ZdIoRYW8fJkBTwfEMyC/NLXZU+SI9V/yxmKtBYkFc4OCg1XhwR5QNwn2SwSimiGPxVFE
+         OgVBgMeIT3m0AreQNAxUJAu2cQIlMd8HrCVPH+yGNSCCSMKbzthJ4nIPdttfDAtStVZV
+         +QwusS1Z2pEKvmewjaSh6SJpYU+SbqAgInc7XyMQB0kaflpheQVAuObNoMvaM2fYlD0f
+         +oqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793399847; x=1794004647;
+        d=1e100.net; s=20260707; t=1793399849; x=1794004649;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=smxd6atDvW+XcNIEKcY809Fe9dqPoq4HuHxsaG6+qd0=;
-        b=QfM/fKlYta1nOrzIKIdwxmYiOZHzvIPWOEWh9LUs6WfhGXF6y3gH/tBa2Nq49Q7O/z
-         X1MITuxQP5qs4PvvQVQ4Q5xa3MPF/h3bT4BZWClgfnwZdOxxlJuyRtHlJ2NVQp/GbK87
-         zvZ69AgG4uetSKkIUGnsEQ4TRhHS/86PQvLaj9p53vWjI5A4VkV9Ik7PebcgcKbM68lz
-         36fgbfXHWC7HdxtR/hqn8itQLQpf1NPKjc0pGpiKKPa2vOxARJefAMWYMySSQ3Am6kgQ
-         VnPTu2UhcVDYvsOutYBjqPGGMA0CzmBvY6CQUdAUrNBY2Ipvt84QCHDdt1zgJusrbJSU
-         7aIQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxAS/L0vXCbyPtPZAXpI4m0bxMsoszDeM44Cx9TfvCcnop3FM317FDcTsPOWagvB4N1frcXG2uyEutnPk0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKypU6xYUIdKswdg9L+bUYAN7qxmAtvNreyADq2N7A0JI+Az4Jw
-	MvrS23gTq+YIsn2ACud1Tg/Pn6vAoWQCmhiW5BkS2jfkchWnlpYMs3mur+TNYdwmQWs=
-X-Gm-Gg: AYBFou21qMJY3J8SmqoBBnSBDvFXfuDbS7ZAx6BocT3NfgANEyLYDtg+9bK5qUkCILR
-	MRuKsGmAzujzNNsYlHhMI+LaUpDEvIr3jJ7pfec62oxCZdQSAe4fh8qJnjcXRz58nUQd2moAnzS
-	ZqkONl21rS2onWwWCYTa1yktDy6tM2TuAm4nG0qH8jhUUL3fob43s6vBgmOm22lnASrb8GbkaJG
-	BweAew49mhssy49haaF0vJ5yt5ZYNpieghR7xjXuuot7hDrt79SDmeIuETIVLLYaxwM2SaF018O
-	QNM2yJodNszk6S6MRExXlfk3PjSEnAcSDEPkG9XzGEhFPVReCWrcUbXLgQ/DsAmJ3XTAC2PtPIl
-	C6Yc5r/VpliI9f5IcvOUHKFkD0zEUbEwf8BuhiKmS6wg3BJ4NYmP0SpcgcVGqQUP3GUa4jQdBd6
-	PYy/fK3W2qlAXRG/jyqZ+1jUC0dC34kvF2G2noBLsCO50v2mt5GgE4jF+Pmy3bcLTb+TdhTYKhh
-	KVUth8vTj/+q8MphGkZAUBiDw+2JNZpxxHdvgNWI2kilsFH2w13r3SmjJyFbu5BjVGoHRt2tn5t
-	5kbBNZxYRpJJT34F4eGXcZ72lHbX/sC1Zq+HBvxwppBGw/fMjNU=
-X-Received: by 2002:a05:600c:8b0a:b0:4a2:191f:7cbd with SMTP id 5b1f17b1804b1-4ac17191009mr83697245e9.11.1793399846753;
-        Fri, 30 Oct 2026 15:37:26 -0700 (PDT)
+        bh=fU5eVFfcbBj5t8UtgLFsfacRqMKeyGT7y6OrNdnpgM0=;
+        b=GLaLuMwr3hJIvppG9DmGRaln1QBa97VgPioieaTLRfKcs2w2mNgvOyW+IUD8hOwGcw
+         zLHH6cEvCD02gdkPQZH+zqi97dqfljNne9ksYrUg7bfICq4ckofKOJ2LWciUtSsjYY3U
+         04/aBo85oc/LcCcRSeVITRL4TcUtlfoS931qSVJ2EBKmHaHpGnK3jpj0f+lejT95v05n
+         EA4sOhHHHNnWUe5jQL/yvZt+SqCRpLeo5rQGGXvz6Wx31VxOR2rKay3Zm/1az0SOpMa9
+         cgBZdc3Ur8rThoCSru34NxPJZdXW7scLW3CoxQPDrjskRGOXWO5zW74mDN7s+po6x0iL
+         oXTw==
+X-Forwarded-Encrypted: i=1; AKwUvBwdH/saH7mQzReKSgGqQy2fM77MP/3IyFGLSMZlhT4X6+nmbxkMyT+yHiRI4EKFZVYBFpgAnEap9P/AkeI=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJVCc7NTlV5IXQBteDaAsmW1Wqrs8OGrJG9L9+nTnM0mXgrcK5c
+	6iyPn4M5MI+Ha0JE8mirwYKr1F363akWxLhNf8nm3T2cAn4/sCyJdlTm
+X-Gm-Gg: AYBFou1xxvSROfLUzYPh45gCWm0UeazB94nc/le9O45Ni5wsY9MNutUrfV7wOPjS29I
+	Ctcb/9cSRY3JtJAOUO83a4WoYkdzOBuU14VKB0N5QxsfJ1UjuS56ltXCXtNcYC13K40/BWrJP4z
+	kL24E6Taw9D6VMBXCKcJm22gPV496SZyXaXnWnpUFGC3eiZuvvou78n2D4SgYej5So4bnoWOWpG
+	sAzX3m7dZk6NIa2/rxoY++aLx0GR8FCvJVPpHMIEMG7LC8ch+B662CDOmiXCOyJLHkDbMPq3pXV
+	0PXAeVJDuPHJgll3FnYtfnhLH0Hb5PcXFtWkZDrDDxt8cZFwVNwUoAxfJSunUqN+oyxYaiaBPjZ
+	IYqiMx5O9eLiImJ5peDLyVbbdYpzKLf6R39VhEiWGAwJi0ajuzjnyHbkU7hwyxq4KKl6NHJ4m81
+	fSx/0mO7Fpv1jw9PNMeVSweDCguK3AbWAobyKPd3UYjj/72RdQkxOj250s3d9YXUAcYgtXNWMzN
+	fb39fBhVwqzP9x/EpuRev9tFMWb3G15nRlbA9RvMg/7CfQiCUHmj0hLJ7vFIgqyOPMHKZgPmk5O
+	aZuu6faSzPDWr3hQ/dEw/xuTUVmL
+X-Received: by 2002:a05:600c:3b18:b0:4a1:c5eb:b445 with SMTP id 5b1f17b1804b1-4ac1932b542mr84346665e9.35.1793399848715;
+        Fri, 30 Oct 2026 15:37:28 -0700 (PDT)
 Received: from m2.. ([37.142.145.227])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-48e71b959c1sm5457300f8f.45.2026.10.30.15.37.24
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-48e71b959c1sm5457300f8f.45.2026.10.30.15.37.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2026 15:37:26 -0700 (PDT)
+        Fri, 30 Oct 2026 15:37:28 -0700 (PDT)
 From: Michael Zaidman <michael.zaidman@gmail.com>
 To: Jiri Kosina <jikos@kernel.org>,
 	Benjamin Tissoires <bentiss@kernel.org>
@@ -96,9 +96,9 @@ Cc: Linus Walleij <linusw@kernel.org>,
 	linux-i2c@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Michael Zaidman <michael.zaidman@gmail.com>
-Subject: [PATCH v2 14/15] HID: ft260: i2c: fix i2c_reset sysfs store return value
-Date: Sat, 31 Oct 2026 00:36:36 +0200
-Message-ID: <20261030223637.86907-15-michael.zaidman@gmail.com>
+Subject: [PATCH v2 15/15] HID: ft260: i2c: recover a bus held by a slave
+Date: Sat, 31 Oct 2026 00:36:37 +0200
+Message-ID: <20261030223637.86907-16-michael.zaidman@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261030223637.86907-1-michael.zaidman@gmail.com>
 References: <20261030223637.86907-1-michael.zaidman@gmail.com>
@@ -113,45 +113,350 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-A sysfs store must return the number of bytes it consumed. kernfs
-hands that value straight to write(2). i2c_reset_store() returns
-whatever ft260_i2c_reset() returns, which is the length of the
-feature report it sent, 2, not 0. The "return count" below it never
-runs, so every write to i2c_reset returns 2 whatever its size.
+An SMBus block read takes the first byte the slave sends as the block
+length. An EEPROM has no length byte, it answers with stored data, and
+ft260_smbus_xfer() rejects a value above I2C_SMBUS_BLOCK_MAX. That
+count phase carries no STOP, so the slave keeps SDA low while it waits
+for the next clock. FT260_SET_I2C_RESET restarts the controller but
+does not clock the bus, the chip cannot put a STOP on the line, and
+every later START ends in arbitration lost.
 
-A write of two bytes is right by coincidence, because the report is
-two bytes long. A caller that leaves out the newline, as C and Python
-code usually does, writes one byte and gets 2 back, which is more
-than it asked for:
+A 24c02 holds 0x68 at offset 0x80, so on that bus
 
-  echo -n 1 > i2c_reset   1 byte, write() returns 2, bash ignores it
-  printf 1  > i2c_reset   1 byte, dash reports an I/O error
-  echo 1    > i2c_reset   2 bytes, correct by coincidence
+  i2cget -y 0 0x50 0x80 s
+  ft260 0003:0403:6030.0011: smbus block read: invalid count 104 from slave 0x50
 
-Return 0 from ft260_i2c_reset() on success. The value is discarded by
-its other callers, ft260_hid_output_report_check_status(),
-ft260_i2c_probe() and ft260_i2c_abort(), whose own four callers
-discard it as well.
+killed the bus: every transfer after it failed with bus_status 0x72.
+The sysfs i2c_reset, unbind and bind of the HID interface, and rmmod
+followed by insmod all left the status at 0x72.
 
-Fixes: 6a82582d9fa4 ("HID: ft260: add usb hid to i2c host bridge driver")
+Nine SCL pulses free the slave. Switching the I2C controller off gives
+GPIO0 and GPIO1 back their GPIO function, so i2c_generic_scl_recovery()
+can clock the line and make a STOP. ft260_i2c_abort() reads the status
+after the reset and calls i2c_recover_bus() when BUS_BUSY is still set.
+The error bit is no use there: the chip reports 0x60 right after the
+reset and only shows 0x72 at the next START.
+
+ft260_gpio_pin_set() and ft260_gpio_read_all() are the bodies of
+ft260_gpio_direction_set() and ft260_gpio_get_all(), split out because
+the recovery needs them without the gpio_en check, SCL and SDA are no
+GPIOs while I2C runs, and without dev->lock, which the abort path
+already holds.
+
+With the patch the same i2cget still fails with -EPROTO and the next
+i2ctransfer succeeds. A full i2cdetect scan of 112 addresses logs no
+recovery, so an address NAK does not take this path.
+
+Fixes: 2d68d67151eb ("HID: ft260: fix SMBus block read protocol handling")
 Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
 ---
- drivers/hid/hid-ft260.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/hid-ft260.c | 193 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 162 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
-index f7d01d9e07f7..cd1117c170e1 100644
+index cd1117c170e1..faa1e12cd2d5 100644
 --- a/drivers/hid/hid-ft260.c
 +++ b/drivers/hid/hid-ft260.c
-@@ -551,7 +551,7 @@ static int ft260_i2c_reset(struct hid_device *hdev)
- 	}
+@@ -188,6 +188,8 @@ enum {
+ 	FT260_GPIO_DIRECTION		= 0x01,
+ 	FT260_GPIO_DIR_INPUT		= 0x00,
+ 	FT260_GPIO_DIR_OUTPUT		= 0x01,
++	FT260_GPIO_SCL_OFFSET		= 0,	/* GPIO0 */
++	FT260_GPIO_SDA_OFFSET		= 1,	/* GPIO1 */
+ };
  
- 	ft260_dbg("done\n");
--	return ret;
+ /* GPIO bit masks */
+@@ -554,6 +556,22 @@ static int ft260_i2c_reset(struct hid_device *hdev)
+ 	return 0;
+ }
+ 
++/*
++ * Enable or disable the I2C controller. With the controller disabled
++ * GPIO0 and GPIO1 carry their GPIO function instead of SCL and SDA.
++ */
++static int ft260_i2c_set_mode(struct hid_device *hdev, u8 enable)
++{
++	struct ft260_set_i2c_mode_report report;
++
++	report.report = FT260_SYSTEM_SETTINGS;
++	report.request = FT260_SET_I2C_MODE;
++	report.i2c_enable = enable;
++
++	return ft260_hid_feature_report_set(hdev, (u8 *)&report,
++					    sizeof(report));
++}
++
+ static int ft260_hid_output_report(struct hid_device *hdev, u8 *data,
+ 				   size_t len);
+ 
+@@ -575,10 +593,46 @@ static int ft260_i2c_stop(struct hid_device *hdev, u8 addr)
+ 	return ft260_hid_output_report(hdev, buf, sizeof(buf));
+ }
+ 
+-static int ft260_i2c_abort(struct hid_device *hdev, u8 addr)
++static int ft260_i2c_bus_status(struct ft260_device *dev)
+ {
+-	ft260_i2c_stop(hdev, addr);
+-	return ft260_i2c_reset(hdev);
++	struct ft260_get_i2c_status_report report;
++	int ret;
++
++	ret = ft260_hid_feature_report_get(dev->hdev, FT260_I2C_STATUS,
++					   (u8 *)&report, sizeof(report));
++	if (ret < 0)
++		return ret;
++
++	return report.bus_status;
++}
++
++/*
++ * I2C reset does not clock the bus. A slave left in the middle of a
++ * byte keeps SDA low, the chip cannot put a STOP on the bus, and every
++ * later START fails with arbitration lost. The chip reports this as
++ * BUS_BUSY once the reset is done; only driving SCL as a GPIO frees the
++ * slave, so fall back to bus recovery.
++ */
++static int ft260_i2c_abort(struct ft260_device *dev, u8 addr)
++{
++	int ret;
++
++	ft260_i2c_stop(dev->hdev, addr);
++
++	ret = ft260_i2c_reset(dev->hdev);
++	if (ret < 0)
++		return ret;
++
++	ret = ft260_i2c_bus_status(dev);
++	if (ret < 0)
++		return ret;
++
++	if (ret & FT260_I2C_STATUS_BUS_BUSY) {
++		ft260_dbg("bus_status %#02x, recovering\n", ret);
++		return i2c_recover_bus(&dev->adap);
++	}
++
 +	return 0;
  }
  
- static int ft260_hid_output_report(struct hid_device *hdev, u8 *data,
+ static int ft260_xfer_status(struct ft260_device *dev, u8 bus_busy)
+@@ -680,7 +734,7 @@ static int ft260_hid_output_report_check_status(struct ft260_device *dev,
+ 	if (ret == 0)
+ 		return 0;
+ 
+-	ft260_i2c_abort(hdev, addr);
++	ft260_i2c_abort(dev, addr);
+ 	return -EIO;
+ }
+ 
+@@ -829,7 +883,7 @@ static int ft260_i2c_read(struct ft260_device *dev, u8 addr, u8 *data,
+ 		timeout_jiffies = msecs_to_jiffies(timeout);
+ 		if (!wait_for_completion_timeout(&dev->wait, timeout_jiffies)) {
+ 			ret = -ETIMEDOUT;
+-			ft260_i2c_abort(hdev, addr);
++			ft260_i2c_abort(dev, addr);
+ 			goto ft260_i2c_read_exit;
+ 		}
+ 
+@@ -843,7 +897,7 @@ static int ft260_i2c_read(struct ft260_device *dev, u8 addr, u8 *data,
+ 		ret = ft260_xfer_status(dev, bus_busy);
+ 		if (ret < 0) {
+ 			ret = -EIO;
+-			ft260_i2c_abort(hdev, addr);
++			ft260_i2c_abort(dev, addr);
+ 			goto ft260_i2c_read_exit;
+ 		}
+ 
+@@ -1027,7 +1081,7 @@ static int ft260_smbus_xfer(struct i2c_adapter *adapter, u16 addr, u16 flags,
+ 				hid_warn(hdev,
+ 					 "smbus block read: invalid count %u from slave 0x%02x\n",
+ 					 count, addr);
+-				ft260_i2c_abort(hdev, addr);
++				ft260_i2c_abort(dev, addr);
+ 				ret = -EPROTO;
+ 				goto smbus_exit;
+ 			}
+@@ -1237,34 +1291,23 @@ static int ft260_gpio_set(struct gpio_chip *gc, u32 offset, int value)
+ 	return ret;
+ }
+ 
+-static int ft260_gpio_direction_set(struct gpio_chip *gc, u32 offset,
+-				    int value, int direction)
++/*
++ * Set the direction and the value of one pin. Takes no lock and does
++ * not look at gpio_en, so the I2C bus recovery can drive SCL and SDA
++ * while it holds dev->lock and while the pins are not GPIOs.
++ */
++static int ft260_gpio_pin_set(struct ft260_device *dev, u32 offset,
++			      int value, int direction)
+ {
+ 	int ret;
+ 	struct ft260_gpio_read_request_report buf;
+ 	struct ft260_gpio_write_request_report *rep;
+-	struct ft260_device *dev = gpiochip_get_data(gc);
+ 	struct hid_device *hdev = dev->hdev;
+ 
+-	if (offset >= FT260_GPIO_TOTAL) {
+-		hid_err(hdev, "%s: invalid offset %d\n", __func__, offset);
+-		return -EINVAL;
+-	}
+-
+-	ft260_dbg("offset %d val %d direction %d\n", offset, value, direction);
+-
+-	mutex_lock(&dev->lock);
+-
+-	if (!(dev->gpio_en & BIT(offset))) {
+-		hid_err(hdev, "%s: wrong pin function %d\n", __func__, offset);
+-		ret = -EIO;
+-		goto exit;
+-	}
+-
+ 	ret = ft260_hid_feature_report_get(hdev, FT260_GPIO, (u8 *)&buf, sizeof(buf));
+ 	if (unlikely(ret < 0)) {
+ 		hid_err(hdev, "%s: cannot get GPIO: %d\n", __func__, ret);
+-		goto exit;
++		return ret;
+ 	}
+ 
+ 	rep = (struct ft260_gpio_write_request_report *)&buf;
+@@ -1298,12 +1341,36 @@ static int ft260_gpio_direction_set(struct gpio_chip *gc, u32 offset,
+ 	ret = ft260_hid_feature_report_set(hdev, (u8 *)rep, sizeof(*rep));
+ 	if (unlikely(ret < 0)) {
+ 		hid_err(hdev, "%s: cannot set GPIO: %d\n", __func__, ret);
+-		goto exit;
++		return ret;
+ 	}
+ 
+ 	dev->gpio = rep->gpio;
+-	ret = 0;
+-exit:
++	return 0;
++}
++
++static int ft260_gpio_direction_set(struct gpio_chip *gc, u32 offset,
++				    int value, int direction)
++{
++	int ret;
++	struct ft260_device *dev = gpiochip_get_data(gc);
++	struct hid_device *hdev = dev->hdev;
++
++	if (offset >= FT260_GPIO_TOTAL) {
++		hid_err(hdev, "%s: invalid offset %d\n", __func__, offset);
++		return -EINVAL;
++	}
++
++	ft260_dbg("offset %d val %d direction %d\n", offset, value, direction);
++
++	mutex_lock(&dev->lock);
++
++	if (!(dev->gpio_en & BIT(offset))) {
++		hid_err(hdev, "%s: wrong pin function %d\n", __func__, offset);
++		ret = -EIO;
++	} else {
++		ret = ft260_gpio_pin_set(dev, offset, value, direction);
++	}
++
+ 	mutex_unlock(&dev->lock);
+ 	return ret;
+ }
+@@ -1321,11 +1388,10 @@ static int ft260_gpio_direction_input(struct gpio_chip *gc, u32 offset)
+ 					FT260_GPIO_DIR_INPUT);
+ }
+ 
+-static int ft260_gpio_get_all(struct gpio_chip *gc, int item)
++static int ft260_gpio_read_all(struct ft260_device *dev, int item)
+ {
+ 	int ret;
+ 	struct ft260_gpio_read_request_report rep;
+-	struct ft260_device *dev = gpiochip_get_data(gc);
+ 	struct hid_device *hdev = dev->hdev;
+ 
+ 	ret = ft260_hid_feature_report_get(hdev, FT260_GPIO, (u8 *)&rep, sizeof(rep));
+@@ -1342,6 +1408,11 @@ static int ft260_gpio_get_all(struct gpio_chip *gc, int item)
+ 	return ret;
+ }
+ 
++static int ft260_gpio_get_all(struct gpio_chip *gc, int item)
++{
++	return ft260_gpio_read_all(gpiochip_get_data(gc), item);
++}
++
+ static int ft260_gpio_get_direction(struct gpio_chip *gc, u32 offset)
+ {
+ 	int ret = ft260_gpio_get_all(gc, FT260_GPIO_DIRECTION);
+@@ -1360,6 +1431,65 @@ static int ft260_gpio_get(struct gpio_chip *gc, u32 offset)
+ 	return (ret >> offset) & 1;
+ }
+ 
++/*
++ * I2C bus recovery. Turning the I2C controller off gives GPIO0 and
++ * GPIO1 back their GPIO function, so i2c_generic_scl_recovery() can
++ * clock the slave out of the byte it holds and put a STOP on the bus.
++ * A pin is released by making it an input, the bus pull-ups then drive
++ * it high.
++ */
++static void ft260_i2c_set_pin(struct i2c_adapter *adap, u32 offset, int val)
++{
++	struct ft260_device *dev = i2c_get_adapdata(adap);
++
++	ft260_gpio_pin_set(dev, offset, 0,
++			   val ? FT260_GPIO_DIR_INPUT : FT260_GPIO_DIR_OUTPUT);
++}
++
++static void ft260_i2c_set_scl(struct i2c_adapter *adap, int val)
++{
++	ft260_i2c_set_pin(adap, FT260_GPIO_SCL_OFFSET, val);
++}
++
++static void ft260_i2c_set_sda(struct i2c_adapter *adap, int val)
++{
++	ft260_i2c_set_pin(adap, FT260_GPIO_SDA_OFFSET, val);
++}
++
++static int ft260_i2c_get_scl(struct i2c_adapter *adap)
++{
++	struct ft260_device *dev = i2c_get_adapdata(adap);
++	int ret = ft260_gpio_read_all(dev, FT260_GPIO_VALUE);
++
++	if (ret < 0)
++		return ret;
++
++	return (ret >> FT260_GPIO_SCL_OFFSET) & 1;
++}
++
++static void ft260_i2c_prepare_recovery(struct i2c_adapter *adap)
++{
++	struct ft260_device *dev = i2c_get_adapdata(adap);
++
++	ft260_i2c_set_mode(dev->hdev, 0);
++}
++
++static void ft260_i2c_unprepare_recovery(struct i2c_adapter *adap)
++{
++	struct ft260_device *dev = i2c_get_adapdata(adap);
++
++	ft260_i2c_set_mode(dev->hdev, 1);
++}
++
++static struct i2c_bus_recovery_info ft260_i2c_recovery = {
++	.recover_bus		= i2c_generic_scl_recovery,
++	.set_scl		= ft260_i2c_set_scl,
++	.get_scl		= ft260_i2c_get_scl,
++	.set_sda		= ft260_i2c_set_sda,
++	.prepare_recovery	= ft260_i2c_prepare_recovery,
++	.unprepare_recovery	= ft260_i2c_unprepare_recovery,
++};
++
+ static int ft260_gpio_init(struct ft260_device *dev,
+ 			   struct ft260_get_system_status_report *cfg)
+ {
+@@ -2331,6 +2461,7 @@ static int ft260_i2c_probe(struct ft260_device *dev,
+ 	dev->adap.class = I2C_CLASS_HWMON;
+ 	dev->adap.algo = &ft260_i2c_algo;
+ 	dev->adap.quirks = &ft260_i2c_quirks;
++	dev->adap.bus_recovery_info = &ft260_i2c_recovery;
+ 	dev->adap.dev.parent = &hdev->dev;
+ 	snprintf(dev->adap.name, sizeof(dev->adap.name),
+ 		 "FT260 usb-i2c bridge");
 -- 
 2.43.0
 
