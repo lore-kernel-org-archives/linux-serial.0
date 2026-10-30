@@ -1,78 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=216.40.44.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793386132;
-	b=lP2OELtdziPHX1H9k5HHaKtyPTZesF9wbFv3K/t3tyNTRSVE9tUQEviwxtA5N+iizxQr
-	 oIL4arpArcDBfRKop/lK+N3skkHwTDLEDvElFwVGSrARhFmg0epT82Qjvz+mUSqghRbcJ
-	 t4OS/qYcxubxOYHeO0ZTp1owIEejgfj1O05KAm7sBvVBg9TDFaqdNu9AhM9UbM4eXnc4N
-	 OIwN+MP3s+WWUhMUzE0SqJKGjCr1k3gMG5KOAkStF0oeWmEI3FVs4DYm/n4qeUoOf+ZW8
-	 sCRqNKRT+PbXSXFc+CfqWQ+wzi5ia5l2+Mjz+VXG9jfs/PleXVlsG/mIdcxhc1YVmrQ==
+	t=1793389220;
+	b=uo7eZhaTCGyopknbFtnhLuAziDPzHfFEST5mAo/rGVV0VpiaVtQcAWNGYy+X5GF2HgCG
+	 gzSMu71so+RwH/0fFy3kwWGI13IP2Kj4M2xXseWzyfa4tjA4jfbaorOxeqgDRIEuy7L7z
+	 vxmeCTZ5L+9nsEDD/SvwbIF3rHZkt+SbzKbfT8Fv56807J4o6pHgxmXMOpSRtOyMvvXv2
+	 DU+jMAhoWYLOUVct6BMMari2Ebehf6WUGiVSLeo1W4ckFNG+BuxtBk7BuXWAvlumFWh0s
+	 68o0DjaX46xg8vJogMXINq0vaUxMNzIhKVg9JcCCYFJnFYrqAnRvYlTANf/XGEGJDkw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793386132;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=R/eIeqkBzYBk/a7bk6HBVW5bw90Y01K8kHpJhRb/ZEw=;
-	b=heos3C4IpxacHAQvwfQyC4hn6Zwkq00j6nw+DnuiKhD+Wh4dg0QHPbAOYzu4CRQKZ04I
-	 d29ACVzpmIxBu2SveLJG1pVDoDk7LKrX88nx9GGxFN/obEJUtGcaG5lOcLI4aow+1L8Tr
-	 DRAXTN72D1MRRYfaEQHYv+3KsN8gzVG99BLjC5qjwL2+YaNS+iv4/05C4EzasMEDQVykW
-	 l00B4tZM3tNoJEtz3xPGdqmNgK+BnaUTN2ojmZ5cXRlxa+q2crRJ5B5A45wwaHWf6b+JB
-	 HqMajz9TazbxyCAhs7F1E8nE4Bq7iYj0LjmnNUHMDMb5kx5GuYMp60pbr+48fkhhYAQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793389220;
+	h=DMARC-Filter:Received:Received:Message-ID:Subject:From:To:Cc:Date:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 User-Agent:MIME-Version:X-Rspamd-Server:X-Rspamd-Queue-Id:
+	 X-Stat-Signature:X-Spam-Status:X-Session-Marker:X-Session-ID:X-HE-Tag:
+	 X-HE-Meta;
+	bh=tB3wDibpkEIsc1D1uRR5wCOBeM1B+5vNvLuHqpwTlCA=;
+	b=Tkjqu9WF39ganH5PsNrQ0IepfSFhPrdj56Oir0ixSYQjHNQ1ui8A/Swf8NNLKtAZHnei
+	 2roCaS/K0T8XI469ixJokFyUlCDQtcM1ef370pVhk2iuCesylJWmsLRxN83MSb/qaUsHV
+	 QDLajNQqOIzLHKeovy39sBIlUD4VV3XecQXmjFdEvpa49GIsi/gsw84Ueblj9iHXTvry4
+	 O5aS03+vaSljkhE36pg64N3eAm1RIky6eiUT/hRcqpV0fqL4LGFfVWHBavUoLlw05t3Dz
+	 l0TvfNHETR47wdTB4lL+WHRkgUPAfBvLp/tJGxr0myTuqNgEbzXdjuNAIfyDc+5sEtw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="dne/oRkf";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=none header.from=perches.com;
+	spf=pass smtp.mailfrom=perches.com;
+	arc=none smtp.remote-ip=216.40.44.17
+Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980DD606A31A;
-	Fri, 30 Oct 2026 18:48:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dne/oRkf
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A2C1F000C1;
-	Fri, 30 Oct 2026 18:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793386131;
-	bh=R/eIeqkBzYBk/a7bk6HBVW5bw90Y01K8kHpJhRb/ZEw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=dne/oRkfLYri4BFiKeyLkAjOPPkE4/MjbAS5xLOIkxVFiO5Tz3S2GwZy5vqztJS+S
-	 SlH+BLaXRWJjUvYldSciyH5tr9fj5GWB0DP21dSZHUny+9haPdib/8Z30pmXR7tkAS
-	 y3oj2gFInLggMWmmTMengisGONlGd/GwvWkGpGeeZCP6JMUvOlmta8IJO9XKXxR2tT
-	 3+Wqci9W9kMknmBQor273A8rkAUmN7ziVLIDMzDZ+Ke+Rgh/IxRyj/0AQMxGdIZjdB
-	 EaBnqu3AgerPufv67HsyfTChzJu9jO9qgHDrHbPI8ofwt5Ru/5fWgEPGUcOBPW1QYk
-	 XyBu0HOERGGYw==
-Date: Fri, 30 Oct 2026 18:48:42 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Kwanghoon Son <asdfkwang@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Paul Walmsley <pjw@kernel.org>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Anup Patel <anup@brainfault.org>, Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 12/12] MAINTAINERS: Add Bouffalo Lab BL808 support
-Message-ID: <20261030-slider-finished-360b10521e0b@spud>
-References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-12-b736ee920078@gmail.com>
- <20261029-spyglass-evasion-772697094cb9@spud>
- <20261029-amuser-savior-6a6ab062f471@spud>
- <auSDJH9V31wmbrYv@debian>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D52B606A31A;
+	Fri, 30 Oct 2026 19:40:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D52B606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=perches.com
+Received: from omf06.hostedemail.com (lb01a-stub [10.200.18.249])
+	by unirelay06.hostedemail.com (Postfix) with ESMTP id A094BA8586;
+	Fri, 30 Oct 2026 19:40:11 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id D04412000F;
+	Fri, 30 Oct 2026 19:40:06 +0000 (UTC)
+Message-ID: <f0bbfcecd63e11fedc4a745aa357fd8c529df097.camel@perches.com>
+Subject: Re: [PATCH] MAINTAINERS: Fix Intel TDX kernel file patterns
+From: Joe Perches <joe@perches.com>
+To: Borislav Petkov <bp@alien8.de>
+Cc: Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe	
+ <rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, 
+ Krzysztof Kozlowski	 <krzk@kernel.org>, Biju Das
+ <biju.das.jz@bp.renesas.com>, "biju.das.au"	 <biju.das.au@gmail.com>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
+ "linux-kernel@vger.kernel.org"	 <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org"	 <linux-serial@vger.kernel.org>,
+ "linux-renesas-soc@vger.kernel.org"	 <linux-renesas-soc@vger.kernel.org>,
+ "x86@kernel.org" <x86@kernel.org>,  "linux-coco@lists.linux.dev"	
+ <linux-coco@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, 
+ Au Dang <au.dang.jx@renesas.com>
+Date: Fri, 30 Oct 2026 12:40:05 -0700
+In-Reply-To: <20261030182031.GAauTf71ujnYNQPluW@fat_crate.local>
+References: <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
+	 <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	 <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+	 <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	 <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+	 <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+	 <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
+	 <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
+	 <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
+	 <7d35e2db2da34735760a08a6f103abee075413c8.camel@perches.com>
+	 <20261030182031.GAauTf71ujnYNQPluW@fat_crate.local>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 (3.58.3-2.fc43) 
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -82,112 +78,41 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="z09qSibq+nPgici6"
-Content-Disposition: inline
-In-Reply-To: <auSDJH9V31wmbrYv@debian>
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: D04412000F
+X-Stat-Signature: wkcp5ff7qj9ftg3f5hfh8x3ibujhqfgd
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18MClqx0jSvr36hEcX/6cU4hJ/gcfU5s1s=
+X-HE-Tag: 1793389206-130397
+X-HE-Meta: U2FsdGVkX1+bis/K6Jvejfrw3OxHiUz+/eHYnGFdduYgMGW84zDkju7YEB2ispdporcrRtwLuBMUWaJJSr5WG2JFmt7Kl2xftjhbrrvKKGpPan1w9dEeVAhOEuB9LLRQrRlJGBVcpHPnB6tXwSSdxf7ICDDEFHONn3jrjIPVdiQlcie0Wqw7tkcpYtoibfn+b43zNZiyfh/8cOsu5hDdtcwKVnvchcBH3SU9s3Dm0gqw1L0TuvoLDIjp4stCLYs7J2jcnp9M2712pYYETSsa2vWHqFe89wksKpxG2k2fYz0ymeiBBie2D1mCkZ9DLSC2
 
---z09qSibq+nPgici6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Oct 30, 2026 at 07:44:36AM -0400, Kwanghoon Son wrote:
-> On Thu, Oct 29, 2026 at 07:20:41PM +0000, Conor Dooley wrote:
-> > On Thu, Oct 29, 2026 at 07:08:56PM +0000, Conor Dooley wrote:
-> > > On Thu, Oct 29, 2026 at 01:05:53AM -0400, Kwanghoon Son wrote:
-> > > > Add a MAINTAINERS entry for the Bouffalo Lab BL808 platform, device=
- trees
-> > > > and Rust serial driver and abstractions.
-> > > >=20
-> > > > Signed-off-by: Kwanghoon Son <asdfkwang@gmail.com>
-> > > > ---
-> > > >  MAINTAINERS | 13 +++++++++++++
-> > > >  1 file changed, 13 insertions(+)
-> > > >=20
-> > > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > > index 801f964899ba790a8f71fe61f9b3777a494dabd5..b76d3e168468bf6139c=
-958a81b626c73b422c0d4 100644
-> > > > --- a/MAINTAINERS
-> > > > +++ b/MAINTAINERS
-> > > > @@ -4926,6 +4926,19 @@ S:	Maintained
-> > > >  F:	Documentation/devicetree/bindings/iio/imu/bosch,bmi323.yaml
-> > > >  F:	drivers/iio/imu/bmi323/
-> > > > =20
-> > > > +BOUFFALO LAB BL808 SUPPORT
-> > > > +M:	Kwanghoon Son <asdfkwang@gmail.com>
-> > > > +L:	linux-riscv@lists.infradead.org
-> > > > +L:	linux-serial@vger.kernel.org
-> > > > +S:	Maintained
-> > >=20
-> > > Missing git tree, unless you're expecting me to apply patches for the
-> > > platform for you?
+On Fri, 2026-10-30 at 11:20 -0700, Borislav Petkov wrote:
+> On Fri, Oct 30, 2026 at 10:16:46AM -0700, Joe Perches wrote:
+> It's probably better to use F: and not N:
 >=20
-> I added this entry after seeing checkpatch's MAINTAINERS warning,
-> but made its scope too broad. I'll separate the BL808 platform support
-> from the generic Rust serial abstractions in MAINTAINERS.
+> The reason being?
 
-Okay, that's good - but that's more of a response to my comment down
-below about splitting the entry, not a response to what I was asking
-here about the lack of a git tree. Are you going to send the SoC
-maintainers PRs for this platform or were you expecting someone else to
-apply the patches for this platform (IOW, me).
+From MAINTAINERS:
 
->=20
-> >=20
-> > Additionally, are you actually going to add wider scale support for this
-> > device? Like a clock-controller driver and the various other
-> > peripherals, or is this really just a vehicle to support your rust
-> > serial driver work?
-> >=20
->=20
-> Yes, I'd like to extend BL808 support beyond serial. I have local work
-> on peripheral clock/reset support, pinctrl/GPIO, SPI and PWM, including
-> an SPI display on the M1s Dock.
->=20
-> I'd like to bring those pieces upstream incrementally as they are ready!
-
-Cool!
-
->=20
-> > >=20
-> > > > +F:	Documentation/devicetree/bindings/riscv/bflb.yaml
-> > > > +F:	Documentation/devicetree/bindings/serial/bflb,uart.yaml
-> > > > +F:	arch/riscv/boot/dts/bouffalolab/
-> > > > +F:	drivers/tty/serial/bflb_uart.rs
-> > >=20
-> > > > +F:	rust/helpers/serial.c
-> > > > +F:	rust/kernel/serial.rs
-> > > > +F:	rust/kernel/serial/
-> > >=20
-> > > These should probably not be maintained under the arch support since
-> > > they're not platform specific.
-> > >=20
-> > > > +
-> > > >  BPF JIT for ARC
-> > > >  M:	Shahab Vahedi <list+bpf@vahedi.org>
-> > > >  L:	bpf@vger.kernel.org
-> > > >=20
-> > > > --=20
-> > > > 2.47.3
-> > > >=20
-> >=20
-> >=20
->=20
-> Thanks for review!
->=20
-> Best regards,
-> Kwang.
-
---z09qSibq+nPgici6
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauTmigAKCRB4tDGHoIJi
-0kS/AQD87LyZbjxV+0reytTO2JJdLqp7qGXF8E+JLF1EVO2SNwD+PJ0smcHb0yyh
-KcwNJW06vgZpnTnI5RXuUEIPuE3QcQs=
-=UI1l
------END PGP SIGNATURE-----
-
---z09qSibq+nPgici6--
+	F: *Files* and directories wildcard patterns.
+	   A trailing slash includes all files and subdirectory files.
+	   F:	drivers/net/	all files in and below drivers/net
+	   F:	drivers/net/*	all files in drivers/net, but not below
+	   F:	*/net/*		all files in "any top level directory"/net
+	   F:	fs/**/*foo*.c	all *foo*.c files in any subdirectory of fs
+	   One pattern per line.  Multiple F: lines acceptable.
+	X: *Excluded* files and directories that are NOT maintained, same
+	   rules as F:. Files exclusions are tested before file matches.
+	   Can be useful for excluding a specific subdirectory, for instance:
+	   F:	net/
+	   X:	net/ipv6/
+	   matches all files in and below net excluding net/ipv6/
+	N: Files and directories *Regex* patterns.
+	   N:	[^a-z]tegra	all files whose path contains tegra
+	                        (not including files like integrator)
+	   One pattern per line.  Multiple N: lines acceptable.
+	   scripts/get_maintainer.pl has different behavior for files that
+	   match F: pattern and matches of N: patterns.  By default,
+	   get_maintainer will not look at git log history when an F: pattern
+	   match occurs.  When an N: match occurs, git log history is used
+	   to also notify the people that have git commit signatures.
