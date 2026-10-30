@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793336346;
-	b=SsGU9bE1H6iPYXzQWZAts6emI4yyytG1E2XXaALcvtHfrd0MNdoGM3ZUvsTzjFCFKsDx
-	 wJ/9VeaFpofy5xC5tQ2ubiAgBAwHgicRt7rpgwZn2jMa83A1EyZRdJbBAMZ4fkwcCjeE3
-	 Aubi9OtWuV2opSlYMqIE7TTdJHZHpiVwSKLa4B7due9Kkrd9mH7qRhqLN8KijQ/ViIfMt
-	 isPJ4DUfZfFxwWVcbD1yySGOIt92Xdh797hrSYvim8lY2nmLbmSsI9lHTqV6OwQ9rHhou
-	 vOusmvJJgNQCzeg/TA3f0eg+WpK6fFyAfcYHHHfh9DwT2WGIdiWRrAfLzD8dKTXXRrA==
+	t=1793336343;
+	b=OxLJHL7YOTAwD9sMgI2D4oSe8XDt6PjvoPy06cUe0+f9DTegZkmWpwzIXugaohkvVqGm
+	 9p+057ZyPavHjbEHkdB9A6KcuvXNFXUAilyXio8WVQKXb+zbHY8arPDUgkjA+RSitIUGR
+	 +wuiEgzvF+rBCYyMEIbDLRa22+glL/MmNvmFSYmNFVljWa+qQWI8JfuWZUwWelPGStEwo
+	 l+F3ZjkJwzmnA2MJbQ5wV+4XkBgK+V9YepICnzY9iLFry/keAM4raogBWDM38IjV2mJcR
+	 bUg6523lQeW7VDcACkiCWQwvq/KyLWH6/XJPCE5V5LPR0t/hqtqhZxRmQuEAN4tWCfg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793336346;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793336343;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=ZG6bOylgszrN/sJI6CN0hf+3k0g0lKx6/Z4LrJV7mls=;
-	b=crcuLIvUNgcRpKTm0X1+Lay+0YeIHR5MZnzp5F40m4QSCV6nME9Aha0uxPjRT4XpjV+L
-	 ZsqC3CCh5/RNJ+MikPOgX2PEdNZlwE3rVYxDdBMxxRanXHY+BXfOWyTrxB0HaRRVqOnX0
-	 0vNP/O1aCIFbYwYFcx8Ofx7KTzRYhGl6weUvCl8iTYP8GAMtS8rDYyU/sy0/ewyGi2OTh
-	 Do6d6kYtrR00t1qZoMxPanBe4Ij114jZP6Qpmb1SfrFdpbTs8Gpa07OhvyXNs5VqFyGXx
-	 IP2tw0BILK75W3NeO4Hpzxjt9NMx+bhmhpzYKFrLgNJD8k+0/+Eqtg+ipz6u9zrDyoQ==
+	bh=UNGSjv4o0HBU90AGH4xcc6Zl05pH//0mf5MeXFB8Jaw=;
+	b=Zhy8rM/mB2Mb24kLe4kxU0Y49jWaqriGJ5/R4BQ5F5sZ7mA7VNaQyazGLZ/zkN9An9WI
+	 X16zw3msRfbme0xF4tLLhZTlH7JtrE1lZ2OvRj8VGbj5y1fQYwoM7qIbS8FJYD85yrw37
+	 +3mSTj3B+Yj/0KvFkhVJF/ErXEKhSRb5DMMy7poFDEdsljzI3B59NKN410S7RFdz7Z+vU
+	 uxiEGpKDAl639emp14VNsICZnvqzngw5UYkb7ECazstwML8OCyiiUtuASIePtRBXTgcEY
+	 3fhecHKt40VE0h8kZDBr8Zym9qoZ+WFj6hQXDidYXMm+zNlODAtBvSmsPHhlLMmWQtw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=INJciFkO;
-	arc=none smtp.remote-ip=74.125.82.47
-Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xrAOp1qP;
+	arc=none smtp.remote-ip=74.125.82.50
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E013606A324
-	for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 04:59:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5E013606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FB97606A325
+	for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 04:59:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4FB97606A325
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=INJciFkO
-Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-1846bc43c28so336354c88.0
-        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 21:59:06 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xrAOp1qP
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-156cbe59524so251018c88.1
+        for <linux-serial@vger.kernel.org>; Thu, 29 Oct 2026 21:59:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793336345; x=1793941145; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793336342; x=1793941142; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=ZG6bOylgszrN/sJI6CN0hf+3k0g0lKx6/Z4LrJV7mls=;
-        b=INJciFkO5H4hqxAW1C8mpRHp4hDDtq7RkjC5vXmOhsNlIuw+a0RMGZM9XGyipAUsTW
-         ATnG2Dk1f2JsvFd8IP6t2cJCX/VhUr4nCzvtzk3wWcbY0Q+J4frKLqZ3+8iu/G0WmRKP
-         1gcbVTuarCESI+T4zZc7MYR2T+0w7j5hKiOct8mP1/1iQ2O0hWsxt8oSm3RBIqkWq/bZ
-         LdSDAT0VOOA7KVckxMp97EGXiLoJimw7j2zFqbjkLBXHq1qTGPVLLZLQlIg4zL8ktsi3
-         oD/m8exNW230TXd+83r6hGVK7UnSI47YxcgrucWrvX+MfhDvemFic6ll9P7et6/nQtNM
-         gHZA==
+        bh=UNGSjv4o0HBU90AGH4xcc6Zl05pH//0mf5MeXFB8Jaw=;
+        b=xrAOp1qPKlvoxGyQvxvlheyc6cfA4GHBcmhtRsZJFPhdacmU6ByarJ7Slxy/FTx4ml
+         5rYXuUJWqoR7naE4UE94dZhfp5ue5fRa3MsZX9OqYvneQiXaAX74t5mVzON2v2awvGQ6
+         wZbJA2ggXi/OHEiUpMldCt5bRaMvAlKUzkGB0W/7Z3QJLnbv3so3IPDizv3SpKBLSMBa
+         XUxMi95iqvRNC7owPZngx7LprYHUJb0N0mM0m8WI0VWt5dyPOAZC+SzL5RnQMLiDTRD6
+         ovJEdbCMSVKzOlY47EILQF/oBnDeFKlPfwEvhffHysK4Ij/DOBupcNfVLbbLpodGiWo0
+         i9cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793336345; x=1793941145;
+        d=1e100.net; s=20260707; t=1793336342; x=1793941142;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ZG6bOylgszrN/sJI6CN0hf+3k0g0lKx6/Z4LrJV7mls=;
-        b=jEgP350+qnYNidrUBGQ09/e5vDCkRFTxGrAlaKDiFNLXwUACml+JVUUygf5u1a1aAo
-         LfYv88ihYLMyuMRhCiLNoyaIN+x1BTYxdorYZIsR5GbHx3lEz1EnTFVfVQzkWRu9v06F
-         4EULNoPd37RINoOeQkOaim54kdXjvuEgCqyyHaBW8QMAPEUQip55JGjcFTPVOlEwtYJE
-         EmWdKo4BuyCwo5kf/U0VBaWWSaBjeHEUo380+f3hmSVJmH7WcQYn0SehFzvp4xMwP9t4
-         cvBVwY7Cr0QRVO2lObkt41PQXz9O/JxRpsvMeaN+8OJ5QXMzcIJysB7vPb5ZTJiEi1uf
-         r+tA==
-X-Forwarded-Encrypted: i=1; AKwUvBzBtLtJotHFH2eUwbs65GIuuR2pTp9zK5JDF+bg5cicI6XlgYpZOp2srZLR10a9UUKnq4wG7NMK9IAJzSs=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKYRo1sOZF/eLXLLYt+oSpPiADZJg4kjc1ek5skHhG0C8RNHggL
-	46QYZ0reTkhB/HIh6vndw4AX+h4qvwqSfc6gc1OwzkooGd7NyaXklDxJ
-X-Gm-Gg: AYBFou3a0EmjE3GDIr7vTQ+T1tOR8wLIYJTlbFcFqxwCLa27pTUI/FlfAPdzamVpWn9
-	TvdMD+NcV0Pz/BJiWyCJBKuuEQWjpVFoxEufTu0MZdjtlLPsa4+gyQ+VrCuvrurL9b73lN420IG
-	8kM3SgcID+uKYGw+OBksilwpkg0jfGdA2zXu7uCjAs1eoXUA9OqzA2vw6+XCn9leaNBECVOgA4h
-	/9f88IvsYr7Kn0+l8LNr7b/fWCB7bO0W47JQXDO3MKAxZjJ7iuEOI4Wi4+Fw1c91TMLSzsX7OB2
-	arlE2Bk6JG3e23G7uKMBKltmJCxUye8114fgiQjZ+00u3WXSrAw4NFg8W1DwY0aBHijk47i8lX3
-	4OO5AEDXPzqxBcWVgUSTLt+IXgtKV+9CswtLdJHUKeKlGJJosdsq944+jxr8YPvM0fskH7qF3Gz
-	aRFPna+8pzYxBUpbobgVYQlzG9U/cFWPYnRfXs0X+AQswfkD+pjef52Q4YYDEOsCVwXJlLc3gYx
-	UWr9mUTOLTfDHi32pN88hmXt3IcSsG2DuGRWfMduLrx7IEBXMrQSHx+Kj9ZLTvCoJ0Pnf/qk9fx
-	VHXgUugzJfDlDUtq+aur3yXJH4AlHCSNNyjdd5178WcW6A==
-X-Received: by 2002:a05:7022:ef12:b0:14d:ef19:246f with SMTP id a92af1059eb24-1ac5f36d5cbmr1974923c88.45.1793336345453;
-        Thu, 29 Oct 2026 21:59:05 -0700 (PDT)
+        bh=UNGSjv4o0HBU90AGH4xcc6Zl05pH//0mf5MeXFB8Jaw=;
+        b=pSU7IEy6dXhTG5cwMrMj2NyMK454UED8WHtcKqw0187GR22smTk52NUc75v8HzMPTZ
+         5RErqMyDetH87HP+8D4Wr19eEPwNFyeFiURg1woMR4IxIRkEdO3zCdaJ/Jf2tgNQbirk
+         26mYnJm4y1EWhMZYJn2Qzm8WLfBityO5BW3kDGJer5zba3MrVkMqPRgQfloONJUT/XQd
+         vCTpBjV6fEEBuCu+PKkQyheaChMfKWlOBpglUBhZ4sAQy1/1HwcU4uyb95qsE+2FlgK8
+         TC8R9oLt/425aZhYDzBhr8nchlPjZ5WdXAGVSFRQZrxBEFyRbGAWwRExUa6qE76QUyum
+         w68A==
+X-Forwarded-Encrypted: i=1; AKwUvBxqarZQPCIp/+MqxB2UCHz8+VRo++OPQreiS/hNFfsdMOZ7qJSkQYNsb7dJ0zuchVJ7TjtsEEgsbVL9huQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYI1pXt0gamuaXdLSEjnZpn8HdTkE2elb9bmB72VhNrUiMidV0GR
+	A8M+cxRKIr69afnnf879Ho29sokgxr2bLp5HSwP2UVDQ7V9YiyZgmUrE
+X-Gm-Gg: AYBFou0licMpDY8980cTc6YOPdJyEIHuhbSekJUogVsdYEqwhK40xee5oBsOvJ9ZeXy
+	REGEgdNjMaN8fHiEk+SI1dp3Dxw5W2bo91Ki4kQo47ms79AqIuEosh9SfL7WbFXG6uTVjWPBPEE
+	fb3O5SUNKRq1kdpYiZMb08NycCViZCvJAJpxeUO7dacdioPFUV7IhDttWyvMz8MiDW7irw1QkCw
+	i/UaeuFewQZCHs8g5bVaNF61r8dvhvvbGL3nMB6wLElJBr/wsCFwDtSDkmhPbM5Z4dCLvxX0yvG
+	4GfMBMTJJFhj6kwJ7WYm1iZToFj/TJWC6PGpLPiMvZkjit32mYImK87geKmBPPdW7pZjULO6CiL
+	CGwcKaGs75JnTsII1X/c7CPSvXanB9KNFDKMQH3J9nR2SMAu153tyMMFitV6Y5738ws5E5C3jAN
+	nE4DYH8ENtVqeZ2hOSsfo+lSL4Vl0u36fmt2/QsGmL+8XpOPFmpBesz5D/UVsE2OO2DOcT1lMPg
+	+0xeF8rHJNI5MiZ2Mbw6Usi7OXg2r2h/6RnboUYJtVjHSIvfmT8K7KBkCEYf3Ax3xi4N40eTciU
+	NR2xTJJ46jkCdbdA9cBY93H0JpzCN+Jzpe7Gq/SY4h+Hjw==
+X-Received: by 2002:a05:701b:4646:b0:157:cbf6:89c4 with SMTP id a92af1059eb24-1ac5eea3b63mr1661179c88.26.1793336342381;
+        Thu, 29 Oct 2026 21:59:02 -0700 (PDT)
 Received: from osman.mioffice.cn ([43.224.245.178])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1ac18458e07sm3433152c88.8.2026.10.29.21.59.02
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1ac18458e07sm3433152c88.8.2026.10.29.21.58.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 21:59:04 -0700 (PDT)
+        Thu, 29 Oct 2026 21:59:02 -0700 (PDT)
 From: Zhan Xusheng <zhanxusheng1024@gmail.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
@@ -87,9 +87,9 @@ Cc: dmitry.torokhov@gmail.com,
 	linux-input@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	zhanxusheng@xiaomi.com
-Subject: [PATCH v4 2/2] tty: sysrq: reset the per-device key state when reparsing reset_seq
-Date: Fri, 30 Oct 2026 12:58:54 +0800
-Message-ID: <20261030045854.153556-3-zhanxusheng1024@gmail.com>
+Subject: [PATCH v4 1/2] tty: sysrq: don't expose a partially written reset_seq
+Date: Fri, 30 Oct 2026 12:58:53 +0800
+Message-ID: <20261030045854.153556-2-zhanxusheng1024@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261030045854.153556-1-zhanxusheng1024@gmail.com>
 References: <20261030045854.153556-1-zhanxusheng1024@gmail.com>
@@ -106,66 +106,270 @@ Content-Transfer-Encoding: 8bit
 
 From: Zhan Xusheng <zhanxusheng@xiaomi.com>
 
-sysrq_parse_reset_sequence() clears reset_seq_cnt, but reset_keybit is
-only ever __set_bit() and reset_seq_len only ever incremented.  struct
-sysrq_state is allocated once per input device in sysrq_connect() and
-lives until the device goes away, so both accumulate every time the
-sequence is reparsed, which happens whenever the mode 0644 reset_seq
-parameter is written.
+reset_seq is a module_param_array, so param_array() builds it up one
+element at a time: it resets the element count, then for each element
+calls sysrq_reset_seq_param_set(), which stores the key and bumps
+sysrq_reset_seq_version, and afterwards increments the count.  Every
+intermediate step is a self-consistent sequence carrying a fresh version,
+and sysrq_handle_keypress() reparses as soon as the version moves, so
+writing 56,29,111 publishes a one-key sequence and then a two-key one
+before the intended three-key one.
 
-After writing 56,29,111 and then 59,60 a device keeps all five keys in
-reset_keybit with reset_seq_len 5, so the effective combination is the
-union of the old and the new sequence: holding just 59 and 60 counts two
-of five and does nothing.  Releasing one of the three stale keys takes the
-key-release path, because the key still tests positive in reset_keybit, so
-reset_seq_cnt is decremented for a key that was never counted and goes
-negative.  From there ++reset_seq_cnt has to climb back through zero
-before it can match reset_seq_len, so the emergency reset cannot be
-triggered until reset_seq is written again or the device reconnects.
+A key event that lands on the one-key state gives the device a one-key
+sequence, and because the parse runs before set_bit(code, key_down) the
+count is still 0 and reset_canceled is false.  The same event then reaches
+sysrq_detect_reset_sequence(), where ++reset_seq_cnt matches reset_seq_len
+and sysrq_handle_reset_request() runs; sysrq_reset_downtime_ms defaults to
+0, so sysrq_do_reset() calls orderly_reboot() straight away.  Writing the
+parameter needs root and the key has to be the first one of the new
+sequence, but an administrator who presses that key while reconfiguring
+the sequence reboots the machine.
 
-Rebuild both from the sequence that was just read.  Also delete
-keyreset_timer: with sysrq_downtime_ms set, holding a full sequence arms
-it, and it is only deleted on a press outside the sequence or a release
-inside it.  Dropping the old keys from reset_keybit removes both of those
-cancellations, so an already armed reset would otherwise survive into
-orderly_reboot().
+Today this needs a device that has not parsed a sequence yet, because
+reset_seq_len only ever grows.  The next patch resets it on every reparse,
+which without this one would expose every device.
 
-This depends on the previous patch.  Clearing reset_seq_len turns what
-used to be a stale superset of the old and the new keys into a real
-truncation, so without the sequence being published in one step the
-single-keypress reboot described there would reach every device rather
-than only those that have never parsed a sequence.
+Parse the whole parameter in one callback and replace the sequence under
+a seqlock.  The reader copies it out under raw_seqcount_try_begin(), as
+it runs from the input event path with interrupts disabled, and keeps
+its current sequence if a writer got in the way.  It is a seqlock rather
+than a bare seqcount because writers were not serialised either:
+sysrq_of_get_keyreset_config() stores the sequence from the kernel.sysrq
+sysctl without the module parameter lock.
+
+Behaviour changes:
+ - A key of 0 is rejected instead of silently ending the sequence there.
+ - A write that fails partway keeps the previous sequence.
+ - An element longer than seven characters, such as a zero-padded hex
+   value, is rejected.
 
 Fixes: 154b7a489a5b ("Input: sysrq - allow specifying alternate reset sequence")
 Signed-off-by: Zhan Xusheng <zhanxusheng@xiaomi.com>
 ---
- drivers/tty/sysrq.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/tty/sysrq.c | 133 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 99 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index f9d63b45f859..00cea2f315c3 100644
+index f4571d05b496..f9d63b45f859 100644
 --- a/drivers/tty/sysrq.c
 +++ b/drivers/tty/sysrq.c
-@@ -724,11 +724,18 @@ static void sysrq_parse_reset_sequence(struct sysrq_state *state)
- 	if (read_seqcount_retry(&sysrq_reset_seq_lock.seqcount, seq))
- 		return;
+@@ -39,6 +39,7 @@
+ #include <linux/writeback.h>
+ #include <linux/swap.h>
+ #include <linux/spinlock.h>
++#include <linux/seqlock.h>
+ #include <linux/vt_kern.h>
+ #include <linux/workqueue.h>
+ #include <linux/hrtimer.h>
+@@ -675,39 +676,68 @@ struct sysrq_state {
+ 	unsigned long reset_keybit[BITS_TO_LONGS(KEY_CNT)];
+ 	int reset_seq_len;
+ 	int reset_seq_cnt;
+-	int reset_seq_version;
++	unsigned int reset_seq_version;
+ 	struct timer_list keyreset_timer;
+ };
  
-+	/*
-+	 * An armed reset belongs to the sequence being replaced: once the old
-+	 * keys are gone from reset_keybit their release no longer cancels it.
-+	 */
-+	timer_delete(&state->keyreset_timer);
+ #define SYSRQ_KEY_RESET_MAX	20 /* Should be plenty */
+ static unsigned short sysrq_reset_seq[SYSRQ_KEY_RESET_MAX];
+ static unsigned int sysrq_reset_seq_len;
+-static unsigned int sysrq_reset_seq_version = 1;
++static DEFINE_SEQLOCK(sysrq_reset_seq_lock);
 +
-+	bitmap_zero(state->reset_keybit, KEY_CNT);
-+	state->reset_seq_len = len;
- 	state->reset_seq_cnt = 0;
++/*
++ * Replace the sequence in one go.  The seqlock serialises writers against
++ * each other and lets sysrq_parse_reset_sequence() tell a complete
++ * sequence from one that is being replaced.
++ */
++static void sysrq_publish_reset_seq(const unsigned short *keys,
++				    unsigned int len)
++{
++	write_seqlock(&sysrq_reset_seq_lock);
++	memcpy(sysrq_reset_seq, keys, len * sizeof(*keys));
++	sysrq_reset_seq_len = len;
++	write_sequnlock(&sysrq_reset_seq_lock);
++}
  
- 	for (i = 0; i < len; i++) {
- 		__set_bit(keys[i], state->reset_keybit);
--		state->reset_seq_len++;
+ static void sysrq_parse_reset_sequence(struct sysrq_state *state)
+ {
+-	int i;
+-	unsigned short key;
++	unsigned short keys[SYSRQ_KEY_RESET_MAX];
++	unsigned int seq, len, i;
  
- 		if (test_bit(keys[i], state->key_down))
+-	state->reset_seq_cnt = 0;
++	/*
++	 * This runs from the input event path with interrupts disabled, so
++	 * it must not wait for a writer.  If one is active, or finishes
++	 * while the copy is being made, keep the sequence the device
++	 * already has and try again on the next key event.
++	 */
++	if (!raw_seqcount_try_begin(&sysrq_reset_seq_lock.seqcount, seq))
++		return;
+ 
+-	for (i = 0; i < sysrq_reset_seq_len; i++) {
+-		key = sysrq_reset_seq[i];
++	if (state->reset_seq_version == seq)
++		return;
+ 
+-		if (key == KEY_RESERVED || key > KEY_MAX)
+-			break;
++	len = sysrq_reset_seq_len;
++	if (len > SYSRQ_KEY_RESET_MAX)
++		return;
++	memcpy(keys, sysrq_reset_seq, len * sizeof(keys[0]));
+ 
+-		__set_bit(key, state->reset_keybit);
++	if (read_seqcount_retry(&sysrq_reset_seq_lock.seqcount, seq))
++		return;
++
++	state->reset_seq_cnt = 0;
++
++	for (i = 0; i < len; i++) {
++		__set_bit(keys[i], state->reset_keybit);
+ 		state->reset_seq_len++;
+ 
+-		if (test_bit(key, state->key_down))
++		if (test_bit(keys[i], state->key_down))
  			state->reset_seq_cnt++;
+ 	}
+ 
+ 	/* Disable reset until old keys are not released */
+ 	state->reset_canceled = state->reset_seq_cnt != 0;
+ 
+-	state->reset_seq_version = sysrq_reset_seq_version;
++	state->reset_seq_version = seq;
+ }
+ 
+ static void sysrq_do_reset(struct timer_list *t)
+@@ -768,6 +798,8 @@ static void sysrq_detect_reset_sequence(struct sysrq_state *state,
+ #ifdef CONFIG_OF
+ static void sysrq_of_get_keyreset_config(void)
+ {
++	unsigned short keys[SYSRQ_KEY_RESET_MAX];
++	unsigned int len = 0;
+ 	u32 key;
+ 	struct device_node *np;
+ 
+@@ -777,17 +809,16 @@ static void sysrq_of_get_keyreset_config(void)
+ 		return;
+ 	}
+ 
+-	/* Reset in case a __weak definition was present */
+-	sysrq_reset_seq_len = 0;
+-
+ 	of_property_for_each_u32(np, "keyset", key) {
+ 		if (key == KEY_RESERVED || key > KEY_MAX ||
+-		    sysrq_reset_seq_len == SYSRQ_KEY_RESET_MAX)
++		    len == SYSRQ_KEY_RESET_MAX)
+ 			break;
+ 
+-		sysrq_reset_seq[sysrq_reset_seq_len++] = (unsigned short)key;
++		keys[len++] = (unsigned short)key;
+ 	}
+ 
++	sysrq_publish_reset_seq(keys, len);
++
+ 	/* Get reset timeout if any. */
+ 	of_property_read_u32(np, "timeout-ms", &sysrq_reset_downtime_ms);
+ 
+@@ -903,8 +934,7 @@ static bool sysrq_handle_keypress(struct sysrq_state *sysrq,
+ 		/*
+ 		 * See if reset sequence has changed since the last time.
+ 		 */
+-		if (sysrq->reset_seq_version != sysrq_reset_seq_version)
+-			sysrq_parse_reset_sequence(sysrq);
++		sysrq_parse_reset_sequence(sysrq);
+ 
+ 		/*
+ 		 * If we are not suppressing key presses keep track of
+@@ -1055,36 +1085,71 @@ static inline void sysrq_unregister_handler(void)
+ static int sysrq_reset_seq_param_set(const char *buffer,
+ 				     const struct kernel_param *kp)
+ {
+-	unsigned long val;
+-	int error;
++	unsigned short keys[SYSRQ_KEY_RESET_MAX];
++	unsigned int len = 0;
++	const char *pos = buffer;
++
++	for (;;) {
++		const char *end = strchrnul(pos, ',');
++		size_t n = end - pos;
++		char token[8];
++		u16 key;
+ 
+-	error = kstrtoul(buffer, 0, &val);
+-	if (error < 0)
+-		return error;
++		if (len == SYSRQ_KEY_RESET_MAX || !n || n >= sizeof(token))
++			return -EINVAL;
+ 
+-	if (val > KEY_MAX)
+-		return -EINVAL;
++		memcpy(token, pos, n);
++		token[n] = '\0';
+ 
+-	*((unsigned short *)kp->arg) = val;
+-	sysrq_reset_seq_version++;
++		if (kstrtou16(token, 0, &key) || key == KEY_RESERVED ||
++		    key > KEY_MAX)
++			return -EINVAL;
++
++		keys[len++] = key;
++
++		if (!*end)
++			break;
++		pos = end + 1;
++	}
++
++	sysrq_publish_reset_seq(keys, len);
+ 
+ 	return 0;
+ }
+ 
++static int sysrq_reset_seq_param_get(char *buffer,
++				     const struct kernel_param *kp)
++{
++	unsigned short keys[SYSRQ_KEY_RESET_MAX];
++	unsigned int seq, len, i;
++	int off = 0;
++
++	do {
++		seq = read_seqbegin(&sysrq_reset_seq_lock);
++		len = sysrq_reset_seq_len;
++		memcpy(keys, sysrq_reset_seq, len * sizeof(keys[0]));
++	} while (read_seqretry(&sysrq_reset_seq_lock, seq));
++
++	if (!len)
++		return 0;
++
++	for (i = 0; i < len; i++)
++		off += scnprintf(buffer + off, PAGE_SIZE - off, "%s%hu",
++				 i ? "," : "", keys[i]);
++
++	return off + scnprintf(buffer + off, PAGE_SIZE - off, "\n");
++}
++
+ static const struct kernel_param_ops param_ops_sysrq_reset_seq = {
+-	.get	= param_get_ushort,
++	.get	= sysrq_reset_seq_param_get,
+ 	.set	= sysrq_reset_seq_param_set,
+ };
+ 
+-#define param_check_sysrq_reset_seq(name, p)	\
+-	__param_check(name, p, unsigned short)
+-
+ /*
+  * not really modular, but the easiest way to keep compat with existing
+  * bootargs behaviour is to continue using module_param here.
+  */
+-module_param_array_named(reset_seq, sysrq_reset_seq, sysrq_reset_seq,
+-			 &sysrq_reset_seq_len, 0644);
++module_param_cb(reset_seq, &param_ops_sysrq_reset_seq, NULL, 0644);
+ 
+ module_param_named(sysrq_downtime_ms, sysrq_reset_downtime_ms, int, 0644);
+ 
 -- 
 2.43.0
 
