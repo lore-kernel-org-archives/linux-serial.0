@@ -1,96 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=203.29.241.158
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793327645;
-	b=TTxbJwAoq6ONiahMZ1KpN8B9a9PclcoNzIIvruVQtflCcRhuGbm6sujaqwZNMhADP2qm
-	 SbVNVs1Hcu2ercvG3D2H7fROFh4PjJDh9o9L7t21PVDuML1B67rdH9SlQXrTv52s/O9Ns
-	 24nVqPNBKuP5z74CQsnenYjoP3Gyji7evjaVtAPSQwvW1i0t6TNUsaeqm9o9rCZ9oXpRa
-	 PPk1HCOwOOXPVZBVx5myLrZrbAOx0GTqnCPtc5FuSQywJbzhI6bG+RoZyrVlnOfyG88N3
-	 Lk0lhMv9bHzHyt8U5sQslFTEYB5LQvCge3c1L84nLhB5ndlQWMKQzetjZ9k5qgg+M1Q==
+	t=1793333186;
+	b=nhJNCfRsCGodx0/DCc2AH9WdxAI1FKGGIYskSwSIgqv9D0k1QcndYc4mtqzU8dpv7lIM
+	 PvcdfgYNXolGwyCp3fyl4D13PjNg5j9+dO0iBrQNIbbRDYZMpJiKZTLw3pVJ6OAwj5LeA
+	 ADsby87dcFGrkmHnbGcUBS0QxNTg4znOiypNvIdzupkjgFT+20nzTfJhFY4LbOdGQ24Q3
+	 Xgpu3ovWK5mE9RhetQ1ZhtqQQk348JRjRBJIYhKJYWpKRl+3EsUeNfKi2T9SrbIcaNxQ0
+	 9uWiXdCHFaT2bnjF/UPKihCHn78TKiogdCiciUB7SSyn60S6n1DHU5HQ+3trH8czZVA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793327645;
-	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=+ygKCXCE551eA/tJUkyJ0eX5BoqYd4HLW3FgIhHoRJY=;
-	b=ui39IR8tXiadnoEdWx2egzdbBDxXsgMR6nze+CrHM2TOxsqxYwmZk5ioQMWBA5kaZEtw
-	 pcNWulH5nAzBvWwoS336qxiL9uq7Q+xSMNUcwyRKIYnxeNV7XWILiQJ/kFxhmenOBpqo9
-	 HgcfgSC4afgkQI9Rig5/Arqefze5R8oO/pcIZ2WNjtHuq9i46QEWoDYsyz3bYMIG3wKhI
-	 yzhNPeLbrX65GrH8fLliVOqN64JMjRrSUCro2wnukTxVWtJ/8ydp11X1VBc4RAmNJvPEQ
-	 S97P8sRZTTJbno0k+qk+H98X7zol1x9sP0NgqSsRqBuHSbquz15/KbDlQv8+Zs66uEg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793333186;
+	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 User-Agent:MIME-Version;
+	bh=grdHjhMd7QvaUC0XVPHxOaowqqDmcsmw2rXkQG3QSuY=;
+	b=p5IwRt9xXXFcUVbokMtt8i2NuT7ezLxx+tiNvYyB9bnADr2xxI5LUbgVmCeyvy0cUV/L
+	 4uSpsmGSmuBruijVgiyl9OFB2nBCv1xSMMdUSxvxTsNm2Bh3PKt2qZiWbmNAH3GCt3G8S
+	 U48ZJeSAzKoNO2frzp/2r1tN4p+1/F5bYMxcUORKazl8/LC98pYd4A1Y/pIvedpIKUqyU
+	 MrRXet0MIh+9tvPQJsyhOKsSrtv9dtlpu3VrM1i6oyeh1dzGPC9DZFUnZrkAoo+SVM9kG
+	 6JbpLbj40mX42eTcBzEhduCgq+pB5o9aDN2d2bB9ykkFao6gFo6r5NE8HKPQ+tuYGLg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=alien8.de;
-	spf=pass smtp.mailfrom=alien8.de;
-	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=kV4uLYKl;
-	arc=none smtp.remote-ip=65.109.113.108
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	dmarc=pass header.from=codeconstruct.com.au;
+	spf=pass smtp.mailfrom=codeconstruct.com.au;
+	dkim=pass header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.a=rsa-sha256 header.s=2022a header.b=gP4O6XbB;
+	arc=none smtp.remote-ip=203.29.241.158
+Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A1E606A31D;
-	Fri, 30 Oct 2026 02:34:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C3A1E606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C9C6606A31C;
+	Fri, 30 Oct 2026 04:06:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C9C6606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codeconstruct.com.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=kV4uLYKl
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id A37DA40E04CF;
-	Fri, 30 Oct 2026 02:34:02 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id MZ4pvWbUOmGC; Fri, 30 Oct 2026 02:33:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1793327639; bh=+ygKCXCE551eA/tJUkyJ0eX5BoqYd4HLW3FgIhHoRJY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kV4uLYKlNxL7QEgZ4wnIDNIuaY+72edTTyZHHk2KLcvU8L8VdXi5qoeH56T8XFVpN
-	 VBdj3hQxGz0+YFcbeHci8YBew4pBo+xyuuCq6OlSmtyG5R2liEkgRbk5Vd4LzMxRqF
-	 1/dWmMfrjvkojmmYOLfCi5d4q1z0uTNn+4UW/K9CxrcKT8esKSllW0DW4OnuYcGYPD
-	 HylcrecQd1awMhxB+XKAWfp2O08dfXwr3G6ELCq7bSaDwoDNWFN5ANqn9aEkEf/+xK
-	 JMcvI0SWOX90lKelqf29+oqX6+386QLnsaOLemBUlnyCUQcGgTgcJ311GLQ+TzAEGR
-	 sAdfzhlW4rOwdI1iWLH7ZJ/kdVc5b3aOUTjRGFD1JnKfqSn7slfZTmPF4WKSa0CEVR
-	 sNNb2HwkJG1C3mHafjqAjdrlegLjbE4x1OFXtICdM8x6RgVjuj5nq1DQAB0fJroAuD
-	 GBdelCWUQioKfF/g3wMFhvgVaQBmxHBUKL6aqfJi4hXAbZp2TuT8j0mKxjKuw1wHsM
-	 ogGP5hRcHn1OwDx7+C8chSH22l29xW7jAD3IU3uSGCXA7rvgay/WutPv0nDUgE6Z3H
-	 nF4BEng8SZdQZ/MIdbbElHfXrTJCkPacoJXay/QqydJkstjKS4kIep028PivEQ+pi9
-	 k1fnP3AiudNeeK8Pr1ehzMvk=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::48])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5852740E02B7;
-	Fri, 30 Oct 2026 02:33:42 +0000 (UTC)
-Date: Thu, 29 Oct 2026 19:33:38 -0700
-From: Borislav Petkov <bp@alien8.de>
-To: Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	"biju.das.au" <biju.das.au@gmail.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Au Dang <au.dang.jx@renesas.com>
-Subject: [PATCH] MAINTAINERS: Fix Intel TDX kernel file patterns
-Message-ID: <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
-References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
- <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
- <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
- <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
- <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
- <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
- <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
+	dkim=pass (2048-bit key, unprotected) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.a=rsa-sha256 header.s=2022a header.b=gP4O6XbB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=codeconstruct.com.au; s=2022a; t=1793333177;
+	bh=grdHjhMd7QvaUC0XVPHxOaowqqDmcsmw2rXkQG3QSuY=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=gP4O6XbBNP3E0tCn55RYSkni7rxRKdrPd+cAyKq7Q7ka6AX+fl+13CnYSbEz7qfEV
+	 LUM/eSwndXbzayTZMnEAp911V2klLbt5RdolBTtGj9AJTcE18qFP1hOh1I7GA16LN9
+	 PECOUTfLQgdUDd06Osrb37D8zntZ+Lgd9AICm5Z3Z9dkLnvotzrpcjxQseRVizJ4Ja
+	 5Ht44VRDHFQXUOgBigtuRcLyXFEmMcx7oavVBo3fsC6Yih5Gp6XxAiuSXecPSpLKUg
+	 lTfO1PMhHtvMi6NObu4pDTT21lbh/vev1DcBDlJCjrCS0cRbkFOrTlFJFvpNXcQ1Jn
+	 7NZqQTlVp2x1w==
+Received: from pecola.lan (unknown [159.196.93.152])
+	by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 8496470E87;
+	Fri, 30 Oct 2026 12:06:15 +0800 (AWST)
+Message-ID: <f3f305a0f3195948bd25ca7eea4348113f998ee2.camel@codeconstruct.com.au>
+Subject: Re: [PATCH 00/11] Add NVIDIA LSTP USB adapter drivers
+From: Jeremy Kerr <jk@codeconstruct.com.au>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Adrian Ambrozewicz
+	 <aambrozewicz@nvidia.com>
+Cc: Donald Shannon <donalds@nvidia.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Linus Walleij	 <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Lee Jones	 <lee@kernel.org>, Pavel Machek
+ <pavel@kernel.org>, Andi Shyti	 <andi.shyti@kernel.org>, Mark Brown
+ <broonie@kernel.org>, Jiri Slaby	 <jirislaby@kernel.org>, Corey Minyard
+ <corey@minyard.net>, "Rafael J. Wysocki"	 <rafael@kernel.org>, Len Brown
+ <lenb@kernel.org>, Jonathan Corbet <corbet@lwn.net>,  Ilpo
+ =?ISO-8859-1?Q?J=E4rvinen?=	 <ilpo.jarvinen@linux.intel.com>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>,  Hans de Goede <hansg@kernel.org>, Lixu
+ Zhang <lixu.zhang@intel.com>, Danilo Krummrich <dakr@kernel.org>,  Johan
+ Hovold <johan@kernel.org>, Oliver Neukum <oneukum@suse.com>, Quan Nguyen
+ <quan@os.amperecomputing.com>,  Andrew Jeffery
+ <andrew@codeconstruct.com.au>, linux-usb@vger.kernel.org,
+ devicetree@vger.kernel.org, 	linux-gpio@vger.kernel.org,
+ linux-leds@vger.kernel.org, 	linux-i2c@vger.kernel.org,
+ linux-spi@vger.kernel.org, 	linux-serial@vger.kernel.org,
+ openipmi-developer@lists.sourceforge.net, 	linux-acpi@vger.kernel.org,
+ linux-doc@vger.kernel.org, 	driver-core@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Bart Van Assche	 <bvanassche@google.com>
+Date: Fri, 30 Oct 2026 12:06:15 +0800
+In-Reply-To: <c569c912141e9da7530121b8b2fc81527e0518a4.camel@codeconstruct.com.au>
+References: <20261012-lstp-usb-adapter-v1-0-aambrozewicz@nvidia.com>
+		 <2026101310-scuttle-unison-d4c3@gregkh>
+	 <c569c912141e9da7530121b8b2fc81527e0518a4.camel@codeconstruct.com.au>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2-0+deb13u1 
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -100,64 +88,72 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
 
-From: "Borislav Petkov (AMD)" <bp@alien8.de>
-Date: Thu, 29 Oct 2026 19:25:27 -0700
+Hi Greg,
 
-A K: is a content regex file pattern which matches any text in a patch
-so if a commit message contains "TDx" as in
+> FWIW, we did raise greybus as an approach to various HW vendors; I
+> assume there were reasons behind OBMF-ICP, and assume some prior-art
+> assesment was involved, but I don't have specifics for those reasons.
+>
+> HW peeps: This would be an excellent opportunity for elaboration on the
+> motivation there, either for LSTP or OBMF-OCP.
 
-  the TDxE (Transmit Data Empty) flag
+I have been doing some asking around, and a few items came up around
+motivations for OBMC-ICP over Greybus. My motivation here is entirely
+around OBMF-ICP; the NVIDIA contributions for LSTP somewhat comes under
+this, and so we're working on composing a unified solution.
 
-for example, see
+Collating some of those items here:
 
-  https://lore.kernel.org/r/20261026-g2ul_sci-v3-3-b3097163edd5@bp.renesas.com
+As a bit of background, the typical use case for OBMF-ICP is for
+platform pre-boot environments, with limitations in capabilities of both
+the hardware and software stack. Microcontroller and mask-ROM
+implementations of either side of the protocol are potential targets.
 
-get_maintainer.pl erroneously adds the x86 gang to the Cc list for what
-obviously is a completely unrelated patch.
+This leads to the structure of OBMF-ICP being intentionally
+light-weight; the channel configuration (ie, definition of the
+encapsulated devices) is static, and the channel-level messaging is kept
+simple, mainly through a requirement of only one message in flight per
+channel.
 
-The same happens when someone uses it to check
+[Greg, this is related to one of your points around why not use a
+multi-function USB device for individual, separate devices: the typical
+device-side hardware does not have support for enough USB endpoints to
+do so. Like greybus, the intention is to be able to support multiple
+downstream peripherals without constraints from USB hardware on existing
+SoC devices]
 
-  drivers/power/reset/tdx-ec-poweroff.c
+There are a few design points that lead to the preference for OBMF-ICP:
 
-patches.
+The front-loaded configuration mechanism means less state to manage on
+both sides of the protocol; the channel set and channel-specific
+parameters (like individual GPIO descriptors and flash geometry) being
+stable over the lifetime of the device means simpler core protocol
+support and channel driver implementations.
 
-So switch the x86 TDX patterns to files and directories (N:) type
-patterns and group them by path, for less false positives.
+The simpler channel communication protocol is better suited to
+lower-complexity interfaces that are needed for the pre-boot
+environments (GPIO control, uart, IPMI, flash access) than the greybus
+targets for mobile device runtime, with higher-bandwidth communication
+requirements (camera, audio, display). For example, typical platform
+management functions generally involve a lot of short i2c operations -
+ICP messages for these are around half the length of greybus
+equivalents.
 
-Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
-Link: https://lore.kernel.org/r/20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local
----
- MAINTAINERS | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+For the platform-boot use-cases, we would need to provide a bunch of new
+channel definitions for greybus. This certainly isn't a showstopper in
+itself, but the specification does not appear to be in active
+development; last change was 10 years ago, and the spec repository has
+since been archived as far as I can tell (and so is read-only).
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7a162e9bcab1..6aaeb7df83c8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -30347,8 +30347,11 @@ L:	linux-coco@lists.linux.dev
- L:	kvm@vger.kernel.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/tdx
--N:	tdx
--K:	\b(tdx)
-+N:	arch/x86/.*tdx
-+N:	Documentation/.*tdx
-+N:	drivers/virt/coco/.*tdx
-+N:	include/uapi/linux/.*tdx
-+N:	tools/testing/selftests/tdx
- 
- X86 VDSO
- M:	Andy Lutomirski <luto@kernel.org>
--- 
-2.53.0
+With OBMF-ICP's super-minimal core protocol, and the use-case
+appropriate channels, seems like a suitable approach to me.
+
+The USB-IF has a class ID allocated for OBMF-ICP interface descriptors,
+with the intention that we have multiple vendor implementations of the
+common protocol; we would like Linux to be one of those.
+
+Cheers,
 
 
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Jeremy
