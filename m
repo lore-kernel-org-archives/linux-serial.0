@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793451325;
-	b=QID1wXD3Tjsij8AmsE34K4ak6aL2418k//n2j36BdgpB2awtv8etMiF4Tk3K9dnbmwW+
-	 3j16RtiY319TSLuwP8fnd3+vGUrrlc+RA4rmY+UK59BOH1koM2hwZHbfqJHcBTq2834+E
-	 vc08yb++ZZYlZd/rq5WYIE15VdaONmzPbL7JECUqMquM5nMVWoQLsr/dA7kOV/68kHER1
-	 RNb2vlsXi2b0wDMGtrAuQJgYOUGXNV0RQRjkQ7AMVrDEBpp2DPOlQntbQFOEG5vk1wP3L
-	 9CZksf9nK6RDN/DMcg+nviZOMXzqOYN3Z7j8dtZlUVqYdE3dATjOKVe8SZCt6fQlYdQ==
+	t=1793451506;
+	b=MNTjMsRa8KsxPQuqid4RSE4uC0KniekWO4NKlxf7eJrBwUd3fOzHq8KAGUFnQmo9MCt0
+	 x0g2a1B9KNVolK2/PjL3MzzVj9ShJ0jRic+n1Qa3/oayxlYd6r0zoWSVxpYtFSNl0dlqm
+	 vsZkni9LK7rXmvrl5lWggvZ3xrGz/+P6zp/AHAjQROq8kLAyNd24+hKQb9LaJT2Dp/EsV
+	 8Q5A+b/MCOFWXynzuWWUmsPhuYSefVKY2hA4Cy4HKsuK1NL/GcBtCz4/inh05/CEeFuWd
+	 1TQGflHFxFv/kwKfsqvzBf/cKuZ3x40gaAjOQH2LuO/lQ0vSMVo79IMCBDVSpD3hdZQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793451325;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793451506;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=/oGaVFbYrk27Z6SQz2H7K7s7cOPw1XnZqEdq8H/khec=;
-	b=umnk/cc0L4mBqzifAWbvKfR/F2SncuFGj7+FavR2uKj+gii5/qQrTcrmF/qHLvhN91m0
-	 RDLy/niVyYMe7OpQ6hib1mQFLezlXn86TWev2vtEe0JItjfQf3DrYM+2i/SYN1BwElVC5
-	 SKNgWNrW7ISLeRE++7Xj/KuK0a0IacDWXvrOi+GoidGgEDZfz4bitbKzNY80X6nEuLt+b
-	 XFLQw0YpIaF5vSGvfnZx0ryG8JfoPJkEYnf3II2QuWUPlj9Ki4wwJhx3rr7uedMtCXkO2
-	 fTNYPnFLR/pUhF0v9OY9TuyQJYFLhhLLFjLgzrPSxzOfS9POfFlf0/9LWomKZl8zF5w==
+	bh=A/L80ksMhPc6C+nD+SSTMHCw9mCt16mAii3eaLYSyUU=;
+	b=fYh7KaDEC2+/X85CmACTfvdNXmSzakw/Heiwes4u2FBwqj8gO3D4FTdw7rZoq0Dn+9cB
+	 9vTrNpW/dRoBZvIMmCDGE4kbLxIbNrmOEjipLZHU5AUSs4TfoyWqyAhLhyb1vNQUjjy4k
+	 awHiSLD5Z2KN846TqJ5QbBtUuV6nskQaJUXbKGoEj21a2spWobu5jFqFXWcetwf1gT/yW
+	 Bnek6T6VJgiFlWs57s59/6w5TzK2PpIn1YtKwWN2KUbQEOOM1W+YAIHeGeLe+2ZsGVMsG
+	 nDPnJptJ9VE7z8ds/vrktq4CfnmAeGehzN/p00kPrPOrEkTp1RlUCN6X7ifixpWmy5Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cSQiSFIX;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="C/fAo6E8";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A24E606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 12:55:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DF0606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 12:58:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cSQiSFIX
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA791F0093A;
-	Sat, 31 Oct 2026 12:55:24 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C/fAo6E8
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C44B51F000C1;
+	Sat, 31 Oct 2026 12:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793451324;
-	bh=/oGaVFbYrk27Z6SQz2H7K7s7cOPw1XnZqEdq8H/khec=;
+	s=k20260515; t=1793451505;
+	bh=A/L80ksMhPc6C+nD+SSTMHCw9mCt16mAii3eaLYSyUU=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=cSQiSFIXxOeE7dEBL0qoA9HhqrQ8LxNsGdIl3oLzntCWQe1gP6BI86/WEm+GbQdFi
-	 b7Y9Q5ljzyIPVbRh6/joVBQ0GAWa5PZpzkrgJXD2jcqRWqLEwb1B+QyKxZWZM+75Vh
-	 SS1Fhd/wOv7dT32da1FdT0aL0p85m0ZKX89NR3Kl+FS8QZSq0lfmvpesOUcrv4xqvn
-	 pqV1AzZ5Zn2Ed/f+xUHpIQTob7fVD1aahfVQdV/3z4LuAjrF9ojEPwzCAbLf/RN0BL
-	 exhQnfohr8qi2RO9OJbHZiOYfAbAkaA2gu8+g7NUkoeytxIt5epoEG3HzfHEX9AhT+
-	 k5q8f6r4uDQQA==
-Message-ID: <sashiko-outbox-191950@kernel.org>
+	b=C/fAo6E8JGgo/NsFWJNmVUFjuOEQMXNyNkDC93MsnHh7BELu4VLaAnBFti3mGgNPh
+	 yv0QWMobEgemh1iij0QoDUh5nOThCYlwva86R3AksEAB0RAB5ZHQMKXrlqG2Cu3l7i
+	 METj5UUAPrOxLrUFBnwl3rzxkGsuQDCfcobWCGps04o2ut94ni5fPb6uF2riw/qeEU
+	 7NK8HmOptK9Y7HbQTE1F+CKT8DlAe9nY0ghCw+bpx3MdSV0oa2g8lPRLxflLMh/gy2
+	 D8PhY5cuI7VBeeY5o5dfarWmUvUczbcAwkde+hx11Aye1CiRCJ6SrD7vOIj7KBJFsN
+	 QwVdgaHqGBKyg==
+Message-ID: <sashiko-outbox-191951@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 5/5] serial: pch_uart: fix TX kfifo underflow on flush
+Subject: Re: [PATCH 3/5] serial: sprd: fix TX kfifo underflow on flush
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Samarth Narang" <samarth.colleges@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261031123911.3784690-6-samarth.colleges@gmail.com>
+In-Reply-To: <20261031123911.3784690-4-samarth.colleges@gmail.com>
 References: <20261031004733.3345841-1-samarth.colleges@gmail.com>
  <20261031123911.3784690-1-samarth.colleges@gmail.com>
- <20261031123911.3784690-6-samarth.colleges@gmail.com>
+ <20261031123911.3784690-4-samarth.colleges@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 31 Oct 2026 12:55:24 +0000
+Date: Sat, 31 Oct 2026 12:58:25 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,206 +63,220 @@ Precedence: list
 
 Thank you for your contribution! Sashiko AI review found 3 potential issue(=
 s) to consider:
-- [Critical] serial: pch_uart: unlocked sg_tx_p read and TX DMA state overw=
-rite after stop_tx
-- [High] serial: pch_uart: lock inversion and self-deadlock in pch_dma_tx_c=
-omplete()
-- [High] serial: pch_uart: active DMA buffer overwrite and duplicate TX aft=
-er flush
+- [High] serial: sprd: TX DMA left running in sprd_flush_buffer() corrupts =
+xmit_buf
+- [High] serial: sprd: DMA mapping leak and TX wedge after sprd_flush_buffe=
+r()
+- [Medium] serial: sprd: race in sprd_stop_tx_dma() when TX DMA just comple=
+ted
 --
 
-commit 41c9c81259479647a63a193b50f8884cd2a2a063
+commit 8173f9afc9b36f262ce001244563fa23087de599
 Author: Samarth Narang <samarth.colleges@gmail.com>
 
-serial: pch_uart: fix TX kfifo underflow on flush
+serial: sprd: fix TX kfifo underflow on flush
 
-This commit adds a flush_buffer() callback to mark in-flight TX DMA
-transfers as flushed and takes the port lock in pch_dma_tx_complete() so
-completed flushed transfers do not advance the transmit kfifo.
+This commit adds a flush_buffer() hook to sprd_serial that marks an in-flig=
+ht
+TX DMA transfer with tx_flushed instead of terminating it under the port
+lock, so that sprd_complete_tx_dma() and sprd_stop_tx_dma() skip calling
+uart_xmit_advance() after the transmit kfifo has been reset.
 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 9505d255f09c5..122025c4a0a66 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-
-[ ... ]
-
-> @@ -750,18 +751,23 @@ static void pch_dma_tx_complete(void *arg)
->  	struct eg20t_port *priv =3D arg;
->  	struct uart_port *port =3D &priv->port;
->  	struct scatterlist *sg =3D priv->sg_tx_p;
-> +	unsigned long flags;
->  	int i;
-> =20
-> -	for (i =3D 0; i < priv->nent; i++, sg++)
-> -		uart_xmit_advance(port, sg_dma_len(sg));
-> +	uart_port_lock_irqsave(port, &flags);
-
-[Severity: High]
-Can taking port->lock in pch_dma_tx_complete() cause a lock inversion with
-pd_chan->lock as well as a single-CPU recursive deadlock on port->lock?
-
-In pch_uart_interrupt(), the interrupt handler holds priv->port.lock while
-calling dma_handle_tx(), which calls into drivers/dma/pch_dma.c:
-
-  pch_uart_interrupt()
-    uart_port_lock(&priv->port)
-    dma_handle_tx()
-      dmaengine_prep_slave_sg() -> pd_prep_slave_sg() -> pdc_desc_get()
-        spin_lock(&pd_chan->lock)
-      dmaengine_submit() -> pd_tx_submit()
-        spin_lock(&pd_chan->lock)
-      dma_async_issue_pending() -> pd_issue_pending()
-        spin_lock(&pd_chan->lock)
-
-This establishes the lock order priv->port.lock -> pd_chan->lock.
-
-In drivers/dma/pch_dma.c, every path that invokes the descriptor callback
-pch_dma_tx_complete() holds pd_chan->lock:
-
-  pdc_tasklet() / pd_issue_pending() / pd_device_terminate_all()
-    spin_lock(&pd_chan->lock)
-    pdc_advance_work() / pdc_complete_all() / pdc_handle_error()
-      pdc_chain_complete()
-        dmaengine_desc_callback_invoke()
-          pch_dma_tx_complete()
-            uart_port_lock_irqsave(port, &flags)
-
-On SMP, if one CPU enters pch_uart_interrupt() -> dma_handle_tx() while
-another CPU runs pdc_tasklet() -> pch_dma_tx_complete(), can this deadlock
-between priv->port.lock and pd_chan->lock?
-
-In addition, in pd_tx_submit(), when pd_chan->active_list is empty,
-pdc_dostart() starts the hardware DMA transfer immediately. Two lines later
-in dma_handle_tx() (still holding priv->port.lock),
-dma_async_issue_pending() calls pd_issue_pending():
-
-  if (pdc_is_idle(pd_chan)) {
-          spin_lock(&pd_chan->lock);
-          pdc_advance_work(pd_chan);
-          spin_unlock(&pd_chan->lock);
-  }
-
-If a short transfer into the UART TX FIFO has already finished by the time
-pdc_is_idle() is checked, pdc_advance_work() will invoke
-pch_dma_tx_complete() synchronously on the same CPU while
-pch_uart_interrupt() already holds priv->port.lock.
-
-> +	if (!priv->tx_dma_flushed)
-> +		for (i =3D 0; i < priv->nent; i++, sg++)
-> +			uart_xmit_advance(port, sg_dma_len(sg));
-> =20
->  	async_tx_ack(priv->desc_tx);
->  	dma_unmap_sg(port->dev, priv->sg_tx_p, priv->orig_nent, DMA_TO_DEVICE);
->  	priv->tx_dma_use =3D 0;
-> +	priv->tx_dma_flushed =3D false;
->  	priv->nent =3D 0;
->  	priv->orig_nent =3D 0;
->  	kfree(priv->sg_tx_p);
->  	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
-> +	uart_port_unlock_irqrestore(port, flags);
->  }
-> =20
->  static int handle_rx_to(struct eg20t_port *priv)
-> @@ -947,6 +953,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *=
-priv)
+> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_s=
+erial.c
+> index 3fdf5939a62c1..718732b683f1b 100644
+> --- a/drivers/tty/serial/sprd_serial.c
+> +++ b/drivers/tty/serial/sprd_serial.c
+> @@ -133,6 +133,7 @@ struct sprd_uart_port {
+>  	struct clk *clk;
+>  	struct sprd_uart_dma tx_dma;
+>  	struct sprd_uart_dma rx_dma;
+> +	bool tx_flushed;
+>  	dma_addr_t pos;
+>  	unsigned char *rx_buf_tail;
+>  	const struct sprd_uart_data *pdata;
+> @@ -236,13 +237,15 @@ static void sprd_stop_tx_dma(struct uart_port *port)
+>  	dmaengine_tx_status(sp->tx_dma.chn, sp->tx_dma.cookie, &state);
+>  	if (state.residue) {
+>  		trans_len =3D state.residue - sp->tx_dma.phys_addr;
+> -		uart_xmit_advance(port, trans_len);
+> +		if (!sp->tx_flushed)
+> +			uart_xmit_advance(port, trans_len);
+>  		dma_unmap_single(port->dev, sp->tx_dma.phys_addr,
+>  				 sp->tx_dma.trans_len, DMA_TO_DEVICE);
 >  	}
->  	priv->orig_nent =3D num;
->  	priv->nent =3D nent;
-> +	priv->tx_dma_flushed =3D false;
+> =20
+>  	dmaengine_terminate_all(sp->tx_dma.chn);
+>  	sp->tx_dma.trans_len =3D 0;
+> +	sp->tx_flushed =3D false;
+>  }
 
-[Severity: Critical]
-What happens if pch_uart_stop_tx() is called while a TX DMA transfer is in
-flight, followed by a flush and a subsequent TX restart before that first
-transfer completes?
+[Severity: Medium]
+What happens if sprd_stop_tx_dma() runs just after the hardware finishes the
+flushed DMA transfer, before the sprd_complete_tx_dma() tasklet runs?
 
-In pch_dma_tx_complete(), sg is initialized from priv->sg_tx_p before
-uart_port_lock_irqsave() is called:
+After uart_flush_buffer() resets tport->xmit_fifo while leaving the TX DMA
+transfer running, kfifo_is_empty(&tport->xmit_fifo) is true. Any subsequent
+call to sprd_stop_tx() or to sprd_start_tx() -> sprd_start_tx_dma() while t=
+he
+kfifo is still empty (such as from uart_flush_chars() or uart_start()) will
+enter sprd_stop_tx_dma():
 
-  struct scatterlist *sg =3D priv->sg_tx_p;
-  ...
-  uart_port_lock_irqsave(port, &flags);
-  if (!priv->tx_dma_flushed)
-          for (i =3D 0; i < priv->nent; i++, sg++)
-                  uart_xmit_advance(port, sg_dma_len(sg));
+drivers/tty/serial/sprd_serial.c:sprd_start_tx_dma() {
+	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port)) {
+		sprd_stop_tx_dma(port);
+		return;
+	}
 
-Meanwhile, pch_uart_stop_tx() clears priv->tx_dma_use =3D 0 without stopping
-the in-flight DMA transfer. If TX is restarted via pch_uart_start_tx(),
-dma_handle_tx() sees priv->tx_dma_use =3D=3D 0 and starts a second TX DMA
-transfer while the first transfer is still running:
+In drivers/dma/sprd-dma.c, when the transfer completes in hardware,
+dma_irq_handle() calls vchan_cookie_complete(), which marks sp->tx_dma.cook=
+ie
+as DMA_COMPLETE and schedules the vchan_complete tasklet to invoke
+sprd_complete_tx_dma(). Once the cookie is marked complete,
+sprd_dma_tx_status() returns with state.residue =3D=3D 0.
 
-  priv->sg_tx_p =3D kmalloc_objs(struct scatterlist, num, GFP_ATOMIC);
-  ...
-  priv->orig_nent =3D num;
-  priv->nent =3D nent;
-  priv->tx_dma_flushed =3D false;
+When sprd_stop_tx_dma() sees state.residue =3D=3D 0, it skips the dma_unmap=
+_single()
+block, calls dmaengine_terminate_all(sp->tx_dma.chn), and clears both
+sp->tx_dma.trans_len =3D 0 and sp->tx_flushed =3D false.
 
-When the first transfer's pch_dma_tx_complete() runs:
-
-1. Because dma_handle_tx() reset priv->tx_dma_flushed to false, the flushed
-first transfer still calls uart_xmit_advance() and underflows the kfifo.
-
-2. If pch_dma_tx_complete() read sg =3D priv->sg_tx_p before dma_handle_tx()
-replaced priv->sg_tx_p under port->lock, and the second transfer has a
-larger priv->nent than the first, the loop over priv->nent reads past the
-end of the first scatterlist allocation.
-
-3. dma_unmap_sg() and kfree(priv->sg_tx_p) in the first completion will
-unmap and free the second transfer's active scatterlist while the first
-scatterlist is leaked, and the second completion will then unmap and kfree()
-priv->sg_tx_p a second time.
+If vchan_complete has not yet spliced vc->desc_completed,
+sprd_dma_terminate_all() -> vchan_get_all_descriptors() frees the completed
+descriptor without calling sprd_complete_tx_dma(), leaking the DMA mapping =
+on
+sp->tx_dma.phys_addr. If vchan_complete on another CPU has already spliced
+vc->desc_completed and sprd_complete_tx_dma() is waiting on port->lock,
+sprd_complete_tx_dma() will run after sp->tx_dma.trans_len and sp->tx_flush=
+ed
+have been cleared (or after a new TX DMA transfer has started), unmapping w=
+ith
+trans_len =3D=3D 0 or prematurely unmapping and advancing the kfifo for the=
+ new
+transfer.
 
 > =20
->  	for (i =3D 0; i < nent; i++, sg++) {
->  		sg->offset =3D tail + fifo_size * i;
-> @@ -1150,6 +1157,21 @@ static void pch_uart_stop_tx(struct uart_port *por=
-t)
->  	priv->tx_dma_use =3D 0;
+>  static int sprd_tx_buf_remap(struct uart_port *port)
+> @@ -273,7 +276,9 @@ static void sprd_complete_tx_dma(void *data)
+>  	dma_unmap_single(port->dev, sp->tx_dma.phys_addr,
+>  			 sp->tx_dma.trans_len, DMA_TO_DEVICE);
+> =20
+> -	uart_xmit_advance(port, sp->tx_dma.trans_len);
+> +	if (!sp->tx_flushed)
+> +		uart_xmit_advance(port, sp->tx_dma.trans_len);
+> +	sp->tx_flushed =3D false;
+> =20
+>  	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
+>  		uart_write_wakeup(port);
+> @@ -555,6 +560,20 @@ static void sprd_stop_tx(struct uart_port *port)
+>  	serial_out(port, SPRD_ICLR, iclr);
 >  }
 > =20
-> +static void pch_uart_flush_buffer(struct uart_port *port)
+> +static void sprd_flush_buffer(struct uart_port *port)
 > +{
-> +	struct eg20t_port *priv;
-> +
-> +	priv =3D container_of(port, struct eg20t_port, port);
+> +	struct sprd_uart_port *sp =3D container_of(port, struct sprd_uart_port,
+> +						 port);
 > +
 > +	/*
 > +	 * The kfifo has been reset. Let the running transfer finish, so that
 > +	 * its buffer is unmapped only once it has stopped, but do not advance
 > +	 * the kfifo for it.
 > +	 */
-> +	if (priv->nent)
-> +		priv->tx_dma_flushed =3D true;
+> +	if (sp->tx_dma.trans_len)
+> +		sp->tx_flushed =3D true;
 > +}
 
 [Severity: High]
-Could leaving the TX DMA transfer running after uart_flush_buffer() resets
-the kfifo cause post-flush writes to overwrite the active DMA buffer and be
-transmitted twice?
+Can leaving the TX DMA transfer running in sprd_flush_buffer() cause subseq=
+uent
+writes to overwrite the active DMA buffer in place and transmit post-flush =
+data
+twice?
 
-When uart_flush_buffer() runs during an active TX DMA transfer:
+In sprd_tx_buf_remap(), TX DMA does not use a separate bounce buffer; it ma=
+ps
+the kfifo backing buffer (state->port.xmit_buf) directly in place:
 
-  uart_flush_buffer()
-    uart_port_lock_irqsave()
-    kfifo_reset(&state->port.xmit_fifo)
-    pch_uart_flush_buffer()
-      priv->tx_dma_flushed =3D true
-    uart_port_unlock_irqrestore()
-    tty_port_tty_wakeup(&state->port)
+drivers/tty/serial/sprd_serial.c:sprd_tx_buf_remap() {
+	sp->tx_dma.trans_len =3D kfifo_out_linear_ptr(&tport->xmit_fifo, &tail,
+			UART_XMIT_SIZE);
 
-Because kfifo_reset() resets xmit_fifo.in and xmit_fifo.out to offset 0 of
-state->port.xmit_buf while the in-flight DMA transfer still has
-state->port.xmit_buf mapped DMA_TO_DEVICE via priv->sg_tx_p, any new data
-written through uart_write() or uart_put_char() before the DMA transfer
-completes will write into state->port.xmit_buf starting at offset 0 while
-DMA is actively reading from that buffer.
+	sp->tx_dma.phys_addr =3D dma_map_single(port->dev, tail,
+					      sp->tx_dma.trans_len,
+					      DMA_TO_DEVICE);
 
-Then, if the in-flight DMA transfer reads those newly written bytes from
-offset 0 and finishes, pch_dma_tx_complete() skips uart_xmit_advance()
-because priv->tx_dma_flushed is set and enables PCH_UART_HAL_TX_INT, causing
-dma_handle_tx() to transmit the same post-flush bytes from xmit_fifo a
-second time.
+In uart_flush_buffer(), kfifo_reset(&state->port.xmit_fifo) resets both
+xmit_fifo.in and xmit_fifo.out to 0 before calling port->ops->flush_buffer(=
+),
+and then wakes blocked writers via tty_port_tty_wakeup().
+
+If a subsequent uart_write() or uart_put_char() runs while the flushed TX D=
+MA
+transfer is still in flight, kfifo_in() writes the new bytes into xmit_buf
+starting at offset 0, overwriting the DMA_TO_DEVICE region while the DMA
+controller is actively reading from it. In sprd_start_tx_dma(), the new wri=
+te
+then returns early because sp->tx_dma.trans_len is still non-zero:
+
+drivers/tty/serial/sprd_serial.c:sprd_start_tx_dma() {
+	if (sp->tx_dma.trans_len)
+		return;
+
+When the flushed DMA transfer later finishes, sprd_complete_tx_dma() sees
+sp->tx_flushed =3D=3D true and skips uart_xmit_advance(), leaving the newly=
+ written
+bytes at xmit_fifo.out =3D=3D 0, and then starts a second DMA transfer for =
+those
+same bytes:
+
+drivers/tty/serial/sprd_serial.c:sprd_complete_tx_dma() {
+	if (!sp->tx_flushed)
+		uart_xmit_advance(port, sp->tx_dma.trans_len);
+	sp->tx_flushed =3D false;
+	...
+	if (kfifo_is_empty(&tport->xmit_fifo) || sprd_tx_buf_remap(port) ||
+	    sprd_tx_dma_config(port))
+		sp->tx_dma.trans_len =3D 0;
+
+[Severity: High]
+Also in sprd_flush_buffer(), what happens if the port is shut down after
+uart_flush_buffer() before the in-flight TX DMA transfer completes (for exa=
+mple
+during uart_hangup() or close)?
+
+When sprd_flush_buffer() sets sp->tx_flushed =3D true and leaves the transf=
+er
+running with sp->tx_dma.trans_len > 0, it relies on sprd_complete_tx_dma() =
+(or
+sprd_stop_tx_dma()) to unmap sp->tx_dma.phys_addr and reset
+sp->tx_dma.trans_len and sp->tx_flushed.
+
+However, uart_shutdown() -> uart_port_shutdown() invokes sprd_shutdown() ->
+sprd_release_dma() and then frees state->port.xmit_buf in uart_free_xmit_bu=
+f():
+
+drivers/tty/serial/sprd_serial.c:sprd_release_dma() {
+	sprd_uart_dma_enable(port, false);
+
+	if (sp->rx_dma.enable)
+		dma_release_channel(sp->rx_dma.chn);
+
+	if (sp->tx_dma.enable)
+		dma_release_channel(sp->tx_dma.chn);
+
+	sp->tx_dma.enable =3D false;
+	sp->rx_dma.enable =3D false;
+}
+
+In sprd_dma_free_chan_resources(), releasing sp->tx_dma.chn stops the chann=
+el
+and frees all descriptors without invoking the completion callback. Because
+neither sprd_release_dma() nor sprd_startup() unmaps sp->tx_dma.phys_addr or
+clears sp->tx_dma.trans_len and sp->tx_flushed, won't xmit_buf be freed whi=
+le
+still DMA-mapped, and won't stale non-zero sp->tx_dma.trans_len cause
+sprd_start_tx_dma() to return early on every write when the port is reopene=
+d?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261031123911.3784=
-690-1-samarth.colleges@gmail.com?part=3D5
+690-1-samarth.colleges@gmail.com?part=3D3
