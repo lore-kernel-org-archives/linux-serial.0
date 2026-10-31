@@ -1,58 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=216.40.44.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793461738;
-	b=tmIQ+SuRPYnTgFIkIoXDRB/wtjSFobXQ4opvXopE0DIfM1gZ+LHzDZk0JUaEdfUr06Ys
-	 R/0xUNPNj/cqC2hUZbn15Bz8o2twh+ZGQs6YqSfiSlR74YEEbd1BOt9XKUFuiGI4iQ8l6
-	 9l7Gq/mN9bfwUNMGlFWrvojYbfDKDlPpTA0+BDdB8i76/EiXSPro6AmsTFuLq3vveTabc
-	 554nV4fhLwe5tLDzw1RnlyJYU3Y/p1Gq6v4ZEZSKhGRnmTp9D1crlFRMUDSoT4B3p8jzi
-	 t04HRYrg6DyWsd1hyT5G9QX719VvSh+DNzxtMzTd3WJXdX5FZx1QCK+9Z93zsidTxMQ==
+	t=1793465038;
+	b=phVyTkzmX0sg+wOlSy82pVUp/gxC6ro1mXUnvd2pGGkb3RgpuVV75a/LXuB2CQ6ZdlIx
+	 apEH7pZRHL4oVccZ7yP4vUXCCoLx3Yhd0AOdC3+xuYT0otqQDXdAJCL/qK3VOZTQw4E2C
+	 QtFoEthGf4ewBAln1GNVUmmdnNhxUqaazVHcZC/XlleDYU7fsnFyBXrj5RI7Hl8I5nyiV
+	 Iila2BXHHnpfKTwPDKVX7OGK4lya4lOsSIZphV9SsaOVtkoNuu4VTEbuNKTeh//Q4i4kF
+	 VbJmbB7VHjH2zoOZZuDUMqXtSXsDvTNlpjT0bAFgL4B5Lf6BoLGQmgt3vhU+8mUgdAw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793461738;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=A7eq/T91iNZYPj2jyZ9LyaqzAS/xjo0loSg5osj+oS0=;
-	b=nRx1FRjImZ5ZdQrjxNdQYB8L8J6vOatBL7miijaHsztGofR6p6kIA5SVGO2/taD58S0c
-	 8/Hl6/Nl4czQJM7bGFc1hfUoNVpbF6BHiYWFRmkINMORdKsU91u6xKYuzV6CGxor0MfU8
-	 vZPozmeSR49GUzeKjH6WMjbk1vQ6pjLB85qbM9CqS+DTopmIMZoRTmKgHMeib6/TEI9pt
-	 fCbC2wv2hzb3+HAjOfF2lXnIfyZv+51Jk1bvB6Ruap90w1pL+SySzG4Bp3KJaEDfolIUo
-	 ULk0aflq7cOkVprVwMw44eGXPY3qwiatVJCp3oGWq7e4KU4hfF2iWQY1XNfQtHasNNw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793465038;
+	h=DMARC-Filter:Received:Received:Message-ID:Subject:From:To:Cc:Date:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 User-Agent:MIME-Version:X-Spam-Status:X-Rspamd-Server:
+	 X-Stat-Signature:X-Rspamd-Queue-Id:X-Session-Marker:X-Session-ID:
+	 X-HE-Tag:X-HE-Meta;
+	bh=2qB20Z5OO2PNW4tv0VUCGMSLze3zUhNo7SG7JE4xwdA=;
+	b=Y7r1BFy/Pz6RkXOliCoYkNOxWagUYdAawfluPm6olEPYBkNC+tRPb/BB5HF8NpmcT9K5
+	 jleFiLTg8pRTCtDZ0nnI47ajgNVf80dX8b9Cccum6ZiFlOpb3bsep1+eWMRyYxB7jJpOg
+	 G0WgQCfu+djOKg5l8CcyYZaufIkX6g9RMvTfQHnUffdf9yYnUHglGDSHyBdRZCnZCO0K1
+	 9xb2CmYfVHSL13mI0CehhkxmZ/MY5HwPG+JPpZGm/9GROUilNRXXuA8q3N20Tg2cK2Diy
+	 2qCl7VSZ/deG9qBMXYOZOb2jPEmImrmryIczyiBbY/JYZOG6HX5U1b2BkrZfd3+ozxA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JvNTn7KS;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=none header.from=perches.com;
+	spf=pass smtp.mailfrom=perches.com;
+	arc=none smtp.remote-ip=216.40.44.13
+Received: from relay.hostedemail.com (smtprelay0013.hostedemail.com [216.40.44.13])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C308E606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 15:48:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JvNTn7KS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 341961F000C1;
-	Sat, 31 Oct 2026 15:48:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793461737;
-	bh=A7eq/T91iNZYPj2jyZ9LyaqzAS/xjo0loSg5osj+oS0=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=JvNTn7KSWaB83HPa5GmXbYBvhQ/+QP6NA6RqRkY/U55dM8rxpD32y/2iiBtQ4aYK0
-	 mk8AbbhmXELQnr6hZGDGp9G4w3JViej7jiEUcHz4hdPH1/lqavYBZxMex9fmaZtsF7
-	 cNIHodYnXwcCYXCOT72KkJj3/2yKRZJ1jtz0y7RstQRs7FIhlzMNqvPneh2pTsfAoX
-	 GRLZdDnwiGd0TbfqpIlDf9R1T3KYKNYTELsewN0jraoWWAFI06D3YfqPV6CcmqjZ4+
-	 Bc0LP0PJufd91Y0GhCPR6mvSsgAUT3OAebSgBLtj89mfDdsbkdoYBU/lOjNbJd3o18
-	 gq/u+bUvU0eJQ==
-Message-ID: <sashiko-outbox-192028@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: serial: samsung: fix TX fifo underflow on flush
- race
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "tianci xie" <xiex16070@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261031152656.1422-2-xiex16070@gmail.com>
-References: <2026103122-repurpose-cost-2da7@gregkh>
- <20261031152656.1422-1-xiex16070@gmail.com>
- <20261031152656.1422-2-xiex16070@gmail.com>
-Content-Type: text/plain; charset=utf-8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D18C1606A31C;
+	Sat, 31 Oct 2026 16:43:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D18C1606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=perches.com
+Received: from omf10.hostedemail.com (lb01a-stub [10.200.18.249])
+	by unirelay05.hostedemail.com (Postfix) with ESMTP id 42C19409E2;
+	Sat, 31 Oct 2026 16:43:50 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id 8D14E30;
+	Sat, 31 Oct 2026 16:43:45 +0000 (UTC)
+Message-ID: <35ba539820e1782bde038df98d3b49295eb7cd3a.camel@perches.com>
+Subject: Re: [PATCH -v2] MAINTAINERS: Fix Intel TDX kernel file patterns
+From: Joe Perches <joe@perches.com>
+To: Borislav Petkov <bp@alien8.de>, Kiryl Shutsemau <kas@kernel.org>, Rick
+ Edgecombe <rick.p.edgecombe@intel.com>, Dave Hansen
+ <dave.hansen@linux.intel.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Biju Das
+ <biju.das.jz@bp.renesas.com>,  "biju.das.au" <biju.das.au@gmail.com>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Greg Kroah-Hartman	
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+ "linux-kernel@vger.kernel.org"	 <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org"	 <linux-serial@vger.kernel.org>,
+ "linux-renesas-soc@vger.kernel.org"	 <linux-renesas-soc@vger.kernel.org>,
+ "x86@kernel.org" <x86@kernel.org>,  "linux-coco@lists.linux.dev"	
+ <linux-coco@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, 
+ Au Dang <au.dang.jx@renesas.com>
+Date: Sat, 31 Oct 2026 09:43:44 -0700
+In-Reply-To: <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
+References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
+	 <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
+	 <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	 <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+	 <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	 <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+	 <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+	 <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
+	 <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
+	 <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
+	 <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 31 Oct 2026 15:48:56 +0000
+User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,152 +77,70 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+X-Rspamd-Server: rspamout06
+X-Stat-Signature: cz19ooi49e8kna7me5cxdfeognint4ao
+X-Rspamd-Queue-Id: 8D14E30
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+aPwco/IotqFsTCHguuiIZ71NEMlq/oig=
+X-HE-Tag: 1793465025-286637
+X-HE-Meta: U2FsdGVkX1+7oQJ8xZbPzF3WUzJtxPMOp4ITyHXTuBqjUwjvWCL8pBnLSLvJ6P0zSuLxo6wFO7RN6RtWjz0Dd3+Fp0tsyGSgSYJQm7LqbZsSbe7+icfF7JAurJ13t8RbUmVfWj9blGLVueeiSOt3v9FUAPxaFjtPpztPj6aySPsRhOfbpZ1wPEpAMCR6Cm4JTzr38J0YNJO32IGcvTDTp7k+TjjpoORr4BqcJYvhG2oto0Cp9TRmqNrU0yqH1w+F8tcRm5C91rM/OCOcwGT7GAZ37awfxD2pryYnFYjKs1KCnJ5mYfL3hXLHEt9C92e5kuLNELHnFkXZP0MgVhpC/ORI5IckZIpVH/+vjzgGJQbwIjmbPDcTmA==
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] tty: serial: samsung: race in s3c24xx_serial_flush_buffer() underf=
-lows TX fifo
---
+On Fri, 2026-10-30 at 20:01 -0700, Borislav Petkov wrote:
+> From: "Borislav Petkov (AMD)" <bp@alien8.de>
+>=20
+> A K: is a content regex file pattern which matches any text in a patch
+> so if a commit message contains "tdx" as in
+>=20
+>   has_tdxe_auto_clear
+>=20
+> for example, see
+>=20
+>   https://lore.kernel.org/r/20261026-g2ul_sci-v3-3-b3097163edd5@bp.renesa=
+s.com
+>=20
+> get_maintainer.pl erroneously adds the x86 gang to the Cc list for what
+> obviously is a completely unrelated patch.
 
-commit f08a63c8494169298262a17372c5a89a1b95c795
-Author: tianci xie <xiex16070@gmail.com>
+It's not an error in get_maintainer.pl
+and V2: no changelog
 
-tty: serial: samsung: fix TX fifo underflow on flush race
 
-This commit adds a flush_buffer callback to s3c64xx_serial_ops and
-apple_s5l_serial_ops to terminate active TX DMA transfers and clear
-tx_bytes_requested when the transmit buffer is flushed, while moving the
-tx_bytes_requested check in s3c24xx_serial_tx_dma_complete() under the port
-lock.
+> So switch the x86 TDX patterns to files and directories (F:) wildcard
+> type patterns and group them by path, for less false positives.
+>=20
+> Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
+> Link: https://lore.kernel.org/r/20261027055750.GBauA9XlPykc1c1Xhv@fat_cra=
+te.local
 
-Link: https://lore.kernel.org/all/20261031004733.3345841-1-samarth.colleges=
-@gmail.com/
+nack.  Bad file pattern below
 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
-g_tty.c
-> index 640f85e2d636b..e955b7eab5f27 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -330,7 +330,6 @@ static void s3c24xx_serial_tx_dma_complete(void *args)
->  	int count;
+
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -30347,8 +30347,11 @@ L:	linux-coco@lists.linux.dev
+>  L:	kvm@vger.kernel.org
+>  S:	Supported
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/tdx
+> -N:	tdx
+> -K:	\b(tdx)
+> +F:	arch/x86/**/*tdx*
+> +F:	Documentation/**/*tdx*
+> +F:	drivers/virt/coco/tdx*/
+> +F:	include/uapi/linux/tdx
+
+No file match.  Probably should be:
+
+F:	include/uapi/linux/tdx*
+
+but as far as I can see there's only a single file there.
+
+F:	include/uapi/linux/tdx-guest.h
+
+> +F:	tools/testing/selftests/tdx/
 > =20
->  	dmaengine_tx_status(dma->tx_chan, dma->tx_cookie, &state);
-> -	count =3D dma->tx_bytes_requested - state.residue;
->  	async_tx_ack(dma->tx_desc);
-> =20
->  	dma_sync_single_for_cpu(dmaengine_get_dma_device(dma->tx_chan),
-> @@ -339,6 +338,17 @@ static void s3c24xx_serial_tx_dma_complete(void *arg=
-s)
-> =20
->  	uart_port_lock_irqsave(port, &flags);
-> =20
-> +	/*
-> +	 * uart_flush_buffer() resets the xmit fifo and then calls
-> +	 * ->flush_buffer(), which clears tx_bytes_requested.  Sample the byte
-> +	 * count under the port lock so that a completion which raced with a
-> +	 * flush cannot advance the already reset fifo past its write index.
-> +	 */
-> +	if (dma->tx_bytes_requested)
-> +		count =3D dma->tx_bytes_requested - state.residue;
-> +	else
-> +		count =3D 0;
-> +
->  	uart_xmit_advance(port, count);
->  	ourport->tx_in_progress =3D 0;
-> =20
-> @@ -1162,6 +1172,32 @@ static void s3c24xx_serial_release_dma(struct s3c2=
-4xx_uart_port *p)
->  	}
->  }
-> =20
-> +/*
-> + * Called from uart_flush_buffer() with the port lock held, after the xm=
-it fifo
-> + * has already been reset.  A TX DMA transfer still in flight carries da=
-ta that
-> + * no longer exists, so drop its byte count before terminating it: the
-> + * completion callback may still run and must not advance the reset fifo.
-> + */
-> +static void s3c24xx_serial_flush_buffer(struct uart_port *port)
-> +{
-> +	struct s3c24xx_uart_port *ourport =3D to_ourport(port);
-> +	struct s3c24xx_uart_dma *dma =3D ourport->dma;
-> +
-> +	if (!dma || !dma->tx_chan || ourport->tx_in_progress !=3D S3C24XX_TX_DM=
-A)
-> +		return;
-> +
-> +	dma->tx_bytes_requested =3D 0;
-> +
-> +	/*
-> +	 * dmaengine_terminate_sync() cannot be used here because the port
-> +	 * lock is held.  The callback may or may not run afterwards; either
-> +	 * way it is a no-op for the fifo because tx_bytes_requested is zero.
-> +	 */
-> +	dmaengine_terminate_async(dma->tx_chan);
-> +
-> +	ourport->tx_in_progress =3D 0;
-> +}
-
-[Severity: High]
-Can clearing ourport->tx_in_progress =3D 0 in s3c24xx_serial_flush_buffer()
-allow a subsequent write to start a new transfer before an already-dispatch=
-ed
-s3c24xx_serial_tx_dma_complete() callback from the flushed transfer acquires
-port->lock?
-
-When a DMA transfer completes just as uart_flush_buffer() runs, the DMA
-engine tasklet (such as pl330_tasklet()) can invoke
-s3c24xx_serial_tx_dma_complete() on CPU 0 while CPU 1 holds port->lock in
-uart_flush_buffer():
-
-CPU 0                                   CPU 1
-s3c24xx_serial_tx_dma_complete()        uart_flush_buffer()
-  dmaengine_tx_status(...)                uart_port_lock_irqsave()
-  async_tx_ack(...)                       kfifo_reset(&tport->xmit_fifo)
-  dma_sync_single_for_cpu(...)            s3c24xx_serial_flush_buffer()
-                                            dma->tx_bytes_requested =3D 0;
-                                            dmaengine_terminate_async();
-                                            ourport->tx_in_progress =3D 0;
-                                          uart_port_unlock_irqrestore()
-
-Because ourport->tx_in_progress is now 0, a new write via
-uart_write() -> s3c24xx_serial_start_tx() -> s3c24xx_serial_start_next_tx()
-can acquire port->lock before CPU 0's s3c24xx_serial_tx_dma_complete() does:
-
-drivers/tty/serial/samsung_tty.c:s3c24xx_serial_start_tx() {
-	...
-	if (ourport->dma && ourport->dma->tx_chan) {
-		if (!kfifo_is_empty(&tport->xmit_fifo) &&
-				!ourport->tx_in_progress)
-			s3c24xx_serial_start_next_tx(ourport);
-	}
-}
-
-If the new write starts a second DMA transfer via
-s3c24xx_serial_start_tx_dma(), it overwrites dma->tx_size,
-dma->tx_transfer_addr, dma->tx_desc, and dma->tx_cookie (which also races
-with the unlocked reads at the top of s3c24xx_serial_tx_dma_complete() if
-CPU 0 has not passed them yet), sets dma->tx_bytes_requested to the new
-transfer's size, and sets ourport->tx_in_progress =3D S3C24XX_TX_DMA.
-
-When CPU 0's stale callback from the first transfer then acquires port->loc=
-k,
-wouldn't it observe the second transfer's non-zero dma->tx_bytes_requested,
-advance xmit_fifo prematurely, clear ourport->tx_in_progress =3D 0 while the
-second DMA transfer is still in flight, and then underflow xmit_fifo when t=
-he
-second transfer's callback later runs and advances xmit_fifo again?
-
-Similarly, if the new write is smaller than ourport->min_dma_size and starts
-a PIO transfer via s3c24xx_serial_start_tx_pio() -> enable_tx_pio(), setting
-ourport->tx_in_progress =3D S3C24XX_TX_PIO and ourport->tx_mode =3D
-S3C24XX_TX_PIO, wouldn't the stale DMA callback subsequently clear
-ourport->tx_in_progress =3D 0 and call s3c24xx_serial_start_next_tx() ->
-s3c24xx_serial_start_tx_pio(), which skips enable_tx_pio() because
-ourport->tx_mode is already S3C24XX_TX_PIO, leaving ourport->tx_in_progress
-as 0 while PIO is active?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261031152656.1422=
--1-xiex16070@gmail.com?part=3D1
+>  X86 VDSO
+>  M:	Andy Lutomirski <luto@kernel.org>
+> --=20
+> 2.53.0
+>=20
