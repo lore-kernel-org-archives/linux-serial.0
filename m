@@ -1,57 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793408641;
-	b=N9pznKYXIDA26j61XrTv9nGi4enr3Mtp+Qv2vMkWCpbSRGMKSu2N5AK/D0Q3X60AIQmA
-	 3WuCXtQfH1reg0FNH0AT5GbEMTCFgcGNXXH3HHlsUW590xDAQzvrXw+/QH95htu/nvYEq
-	 Vo+FUVsEfd/6O1VBiV/6ahmD8pY5aUG0YVl4Q+1hikzyek3V7O9+30paCxlXkJnOPoIZp
-	 eAKrSx2g0RwLlM/Sg73ZOkWSwAaKfdX7nqIWtiN4rUviqxqNU5PXqzgytM84TiJzfw0mn
-	 uBLdsSv7U/OQ9f0mlJonUCZf9QgJDP39BEXkmoRrJM70NvjrabwbrZfYP0T1/wCeesw==
+	t=1793415700;
+	b=wG9RMDjU2OB91OvC5A2ZYEOfXLSGsuaJoZt3HZNWnsxXlHyRsaHZboiqZkksD+IS1mOg
+	 cCRbi+wbfA2g5Av7eWStFl1MgaFJ1/pSfhPrS92xpBv95KhSO9NaElTdXuJwKrYGr1LIp
+	 S5oYb5NRZV6tMdf8+yVegzpnWLnvxTsstJIqQXqwWQd4RwZNkafKH9s08g+5oqtoPexD8
+	 Y2vA9libQM4A2IY95zO8j1apLpe5GL4cER8CiP6WcqVJRusKm4wwzzOXJrVu9Fnz3S5g9
+	 uHQKIRe02vGt97T1LzY6BiN52BmSlWLA5lrPM5znEIvLV+thXrcJ83+BgZg9P8fOwkw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793408641;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=a1CbCW0Dp4if+t8lu2uVlq23sebU/fkxrgKkEzine8Q=;
-	b=tN3/BYRAiS9OuMPz3jeDUpSD/HlC3c0N4vSpNq2eLMjAfsgM5+2c8VZPjteAkz46jdX/
-	 IqbMxflQmSqjkAwVF3SZQJcG6oOqvYuBOXWPd3D6LfyEizEw4lJw2ojdacMQv8k4c1PJs
-	 cq+FEsfs4pR1lQ7Jv4LS41ipj41x/ldf+XMIHJ4GEOJnkIkUu+aUQcINOn3fBZ2Hu1rv+
-	 PKfv9UeBJKZBtScozUiAh0LQ/MUC622cXX+3q2/k9Gbi5ZW7+SJvzZl9QA6Q1I51zBh6m
-	 S0FjwYC70/zDkz52b/RjcB1NxcUHZiqIq7zFlfzTED300JxTsQ67c6vIajU+UlA9wcg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793415700;
+	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=0pyAsH8gwqtQqNNm/v8qLvT0oMadqvUmRdeyHoWxCkk=;
+	b=rue+L+nwHac/TZfcWJ8T44f1/mOvR6pT4x+6vg0o/o1KlRzOdLs0xhcbRO5akz2tp9GX
+	 nqVOZKSX5XC3dNJ0TuLsyH4yQWa66p6oVjsSMuEnIzP1t47VlP2c66DvbcD7PC9uNwSdr
+	 mHDqzE1/muhHDHey+xeuFMrSrPqO0u1MO5M0c7HIujCXxdYcFX5YAaetA7jiOyWrSRIRA
+	 GAaV6oXiRpEaDgySKntq098H3VVbyC8bcAB97UG1/vHjMRHKKHk8Z+d+fdVMD1Agi2znC
+	 JUojHNEtKc+MtBgitlMGT70F12Qo6UWO1Oulihe0/db65zwa6eOnV2dEQRdvXpIjWdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HV2nQ3eA;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=alien8.de;
+	spf=pass smtp.mailfrom=alien8.de;
+	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=ARo0k0t6;
+	arc=none smtp.remote-ip=65.109.113.108
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6EA2606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 01:04:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B91606A31D;
+	Sat, 31 Oct 2026 03:01:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E9B91606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HV2nQ3eA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62C031F000C1;
-	Sat, 31 Oct 2026 01:04:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793408640;
-	bh=a1CbCW0Dp4if+t8lu2uVlq23sebU/fkxrgKkEzine8Q=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=HV2nQ3eAAn3JlfV5uriDD2N7emX2xDJ/zpRQTyqgAs6iuw65fElPVBxkU39hFFxrc
-	 uAa4PmWz2hun9w7gh2w4JT3PXp0GhMV29hiQw499nDMr4U/KShhzXPFM/go2BFeSM7
-	 L1kYYn3HzLyWt+axnjGSCFmz02tsi1U2JotWhEivKFkOYkv7LCgkdncccH/hMlGgj0
-	 2inHQNgHLFBaQfyAp8AMnHIgFHgOSghqKDNQ1O2yQkh2rS09EtI2Mn3NZgsdrf2d1y
-	 0HxQcsm1KbYfrrBcCCbG9y3llIGirjh8AQN+tIewuihDlR45AC5UgbjeesiGsz3Wl/
-	 4wKvBz0g+hItA==
-Message-ID: <sashiko-outbox-191689@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/2] tty: serial: samsung: do not re-arm RX DMA once RX
- has been stopped
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Samarth Narang" <samarth.colleges@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261031004217.3340610-3-samarth.colleges@gmail.com>
-References: <20261031004217.3340610-1-samarth.colleges@gmail.com>
- <20261031004217.3340610-3-samarth.colleges@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 31 Oct 2026 01:03:59 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=ARo0k0t6
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 6E73A40E03BE;
+	Sat, 31 Oct 2026 03:01:36 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id VAOU-mxyKRtE; Sat, 31 Oct 2026 03:01:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1793415692; bh=0pyAsH8gwqtQqNNm/v8qLvT0oMadqvUmRdeyHoWxCkk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ARo0k0t63aHztXyih1D0V4Z2TxlBKaR+J5do/x/gYMHI8FJ9q9fi8OmK1HMDBS7jg
+	 TeYJFKvUD4lGZ3wHHrzeu94rpgtEiCB3a+HyHpF5EaqActVQ2hrRbVuXCurwtkKRjR
+	 PBivNrv1Z4N8nSptEDL++HJXRpxkogeZotdKAVPMC5pfyCvhe+iFMvmX7t+27oUG7M
+	 dQR5+pOvBZC7CR1z58DT2TlRnYeeJiDwA8oRi9wsYbg0YENxgYHuJZw9w+hMdV2rig
+	 wuF6RY6B5M+HZoyjae8efvTAsDdR2qMWua5jr/666ru7IsE1BB9YKZCnsYpdFwsMp0
+	 BhJCtzZn4DiDOaSE8K5203liu4WT6zds/kMVbaiB0cwD7ROSoNpi60TLjCaKy2bxuM
+	 /qzLPMGDf/O1AbeF9nACfcA7MRPW5tqfvuCQWgx879iw3+hboObXn7vRkon9W8pqI6
+	 LnAm2xrppa/b2+MeDRGpPxyfPN12rFH26zOTMM7DOAQmJoK7REkR3HvbewTeQkeweZ
+	 6sIertfd5jYuFhIKFm48spvMpmd31YqFaKDqJlvksul4Suy8lhai7Cjp6aT8iKrojz
+	 Z3OJWfM0hKcOT3PuQosu/3F73ThYEcyEXcC1x5I66IFIGBHX8mqv53CNPsZlESL7z/
+	 lw/SrvWoh2iAxU2PgcnswTxs=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 21C9F40E016C;
+	Sat, 31 Oct 2026 03:01:15 +0000 (UTC)
+Date: Fri, 30 Oct 2026 20:01:12 -0700
+From: Borislav Petkov <bp@alien8.de>
+To: Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	"biju.das.au" <biju.das.au@gmail.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Au Dang <au.dang.jx@renesas.com>
+Subject: [PATCH -v2] MAINTAINERS: Fix Intel TDX kernel file patterns
+Message-ID: <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
+References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
+ <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
+ <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+ <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+ <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+ <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
+ <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
+ <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,105 +100,64 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] tty: serial: samsung: s3c24xx_serial_rx_chars_dma() ignores rx_ena=
-bled
---
+From: "Borislav Petkov (AMD)" <bp@alien8.de>
 
-commit 487da6105041ec489b81c069edfdd379610e15fb
-Author: Samarth Narang <samarth.colleges@gmail.com>
+A K: is a content regex file pattern which matches any text in a patch
+so if a commit message contains "tdx" as in
 
-tty: serial: samsung: do not re-arm RX DMA once RX has been stopped
+  has_tdxe_auto_clear
 
-This commit prevents s3c24xx_serial_rx_dma_complete() from re-arming RX DMA
-after ourport->rx_enabled has been cleared, and clears ourport->rx_enabled
-under the port lock during s3c64xx_serial_shutdown().
+for example, see
 
-Link: https://lore.kernel.org/r/20261030162334.3000737-1-samarth.colleges@g=
-mail.com
+  https://lore.kernel.org/r/20261026-g2ul_sci-v3-3-b3097163edd5@bp.renesas.com
 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
-g_tty.c
-> index 2f6c69beccb74..3f2346f4fd0a9 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -622,7 +622,8 @@ static void s3c24xx_serial_rx_dma_complete(void *args)
->  		tty_kref_put(tty);
->  	}
-> =20
-> -	s3c64xx_start_rx_dma(ourport);
-> +	if (ourport->rx_enabled)
-> +		s3c64xx_start_rx_dma(ourport);
-> =20
->  	uart_port_unlock_irqrestore(port, flags);
->  }
-> @@ -1165,10 +1166,13 @@ static void s3c24xx_serial_release_dma(struct s3c=
-24xx_uart_port *p)
->  static void s3c64xx_serial_shutdown(struct uart_port *port)
->  {
->  	struct s3c24xx_uart_port *ourport =3D to_ourport(port);
-> +	unsigned long flags;
-> =20
-> +	uart_port_lock_irqsave(port, &flags);
->  	ourport->tx_enabled =3D 0;
->  	ourport->tx_mode =3D 0;
->  	ourport->rx_enabled =3D 0;
-> +	uart_port_unlock_irqrestore(port, flags);
+get_maintainer.pl erroneously adds the x86 gang to the Cc list for what
+obviously is a completely unrelated patch.
 
-[Severity: High]
-Does s3c24xx_serial_rx_chars_dma() also need to check ourport->rx_enabled
-after acquiring the port lock?
+The same happens when someone uses it to check
 
-In drivers/tty/serial/samsung_tty.c, s3c24xx_serial_rx_chars_dma() reads
-S3C2410_UTRSTAT before acquiring uart_port_lock(port), and then proceeds
-without checking whether ourport->rx_enabled is still set:
+  drivers/power/reset/tdx-ec-poweroff.c
 
-drivers/tty/serial/samsung_tty.c:s3c24xx_serial_rx_chars_dma() {
-	utrstat =3D rd_regl(port, S3C2410_UTRSTAT);
-	rd_regl(port, S3C2410_UFSTAT);
+patches.
 
-	uart_port_lock(port);
+So switch the x86 TDX patterns to files and directories (F:) wildcard
+type patterns and group them by path, for less false positives.
 
-	if (!(utrstat & S3C2410_UTRSTAT_TIMEOUT)) {
-		s3c64xx_start_rx_dma(ourport);
-		if (ourport->rx_mode =3D=3D S3C24XX_RX_PIO)
-			enable_rx_dma(ourport);
-		goto finish;
-	}
+Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
+Link: https://lore.kernel.org/r/20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local
+---
+ MAINTAINERS | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-	if (ourport->rx_mode =3D=3D S3C24XX_RX_DMA) {
-		dmaengine_pause(dma->rx_chan);
-		dmaengine_tx_status(dma->rx_chan, dma->rx_cookie, &state);
-		dmaengine_terminate_all(dma->rx_chan);
-		received =3D dma->rx_bytes_requested - state.residue;
-		s3c24xx_uart_copy_rx_to_tty(ourport, t, received);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7a162e9bcab1..015cf66afb96 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -30347,8 +30347,11 @@ L:	linux-coco@lists.linux.dev
+ L:	kvm@vger.kernel.org
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/tdx
+-N:	tdx
+-K:	\b(tdx)
++F:	arch/x86/**/*tdx*
++F:	Documentation/**/*tdx*
++F:	drivers/virt/coco/tdx*/
++F:	include/uapi/linux/tdx
++F:	tools/testing/selftests/tdx/
+ 
+ X86 VDSO
+ M:	Andy Lutomirski <luto@kernel.org>
+-- 
+2.53.0
 
-		enable_rx_pio(ourport);
-	}
-}
 
-If an RX interrupt fires on another CPU and spins on port->lock while
-s3c24xx_serial_stop_rx() or s3c64xx_serial_shutdown() clears
-ourport->rx_enabled (especially during s3c64xx_serial_shutdown(), where
-S3C64XX_UINTM is only masked after free_irq()), s3c24xx_serial_rx_chars_dma=
-()
-can enter the critical section after ourport->rx_enabled is 0.
+-- 
+Regards/Gruss,
+    Boris.
 
-When S3C2410_UTRSTAT_TIMEOUT is not set, s3c24xx_serial_rx_chars_dma() will
-call s3c64xx_start_rx_dma() and enable_rx_dma(), restarting RX DMA after
-s3c24xx_serial_stop_rx() has already stopped reception and terminated the
-channel.
-
-When S3C2410_UTRSTAT_TIMEOUT is set, neither s3c24xx_serial_stop_rx() nor
-s3c24xx_serial_rx_dma_complete() (when skipping s3c64xx_start_rx_dma()
-because ourport->rx_enabled is 0) resets ourport->rx_mode from
-S3C24XX_RX_DMA. Could s3c24xx_serial_rx_chars_dma() then query
-dmaengine_tx_status() on a dma->rx_cookie that was already completed or
-terminated (where state.residue is 0) and copy dma->rx_bytes_requested
-(PAGE_SIZE) bytes of stale data from dma->rx_buf into the tty flip buffer?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261031004217.3340=
-610-1-samarth.colleges@gmail.com?part=3D2
+https://people.kernel.org/tglx/notes-about-netiquette
