@@ -1,97 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793415700;
-	b=wG9RMDjU2OB91OvC5A2ZYEOfXLSGsuaJoZt3HZNWnsxXlHyRsaHZboiqZkksD+IS1mOg
-	 cCRbi+wbfA2g5Av7eWStFl1MgaFJ1/pSfhPrS92xpBv95KhSO9NaElTdXuJwKrYGr1LIp
-	 S5oYb5NRZV6tMdf8+yVegzpnWLnvxTsstJIqQXqwWQd4RwZNkafKH9s08g+5oqtoPexD8
-	 Y2vA9libQM4A2IY95zO8j1apLpe5GL4cER8CiP6WcqVJRusKm4wwzzOXJrVu9Fnz3S5g9
-	 uHQKIRe02vGt97T1LzY6BiN52BmSlWLA5lrPM5znEIvLV+thXrcJ83+BgZg9P8fOwkw==
+	t=1793436251;
+	b=X4d8erjxDL+LA8oJJb8nX5z9BiWHKpLjJr9DI0Aboo6GPgEFqFwHQRr8PT1jgWZL2XPm
+	 2y59tEjAXH+/ymNZo2bXCVBS0qWz6jDSottOaGXad9aZlDY414xYfuJS0ibyi0sY+TYyQ
+	 A6BIn+jPnhksOzCDT2p76Z3Rk2UscLRdDkZPv5zb1G9XkDiheHEo2fAmxMqQzkIarsfbE
+	 PbHOMGMNDXt4H+ipDOq1Yr52Fa5uaklGcFD3Q8n6ZWBfgIPthGNr8IgSVC+tf4Eq8vf+m
+	 q6+ZiXM5ARv47AIPQSZUhtjhgD7/jGn2CLbHenBPvwhbJINlEZqiuBfla22TqXqt8Ug==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793415700;
-	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=0pyAsH8gwqtQqNNm/v8qLvT0oMadqvUmRdeyHoWxCkk=;
-	b=rue+L+nwHac/TZfcWJ8T44f1/mOvR6pT4x+6vg0o/o1KlRzOdLs0xhcbRO5akz2tp9GX
-	 nqVOZKSX5XC3dNJ0TuLsyH4yQWa66p6oVjsSMuEnIzP1t47VlP2c66DvbcD7PC9uNwSdr
-	 mHDqzE1/muhHDHey+xeuFMrSrPqO0u1MO5M0c7HIujCXxdYcFX5YAaetA7jiOyWrSRIRA
-	 GAaV6oXiRpEaDgySKntq098H3VVbyC8bcAB97UG1/vHjMRHKKHk8Z+d+fdVMD1Agi2znC
-	 JUojHNEtKc+MtBgitlMGT70F12Qo6UWO1Oulihe0/db65zwa6eOnV2dEQRdvXpIjWdg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793436251;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=W7C9cpmzdFca870tYxpXsF2MjrgsKkdtNJLk6fjsOEI=;
+	b=C8dO34n1vZaHpFQI/Oxr9TDdmbMKhVqZm+gSZcuU2TSenVcVWiwM9Z3zyMP2OfitfrlO
+	 duuw1TnkhYS7tfZTWQWDWq+86mGU+r6GbJ6HPBc7kazk1Z3IFe+a+T429I1bd+NoyioM8
+	 +g2DJfKbSd+rCeoAlj1UrzXgGQQf5WgX8VFNjjfOeyRtIwDwiHm8bZLHxP64u+dQQwqdG
+	 jjUCaL3Zd/EPkp8pdNytTYj8jS5NGlvtdX7enaTxGEQep8GLYPInbuGhNtq7TCz0DBIfo
+	 ntMlplvbF5imLchjZPfRF897FTciW9woE7uUO4XCToXE66Y24ex9H1H/cHyQwqe5Xsw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=alien8.de;
-	spf=pass smtp.mailfrom=alien8.de;
-	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=ARo0k0t6;
-	arc=none smtp.remote-ip=65.109.113.108
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MJNJZifK;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B91606A31D;
-	Sat, 31 Oct 2026 03:01:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E9B91606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DBFD606A31C;
+	Sat, 31 Oct 2026 08:44:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2DBFD606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=ARo0k0t6
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 6E73A40E03BE;
-	Sat, 31 Oct 2026 03:01:36 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id VAOU-mxyKRtE; Sat, 31 Oct 2026 03:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1793415692; bh=0pyAsH8gwqtQqNNm/v8qLvT0oMadqvUmRdeyHoWxCkk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ARo0k0t63aHztXyih1D0V4Z2TxlBKaR+J5do/x/gYMHI8FJ9q9fi8OmK1HMDBS7jg
-	 TeYJFKvUD4lGZ3wHHrzeu94rpgtEiCB3a+HyHpF5EaqActVQ2hrRbVuXCurwtkKRjR
-	 PBivNrv1Z4N8nSptEDL++HJXRpxkogeZotdKAVPMC5pfyCvhe+iFMvmX7t+27oUG7M
-	 dQR5+pOvBZC7CR1z58DT2TlRnYeeJiDwA8oRi9wsYbg0YENxgYHuJZw9w+hMdV2rig
-	 wuF6RY6B5M+HZoyjae8efvTAsDdR2qMWua5jr/666ru7IsE1BB9YKZCnsYpdFwsMp0
-	 BhJCtzZn4DiDOaSE8K5203liu4WT6zds/kMVbaiB0cwD7ROSoNpi60TLjCaKy2bxuM
-	 /qzLPMGDf/O1AbeF9nACfcA7MRPW5tqfvuCQWgx879iw3+hboObXn7vRkon9W8pqI6
-	 LnAm2xrppa/b2+MeDRGpPxyfPN12rFH26zOTMM7DOAQmJoK7REkR3HvbewTeQkeweZ
-	 6sIertfd5jYuFhIKFm48spvMpmd31YqFaKDqJlvksul4Suy8lhai7Cjp6aT8iKrojz
-	 Z3OJWfM0hKcOT3PuQosu/3F73ThYEcyEXcC1x5I66IFIGBHX8mqv53CNPsZlESL7z/
-	 lw/SrvWoh2iAxU2PgcnswTxs=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 21C9F40E016C;
-	Sat, 31 Oct 2026 03:01:15 +0000 (UTC)
-Date: Fri, 30 Oct 2026 20:01:12 -0700
-From: Borislav Petkov <bp@alien8.de>
-To: Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	"biju.das.au" <biju.das.au@gmail.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MJNJZifK
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793436249; x=1824972249;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wn8SFowoel5epk8m5Si6mxTN8wfKc2MuePpSe+sjbLY=;
+  b=MJNJZifKks8msiDDTcsubAz8Flw64AfLcsvFH3BruUk9obfl7QY2NXb3
+   NpRsus+d2uLYRFgYZGOHVvhordHKa+0vmTubjylePTHxleVy03LDmFoe0
+   EluMIMucdmTBJmInPRzTb69QuqzCUrOI0zKgCHGOabJLH7SwuOF2oMxxn
+   4rct3ChXXshKoAH2i9KwXky8H4CeycU33xHzkXkSwoyd3dvqNsZ+Hpigj
+   xojbqz76MwGxVzgwQzcnfXtIFY5cbZNbUqyltTmP9AFllcS3+jvzsyFzR
+   XcjQkzmZlJbItfNVAxB8d3PKu6wCH2ZVjD1ittFhY/MVMxS4Mt7cQH8+m
+   Q==;
+X-CSE-ConnectionGUID: avOEHitMR72MqAImxd8aYA==
+X-CSE-MsgGUID: DsCaJd+UTumHnlgAusFkXQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2185102"
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="2185102"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 01:44:08 -0700
+X-CSE-ConnectionGUID: kFJld0R6TF22hO1251niqA==
+X-CSE-MsgGUID: vR+J2NnMRyGUqn4j6kuC/Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="6184723"
+Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.127])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 01:44:03 -0700
+Date: Sat, 31 Oct 2026 10:44:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Au Dang <au.dang.jx@renesas.com>
-Subject: [PATCH -v2] MAINTAINERS: Fix Intel TDX kernel file patterns
-Message-ID: <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
-References: <20261026-g2ul_sci-v3-0-b3097163edd5@bp.renesas.com>
- <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
- <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
- <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
- <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
- <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
- <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
- <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
+	Raul E Rangel <rrangel@chromium.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Timur Tabi <timur@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	imx@lists.linux.dev, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v8 6/6] serial: 8250: retain DMA resources when
+ termination fails
+Message-ID: <auWqUIBUs0_7bnGU@ashevche-desk.local>
+References: <20261029-submit-serial-8250-dma-cancel-v1-v8-0-3fd56ba352ed@gmail.com>
+ <20261029-submit-serial-8250-dma-cancel-v1-v8-6-3fd56ba352ed@gmail.com>
+ <auNW_Oc-Ao5Iw-Gw@ashevche-desk.local>
+ <CADvTj4pOg4w5LpFW_E3qzP7FZDnDgpB8LyR9xxhT_mZre21vFw@mail.gmail.com>
+ <auRl9ztbav4nHi7U@ashevche-desk.local>
+ <CADvTj4p8tjwdftg+H11ob0iaBZKxXrTdkSmhfZHjOYunm5tr9w@mail.gmail.com>
+ <auTZtteCFnuoMD3p@ashevche-desk.local>
+ <CADvTj4rXXAEnTyu_AzpF41a2YSHHG1ANozCUSePBoH3QZYbBQg@mail.gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -103,61 +108,105 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CADvTj4rXXAEnTyu_AzpF41a2YSHHG1ANozCUSePBoH3QZYbBQg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: "Borislav Petkov (AMD)" <bp@alien8.de>
+On Fri, Oct 30, 2026 at 12:08:52PM -0600, James Hilliard wrote:
+> On Fri, Oct 30, 2026 at 11:54 AM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Fri, Oct 30, 2026 at 11:09:53AM -0600, James Hilliard wrote:
+> > > On Fri, Oct 30, 2026 at 3:40 AM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Thu, Oct 29, 2026 at 11:19:59AM -0600, James Hilliard wrote:
+> > > > > On Thu, Oct 29, 2026 at 8:24 AM Andy Shevchenko
+> > > > > <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > > On Thu, Oct 29, 2026 at 01:37:02AM -0600, James Hilliard wrote:
 
-A K: is a content regex file pattern which matches any text in a patch
-so if a commit message contains "tdx" as in
+...
 
-  has_tdxe_auto_clear
+> > > > > > > +     while (rx_ret || tx_ret) {
+> > > > > > > +             dev_err_ratelimited(p->port.dev,
+> > > > > > > +                                 "DMA termination failed: RX %d, TX %d; retrying\n",
+> > > > > > > +                                 rx_ret, tx_ret);
+> > > > > >
+> > > > > > > +             msleep(100);
+> > > > > >
+> > > > > > Huh?!
+> > > > > >
+> > > > > > > +             if (rx_ret)
+> > > > > > > +                     rx_ret = dmaengine_terminate_sync(dma->rxchan);
+> > > > > > > +             if (tx_ret)
+> > > > > > > +                     tx_ret = dmaengine_terminate_sync(dma->txchan);
+> > > > > > > +     }
+> > > > > >
+> > > > > > This is unacceptable. Sleeping is okay, but value should really match the
+> > > > > > baudspeed and other parameters of the transfer.
+> > > > >
+> > > > > This sleep is backoff after dmaengine_terminate_sync() has returned
+> > > > > an error, rather than an estimate of UART transmission time. Each
+> > > > > retry asks the provider to stop the channel again; elapsed time is
+> > > > > never treated as evidence that the resources are safe to free.
+> > > > >
+> > > > > The particular 100 ms interval has no hardware-derived justification.
+> > > > > However, I don't yet see a sound way to derive the retry cadence from
+> > > > > baud rate either. RX can be waiting for input, TX can be held by flow
+> > > > > control, and callback retirement is a separate requirement from
+> > > > > moving bytes through the UART.
+> > > > >
+> > > > > Do you have a particular provider failure mode in mind where retrying
+> > > > > termination should follow the serial transfer timing? I'd like to
+> > > > > base the interval on the condition that can make termination succeed,
+> > > > > rather than substitute a wire-time estimate for an arbitrary delay.
+> > > >
+> > > > Termination of DMA sometimes require to clean up internal FIFOs and other state
+> > > > machines. That's what happens on HW side. In the software waiting for too much
+> > > > may lead to the very big undesired latencies. The value of 100ms sounds insane
+> > > > to me for the HSUART cases (megabaud range of speed). Also note, not every PCB
+> > > > design uses HW flow control, so this may be even worse for them.
+> > >
+> > > The 100 ms interval can add unnecessary teardown latency if a failed
+> > > termination becomes retryable much sooner. There is no hardware-derived
+> > > justification for that particular value.
+> > >
+> > > The FIFO/state-machine draining is part of the provider's stop sequence.
+> > > For example, DW performs its FIFO-empty polling inside
+> > > dwc_terminate_all(). If termination succeeds, this patch proceeds without
+> > > the retry sleep, regardless of baud rate. The sleep is only reached
+> > > after an error during DMA release, not during normal RX delivery.
+> > >
+> > > Baud rate can influence how quickly a transmit FIFO drains, even without
+> > > flow control. However, the termination error does not tell 8250 whether
+> > > that drain is still progressing, how much remains, or whether the
+> > > controller needs a different recovery operation. That distinction matters
+> > > when choosing a retry interval: a shorter interval reduces the added
+> > > latency, but does not establish that retrying can recover the channel.
+> > >
+> > > There is also a specific API detail here: dmaengine_terminate_sync()
+> > > returns immediately if device_terminate_all() fails, without reaching
+> > > dmaengine_synchronize(). Consequently, an error leaves callback draining
+> > > unconfirmed as well. The retry cadence can change, but resource release
+> > > still requires successful termination and synchronization.
+> >
+> > Most likely this is AI slop. I can't see the justification for 100ms.
+> > Can you explain that?
+> 
+> 100 ms was an arbitrary backoff to avoid a tight retry loop if
+> termination keeps failing. It was not derived from the baud rate,
+> FIFO depth, or a DMA provider's recovery timing.
+> 
+> That motivation explains sleeping between retries, but not choosing
+> 100 ms. I don't have evidence supporting that particular interval.
 
-for example, see
+Yep. And that's what my point is about. Any big sleeps has to be explained
+and justified.
 
-  https://lore.kernel.org/r/20261026-g2ul_sci-v3-3-b3097163edd5@bp.renesas.com
+> > > > > Regardless of the retry interval, shutdown cannot release the buffers
+> > > > > until the provider establishes that DMA and its callbacks have stopped.
 
-get_maintainer.pl erroneously adds the x86 gang to the Cc list for what
-obviously is a completely unrelated patch.
-
-The same happens when someone uses it to check
-
-  drivers/power/reset/tdx-ec-poweroff.c
-
-patches.
-
-So switch the x86 TDX patterns to files and directories (F:) wildcard
-type patterns and group them by path, for less false positives.
-
-Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
-Link: https://lore.kernel.org/r/20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local
----
- MAINTAINERS | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7a162e9bcab1..015cf66afb96 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -30347,8 +30347,11 @@ L:	linux-coco@lists.linux.dev
- L:	kvm@vger.kernel.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/tdx
--N:	tdx
--K:	\b(tdx)
-+F:	arch/x86/**/*tdx*
-+F:	Documentation/**/*tdx*
-+F:	drivers/virt/coco/tdx*/
-+F:	include/uapi/linux/tdx
-+F:	tools/testing/selftests/tdx/
- 
- X86 VDSO
- M:	Andy Lutomirski <luto@kernel.org>
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
 
 
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
