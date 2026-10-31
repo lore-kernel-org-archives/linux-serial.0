@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.227.134
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.228.5
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793460430;
-	b=wkZnTRmbaznENAJo+y4Cz5RpRMG81ktJRfy/IbMBQFQRpx6DFW58O9KxNuIzUMo+OXKb
-	 0fFL6oemw/aRX/UvZn/tSWrnjoUrfVXH2MofCBBDrc+vD/ZvKvTMJ7SDXdtofxWHTyvAa
-	 efGZFM3ttAzgAFFHMiGr8uRiRMT1IGIPTdhOLR6qIOPdvy3bG0ONtMIIl81B/ptFwkHli
-	 GcP9fzSAL1c/U7Tva+hOc+n8WjN6MpKVd2pxOjVPJ1ZjWX53+NNcRdgO9ziXR7kS9n6Wd
-	 MhLt6L+OLJ1REk6P3eYrjxJ7Wm9+f3C2SDiv0cnjli10jo59/4x7+/O5GIh7Qo3E1aQ==
+	t=1793460435;
+	b=Hg6pMZoxtdfq5M4J724a1lFU7STpynVMoNA40kGJw9/WKO80kTGeS87rOUQ3X0hWSi6i
+	 zIw+4kZSX4DuKTBLqGF9aw20n4ZbaCoDD/bLVkheYH9L9RAVo/Z1jwqZkp7roTB3W8U+m
+	 w4t+89EMpW7+9chC9yPADg3zfBUdJzuK/CBp5aLx4MhF/1xiJIlRl4AGoTKdbYjx1MFm8
+	 LCJ2k3J4qoM1a6YDx+lm1EdpVpzDadBtkXffhi6DuN10dPq/hccxyuVQswIi3laWM0fnM
+	 7yYFmQQEHT+IbGiopiXmCurV9V25NNxUXJa/5GWyaSsRdP308K4r5x+EVON7tEdGngA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793460430;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793460435;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=xTNa3CisyEifdpOcMGd1ZFRXYvZSpSVI/VVxCfsYBaI=;
-	b=3ycCaCAiUkFQE9YVB1to+du8zTQCwD9eQt6HifE7jAl8evR7Mo4l7W7tzxxVRafzNZey
-	 NDYCvuOF1MXo/jScjZIzeb8eYLjGAfr0p/EHzCxhxVAQWbQGp5o3oNoZuT78/AeVhQe5/
-	 2ziCNuPmRCr8pMA3wKbDVYweQ/cKu5i0CHAdIVlndSugGvPOpSl6BGRKGW23I3teBM8A5
-	 T5pyPEBcRBGe0PpqwE9uC/rfTuSxbqvkS4udDkj+qBUTIJ+pogzqmWWnZ/UZVA2fuHBi4
-	 d/TPLK5xFPZr5qXpg+FQ/vSSVfUxYqWz/WhnE/JVFt3a55vrKFUzF8zwr4U+Mh0jyTg==
+	bh=ApVcgRbUJOCRqk0kM38newz6TbCCt9oxZvC4V9s3//Y=;
+	b=069ZlwM+cY+vWr9p60cRh9bdsJBr1Z0AmXqEZXzdPbuNZslvP9A95d8grg9kO0X1MgHW
+	 4uvH8pVzvXFZ9A08md0rAgtd7XW4pYaGLByws8P/ulB9PONpZdG988ZQN+KKY8oaiAsyB
+	 dFBDSJlO9nvHcWsjECxpzXtuqRrzoNEQqip/fIe24dFK8oKfqzbGgIQs9u8l6bcT5ACVQ
+	 gie9YPo8oWGr2OEk5OPw9DUnbxomthfOLdS4Qddf8ae8WZeRdhHl3pCRgXjNTJUUAoyG1
+	 pRU7cZ6DJBxL/S5IIwUFmpGMdpIBmxigeRyWk2BZC+lEIE5Po5Maol2OJrM0l4ebZ2A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MWXe8N0b;
-	arc=none smtp.remote-ip=74.125.227.134
-Received: from mail-pj2-f6.google.com (mail-pj2-f6.google.com [74.125.227.134])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xxKt9e0N;
+	arc=none smtp.remote-ip=74.125.228.5
+Received: from mail-pz2-f5.google.com (mail-pz2-f5.google.com [74.125.228.5])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 461F9606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 15:27:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 461F9606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE683606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 15:27:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CE683606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MWXe8N0b
-Received: by mail-pj2-f6.google.com with SMTP id 98e67ed59e1d1-3ad41dad3faso1116426a91.1
-        for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 08:27:09 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xxKt9e0N
+Received: by mail-pz2-f5.google.com with SMTP id 41be03b00d2f7-cc7c286026aso892109a12.0
+        for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 08:27:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793460429; x=1794065229; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793460434; x=1794065234; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=xTNa3CisyEifdpOcMGd1ZFRXYvZSpSVI/VVxCfsYBaI=;
-        b=MWXe8N0belkFGCTDLmOtDYvkv4S5/Wrr/o60zDaIZySzJ1rJDRGKyDGHnlV+YuzkO9
-         8MY0JGsKKU7OR+YS/ayGOWtwIEox80KCmdXVLwJ18DDr+2G2Yujl7RaKIFQcNGGv07j7
-         KhGerTpoHppHec6Y8JtjBGFq8ZyS3k+fmg1DoZNI8c2pf0uV0LJfTRl8pqiS9jJXqRw3
-         x2Dlb9eijfKxvTcVrkcnIxlzpasIjll7zmtHdQc5p1UWltlzG34tILMiiPAdz7Y8joTk
-         GT2OkvdpcYj9p1+a/pejwMlSt+Lx7dP7nwZG2X6oc+D/LJPasTi9tVys7w8JgJXEf5Mm
-         gkaQ==
+        bh=ApVcgRbUJOCRqk0kM38newz6TbCCt9oxZvC4V9s3//Y=;
+        b=xxKt9e0NpDf3tVGVMS6wABgShbLvUu1jspoSSPdQR+jrZURTsAUlFjFIUbaa+zldue
+         BH9Q2YVj/MhQi17vot9q4bxY+OgPjR93EO4U/n2JdlDzmd3jONUECn7mMK4+NWPOJKOn
+         CZ8OwCL1ud1Ux8ShHqn1BWX9Kct1BdM5w1EHu0/NuVMZGDeco7HRAjwnrvuugCPwdkE5
+         pC1dHjy68JWDh21fbmodKPKtC9Ll9YrERB/aYMaK6ZLn5+eTmvLscCsZLsAkpTivuWve
+         OF/OmyNhWECuTIhr0RePHZiKrER11pXgxqnJkKFItyYqiktMFEKB6P5GQzeInHxmkwCS
+         ttqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793460429; x=1794065229;
+        d=1e100.net; s=20260707; t=1793460434; x=1794065234;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=xTNa3CisyEifdpOcMGd1ZFRXYvZSpSVI/VVxCfsYBaI=;
-        b=LqyXAXy982qrqQvXLtBnr85uchxNYsvm9mxy4gr/v6V5OGuUk9vj9Va8AD4TQFMj29
-         nSc7FIWWDpedwU9XzUHD8crNXQujHx3Nb4d3cNrhEJIoQ14mD/GegbsMmhpjPqID6mp5
-         JHRS7ovHgyi+ZB6Gkb5Lc+WQhdS4ZKtMuQy8i6SPGtvxuHFmVfFGqxsz4LEGXs34T0ER
-         Yeku1Cd94MKCGLFU26AIdfwi6K4Xz2jdT/VlbVw63vD6KecjW08kMsFGgx69Vvd2eRHZ
-         zCGrQq2lVVEWQw9iFqc/5KeK9CmPeS63vAkYFee77jBSdL5+xI8OFgHqXPqGgtrNbCcq
-         yj4Q==
-X-Forwarded-Encrypted: i=1; AKwUvByJN70EFGmYW1Bn5rUI9TiL7pcw0WuRk8SVgN3C0em1EMTQ1yPlFRQSX41bpK2qV8HmqqNVGBFWPj86Gpk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJloHu/tmQgUR4RilYchU2njOGgsoGGUUVOHSu1YU5AxOrajcCk
-	HGIAsz7lbWx8iw7aPExBZ5TVxCBzDEeN9QSiro2owXuOnmw2djDjyvJ9
-X-Gm-Gg: AYBFou3SmkvtPV/adolUQbeylPsTWEQC/+z/KCbgeqc4Nd+Nz/l67MGr3h78Nt2hGw7
-	hxdCPCFthysb1E1+iuIQd2z1Wp+MHiG1Xw89+2NdR1+8bzIg72r84zHXngvtWpnhFYjctcz7Yit
-	ehfq/yKWz17T4cy4PgQhZcTjO5lNVpuKh08yFy0E+K0TPRyhJIMbUNOM5tqbtdc1GqNkaz37vb5
-	o2Ftiht/l8BBYCtUfa6eKk0C6RW6BjDbm4rwJpKKHrqNN1hFaRCzEJntRhglybQWwiugouDFR+E
-	F2GrK6XbqvOLbshiNlm3bIztnt/9R2sM95G4w8kBZzF3hteWOYgF9QkbqOxyNjMIJGTcy8sjNX/
-	bikKFztMA46x9kuS34e9LrIUbjjw7eGRkfIkkBWY3sxskYjYQRMar+IRoqiiTgi2f0XO452etSi
-	3SCz32dTE+CfOqgFNjHdhecbr4yrp1wDQchO+qG/BD3WJXgqBf0cLYvikNcBfX1oy9t8PyqrZOd
-	wd5SqjqfAVTNGhr2i8/Os3kw3oF8/9cT9/M/4E+f/cSERlKhXDhkSj0DcxYct8MXUpeLb4r1ozS
-	EQXoN1FWfu11D7ymilFjXmfSd4Uc3S41yHPtfysHPp13yL5w1mgo
-X-Received: by 2002:a17:90b:534b:b0:3ab:4f1:4f76 with SMTP id 98e67ed59e1d1-3ae898127f4mr4404747a91.24.1793460428503;
-        Sat, 31 Oct 2026 08:27:08 -0700 (PDT)
+        bh=ApVcgRbUJOCRqk0kM38newz6TbCCt9oxZvC4V9s3//Y=;
+        b=ClpBOeVNbJTZLgcPhGihAYdYMo7VrM1adU3b8xVCb/T2jcwg+n8IQoIAsSPoG209jg
+         ARtSgcb/C50PHDX0n28tRspjxSXOoe4raT10oPiqeYMR30APQUJm2pFdNc7QHrar23aj
+         RrfzbTM1XX/prvc2pkBdY8y7z7IUJ1+4WEWri2ZsZ3735fNf+7JrHW3H6yzdS77An5he
+         LDPCUm0YiiQekC1mzdO5LRliwjEuny93KzCQwpppf359KZtPNzJeO+W8aegyFYhLXQCN
+         otbpqaEw/mmZPi2lyJAqusZxPUYJNzV8BuR89exmo5zpgzSmglmCsept8iYdoqcuE154
+         OcZw==
+X-Forwarded-Encrypted: i=1; AKwUvBzbVB/M7jXesfs+AJjRT/Vkcx4RcNcnX5AT7/sWaziIFfUAqhj2vqCBvVe9gbqjzHUldcehdxJOo48gZ2s=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL6piZu+ecFlPBe6qPQ6/ASTkw7VW48uVTF1xztjQV9PJO7GRIU
+	VNC528ekUoWPEqczxu+p0XFMprfi/+tifPdTOMxb9aQUA9tS15FSuPIq
+X-Gm-Gg: AYBFou2mntEUHdynIBKVOFJRAXh416dG0zAOo1uOatl+8RMq+3Y8zAWQMP4vSUz8zrn
+	cKhixeBJ3Va5nqAiufC/7/SHA6VtUoA3wh49PACUBjkO8uZDCBi6I6hr0I4hSFKu+ONdpSGi3TZ
+	HbAtJ0HaEbC0jcRZxMdqe8V/hESg2aVQ3u60/7yl6g0EE3LEjbw03fPlHdYlaAlKuMDzcHwrORy
+	8EjOGgcg6ZeP6Fnh8xJLohBunbPcFdHB6SPg7J+OUT9wLBhao0o9gVP1YRHXrZe4NrLUoDFYH44
+	eMG9zMAoela80c+etIp/BNKanwCU1Ljbf39fEfCVn+yfXNAhgtWwSsVgqM51YwjJL0De7OLs8WC
+	O9sGBVWsH01TpSp6NcN2Zao2u9DRDEM6DZ66Aw2mxqH26OBSTtVJNRAYg6QLyEJWmvSBxXMtoys
+	2h39TKJQf3N3Xnm/nxXw+MrqZUMxSCzHbJbw5KgLiZA5R1H8LUlas3zF3v2AN8gM8YFVUkoqBB8
+	mmAJPTsNm9STEFsC+lSVTuy18dLHMuBngMzPSHHJynFgZ+R/5GtuJBHzMAkCHH1YNy8itdxfanO
+	eAG7xTc9CqpncDaq8NtAT8Hn0MdWEY8=
+X-Received: by 2002:a05:6a21:6b8c:b0:3de:b120:bba0 with SMTP id adf61e73a8af0-3e928cd25a1mr4531768637.36.1793460433856;
+        Sat, 31 Oct 2026 08:27:13 -0700 (PDT)
 Received: from kei ([222.141.54.22])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb09615125sm1731025a12.1.2026.10.31.08.27.04
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb09615125sm1731025a12.1.2026.10.31.08.27.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2026 08:27:07 -0700 (PDT)
+        Sat, 31 Oct 2026 08:27:13 -0700 (PDT)
 From: tianci xie <xiex16070@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -91,12 +91,13 @@ Cc: Krzysztof Kozlowski <krzk@kernel.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	tianci xie <xiex16070@gmail.com>
-Subject: [PATCH 0/1] tty: serial: samsung: fix TX fifo underflow on flush race
-Date: Sat, 31 Oct 2026 23:26:55 +0800
-Message-ID: <20261031152656.1422-1-xiex16070@gmail.com>
+Subject: [PATCH] tty: serial: samsung: fix TX fifo underflow on flush race
+Date: Sat, 31 Oct 2026 23:26:56 +0800
+Message-ID: <20261031152656.1422-2-xiex16070@gmail.com>
 X-Mailer: git-send-email 2.54.0.windows.1
-In-Reply-To: <2026103122-repurpose-cost-2da7@gregkh>
+In-Reply-To: <20261031152656.1422-1-xiex16070@gmail.com>
 References: <2026103122-repurpose-cost-2da7@gregkh>
+ <20261031152656.1422-1-xiex16070@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -108,69 +109,119 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Sat, Oct 31, 2026 at 09:54:55AM +0100, Greg Kroah-Hartman wrote:
-> Always just send us patches, after testing them, you never need to ask
-> if you should do so.
+uart_flush_buffer() resets the xmit kfifo and then calls ->flush_buffer()
+with the port lock held.  Neither s3c64xx_serial_ops nor
+apple_s5l_serial_ops implements that callback, and
+s3c24xx_serial_tx_dma_complete() computes the transferred byte count from
+dma->tx_bytes_requested before it takes the port lock.
 
-Understood.  Here is the samsung_tty part of the report; the other four
-drivers are separate and I have not touched them.
+A completion that has already sampled that count can therefore run after
+a TCOFLUSH has reset the kfifo, and advance the freshly reset kfifo by
+the byte count of the discarded transfer.  kfifo_skip_count() does not
+clamp, so ->out moves past ->in and kfifo_len() wraps to a huge value.
+The driver then keeps transmitting stale buffer contents, and a later
+close can wait in tty_wait_until_sent() until it times out.
 
-The analysis holds up against mainline.  Neither s3c64xx_serial_ops nor
-apple_s5l_serial_ops has a ->flush_buffer() callback, and
-s3c24xx_serial_tx_dma_complete() samples tx_bytes_requested before it
-takes the port lock.  A completion that raced with uart_flush_buffer()
-therefore advances the freshly reset kfifo by the byte count of the
-discarded transfer, and since kfifo_skip_count() does not clamp, ->out
-passes ->in and kfifo_len() wraps.
+Handle this the way 8250 does in 9e512eaaf8f4 ("serial: 8250: Fix fifo
+underflow on flush"):
 
-One detail worth adding to the report.  In 29bef7990845, where TX DMA was
-introduced, the callback advanced the buffer with
+ - add s3c24xx_serial_flush_buffer(), which clears the outstanding byte
+   count and terminates the TX channel asynchronously.  The port lock is
+   held here, so dmaengine_terminate_sync() cannot be used;
 
-	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
+ - sample dma->tx_bytes_requested under the port lock, so that a
+   completion racing with the flush observes the cleared value and
+   advances by zero.
 
-so an over-advance was masked away and could not wrap.  The wrap only
-became possible once the driver moved to the kfifo helpers, which drop
-the mask.  That is probably why this never showed up on the older code.
+The callback may still run after dmaengine_terminate_async(); for the
+fifo it is then a no-op, but it does clear tx_in_progress so that a new
+transfer can be started.  As in 8250, this assumes that a terminated
+descriptor is retired before the next one is queued.
 
-The patch follows the 8250 fix in 9e512eaaf8f4, with one addition.  The
-8250 changelog says that clearing the outstanding byte count under the
-port lock is sufficient "since the port lock is held when the kfifo is
-reset in uart_flush_buffer() and in __dma_tx_complete()".  That holds for
-8250 because __dma_tx_complete() reads tx_size inside the lock.  Here the
-count is read before the lock, so clearing alone would not help; the
-patch also moves the sample under the lock.  The same gap applies to
-serial-tegra as reported.
-
-Testing so far:
-
-  - BUILD_RESULT: builds cleanly with gcc 12.3 on x86_64 (COMPILE_TEST,
-    CONFIG_SERIAL_SAMSUNG=m, W=1) and with aarch64-linux-gcc 13.3.0 on
-    arm64 (arm64 defconfig, which enables ARCH_EXYNOS, ARCH_APPLE and
-    SERIAL_SAMSUNG_CONSOLE); no warnings from the new code.
-  - BOOT_OR_RUNTIME_RESULT: not booted; I have no Exynos or Apple board.
-    Runtime behaviour is covered by the exhaustive interleaving model.
-  - the patch applies to mainline at 83f32c773255 with git am;
-  - a model of the two actors, with the kfifo semantics taken from
-    include/linux/kfifo.h, exhausts every interleaving under the port
-    lock: the unpatched callback wraps kfifo_len() in all four flush
-    scenarios, the patched one in none, and both agree when no flush
-    happens.
-
-I do not have a Linux machine of my own.  The x86_64 build above was run
-on a rented Linux server, and the arm64 build was cross-compiled there
-with a no-libc aarch64 toolchain; that is as far as I can take testing
-without hardware.  There is no Exynos or Apple board available to me, so
-the model is what stands in for a runtime reproduction.  If you would
-rather have the flush modelled as a KUnit test in the tree, say so and I
-will send that instead.
-
-Thanks,
-tianci xie
-
-
-tianci xie (1):
-  tty: serial: samsung: fix TX fifo underflow on flush race
-
+Reported-by: Samarth Narang <samarth.colleges@gmail.com>
+Link: https://lore.kernel.org/all/20261031004733.3345841-1-samarth.colleges@gmail.com/
+Fixes: 29bef7990845 ("serial: samsung: add DMA support for TX")
+Signed-off-by: tianci xie <xiex16070@gmail.com>
+---
  drivers/tty/serial/samsung_tty.c | 40 +++++++++++++++++++++++++++++++-
  1 file changed, 39 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 640f85e..e955b7e 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -330,7 +330,6 @@ static void s3c24xx_serial_tx_dma_complete(void *args)
+ 	int count;
+ 
+ 	dmaengine_tx_status(dma->tx_chan, dma->tx_cookie, &state);
+-	count = dma->tx_bytes_requested - state.residue;
+ 	async_tx_ack(dma->tx_desc);
+ 
+ 	dma_sync_single_for_cpu(dmaengine_get_dma_device(dma->tx_chan),
+@@ -339,6 +338,17 @@ static void s3c24xx_serial_tx_dma_complete(void *args)
+ 
+ 	uart_port_lock_irqsave(port, &flags);
+ 
++	/*
++	 * uart_flush_buffer() resets the xmit fifo and then calls
++	 * ->flush_buffer(), which clears tx_bytes_requested.  Sample the byte
++	 * count under the port lock so that a completion which raced with a
++	 * flush cannot advance the already reset fifo past its write index.
++	 */
++	if (dma->tx_bytes_requested)
++		count = dma->tx_bytes_requested - state.residue;
++	else
++		count = 0;
++
+ 	uart_xmit_advance(port, count);
+ 	ourport->tx_in_progress = 0;
+ 
+@@ -1162,6 +1172,32 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+ 	}
+ }
+ 
++/*
++ * Called from uart_flush_buffer() with the port lock held, after the xmit fifo
++ * has already been reset.  A TX DMA transfer still in flight carries data that
++ * no longer exists, so drop its byte count before terminating it: the
++ * completion callback may still run and must not advance the reset fifo.
++ */
++static void s3c24xx_serial_flush_buffer(struct uart_port *port)
++{
++	struct s3c24xx_uart_port *ourport = to_ourport(port);
++	struct s3c24xx_uart_dma *dma = ourport->dma;
++
++	if (!dma || !dma->tx_chan || ourport->tx_in_progress != S3C24XX_TX_DMA)
++		return;
++
++	dma->tx_bytes_requested = 0;
++
++	/*
++	 * dmaengine_terminate_sync() cannot be used here because the port
++	 * lock is held.  The callback may or may not run afterwards; either
++	 * way it is a no-op for the fifo because tx_bytes_requested is zero.
++	 */
++	dmaengine_terminate_async(dma->tx_chan);
++
++	ourport->tx_in_progress = 0;
++}
++
+ static void s3c64xx_serial_shutdown(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+@@ -1684,6 +1720,7 @@ static const struct uart_ops s3c64xx_serial_ops = {
+ 	.stop_tx	= s3c24xx_serial_stop_tx,
+ 	.start_tx	= s3c24xx_serial_start_tx,
+ 	.stop_rx	= s3c24xx_serial_stop_rx,
++	.flush_buffer	= s3c24xx_serial_flush_buffer,
+ 	.break_ctl	= s3c24xx_serial_break_ctl,
+ 	.startup	= s3c64xx_serial_startup,
+ 	.shutdown	= s3c64xx_serial_shutdown,
+@@ -1705,6 +1742,7 @@ static const struct uart_ops apple_s5l_serial_ops = {
+ 	.stop_tx	= s3c24xx_serial_stop_tx,
+ 	.start_tx	= s3c24xx_serial_start_tx,
+ 	.stop_rx	= s3c24xx_serial_stop_rx,
++	.flush_buffer	= s3c24xx_serial_flush_buffer,
+ 	.break_ctl	= s3c24xx_serial_break_ctl,
+ 	.startup	= apple_s5l_serial_startup,
+ 	.shutdown	= apple_s5l_serial_shutdown,
