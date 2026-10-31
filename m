@@ -1,112 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793450391;
-	b=c19+qwN3yvRfMrbcPZJVW33p9FY34CnQ3oeMe5EPqWZw5xJu6+BC2hy3ySnzDZFmsejL
-	 JZNewshgJ9dLSeFfdChpaYAKuqHW7axJ5jqWuUAV0Ux40EJ/Q1Jt7GB4CWg+gHMFCOLla
-	 AKnMah0vVRC/8oO75mqz13KFqkILD8EVmUEA62oCrHfFl96lWyVrRZ0CNUgDDQ6ioFRgM
-	 QVl5mpVaw6JIQt3bzp3FUNG5SQya3qa64J0q0bv/J1ey2ImIP3lWOrgKaGtoA+xxluF89
-	 mDB3dgKYu1EvXrXq+Tym43lQDzNZaR0WmRs10NUy7mDyhCNey/U33taAb1/oa9mNVKw==
+	t=1793451167;
+	b=Ey+u08v5bNHYZRm1B5wA4WBceKthFFxab80V51WARe3UZOIFRYC5Qag92tDloD1TsDj6
+	 xg01q65nXx0r5yb1Ykw09N3LS35rSS9lMNQ6e5lsd9BwzVO9rplqvn1rGTBASbeZp2SSS
+	 FSIW2MVq1ZJRmAbgGisCJRRV/qXbivcFxKisNjyDjJ30FN0iZ1KDcqDidjRDzEWY6LG81
+	 icm4JS0+BocbS/dv9QMr91CTHDygIW5zemXgoWOi1EnHfFHTfEl1zk8qQYA2/DPBSVskx
+	 jEluNUbeNVJTNcvGkYa8cEPk5jYG56Bjr94X7G2LbmDnZ1OeWf8mggSfMVlm2CNLNvw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793450391;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=XmGfQWvcvFmnjKr+xP8taKEHDJYND7b+j1Gc4pD7Vlg=;
-	b=RAVnGyVaC4aYE0ZuFcmExzsLIEy5zjPdzQ3wZsKlHtMHdRtRkKRzVF5G8e5HgSWUC4Po
-	 73OFj9LvLh1kJHFehLiKvSK8/gA9OCfubGwAUge2cmueZEgKXkIejgE5JYgdNEUqFo7XH
-	 qPAPY2CuJQTxpUtV9mstMuIGzJeesUm7jQO1cqnUJar1watsYdgMf4RY39EpBK/k8n3W/
-	 KCmG/iGGXmOlk5Q5S2agIBw2ONagrE6WgOCCrbMjUp07i7JFXZ716krIhlA/VXh0/jA0h
-	 eojw+F45dCFV8vUl2xV/YHZR3FPkB/Hg2PkAm4Hf7muvNEQFI0MevQl2DTKb+DyguvA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793451167;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=Ef5Oa3VZ/itcQdeoCMh/rBhxuBUEhpvE45t5B+2SzD0=;
+	b=fMLtJDAWaAChd9vlvXZstewL4GGo4dE1IuHVrGqd8xkJn1AzulG4U7BQvJkSA/Q/RSrp
+	 h5yNGjKMJqk74AgEdTkoS4BkQdtpkUa/skyvr2x36zXp1tzbw/EIQ5CiQNxU9zUtMqZCm
+	 1scA4aX2adzQH11kUmh6SgreNjAR8nz6A/VUSD4lp7tpVL1aO+rS5O9kCNpSRU5uEKsNc
+	 wZmUN8LDkEUu7dnLGE47vH5z+G3viuW/FyzESNuuVfqGH0lbCG6vhFJT3f5x0fnaLO3sV
+	 U7ODoQEhEZ4huxHj7HYXu2KsnOkpOveQQt4vRfj+0SdVD4sMXDO8cFs/CXr0GWz1yfg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nTVaLVj4;
-	arc=none smtp.remote-ip=74.125.82.52
-Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OIXbW4XL;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B6CA606A31C
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 12:39:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9B6CA606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0AB606A31A;
+	Sat, 31 Oct 2026 12:52:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nTVaLVj4
-Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-1a2761c69fbso1363319c88.0
-        for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 05:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793450390; x=1794055190; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=XmGfQWvcvFmnjKr+xP8taKEHDJYND7b+j1Gc4pD7Vlg=;
-        b=nTVaLVj44Ub7z74cDC1wz876qdD4BKmWpGUd3aathGvyrzUmTNX/U3B41UPTFFFqjN
-         x70xLLXEJR0xkZSG2Hv65YNG7+qMPGDvnGGH1Y6MJSXnCL/rRVHa8/tVJW9LJIoYlEA9
-         6dXLZ30iqlNeaVxJlOXtpdzaym+La7NnDByhobhHux8WMrYR54d3/v/kt7kyefLtQDqx
-         7q8SH8uUvxxsRgNDzao73J8zRBih/KHAA83YUuTGm+5mpJ+STug39hfBE/4SVHn+J1Sg
-         qqxqi+l2Ygzq1WqLILBFDDg1fsnLdB/XIFsKTiXNxR9GrGrVJ5brPoJwKKqkfi/pVEPN
-         p8kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793450390; x=1794055190;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=XmGfQWvcvFmnjKr+xP8taKEHDJYND7b+j1Gc4pD7Vlg=;
-        b=WwDivxlc/hC+XzzMLBuCNL1q7+qWFF4FRWrsSBK4xuAFpwcKxi+kL/3R+biG31QRwD
-         hi7roqlK8g9La6ZgXrsDnTD3KaxK2H37x9a5knt4OWGLBsszOtWdFZILNsQgKMTZOfBP
-         1DUzjd1FBWMOYDWADvMj92dEbxqmhwPM/eY/hNRpmLaVpbvuEPsj25vnz53ghuKkXpPR
-         CST5Ts1FsPk9jQE1DBhCno7AvKEMpG828DM8VuBS2e5YbtF7yMk0SqHAirC63xkamBBn
-         hgR8Rz9LI+mZOx/P3Hy7MUidnh0HLvqQt7t90yhDfmiJ0/xcVhY/ebjy/xQA4HNIEY4U
-         CqoQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxalkT+OiaV3jXlWyYfd4rEbaaodFdCIz7u/ZF1uU49gxUGlPHzaRUZVI1+VgtTkIrr/4fR8nIITQfsCu4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJ/BS3N1Hsehd7QY3a8ysujsNuFUt6ZE1Ec5i/9ZNEQvOwo5Trw
-	CHr7Vse2qU0eaSzc7KnSLHhWXiA+918uEOuOEk86wZTpzeL4p2Ep4Y+V
-X-Gm-Gg: AYBFou3OKqSB8SnJWxf326mUlLQNFXU8PMgBGOtJsHMvCOI3e2+ezIRVfYWpq+ONKSC
-	TFh1LRW66PT2EcN8GZthhHHumairviqK87p1EHwES7QaQBy0R+qzM7+E/HuS29UbwW5lETEHnxy
-	dWPsMxaalESPWw9nEuOoG+PrTEatAzQWA9D5FzfOHRlvkiFO1wzTotqeiGkfxeGzHbtUGCtn3sr
-	Z+tUvK79p6jbu6fW0BPkJujgS2uHxZKFMlsz/ZNh7JBy8Awkjsrl3iCmpzSZXo1XV9BYN4RqNGw
-	WMVD+XJk7nFAnwXTRVaH15m6c6Xe96i9yfQz4dk/l1L0Pk0hYGQ1P2DSpwjRokmn7kLNtcMIzsY
-	y8un8e1buJ6UJy8pVYygyEWJeq+U6wZTlrLY4FxaHjxum1uYUXZAgUEG/RdSR7VQI2EbUyfp1aN
-	UK3XEtSfB5PYxPDJ5rwG63Fu7RO11X8jTxg/mkWzmPCF7Nfmbgd8RG1NJ02mWAwRygo6/gRhhBZ
-	QCgPNY7yhAvyeTfSFVQmrXzdEQnfYksGeDn2lCeHUlEHSV7ho4hzfeYGi0STupxxe4bJU+T2UKD
-	fO83wxedb24hfAQzUO3iRhPIIyVR/7D31AQ7zgGh9tA2ymOk2tP5m5l9FFW+1IRDBuxUKorKm/p
-	GOZqDNBzj5q5LmkOhkyM4BKASdwwDM2iqmHJUSkg1UwSrEzGiLPo7uMLfGq01Ftns7XWQ/3bpJU
-	OrrsuTLHnv5r3MC/g=
-X-Received: by 2002:a05:7022:5f0b:b0:1ab:de8b:5f0f with SMTP id a92af1059eb24-1ac5cb18717mr6418421c88.40.1793450389793;
-        Sat, 31 Oct 2026 05:39:49 -0700 (PDT)
-Received: from brev-9gdpyq8lp.ap-south-1.compute.internal (ec2-3-110-210-194.ap-south-1.compute.amazonaws.com. [3.110.210.194])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1ac1854da78sm21566039c88.6.2026.10.31.05.39.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2026 05:39:49 -0700 (PDT)
-From: Samarth Narang <samarth.colleges@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Samarth Narang <samarth.colleges@gmail.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Peter Griffin <peter.griffin@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	linux-serial@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] serial: pch_uart: fix TX kfifo underflow on flush
-Date: Sat, 31 Oct 2026 12:39:11 +0000
-Message-Id: <20261031123911.3784690-6-samarth.colleges@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261031123911.3784690-1-samarth.colleges@gmail.com>
-References: <20261031004733.3345841-1-samarth.colleges@gmail.com>
- <20261031123911.3784690-1-samarth.colleges@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OIXbW4XL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 382A61F000C1;
+	Sat, 31 Oct 2026 12:52:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793451166;
+	bh=Ef5Oa3VZ/itcQdeoCMh/rBhxuBUEhpvE45t5B+2SzD0=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=OIXbW4XLLzu0zUQW/vFxRZwQoGsJWtUPLu4aFA5oyuCxVql6GgkuosMuY6Ezwnixt
+	 xgANnhICOpl6vx+BMT0gXu1JXnt1G13cLfd34k1GepK3LBAsIutSaIr/rpZYVfPNLs
+	 3iUoP4zLq2nk2eZKWfzOKk7n7qX8v/N5kMpTlNmgXywbWDmmFEkDrW0dYrtjxw0bRP
+	 IqdKCkd+UiQYsTmPeuwhM0grHYEiMQXdCcjLPbR6d2SegeNCR2G03IxamktETKjJOK
+	 jg3fShw24MQNWZgz+boKJUo6QNB4/LX2gxfrqv2BaYSEbuRlvASO21wpCndTIIslpZ
+	 l2nvtF8SPFJBg==
+Message-ID: <sashiko-outbox-191946@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH 1/2] serial: amba-pl011: keep the flushed TX buffer
+ mapped until DMA stops
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Samarth Narang" <samarth.colleges@gmail.com>
+Cc: linux-serial@vger.kernel.org, imx@lists.linux.dev, Frank.Li@kernel.org
+In-Reply-To: <20261031123749.3783352-2-samarth.colleges@gmail.com>
+References: <20261031005425.3351240-1-samarth.colleges@gmail.com>
+ <20261031123749.3783352-1-samarth.colleges@gmail.com>
+ <20261031123749.3783352-2-samarth.colleges@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 31 Oct 2026 12:52:45 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -115,114 +61,226 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-uart_flush_buffer() resets the transmit kfifo under the port lock before
-calling the driver's flush_buffer() hook. Since pch_uart does not
-implement this hook, an outstanding TX DMA transfer may complete after
-the flush and call uart_xmit_advance() for each entry of the flushed
-transfer's scatterlist. This can advance the kfifo tail past its head,
-causing kfifo_len() to wrap and the driver to transmit stale buffer
-contents. The completion callback also updates the kfifo without holding
-the port lock, allowing it to race with the flush itself. The same issue
-was fixed in 8250 by commit 9e512eaaf8f4 ("serial: 8250: Fix fifo
-underflow on flush").
+Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+s) to consider:
+- [Critical] serial: amba-pl011: race and TX restart in pl011_dma_shutdown()
+- [High] serial: amba-pl011: TX DMA re-enabled while dmatx.flushing is true
+- [Medium] serial: amba-pl011: pl011_dma_tx_flush_work() bypasses pl011_sta=
+rt_tx()
+--
 
-Since the TX buffer is mapped separately for each transfer and the flush
-hook runs under the port lock, the driver cannot synchronously terminate
-DMA and safely unmap the buffer from that context. Instead, leave the
-outstanding transfer running and mark it as flushed, allowing the
-completion callback to unmap the buffer without advancing the kfifo.
-Take the port lock in the completion callback to synchronize access to
-the flush flag and kfifo state. This prevents the underflow, although
-the data already queued for DMA before the flush may still be
-transmitted.
+commit fb5633a8b4f6925fce77e6c969ed222b6e66d5c1
+Author: Samarth Narang <samarth.colleges@gmail.com>
 
-Fixes: 3c6a483275f4 ("Serial: EG20T: add PCH_UART driver")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Samarth Narang <samarth.colleges@gmail.com>
----
- drivers/tty/serial/pch_uart.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+serial: amba-pl011: keep the flushed TX buffer mapped until DMA stops
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 9505d255f09c..122025c4a0a6 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -230,6 +230,7 @@ struct eg20t_port {
- 	struct scatterlist		*sg_tx_p;
- 	int				nent;
- 	int				orig_nent;
-+	bool				tx_dma_flushed;
- 	struct scatterlist		sg_rx;
- 	int				tx_dma_use;
- 	void				*rx_buf_virt;
-@@ -750,18 +751,23 @@ static void pch_dma_tx_complete(void *arg)
- 	struct eg20t_port *priv = arg;
- 	struct uart_port *port = &priv->port;
- 	struct scatterlist *sg = priv->sg_tx_p;
-+	unsigned long flags;
- 	int i;
- 
--	for (i = 0; i < priv->nent; i++, sg++)
--		uart_xmit_advance(port, sg_dma_len(sg));
-+	uart_port_lock_irqsave(port, &flags);
-+	if (!priv->tx_dma_flushed)
-+		for (i = 0; i < priv->nent; i++, sg++)
-+			uart_xmit_advance(port, sg_dma_len(sg));
- 
- 	async_tx_ack(priv->desc_tx);
- 	dma_unmap_sg(port->dev, priv->sg_tx_p, priv->orig_nent, DMA_TO_DEVICE);
- 	priv->tx_dma_use = 0;
-+	priv->tx_dma_flushed = false;
- 	priv->nent = 0;
- 	priv->orig_nent = 0;
- 	kfree(priv->sg_tx_p);
- 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
-+	uart_port_unlock_irqrestore(port, flags);
- }
- 
- static int handle_rx_to(struct eg20t_port *priv)
-@@ -947,6 +953,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
- 	}
- 	priv->orig_nent = num;
- 	priv->nent = nent;
-+	priv->tx_dma_flushed = false;
- 
- 	for (i = 0; i < nent; i++, sg++) {
- 		sg->offset = tail + fifo_size * i;
-@@ -1150,6 +1157,21 @@ static void pch_uart_stop_tx(struct uart_port *port)
- 	priv->tx_dma_use = 0;
- }
- 
-+static void pch_uart_flush_buffer(struct uart_port *port)
-+{
-+	struct eg20t_port *priv;
-+
-+	priv = container_of(port, struct eg20t_port, port);
-+
-+	/*
-+	 * The kfifo has been reset. Let the running transfer finish, so that
-+	 * its buffer is unmapped only once it has stopped, but do not advance
-+	 * the kfifo for it.
-+	 */
-+	if (priv->nent)
-+		priv->tx_dma_flushed = true;
-+}
-+
- static void pch_uart_start_tx(struct uart_port *port)
- {
- 	struct eg20t_port *priv;
-@@ -1520,6 +1542,7 @@ static const struct uart_ops pch_uart_ops = {
- 	.set_mctrl = pch_uart_set_mctrl,
- 	.get_mctrl = pch_uart_get_mctrl,
- 	.stop_tx = pch_uart_stop_tx,
-+	.flush_buffer = pch_uart_flush_buffer,
- 	.start_tx = pch_uart_start_tx,
- 	.stop_rx = pch_uart_stop_rx,
- 	.enable_ms = pch_uart_enable_ms,
--- 
-2.34.1
+This commit defers unmapping a flushed TX DMA buffer from
+pl011_dma_flush_buffer() to a work item that calls dmaengine_synchronize()
+before releasing the mapping and restarting transmission. It keeps
+dmatx.queued set while dmatx.flushing is active and flushes the work item in
+pl011_dma_shutdown().
 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
+011.c
+> index e6f652905ca6f..863a050cf654e 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+
+[ ... ]
+
+> @@ -867,13 +876,47 @@ __acquires(&uap->port.lock)
+> =20
+>  	dmaengine_terminate_async(uap->dmatx.chan);
+> =20
+> -	if (uap->dmatx.queued) {
+> -		dma_unmap_single(dmaengine_get_dma_device(uap->dmatx.chan), uap->dmatx=
+.dma,
+> -				 uap->dmatx.len, DMA_TO_DEVICE);
+> +	/*
+> +	 * The terminated transfer may still be reading dmatx.buf: keep it
+> +	 * mapped, and queued set so that nothing refills it, until
+> +	 * pl011_dma_tx_flush_work() has synchronized the channel.
+> +	 */
+> +	if (uap->dmatx.queued && !uap->dmatx.flushing) {
+> +		uap->dmatx.flushing =3D true;
+> +		uap->dmacr &=3D ~UART011_TXDMAE;
+> +		pl011_write(uap->dmacr, uap, REG_DMACR);
+> +		schedule_work(&uap->dmatx.flush_work);
+> +	}
+> +}
+
+[Severity: High]
+Can UART011_TXDMAE be re-enabled in REG_DMACR while uap->dmatx.flushing is
+still true and before pl011_dma_tx_flush_work() finishes
+dmaengine_synchronize()?
+
+When uart_flush_buffer() calls pl011_dma_flush_buffer(), uap->dmatx.queued =
+is
+kept true while UART011_TXDMAE is cleared. Immediately after
+pl011_dma_flush_buffer() returns, uart_flush_buffer() drops uap->port.lock =
+and
+calls tty_port_tty_wakeup(). If a subsequent write or wakeup calls
+pl011_start_tx() -> pl011_dma_tx_start() before pl011_dma_tx_flush_work()
+runs, pl011_dma_tx_start() sees uap->dmatx.queued set and UART011_TXDMAE cl=
+ear:
+
+drivers/tty/serial/amba-pl011.c:pl011_dma_tx_start() {
+	...
+		if (!uap->dmatx.queued) {
+			...
+		} else if (!(uap->dmacr & UART011_TXDMAE)) {
+			uap->dmacr |=3D UART011_TXDMAE;
+			pl011_write(uap->dmacr, uap, REG_DMACR);
+		}
+		return ret;
+}
+
+Similarly, if a TX interrupt fires (for example after sending an x_char) and
+calls pl011_dma_tx_irq(), it also checks uap->dmatx.queued without checking
+uap->dmatx.flushing:
+
+drivers/tty/serial/amba-pl011.c:pl011_dma_tx_irq() {
+	...
+	if (uap->dmatx.queued) {
+		uap->dmacr |=3D UART011_TXDMAE;
+		pl011_write(uap->dmacr, uap, REG_DMACR);
+		uap->im &=3D ~UART011_TXIM;
+		pl011_write(uap->im, uap, REG_IMSC);
+		return true;
+	}
+}
+
+In both cases, re-enabling UART011_TXDMAE causes the UART to assert TX DMA
+requests to the DMA controller for the terminated transfer and pull stale
+flushed bytes from dmatx.buf into the TX FIFO, and a second call to
+pl011_dma_flush_buffer() while uap->dmatx.flushing is already set will not
+clear UART011_TXDMAE again. Should pl011_dma_tx_start() and
+pl011_dma_tx_irq() check uap->dmatx.flushing before setting UART011_TXDMAE?
+
+> +
+> +/*
+> + * flush_buffer runs under the port lock and can only request terminatio=
+n.
+> + * Unmap the flushed TX buffer here, once the terminated transfer and its
+> + * completion callback are known to have finished, then restart TX.
+> + */
+> +static void pl011_dma_tx_flush_work(struct work_struct *work)
+> +{
+> +	struct uart_amba_port *uap =3D
+> +	    container_of(work, struct uart_amba_port, dmatx.flush_work);
+> +	struct tty_port *tport =3D &uap->port.state->port;
+> +	unsigned long flags;
+> +
+> +	dmaengine_synchronize(uap->dmatx.chan);
+> +
+> +	uart_port_lock_irqsave(&uap->port, &flags);
+> +	if (uap->dmatx.flushing) {
+> +		dma_unmap_single(dmaengine_get_dma_device(uap->dmatx.chan),
+> +				 uap->dmatx.dma, uap->dmatx.len, DMA_TO_DEVICE);
+> +		uap->dmatx.flushing =3D false;
+>  		uap->dmatx.queued =3D false;
+>  		uap->dmacr &=3D ~UART011_TXDMAE;
+>  		pl011_write(uap->dmacr, uap, REG_DMACR);
+> +		if (!uart_tx_stopped(&uap->port) &&
+> +		    !kfifo_is_empty(&tport->xmit_fifo) &&
+> +		    pl011_dma_tx_refill(uap) <=3D 0)
+> +			pl011_start_tx_pio(uap);
+>  	}
+> +	uart_port_unlock_irqrestore(&uap->port, flags);
+>  }
+
+[Severity: Medium]
+Does calling pl011_dma_tx_refill() and pl011_start_tx_pio() directly in
+pl011_dma_tx_flush_work() bypass the RS485 state machine and UART011_TXIM
+masking normally handled by pl011_start_tx()?
+
+In pl011_start_tx(), when SER_RS485_ENABLED is set and uap->rs485_tx_state =
+is
+not SEND, the driver calls pl011_rs485_tx_start() and waits for
+WAIT_AFTER_RTS before starting DMA or PIO:
+
+drivers/tty/serial/amba-pl011.c:pl011_start_tx() {
+	if ((uap->port.rs485.flags & SER_RS485_ENABLED) &&
+	    uap->rs485_tx_state !=3D SEND) {
+		/* trigger_start_tx starts TX once delay_rts_before_send passed */
+		if (uap->rs485_tx_state =3D=3D WAIT_AFTER_RTS)
+			return;
+
+		pl011_rs485_tx_start(uap);
+		if (uap->rs485_tx_state =3D=3D WAIT_AFTER_RTS)
+			return;
+	}
+
+	if (!pl011_dma_tx_start(uap))
+		pl011_start_tx_pio(uap);
+}
+
+In addition, when pl011_dma_tx_refill() > 0 succeeds in pl011_dma_tx_start(=
+),
+it clears UART011_TXIM in uap->im and writes REG_IMSC, which is skipped when
+pl011_dma_tx_flush_work() calls pl011_dma_tx_refill() directly. Should
+pl011_dma_tx_flush_work() call pl011_start_tx(&uap->port) instead?
+
+[ ... ]
+
+> @@ -1236,6 +1281,9 @@ static void pl011_dma_shutdown(struct uart_amba_por=
+t *uap)
+>  	if (!(uap->using_tx_dma || uap->using_rx_dma))
+>  		return;
+> =20
+> +	if (uap->using_tx_dma)
+> +		flush_work(&uap->dmatx.flush_work);
+> +
+>  	/* Disable RX and TX DMA */
+>  	while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
+>  		cpu_relax();
+
+[Severity: Critical]
+Can flushing dmatx.flush_work at the start of pl011_dma_shutdown() allow TX
+to restart during shutdown or race with a concurrent uart_flush_buffer()?
+
+First, pl011_shutdown() calls pl011_disable_interrupts(uap) before calling
+pl011_dma_shutdown(uap). When flush_work(&uap->dmatx.flush_work) runs at the
+start of pl011_dma_shutdown() while tport->xmit_fifo is non-empty and
+!uart_tx_stopped(&uap->port) (such as during uart_suspend_port()),
+pl011_dma_tx_flush_work() will either start a new DMA transfer via
+pl011_dma_tx_refill() and advance xmit_fifo right before
+dmaengine_terminate_sync() discards it, or call pl011_start_tx_pio() and
+re-enable UART011_TXIM in REG_IMSC after pl011_disable_interrupts() masked
+all interrupts.
+
+Second, after flush_work(&uap->dmatx.flush_work) returns,
+pl011_dma_shutdown() spins on REG_FR and calls dmaengine_terminate_sync()
+without holding uap->port.lock while uap->using_tx_dma and uap->dmatx.queued
+are still true:
+
+drivers/tty/serial/amba-pl011.c:pl011_dma_shutdown() {
+	...
+	if (uap->using_tx_dma) {
+		/* In theory, this should already be done by pl011_dma_flush_buffer */
+		dmaengine_terminate_sync(uap->dmatx.chan);
+		if (uap->dmatx.queued) {
+			dma_unmap_single(dmaengine_get_dma_device(uap->dmatx.chan),
+					 uap->dmatx.dma, uap->dmatx.len,
+					 DMA_TO_DEVICE);
+			uap->dmatx.queued =3D false;
+		}
+
+		kfree(uap->dmatx.buf);
+		uap->using_tx_dma =3D false;
+	}
+}
+
+Because uart_flush_buffer() only takes uap->port.lock, a concurrent
+uart_flush_buffer() -> pl011_dma_flush_buffer() after flush_work() returns
+can see uap->using_tx_dma and uap->dmatx.queued still set, mark
+uap->dmatx.flushing =3D true, and schedule uap->dmatx.flush_work again. Once
+pl011_dma_shutdown() unmaps uap->dmatx.dma, frees uap->dmatx.buf, and
+pl011_shutdown() disables the UART clock, the newly scheduled
+pl011_dma_tx_flush_work() can unmap uap->dmatx.dma a second time, write
+REG_DMACR with the clock disabled, and access the freed uap->dmatx.buf.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261031123749.3783=
+352-1-samarth.colleges@gmail.com?part=3D1
