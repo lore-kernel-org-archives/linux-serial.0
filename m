@@ -1,84 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.180
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793407345;
-	b=CbxJT3ccLwejhlIYE6VrpNmtCXD9WkytS2kJAepdEEHdm+I1eerNW+TbvdPS4BrU2U0I
-	 sCpDt/xpA3wzKiiN41Wf+rR3CLobImIM6K0/HT6fHrU8rPCC2cduLHV7ySvFG+30DRn/C
-	 2mT43uVWEgSnTQgUQHsE6hjrGgymNL6HsH1H/hOPMMgeNft3TTThJ8W5JOi4m2J7KriQT
-	 BAXyJaT1zRqaoRCKk53192NA7YPO4lgYJHEQMynVNs6G+UizzaWw3vXal1UpChW6zFUvk
-	 KKS5qRon02N0/TIeYbG+tvEb7ejHucoZg4/k5zaP+M6vetSt9fXAFOkI0r33FLR1CzQ==
+	t=1793407348;
+	b=S20KwrKao+HrArE3rW9mPwst7gErkDCGbhJEQvcjFweWJUbl0Y6H8RKQ2kyVGifAsKb/
+	 jln5iUXW6jg+J82rfiZ8NdxsWlE/S8NqwpY77MSPrM4xIGw/GbfcE/dzYK3EVgfp+Bt7o
+	 K7mvLLpHClykDNOKLS2qPKtwUSlV38J1Tt6DptAjdoLdxWY5D+r4fgdCIneNn7ZxrfJjM
+	 bllZC6zUCMSPBD3dDV8AftIb84XqpGQq3GtaVg9VzEab5NQIN18WxgJnQXqZfhVqPg3a+
+	 wvjdlydMA56MBx7lbfqXgXRjk5wfNDU3q9RqI6fS8xQZwPAQsmfgpp3vbyQmrGSbsDQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793407345;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793407348;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=6Zn8ogGo3EJrK8xLaTC29uAmsx2DQ8Ou6DfNANGyHlM=;
-	b=GdP0+Zr5MfjqVWgKFZiWcr0NLCxrmJk3IXt0VVKE5c0lrDJRzTgrNQE40OzGVUAcYhg0
-	 ieKV64rzpdqw/rkGOPy9+tCPvgS6Bn7zCbtHxyPkpuWY4RnnQzbT4omOiWHqkv+SyqF8G
-	 xPu4097tMW7RiNzqXBuHlQsShORwCvdB+K6JUBWywdzZeKdcsGBt6vgFn60yQrJvbyao/
-	 9Ka/A49lunCCTqZYU5Gx53sDv9ypDa21/p3JudN282B2KReUX0AC0CIiur1jQsSNzw0vj
-	 FAf7F3ubZL7ait7QHKHz3W5Mzy7z3NXKq0Pw3/69dBKjIjRAM4QNPP1h8ccda6cqrKQ==
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=sz2NiJZ3qIKEXA71rCBDrOKHY9+zaIkwX4bCGBQ323U=;
+	b=W6C3WKP4AOehj4PWM2454RnCbAOilxgyJnqoA6xrk/0ZI2T3vUkUMPYtfJ22MGM3LJUb
+	 xmdZKc7X9zFT0i7lMULvKZcFU2gQQlI3VqlvINwnQed5uiKUAP7TFaETXEUMk3WmdFREQ
+	 GfOnElKbDJOTRCPYtyQ8ULWLi+uZMiKkfxnc0wSikZ2Tc7OQkzwaYZ1y0oMQYJ/9OVROh
+	 +0eKPMzws+N6hcx9YGBOeIo9l90u+sJkzPu2iyFtAOtdL1jo8pGcQySG5A1CVNSevOt8O
+	 uaruMcDpuq4C1oXDPA/BzThWEhq93d8gvVDXSkk7KvFvlMWHuceQuLuLEhaFm4fbaDQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=lDJUF5HR;
-	arc=none smtp.remote-ip=74.125.82.180
-Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HQVXeJRK;
+	arc=none smtp.remote-ip=74.125.82.172
+Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22176606A31A
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 00:42:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22176606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C05AC606A31A
+	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 00:42:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C05AC606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=lDJUF5HR
-Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-36a1947498bso645149eec.1
-        for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 17:42:23 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HQVXeJRK
+Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-35b2c599f43so500871eec.0
+        for <linux-serial@vger.kernel.org>; Fri, 30 Oct 2026 17:42:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793407343; x=1794012143; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=6Zn8ogGo3EJrK8xLaTC29uAmsx2DQ8Ou6DfNANGyHlM=;
-        b=lDJUF5HRQrNGcGOXShA4FcSRi6t1g5cq5qrr1V+hZFuwmkwlPaj+mOE/Ralxw5ujyJ
-         pWsIo6F0SoXvQwSAmz+VCM0sGfwVkNC0T0KLZyJaBNXjhKSuo8zSDB+LDHEl3EG/z/7G
-         kBV1LFgN91+PpAJCRmiHSMZkGKXEr+fa5coR+8qZ//C/OfWDLeh6Ng9kjqZcVAhLoCmt
-         BaPOfmYO/OITGkli8NkfGVe2wjPfPEtL8+OP4x5emUc/Q6ZFkiIQeHdv8gGmJtQa2oEU
-         xaJPd4gX65hxJUIok73Kl96O77GeK5XpwUlxhKFUiCcna6Gk9J4e+pUjp7qN/7+Aa5Y4
-         CqPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793407343; x=1794012143;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1793407347; x=1794012147; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=6Zn8ogGo3EJrK8xLaTC29uAmsx2DQ8Ou6DfNANGyHlM=;
-        b=QHYDHgtqusOdnYYvth5A9Usz5iCQ6OuCPsZrFOzXtFk+xa4x5oFj2MDRcnzis5wqrF
-         fczzR4tO9pqn7nTERKUQPCRJWZJSjz2KYC/oNVpeVE2m2OUz+4DV/HUACqTLZxhf4n1a
-         Yy2qMTRELBrOyc8PamBDpGfpl6TSFQ5lEGZdiWvv2X2PY0f5s03qRPwCVIQ2s0BG2yuR
-         mAnWVExFHoDag9MIYQoTvupLeoHFF8FUozmdS6fYhefy41fknOteoGc1VanoUuVyA/df
-         vq8nC11dBKsfU1GSoAx+5bURMF+lnNdDXRcClCCiOMbz02iGSCyGItC3ZRxbwr9TauMr
-         AP0Q==
-X-Forwarded-Encrypted: i=1; AKwUvBzFuLRIfT/zZOK//ysZouYcprxdblpyQ2R1XTYpi+HLgTXkyK927HDscruPfTZBLhc5mvJjPZig+fbSTOQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLJ4ylfW9CPDO7oo4kfSMQxAlc2L96O+XypkEylWtHipo9MG48m
-	Dwsg/q8hzQy1xJf4jpU7srMAxfNCp42pNytyYtTYxJsBpl0evIwo/BJ6
-X-Gm-Gg: AYBFou1E02opyAfxGoF3ia+pAKtyWA0DQC/WgGmeKu2kzkFIWLe0jVqoif65EBNicHy
-	X1r4bdci3QZ3xpIBiY6k2dG0Ik3SjYMEjsmoV0H6bPyLaraJ0RRZTWGdYi2hVmZYzBwShlLrpVR
-	ZMrVKUuxUvCe2BTbKPMvq/alb/GxTw3cpKMrpYuni10eM6ckdxEFAKU0THOe41tl+3dp9x1Huyh
-	uRPg72XD0YE9RK6D58Sl3XKy9PWA0spzHKJSMyjIcfzcz/ZVtiSN8MeWXtePNcUioT4WmPjjEaW
-	4QeKU5rt6LMlwDHfMp+f3vXunDy6S2fZY6yp3PTsEw+9XK1Cu4Y0QH8TGT/KoJLJkW4omy5ABri
-	LtjT+J+2ervHZFr+yKuQsvscnSWUZbpXrprFBptN1WptN/oXdzzw8XCHr5WpIrUfqA4wOOHBD3p
-	f0bsN4Aztr3cE80w+IO7BIXNAIG7aJjNhNHkGSi9M4QEl1x/HlNzospE5vV85imW9YSNs9RUrD2
-	YqkL4B2UoxTCMkq7r8eAsaOroySKqNJX5LSQhL40dsD0k/4rPWmXxn6ULsEAtwNmcGE7/YfrmZs
-	GSGjEYXWgW006rDym7iesTGASfvLsPJvQe+GSLtUuFUFsIjxEZIyIPCh7Ox7xCg6LxFJEU3LtOD
-	0j9foOHkclLBgKwn73buMORiPpReWMzDE3L4WmGIeyDzvDF1G58wNpWcV8/wOClLHvh/nX6R3/i
-	YjgVdph/FH1WbEdn+E
-X-Received: by 2002:a05:693c:83cf:10b0:36a:1427:3933 with SMTP id 5a478bee46e88-36a4236e7bemr6281218eec.16.1793407342986;
-        Fri, 30 Oct 2026 17:42:22 -0700 (PDT)
+        bh=sz2NiJZ3qIKEXA71rCBDrOKHY9+zaIkwX4bCGBQ323U=;
+        b=HQVXeJRKbHbH+PENXZA/vCBb2n2Fj8A8OXTpVl4KqYXjAGH7NmwgR/rs2vLlP5zMeQ
+         zTO0FQgL3wsI0+LGyjeTt5wfgmc8U0SYkaZWc61SEYjnOsa6pid4wVYj8VdHTXYR6Eg0
+         CqJkMVAPtRb1BThWTwYNdOEiPzd237Oq3ornsmLQWKzXbQ/yEP611wLzZsM1NRAd8oeQ
+         UfGuMopjl0SdGxPQjVePmIBXpNgUT2Gl15O566nUHBzGIR84CdJZVCNSwbEBOcBOeX5a
+         FZPimCcxZWQ987Tn4L19fBe5mGR0FeJ2dHL6FNkanrfQz70X/0hSLc3c+k6ODU3AMmwg
+         L2Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793407347; x=1794012147;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=sz2NiJZ3qIKEXA71rCBDrOKHY9+zaIkwX4bCGBQ323U=;
+        b=RFTWQJVqfQLRFYhINnZTmRQwYFe3CmOeHAeEx0452v8af+kE5cG6gySndPPBqp79ve
+         AgTWGwokufqXX28PkruyorGk59CqDL9i/Ge5IoTPDwXIIWck6fO2mq5EdGadb69lg1gn
+         M+eFOU8pBkTlUe87Gk82H6u2tqfDpmI6rQLJ3yLkJCvRGb0hrMiaJCEuc9XguIL+CTR/
+         wmH/dg3Nvl2yJYxA+HdbnlwMONAmOIIw/w8dBVHGfgt5b3BrSKG1iKei0G1JeYcXsgCm
+         18JCYGGso5XM22WDsVs1uhCmNlkUQveNJ2oo+HLgbkEIpcwvlbJccd0W50AgLX/zZ6Yt
+         Rb3w==
+X-Forwarded-Encrypted: i=1; AKwUvByRDAftHLicunZiZ5OMHIRVChcUEVSytpYLuTzn4V9cyj0XnbamnLMsrgZTZROL2QduZ0dCCyj1q7lzo5w=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIhCUemA+dqvUTU4Nq3xMAvlf523dV4n4CQDv353OgGhN0vT2jf
+	jUIjPuSTuvX2klWxSl+18eqykiP1PCoz7wM7HNozdVVhYJJGIOzKbjHy
+X-Gm-Gg: AYBFou1bu4m1xt+Bsfy4umNs4ao9QoRfzQWHBzC/Nnfou0m7qluET3EF3kWda/zVV4M
+	HmkcLb/ZGWHpRUvIs28BikktzB+eA1J1u/X7ywypsfqQ1BKs67BO1Wc/xUYR8UCDair+1RvMVWg
+	f6iMp72onYAovZno+jbQrHeOYd+pu1ZoCDNZ86dnuSWGhvwyJRa/wkWnTgosRHdsUGINWjIIe7d
+	h/OxqNRWe0Nzn490MWzO7ckpj2o2aiQFoK2xiGkLNPUf8u+83OzwZrAZ9vm3DhskiHgEp+JehCZ
+	2jpmyk7ZFcbtM0YISdu5CDoofMQzJHB6KOFzG36TGQZhyTgLHGbNod5wQR92WkfydwMbhskAd69
+	VFpp9O0l+imKU3A3Hbah/oX0F5gBzbF2vxn84hZ5NjYEkK7P0dfojKm/81idfjdhvQK++XRIzlL
+	8tdkQ0/eyR78uyTW6ALCO+qtzuAdJCPtw1oYIBq2KuoXwc3Beiqf3w8XE0+/kFJd9KZMmu4yqYu
+	aKw5wGUVYlkuUE2I59cAKgYWLmxpOcN2zaqaS8AfKkz7JgLt5fU329bE+viqp1veWv5kRUyRNHS
+	+A7Ye4+EXXbNkH29hnS7jfnsJrEH/lzAktuMNL0P4vnpJIQXUTdkwgLXs6UcnQEBncCbZ2eezYC
+	icxqU2pnUTw6z+hJGhVi14gEi4KJIa1LHLQeiWVJM9nETCc52fHMKHnJArSoEtIFfxxKCGH1m3h
+	39xvBL7EWzYmUIJjB3qyZLsBpR0CBy+QsP7t8X
+X-Received: by 2002:a05:693c:65d1:b0:36a:3407:26ed with SMTP id 5a478bee46e88-36a4243cd68mr5338049eec.34.1793407346852;
+        Fri, 30 Oct 2026 17:42:26 -0700 (PDT)
 Received: from brev-9gdpyq8lp.ap-south-1.compute.internal (ec2-3-110-210-194.ap-south-1.compute.amazonaws.com. [3.110.210.194])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a428af91bsm10889097eec.8.2026.10.30.17.42.19
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a428af91bsm10889097eec.8.2026.10.30.17.42.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2026 17:42:22 -0700 (PDT)
+        Fri, 30 Oct 2026 17:42:26 -0700 (PDT)
 From: Samarth Narang <samarth.colleges@gmail.com>
 To: Krzysztof Kozlowski <krzk@kernel.org>,
 	Peter Griffin <peter.griffin@linaro.org>,
@@ -91,10 +92,12 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Samarth Narang <samarth.colleges@gmail.com>
-Subject: [PATCH 0/2] tty: serial: samsung: RX DMA fixes in stop_rx and the RX completion
-Date: Sat, 31 Oct 2026 00:42:15 +0000
-Message-Id: <20261031004217.3340610-1-samarth.colleges@gmail.com>
+Subject: [PATCH 1/2] tty: serial: samsung: pause the RX DMA channel in stop_rx
+Date: Sat, 31 Oct 2026 00:42:16 +0000
+Message-Id: <20261031004217.3340610-2-samarth.colleges@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261031004217.3340610-1-samarth.colleges@gmail.com>
+References: <20261031004217.3340610-1-samarth.colleges@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -106,31 +109,38 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series addresses two RX DMA issues previously raised under the
-release_dma patch [1] and subsequently confirmed by Marek Szyprowski.
+In s3c24xx_serial_stop_rx(), the driver pauses dma->tx_chan before
+reading the residue of the RX transfer on dma->rx_chan to determine how
+many bytes have been received. Since pausing the TX channel does not
+stop RX DMA, additional bytes may arrive before the RX channel is
+terminated, causing them to be omitted from the data passed to the tty.
+This also unnecessarily pauses an active TX transfer, which the driver
+does not subsequently resume.
 
-The first fixes s3c24xx_serial_stop_rx(), which incorrectly pauses the
-TX channel instead of the RX channel before reading the RX residue. The
-second prevents s3c24xx_serial_rx_dma_complete() from re-arming RX DMA
-after reception has been stopped or during shutdown, which could
-otherwise start a new transfer after the channel has been terminated.
+Pause the RX channel instead, following the existing handling in
+s3c24xx_serial_rx_chars_dma() on the RX timeout path.
 
-The series applies on top of [1] and has only been compile-tested with
-arm64 defconfig and W=1, with no new warnings. It has not been tested on
-hardware.
+Fixes: b543c301c2c5 ("serial: samsung: add DMA support for RX")
+Link: https://lore.kernel.org/r/20261030162334.3000737-1-samarth.colleges@gmail.com
+Assisted-by: LLM
+Signed-off-by: Samarth Narang <samarth.colleges@gmail.com>
+---
+ drivers/tty/serial/samsung_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1] https://lore.kernel.org/r/20261030162334.3000737-1-samarth.colleges@gmail.com
-
-Samarth Narang (2):
-  tty: serial: samsung: pause the RX DMA channel in stop_rx
-  tty: serial: samsung: do not re-arm RX DMA once RX has been stopped
-
- drivers/tty/serial/samsung_tty.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-
-base-commit: 83f32c773255720a661aa45d83e36278135f23f5
-prerequisite-patch-id: cfa1c1db9d23de3ae1cc6f0476a8ac611d09c7a8
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 4eeef149b..2f6c69bec 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -553,7 +553,7 @@ static void s3c24xx_serial_stop_rx(struct uart_port *port)
+ 		ourport->rx_enabled = 0;
+ 	}
+ 	if (dma && dma->rx_chan) {
+-		dmaengine_pause(dma->tx_chan);
++		dmaengine_pause(dma->rx_chan);
+ 		dma_status = dmaengine_tx_status(dma->rx_chan,
+ 				dma->rx_cookie, &state);
+ 		if (dma_status == DMA_IN_PROGRESS ||
 -- 
 2.34.1
 
