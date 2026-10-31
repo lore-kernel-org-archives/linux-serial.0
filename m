@@ -1,48 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793466607;
-	b=AsYRAegWSsEJgN8KA5yDXYCooLx+7FM4WigIq6o2o9vVCLGzMG9mcyCbzmuN8CpXkKjj
-	 Ebar7KKEx7cUJeosmjcySaEU7ecSry3pmv/ppefL3vP2Fcs4QOzUxjS3YVXpMSIGwxrBn
-	 KCUjDpyx4aXY6KaxkTFBVKXyztM6o8neovWpuoRwiUcNOIi8h2l/4Z6btFZAkEVheBPRA
-	 mxjaM4nSgfpA9KsaAtX5AocciY8o+ZOixZRQ8fdKzmTSR3JIzBpeeaR0p9ZsiuBGXQBvS
-	 uzYxOb4c36VxKe8p04nL/V3BjVRTZMao9XzbsBGO1NCBYLQlwiXHUrD4kSrSS+NuEUg==
+	t=1793466615;
+	b=4XFdEjT+X+bHtgjQn42lXumayigqtQ9lud4hj3xGjE3iKl6mwz1aS2aJaJAuMmhFPxwR
+	 Yq2w9UCfHmFxv4hm0rCkpxCQ10MRX2bA2gu0TGukxQ3XUjRVW4QeUnIz3PpNORbJTEtKh
+	 65xeyoxE+JEPZSTIhh++ZJ+qU/R7GifUQUH/yX5BczV5yMC7NOvPJjJZVCeBTMN1CzpF0
+	 hiDuy0vb+pcf99qey5TmiIoysw6AaNbJgRa0HuhrySiSQ+VOsxyzZTEHoakuiUuPNGLnZ
+	 FVXdzoBTdRx1NzJQLlvGjaVUyWSmepvzxJgQi8nr7jadNGXppALxiYh5t96kZSXT80w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793466607;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793466615;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=Ht3eHe4EzKYxFFLbnOBIrMS9lRut2mY+uEg1RLF4XUA=;
-	b=js0FUkD1JtlRLZMCrAinu2//Jc9+F6wlgYd4U28H18MwTzLDXfE05A/rqiHT1giQmYFH
-	 cVThOJZcfL221X5Xt1bGmDcNwyaRFmL+o79U5ZAk7umvNpQWT+25NC5726ygEYhXHIleC
-	 89Y1LZHSw0SXH/0bjTLqHJ/0VUNhyMiaeurB0r2vf4wu1F6kYlqZGj+7IWkPqgaEARkoz
-	 gZF5bEY0B8RlqJ72eNKuALqM+T626Biw4/WP5e/mt4FZeQdyDK6gQeABEEV6Bj8YK653+
-	 W2VzyHyUzNK1ZQHRQSjEmp8npnndagrUrY+hFPSshmik8boHlPEfFpFJ3aIeMbETGEA==
+	bh=iBtZ+8x+9hsMF2RGzIf/j7mP7lqK838eZOHrYT6mP7A=;
+	b=YGOgTtX+tS/6fY/tqnA6Pt8P5Wv/UthudLwY6LjsYtN3NcFPk9h44vOfpXqiYtPRDPji
+	 xZShaFV/AViKyWt6sw1KMGKTQqb4sUMa4VEfuZAqnBAqLHJMwltQY5k1XQb6vCWG9Go7K
+	 rSnf95x9+URNDvclC5OXqMNrj6xPwHN0XY39LDbGv5YyqktZB/lSAgI+Od0H9jDMsIvFD
+	 zGmZ0zpjPYGYbkqTuucplaNHfEy88+KEOe8qN1wsraZX7ZcFyh4SZrqJpRrl2tR2apqvq
+	 0rfCmV5ojxzCL1Ddi8qqrSjkqScWMnQ7miCTXDpHouNAGpBVCuTTXerNhSsWe7XDcyw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KrbN85Oq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="c0h/Q8p9";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF6EE606A31E;
-	Sat, 31 Oct 2026 17:10:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8BE8606A326;
+	Sat, 31 Oct 2026 17:10:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KrbN85Oq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86CB91F000C1;
-	Sat, 31 Oct 2026 17:10:04 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c0h/Q8p9
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B58D1F00A1C;
+	Sat, 31 Oct 2026 17:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793466606;
-	bh=Ht3eHe4EzKYxFFLbnOBIrMS9lRut2mY+uEg1RLF4XUA=;
+	s=k20260515; t=1793466614;
+	bh=iBtZ+8x+9hsMF2RGzIf/j7mP7lqK838eZOHrYT6mP7A=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=KrbN85OqY1lCsidheCnNJolG+HjnxA3FM3VFV1wn90pXbtHW7nKFH6nms0CY0E5Vu
-	 QsJ2zC7Cyb0Ez6cVoCm7nX4gF94MWLsJxjPF65GEZKV9oWAvmDiNMVVfMCBELi26PZ
-	 5dMzz0TOCAu8uYaGbPWLnaj8ZcOCRHjL2ukFnq7EdpJzNiaaemdYoCaq3OiuL7cIAp
-	 i5yW5pb0V6tUzX8GfRGTzWH8AA/FWOYg4qDco0YnDyVj6yeI1SwTEx/5ajQJn+ONnV
-	 y7ZCyasozMg/63Ze5mZisuNx8VL4T1Im5njy1NWu3FeF8av2C0TsanGNM7WZm237o0
-	 TH7jiFuraDKGA==
+	b=c0h/Q8p9hVCQz45IKlhRwOBJeFegWtEuxzkAp2REt55hfjLJWaE/J4WML49lNsMB0
+	 KtAKXjxtIhY2vtkrs0rLwHjOY4+55AL2hbiKv0nzUdyiY6OM9LmTU4Uq+tQL3sb4J7
+	 +it1SZXiOmeyVtcdSNNWbr+L2ewiTE/R7clzwqtVsYCY+wr8ZY/m2h7/69I7Y0H10S
+	 T08CbVXQ1ud0hawtF9+fw3oWCCYVhpqTsbl6sNBB99aSJRMMP6fTFC06OYZoqa/M/V
+	 cgC77Io/6n7op10dyf3QnET/U4FVndx8ZLgH2Kvb0q3uboaJPpm2ymTTJv2Zzk6Lm5
+	 eO4HOoozWpngg==
 From: Joshua Crofts <crofts@kernel.org>
-Date: Sat, 31 Oct 2026 18:09:46 +0100
-Subject: [PATCH 2/5] serial: fsl_lpuart: remove redundant
+Date: Sat, 31 Oct 2026 18:09:49 +0100
+Subject: [PATCH 5/5] serial: uartlite: remove redundant
  pm_runtime_dont_use_autosuspend() calls
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,7 +55,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261031-tty-dont-use-autosuspend-removal-v1-2-7bdadcadc4dd@kernel.org>
+Message-Id: <20261031-tty-dont-use-autosuspend-removal-v1-5-7bdadcadc4dd@kernel.org>
 References: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
 In-Reply-To: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -64,11 +64,11 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org, Joshua Crofts <crofts@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793466599; l=1119;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793466599; l=846;
  i=crofts@kernel.org; s=20261015; h=from:subject:message-id;
- bh=2oCMjGtbSQHN64VRa5dtTxB0LFjvNWUjbw8MWTfVbOY=;
- b=cLUcxGR7/9wLAmRMhc+sl8k/QOn4ZFAiZc86JXTxphHlomh6NKpgAKNnKN3vaCWkNhcZAIwl1
- Nmfj7RRHhi8ANbairlQHfGVoH2TDp+O673CHwBph0L5tTNU1LJtd1Ht
+ bh=mLeFYhwf3vQCJZ2IaX6xBHLUPjV63sPKWbZxuVLBLCs=;
+ b=LPGQnS3CnIiH3EjafGjL8Rzp5cjrGL2VVHmjnYrEcroAxHodSxBBYC4Aj7QxIe+yXVCKa7SBE
+ F0znZV6oZq+DlZl2/6yKf82m2sBb08B09sxwIV5plLuo/dDhnfs3lgp
 X-Developer-Key: i=crofts@kernel.org; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
@@ -76,33 +76,25 @@ Since commit d1706f9da9f4 ("PM: runtime: call pm_runtime_dont_use_autosuspend() 
 driver core is now responsible for undoing any
 pm_runtime_use_autosuspend() calls on driver exit.
 
-Remove the redundant function calls.
+Remove the redundant function call.
 
 Signed-off-by: Joshua Crofts <crofts@kernel.org>
 ---
- drivers/tty/serial/fsl_lpuart.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/serial/uartlite.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c8575c965203..411e14151a50 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2987,7 +2987,6 @@ static int lpuart_probe(struct platform_device *pdev)
- failed_reset:
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_set_suspended(&pdev->dev);
--	pm_runtime_dont_use_autosuspend(&pdev->dev);
- 	lpuart_disable_clks(sport);
- 	return ret;
- }
-@@ -3008,7 +3007,6 @@ static void lpuart_remove(struct platform_device *pdev)
- 
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 6240c3d4dfd7..e7e2fd2b7c59 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -898,7 +898,6 @@ static void ulite_remove(struct platform_device *pdev)
+ 	ulite_release(&pdev->dev);
  	pm_runtime_disable(&pdev->dev);
  	pm_runtime_set_suspended(&pdev->dev);
 -	pm_runtime_dont_use_autosuspend(&pdev->dev);
  }
  
- static int lpuart_runtime_suspend(struct device *dev)
+ /* work with hotplug and coldplug */
 
 -- 
 2.56.0
