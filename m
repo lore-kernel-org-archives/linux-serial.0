@@ -1,50 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793466602;
-	b=PnEC1Qk0z+Cq5YBe+dqwpSkA++iHMCLhL746Xot5kkqwQsDdJFrvTomCa1kpPwWaojVi
-	 RRnEaDEnhvSwTzQ/SIneo0HgsUQ0aO6YS9tYpnbOi5FhAlrljDJpWZ4/2vAeVXrTNtORv
-	 WV8IzNgXOEMNXlMss4vBk1FlLWjwNierhrKtSKg/b50lWp1zy5fx9RSITM23EMju6xiqZ
-	 iRao6YvSCGhKGJrJlc8mhMMDvTqrzIoLrUI+ty7b35qyIeGALAHrq4xn0ePv+ZvzM1c13
-	 6Tcwla2MTn+oXmrdtdpWWsZfNrh+tJA+z/JGNFzMSjbmlYpt/fga9VvXsNF7ht0HnUw==
+	t=1793466604;
+	b=Iv1c2W1UTMkFBHTIVH73H5KPmLC2zfwsO5KW1SzVIiUmjyG+PSOm2BANZqsyeF6PeY+3
+	 waYznNO8SrVzDfXyFW0rLbCeNlliXzn8bYfhazj7SGfGrh0qd+2q6DVCMezy9Y2xEpaJo
+	 OPTWsiaRPpoYQlU2oPPccCx0HT7/TkIwPQIYov2rw3ETaEdAUUSh/B2RHv1uE3GD3hXPl
+	 tFnqVH+Q09UXL0DOr6dyOrBCONqTChc5cGIlHiKO0LmgAFZWq8oVBMAXCgCrHb7TtL0Qz
+	 MUxPjgReU0nRFF6fqrXp5sRX2bLmvV9MGHGGEfXTgvMk9/ADxnHawFGBOfeE9cK1t2A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793466602;
-	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=rwgOuZt3/daKJP7MDhwWg9Xwq6IOExj4eF3w/XLEjcI=;
-	b=Dy+Ktu0TZRcCyWucouwYgOGRCefZr0z7gJYyef5ZrQeIQo51Dd57gje4/CVg0vNYG4NT
-	 jLw38T4zXUi2a8buuXZIKO1aF4NhOxWzDtNKaqSmf9op7NyjhMAXwdRqxfmc4O78mcWVa
-	 mlAQB5rrL6TARHR+wIcPQT440WZdzB5UiqC7aWlAbEtCUUfRi2EP0zVvCRyC6xgfA/3gL
-	 gAVM0Ye1qKcaCisJJq2w2BUMhL2tOgnUA0+9t/mDQfpaGMZm0LV43g6JXC1NPOmamJkly
-	 eZQsIiSFEmoTC6yRjHYZ9+L+VBAswX77nbT+WhDocNQYTaH2/6WVexVbPqdfWgQJGlA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793466604;
+	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
+	 X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=W5pbACeLmZxOgIPqMZmA7R0XTuCDvCRAkd65xmmHjps=;
+	b=xNZPw2Kv5yXLX1D0xUxGEXXoQTYjZI7QHzoMJCB/M4YbwuQsTJMHERBRXXXbCpCmPxTu
+	 AziwWtZTsuKwCXdeo1dp7kdVh35T1KhUeayXqo0o8pUzmo9yIq4Xc/4ZpHS18M6F+WZec
+	 BhSjF00X/uv6y+uiFjrdRIsYsC3CHI5jxJyTB8GphPVpJh+RfSS9a+PWisNUlE8ehLWRy
+	 8n8/EmC671nHgHlOOVrNxVCqjTmXPBvNvYAJ9va122NIdQdqZFjP5JbJTFU4h8i/V2MII
+	 XAfZu3XeHyzc7v52PUUsnR896HWh6jN5N57MUM/yRbQoQA2z4evdn5plLaSZJYyHz4A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DgDXR5r8;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WXr8VFkh;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06D7D606A31A;
-	Sat, 31 Oct 2026 17:10:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A83606A31F;
+	Sat, 31 Oct 2026 17:10:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DgDXR5r8
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FB31F000C1;
-	Sat, 31 Oct 2026 17:09:59 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WXr8VFkh
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 172B71F00919;
+	Sat, 31 Oct 2026 17:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793466601;
-	bh=rwgOuZt3/daKJP7MDhwWg9Xwq6IOExj4eF3w/XLEjcI=;
-	h=From:Subject:Date:To:Cc;
-	b=DgDXR5r8uhoVW7rNG1/mUea4nbNWPx3W7h9kGOxAutQWk/LgQcYM7jMxtI4ybU5z4
-	 /VXY0Vc3/xUC4zmUsi2tyuLIuqHNG8fD0fu92wb2ksBVDhgo4x0Eq8AEYzt0l3ugdu
-	 JhbD9+fAq5zhMzHcMB0lATI8fAHagVmjja8m8MYinnDL/+vv66DJu100jkfbkH+SrZ
-	 fSN98XEcY8flO07fTzoLAL2IikYASnTV5/ytWZB+2nFdQQOix5XUmdooHdMvB4DsTj
-	 6VEKODdjgl2kb/ZSRAScUfNhNeLRkowbvy0z78dYFTI27GFlHfZyg/p1pbOrjNhpgZ
-	 ilEVZ/THNJyiA==
+	s=k20260515; t=1793466604;
+	bh=W5pbACeLmZxOgIPqMZmA7R0XTuCDvCRAkd65xmmHjps=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc;
+	b=WXr8VFkhseeAagtDUGfC8bF92PTIxvdLT1NpPWhdA6T92SXjh9DnkGQlCi2zQ+a9H
+	 JNCyE9o3HBjdPGWUwzIXbGfG+t5/yHTYmdhfzBqGcPIh6iHBuZBpyD1hPrZPlkDbUk
+	 vgs6B/XD7wrFwVr21G+r60HjC4ATEbb7Mi31RmijnmbEB6a+CuQeI+e2tLnfpC2bh8
+	 yl9tUDAXDV2A23OMP7x6HzHa53vCXkS6Py4V8RQFAZX/NNVwfaM7GJN97WOrOMLHLH
+	 kS86fu1ufMo8mwo0C9IXofNdMrAz2Dt+Jqct6s3Bmu3c3nWfqFHmAqyiAuK53Zeh/2
+	 yU1xRmfdxtJWA==
 From: Joshua Crofts <crofts@kernel.org>
-Subject: [PATCH 0/5] tty: serial: remove redundant
+Date: Sat, 31 Oct 2026 18:09:45 +0100
+Subject: [PATCH 1/5] serial: 8250_omap: remove redunant
  pm_runtime_dont_use_autosuspend() calls
-Date: Sat, 31 Oct 2026 18:09:44 +0100
-Message-Id: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -56,21 +55,20 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3NQQrCMBBG4auUWTvQiVLFq4iLmPzqgCYlkxSl9
- O4Gl9/mvZUMRWF0HlYqWNQ0pw7ZDRSePj3AGrvJjW6ScS9c65djTpWbgX2r2ZrNSJEL3nnxL8b
- JyS0IwuE4Uc/MBXf9/BeX67b9AE/dmkZyAAAA
-X-Change-ID: 20261031-tty-dont-use-autosuspend-removal-e821bc1ec476
+Message-Id: <20261031-tty-dont-use-autosuspend-removal-v1-1-7bdadcadc4dd@kernel.org>
+References: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
+In-Reply-To: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>, Michal Simek <michal.simek@amd.com>, 
  Peter Korsgaard <jacmet@sunsite.dk>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org, Joshua Crofts <crofts@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793466599; l=1149;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793466599; l=1219;
  i=crofts@kernel.org; s=20261015; h=from:subject:message-id;
- bh=2SRCu0EHsDqsQ6XggGun3l8mT6gihtWOiO8PI8Na/OI=;
- b=GJ7+wDp1zdB9c844WCb+h+JMrXpw5Q//cyIE8FCrJ/Xud+6N0TPvu17+EryGgO16JKE8QJDjT
- rt5UknaSnZnBGaaEkKSgawxPZKnBY/i7jBXMJIxlAoYyLtMwvcwnoBX
+ bh=MJ3P6Nb034L4X0qZnePc1m99BfQRbCOFnwq53NCQfmI=;
+ b=DI3XA8FRtJKLJpa/DleKCsuR9oBj0b1rJwiZPWuwjd8XYHTP4/yIKWfmLw5WgkzESw1XV7FOj
+ kENn+QC1qGMCQsE1TkWHJ4Im38hNr5AsK3eqBGqljRoLaz+oQcR71LN
 X-Developer-Key: i=crofts@kernel.org; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
@@ -82,24 +80,30 @@ Remove the redundant function calls.
 
 Signed-off-by: Joshua Crofts <crofts@kernel.org>
 ---
-Joshua Crofts (5):
-      serial: 8250_omap: remove redunant pm_runtime_dont_use_autosuspend() calls
-      serial: fsl_lpuart: remove redundant pm_runtime_dont_use_autosuspend() calls
-      serial: xilinx_uartps: remove redundant pm_runtime_dont_use_autosuspend() calls
-      serial: port: remove redundant pm_runtime_dont_use_autosuspend() calls
-      serial: uartlite: remove redundant pm_runtime_dont_use_autosuspend() calls
-
  drivers/tty/serial/8250/8250_omap.c | 2 --
- drivers/tty/serial/fsl_lpuart.c     | 2 --
- drivers/tty/serial/serial_port.c    | 1 -
- drivers/tty/serial/uartlite.c       | 1 -
- drivers/tty/serial/xilinx_uartps.c  | 2 --
- 5 files changed, 8 deletions(-)
----
-base-commit: d135ab453a7400a34930bdda1ef4bdc8acfac80e
-change-id: 20261031-tty-dont-use-autosuspend-removal-e821bc1ec476
+ 1 file changed, 2 deletions(-)
 
-Best regards,
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 29a203ed93fd..5d6911b1a2b0 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1608,7 +1608,6 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	return 0;
+ err:
+ 	dev_pm_clear_wake_irq(&pdev->dev);
+-	pm_runtime_dont_use_autosuspend(&pdev->dev);
+ 	pm_runtime_put_sync(&pdev->dev);
+ 	flush_work(&priv->qos_work);
+ 	pm_runtime_disable(&pdev->dev);
+@@ -1631,7 +1630,6 @@ static void omap8250_remove(struct platform_device *pdev)
+ 	serial8250_unregister_port(up);
+ 	priv->uport = NULL;
+ 	dev_pm_clear_wake_irq(&pdev->dev);
+-	pm_runtime_dont_use_autosuspend(&pdev->dev);
+ 	pm_runtime_put_sync(&pdev->dev);
+ 	flush_work(&priv->qos_work);
+ 	pm_runtime_disable(&pdev->dev);
+
 -- 
-Joshua Crofts
+2.56.0
 
