@@ -1,105 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793450286;
-	b=wt+DsNoqui0ow/4OmdgnQu6lhDvsOOIq4nL8TRr+O0H4ewiX8OBuPeBmCTDZA683rBkk
-	 FchRxbJ7hD0hI7gROOjqGMdlSwVkkzKU8CC8P5FULKuY5G0UTGwNeTdP1t4gMKcmX74n8
-	 XTtWwBOL7UA+3/pOLLVCBHZ8lp7YPNh/KDByCwCl+pdeAYsFuGUKjZ+C4HJrsV7fuMoV6
-	 WQyIwzaU34B8Rw+bzM9r3yIrWCA27KwcY/om/wPuRKFasfsxLHOxY1uqM+fOXhRzkCjP8
-	 Hx2ko19ozFWHF6ES6iDqU5J4dlziSKOhoOIiLUtEg3HdTCY9Ly2Alvc9TzmZbOpOzdw==
+	t=1793450360;
+	b=ZMX39tdlyDi4XmdpqeE9stTJGNLMeuC//Ip8mAx2mb0wLR5EXRO8seljKNWi4U8T/+VR
+	 Xptr/lHMoofTuwYV3vss9S5w1ItXp2ch81fsew/trKlIpVMZi30ZrjqbDDSnv9lIMAXlH
+	 cTBiS2Pz5UDJ3TDyv7pFXfbifMY7llFm4azcTOeh8fI+pTJ3CA+lOzIlF11hWpVjYRKqh
+	 iopKaf2cmlNdQ2JO5GA25HAFonl9DpUhMs+I42UwRqifg0q1ekdjn91d5CNMyt1UdlkHd
+	 BCk4gUwGYTepuTOG08I3UKwEQ8OgBpaIMZJSclHWfb+nM/zGsEF5NG0Cmi8vXV1MaRw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793450286;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793450360;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=maS1TlQtTNtCaHJfozZuk+FUqQKZG+g+AwgR3S2V5EU=;
-	b=46DXLUtqj0W7DoMeFSouqPhToavNqQwgIFmRWjVmKYn9eLoHnkkEZO0PcyxBIEHCUkVR
-	 JR/U7wzUwXw5Pwh4lKjTeQWYrXOzt/yIhscxKmgHipQGqF2wzQ1COA48BNfXHCusBfTZO
-	 lDxNB37bx4V/WxMSteqcTa1+GXkdAlSRanOM+Y09suMuONCYHlto+N3tS0c++cLrcGyAU
-	 tc5VdWHf1Bp/PWhH7Ea0MzyVW8Oi8ej+zLrarylALtvqLML4fa0dVo91oxFZM8RVT2Tdh
-	 vh9td1EyLfKiN/AnIFNa1NqonkjC9dstUgORAuIjBvFeupJEKEE9ClfI8K1RW3cH97g==
+	bh=p+SP5aC6kFf2m6+Y0UAcy1XbuoZimqxQ+Qboov/RQdw=;
+	b=R8dkhjBY0kZlUyd9NnbsXCNX9wY/4mTVMTiLrhtjtTf0fwdUv6P0DVh8iTe3l1/Hyyb8
+	 yBz82gMKmtI7tPxKORuFGqTRcoRZQ30JOsxcVhzKBnWz3hKdh/O6gT8pMyfy+gdRP6FRE
+	 rBe1AnvJf+ZKP7nprdeir70MDCND+1y2iFl87jQjruZLlRvmQINWylZLLc2kXwGy+2ORN
+	 lrlwtzj/ArotIzUdl3i/zcLZrd3yl7k4+V/L8UMNylPZMP8y2i84QyIX8YxgSpMYPRr+9
+	 4pgYfa6qtbm72knw7ulHTw5oVlKmvGFC+IZZcLo2XIunfBUCUFr4yTL9EapDwIaCDog==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=U8JKjXk3;
-	arc=none smtp.remote-ip=74.125.82.44
-Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xKL4FZYZ;
+	arc=none smtp.remote-ip=74.125.82.181
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26122606A31E
-	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 12:38:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 26122606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BCBD606A325
+	for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 12:39:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6BCBD606A325
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=U8JKjXk3
-Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-1ae18eb9b69so911629c88.0
-        for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 05:38:05 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xKL4FZYZ
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-35829219da8so3139587eec.0
+        for <linux-serial@vger.kernel.org>; Sat, 31 Oct 2026 05:39:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793450285; x=1794055085; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793450359; x=1794055159; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=maS1TlQtTNtCaHJfozZuk+FUqQKZG+g+AwgR3S2V5EU=;
-        b=U8JKjXk3DYErMaXytKjt953ljSKW3ppg9GTvcuywwBmgHb9qsx/TYxkg1QCQhybUYE
-         AyUsBc6WOUe2ejfl5VdAi4tvlr1QPIGrqmnj1b2Vkh4WjCMveaQo7BkiOTiu3JRA9KHl
-         5XxJ5doDpvLiYKYoAHBCR63xb6RcfA8TPTcka71YuK3yYmIW4oZ9IZnhv0v8xcGcRnMb
-         qUXAbsMDfItKeD/+I8/yFeq7hDWZWYUYK3ryc5Y/txSSUsSZWquoT6TtvN7GRLVbr3Ud
-         kSv5fj6GuigqTiij6/noqO7CImceKPwkJ7B1NGgpIG1jrepjjRLK6qpnUr6uFd/q/Fl3
-         gn8Q==
+        bh=p+SP5aC6kFf2m6+Y0UAcy1XbuoZimqxQ+Qboov/RQdw=;
+        b=xKL4FZYZxZ2DMFO63mud1fJJvL8ljHKd1cSzKueTBjZ5KWdT9ssOnP0v+oXC+Q0hZo
+         Qs+PHJ9Klrp7eA+ZXpy9jf3Dvec5+bt97LOlRXjZ2Q/ZQk3duWOE8JWGvfSgl57vgWch
+         JCwhFXX9MgJGW590FuwNWfZumZRtLkpFT5T7+6Bz4lAo+aIOdOUI37/Kc3CAmRyY4HcK
+         W41yN4QDz1O5X8AHfcEF+5+xoVAARl8Hp+FsH+KuRBB/WuH0FK/KGowokkDV3UY6/ekT
+         v7y6LWO5F42Vjer5ob4L76hFwBAGTlmtyimH5jt8uYFW8EL+iFHLnr9Tu8b/QEml5OWf
+         mHPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793450285; x=1794055085;
+        d=1e100.net; s=20260707; t=1793450359; x=1794055159;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=maS1TlQtTNtCaHJfozZuk+FUqQKZG+g+AwgR3S2V5EU=;
-        b=CIVdKnlhULdF88D2CAaFxo+Dj1R4asKqa+7M5vS9tPDQ+HcGHku3Xi6LDF8sWr9PgM
-         N287j8a+N9KFul1er0bywBmgjXtE3bZnddC5mTDb5qQdOPXD1Xcl+TZ7cYzeC5N7Sy+g
-         SHPNb/psAq38dSm6snOhTDv0GlWsr8rUXKczFHNZLFcHv4PKvgOsUNyrnc8YsT7jcK6R
-         hKeiyKaKKb95/oxEBd7+fuGs2dNoCiTFpe3fpeH1ilu35NEgDeQLvdZA77BGBLxb7iV6
-         L1t9q42W06bzU0CpZ/HocHuvE+DuvSlgwCm3o0s4wXYF+GACAy6JQ7VCv1ZkWQHPyVTt
-         6oEQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxM35S0ae5WsQXv1aHCYF70DWajofYr4oZfwtS/YuWVollr4fFMqXcWSXToHc8J2hM2EGCU95i7MNQoPs8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYK4f0vslVHrDkPjY0O3wghgHrS3hExEWKd67ZsoZSAQNySSBx4J
-	51s5pV5xdzPmfBKP3abkP8lZqLOdjuwzi/KYz5Zzjuj+rdOFSbR095mj
-X-Gm-Gg: AYBFou2BwJ6pZr0BEiW9r07PnpVj29oD0BW1HKfuuJOyAsSuxRIOltC2GyyS6IEMQTE
-	K8YvVIPGDJuBrdJxvRjFGfr7xv3QmEw8aqkobZYpgifx7ZvzJMcYU5yOFuavwCREDpYDHK6M2HQ
-	7g8oY0j6N3sO4Wu3nVPVSRmXqokRhwEmcKiJshSJcFxE12mWNv/ozWxhpuR49zuJfXe1v86NI0l
-	6iqaFQ+6RaLJhy1ilS/OLgHrPGhofaf876EOkkEsAdVf/MR2pHtsbh21x9ND2Y57HHN0DzNOStC
-	kOq7hV79VW2zi2+KHvSRay3hckTQdX85yQvA8dJEPIa1ekvV1fTDPVZ5twtmYCzeLnu3L92bB2N
-	xSjzaHrwdsDOvmxydKm9HsvYH2RfYD52s8USB1QH6ZSXpDKCojMG2XKrAdCj7EJuGG7Su6mYoAi
-	0LhzWSS6eBi1K9hMYUotmjF2OEz2dchQSA7HUdnJkjR4vH71CvE/cNB/JZQTkUqdVmXn2DpH2F/
-	GqyCNLdXB1jTiDirZ9xnViga6p/EklgcM0DOMFjpWSQfAhPl/W/zaGfe8F7/QjJ5Y8d1OonppWz
-	TISjK573COC4mQ95b7gyFTw15zh1ep/WQOcKf1oHUfaSUPMuQh+tU/E7VuQuNn1Y5u+7OdTHOko
-	m8XOEsfwlNCOwmqv8E/dfeEladg6pgVco3J4yMKv4UPfAuPgrqYS4Wpqiocr8Jv9MJsshWOb9CW
-	27oYKGZdMFGx4tInD8AlRN/OZDHLSwlW4yQ44=
-X-Received: by 2002:a05:7022:3a03:b0:152:9e88:daaa with SMTP id a92af1059eb24-1ac5f181628mr8313206c88.36.1793450284992;
-        Sat, 31 Oct 2026 05:38:04 -0700 (PDT)
+        bh=p+SP5aC6kFf2m6+Y0UAcy1XbuoZimqxQ+Qboov/RQdw=;
+        b=Q8oskmaVeXZTDm2X/wMs+9QPC9otVBbbwG2vZ9O/128v3+MW/6WUbKnzTzBZYjJ8vG
+         TjrXf5M++ZuMfIak9I4nPWbnVaTL6qXLPD2teW4nhavLPD3Ugk42ONqKWLdOhvfr36S6
+         7YGSlbUhvhXb3+jgPhT4dHO3K44cspn6VElvWk32ZoM8CmTlvjfmwbbI2gjw54oKiepF
+         nBZHYVxiHZPcw6h3qNJfqmZ0u8Es3sah5aJCGXyUWpndMHEgv7crKzvdVzvTEyhpjTOj
+         vFTdu5V9ixQN7EdYCEatMhmh/ysIKK6XhArg0XsTGhmFGIlhN3e59nPU8LvXzj9+MQX/
+         o/pw==
+X-Forwarded-Encrypted: i=1; AKwUvBwZDa7ouApqPnOqwfpwiziqMPosrgJTHGL9YXn6z7RdzEdMnmue582xuOY5R0KJlAvbL6EqRoqN5AlKIj0=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLU/8t4390QUsNaENGAWQv8+EmnJwW5bh1LNw766+So1O29I8ZD
+	nhl2BqeoCiGyDgfkee818EQSS5EF9PNaTNH8v3hd1nqRvQbu2sKqNQt7
+X-Gm-Gg: AYBFou3cblR6TwSYr1wi3pfWEARaghWjhHDYAC+426k1f7109C9qnzf6eEieTI6+8Qa
+	vawqMxRgcjD1IafEPevfZ2lO1HRmLiB2UOvnfcQHFgeN9YxBp4S1tQFBvvn14ShS/1g93MZ/mVE
+	EGea8buCBuWlAci+OS+YGHsgSSKcKvrW4nAzApv01rQSKXZYC1j/utZHLA8kWL3ky/QkWchxtea
+	bcBsnfe/QSIVRivDrOXDMZYbCRPaXgUgyYO5YlHS/o9HQwwhPNuSZ9JKq942suY3rBh99lCJ1EP
+	COsKiZDmTKf35SyPqY/7Nvu5pQr2FNM16rnfiwpv/1+2yZojlmEuSZar/kr+L46TZ+5N1NpLK4X
+	yEVv1kUhUIk/p1bldsQvAx9NFB4uExs1UvQQCfVg6NuoWeTQgVOb+z/3HOwqC/ECH0LlQ+UrjWa
+	ANma4rBHZcbcLC/I1kBA0fby8Ns1vFjmqA3MQc8yANfQZEFINFjhoGqhC16SFvu8ZQZ6zPS3r+Z
+	n2NcSoQrOECjLInLqdS1rjpJV9BvKKDBhgfhqkX1+LutWNeLG+edqwDO5bvgFhA6ri0/cCj0R9/
+	BBjjdQVUGc5XU9hnopg14a/OfVvtT75D6pqCrclkY2Q1aSqjeExDjjYi1BreQ8mg84TIKrQT54j
+	FToxHOAW3+GrJkdp9+rTNERUpuItLZrgxs8ZO2lj1iAu/HMXPwNpS0IOysYX5/kmcQACWPf0GGn
+	EXN9Y7Uunzd5/T7Q==
+X-Received: by 2002:a05:7022:f507:b0:1ab:90a8:87a2 with SMTP id a92af1059eb24-1ad1077e9a6mr5123543c88.11.1793450359362;
+        Sat, 31 Oct 2026 05:39:19 -0700 (PDT)
 Received: from brev-9gdpyq8lp.ap-south-1.compute.internal (ec2-3-110-210-194.ap-south-1.compute.amazonaws.com. [3.110.210.194])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1ac1a13652csm17300763c88.17.2026.10.31.05.38.00
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1ac1854da78sm21566039c88.6.2026.10.31.05.39.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2026 05:38:04 -0700 (PDT)
+        Sat, 31 Oct 2026 05:39:18 -0700 (PDT)
 From: Samarth Narang <samarth.colleges@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: Samarth Narang <samarth.colleges@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
 	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
+	linux-samsung-soc@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] tty: serial: fsl_lpuart: don't unmap TX buffer before DMA has stopped
-Date: Sat, 31 Oct 2026 12:37:49 +0000
-Message-Id: <20261031123749.3783352-3-samarth.colleges@gmail.com>
+Subject: [PATCH 0/5] serial: fix TX kfifo underflow on flush in five drivers
+Date: Sat, 31 Oct 2026 12:39:06 +0000
+Message-Id: <20261031123911.3784690-1-samarth.colleges@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261031123749.3783352-1-samarth.colleges@gmail.com>
-References: <20261031005425.3351240-1-samarth.colleges@gmail.com>
- <20261031123749.3783352-1-samarth.colleges@gmail.com>
+In-Reply-To: <20261031004733.3345841-1-samarth.colleges@gmail.com>
+References: <20261031004733.3345841-1-samarth.colleges@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -111,147 +117,55 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-lpuart_flush_buffer() unmaps the TX scatterlist before calling
-dmaengine_terminate_async(), allowing eDMA to continue reading from the
-buffer after its mapping has been released. Reversing these operations
-would not be sufficient, since asynchronous termination does not
-guarantee that DMA has stopped and dmaengine_synchronize() is required
-before releasing memory accessed by the descriptor.
+This series addresses the TX kfifo underflow reported in the parent
+thread, where uart_flush_buffer() resets the transmit kfifo but a
+completion callback from an earlier DMA transfer may still call
+uart_xmit_advance() using the byte count from before the flush.
 
-The issue can be triggered through TCFLSH(TCOFLUSH), hangup, or close
-while TX DMA is active. On systems using SWIOTLB, outstanding DMA reads
-may access a bounce slot that has already been reassigned to another
-device, potentially transmitting its contents over the serial line.
+The fixes take two approaches depending on how each driver manages its
+TX DMA mappings. In samsung and tegra, which map the TX buffer once,
+samsung's new flush_buffer() terminates the outstanding transfer, as
+tegra's already does, following the approach introduced in 8250 by
+9e512eaaf8f4. A completion already in progress skips the kfifo update if
+the transfer has since been retired by flush_buffer() or stop_tx().
 
-Since flush_buffer() runs under the port lock and cannot sleep, request
-termination there while keeping the scatterlist mapped and
-dma_tx_in_progress set to prevent reuse. Defer unmapping to a work item
-that first calls dmaengine_synchronize(), have the TX completion
-callback ignore flushed transfers, and ensure that shutdown and suspend
-wait for the work to finish before resetting the TX DMA state.
+In sprd, msm, and pch_uart, which map each transfer separately,
+terminating DMA there would leave the flush hook to unmap a buffer the
+controller may still be reading. These drivers therefore leave the
+transfer running and mark it as flushed, allowing the completion
+callback to unmap the buffer without advancing the kfifo. This means
+that the data already queued for DMA before the flush may still be
+transmitted.
 
-Fixes: 6250cc30c4c4 ("tty: serial: fsl_lpuart: Use scatter/gather DMA for Tx")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Samarth Narang <samarth.colleges@gmail.com>
----
- drivers/tty/serial/fsl_lpuart.c | 53 +++++++++++++++++++++++++++++----
- 1 file changed, 47 insertions(+), 6 deletions(-)
+All five patches have only been compile-tested with arm64 defconfig and
+the relevant drivers enabled, including pch_uart through COMPILE_TEST,
+using W=1 with no new warnings. I do not have access to the affected
+hardware, so testing by someone with suitable devices would be
+appreciated.
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c8575c965203..8343351199eb 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -26,6 +26,7 @@
- #include <linux/serial_core.h>
- #include <linux/slab.h>
- #include <linux/tty_flip.h>
-+#include <linux/workqueue.h>
- 
- /* All registers are 8-bit width */
- #define UARTBDH			0x00
-@@ -280,6 +281,8 @@ struct lpuart_port {
- 	unsigned int		dma_tx_bytes;
- 	unsigned int		dma_rx_bytes;
- 	bool			dma_tx_in_progress;
-+	bool			dma_tx_flushing;
-+	struct work_struct	dma_tx_flush_work;
- 	unsigned int		dma_rx_timeout;
- 	struct timer_list	lpuart_timer;
- 	struct scatterlist	rx_sgl, tx_sgl[2];
-@@ -530,7 +533,7 @@ static void lpuart_dma_tx_complete(void *arg)
- 	unsigned long flags;
- 
- 	uart_port_lock_irqsave(&sport->port, &flags);
--	if (!sport->dma_tx_in_progress) {
-+	if (!sport->dma_tx_in_progress || sport->dma_tx_flushing) {
- 		uart_port_unlock_irqrestore(&sport->port, flags);
- 		return;
- 	}
-@@ -558,6 +561,36 @@ static void lpuart_dma_tx_complete(void *arg)
- 	uart_port_unlock_irqrestore(&sport->port, flags);
- }
- 
-+/*
-+ * flush_buffer runs under the port lock and can only request termination.
-+ * Unmap the TX scatterlist here, once the terminated transfer and its
-+ * completion callback are known to have finished.
-+ */
-+static void lpuart_dma_tx_flush_work(struct work_struct *work)
-+{
-+	struct lpuart_port *sport = container_of(work, struct lpuart_port,
-+						 dma_tx_flush_work);
-+	struct dma_chan *chan = sport->dma_tx_chan;
-+	unsigned long flags;
-+
-+	dmaengine_synchronize(chan);
-+
-+	uart_port_lock_irqsave(&sport->port, &flags);
-+	if (sport->dma_tx_flushing) {
-+		dma_unmap_sg(dmaengine_get_dma_device(chan), &sport->tx_sgl[0],
-+			     sport->dma_tx_nents, DMA_TO_DEVICE);
-+		sport->dma_tx_flushing = false;
-+		sport->dma_tx_in_progress = false;
-+	}
-+	/* As in the TX callback: no restart while shutdown waits on dma_wait */
-+	if (!waitqueue_active(&sport->dma_wait) &&
-+	    !lpuart_stopped_or_empty(&sport->port))
-+		lpuart_dma_tx(sport);
-+	uart_port_unlock_irqrestore(&sport->port, flags);
-+
-+	wake_up(&sport->dma_wait);
-+}
-+
- static dma_addr_t lpuart_dma_datareg_addr(struct lpuart_port *sport)
- {
- 	switch (sport->port.iotype) {
-@@ -605,12 +638,16 @@ static void lpuart_flush_buffer(struct uart_port *port)
- 	u32 fifo;
- 
- 	if (sport->lpuart_dma_tx_use) {
--		if (sport->dma_tx_in_progress) {
--			dma_unmap_sg(dmaengine_get_dma_device(chan), &sport->tx_sgl[0],
--				sport->dma_tx_nents, DMA_TO_DEVICE);
--			sport->dma_tx_in_progress = false;
--		}
- 		dmaengine_terminate_async(chan);
-+		/*
-+		 * The transfer may still be reading the TX scatterlist: keep it
-+		 * mapped (and dma_tx_in_progress set) until the flush work has
-+		 * synchronized the channel.
-+		 */
-+		if (sport->dma_tx_in_progress && !sport->dma_tx_flushing) {
-+			sport->dma_tx_flushing = true;
-+			schedule_work(&sport->dma_tx_flush_work);
-+		}
- 	}
- 
- 	if (lpuart_is_32(sport)) {
-@@ -1760,6 +1797,8 @@ static void lpuart_tx_dma_startup(struct lpuart_port *sport)
- 		goto err;
- 
- 	init_waitqueue_head(&sport->dma_wait);
-+	INIT_WORK(&sport->dma_tx_flush_work, lpuart_dma_tx_flush_work);
-+	sport->dma_tx_flushing = false;
- 	sport->lpuart_dma_tx_use = true;
- 	if (lpuart_is_32(sport)) {
- 		uartbaud = lpuart32_read(&sport->port, UARTBAUD);
-@@ -1926,6 +1965,7 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
- 	}
- 
- 	if (sport->lpuart_dma_tx_use) {
-+		flush_work(&sport->dma_tx_flush_work);
- 		if (wait_event_interruptible_timeout(sport->dma_wait,
- 			!sport->dma_tx_in_progress, msecs_to_jiffies(300)) <= 0) {
- 			sport->dma_tx_in_progress = false;
-@@ -3179,6 +3219,7 @@ static int lpuart_suspend(struct device *dev)
- 				writeb(temp, sport->port.membase + UARTCR5);
- 			}
- 			uart_port_unlock_irqrestore(&sport->port, flags);
-+			flush_work(&sport->dma_tx_flush_work);
- 			sport->dma_tx_in_progress = false;
- 			dmaengine_terminate_sync(sport->dma_tx_chan);
- 		}
+One race remains, which is also present in the 8250 fix: a completion
+may already be running when the flush occurs but acquire the port lock
+only after a new transfer has started, potentially mistaking the new
+transfer's state for its own. Preventing this would require tracking
+individual transfers, for example with a generation counter, which I
+have left out of this series to keep the changes focused.
+
+Samarth Narang (5):
+  tty: serial: samsung: fix TX kfifo underflow on flush
+  serial: tegra: don't advance the TX kfifo for a flushed transfer
+  serial: sprd: fix TX kfifo underflow on flush
+  tty: serial: msm: fix TX kfifo underflow on flush
+  serial: pch_uart: fix TX kfifo underflow on flush
+
+ drivers/tty/serial/msm_serial.c   | 19 ++++++++++++++++++-
+ drivers/tty/serial/pch_uart.c     | 27 +++++++++++++++++++++++++--
+ drivers/tty/serial/samsung_tty.c  | 22 ++++++++++++++++++++++
+ drivers/tty/serial/serial-tegra.c |  8 ++++++++
+ drivers/tty/serial/sprd_serial.c  | 24 ++++++++++++++++++++++--
+ 5 files changed, 95 insertions(+), 5 deletions(-)
+
+
+base-commit: 36aad21d50d1af3f6954bb0c988257a908202477
 -- 
 2.34.1
 
