@@ -1,58 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793451167;
-	b=Ey+u08v5bNHYZRm1B5wA4WBceKthFFxab80V51WARe3UZOIFRYC5Qag92tDloD1TsDj6
-	 xg01q65nXx0r5yb1Ykw09N3LS35rSS9lMNQ6e5lsd9BwzVO9rplqvn1rGTBASbeZp2SSS
-	 FSIW2MVq1ZJRmAbgGisCJRRV/qXbivcFxKisNjyDjJ30FN0iZ1KDcqDidjRDzEWY6LG81
-	 icm4JS0+BocbS/dv9QMr91CTHDygIW5zemXgoWOi1EnHfFHTfEl1zk8qQYA2/DPBSVskx
-	 jEluNUbeNVJTNcvGkYa8cEPk5jYG56Bjr94X7G2LbmDnZ1OeWf8mggSfMVlm2CNLNvw==
+	t=1793451192;
+	b=ozT3MjBTyZRMlWgep17NE3nxi5/LfJKFOm3TgcJqiXgMOdVDBLgXQutFO2em0HlHpY9A
+	 fxDcvTlaMm5r2v6t1Olh2obIPfrQiIv+Mx1ILjzWPTaCsubYilkKeNxeyMo1Rfg+bQOuM
+	 YFr91h66lOv1kPmFyr9l+LnwYERtcQIJ2JM6yDWNqxgVtLAgKZQxB/ohfWxqLTS41KUgl
+	 m7EVsw+I/wuVPYuB/LxL3BjM10Sg9dHPscgz8bABk5/ObZjSfGKFBUq9SOMom+ZQxqWwC
+	 ksDqHn1nEi1XCMyUrYph7TRIdu0Y/FkukidLiE6nVsN/reUS4H30lJmZZ6+dYWfSccw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793451167;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793451192;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Ef5Oa3VZ/itcQdeoCMh/rBhxuBUEhpvE45t5B+2SzD0=;
-	b=fMLtJDAWaAChd9vlvXZstewL4GGo4dE1IuHVrGqd8xkJn1AzulG4U7BQvJkSA/Q/RSrp
-	 h5yNGjKMJqk74AgEdTkoS4BkQdtpkUa/skyvr2x36zXp1tzbw/EIQ5CiQNxU9zUtMqZCm
-	 1scA4aX2adzQH11kUmh6SgreNjAR8nz6A/VUSD4lp7tpVL1aO+rS5O9kCNpSRU5uEKsNc
-	 wZmUN8LDkEUu7dnLGE47vH5z+G3viuW/FyzESNuuVfqGH0lbCG6vhFJT3f5x0fnaLO3sV
-	 U7ODoQEhEZ4huxHj7HYXu2KsnOkpOveQQt4vRfj+0SdVD4sMXDO8cFs/CXr0GWz1yfg==
+	bh=OcT1grN6MPPjT2fY0UWaly2GxOEld4jmpqMhv5j5CUI=;
+	b=kMcbOsOcUYVkyYWQC55KfXl17jYNSOzhpbQH6G1k2TGPa2kVdPLrglWS4FfwFF/r3Xv7
+	 hl0kMV+wfdmOvbpdgE8VunyLOzdS93XGnKxhnFZb3EHJGkiL5NPNxXmfZkSrSJ57k+G+H
+	 du3DzNL3slc2+APMysd6JLPfHWZt9xkj4oWEizTLUVDZUdsGctg0k1Qf1DRUMOw8kDzQW
+	 tMHMPjnx1r87xPXg5nExKUXfwyMInqe1y94KE02InG6+pKfxYanxfhtOHnD3rtytsG4u8
+	 6EiPEjW80UDVs6aIborXPNPz59ZGCt/cYeOYUCC75JrZwdDdpCux3nvYnEB3cPKrKlg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OIXbW4XL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hw1mtu4K;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0AB606A31A;
-	Sat, 31 Oct 2026 12:52:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87399606A31A;
+	Sat, 31 Oct 2026 12:53:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OIXbW4XL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 382A61F000C1;
-	Sat, 31 Oct 2026 12:52:46 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hw1mtu4K
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE791F000C1;
+	Sat, 31 Oct 2026 12:53:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793451166;
-	bh=Ef5Oa3VZ/itcQdeoCMh/rBhxuBUEhpvE45t5B+2SzD0=;
+	s=k20260515; t=1793451192;
+	bh=OcT1grN6MPPjT2fY0UWaly2GxOEld4jmpqMhv5j5CUI=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=OIXbW4XLLzu0zUQW/vFxRZwQoGsJWtUPLu4aFA5oyuCxVql6GgkuosMuY6Ezwnixt
-	 xgANnhICOpl6vx+BMT0gXu1JXnt1G13cLfd34k1GepK3LBAsIutSaIr/rpZYVfPNLs
-	 3iUoP4zLq2nk2eZKWfzOKk7n7qX8v/N5kMpTlNmgXywbWDmmFEkDrW0dYrtjxw0bRP
-	 IqdKCkd+UiQYsTmPeuwhM0grHYEiMQXdCcjLPbR6d2SegeNCR2G03IxamktETKjJOK
-	 jg3fShw24MQNWZgz+boKJUo6QNB4/LX2gxfrqv2BaYSEbuRlvASO21wpCndTIIslpZ
-	 l2nvtF8SPFJBg==
-Message-ID: <sashiko-outbox-191946@kernel.org>
+	b=Hw1mtu4KmPRASiY16N8m1jbHsvSyCUS7FsTD/dekKxHowcb4ESdLENB1QRORpCcUu
+	 eyg0/AYzhsZMFyCrriRqleH6kj1yTn6TfT0lzRYvWgm+95ZrdZikPeH1HndkHVMiMA
+	 TuQkEgFs9xIqohbxGPfjOQkT7Jcf5bvVal25MR5ICuLY5YorEakKPuWluzlEymK9yW
+	 W1uq9bPvi8wO1vUayA0/xrf4wQJpkKL1e+ENkLZqsy7m327VyA3Cr4+sNZooqppFgW
+	 n1jz1VcBAyR3is9bnIesWfBIG0UFDRtzwBymKMI9KiMLvIzemJW0V34okm+tH/T3kT
+	 ZBdPdGeXT49UQ==
+Message-ID: <sashiko-outbox-191947@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/2] serial: amba-pl011: keep the flushed TX buffer
- mapped until DMA stops
+Subject: Re: [PATCH 2/2] tty: serial: fsl_lpuart: don't unmap TX buffer
+ before DMA has stopped
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Samarth Narang" <samarth.colleges@gmail.com>
 Cc: linux-serial@vger.kernel.org, imx@lists.linux.dev, Frank.Li@kernel.org
-In-Reply-To: <20261031123749.3783352-2-samarth.colleges@gmail.com>
+In-Reply-To: <20261031123749.3783352-3-samarth.colleges@gmail.com>
 References: <20261031005425.3351240-1-samarth.colleges@gmail.com>
  <20261031123749.3783352-1-samarth.colleges@gmail.com>
- <20261031123749.3783352-2-samarth.colleges@gmail.com>
+ <20261031123749.3783352-3-samarth.colleges@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 31 Oct 2026 12:52:45 +0000
+Date: Sat, 31 Oct 2026 12:53:11 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -62,225 +62,186 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [Critical] serial: amba-pl011: race and TX restart in pl011_dma_shutdown()
-- [High] serial: amba-pl011: TX DMA re-enabled while dmatx.flushing is true
-- [Medium] serial: amba-pl011: pl011_dma_tx_flush_work() bypasses pl011_sta=
-rt_tx()
+- [Critical] tty: serial: fsl_lpuart: race scheduling dma_tx_flush_work aft=
+er flush_work()
+- [High] tty: serial: fsl_lpuart: lpuart_dma_tx_flush_work() restarts DMA o=
+n teardown
 --
 
-commit fb5633a8b4f6925fce77e6c969ed222b6e66d5c1
+commit 45f7dcf3d930bb1e96c498ca260fc93b635e30f0
 Author: Samarth Narang <samarth.colleges@gmail.com>
 
-serial: amba-pl011: keep the flushed TX buffer mapped until DMA stops
+tty: serial: fsl_lpuart: don't unmap TX buffer before DMA has stopped
 
-This commit defers unmapping a flushed TX DMA buffer from
-pl011_dma_flush_buffer() to a work item that calls dmaengine_synchronize()
-before releasing the mapping and restarting transmission. It keeps
-dmatx.queued set while dmatx.flushing is active and flushes the work item in
-pl011_dma_shutdown().
+This commit defers TX DMA scatterlist unmapping from lpuart_flush_buffer() =
+to
+a work item that runs dmaengine_synchronize() before releasing the mapping,
+and flushes that work item in lpuart_dma_shutdown() and lpuart_suspend().
 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
-011.c
-> index e6f652905ca6f..863a050cf654e 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
+art.c
+> index c8575c9652035..8343351199eb5 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
 
 [ ... ]
 
-> @@ -867,13 +876,47 @@ __acquires(&uap->port.lock)
+> @@ -558,6 +561,36 @@ static void lpuart_dma_tx_complete(void *arg)
+>  	uart_port_unlock_irqrestore(&sport->port, flags);
+>  }
 > =20
->  	dmaengine_terminate_async(uap->dmatx.chan);
-> =20
-> -	if (uap->dmatx.queued) {
-> -		dma_unmap_single(dmaengine_get_dma_device(uap->dmatx.chan), uap->dmatx=
-.dma,
-> -				 uap->dmatx.len, DMA_TO_DEVICE);
-> +	/*
-> +	 * The terminated transfer may still be reading dmatx.buf: keep it
-> +	 * mapped, and queued set so that nothing refills it, until
-> +	 * pl011_dma_tx_flush_work() has synchronized the channel.
-> +	 */
-> +	if (uap->dmatx.queued && !uap->dmatx.flushing) {
-> +		uap->dmatx.flushing =3D true;
-> +		uap->dmacr &=3D ~UART011_TXDMAE;
-> +		pl011_write(uap->dmacr, uap, REG_DMACR);
-> +		schedule_work(&uap->dmatx.flush_work);
-> +	}
-> +}
-
-[Severity: High]
-Can UART011_TXDMAE be re-enabled in REG_DMACR while uap->dmatx.flushing is
-still true and before pl011_dma_tx_flush_work() finishes
-dmaengine_synchronize()?
-
-When uart_flush_buffer() calls pl011_dma_flush_buffer(), uap->dmatx.queued =
-is
-kept true while UART011_TXDMAE is cleared. Immediately after
-pl011_dma_flush_buffer() returns, uart_flush_buffer() drops uap->port.lock =
-and
-calls tty_port_tty_wakeup(). If a subsequent write or wakeup calls
-pl011_start_tx() -> pl011_dma_tx_start() before pl011_dma_tx_flush_work()
-runs, pl011_dma_tx_start() sees uap->dmatx.queued set and UART011_TXDMAE cl=
-ear:
-
-drivers/tty/serial/amba-pl011.c:pl011_dma_tx_start() {
-	...
-		if (!uap->dmatx.queued) {
-			...
-		} else if (!(uap->dmacr & UART011_TXDMAE)) {
-			uap->dmacr |=3D UART011_TXDMAE;
-			pl011_write(uap->dmacr, uap, REG_DMACR);
-		}
-		return ret;
-}
-
-Similarly, if a TX interrupt fires (for example after sending an x_char) and
-calls pl011_dma_tx_irq(), it also checks uap->dmatx.queued without checking
-uap->dmatx.flushing:
-
-drivers/tty/serial/amba-pl011.c:pl011_dma_tx_irq() {
-	...
-	if (uap->dmatx.queued) {
-		uap->dmacr |=3D UART011_TXDMAE;
-		pl011_write(uap->dmacr, uap, REG_DMACR);
-		uap->im &=3D ~UART011_TXIM;
-		pl011_write(uap->im, uap, REG_IMSC);
-		return true;
-	}
-}
-
-In both cases, re-enabling UART011_TXDMAE causes the UART to assert TX DMA
-requests to the DMA controller for the terminated transfer and pull stale
-flushed bytes from dmatx.buf into the TX FIFO, and a second call to
-pl011_dma_flush_buffer() while uap->dmatx.flushing is already set will not
-clear UART011_TXDMAE again. Should pl011_dma_tx_start() and
-pl011_dma_tx_irq() check uap->dmatx.flushing before setting UART011_TXDMAE?
-
-> +
 > +/*
 > + * flush_buffer runs under the port lock and can only request terminatio=
 n.
-> + * Unmap the flushed TX buffer here, once the terminated transfer and its
-> + * completion callback are known to have finished, then restart TX.
+> + * Unmap the TX scatterlist here, once the terminated transfer and its
+> + * completion callback are known to have finished.
 > + */
-> +static void pl011_dma_tx_flush_work(struct work_struct *work)
+> +static void lpuart_dma_tx_flush_work(struct work_struct *work)
 > +{
-> +	struct uart_amba_port *uap =3D
-> +	    container_of(work, struct uart_amba_port, dmatx.flush_work);
-> +	struct tty_port *tport =3D &uap->port.state->port;
+> +	struct lpuart_port *sport =3D container_of(work, struct lpuart_port,
+> +						 dma_tx_flush_work);
+> +	struct dma_chan *chan =3D sport->dma_tx_chan;
 > +	unsigned long flags;
 > +
-> +	dmaengine_synchronize(uap->dmatx.chan);
+> +	dmaengine_synchronize(chan);
 > +
-> +	uart_port_lock_irqsave(&uap->port, &flags);
-> +	if (uap->dmatx.flushing) {
-> +		dma_unmap_single(dmaengine_get_dma_device(uap->dmatx.chan),
-> +				 uap->dmatx.dma, uap->dmatx.len, DMA_TO_DEVICE);
-> +		uap->dmatx.flushing =3D false;
->  		uap->dmatx.queued =3D false;
->  		uap->dmacr &=3D ~UART011_TXDMAE;
->  		pl011_write(uap->dmacr, uap, REG_DMACR);
-> +		if (!uart_tx_stopped(&uap->port) &&
-> +		    !kfifo_is_empty(&tport->xmit_fifo) &&
-> +		    pl011_dma_tx_refill(uap) <=3D 0)
-> +			pl011_start_tx_pio(uap);
->  	}
-> +	uart_port_unlock_irqrestore(&uap->port, flags);
->  }
+> +	uart_port_lock_irqsave(&sport->port, &flags);
+> +	if (sport->dma_tx_flushing) {
+> +		dma_unmap_sg(dmaengine_get_dma_device(chan), &sport->tx_sgl[0],
+> +			     sport->dma_tx_nents, DMA_TO_DEVICE);
+> +		sport->dma_tx_flushing =3D false;
+> +		sport->dma_tx_in_progress =3D false;
+> +	}
+> +	/* As in the TX callback: no restart while shutdown waits on dma_wait */
+> +	if (!waitqueue_active(&sport->dma_wait) &&
+> +	    !lpuart_stopped_or_empty(&sport->port))
+> +		lpuart_dma_tx(sport);
 
-[Severity: Medium]
-Does calling pl011_dma_tx_refill() and pl011_start_tx_pio() directly in
-pl011_dma_tx_flush_work() bypass the RS485 state machine and UART011_TXIM
-masking normally handled by pl011_start_tx()?
+[Severity: High]
+Can lpuart_dma_tx_flush_work() still restart TX DMA and leak the scatterlist
+mapping on sport->tx_sgl during shutdown or suspend?
 
-In pl011_start_tx(), when SER_RS485_ENABLED is set and uap->rs485_tx_state =
-is
-not SEND, the driver calls pl011_rs485_tx_start() and waits for
-WAIT_AFTER_RTS before starting DMA or PIO:
+In lpuart_dma_shutdown(), flush_work(&sport->dma_tx_flush_work) is called
+before wait_event_interruptible_timeout() adds a waiter to sport->dma_wait:
 
-drivers/tty/serial/amba-pl011.c:pl011_start_tx() {
-	if ((uap->port.rs485.flags & SER_RS485_ENABLED) &&
-	    uap->rs485_tx_state !=3D SEND) {
-		/* trigger_start_tx starts TX once delay_rts_before_send passed */
-		if (uap->rs485_tx_state =3D=3D WAIT_AFTER_RTS)
-			return;
-
-		pl011_rs485_tx_start(uap);
-		if (uap->rs485_tx_state =3D=3D WAIT_AFTER_RTS)
-			return;
+	if (sport->lpuart_dma_tx_use) {
+		flush_work(&sport->dma_tx_flush_work);
+		if (wait_event_interruptible_timeout(sport->dma_wait,
+			!sport->dma_tx_in_progress, msecs_to_jiffies(300)) <=3D 0) {
+			sport->dma_tx_in_progress =3D false;
+			dmaengine_terminate_sync(sport->dma_tx_chan);
+		}
+		sport->lpuart_dma_tx_use =3D false;
 	}
 
-	if (!pl011_dma_tx_start(uap))
-		pl011_start_tx_pio(uap);
-}
+In lpuart_suspend(), flush_work(&sport->dma_tx_flush_work) is also called
+with no waiter on sport->dma_wait:
 
-In addition, when pl011_dma_tx_refill() > 0 succeeds in pl011_dma_tx_start(=
-),
-it clears UART011_TXIM in uap->im and writes REG_IMSC, which is skipped when
-pl011_dma_tx_flush_work() calls pl011_dma_tx_refill() directly. Should
-pl011_dma_tx_flush_work() call pl011_start_tx(&uap->port) instead?
+		if (sport->lpuart_dma_tx_use) {
+			...
+			uart_port_unlock_irqrestore(&sport->port, flags);
+			flush_work(&sport->dma_tx_flush_work);
+			sport->dma_tx_in_progress =3D false;
+			dmaengine_terminate_sync(sport->dma_tx_chan);
+		}
+
+Because waitqueue_active(&sport->dma_wait) is false while flush_work() runs
+in both paths, if xmit_fifo is non-empty (for example, if bytes were queued
+after uart_flush_buffer() called tty_port_tty_wakeup() while
+dma_tx_in_progress was held true by a pending flush, or when suspending an
+active wakeup-enabled port where uart_suspend_port() returns early),
+lpuart_dma_tx_flush_work() will call lpuart_dma_tx(sport) and map
+sport->tx_sgl after the UART transmitter and TX DMA request bits have alrea=
+dy
+been disabled in hardware.
+
+Since hardware TX DMA is already disabled, that newly submitted transfer
+cannot complete: lpuart_dma_shutdown() will wait for the 300ms timeout (or
+return immediately on a pending signal) and then call
+dmaengine_terminate_sync(sport->dma_tx_chan) without unmapping sport->tx_sgl
+before uart_shutdown() frees xmit_buf, and lpuart_suspend() will likewise
+clear sport->dma_tx_in_progress and call dmaengine_terminate_sync() without
+unmapping sport->tx_sgl.
+
+> +	uart_port_unlock_irqrestore(&sport->port, flags);
+> +
+> +	wake_up(&sport->dma_wait);
+> +}
 
 [ ... ]
 
-> @@ -1236,6 +1281,9 @@ static void pl011_dma_shutdown(struct uart_amba_por=
-t *uap)
->  	if (!(uap->using_tx_dma || uap->using_rx_dma))
->  		return;
+> @@ -1760,6 +1797,8 @@ static void lpuart_tx_dma_startup(struct lpuart_por=
+t *sport)
+>  		goto err;
 > =20
-> +	if (uap->using_tx_dma)
-> +		flush_work(&uap->dmatx.flush_work);
-> +
->  	/* Disable RX and TX DMA */
->  	while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
->  		cpu_relax();
+>  	init_waitqueue_head(&sport->dma_wait);
+> +	INIT_WORK(&sport->dma_tx_flush_work, lpuart_dma_tx_flush_work);
+> +	sport->dma_tx_flushing =3D false;
+>  	sport->lpuart_dma_tx_use =3D true;
+>  	if (lpuart_is_32(sport)) {
+>  		uartbaud =3D lpuart32_read(&sport->port, UARTBAUD);
+> @@ -1926,6 +1965,7 @@ static void lpuart_dma_shutdown(struct lpuart_port =
+*sport)
+>  	}
+> =20
+>  	if (sport->lpuart_dma_tx_use) {
+> +		flush_work(&sport->dma_tx_flush_work);
+>  		if (wait_event_interruptible_timeout(sport->dma_wait,
+>  			!sport->dma_tx_in_progress, msecs_to_jiffies(300)) <=3D 0) {
+>  			sport->dma_tx_in_progress =3D false;
+> @@ -3179,6 +3219,7 @@ static int lpuart_suspend(struct device *dev)
+>  				writeb(temp, sport->port.membase + UARTCR5);
+>  			}
+>  			uart_port_unlock_irqrestore(&sport->port, flags);
+> +			flush_work(&sport->dma_tx_flush_work);
+>  			sport->dma_tx_in_progress =3D false;
+>  			dmaengine_terminate_sync(sport->dma_tx_chan);
+>  		}
 
 [Severity: Critical]
-Can flushing dmatx.flush_work at the start of pl011_dma_shutdown() allow TX
-to restart during shutdown or race with a concurrent uart_flush_buffer()?
+What prevents lpuart_flush_buffer() from scheduling sport->dma_tx_flush_work
+again after flush_work(&sport->dma_tx_flush_work) has already returned in
+lpuart_dma_shutdown() or lpuart_suspend()?
 
-First, pl011_shutdown() calls pl011_disable_interrupts(uap) before calling
-pl011_dma_shutdown(uap). When flush_work(&uap->dmatx.flush_work) runs at the
-start of pl011_dma_shutdown() while tport->xmit_fifo is non-empty and
-!uart_tx_stopped(&uap->port) (such as during uart_suspend_port()),
-pl011_dma_tx_flush_work() will either start a new DMA transfer via
-pl011_dma_tx_refill() and advance xmit_fifo right before
-dmaengine_terminate_sync() discards it, or call pl011_start_tx_pio() and
-re-enable UART011_TXIM in REG_IMSC after pl011_disable_interrupts() masked
-all interrupts.
+uart_flush_buffer() only takes sport->port.lock and does not hold
+state->port.mutex or check tty_port_initialized(), so it can run concurrent=
+ly
+via tty_ioctl(TCFLSH) -> tty_perform_flush() or line discipline signal
+handling (isig() -> tty_driver_flush_buffer()):
 
-Second, after flush_work(&uap->dmatx.flush_work) returns,
-pl011_dma_shutdown() spins on REG_FR and calls dmaengine_terminate_sync()
-without holding uap->port.lock while uap->using_tx_dma and uap->dmatx.queued
-are still true:
-
-drivers/tty/serial/amba-pl011.c:pl011_dma_shutdown() {
-	...
-	if (uap->using_tx_dma) {
-		/* In theory, this should already be done by pl011_dma_flush_buffer */
-		dmaengine_terminate_sync(uap->dmatx.chan);
-		if (uap->dmatx.queued) {
-			dma_unmap_single(dmaengine_get_dma_device(uap->dmatx.chan),
-					 uap->dmatx.dma, uap->dmatx.len,
-					 DMA_TO_DEVICE);
-			uap->dmatx.queued =3D false;
+	if (sport->lpuart_dma_tx_use) {
+		dmaengine_terminate_async(chan);
+		if (sport->dma_tx_in_progress && !sport->dma_tx_flushing) {
+			sport->dma_tx_flushing =3D true;
+			schedule_work(&sport->dma_tx_flush_work);
 		}
-
-		kfree(uap->dmatx.buf);
-		uap->using_tx_dma =3D false;
 	}
-}
 
-Because uart_flush_buffer() only takes uap->port.lock, a concurrent
-uart_flush_buffer() -> pl011_dma_flush_buffer() after flush_work() returns
-can see uap->using_tx_dma and uap->dmatx.queued still set, mark
-uap->dmatx.flushing =3D true, and schedule uap->dmatx.flush_work again. Once
-pl011_dma_shutdown() unmaps uap->dmatx.dma, frees uap->dmatx.buf, and
-pl011_shutdown() disables the UART clock, the newly scheduled
-pl011_dma_tx_flush_work() can unmap uap->dmatx.dma a second time, write
-REG_DMACR with the clock disabled, and access the freed uap->dmatx.buf.
+In lpuart_dma_shutdown(), after flush_work(&sport->dma_tx_flush_work)
+returns, the task sleeps in wait_event_interruptible_timeout() without
+holding sport->port.lock while sport->lpuart_dma_tx_use is still true and
+(if an un-flushed TX DMA transfer was active when lpuart_shutdown() or
+lpuart32_shutdown() disabled hardware TX) sport->dma_tx_in_progress is true
+and sport->dma_tx_flushing is false.
+
+If lpuart_flush_buffer() runs during that wait and schedules
+sport->dma_tx_flush_work, and wait_event_interruptible_timeout() is
+interrupted by a signal or times out before the work runs,
+lpuart_dma_shutdown() proceeds to call
+dma_release_channel(sport->dma_tx_chan) without flushing
+sport->dma_tx_flush_work again, allowing lpuart_dma_tx_flush_work() to
+dereference the released sport->dma_tx_chan.
+
+Similarly, in lpuart_suspend() on an active wakeup-enabled port,
+sport->lpuart_dma_tx_use remains true across suspend and
+sport->dma_tx_in_progress is cleared outside sport->port.lock after
+flush_work(). If sport->dma_tx_flush_work is queued after flush_work() in
+either path, a subsequent open or resume calling lpuart_tx_dma_startup()
+will also execute INIT_WORK(&sport->dma_tx_flush_work, ...) while the work
+item is still pending or running.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261031123749.3783=
-352-1-samarth.colleges@gmail.com?part=3D1
+352-1-samarth.colleges@gmail.com?part=3D2
