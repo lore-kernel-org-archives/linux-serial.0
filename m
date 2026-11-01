@@ -1,99 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793564279;
-	b=ljR4EA9zAtTbOX4iJq/DWxxXULNHprYa8HIWVDsGowRX9O10JsEiOFpnMX6aUhH40GmW
-	 K4U3QC8gYSk8nNrByPZUeRl5+A9BW5mB/hjGGKx94j3lxAOq4wSbJOnvqtsdTBgcAWImo
-	 +Pz/3LHjHfdKxx+jTmvupUQC1Y8qZDv4EhfyxaEJrO8l+KfTTl0VrvwzcffDEsxrHc11A
-	 GiOkIY8wAdKifvva2VIrqPcWUL8AuPPP6mBqJkyaiLCW2dDK7GH9S7r3T4JwNSIAv6+Y/
-	 zEfoCH8gafrhP1bPUTjF1uwg9sqBlBC4FljkWSlD5VElWWz0vuhih0peWzA9c9qZpXw==
+	t=1793571384;
+	b=HxXsRHguqk/N1zmjHtQF8brF+ytjBMbF/MNF8IIMo/Zr0KHiz3TycMyJE7AlUAEjd1tH
+	 U5WTPx9CY5ps5zm00Vng98NQxUvUba6gg71nXHevz9qurLSCWPWqbwGBYu4Fmjb5r9Uf2
+	 BAcPlja3lJZ5FHdVTpGXlr3swt8AQN1Xf2H7CsFnZufxte4am+VHOJ/2yyBbufeMzPb7d
+	 Stlo6z9KyxEowlfJuvbzm8lReADMrdBep0F2r9xMuiKYeKaSeZYCJ6MS8mHem5GhEGzoj
+	 nEflue7HYp1LoNtkM3HoBf0Q/1E3U8jSg4h0MIsEeXK+J5OvDSicJhJUu184myFVyvw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793564279;
-	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=CcMs9tvtlwt5Bs19TD28TDiqHmuTbnMeK3Pwk1m9fcI=;
-	b=RBe5+miP6OiHoKBLNRCjYVohxiKgEwns2qe7QjloR1u7tO94morpwU8ahF99bbyEqfNi
-	 kJdNO8Kk/Jmqgg7N/OA3x5vFs86xtsTBkaTWCNV+mhnbe9AslqKfBkbw5T0cJq91dhTE0
-	 v56IQdWb2qZiiw8rTeJEbuIsypQDeEnzpl8g5ElDKfG+BGT3Np6nhyPtgapCNwgAtErja
-	 Vdv2/Xwlu1i4tj3BYY8oYCMsmCGSewibfhRRPhTa5fGYL4Hxno7hKrVpC49APqv7zOZ8v
-	 hnYruXwFLYy5S4DRTvwxJUp5fe9Sx5RaTBgjollZJOLggIPUMZ19tQQ/iNdyxsD9HMQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793571384;
+	h=Received:DKIM-Signature:Received:Content-Type:MIME-Version:
+	 Content-Transfer-Encoding:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc;
+	bh=fIWdtQoZgU+HOxQ8xPE7U0OO9UgX4aiH7YmUwuj+ArM=;
+	b=VmHxHZ/zmtAdzs1rB3wOYJphZRDFv1fpd0ZkEK63IXOREEPApzocwCeLGDiSzELhXdK1
+	 Y/nxkRlQC9/DcD1XORkhKlaP7UAi386EqzVPJ71BwMh/Z9qCfamRbQzz/CU5s/goOSfFm
+	 eBqsjXRJ2OPCQABdOjLHJhL3kXGN4wFE2L8lXmcyxL5hV9hJ/naik/04e9sHZghszZmfE
+	 B7lPfA2+Vh7a8eAhxQ6jbmqf8sw/26g/bdbxecHwMFM+B1ESRq9h2aFHC9zAf/MyVo9AR
+	 8N+hUny/XLIpAE7JQBWPakEgEtSYxXAwAyvMKLNCWNAT9P8/C+yX1afLq0SbH7OZUwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=alien8.de;
-	spf=pass smtp.mailfrom=alien8.de;
-	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=BdZrPLVn;
-	arc=none smtp.remote-ip=65.109.113.108
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E03HRJiW;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19755606A337;
-	Sun,  1 Nov 2026 20:17:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 19755606A337
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B681606C6CC;
+	Sun,  1 Nov 2026 22:16:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=BdZrPLVn
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 5C99340E03BE;
-	Sun,  1 Nov 2026 20:17:54 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id Bd7ecPcu3egA; Sun,  1 Nov 2026 20:17:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1793564269; bh=CcMs9tvtlwt5Bs19TD28TDiqHmuTbnMeK3Pwk1m9fcI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BdZrPLVnCOqsebut2c7nykFo/vNmhjON4fQa50k/KbCavQnJesAcCCeyovv86jH0Z
-	 6c91xRny7T8cZrM/nOsb7OJFJbpCFlj5B8DX8XbLQ5oJjm7WwEtTuY+HcRSBo9SZ+0
-	 +TiXYiVUwm6ZyrCGWXAISZIx19w4dFtAGYrgjj0IhLYisQ67RXNYWLz3zAfohIVIDN
-	 kdpJ90prDrv09xZpeTqFnN3k5JB7fc7p5Sl2pvahQ3ORoY0Z9jN5W6hZ7O2mHAyjAh
-	 zmU+s1UUy+58aEpNvuRAdxbHn+zsuMukhvt34hgdotP5uO0sSGXBANvo+mRpXrmMc8
-	 +m41JE+gKXLRoPqSEG16r9V6R5T2smfVdoP18vgO48YC1c+ngHB3iE4e6l0WpSE9Zy
-	 CHHfE3wxVIpPrfaSlAMLUWRijoH6NrjVgGeqKI0odptOsvWBp9gUospPyx7+IlS6nd
-	 2hdNNgScNU7TNmJzwlG7KTJRIGQsC3Gh5yZQhOoHvZ9F+gpfA24Rq3S05mdMO+AKF7
-	 QoaBFOzIIgK9Jx9cEUIzXheIbNXcUVMjf3NjqBIn5NuGlsNdS5NGEWDn8qJaz73H4D
-	 jL6jnXgqqUdE3En7PDXPe3PUnpQyGrcf5ytzSHIwKOh7K+Ej2/uyz3dB82z+kwrOIM
-	 vt+Hq3gPyHodhUq01aAERb58=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7C7F040E0299;
-	Sun,  1 Nov 2026 20:17:30 +0000 (UTC)
-Date: Sun, 1 Nov 2026 12:17:27 -0800
-From: Borislav Petkov <bp@alien8.de>
-To: Joe Perches <joe@perches.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	"biju.das.au" <biju.das.au@gmail.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Au Dang <au.dang.jx@renesas.com>
-Subject: Re: [PATCH -v2] MAINTAINERS: Fix Intel TDX kernel file patterns
-Message-ID: <20261101201727.GCaueeVySou8SsgdDY@fat_crate.local>
-References: <20261031202741.GAauZPPfNDpQLSmIZD@fat_crate.local>
- <94f0ab99b5c9072ce7c026672f704b2987db427f.camel@perches.com>
- <20261031235958.GDauaA_pScrsk2xYUF@fat_crate.local>
- <5ad69a1167fddc7caf1eb73e439765116db1ce17.camel@perches.com>
- <20261101014710.GEauaaHoYk5TzRpGBQ@fat_crate.local>
- <b700f0fb96b9454287850f7aa54d876b709cadb0.camel@perches.com>
- <20261101185452.GAaueK_PzlK68DsmRz@fat_crate.local>
- <44db8c930587810e902dcb36b5a0718a52eb94fc.camel@perches.com>
- <20261101193759.GBaueVF-1a0H8BDmZ2@fat_crate.local>
- <874236faffbe90543d69361f04628fd8047ab1b8.camel@perches.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E03HRJiW
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 494FC1F00A1D;
+	Sun,  1 Nov 2026 22:16:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793571384;
+	bh=fIWdtQoZgU+HOxQ8xPE7U0OO9UgX4aiH7YmUwuj+ArM=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc;
+	b=E03HRJiWMH7vhzLjAIAvdkSug+FbE0oqKaLpUuUiovEpCVsAAnofPD2ZY4nGlMBTL
+	 MsomjHvrrseLRoGulL364cZHAd+rEebKk9OGO0M3Q5qd1LCM/2qapQHY82ORqPwvup
+	 Eied/++HJpf91kTVLQ/Y4v2gvHTP9zUVoXb1bLDUS3++xUel388+HfAtrZWOjcOWak
+	 de1VDzkC8toobp3DO+dh3bv2XFf7GLPh0eoW8E636a86a1F4GSPJUpoPPW+ATwW6WP
+	 Yr2425Y6oR9vAaDACt9obbh8LjTJJ72SqGEaCC1uV5jD403ArDE6DLYdYhk0joVtl2
+	 jfN5uoZ0iDBEQ==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 4020938003B8;
+	Sun,  1 Nov 2026 22:16:24 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -103,25 +53,44 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <874236faffbe90543d69361f04628fd8047ab1b8.camel@perches.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] serial: sifive: fix off-by-one in console port bounds
+ check
+From: patchwork-bot+linux-riscv@kernel.org
+Message-Id: 
+ <179357138279.2624073.12379269503301547375.git-patchwork-notify@kernel.org>
+Date: Sun, 01 Nov 2026 22:16:22 +0000
+References: <20260827014524.19375-1-min_halo@163.com>
+In-Reply-To: <20260827014524.19375-1-min_halo@163.com>
+To: Zongmin Zhou <min_halo@163.com>
+Cc: linux-riscv@lists.infradead.org, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, pjw@kernel.org, samuel.holland@sifive.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ zhouzongmin@kylinos.cn
 
-On Sun, Nov 01, 2026 at 11:54:42AM -0800, Joe Perches wrote:
-> I do think it was already generally understood though as
-> there was just one exception to the pattern match style
-> in the existing more than ten thousand ^[FX]: MAINTAINER
-> entries.
+Hello:
 
-I leave it up to you.
+This patch was applied to riscv/linux.git (fixes)
+by Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
 
-As said, my only angle is having this documented as clearly as possible, even
-with an example, so that people in the future do not stumble over this and
-have to add debug prints to get_maintainer.pl code to figure out what exactly
-happens.
+On Thu, 27 Aug 2026 09:45:24 +0800 you wrote:
+> From: Zongmin Zhou <zhouzongmin@kylinos.cn>
+> 
+> sifive_serial_console_ports[] is sized SIFIVE_SERIAL_MAX_PORTS (8), so
+> valid indices are 0..7. The bounds check in sifive_serial_probe() uses
+> "id > SIFIVE_SERIAL_MAX_PORTS", which lets id == 8 pass and causes an
+> out-of-bounds write in __ssp_add_console_port() through
+> sifive_serial_console_ports[ssp->port.line].
+> 
+> [...]
 
+Here is the summary with links:
+  - serial: sifive: fix off-by-one in console port bounds check
+    https://git.kernel.org/riscv/c/bf961847813d
+
+You are awesome, thank you!
 -- 
-Regards/Gruss,
-    Boris.
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
