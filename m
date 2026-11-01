@@ -1,47 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793516113;
-	b=49PKDGD0vwnoWg/vADHz7vxHCzoFMkojABZg37Xh+yZW5XRL+jrV+XtpQWfUnP7Cnr8m
-	 ZPfAEqTeSlvkMz1dF78+zq5o9Z/WWRkNxH3tatt1R1qK3GF4jY5atwnmH+I5xqBYmBP3b
-	 Y6CKp6ApZUY1u3kjFjYsBUSg/3Z2J32qAG4vu6uwr4nJ8nzUhEpdPpa0wlFlZfndivd+g
-	 InRE9m4VtN3hMfpeYZMcvkS4umuxj0BXrMypIr4dzLL3JLCVIz6oaIncEMOBfJp99fyVL
-	 7QD6c458Mk0RSUTUI6XtSvykHv+IxkYGys7QQrGrW9F2gVQih1WiDauPwE5GbL0GcDQ==
+	t=1793530328;
+	b=Rar9Gf1jMANl7HOyZI5hpRer8xCgpb5ftEmK5H40k7sgIA8J8jT8YcqV5WQa3hUmfx2H
+	 WJxzgxPvcL68wbQlbIt9aPPzyQ+5+PkfCZnECG2hgnMsJFl3X0bCbLVQR5a2JKtWP8c/U
+	 Ittda2XXcEubmV0du+uvI6Vrd0qdz7ORcoPetT+oGjDHUoMGsFz/qkFC3td2FhikKGepN
+	 KlNtQp9lcdH/4hTJT16FmJ495612Leavj8pu+LBoX/EseOc3xN0/DoCmY5GfQ+6FFkAJq
+	 sdDMilhKLmxFhzmf3OiQGFVhie7PnbHhd3pWMEc2vWHIj1yK91+ZEw92vXhpWGjeHWQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793516113;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:References:Content-Language:From:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=/CKMfN/Si2/MEVvjJNq4BneqQPomvixJjOeTTGaMj7g=;
-	b=rEQSfedjPZYOG124BhpCTo1+GAxjDwcL0qibCZlT2XROgW18TKO20t2gWAiAh5l2STz/
-	 zzy7bMhzBK1IRgmYlPua636cZdMFDI7bZf8Q8AY+Wmu2IjvfCb6qJ6IaLVQC3KMjvmIZ6
-	 bW5hrBWkqpPgCW3wpCtUelc7CCtCyOS+Pds8gvZLHR0I1Mtxmm1mJtws7iSRyZsjHBN+m
-	 cxCPhJJsV9AF308drnIFCfTv9Aput8PxukfNMgF6ptkdc1g0vY6Vs3ErUgQQChozGxKAv
-	 sK1iClSmWbHBnIzuIv9NsaWbWA5XjWCg5Syg+KhwWpX4QOjA9lHZbrJ6MpumGD+/pUQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793530328;
+	h=Received:DKIM-Signature:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:References:
+	 Date:Message-Id:X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=pJVVKwHbhmfTEf9BsmBhWwB3UfIBhltnU3zTc/bmdjo=;
+	b=kHjfFcSIkYIZDlZecGeDHWVs4emKYwEiBKB2xZGaGKQwVQempPQPCyeJX9j2KO1Pyzev
+	 C3NVpbRNMD45aDRcK+9I/mg/L650Hy/ur6KknQQYRQI7/DtbTc2vZ6BuAwkt4iBhH4Kox
+	 l+I/rSb4rGtB9ya4furnbNQKsAx6kcVa5T6UErAvuZpx2LW+CFw1QA6Xgqc0t3ecjpnW6
+	 sGqX2KZTnu6XeZKXJOiZoATYBQaYnZnwgsEbmBtKG8wf1ZFdQap3h36r9/wJuJ/fdqGGu
+	 gCuVD8dX2gxoZTTCe+NDs6c4HGx6LRHJBpdNIaS6+cI3G/VzO7CZ3VrwsQlefjDs9KA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MNmpdYnP;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="l0c/lPT/";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F2A6606A324;
-	Sun,  1 Nov 2026 06:55:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B6E6606A324;
+	Sun,  1 Nov 2026 10:52:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MNmpdYnP
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CE121F000C1;
-	Sun,  1 Nov 2026 06:55:11 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l0c/lPT/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC941F000C1;
+	Sun,  1 Nov 2026 10:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793516112;
-	bh=/CKMfN/Si2/MEVvjJNq4BneqQPomvixJjOeTTGaMj7g=;
-	h=Date:Subject:To:References:From:In-Reply-To;
-	b=MNmpdYnP8TP4JE8vbUYIdIM5RyMZz69DBcL0ha3TXCQ+QdUHHqB4BnBPRKEbKDMOz
-	 fJidJZtowX9mzBRcmp2jnSiFpbXzUevNmSZma9aALdWXj/TbQwtqDbI6B67oyj2Rah
-	 fK+92Jo6jc5IO6uA6ZQ7nWW6+x53mzwsrXaiayo5QvFbInMRjDzF2+ZDsJ9r3EHwON
-	 3w1L0b9H047IxD9WsN36c6jkIWmlIGXkfqTxVtEHMmF3HlKJNDd0a+89iA6Lc8+qFg
-	 kl1OBkkN0JibBLjyhr3UQV1CYXVHPcy01L9VrnK4cBoBbzCXGqFH01RMLUq2QuNpCk
-	 eNaRggcXTKuLQ==
-Message-ID: <0f0cb164-8871-4030-8430-b41dc7dc37c2@kernel.org>
-Date: Sun, 1 Nov 2026 07:55:09 +0100
+	s=k20260515; t=1793530327;
+	bh=pJVVKwHbhmfTEf9BsmBhWwB3UfIBhltnU3zTc/bmdjo=;
+	h=Subject:From:To:Cc:In-Reply-To:References:Date;
+	b=l0c/lPT/eHsnt1tu0zHEi2fcjmyhFiZ/YhFGHrjw3FbL3pYqJvbloIdadawwaB612
+	 FBUXj/oiY0K3qDL8wX/neSpZzhEHZkMFvAKvNkqQTnumEInIkI6/gCd7lKUmkFdqHz
+	 PxfZ7v4jGDpZvZdkWaoBpXrQErbRQXKlIjTIeRWOR5hVqs/5jLB0rcT1poWWRrLIEx
+	 keRC/Y8Be+MNkn9QSHiLWHWKDEisoJA/OWDywAbucKI3nYaJJ9dQt8eIPH0grbMLPQ
+	 t9IDpoyBs4x4Ix9A6NGoqNrAX/wPqbatMCkyFH7cI18gzxBx4BVvfCmGl/YnX8O4C0
+	 1UBl0NAQojcig==
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -51,87 +49,131 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] tty: serial: mvebu-uart: use device_get_match_data()
-To: Bramwel Barack <bramwelbarack89@gmail.com>, =?UTF-8?Q?Pali_Roh=C3=A1r?=
- <pali@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>,
- "open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-References: <20261030183332.23834-1-bramwelbarack89@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20261030183332.23834-1-bramwelbarack89@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 21/27] phy: rockchip-inno-usb2: Add RK3572 support
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Cunhao Lu <1579567540@qq.com>
+Cc: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+ Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+ Philipp Zabel <p.zabel@pengutronix.de>, 
+ Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>, 
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+ Richard Cochran <richardcochran@gmail.com>, Ulf Hansson <ulfh@kernel.org>, 
+ Andi Shyti <andi.shyti@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Jisheng Zhang <jszhang@kernel.org>, 
+ Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ David Wu <david.wu@rock-chips.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, 
+ Maxime Chevallier <maxime.chevallier@bootlin.com>, 
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+ Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Thinh Nguyen <Thinh.Nguyen@synopsys.com>, 
+ Jaehoon Chung <jh80.chung@samsung.com>, 
+ Shawn Lin <shawn.lin@rock-chips.com>, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
+ linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org, 
+ linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
+ linux-usb@vger.kernel.org
+In-Reply-To: <20261022-add-board-ok3572-c-v1-21-0b0fd85a31ee@qq.com>
+References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com>
+ <20261022-add-board-ok3572-c-v1-21-0b0fd85a31ee@qq.com>
+Date: Sun, 01 Nov 2026 16:21:52 +0530
+Message-Id: <179353031285.2955.4272173079718014092.b4-reply@b4>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2049; i=mani@kernel.org;
+ h=from:subject:message-id; bh=31exuPQfsAOhnwIjmXEjjvAlTRXnnjz1PKLb/yyFj6k=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBq5xnKP2pbzdBpJAuX9SwupspI7yJNwomVsnJuz
+ aOJqq74qKuJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaucZygAKCRBVnxHm/pHO
+ 9WQAB/96KIbnRgeB00Ab1FYAF1roqbKbj5c0aeRO93f5urNJ5r4URepXfyJP8dOuE9JZMVZcr5b
+ GALeNpvXnpsL49mzVQohe0Sp2GxQbbkDvy3WNXMFLbrkiwoNUew3PXjGrpC+WP0iMwunoMh40sM
+ +FfXLZ/BJbcm4CwP6xP2rbTgKlRX+YBDZ+5anFKAflhI8lyjzOroc6CaQKJWA1uoNR/cCsO3b/7
+ PbLuWLleLh5V6qLB832ZwG0rMmEZomEhcXEuXh11t9ERKG4ysL4hKV6TinMlLU2Ruhu+iLPuGXa
+ eWPJiKBNr/cTl6yoqPDo7ctlFKJ8f+OZjojQUZ/2GmF6FG2F
+X-Developer-Key: i=mani@kernel.org; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
 
-On 30. 10. 26, 19:33, Bramwel Barack wrote:
-> Modernize the driver by replacing the legacy of_match_device() call
-> with the modern device_get_match_data() helper API. This cleans up
-> the boilerplate code by extracting the match driver data configuration
-> directly.
+On 2026-10-22 00:11 +0800, Cunhao Lu wrote:
+> Support both RK3572 USB2 PHY instances.
 > 
-> Consequently, drop the explicit inclusions of <linux/of_device.h> and
-> <linux/of_platform.h> as they are no longer required by the driver.
-> This allows us to also remove a now-redundant forward declaration and
->   drop the problematic of_match_ptr() macro wrapper.
-...
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index 33ea496c93b2..1e980dd26465 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-...
-> @@ -919,7 +914,7 @@ static int mvebu_uart_probe(struct platform_device *pdev)
->   		return -ENOMEM;
->   
->   	/* Get controller data depending on the compatible string */
-> -	mvuart->data = (struct mvebu_uart_driver_data *)match->data;
-> +	mvuart->data = (struct mvebu_uart_driver_data *)device_get_match_data(&pdev->dev);
+> Signed-off-by: Cunhao Lu <1579567540@qq.com>
 
-Perhaps remove the cast too?
+Nitpicks below. With those fixed,
 
-thanks,
--- 
-js
-suse labs
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+
+> ---
+>  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 136 ++++++++++++++++++++++++++
+>  1 file changed, 136 insertions(+)
+> 
+> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> index 7d8a533f24aea..16a36e68cb6d3 100644
+> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> @@ -1544,6 +1544,49 @@ static int rk3528_usb2phy_tuning(struct rockchip_usb2phy *rphy)
+>  	return 0;
+>  }
+>  
+> +static int rk3572_usb2phy_tuning(struct rockchip_usb2phy *rphy)
+> +{
+> +	u32 reg = rphy->phy_cfg->reg;
+> +	struct clk *refclk;
+> +	unsigned long rate;
+> +	u32 val;
+> +	int ret;
+> +
+> +	refclk = devm_clk_get(rphy->dev, "phyclk");
+> +	if (IS_ERR(refclk))
+> +		return PTR_ERR(refclk);
+
+Please insert a newline between each operation to improve readability.
+
+> +	rate = clk_get_rate(refclk);
+> +	if (rate != 24000000 && rate != 26000000)
+> +		return -EINVAL;
+> +
+> +	ret = regmap_write(rphy->grf, reg + 0x0004,
+> +			   GENMASK(18, 16) | (rate == 24000000 ? 2 : 6));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(rphy->grf, reg + 0x0010, &val);
+> +	if (ret)
+> +		return ret;
+> +	if (val & BIT(13)) {
+> +		ret = regmap_write(rphy->grf, reg + 0x0010, BIT(29));
+> +		if (ret)
+> +			return ret;
+> +		ret = rockchip_usb2phy_reset(rphy);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	/* Set the normal line-state filter interval. */
+> +	ret = regmap_write(rphy->grf, reg + 0x0020, 0x30100);
+> +	if (ret)
+> +		return ret;
+
+Here.
+
+> +	/* Increase HS voltage by 5.89% and double pre-emphasis current. */
+> +	ret = regmap_write(rphy->grf, reg + 0x000c, GENMASK(27, 24) | 0x0900);
+> +	if (ret)
+> +		return ret;
+
+And here.
+
+- Mani
+
+
