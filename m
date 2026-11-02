@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793648712;
-	b=V8DdvlwzAR7rmDJkaPc9blW0OpIYUMxyCjGedq+6JLSbYVQ3DtpURSb9qbENy4TR8WXr
-	 4oAd33d5pk4/NYIW+v6XtALuI1JJXX+BDqsvpPZ3w0QPzbIcHXl3IpoCrl0bPbtmXLN90
-	 /QWqDRS7A2q/pCNf1iCQ+MsH3Xg7+Fo32SF3YNzr/CHIx159Xq6s8fjaj+St7T+nWHl6o
-	 P0eGQD5AaTvEIoLIIXalH3FGXa3PwmQ9GPu6T/+0TnqW1cBPannbqmR2+3tmfRnNZDOFD
-	 M/k483M/iQJSjYwcTXpuqjPqDPAK+IFa2h2IceGw0f1x0JRPqXYYKQLbLlXD2pxDQ1g==
+	t=1793648714;
+	b=qRKOKDCm5VcsVHQgZ3QjmzUZu7+eIluCyiU3wnqW8KfFp+6uIxBgDd/wRrz3xIX7//G1
+	 LZq1GrcxyV5XQKM1FZu8RRrkf7MrPqOcjCNc8YBUKvRudoIDuyy1ZfVG6gI9899At7pBI
+	 +21G6xquJyGW8692AZMrfjwbKzoO0+NRF/mynXO0myWSrJH6uM6I+nScfs4KdM9p9KqhV
+	 kUyuuzU4RcyyyPPt5ACLMj47paeFie05/EBPYJnp+nfvfGr7vOgriO1SgJRc4HLCAQT1h
+	 YEfbVCNQJsyBTtPUd9Txu8iqM8sC45VYkwC2g59Zx1PX+z0vxKQiYSRegDRQdiRbDTw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793648712;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793648714;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
 	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=X1gs5KeCo1v5nVzDOONX/rjGPthdxfNaqSCGYiFENeg=;
-	b=4mBDZjNhTWYHMfzzBfXPhOnycclLyv2AJn2P1NqDlCYuLiBWh2PYC5scxhytCTYBrJGB
-	 l+aypi2nkXkXcew8/5yKbDL45/TbOpUtwMByF/EJGeJdWtly7R0TbqZaMV7+HKo6S3IKN
-	 6kFXhP0zxbarhH0uSkny5YoGB+uO/aC6d2uLpCvmkFICIdMvPRRUgESoWnIrox7tmoSfu
-	 3Ba4vReqX1l41JrKwthJs4qPFjcg+IAidSUnjb/G87GtzHbeg9jRWVLM3OlBuz+8V/CMC
-	 j3QP06CTjWD0HHcH1P8Q5BXmk1XCLJlJS3s0tlzlQWRIR+aVnoOY+mpkQIHYs3IXdKw==
+	bh=2skKssvMl7NrG/EIFxQTg5In1tC5JMHyWGqJ1c52uyI=;
+	b=fJSa6x6ppIXIpZuepexgL4lVF9dF5gpBG8EBBvZpNYfE2ttbqdUEi3Nst6VMrsPO1hQE
+	 v7+nX7latPwmxiycSFmDTIWWWRynBBXiELITLrkTqLatIj479E/Z05xR97v1AdTVbnNJw
+	 pEqXljAXLHj8jaqT0wdCZN5PfCxxz7wn8CfP3azzuIEJtXAlUNOEtgkyZzA0LOV/IvhRt
+	 hTQ4okNjAem67u0XwHSieeTru8aRg9+vHpjO/kdRGAVTHzf3Jm1MinqYMlxs7550mugtI
+	 1/t8fRZEcvgb+zGQ29yyVODR88RRsO1tOqNUba3Bx53A4ZWsnYAI/5qGY+NtxJWp5hw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ipo59+gg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EH3Q2rpB;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B93EB606D80A;
-	Mon,  2 Nov 2026 19:45:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7DC1606EE80;
+	Mon,  2 Nov 2026 19:45:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ipo59+gg
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EH3Q2rpB
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793648711;
-	b=nCbCdpKz8xSCrngA3Y2F2D7Vny00zp3el4jwGJFanQUUSc6b3qcBMOeOkskOJANtnGTi
-	 BWeX7YyabRYAGOK28eDgzRfEUuqyXGrzHJ+p6+q3yo62rehhDUGdv+exF/sPEkzo65aq9
-	 DrgaaZ830irmOG9/AqPOQVbDwu3KWOaLEfNNyyVvfekDY/CnbHV+uqjQ8lblFlaU4JLkj
-	 Iv3vdcC8HWE2TRYtcy+gaoee1tHlMAjxfm1zXeB92qTkK2tS9cPFhhW7yaFhm9R5SNNjK
-	 VnTKcyizPxGpmoEo2EVQefL4VPzH35DZmXL+iquyTU4sJoGtEbwJzmxUkBYJ3ICHvcA==
+	t=1793648713;
+	b=sDw2f1cF1aagBONm5vhjndWF7iueeeRFJE7AfQWBAruYI+4xwFehhujyjowi8wkWsu6S
+	 +IRNXt9k+TrHFqJexfzsERGDXC5yBH+oec++ZS9vlfCawFMylLo+n8f4L1wsxyIgTRlIP
+	 dw1KRaZokd7+CuftWLIb6MXCaNwF1AGvp0bucEn7xLPBlxaUatERc6YqEb76V5UCewGEP
+	 MWBEeBDJuWkv79OWiDHTZ3IY88VyMJlHwuuS4ZVLsCIT/5qNrFdzqUA1zH2pSjCn6KrZI
+	 EsqFjRwSwD3KjiV1NtV3JavTZSQauyuaruhh1jIhQWpTQJPt3yM3DSsXFNOwFr5rpFQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793648711;
+	c=relaxed/relaxed; t=1793648713;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To;
-	bh=X1gs5KeCo1v5nVzDOONX/rjGPthdxfNaqSCGYiFENeg=;
-	b=WfNSS7lOhQ6kuqCmUogoEx3nYELUHCQGAQtXuH/zD6kLqRGgqMGNKG6TUzWpFNyE1JEf
-	 X+6wmSSby7eSQva0Iy+3LYLh6epFausIwzxTh75TYThSd5wzDQwuEFzDBKU1TZU5fGrAW
-	 /hJjbzOc9wUUodjhd94Uvhk6PXJWebr0CvOal320ppnvqPgjRGMrqydekY9LvgesxhitT
-	 jX2DgDx4ZI0jQ9BpF3J7rfVjTFCui1uTb69kgnqUlYnWPxLtPe4fp+t1oMS1ouSOUHdwM
-	 HzcctaHh/kIZzNiFYTZ2FbCwlExTetmuI1G5R9V0Uuh04bgs72852XVyI0jfDRfB04g==
+	bh=2skKssvMl7NrG/EIFxQTg5In1tC5JMHyWGqJ1c52uyI=;
+	b=H4GnM+hW02wAOxg0MgXdDGN3KzhbGpNucpQMd4x8Ik1g3ReqlXMbKWNDVblehqt9dyYQ
+	 kCk0pUQtZe7VTOuO2iqAKsRsEUkYsW9VdPLr2QXXoAbKJELJYl5oiNQH3KRiNZtsns8Ma
+	 NHzfDzquNg5L7eYg2ysobhM2n04oyQRTlWoppsNyp2x9LYsggmOadKPOvxRq0AP1FmoPu
+	 p04G524D2b7/O8ky/8Swol8GvJDYMZA1g1p6Yb4EgbLO1gG4tpz3f3Bv27oz3pfRaQKFm
+	 QszIJyNpWVXcrRReCqNM8BU+0//lVnEaU6gsBHxbpWNyVF4RV4+xLFMP+rzw5YzpI4w==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 55B8F1F00A20;
-	Mon,  2 Nov 2026 19:45:09 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 15FE11F00A1D;
+	Mon,  2 Nov 2026 19:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793648711;
-	bh=X1gs5KeCo1v5nVzDOONX/rjGPthdxfNaqSCGYiFENeg=;
+	s=k20260515; t=1793648713;
+	bh=2skKssvMl7NrG/EIFxQTg5In1tC5JMHyWGqJ1c52uyI=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Ipo59+ggcxFRtMW5bYfxQ5M74mz/GYmwgxlBwSo4vzGqKB+inZ0mrMbSRWB6+94gg
-	 q2FanmVkIq0ePHFgZqd66v43NmfVl4dX1rNSDPTNQ0JOyHrmZeS4gjI4TD6Kkmc+8m
-	 MrZQxgJRolgyAqUVYELGedKn/pK7/6W73B3BqnOFtWMFmO1ginY+F22M+U76/jBtnY
-	 hJui9woxqQMsMngTuxtWdc0XR4C4rTwO0LjxLTyXt1nBT9pNRcqEV3YidFRrExuTDX
-	 ojewSRZDzrfltFCJQ8/Hz2amuebW8gTrOnmWIgoduEETl95CPyHof8sI0RVxOy49go
-	 S4HXSYzOY+UIg==
+	b=EH3Q2rpBgrh8OKuqCSJVGVrDZeGvO82NbyyyFsXJ/Mr3pNZHPxFi3XZBtGtTw/H7J
+	 w1/Qm2Nkgu/wex+AD06UYDY+9hQ/yRKcfeVAaSdCrUQhjod0ubVLUmM5j/cho4En26
+	 saeh2OlGUijb2iB2lSHkW1x1lR1Wrtd8m7XO+zx+71PHPzs4aWgl83yjUPsTtlViv5
+	 3ZuZivdxFYl9IHdM9b4ftTpjM6nX3TT2vrvyrAMIRpaeOLmj222FWY0Ukr6VToetxM
+	 2lwUVfZgfUrlkajMR2VKF7suVIDF83h7cyeRbP/Z8ond4uDLYJNlhIoE04BykIYe3x
+	 g+594D6zfY2zg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id D0A624660E;
-	Mon,  2 Nov 2026 19:45:08 +0000 (UTC)
+	by lkml.kernel.org (Postfix) with ESMTP id 0932546619;
+	Mon,  2 Nov 2026 19:45:09 +0000 (UTC)
 From: Han Gao via B4 Relay <devnull+gaohan.iscas.ac.cn@kernel.org>
-Date: Tue, 03 Nov 2026 03:45:06 +0800
-Subject: [PATCH RFC v3 03/17] riscv: add Zhihe A210 support
+Date: Tue, 03 Nov 2026 03:45:09 +0800
+Subject: [PATCH RFC v3 06/17] dt-bindings: pinctrl: add Zhihe A210 pin
+ controller
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,7 +85,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261103-a210-scmi-v3-3-ee6b31580808@iscas.ac.cn>
+Message-Id: <20261103-a210-scmi-v3-6-ee6b31580808@iscas.ac.cn>
 References: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn>
 In-Reply-To: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn>
 To: Sudeep Holla <sudeep.holla@kernel.org>, 
@@ -115,11 +116,11 @@ Cc: arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-serial@vger.kernel.org, Han Gao <rabenda.cn@gmail.com>, 
  Han Gao <gaohan@iscas.ac.cn>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793648705; l=1016;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793648705; l=5149;
  i=gaohan@iscas.ac.cn; s=20261021; h=from:subject:message-id;
- bh=Xvkj+SoMFEM0aCTapUCLJM3XOLxV9bGDyfr9qshYbdY=;
- b=I0TapnLVfQ9sU2mdSncHY+aBiRw1rfxabNHXOZ0jJcN3NsSMFr7CpeOk+ZPgK//QAqF6BhYuQ
- kGNPy/GvyfcDca9A7qNH3luBDY3/Raumnjxfz/13SL/GE4neHTY4Bwa
+ bh=ViPTWWQQeexsnyAa+LU8olyP5is0pfShY5chI2/PszU=;
+ b=BUGfjsDUMGXJ2Xsl51TLYgelij2NnYdnV7+1jqBYXjvnS9TJfLhs32lM54YtvZYZw9lZI3FfS
+ kRmBjNho0QBARTjyq1+DvWmWrg62TTXpZJKnuFH9TXcD2UGfrsUCdNY
 X-Developer-Key: i=gaohan@iscas.ac.cn; a=ed25519;
  pk=J8WHEK3filS86QaCaIHDGafqhxKyQ4K7+vFgRirTIiY=
 X-Endpoint-Received: by B4 Relay for gaohan@iscas.ac.cn/20261021 with
@@ -129,36 +130,169 @@ Reply-To: gaohan@iscas.ac.cn
 
 From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
 
-Add the ARCH_ZHIHE option for the Zhihe A210 SoC.
+Add a binding for the AON, PERI1 and PERI2 pad controllers of the Zhihe
+A210. Every pad is muxed and configured on its own. Functions of the same
+kind share one name unless a pad can select more than one instance of
+them, as with the UARTs.
 
 Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
-Co-developed-by: Han Gao <gaohan@iscas.ac.cn>
 Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 ---
- arch/riscv/Kconfig.socs | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ .../bindings/pinctrl/zhihe,a210-pinctrl.yaml       | 146 +++++++++++++++++++++
+ 1 file changed, 146 insertions(+)
 
-diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-index cecbce0c4983..9e096feb79b9 100644
---- a/arch/riscv/Kconfig.socs
-+++ b/arch/riscv/Kconfig.socs
-@@ -91,6 +91,16 @@ config ARCH_ULTRARISC
- 	  This enables support for UltraRISC SoC platform hardware,
- 	  including boards based on the UR-DP1000.
- 
-+config ARCH_ZHIHE
-+	bool "Zhihe SoCs"
-+	depends on 64BIT && MMU
-+	select ARCH_HAS_RESET_CONTROLLER
-+	help
-+	  Enable support for the Zhihe A210 SoC.
-+	  A210 has four C908V and four C920V2 RISC-V CPU cores.
-+	  Supported boards include the Melon Pi V1 and V2.
-+	  Say Y here to build a kernel for these boards.
+diff --git a/Documentation/devicetree/bindings/pinctrl/zhihe,a210-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/zhihe,a210-pinctrl.yaml
+new file mode 100644
+index 000000000000..96c46b59d147
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pinctrl/zhihe,a210-pinctrl.yaml
+@@ -0,0 +1,146 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pinctrl/zhihe,a210-pinctrl.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- config ARCH_VIRT
- 	bool "QEMU Virt Machine"
- 	select POWER_RESET
++title: Zhihe A210 pin controller
++
++maintainers:
++  - Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
++
++description: |
++  Pinmux and pinconf controller of the Zhihe A210 RISC-V SoC.
++
++  Most pads of the A210 are split into three groups, each managed by its
++  own pad controller with a separate register range:
++
++    AON pad controller   -> zhihe,a210-aon-pinctrl
++    Peripheral 1 pads    -> zhihe,a210-peri1-pinctrl
++    Peripheral 2 pads    -> zhihe,a210-peri2-pinctrl
++
++  Each pad can be muxed individually to up to 8 different functions,
++  though for most pads only a few of those settings are valid. A few pads
++  in the AON group do not support muxing or configuration at all.
++
++  The pads support configurable drive strength, bias, input enable,
++  Schmitt trigger and slew rate.
++
++properties:
++  compatible:
++    enum:
++      - zhihe,a210-aon-pinctrl
++      - zhihe,a210-peri1-pinctrl
++      - zhihe,a210-peri2-pinctrl
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: pclk
++
++  resets:
++    maxItems: 1
++
++patternProperties:
++  '-[0-9]+$':
++    type: object
++
++    description:
++      A pinmux group referenced by a consumer's pinctrl phandle. It
++      contains one subnode per set of pads sharing the same pinmux and
++      pinconf settings.
++
++    additionalProperties: false
++
++    patternProperties:
++      '-pins$':
++        type: object
++        $ref: /schemas/pinctrl/pincfg-node.yaml#
++
++        description:
++          A pinctrl node describing the pinmux and pinconf settings of
++          one or more pads.
++
++        properties:
++          pins:
++            $ref: /schemas/pinctrl/pinmux-node.yaml#/properties/pins
++            description: List of pads that properties in the node apply to.
++
++          function:
++            $ref: /schemas/pinctrl/pinmux-node.yaml#/properties/function
++            enum: [ aouart, aouart_ir, aogpio, aoi2c, aospi, jtag, reset,
++                    por, pmic, dvs, uart0, uart1, uart2, uart3, uart4,
++                    uart5, uart6, uart7, uart8, uart9, uart_ir, gpio,
++                    gmac0, gmac1, spi, qspi, pwm, can, i2s0, i2s1, i2s2,
++                    i2s3, i2c0, i2c1, i2c2, i2c3, i2c4, i2c5, i2c6, i2c7,
++                    i2c7_smb, sdio, isp0, dptx, usb31, sata, hdmi, zmac,
++                    bsel, dbgm, cdbg, pdm, tdm, pcie, sen_vclk ]
++            description: |
++              The mux function to select for the given pins. Functions of
++              the same kind share one name, such as spi or pwm, unless a
++              pad can select more than one instance. For example GPIO0_16
++              selects UART0 or UART1, so the UARTs are named uart0 to
++              uart9.
++
++          bias-disable: true
++
++          bias-pull-up: true
++
++          bias-pull-down: true
++
++          drive-strength:
++            minimum: 1
++            maximum: 25
++            description:
++              Drive strength in mA. The pads support 1, 2, 3, 5, 7, 8, 10,
++              12, 13, 15, 16, 18, 20, 21, 23 and 25 mA. Other values select
++              the next higher strength.
++
++          input-enable: true
++
++          input-disable: true
++
++          input-schmitt-enable: true
++
++          input-schmitt-disable: true
++
++          slew-rate:
++            maximum: 1
++
++        required:
++          - pins
++
++        additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    pinctrl@2026000 {
++        compatible = "zhihe,a210-peri1-pinctrl";
++        reg = <0x2026000 0x1000>;
++        clocks = <&clk 0>;
++        clock-names = "pclk";
++
++        gmac0-0 {
++            gmac0-pins {
++                pins = "GPIO0_0", "GPIO0_12";
++                function = "gmac0";
++                bias-disable;
++                drive-strength = <13>;
++                input-disable;
++                input-schmitt-disable;
++                slew-rate = <0>;
++            };
++        };
++    };
 
 -- 
 2.55.0
