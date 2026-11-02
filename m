@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793649081;
-	b=L9t93jVg3J6+vgMNvQgvYNIr9A+/EnGKznn1DIHgceWmk3j6HDCBkXvdXUL7sLDTJ7Qs
-	 asUo1mN63ESHQ3F3RGbxdVq2YKncX3CsJcfGXKwSpt6eC9bgjBQjn1fXD9pA/H1utVOgv
-	 cwruOzobxfahJxKYDdFmHRU/yBBZvVqOo19sfY/fChEWuaufkx+mtWCaH6XrFOqQP3p5O
-	 3IwCTlxh6K5lWtWDCExjRvNM8pHjfO8NJ28y6Wthh4mj83Gud2pqn9kCZdRiCuGhtolAi
-	 I78Af3ebXrhzH3dIoE2zkrpeiyOQM/PxOoxtYVtaogBfx/7K197uAmRZSB6hfr3a8Iw==
+	t=1793649112;
+	b=kPxoqycXZqFB0ByPer0KmFff8BoHGzl6Mcv7IHCAZPiDMB5+TAjcH6M+xk0G68bFNE6G
+	 CeN3OgHsVQ1Wl6wNVCznhhcliiI8G4dhagH7cy/KIp28vyNUNoMj2ilT3MnzxGYjwv51D
+	 ku+Zk75ITs8rMRHlGthoonsxT8I4w8DzMF7QnQYSfN62A1CqWdUdn0gRg7gbM+O3vZGHA
+	 R8ZfpajbpQyukP74KKV3rYjf0hpWshQsA3KalYYKUvNJ9enPzUr4MSyxdJS4IWPrlDELf
+	 EL/CmKfL43oU728sbT5ZeOfNtXKs0Dc+DlGqa1BbcDoHW8CBU4jPLp1IettuNe1OOCA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793649081;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793649112;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=FPJhkAlQTPW1DH6FYmQZMN+jrtPORFxZr0eQdm16iUM=;
-	b=nAJDLoovY9CU+bA9yNMVYcYNm6Ce83eMjCbfqtdUihk8yNRoA5CGfcYnpcDZP0dupF+g
-	 BqFJZaSwVnbfAjehSlTEZUsBwCzrl3dXwca5DJDo6N5faejIeYBUN0DmjBEBL5NnUHXs7
-	 0w+nivl9Vam0crms1Bj/8pn+QveQqfdOYm7ljGBlPUTKdXVm+6NFCQCVb8405+NZ5/920
-	 2tWC0/0cYW1XwlksQsDEsMGWuMhdF45LMLbTGSImpkpiEz1FURc7BFmBNRiK1mBQb6r9W
-	 4bmzsF2QYlNKknsb8WsHZo/h12+b1i04qMw4q4G5+84cY/KLStrw2M2Y9oFMwMMST7A==
+	bh=uFYFEYunEH7ogRztWAlBHTE6PELYqaCujszRLeCGDyo=;
+	b=xVhdBJ3dJVRn8qscgmBJTRspINoXXptmuFpKAMq/9cbIwnhKJMFS+iKvh/TFChvuo5nT
+	 Q8BLg17xgOQJKIu3DRkfNejsAWn9ZKnysf9dY3iQn5Vb0eGyDgMLVVv5nuzDQmu18Bdiw
+	 Fq/hFMOa3uJDpLnXfi4CVao748QnwoJuticiJHhyYC3OOEBol6+5NO0Df44mOP9Y/9App
+	 JPd68gV3s/6mrJRWWArr51qUl1dXJ3aD6AqHUOgb6nJyMMiJ/mrYnVj959A9HbI5BL3dF
+	 GJlw6+s8XRXg+LDu7oRzHmx8RCnNbNfRYghloPRfPXDdCNikwagdT6p42dTaaJzdryQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GVUb6aTT;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l6Vs1tJm;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E85606A330
-	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 19:51:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26C29606A324
+	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 19:51:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GVUb6aTT
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E091F00A16;
-	Mon,  2 Nov 2026 19:51:20 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l6Vs1tJm
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9025F1F00A16;
+	Mon,  2 Nov 2026 19:51:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793649080;
-	bh=FPJhkAlQTPW1DH6FYmQZMN+jrtPORFxZr0eQdm16iUM=;
+	s=k20260515; t=1793649111;
+	bh=uFYFEYunEH7ogRztWAlBHTE6PELYqaCujszRLeCGDyo=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=GVUb6aTTaL0s41efSMAhVG5PZ51nZrmmiOEhGSkPGPlrvg4KDMRdBIzRb4zAF6FvK
-	 VJgZ6rvbn2Z5V6Pmn7FYLXOkehNAvVgGSjt+9Wc0Z1PRRpvCLPI843VZ7pnIGwd6JK
-	 Ro9qlVm0lGH/n9y9ubrH9j6iF0MoHYhU8iMmej5cknzt8T3S5jVwEgFxWX7kkH1adm
-	 sEGed+IGoNAojS03rxH564P5aSaxdOek43TrAb916q5MZmiJdl6dKkBvvQJAZVKxpJ
-	 H21BWm2QNFC2BD+fhXU/PCth5aAj46UXQKi/LOa0oYW+EMUMCsU4eN8zktjG4Sdsm7
-	 0bS+FbBEWlLng==
-Message-ID: <sashiko-outbox-194027@kernel.org>
+	b=l6Vs1tJmNA0nXg2/EQ1oLVjcoLE73aD/m3hJbjGygLveq6n0jKhTm5bWMtKd3obM3
+	 HyOT7ASzALOJEM0V95R/70dWo2j/28QU4L91OO85QcyvEMRDci2rW3iGET6ErBsQDT
+	 P0Dlz1rUlRAzRpDdZW9v9gZ5PHS3avmgHNdtu9lv+yAsy/tqBGmy0vGYR5sQrQ4Zmn
+	 QBtF9odNwLweP4e6iF5IFI6/ceFT2eyVP/hs2ztDGV94CdfsDSUU/ONPhxMm5IPzyt
+	 7hsZK9ISLpY57as8S0d6hgkIVKy9a02tO1qJ3ZjVVek/aiqhLH7SNBg9zOFrScP0mu
+	 X/obPD5RUFvWw==
+Message-ID: <sashiko-outbox-194031@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 08/10] dmaengine: dw: drain the tasklet before
- releasing channel resources
+Subject: Re: [PATCH RFC v3 04/17] dt-bindings: mailbox: add Zhihe A210 AP to
+ E902 mailbox
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "James Hilliard" <james.hilliard1@gmail.com>
+To: "Han Gao" <gaohan@iscas.ac.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261102-submit-dw-dma-synchronize-v1-v5-8-d3207758fbf9@gmail.com>
-References: <20261102-submit-dw-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com>
- <20261102-submit-dw-dma-synchronize-v1-v5-8-d3207758fbf9@gmail.com>
+In-Reply-To: <20261103-a210-scmi-v3-4-ee6b31580808@iscas.ac.cn>
+References: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn>
+ <20261103-a210-scmi-v3-4-ee6b31580808@iscas.ac.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 02 Nov 2026 19:51:20 +0000
+Date: Mon, 02 Nov 2026 19:51:50 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,25 +61,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The controller tasklet invokes callbacks after dropping the channel lock.
-> Releasing a channel can therefore clear its configuration and disable the
-> controller while that tasklet run is still using them.
+> From: Han Gao <gaohan@iscas.ac.cn>
 >=20
-> Disable the tasklet before clearing channel resources and re-enable it
-> after updating the controller's in-use mask. This waits for an executing
-> run while preserving pending schedules for the other channels. Have a
-> pending run return before accessing registers when the last channel has
-> already been released.
+> The Zhihe A210 has an E902 management core next to its application
+> processors. Each side owns a mailbox block and rings the other side by
+> writing to its slice of the other side's mailbox.
 >=20
-> Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA c=
-ontroller")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> The application processors ring E902 through their slice of the E902
+> mailbox. E902 rings back through the application processor mailbox and
+> writes INFO0 or INFO1 there to say which of its two doorbells it rang.
+> The doorbells carry no data, and clients such as SCMI keep their
+> messages in shared memory.
+>=20
+> Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261102-submit-dw-=
-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com?part=3D8
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261103-a210-scmi-=
+v3-0-ee6b31580808@iscas.ac.cn?part=3D4
 
