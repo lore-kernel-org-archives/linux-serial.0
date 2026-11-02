@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793648716;
-	b=XZ6gbBIcK6GB5xVNLYP2gA5czpUE+AwG7YX5+lBKHRDHbf25HYRqsxyUYUCx9O1vmTjB
-	 2Xtu2xq6VZts0LSdnvcvPJtZ9Ld35trwVoOraU1ukK/+ZPrPAihFp2PfXtYaWFvFBT2zf
-	 fS7i27wrfrz3p8lHY4wbZDixymwBopexXp0Mo1sdozJ0VocA8dx/BT1cxcmBfwKWmdyAE
-	 thjcemOewHJ7a1zhWHfu66emhpakv3wMPl1FZG1fAyPjgKu+2mJPOiWI0Az2/e2YBmKp7
-	 lQACAfiRDHgnoD9cxA03gsH9LRktx60GX6IQLDTuWBe8Og9u6EUOhtA8ylBwTO0hrdw==
+	t=1793648722;
+	b=XnoyTomd2QswBQ2Qadyg/Rw96sRhWfbFij42RgEYvZW+zJ1JcVyzxGtiNySEno/ogi0z
+	 57VpSFXYekbUrUul0fU6YVWTOy6aCbo4lXD1Yu0Ik5QaeM77vrM/7hMyreTbcVzPVMuhW
+	 Maa0yE504sHs0/6LJ5UeksF1jykkJMaQBKpston+3LtgZrpUpR8QmYsm0bt97gd9M37hS
+	 sV1cNK/KG+eg0QiNhuIAKq0dIRe6NMA6Ooa/r5nQpOsN4je51SFEPSQ+fH4fIDGTSecXw
+	 xOEGEgMCqPDAM2leIaZFl3+cEG52WC2DWqnGRYJKGuN9oP9eQWbMCIjogzhRd7iG0jQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793648716;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793648722;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=E+Sl1Gk0Izp8iNjXVvH7BXDYK1wVBrrJEHxdo0B8yl4=;
-	b=Q+9ycn70epuVztj98YhuWyhmRbH8xFbloOsfdJC1z3xjp8mPzqLsL8ECsAphe80E9gNy
-	 PvvufHu4hj4nZk8FSrvKQc9L6vk8mP3UroX9HfsyUhTBBQI8xzJVGsp3TcCYqFOlSrYjG
-	 YiqiFtCWcIdAacygVE9DLfIqFw9O2r9jZBCigFD3yCXtIcwsFRhNSuX+F8YNoGU4YqSx7
-	 eJa9v4Qoa4rUnB53dapmqa1qEIDhXuYR6QOTxGR+DZ+MpJnLF0VBabGYH6lgReNVV9Hut
-	 xRFuqkwmLRlCm5x3hA5JY2OYxjqy3KUb0ugbf1wi1rMd6sQ/TH84mhXUvq+19q7mkZA==
+	bh=Rmfx7QYlhFdbxH6abqp7/AYToCj2a0IViMkw7PBXQf8=;
+	b=VbbzTW7S3zBm6F445V08DqpsiYeZcCQ6zqKxcuy3LKrc7P+//cOCbiQFr+HO5SaIBvms
+	 5IawjXnEp3qXonEZATK1IGxOhGV/6boqHEY/aBY1nyrHiCuOhbj2dvqVoaSenoySenNnE
+	 cezyFV9QJqhgcHa3AsYiHz49dIallU/rHMoQZTA/lt8Fai73lS13l68mK6v3bNGBH1dW3
+	 +zWc0bhlsg6QRIT9AJkJ6oGZerhTeYVWsim9GTLtJCuebswkMiWc+bEU6YzDfuDy5wKMm
+	 NPXCsDm9bB/BZ69eNPJKX8k5ZeupE5R0q3ReCK0ls3AdTv7hxXF2bgPfMLytpn1E2Vw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ElOsybAp;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="W5rudeN/";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CACB4606EEAA;
-	Mon,  2 Nov 2026 19:45:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FCEE608362A;
+	Mon,  2 Nov 2026 19:45:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ElOsybAp
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W5rudeN/
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793648715;
-	b=c60FhZSLfJdQPfcdSArXyTt+Q13tlVdLIx0WBAyeKg+lrUV3Cl9ogfT04NSJrMna6s15
-	 uCktQjLzdAMSmxOqz+os4rtu8ig9rb3oG97Kq82x5qLCD3hNRjPIRWT/i8GvCOQ8bMV5S
-	 xGvBzROCZ4b/1rv55eYwnAZdWCWHfxf8biqdJ/lZIwjLs3OVeA6KolOQX3GWARw3eecjI
-	 zlMhTGU+gz1TXSEmIpmNExT9q/08qW8MHhsBy8T/vkqyQ4u3BUI3FkUgyRNY9xqlyqj3j
-	 pIaaLTN0VYi9+Zg7bWR8jSikFumJ3Fk3HeetNf6b0vVtPOz6s0m5meJbMzlB5aTiQjA==
+	t=1793648722;
+	b=sIvOjamXTvZrndOeoaw0Z1RawDRDFjqk3hyNUMPR1P3G2KttkIAZXBB1X5l0TOvZ05Sb
+	 AI+gC/N0lHSST4JRte7Yk9f1ReMSg2L0FeycIJqYGsGxoEwdrkGPCXZYToCgb5+ejoHQV
+	 Eqb08XdUC4uwMuuuksCxHq2DaJzovlX3gqXYxcrxB8+yNX3AhMQneQpl0xBvya3BRHOSd
+	 ybCtR9EghIPZfTgbFEjdeHGhcibfHCurJeVDVIC6wgKvMad5JQEOOYsuS3wYkd/ZzY7PF
+	 NmeBkPBS2YvVu6qofPVHCPuyNeqrps27YHnPclrgeLdIAYpOKCNW/SfqEQh3oHd0xPw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793648715;
+	c=relaxed/relaxed; t=1793648722;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=E+Sl1Gk0Izp8iNjXVvH7BXDYK1wVBrrJEHxdo0B8yl4=;
-	b=3FGRdQeBKM6YJTdcRqrGlhM6G5MPe+EOCXbq/PiW47vCAcxw1rBc+RmI+BKbJJiywQkf
-	 cWqa4CNgJVi3GvtVcXNjflx2HiAua2jBTOdVlSmsT4RWj5lOtw3CXiF7/mR8Qdub2Ro9W
-	 2VLfMFANqnTZyZG5JCBdrRx1t1VGaQKt3seJZxJAzag5+UksAjS+TL50lAyGHHws9nXhu
-	 QHaMQpQK+JdZbRd4s0j8BoDBsjd0ybtSHVTwT5QPkI5IKwCj9QcRJPioQt73QAAa+mCyL
-	 Doy7nZhC+/C2nQSK5rbLlr74SsPi8ROuCLYQnRF9gP9UEgdRJivm4z335HL7PDi6DBQ==
+	bh=Rmfx7QYlhFdbxH6abqp7/AYToCj2a0IViMkw7PBXQf8=;
+	b=xMI+bY0x09fuhFnB0dFX/DogrCXcsLJTJi/An02AZ/ny4M1VhyUNFX5CTxPhEBlsUyG0
+	 aQlcfzY/KlxZLwiB1MFCrrdq8zMqY4HOL4Men5hAs5fpSxGuqUQj9hnCc/a23YoM+lzYI
+	 07c84BLidSS7S7ocGvlqG2NBy9h9YFcZrhufQHCyQLUUen/YgVYSEtqEasww2KcDwdrCk
+	 FMhSOdwdZqI2bI0NkLIFUj8h3rUmDK0pknxhucgN0C7qXatDuseIwJPBNV+76fPRnrLZJ
+	 69amymiMzFFUu7HxDfkZTqWfFSp3ujJNfTNmA5hsMPMmtDx4IO3s6N4QbprtOeqxMRQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id F3C1B1F00A27;
+	by smtp.kernel.org (Postfix) with ESMTPS id B95B31F00A2A;
 	Mon,  2 Nov 2026 19:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793648715;
-	bh=E+Sl1Gk0Izp8iNjXVvH7BXDYK1wVBrrJEHxdo0B8yl4=;
+	s=k20260515; t=1793648722;
+	bh=Rmfx7QYlhFdbxH6abqp7/AYToCj2a0IViMkw7PBXQf8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=ElOsybApz+l9j2Bi0vhKZSGf1bBjxGv6W6mYeIdnt8MroWkQjR3Q7ogwPhpT06Chm
-	 5nZw0wGU3fNNGdHvNc46D5fGuGjAyUS33O1yhYPqXsik+jmmTgQDYhZpD0TLbd0M8o
-	 W+cAOeLalsQvRUsfy6S0dGM8u/pVj9X9ph6s8PyqCvEURMvGsVMkdhw3AVadF3WM+l
-	 M+wRMn8bcXq8hmGr36TdXaYidMykNvJdVoLoXfFAGhDmc0NXElxX6MxU+4H5AJcPRY
-	 TyZ3Nx3Vksu1mSiwEzXUepNIhSHmKPdwyshxcRxbwSUsSz786yxlAYsbpks/BuiwR3
-	 yBa+HeblqnYfg==
+	b=W5rudeN/9ftHf2uMl3BdPZ05LRbMbd3yveTCJ3gcETNplQP+7wwydsdWBk07mnb2c
+	 6IppoNJDPkaHDQrq2ce0HBasQsbS+21PZ9rZ6UI76e8AfnHzhPzD1OBMHTSs9kZDG8
+	 BNqvv/VUDRWHoMl7eM/gW7FzNRFBDsfuHf8TI8Dr551JP86QX8R/TcOEz46uqszw19
+	 RNQ1JSqTMLtS6T6vAVJ5TVPbkLyryyDAHHwf8Pg5SrGX9KnH1smH1AMJUz/atNT01V
+	 rMMALjI+pwrYgXrPonhiuwDD1BM/MO/vIvZVnYmmYlvUe0Rx9F+iifzwL9TTETVq2Z
+	 0PIEEdeKApzTA==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 8775146639;
+	by lkml.kernel.org (Postfix) with ESMTP id 568294662D;
 	Mon,  2 Nov 2026 19:45:09 +0000 (UTC)
 From: Han Gao via B4 Relay <devnull+gaohan.iscas.ac.cn@kernel.org>
-Date: Tue, 03 Nov 2026 03:45:17 +0800
-Subject: [PATCH RFC v3 14/17] riscv: dts: zhihe: add A210 module memory
+Date: Tue, 03 Nov 2026 03:45:14 +0800
+Subject: [PATCH RFC v3 11/17] dt-bindings: serial: snps-dw-apb-uart: add
+ Zhihe A210 UART
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,7 +84,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261103-a210-scmi-v3-14-ee6b31580808@iscas.ac.cn>
+Message-Id: <20261103-a210-scmi-v3-11-ee6b31580808@iscas.ac.cn>
 References: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn>
 In-Reply-To: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn>
 To: Sudeep Holla <sudeep.holla@kernel.org>, 
@@ -112,13 +113,13 @@ Cc: arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-riscv@lists.infradead.org, linux-gpio@vger.kernel.org, 
  Paul Walmsley <paul.walmsley@sifive.com>, linux-clk@vger.kernel.org, 
  linux-serial@vger.kernel.org, Han Gao <rabenda.cn@gmail.com>, 
- Han Gao <gaohan@iscas.ac.cn>
+ Han Gao <gaohan@iscas.ac.cn>, Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793648705; l=777;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793648705; l=1465;
  i=gaohan@iscas.ac.cn; s=20261021; h=from:subject:message-id;
- bh=YcgMhPuDLQowVTt+MvNEeWTBEwtrbKzVnPLSZwTdXCU=;
- b=Y4lI8673ffBSGvGUvR8TW2oNRV2yJq+b13kVULUpd8094Rdj5zdOhEq52/aKiT/FxqZbiu02T
- vGoyqQWuTEKCXPpcj9O6MffWpBqvTbgdlSgRnELC/hPFixfOigKhp8P
+ bh=QLjwbL73GqPkQVnItJ73UGwGElc2NGvSKMH+o+6GPQk=;
+ b=GwTMVWufbQ3apHJbtkCx8hlRQnr+EZ3B6ni/R6Ct6tj8GjQaIdyxcUFNA6jzCIbaIHbScNRAo
+ NxteGYBNi8CCG2wb3dxhMiBYvRAuuXZM8hNZ8O6SDJT8ZST/KoSAtkO
 X-Developer-Key: i=gaohan@iscas.ac.cn; a=ed25519;
  pk=J8WHEK3filS86QaCaIHDGafqhxKyQ4K7+vFgRirTIiY=
 X-Endpoint-Received: by B4 Relay for gaohan@iscas.ac.cn/20261021 with
@@ -129,31 +130,47 @@ Content-Transfer-Encoding: 7bit
 
 From: Han Gao <gaohan@iscas.ac.cn>
 
-Add the A210 module memory node with a default 4 GiB range for boot
-firmware to update with the detected capacity.
+The Zhihe A210 UARTs have separate APB and serial clock domain resets.
+Add an SoC-specific compatible that, like the StarFive JH7110 one,
+allows both resets.
 
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 ---
- arch/riscv/boot/dts/zhihe/a210-som.dtsi | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/riscv/boot/dts/zhihe/a210-som.dtsi b/arch/riscv/boot/dts/zhihe/a210-som.dtsi
-new file mode 100644
-index 000000000000..a77447e402d7
---- /dev/null
-+++ b/arch/riscv/boot/dts/zhihe/a210-som.dtsi
-@@ -0,0 +1,11 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+#include "a210.dtsi"
-+
-+/ {
-+	/* The loader replaces this reference capacity after DDR training. */
-+	memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x0 0x80000000 0x1 0x0>;
-+	};
-+};
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index e2ca126d58ba..a46a87e100bf 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -29,7 +29,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: starfive,jh7110-uart
++            enum:
++              - starfive,jh7110-uart
++              - zhihe,a210-uart
+     then:
+       properties:
+         resets:
+@@ -43,6 +45,7 @@ allOf:
+               enum:
+                 - starfive,jh7110-uart
+                 - syna,sl2610-uart
++                - zhihe,a210-uart
+     then:
+       properties:
+         resets:
+@@ -92,6 +95,7 @@ properties:
+               - syna,sl2610-uart
+               - ti,tda54-uart
+               - ultrarisc,dp1000-uart
++              - zhihe,a210-uart
+           - const: snps,dw-apb-uart
+       - const: snps,dw-apb-uart
+ 
 
 -- 
 2.55.0
