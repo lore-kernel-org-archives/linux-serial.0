@@ -1,102 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.47
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793646118;
-	b=D68mDgO4on4+cyCgJyAvm2ny8heSl15pa/bUZbcWJUQPWFHKWmI1YN+188KMWrB7FEfk
-	 DzuZlCSiIt1rLJ5Mn6SI3URykxArQmutUJDLADh/7hcJFJUU30UedFjOTR038vTbbLKm+
-	 aSgmhS1m3lrMwbtZ3VbSb5kpPEMS5F5qqNAdrXUYK+hKtcImRm2+26OTfNZri1fZR2Pt5
-	 HrwWRWCvkq+0Pl8YQuIBOg7uzoQLMWFEK2upJDlGUEUe1OPL+jfISCbySuK0tEI2pnKFS
-	 vH8rB9iQCCIzZqdh65+qv8+F0tzYjeVO6GMAHu1mRXBbONIVJenhJKFB6V8xK2OthAw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793646118;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.178
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793648059;
+	b=cD8Xm4DZxOu/Pdvqz+aoVpbNF3jYwLIYP/Lz4FOOqOGF+ye28XMNCqH8rbmWt68f2lIQ
+	 dMoNc1VKieQqNINUtvU8e5MZ6PNY0X322w1o00O8Loz1gGhxaL7os4/EvBAdV/4FPr/2r
+	 9zNryWoMtvrrODJ/WlCqgp9ZOYLxwp6es02siX/DNGmQPPe1Qn6Njfo+x+zx8niktzhXK
+	 hKn2L1AehI+nFqHW/eKbrUv2yoWSFllAAXPqrm5KfQxxtP3P2VpnSsMjvJjwaYSkG+Iqe
+	 8xjc+4TCe74xlnFQTNqx/oenRnWmZ6ZBriS0tIlqcvOe5fn4Ddm1tdBN7mOqfhFUUSw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793648059;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=6x7C36ItNCE7Mv0HbSUEpY6Gibir1HyWLaQqqnLukwk=;
-	b=E27wRfmM3GcVrb7xBPxD2KxRrj0PaLTZbiYadfkd9PHEzmxPU8ADJb/t2KgJdRjdhGwZ
-	 cekLH1gdLw18Mr/l75z8nXgAA7aAOuR0D2g55VIn1ZEGvJhnidMKze/GOzWqq3sJ39zpL
-	 7aPWbgaOPuE4Qfuhl3EPkR3BcxF3SJloZSNQSgzO7GJxdDTdO9CIGRY/sOUPNpergzYdX
-	 FeSNOwCmalzWsO/jdz54geIEAtOaOzEpDl9TWu9ueFAgn2JMJvdlpGKrSJOexH97xW4Oq
-	 I6Kk8wAfz1Gudz2gdJEc4lzgsRCy1iYV9+hkPe0jhVSRFlbswNOgwu9y57iFLsJwGOA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=q+rdUxamFVww//fVRdvdICS8n134NRDCqiLcyvwJX0I=;
+	b=RS5dzlyyLOMaoPu7Qy0TmxoVkcHiqobSgnmeUAs9kxf+9ZMkSzAI290UvNORPTV6m5kJ
+	 3yUP+ScNLW41+B6JNjoRjZKFWiKvjnmK8Wfhoqn729gN6cc3gu4Clp0S9OgILou7tZKFF
+	 cXWbJ9cU7QpB6fnrUIaIXutSb6eHpl1c2L6K4HiKnyjnvTJMviylHQcJyuZxRzDEpMuC+
+	 tRBXCn0SkmBguB+sRWzUvrBJIilNXShioRQmsAhHVEsDxJEx5VKhPhmncbnA6SY2WnqNS
+	 2K/JTbN1cvgnQchrrFUzBA0Cp4K4huQ7pk3plr7JuWQ3ch2IYsTb0FJp+UnLS/1X6Tw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="OoS/CdOz";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.47
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XJcPyCaG;
+	arc=none smtp.remote-ip=209.85.167.178
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C616606A326
-	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 19:01:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C616606A326
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD9BF606A326
+	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 19:34:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD9BF606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OoS/CdOz
-Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-9905e692905so272286241.0
-        for <linux-serial@vger.kernel.org>; Mon, 02 Nov 2026 11:01:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793646116; cv=none;
-        d=google.com; s=arc-20260327;
-        b=oZakA4KMpI7igQMVgdlL7r17qIOWTr/wdvOOt8j0jH6UYBZiZzZv1kArcIQr5DI8Zs
-         g73+K2dnNADQLgx3pTtVtTaH2f2ZzWLgEfr6oTw7WUNBWsy8Vne9N1PdSFSui9uKWCwh
-         Fg6drt9fd9bZXfflt9G0cC33/qptIc74EoYJmbW5AZ+3vfTyBFr8rSvX/G++EESfcqZO
-         bA0EVxf3HrZdTAtC9kbixs05G19RDTlKJTge15AKlTS8ujBUuxpJ2UJzVuK93tB4e8vO
-         tXAHhnPTYFT7pANAPVN1x5/eL8IOpQ5DVarqccD0hBsoWSQgzt76GoeIXkm3H3qxpaJd
-         qeNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=6x7C36ItNCE7Mv0HbSUEpY6Gibir1HyWLaQqqnLukwk=;
-        fh=wnLIJ/S+IBjyq6Q9dm0S2NGZX5Fl7SrmyrudT94rydo=;
-        b=h9G29s0opnf5O7FalKbLEVHlu/gJbLrBQyboj/7U5/nQUlwXiQpDOepiCqdUQv9fzN
-         Cl1HkKAvVLfbxM30MCjVc1UKhdIe/K8ZSBD+41/ZZty+NYmyCDRUTTW/yAAsBdi0QDhv
-         87Gv7rsJdS9a3F0SmNiicVCiSe6rG0CBHTvRqilf+1iD7Hg5Jx7XvEj2mSMBUDjMPbv+
-         hkufZnNliZ0n4SwX759aVWd11XdoNLvFPFuzrByPUtLYc+jwMaR/J+mIuP5lmAVuTsPV
-         Guy5tc2Gr8J4iYYlGbg5PhGzoRr5yx5B+kixd9WRQpfVgW3to1Ij9SpW+j/0AY+BCVzx
-         fvmw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XJcPyCaG
+Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-53dbe9b8d6eso3058371b6e.1
+        for <linux-serial@vger.kernel.org>; Mon, 02 Nov 2026 11:34:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793646116; x=1794250916; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=6x7C36ItNCE7Mv0HbSUEpY6Gibir1HyWLaQqqnLukwk=;
-        b=OoS/CdOz8tQYiW8NJVemZhVqI7PjK7UstpTdQY4Dz6TKPNul6fYv3wiPUjHSpHVR0X
-         +8G7/pSZXoj3VBm+C4dJMmCiEGzZcMUzCW1H0qMMp5RGkNaw0R0+tKREaicYCfwqsmYz
-         x0fp8lsiDbrcssAnqhY01lprh/ni95JhhwkCvg0WgLlUZxrTK5tv0rc0TrAuYXIstkSo
-         Z7sVetFi8O2ocPpB8QLXZsWIrhtRAtoNu4pSQbLFTYp+EaaoXTq22kx0Z0H90Hd8g9/F
-         AO92ly93r0kXkZZNFZ8sWIB44GZ15Otq9O7z/AsCuDASrqdxQhUeAFX6Yu43plwg1N4S
-         aJcw==
+        d=gmail.com; s=20260707; t=1793648058; x=1794252858; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=q+rdUxamFVww//fVRdvdICS8n134NRDCqiLcyvwJX0I=;
+        b=XJcPyCaGwGGomr3dCjfS8r+48PC8R4Ov0Juox2GIMmm25Gn9vxey4/354LRl1tL3Pt
+         2GnF1litqZBioV2H73zSi7rP8h1mYOCpB3kxcyhdhhAQN0YimkIbtTq5dNpNnrKpmWsK
+         qaZOOQ7busMgL7icaRwDIZjTHCw5eSSLWluhMydSusb0OuuoBiZhAq8JQeb5S8/F8MRd
+         piK0CC8kVl6BtNotGyXYfTh0kNJ6/er26T2yiyfUigJ0E+kMEUsQ3bMEkVzgxHfQSWW6
+         ov07OYzRsFh0vdNIKqiyjjHw9P1RGrTX8W21vprfznWCavihOFvyfa5aY1FRoGBUX6D7
+         rUtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793646116; x=1794250916;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=6x7C36ItNCE7Mv0HbSUEpY6Gibir1HyWLaQqqnLukwk=;
-        b=M6jnQVYt9uQYAgJKotd78qHtsvIcuGcyq27qCngtM0RO1p2EDFaECXs1PRNf/Q2yp/
-         QuPhHpx8MIi0GMeh51BjHOXtN3ABNnVOO51P+OoxRuH0BP/am8RAPq4VyfpPtjlNNEKE
-         VMT0xCDbFuncvUZQdcgMF+lvYu8zzHhZBPvNTwCqXFydviHaqEW9xr7h3S19B0oIsEBC
-         R/Cjq6w9X+7tZabi0xugFzlnZbDf3HoO7jHlU0OduCPhZ/PL5hytugNO+vvPHrcr5nNL
-         ZuDB50U6l/Evq/B94ByI/zHxyDdCHS3KgFnrpl0p7AUtxVBaZilk3oIVmbwP1cuiOo8L
-         BXZw==
-X-Forwarded-Encrypted: i=1; AKwUvBwT2MNsz9ZP13pmsN7Wrj4n+LLOxGANTnZHsxMoCRSBl4elQ8mt1A7KC/2XXvNzkT52JUDtGcoh55deyfo=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/1UXGFZDhCWsAHanTkURQp2Vm2LeuWHaPSLKhLRlwtfda06gZD
-	IdTUgQz7DzlhH6pMXkRnsDLqElkS2Dzlqi4WjK+vL9vSPFJJPTWIfKjN4gwyYjsv94ZObZGJJgI
-	pdoHVrOjRJX8jYC0qJIapRsr0uYynWeA=
-X-Gm-Gg: AYBFou27fLfHsUcVJnv9X6aZXZuGzIZKDLQInSIuaqc/taLM8JlL7IsggaP0A30HzcQ
-	Frwb8txwMkq9Onb0HtAPsJFHEpEyoPcNTyo4ZPau7hIWwLNya32sv6LD0syYVddIs61Z0/TVHsY
-	AOh23O8jUdO5m49ZN1atv9PngXPlV9pXUFjtG6pVqiCTzTrFvfFCaP0vSnO4Yrdg5ycLlwKt8Gw
-	Eid5lkJLANIh8Hhn+gsAVSxIYnRggmdALh+f5mWnTxh088XEAVWUcLjGr8iPIbGolRbbXzSCmP2
-	FL+uTA6LmP+lc/R60FR9MiWerxgoIHinZvH+dJoyLtLPSdUkkv7WvWBmaj2aA5qQTxjKhnqeVrE
-	QwIjetjuVMpawINtdjMBKMGedPsO+S1s2buTTFgpEdzXCqF33OtINDf1yIzhLQfMHWjSBMOM4BO
-	yAclY2OOkyW3pPdfKE7OWokHDKOb4T+AH3uBbGUlNw5C9YQZndjc+3EMFKp6eJzoV/xKnY8OCmc
-	g+2BHilULPWuJMV7wEdGO1mbtAM2w==
-X-Received: by 2002:a05:6102:950:b0:7b3:8f0a:f76c with SMTP id
- ada2fe7eead31-7d072bb3726mr4192494137.13.1793646113500; Mon, 02 Nov 2026
- 11:01:53 -0800 (PST)
+        d=1e100.net; s=20260707; t=1793648058; x=1794252858;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=q+rdUxamFVww//fVRdvdICS8n134NRDCqiLcyvwJX0I=;
+        b=wF2a3CPsRFinHBvMY9TitrSmJdFPOr0OD0nPLdK9VxnP3y6TGFxbLa4sEGwj0OHXVA
+         3Yl8niJyIEOEDjJ0OoO8MfJzMjiHyJjOEoxRP7W64KjV4EbMaMgg1rah1IsTpguSk8VC
+         Kh6Jzzk+kLQw/gXdSzO2UAJdK2tfgPbVuHdeW6NqoUr++eskXWIQQAEmic1Wxun8+GKX
+         uMvIdE8C4XGdbN+vkQ1xQ/YrorZgkJezmdZ4GF19UZN3p45SLKW1pPpuOElMHixgIqK4
+         EMj+0J5XU2izWgncktRwHC2OtYST6kmZoju+rp4He9EEdPyl/bALudQUDxdTMSMWIacg
+         rn3A==
+X-Forwarded-Encrypted: i=1; AKwUvBwjY1TPeMYnWwhpwToHqC48VRK7Au2HbgH0pp1/5Z9q9U8eD3U9dEd8iQYq+ID9nDkgFBw/k4zOpVGOHJA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKTRHsNMPe5gPKj9F1nCPkPCemhYUPaTgRWFip64Z1keREbWnms
+	AGlmrYHM81RikF6gc3drcxBQ3uxvskggSbibIncw7robrDj6/wrq57oN
+X-Gm-Gg: AYBFou2jHXGKdL79yw/StsgNIQrBYb1DPrDy7YBxuxq/GaNrePBZ9iUVOen4YzLNqEs
+	CHPPKUh7xShrIC8+1Cqbpz4CcxpDbVReyyRIkSQAyQ+zHD0EjrA1h/iG08ru8mJ21+TwnssmQc3
+	Cd6A54mnwr9/6Nh1adbPgwalefn6Hai0GhE9/7KJpvVH5hsCCvm3zI7GqsoJZDYXtbVcup7zhfm
+	siIsHGbH2u9OBk+vic5fvbdwKWpFufJ5v+IMFOqlPOCDvMQyv/NBUxD4tFyWpvxl0x5HQ3VM+cu
+	FzdxfSAacNKj8IN0mkmcGLZ45TLMJ6TbT8v9jLQPnDr4nuJbL7fNV0r8rv9SrkKmiy6szxWSY06
+	tHH7/KntCGdfQ5V3S4nRONA574vIPi7+0U+TiZm1iGDOXegTHsLgLo6gIle3TqGbrQqvBIVH46y
+	+hbWD85fzbDnvRu7FA7AL4lg+zs8LFCEyDCET7QYrnKE0V9N7jypS1615ZLVeGH23uIeZqGzQ7P
+	UK81e8CGV3hR8Y+TdLcBSqo4aDlAhA9DrYjYN6EAvHbISJVJ/guEEWoOJAWjtMxWHSH/R4cx1sw
+	IbHFNeVhP1Xx48TiP0wBskWl7smIyxHoAVQXqRkQKqS6HH1xifAfrGJ30WDq7AiREZAUk4HP1dU
+	2MGuf+ZZeiH5uLgjNNqcCjvsUlW7379Tryuch/J+cTHAqRadFQZKZOBD57m8TuX9SaC5mAj9uIR
+	7toDE/jEUmaJswvtaj7NhEGnkqBlCIboUFWj/zo8EzVtpWRPS4HME=
+X-Received: by 2002:a05:6808:17a3:b0:4d6:9133:cfee with SMTP id 5614622812f47-563efc7b62cmr7343937b6e.51.1793648057640;
+        Mon, 02 Nov 2026 11:34:17 -0800 (PST)
+Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-5640fd93451sm8558249b6e.3.2026.11.02.11.34.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2026 11:34:17 -0800 (PST)
+From: James Hilliard <james.hilliard1@gmail.com>
+Subject: [PATCH v5 00/10] dmaengine: dw: serialize completion and
+ termination
+Date: Mon, 02 Nov 2026 12:34:12 -0700
+Message-Id: <20261102-submit-dw-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -106,204 +94,141 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261029-submit-serial-8250-dma-cancel-v1-v8-0-3fd56ba352ed@gmail.com>
- <20261029-submit-serial-8250-dma-cancel-v1-v8-6-3fd56ba352ed@gmail.com>
- <auNW_Oc-Ao5Iw-Gw@ashevche-desk.local> <CADvTj4pOg4w5LpFW_E3qzP7FZDnDgpB8LyR9xxhT_mZre21vFw@mail.gmail.com>
- <20261029222734.3086943-2-rrangel@chromium.org> <CADvTj4rRtKyq_7yhpfwGQrbOA=k_jxQymTpZSvdVBB0A-xR-Rw@mail.gmail.com>
- <20261030173635.2186490-2-rrangel@chromium.org>
-In-Reply-To: <20261030173635.2186490-2-rrangel@chromium.org>
-From: James Hilliard <james.hilliard1@gmail.com>
-Date: Mon, 2 Nov 2026 12:01:42 -0700
-X-Gm-Features: AclHuK8hePvnISH49dlVrc4mCThAhAMYZDLctOcSiiJ-Xdrwl739zXGlDWt75pI
-Message-ID: <CADvTj4op-tFqWmtzOQnt=q9aZttaWngYXLjfXEkdqcLirTMoXA@mail.gmail.com>
-Subject: Re: [PATCH v8 6/6] serial: 8250: retain DMA resources when
- termination fails
-To: Raul E Rangel <rrangel@chromium.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>, Tony Lindgren <tony@atomide.com>, 
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Richard Genoud <richard.genoud@bootlin.com>, 
-	Nicolas Ferre <nicolas.ferre@microchip.com>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
-	Jacky Huang <ychuang3@nuvoton.com>, Shan-Chun Hung <schung@nuvoton.com>, 
-	=?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Timur Tabi <timur@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev, 
-	linuxppc-dev@lists.ozlabs.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43OwW7DIAwG4FepOM8bOJAmO+09qh0ImIRpIRNk6
+ boq7z5oL1EvmeTLb9mf/itLFD0l9nq4skiLT34KOainAzODDj2Btzkz5FgLjgLSdzf6GewZ7Kg
+ hXYIZ4hT8L8EigJTiTh6dFVazTHxFcv7nxp/e7zn/f5CZi1kuOp0IuqgzU1bZpND7QC/3v3wx+
+ DRP8XJruIgi/bNMHgG1do0yaGtXt2/9qP3ns5lGVsosuMVwB0PgoFBKaqU1ujGPWLXFqh2sypi
+ psXNcNk4ZesTkFmt3MJkxR1rKo20dNmqLrev6B+1DI33jAQAA
+X-Change-ID: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
+To: Viresh Kumar <vireshk@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
+ Dan Williams <djbw@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org, 
+ Frank Li <Frank.Li@nxp.com>
+X-Mailer: b4 0.15.2
 
-On Fri, Oct 30, 2026 at 11:36=E2=80=AFAM Raul E Rangel <rrangel@chromium.or=
-g> wrote:
->
-> On Thu, Oct 29, 2026 at 6:35 PM James Hilliard <james.hilliard1@gmail.com=
-> wrote:
-> > That is the current behavior. Returning from shutdown allows serial
-> > core to free the TX buffer and removal to release the callback
-> > context. The retry loop prevents those releases, but a permanent
-> > termination failure blocks teardown indefinitely
-> ...
-> > Retaining the buffers and channels does not preserve the complete
-> > callback context.
-> >
-> > The callbacks carry a uart_8250_port pointer. For DW, the DMA state is
-> > embedded in devm-managed private data, which can be freed after
-> > unbind. The registered 8250 port slot can also be reused. Retaining
-> > the DMA channel does not prevent either operation.
-> ...
-> > Clearing up->dma does not stop hardware accesses. After unsuccessful
-> > termination, the channel may still access the UART FIFO, so reopening
-> > with PIO can introduce concurrent FIFO access.
-> >
-> > A hardware-specific stop/reset sequence could establish quiescence,
-> > but its implementation and effects on other channels depend on the
-> > controller. If the channel cannot be stopped, quarantine also needs
-> > to preserve callback-context lifetimes and prevent unsafe port reuse.
-> ...
-> > The current callbacks fetch p->dma before acquiring the port lock.
-> > A callback can therefore retain the old non-NULL pointer across the
-> > assignment of NULL. Checking that cached pointer does not protect
-> > its backing allocation from being freed.
-> >
-> > When termination returns an error, dmaengine_terminate_sync() also
-> > returns without calling dmaengine_synchronize(), so callback draining
-> > has not been established.
->
-> Those are all good points. We added port reopen and a `NoConcurrentFifoAc=
-cess`
-> invariant to `Serial8250TxDmaV8.tla`
-> (`Serial8250TxDmaV8_QuarantinePioReopenHazard.cfg`), and TLC immediately
-> confirmed your point on FIFO contention: clearing `up->dma =3D NULL` and
-> falling back to PIO when reopening after a failed `dmaengine_terminate_sy=
-nc()`
-> violates `NoConcurrentFifoAccess` in 7 states because the un-terminated D=
-MA
-> descriptor can still access the hardware UART FIFO concurrently with PIO.
->
-> We can satisfy all three constraints while still preventing normal `close=
-()`,
-> `hangup()`, and system `suspend()` from hanging forever in
-> `TASK_UNINTERRUPTIBLE` under `port->mutex` across the three lifecycle edg=
-es:
+Keep client callbacks in the controller tasklet while preserving polled
+completion. Serialize descriptor ownership across completion, error
+recovery and termination, and wait for callbacks before a client reuses
+its resources.
 
-Keeping the DMA state intact and refusing PIO reuse addresses the earlier
-reopen hazard. However, implementing quarantine safely requires changes
-beyond retaining the buffers and rejecting startup.
+The series first serializes completion, error recovery and cookie
+accounting with termination. Separate patches extract hardware-LLP
+residue calculation, move it into the status getter, simplify completion
+handling and report queued residue. Channel release and
+device_synchronize then gain tasklet draining before the final patch
+adds deferred notifications and shared completed-descriptor cleanup.
 
-For example, serial8250_do_shutdown() clears the FIFOs and reads UART_RX
-after serial8250_release_dma() returns. Those operations also need to be
-excluded while the retained channel may still access the UART. Close and
-suspend subsequently enter power-down paths, so retaining the allocations
-alone does not establish that either transition is safe.
+The series adapts Serge Semin's channel-restart and callback fixes [0-2].
+Polling continues to advance cookies and software-LLP blocks, while client
+notifications run from the controller tasklet. Synchronization preserves
+pending tasklet runs from other channels.
 
-There is also a serial-core exception to the proposed reopen contract:
-startup errors permit an administrative open for CAP_SYS_ADMIN. That
-allows reconfiguration paths which can release port resources. Returning
--EIO from the driver startup callback therefore does not by itself
-enforce quarantine.
+Based on dmaengine/fixes at 6628e7d4c6b2.
 
->
-> 1. **On `close()` / `hangup()` / `uart_suspend_port()` (`serial8250_relea=
-se_dma()` & `uart_free_xmit_buf()`)**:
->    - Bound the retry loop in `serial8250_terminate_dma()` (with a short
->      backoff rather than an unbounded `msleep(100)`, guarding
->      `if (dma->rxchan)` / `if (dma->txchan)`) and release whichever
->      channel(s) terminated cleanly (`rx_ret =3D=3D 0` or `tx_ret =3D=3D 0=
-`).
->    - If `rx_ret !=3D 0` or `tx_ret !=3D 0`, **keep `up->dma` intact** (do=
- not set
->      `up->dma =3D NULL`, including in `8250_omap.c:omap_8250_shutdown()`)=
-, keep
->      `dma->shutting_down =3D true`, and retain the failed channel and its
->      buffer (`dma->rxchan` / `dma->rx_buf` when `rx_ret !=3D 0`; `dma->tx=
-chan`
->      and mapped `dma->tx_addr` when `tx_ret !=3D 0`).
->    - When `tx_ret !=3D 0`, explicitly call `uart_xmit_block(&p->port)` un=
-der
->      `p->port.lock` (`state->xmit_blocked =3D true`, since `xmit_blocked`=
- is
->      otherwise only set when `uart_flush_buffer()` ran prior to `close()`=
-),
->      and in `serial_core.c:uart_free_xmit_buf()`, return early under
->      `uport->lock` if `state->xmit_blocked` is set (without clearing
->      `port->xmit_buf =3D NULL`, resetting `port->xmit_fifo`, or calling
->      `kfree(xmit_buf)`).
->    - Because `up->dma` is not cleared and `struct uart_8250_dma` /
->      `struct uart_8250_port` remain allocated on the bound device during
->      `close()`, `hangup()`, and `suspend()`, any callback that was not
->      drained by `dmaengine_terminate_sync()` safely loads a valid `p->dma=
-`,
->      observes `dma->shutting_down =3D=3D true` under `port->lock`, and re=
-turns
->      without UAF=E2=80=94while `close()`, `hangup()`, and system `suspend=
-()` return
->      cleanly without hanging in `D` state or triggering `hung_task_panic`=
-.
->
-> 2. **On subsequent `open()` (`serial8250_do_startup()` & `omap_8250_start=
-up()`)**:
->    - At the very start of `serial8250_do_startup()` (`8250_port.c:2356`) =
-and
->      `omap_8250_startup()` (`8250_omap.c:724`)=E2=80=94after acquiring ru=
-ntime PM,
->      and **before** clearing `up->dma->shutting_down =3D false`, touching
->      `UART_FCR` / `UART_RX` / `UART_TX`, or setting up IRQs/timers=E2=80=
-=94if
->      `up->dma && (up->dma->rxchan || up->dma->txchan)` is still non-NULL =
-from
->      a prior failed termination, retry `serial8250_release_dma(up)` first=
-:
->      - If `up->dma->rxchan || up->dma->txchan` is **still** non-NULL
->        (termination still failed), immediately return `-EIO` and **fail
->        `startup()`** (do *not* clear `up->dma =3D NULL` and do *not* fall=
- back
->        to PIO while the wedged DMA channel may still touch the UART FIFO)=
-.
->      - If termination succeeded on retry (`rxchan =3D=3D NULL && txchan =
-=3D=3D NULL`,
->        which also unblocked `state->xmit_blocked`), reset `xmit_fifo` and
->        proceed with normal startup and `serial8250_request_dma(up)`.
->
-> 3. **On driver unbind (`serial8250_unregister_port()` / `serial_core_remo=
-ve_one_port()`)**:
->    - Driver removal is the *only* point where `devm`-allocated
->      `struct uart_8250_dma` and the `serial8250_ports[]` slot are about t=
-o be
->      freed/reused (note also that `serial_core_remove_one_port()` at
->      `serial_core.c:3336` only calls `uart_shutdown()` when
->      `tty_port_initialized(port)` is true, so if the port was already clo=
-sed
->      with a quarantined channel, unbind must still drain/release it).
->    - Restricting blocking termination wait to driver unbind (when a chann=
-el is
->      still active/quarantined) prevents `close()`, `hangup()`, and system
->      `suspend()` from ever hanging the kernel in `msleep(100)`.
+[0] https://lore.kernel.org/r/20240911184710.4207-1-fancer.lancer@gmail.com
+[1] https://lore.kernel.org/r/20240911184710.4207-2-fancer.lancer@gmail.com
+[2] https://lore.kernel.org/r/20240911184710.4207-3-fancer.lancer@gmail.com
 
-This looks like a useful direction, but it introduces a broader lifecycle
-contract across serial core, the individual drivers and power management.
-In particular, suspend may need to fail until the hardware is quiescent,
-rather than succeed with a quarantined channel.
+Assisted-by: Codex:gpt-6-astra
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-The current retry loop still allows permanent termination failure to
-block teardown; changing the backoff does not resolve that limitation.
+---
+Changes in v5:
+- Rebase onto dmaengine/fixes at 6628e7d4c6b2, using the shared
+  dmaengine_chan_dev() helper for channel logging.
+- Split residue handling into a behavior-preserving extraction, status
+  calculation, scanner simplification and queued-residue reporting,
+  following Frank's review.
+- Share completed-descriptor freeing between the tasklet and channel
+  release, retaining callbacks for normal completion and suppressing
+  them during teardown. Name the helper dwc_free_completed().
+- Carry Frank's additional review tags and put the submitter sign-off
+  after the review tags.
+- Link to v4: https://patch.msgid.link/20261029-submit-dw-dma-synchronize-v1-v4-0-fea447d9f285@gmail.com
 
-Would it make sense to address quarantine separately, with that
-limitation documented explicitly here? I would prefer not to fold this
-larger redesign into the cancellation series before those paths have
-been worked through.
+Changes in v4:
+- Split v3's callback-deferral patch into cookie accounting, residue
+  calculation, channel-release draining and callback-deferral patches,
+  following Frank's review. The resulting seven-patch series preserves
+  v3's final implementation.
+- Place device_synchronize before callback deferral so clients can drain
+  deferred notifications when the completion list is introduced.
+- Carry Frank's Reviewed-by tags on the unchanged channel-completion,
+  error-recovery and device_synchronize patches.
+- Link to v3: https://patch.msgid.link/20261023-submit-dw-dma-synchronize-v1-v3-0-c62bf048f5ce@gmail.com
 
->
-> We verified this quarantine + `-EIO` reopen contract in
-> `Serial8250TxDmaV8_TerminateRetryHang_Fixed.cfg` (`AllowReopen =3D TRUE`,
-> `ReopenFallbackToPio =3D FALSE`), which passes all safety and liveness
-> properties (`NoUsersAtFree`, `BoundedTerminateRetries`,
-> `NoConcurrentFifoAccess`, `QuarantineImpliesXmitBlocked`, `ShutdownProgre=
-ss`)
-> with 0 errors:
-> https://github.com/ismell/linux-8250-dma-tla
->
-> Thanks,
-> Raul
+Changes in v3:
+- Order channel-completion and error-recovery locking before callback
+  deferral, retaining four patches.
+- Require a locked RAW.XFER event before retiring a transfer; zero source
+  residue alone cannot establish destination completion.
+- Preserve polled completion and software-LLP progress in tx_status(),
+  queuing client notifications for the controller tasklet.
+- Serialize cookie updates with termination and report queued residue.
+- Drain deferred notifications on channel release and let a pending
+  tasklet return without MMIO after the last channel is released.
+- Adapt Serge's two patches and retain his authorship and revision notes.
+  Drop the Tested-by tags that covered their earlier implementations.
+- Identify the introduction of the synchronization API in the final
+  patch's Fixes tag.
+- Link to v2: https://patch.msgid.link/20261022-submit-dw-dma-synchronize-v1-v2-0-5244e94dca8c@gmail.com
+
+Changes in v2:
+- Carry Serge Semin's two posted fixes before the synchronization change,
+  preserving his authorship and revision notes. Add the requested stable
+  Cc trailers and Andy Shevchenko's Tested-by tags to those unchanged fixes.
+- Add a separate error-recovery fix for stale error status, empty channel
+  lists and software-LLP state when terminating or restarting a channel.
+- Use tasklet_disable()/tasklet_enable() instead of tasklet_kill() so
+  synchronization preserves scheduling requests from other channels.
+- Explain descriptor ownership during termination and acknowledge the
+  shared-tasklet scheduling race reported by Sashiko.
+- Link to v1: https://patch.msgid.link/20261021-submit-dw-dma-synchronize-v1-v1-1-6af85c2d6f69@gmail.com
+
+Revision history from Serge's series:
+
+Link: https://lore.kernel.org/dmaengine/20240802080756.7415-1-fancer.lancer@gmail.com/
+Changelog RFC:
+- Add a new patch:
+  [PATCH 2/2] dmaengine: dw: Fix XFER bit set, but channel not idle error
+  fixing the "XFER bit set, but channel not idle" error.
+- Instead of just dropping the dwc_scan_descriptors() method invocation
+  calculate the residue in the Tx-status getter.
+
+---
+James Hilliard (6):
+      dmaengine: dw: serialize error recovery with channel termination
+      dmaengine: dw: complete cookies before releasing the channel lock
+      dmaengine: dw: simplify transfer-complete handling
+      dmaengine: dw: report residue for queued transfers
+      dmaengine: dw: drain the tasklet before releasing channel resources
+      dmaengine: dw: synchronize completion callbacks
+
+Serge Semin (4):
+      dmaengine: dw: Fix XFER bit set, but channel not idle error
+      dmaengine: dw: extract hardware-LLP residue calculation
+      dmaengine: dw: calculate residue in the status getter
+      dmaengine: dw: Prevent tx-status calling DMA-desc callback
+
+ drivers/dma/dw/core.c | 301 +++++++++++++++++++++++++-------------------------
+ drivers/dma/dw/regs.h |   1 +
+ 2 files changed, 154 insertions(+), 148 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
+
+Best regards,
+--  
+James Hilliard <james.hilliard1@gmail.com>
+
