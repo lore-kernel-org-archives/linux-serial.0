@@ -1,57 +1,109 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793619777;
-	b=bJOj6y8HuKAr9i7Nw58Z2P/RhIgHPvnSwz39zD+z6wJjlbryCah9upwkX/UObzFSjZUl
-	 lNHQx/TGfKvga/6bOPL6ANPXozrcQYTKEUPTtBFn/uK7RRaojKsxMNGCWkS5dU7LqsRjv
-	 VDYY8dHGjtOKwPKudn+JCSyFg3tB16dhlAw2P8pdBgyWmDxWIbJd6uxvL0cJsvPSDrJ6s
-	 fklcFji9xWi+lDqAYe5s4WhjIzrDcKIU5FIrAJLWUvQ6leBkDH6tXpGw6U/WRfVnbX7+d
-	 Quo7DGqpFcQJsumfb4Nacplu8lE2BsOBbaPC3ycmsX9vrnP3iUKJyfz0THVlDw+bgfg==
+	t=1793629260;
+	b=pCpHSVZDMMdk6s2/SWjI0YYQxt3cLXCpszddhZgCLrD+zL+P1nSYoDjGmWwEsPGQRuoS
+	 cAF+bgvb4//kt5Wwy5h30dajrh4j4Oyu4lOfrLg9hYjc+HhlN9WcTQLOx97AxD9fJDKmY
+	 GImIjoJ0o5r6bMWBreBX3aZy2fGlhnYDKn1wJzqL6Wxaav6MS4KzJC9Z5/1wzOzE8CLt9
+	 t9NIHnDkbziEWw6zFMPilZPTpBAKhNswWQpO6JtBnrRLy7fpM3gm/E/DWhUO8j+IB6HnY
+	 wm503hZLiIrM4tF2OY8MYwnk+JmVUbqFEciduIYQE6lhvx0uU1BUyMmhHg3uQqZ/32g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793619777;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=hwBFK7W3RIZ8AyEe/QASm7pGThlOI2XX4GmjCbzsDBQ=;
-	b=z/eHRu4LhocI9OcJpPFoHumYMHgZbPvOiqZNdYShXar6MZRUBDnAz3ZVe40nZgOhz99S
-	 XmD89Altx5/Ax8Ij55uzbqoMIOk4kdnexRX9AcWQbf9QeOFbB1ViAgwlicfgsrtHoedy6
-	 CzcWiMqSznAx8qV0CMuEaF1MuP9dXI8wPdFSR41+ip+EhzSRyoq1Vz1bPG9NultRnPw4m
-	 JpJxGorxhswhlboQ9hgadCqjEu0SxxS1MpOgSQpU1c2HQ/chnHrDVxVW6ol+G2VryaIBw
-	 OdFBt9yDI9JAhGmwChVTw+gLHFhAWnpcMIKZwg3C2ymSIPyCjWW+juMGDRASO1ihp0Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793629260;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:X-Developer-Signature:X-Developer-Key:
+	 Content-Transfer-Encoding;
+	bh=AMQhAUoLjC1OsRhPIF0X/aZZvhoGLtnfpHmE2nV4Wn8=;
+	b=w0iUuu25LcgkA3xGhaCiKMEKC4+WEmJvuCSsM7a4JcQzbZkbzH95lmjyghuNDSZ636lM
+	 zDqlTkdA53RBUQ/pfPUtP35lwyf23hoIVTza23nSQ/mxH15ctyh9mOtI68HNAhD4vZQq2
+	 H1pAwc8FT0JABLkWPADeSKIfS3K0Si2FdjU7nGK5JKm78OPZr0ETnE6cVeYr9JSM8ejlT
+	 qSV26qfr4m9ADzs0JeKUvRhT3WqpTt1yNreGV/9s3Zy1LwstRqheSzSloj1kmuJYwmew3
+	 hQf23VzxVy8e0WCjv8ctXarDx8UwmqgUEp8H2W9zOkRKd4ZYX1BHGBPLKByfm8j/6Qg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="YMX4/Tdc";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i0H9lG0B;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BB3D606A326
-	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 11:42:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821D9606A327;
+	Mon,  2 Nov 2026 14:21:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YMX4/Tdc
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B094E1F00A16;
-	Mon,  2 Nov 2026 11:42:56 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i0H9lG0B
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED4A1F00A24;
+	Mon,  2 Nov 2026 14:20:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793619776;
-	bh=hwBFK7W3RIZ8AyEe/QASm7pGThlOI2XX4GmjCbzsDBQ=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=YMX4/TdcizgcDsRlXxLfaOInOZKg+JAHM6Xodshm8X5mClhV+LA2mkjUGPmZPsic0
-	 PF9eq/hmTiL162wkjmaL7qV7oFW65+VCuZql2fqHn72RYM2+gOBx9hotRdVzoeb4GT
-	 312r6TEDM9HIsL+qNSuqInDM8Byn/RMB07j1D2jGiAdT3lp7TV63gUMeOxOLhV6oXL
-	 ejCAQCjHpfZ7qm8ixJbOUfFpEhxLZYl1NeLLdS//gad95s8ZuCse/uXlmQwtBA9keF
-	 uLGJNzjeiCM8nnxpvENxCy4lHN26q+eYD6pRN8m+opVlke9bM2REmoC+jAJ3TwkkqI
-	 xZ0j5gOmhdzzA==
-Message-ID: <sashiko-outbox-193347@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] serial: 8250: restore FIFO in
- serial8250_console_restore()
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Fuzheng Meng" <fuzheng.meng@semidrive.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261102113114.2453899-1-fuzheng.meng@semidrive.com>
-References: <20261102093609.2400381-1-fuzheng.meng@semidrive.com>
- <20261102113114.2453899-1-fuzheng.meng@semidrive.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 02 Nov 2026 11:42:56 +0000
+	s=k20260515; t=1793629260;
+	bh=AMQhAUoLjC1OsRhPIF0X/aZZvhoGLtnfpHmE2nV4Wn8=;
+	h=From:To:Cc:Subject:Date;
+	b=i0H9lG0Be05TEfu/3sSSx1mNu2tXsbt81HU4VhWr1YaNjWqP1nbmV2PU6N9fCZNuw
+	 nivi01r4yhBVK5q6ZZ/2sNWNfeS1/SVvtod3GB/cMk9XHlaJxrROzU9uNyaCbwueWN
+	 AE/rw/aIukHRd/bUpfVF3u6Oo+d1/1nWu8xicACG8hfScuBzUWJR1oSKGUI3TT1yza
+	 I6qw7gNhliBS+HPnhAgAxa3M/VUpvB8uzbr6ovyo5O6M56NbveIxMw0j6pJhZqxruk
+	 pALxbTScur8TNXplk3A0Y4Q0gW4y8sE5l288k+10HrKs8+OO7WmnOZctFatwni3om7
+	 HzOPbsKYJ2AYQ==
+From: Christian Brauner <brauner@kernel.org>
+To: linux-fsdevel@vger.kernel.org
+Cc: Christian Brauner <brauner@kernel.org>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Jann Horn <jannh@google.com>,
+	Josef Bacik <josef@toxicpanda.com>,
+	Chris Mason <mason@kernel.org>,
+	Jeff Layton <jlayton@kernel.org>,
+	NeilBrown <neil@brown.name>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Christoph Hellwig <hch@lst.de>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	Joel Granados <joel.granados@kernel.org>,
+	Kees Cook <kees@kernel.org>,
+	Jan Kara <jack@suse.cz>,
+	Jan Kara <jack@suse.com>,
+	linux-kernel@vger.kernel.org,
+	linux-nfs@vger.kernel.org,
+	linux-acpi@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org,
+	linux-um@lists.infradead.org,
+	linux-wireless@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	netdev@vger.kernel.org,
+	ntfs3@lists.linux.dev,
+	platform-driver-x86@vger.kernel.org,
+	coreteam@netfilter.org,
+	kexec@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	netfilter-devel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	ibm-acpi-devel@lists.sourceforge.net,
+	jfs-discussion@lists.sourceforge.net,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-cifs@vger.kernel.org,
+	linux-fbdev@vger.kernel.org,
+	linux-hwmon@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-sh@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	samba-technical@lists.samba.org,
+	sparclinux@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-doc@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-atm-general@lists.sourceforge.net,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Takashi Iwai <tiwai@suse.de>,
+	linux-input@vger.kernel.org,
+	linux-raid@vger.kernel.org,
+	linux-ext4@vger.kernel.org,
+	linux-modules@vger.kernel.org,
+	linux-debuggers@vger.kernel.org
+Subject: [PATCH RFC 0/7] proc: move procfs to what kernfs does
+Date: Mon,  2 Nov 2026 15:19:15 +0100
+Message-ID: <20261102-defizit-jobaussicht-kurios-7016c6e67442@brauner>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,125 +112,130 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6321; i=brauner@kernel.org; h=from:subject:message-id; bh=DeFgfcqlv/TY20j7H/EH1gPUF0B7m3TaniK1kcChAz8=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS9mGNqL7pz+vPzk4KWfT6wfNmBh/f/+az2dnquniC7r OfbdVtpkY5SFgYxLgZZMUUWh3aTcLnlPBWbjTI1YOawMoEMYeDiFICJLNFkZJi9z+Wc51MV9sWG KyZ0i3EcLl3135Rh1V/p2TenWEnnPCln+F99gMWOyX62xk4Du399RQ9XTQsXMmEy4ArfuSn16RK 3R1wA
+X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Medium] serial: 8250: open-coded FCR restore in serial8250_console_resto=
-re()
---
+Ok, as mentioned off-list I have an RFC version of getting rid of page
+fault induced stalls in procfs when removing entry which plagues
+networking devices among others.
 
-commit 6d2b7c890ac68c261011475644811d6fe155a916
-Author: Fuzheng Meng <fuzheng.meng@semidrive.com>
+There was a hackish very narrow AI solution to a part of this bug class
+that was floated off-list. It used a second buffering mechanism on top
+of seqfiles which was really nasty. Plus, it didn't fix the whole bug
+class, it only eliminated a small portion. If we want to get rid of the
+whole page fault issue we need a bigger hammer. So I tried to work
+through that over the last couple of weeks. The series in a shape where
+it's not totally insane to have someone else look at it. So here it is.
 
-serial: 8250: restore FIFO in serial8250_console_restore()
+I understand it's big but I thought it's probably nicer to look at the
+end result than just making a promise of what it might end up looking
+like.
 
-This commit factors the FIFO write condition into a
-serial8250_console_use_fifo() helper and uses it in
-serial8250_console_restore() to reprogram UART_FCR when the UART loses power
-during system sleep with console_suspend disabled.
+It's not super polished yet and I haven't gotten into sorting out all
+the warts as there were some really gnarly bugs in there like the whole
+readdir mess that repeated entries or terminated early. I think we could
+go a lot further there if we wanted to but I think that blows this out
+of proportion and at some point it becomes difficult to grasp the scope.
+So I'd rather delay that until I have a sense of how acceptable this all
+is.
 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index 36b2b0a2c05cd..ee6b02cff0156 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
+remove_proc_entry() waits until every call into the entry has returned,
+and most of those calls copy to or from userspace with the entry pinned.
 
-[ ... ]
+A reader or writer can make a page fault in that copy take as long as
+it wants, with userfaultfd or by punching holes into a memfd over and
+over. And the callers of remove_proc_entry() like to hold locks while
+they wait. addrconf holds RTNL when it removes /proc/net/dev_snmp6/<dev>
+and xt_hashlimit holds a mutex that all network namespaces share.
 
-> @@ -3345,6 +3376,19 @@ static void serial8250_console_restore(struct uart=
-_8250_port *up)
->  	serial8250_set_divisor(port, baud, quot, frac);
->  	serial_port_out(port, UART_LCR, up->lcr);
->  	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
-> +
-> +	/*
-> +	 * System sleep may reset the FCR, leaving the FIFO disabled,
-> +	 * while the cached up->fcr still tells console_write() to push
-> +	 * tx_loadsz bytes into the FIFO at once; with the hardware FIFO
-> +	 * off, the THR holds only one byte and earlier ones are
-> +	 * overwritten, which garbles the console output after resume.
-> +	 * Restore the FCR when the FIFO write path is going to be used.
-> +	 */
-> +	if (serial8250_console_use_fifo(up)) {
-> +		serial_port_out(port, UART_FCR, UART_FCR_ENABLE_FIFO);
-> +		serial_port_out(port, UART_FCR, up->fcr);
-> +	}
->  }
+Every network device with IPv6 gets a /proc/net/dev_snmp6/<dev> that
+everyone can read, and addrconf_ifdown() removes it with RTNL held. So
+any local user can keep RTNL for as long as their read stays stalled.
+Until then no device can be registered, removed or renamed and no
+network namespace can be created or torn down.
 
-[Severity: Medium]
-As reported by Sashiko on v1 [1], should serial8250_console_restore() call =
-the
-existing serial8250_set_fcr() helper instead of writing UART_LCR and
-open-coding the UART_FCR restore conditionally on
-serial8250_console_use_fifo()?
+Without privileges a FUSE mount in a user namespace whose daemon never
+answers is enough to stall the copy. Killing the reader ends it, but
+until then whoever removes the file sits in D state.
 
-In drivers/tty/serial/8250/8250_port.c, serial8250_set_divisor() leaves
-UART_LCR_DLAB set in UART_LCR, and serial8250_set_fcr() handles both the
-PORT_16750 ordering requirement and the two-step FCR write:
+xt_hashlimit removes the proc file of a table with hashlimit_mutex
+held. Every rule insert in every network namespace takes that mutex and
+so does network namespace cleanup. cleanup_net() runs on a single
+workqueue with pernet_ops_rwsem held, so a stalled reader also stops
+every later network namespace teardown and every module load that
+registers pernet operations. xt_recent does the same with recent_mutex.
 
-static void serial8250_set_fcr(struct uart_port *port, struct ktermios *ter=
-mios)
-{
-	struct uart_8250_port *up =3D up_to_u8250p(port);
-	bool is_16750 =3D port->type =3D=3D PORT_16750;
+And it's not specific to networking. remove_proc_entry(), proc_remove()
+and remove_proc_subtree() have over 200 callers and plenty of them hold
+locks. A stalled reader of /proc/fs/ext4/<dev>/options holds up the
+unmount of that filesystem with s_umount held, and every sync(2) with
+it. The same goes for PCI hot-removal, for freeing IRQ descriptors,
+which CPU bring-up waits on, and for unplugging a USB sound card.
+syzbot has hit removal under locks before (cf. [1]), and the xt_recent
+deadlock fixed in (1) below is another one.
 
-	if (is_16750)
-		serial_port_out(port, UART_FCR, up->fcr);
+Stalling the kernel in a copy to or from userspace is a well-known
+exploitation primitive. It's why unprivileged userfaultfd can't do it
+by default anymore since v5.11 (d0d4730ac2e4), and FUSE has been used
+the same way.
 
-	/*
-	 * LCR DLAB must be reset to enable 64-byte FIFO mode. If the FCR is writt=
-en without DLAB
-	 * set, this mode will be disabled.
-	 */
-	serial_port_out(port, UART_LCR, up->lcr);
+kernfs doesn't have that problem. The code of a kernfs file only ever
+runs with the node pinned and never touches userspace memory, kernfs
+copies in and out itself. This moves procfs over to the same scheme.
 
-	if (is_16750)
-		return;
+sysfs has only held its active reference around ->show() and ->store()
+since v2.6.23, the same release that made remove_proc_entry() wait for
+the entry's callers. A copy to userspace couldn't be stalled for long
+back then. userfaultfd only came in v4.3 and FUSE in user namespaces in
+v4.18. configfs moved its copies out of its active reference in v5.3
+and DRM copies ioctl arguments in and out around the driver's handler
+the same way. debugfs still holds its reference across the copies,
+ran into a deadlock with wifi drivers because of it and grew an API to
+cancel operations instead (cf. [2]).
 
-	/* emulated UARTs (Lucent Venus 167x) need two steps */
-	if (up->fcr & UART_FCR_ENABLE_FIFO)
-		serial_port_out(port, UART_FCR, UART_FCR_ENABLE_FIFO);
+That touches just about every ->proc_read(), ->proc_write() and
+->proc_ioctl() in the tree, so I've split it up into seven series. They
+go out as replies to this mail:
 
-	serial_port_out(port, UART_FCR, up->fcr);
-}
+(1) proc: fix a few old bugs in /proc handlers (38 patches)
 
-By writing up->lcr to UART_LCR before writing UART_FCR in
-serial8250_console_restore(), UART_LCR_DLAB is already cleared when UART_FCR
-is written. On TI 16750 (PORT_16750) UARTs, writing UART_FCR with DLAB
-cleared disables 64-byte FIFO mode (UART_FCR7_64BYTE), leaving the hardware=
- TX
-FIFO in 16-byte mode while up->tx_loadsz remains 64 and
-__serial8250_console_fifo_write() bursts up to 64 bytes per UART_LSR_THRE
-wait, overflowing the 16-byte FIFO.
+    Bugs in the handlers and in procfs itself that are a lot older than
+    the conversion and that reviewing it turned up. Most of them are for
+    stable. They come first so they can go there on their own and the
+    conversion doesn't have to bother with that crap.
 
-In addition, gating the UART_FCR write on serial8250_console_use_fifo(up)
-skips restoring up->fcr after power loss when console burst-FIFO writes are
-not used (for example when uart_console_hwflow_active(port) is true even
-though UART_MCR_AFE is restored via up->mcr, when UART_CAP_MINI is set or
-tx_loadsz is 1, or when TTY_PORT_INITIALIZED is not set such as on
-8250_ingenic where ingenic_uart_serial_out() sets UART_FCR_UME on UART_FCR
-writes), while serial8250_console_write() still clears up->canary =3D 0. If
-device_may_wakeup() is enabled on the tty device, uart_resume_port() returns
-early without calling set_termios(), leaving the hardware FIFO unprogrammed
-for normal interrupt-driven TTY transmission in serial8250_tx_chars() as
-well.
+(2) proc: let procfs own the data path (16 patches)
 
-Also, the commit message mentions that writing UART_FCR_ENABLE_FIFO followed
-by up->fcr matches dw8250_idle_exit(), whereas dw8250_idle_exit() in
-drivers/tty/serial/8250/8250_dw.c only performs a single write:
+    The procfs side. procfs owns the seq_file of an entry, copies in
+    writes, copies out reads and copies ioctl arguments in and out, and
+    only calls into an entry with it pinned. proc_create_seq() and
+    friends and the plain seq_file users are switched over here too.
 
-	if (up->capabilities & UART_CAP_FIFO)
-		serial_port_out(p, UART_FCR, up->fcr);
+(3) proc: convert the arch and platform entries (22 patches)
+(4) proc: convert the driver entries (23 patches)
+(5) proc: convert the fs, kernel and mm entries (27 patches)
+(6) proc: convert the net entries and the kfifo samples (11 patches)
 
-and it is serial8250_set_fcr() that performs the two-step write. Would call=
-ing
-serial8250_set_fcr(port, NULL) right after serial8250_set_divisor() in
-serial8250_console_restore() avoid duplicating this logic and restore both
-UART_LCR and UART_FCR across all port types?
+(7) proc: drop the __user methods (5 patches)
 
-[1] https://lore.kernel.org/r/20261102093609.2400381-1-fuzheng.meng@semidri=
-ve.com
+    Drops the old methods for every entry that can be removed and gives
+    the new ones the names kernfs uses, ->proc_read(), ->proc_write()
+    and ->proc_ioctl(). This needs all four conversion series.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261102113114.2453=
-899-1-fuzheng.meng@semidrive.com?part=3D1
+The series should all indicate cleanly what dependencies they have so b4
+should be able to pull it for review. But I could be wrong.
+
+With all of it on a KASAN and lockdep kernel the removal selftests of
+every part pass, the proc, pktgen and allocinfo selftests behave like
+without it and the bugs from (1) that reproduce in a VM are gone. Every
+patch builds on its own on x86_64 and i386, and with W=1 on the
+architectures it touches.
+
+[1]: https://lore.kernel.org/r/000000000000f24f4705b6988f3e@google.com
+[2]: https://lore.kernel.org/r/20231109212251.213873-7-johannes@sipsolutions.net
+
+-- 
+Christian Brauner <brauner@kernel.org>
