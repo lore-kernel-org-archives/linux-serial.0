@@ -1,57 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793648974;
-	b=n1H6Y+obx65ymJJ+uOdYwKVY1tqYMVFUvQPnGhud3Up9CANfEqR9aKL85Ino0FUeQ7j9
-	 J7Cu3GIoVrfDmAKYHhTa2L8QEo1XflPAXMRZmFUhOjO1nz+hwn6e8pMWNa52gM+Osm7Rr
-	 MY7+E6Ow78IXfDKXI7E+fSmesnUBotQvlWHBAGXuj7qo8uSkhpgA0hWZ1gLJBLAsZGHPg
-	 1tNlScbWIT++dNtHjdmye9iU0abvLoVYO25TV24RBQNb2s+2zh4ne2Nbhnb3aHVgMFjld
-	 9PRDlqECLXt5hhVuKJwvFxmwMHKf9lI9vnavejIjtqnfgkcsViUC4oS2p2k9L/tgDcw==
+	t=1793649012;
+	b=zixaYNZZg+chDaweWPsZiehVeXuERI1cXNRNteqBfVpF+GZBFS6pzydIbZwMczzI3gh9
+	 u2aUYRPDvEDKsGSPRcr1irdvcQFK/ZFNGli63LF8siDD6K15le8zl9jlKkr9Tnm+3GpaL
+	 VyGTntWi46oOGZqOKZQgizMKKiFLLY48PJUr/kRL8oltxq8LmaMb8l3bULKaeAtnerGkt
+	 qXs6g2Sm1XyOviNzH9nXhtWttsUT+5e3vWSIfDPLrlZ+/ZgSp5QYnMl+1f+TMeKz6Dy8W
+	 0UgW4x/CLvYCDZ955NUIkIWSPNG2wV/gBnPkbTstKzOSLGBCIgZJyNpstSPXjwyaEXA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793648974;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=9b6IqD/xEfbSDE1yiPPADXCbKoWTJ3gOYDM3aWMSwi0=;
-	b=2YhtK5AiEBaQF4YYT7svk14Wg3dy9JUtiCjRSIXWE0/W5Cdgl4/S8uSBry5ve98LawjM
-	 vFuvHIWGQooaQEnOd5RpQ2+QF4vjYpp385jitTky6SjI0iyRCKnMT/7TsKZezN4RhEShe
-	 HhLJNkhmE74QQbAORuiYkjZt1P9iSSAbghMgoDQ09wrYHA6qoStrLCHpIVIoVfk7PCWdj
-	 fShKs8VUDGqsLP0Xu0R77qThXbo8lK46ztYDNyttlE4hh7656jJl+PB1wfMMg6TZXr72v
-	 JX/782g4rVueDvdQV7bgQC9FAU3OUkrmAfG1toN4BPolb/HsxhtNbqEi09wO7VLI7tg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793649012;
+	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=6b+t4DLaXsTbBo3v4wTWOzTtPpjmGsh78Ivlm5MgXBA=;
+	b=UPVZg8A75OuZvzgjkTzDZpfQ22y/BHMOmLh8A0Pcx21yvbJiaSMvvTRtLiYYAkASYJjE
+	 nwJHw0p+F4ChcoItv+cYXBzPMQHd6INkUICvxHUMyDlI00q4DtLpDlFqIAu82WOfjtwR0
+	 QTGxSiOfIHtCN4YvKx/qP3yUQFDvg2zdoy7I4PeniJZT+8RsJqEsNgpgSHWy4ue5jWFpo
+	 FXZSrvBE0jxnIkpZAjkiniYHDeGGZmGcAWNJx3zAe7VVM3Psfyw+XoZiRpQ/GN2Edws8M
+	 FsQxWFyX2wsSs5ZZFQkVRDU2qD0QkoLv7MBNk6s4VF9xg4XtKSHaYIFbGt434FJK4wA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LS1V3wVs;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=alien8.de;
+	spf=pass smtp.mailfrom=alien8.de;
+	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=Q4c7HHZx;
+	arc=none smtp.remote-ip=65.109.113.108
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA767606A324
-	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 19:49:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0047606A329;
+	Mon,  2 Nov 2026 19:50:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E0047606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LS1V3wVs
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469BE1F00A16;
-	Mon,  2 Nov 2026 19:49:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793648973;
-	bh=9b6IqD/xEfbSDE1yiPPADXCbKoWTJ3gOYDM3aWMSwi0=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LS1V3wVsntfGza7dMXp/3LqODRpvW7xuVhOLI427muR5AHTtygYlR4Yi59CeBfxrV
-	 pHKxjSziMUf56S2SllQbl8hWqc+oc4Hx8KbnQocPYNcjMsI5PsLeHTgLvylVNofNpo
-	 FRN6SMbDNjFtKF0ynKjpfNBgb95S4IlPN78LyT7IA/hnrHWrvsTl2nPgyVPiDP9s9N
-	 c623SQjfMJkN2iAM6Z3ybfzB59aUPB56/xwJo9YVmuXEe+El8DNCZ1Qm+ecucxARC3
-	 dc/LUJyzru0DHhCVsJuIhIhVgutxX5Rmq5vJ2D6Cw+v3KuxgeEYh5UmVcPRJn1w2M/
-	 1/XSJwQWCOMew==
-Message-ID: <sashiko-outbox-194022@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 09/10] dmaengine: dw: synchronize completion
- callbacks
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261102-submit-dw-dma-synchronize-v1-v5-9-d3207758fbf9@gmail.com>
-References: <20261102-submit-dw-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com>
- <20261102-submit-dw-dma-synchronize-v1-v5-9-d3207758fbf9@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 02 Nov 2026 19:49:32 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=Q4c7HHZx
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id A03FE40E02B7;
+	Mon,  2 Nov 2026 19:50:09 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id K2LTiNWHYnAL; Mon,  2 Nov 2026 19:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1793649004; bh=6b+t4DLaXsTbBo3v4wTWOzTtPpjmGsh78Ivlm5MgXBA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Q4c7HHZxNNyjLdj82SDdH90ubdZp2j335bULS93wJJeuc8Q3YM5EDCRGeyAW4ZcQZ
+	 0F+5FLADLQWtkDZNFizrJgq4o3Oj0kKJwxSa0JyTG1UKCkWLDlQ7HXxfLMpvKExu8s
+	 HdSvoOnEkWX6qSLuEGDVM7hC91vfxd7dinOWArxb7xF4LPi49xqYjv9xdktjno1z3U
+	 o2DmFUpy0pyi9zBZ2g1oaoTqDZBsoHjopl3l1RxxRA9UXVNnOISmC1Cn64xI3KhkaA
+	 tGOcUb5kYmPWNbfCIbfnonkZCqQS6ZfLQ/TBv/ZQqstw6slVEZRrB9hnO/1cENHMxT
+	 fOE8lFReNL72vwB4rYzgbhpZbSgKC22y6unZqzst3rWgHEnmGHk9SprG5cxgwE09oZ
+	 lcldiouakI+xn1Q7ey3dkzLeDsjGNjXeF8E7l4KeKB/IO+XbpvMHPuvryUe6kOKfdB
+	 8gCJ8mlHUwlXOx1+BKOV0BroyXMYIY0RcQOesV7DOogkneghldDF9edF4eFXDJeNc9
+	 atGQOkRTRMrgaun31vAtpki2NVpfvpIqi1fsO8U6aSguE2r8TY9PftQEmMA7kaAG3Z
+	 i1QLQQKkrrVLucWTNs4uiBpYL0JYkk9ZVKRurGotoCIoWHKXIWZErt2d9MK9dNixiN
+	 A/JO1WzVrAkw3jQ4uNmVZq2k=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 307D540E016C;
+	Mon,  2 Nov 2026 19:49:47 +0000 (UTC)
+Date: Mon, 2 Nov 2026 11:49:43 -0800
+From: Borislav Petkov <bp@alien8.de>
+To: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc: "kas@kernel.org" <kas@kernel.org>,
+	"seanjc@google.com" <seanjc@google.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"krzk@kernel.org" <krzk@kernel.org>,
+	"au.dang.jx@renesas.com" <au.dang.jx@renesas.com>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"biju.das.jz@bp.renesas.com" <biju.das.jz@bp.renesas.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"biju.das.au@gmail.com" <biju.das.au@gmail.com>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH -v2] MAINTAINERS: Fix Intel TDX kernel file patterns
+Message-ID: <20261102194943.GEaujpV134C7Wgx0Nj@fat_crate.local>
+References: <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
+ <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
+ <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
+ <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
+ <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
+ <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
+ <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
+ <953b3d774dc281bf13f5025041d4434f560cf776.camel@intel.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,38 +101,30 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <953b3d774dc281bf13f5025041d4434f560cf776.camel@intel.com>
 
-> The controller tasklet can detach completed descriptors and invoke their
-> callbacks outside the channel lock. Terminating the channel does not wait
-> for those callbacks, and there is no device_synchronize hook. A client can
-> therefore reuse callback state or release its buffers after
-> dmaengine_synchronize() while an old callback still uses them.
->=20
-> Disable and re-enable the controller tasklet from device_synchronize,
-> outside the channel lock. Disabling waits for an executing tasklet,
-> including descriptors it already removed from the channel lists. After
-> termination, a later tasklet run cannot acquire another descriptor from
-> the terminated channel. Clients must continue to exclude new submissions
-> on that channel until synchronization finishes.
->=20
-> The tasklet is shared, so other channels may schedule it while this wait
-> is in progress. Preserve those pending runs: tasklet_kill() temporarily
-> owns the scheduling bit and can consume a concurrent scheduling request,
-> leaving controller interrupts masked. The disable/enable pair leaves the
-> scheduling bit and pending tasklet queue intact. Other channels' hardware
-> transfers continue, though their callbacks may be briefly deferred.
->=20
-> Fixes: b36f09c3c441 ("dmaengine: Add transfer termination synchronization=
- support")
-> Reported-by: Sashiko <sashiko-bot@kernel.org>
-> Closes: https://lore.kernel.org/r/sashiko-outbox-180707@kernel.org
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+On Mon, Nov 02, 2026 at 07:38:07PM +0000, Edgecombe, Rick P wrote:
+> > +F:	arch/x86/**/*tdx*
+> > +F:	Documentation/**/*tdx*
+> > +F:	drivers/virt/coco/tdx*/
+> > +F:	include/uapi/linux/tdx
+> > +F:	tools/testing/selftests/tdx/
+> 
+> This drops arch/x86/kvm/vmx/tdx.c.
 
-Sashiko has reviewed this patch and found no issues.
+./scripts/get_maintainer.pl -f arch/x86/kvm/vmx/tdx.c
+Sean Christopherson <seanjc@google.com> (maintainer:KERNEL VIRTUAL MACHINE FOR X86 (KVM/x86))
+Paolo Bonzini <pbonzini@redhat.com> (maintainer:KERNEL VIRTUAL MACHINE FOR X86 (KVM/x86))
+Kiryl Shutsemau <kas@kernel.org> (maintainer:X86 TRUST DOMAIN EXTENSIONS (TDX))
+Rick Edgecombe <rick.p.edgecombe@intel.com> (maintainer:X86 TRUST DOMAIN EXTENSIONS (TDX))
+Dave Hansen <dave.hansen@linux.intel.com> (reviewer:X86 TRUST DOMAIN EXTENSIONS (TDX))
+...
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261102-submit-dw-=
-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com?part=3D9
+-- 
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
