@@ -1,80 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793649791;
-	b=Auaol19gjm9FpdlFXg0qaKCpp1bxC4oNXcoIk3tOexwasaiTQ9oQ/NXP/liaYb8qEtWd
-	 EdKFN5Izary3Di5+RHiCbDHBICiZKrBvKzdqGaeJdxETKYbMRvDOndXMlhryJHf272qcs
-	 bUCMkuIpa5rvZPCZKeeyuDiLbFIIyX2ELhMMPznr7BYEtL3TKuI+gkRjPKjDtR2WI7KV8
-	 qK1CuK2cB+u+71mV5SMl70sWcrG9lKKRqmcwBJIQcS7QBDRNBhItn8pS/7ynBjzysCDvg
-	 c8UKFQahz3KM9wkAN+xialdUdhzuTp7e1ofKCHFprQ2mc4BhKHh8M92Cjd05ch7t+wA==
+	t=1793649798;
+	b=aemvexd+F/wLGoBom+H5WqPrCJOpMbynvCUUcMUXds7OZhmtPnijewRNw4NpfUbhKDI/
+	 AjnR+rDbMglluBRisCVqX6MR//a/eiWm1pVdPwvlowjdNc0vk1zpOm361mMtzGCjqKp34
+	 2oO97ay19rCNYb2sLsJj1t0GXjlN0aFvFD/3yRffLR6W/uwJl6zlQ5MG/SKRZFChGpOL+
+	 F2Ykb6gaBF7UXuY6r6GiKYqXuiZr2duHC9hccPKRln1d4Zb0rk09Ew1M8Mj6uahAKg8BZ
+	 7iZDlyq7Bdoq5TAj1HN4uk3Q94ogRuRqeVO6lV2sLPeqS84ND3msBHJLqV8X3BtRe3g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793649791;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=8f53qSaOUew/yduHzYAT33Sw2UKphgT8s54cwVuq9zg=;
-	b=z3aTaQGFDCQAcLXAnceNQ9n50rCKWBf7BzP42gnK9SAm+rqtsB1UcyI1s9yTdf2Rbv2g
-	 +4FRcd6HROyOJH9JhCvN54PbNQfvGhtcf6reicim9O5h9aaQMsZPJ8VEPlsr50DFtfS3I
-	 jXzR4DG4MTNXctTAp/UHCQMJwIb8Q/agLhsQD1QCOV94/tAbQUgClIKrwkKwImF//AK9L
-	 g9EmZxyqaK3zF1INLv6cSrjK1PNYfbWxQZA76qnlI1jKLRgTSlfCiOOnXFcqHClpkTKLZ
-	 +TTXUJ86098w2iNM1JPJXwMGWJTEYicsCgm8bfU80KwBy51VImglqvqRdB1Ws7m2PjA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793649798;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=Hyp8+rljSXdQs1ER/LzKYvKo25DKUPM8AdAgWjwTQeU=;
+	b=4d6WDSUcs/Df8k67EaG1ofZlMtqlhprUW0ob2egUjQmIRgoksoqtvSxxJ5U+WiPEw9fu
+	 E8/KRZftayuwgVp/hEh4WbaxxDW7JcTeLTym++leXV/9+AjH59EEoGb4I+lKIPE72tpBf
+	 fZPLDF3jXWBi/7qUfgvsDrs3WpS0ahpCdsqcGe/FQ4lZ0ViqLfoBCf4FH3MZtAbWGxN+W
+	 7jOdbvNGn8vNa+kOsaWtEw1T6YWZSyzx5cfzoNoL+3qu1En/P1yqDnXQ2Acc3ceIdKumm
+	 VvA60I0vDhfCsFoEUOCwsPwPqsMM9nE6zSHfCCE97H575oTaZjFpZVCxMkSzkBkr9sw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C6Hdo+hz;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sm47B42y;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8444606A324;
-	Mon,  2 Nov 2026 20:03:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5462C606A329
+	for <linux-serial@vger.kernel.org>; Mon,  2 Nov 2026 20:03:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C6Hdo+hz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BAD1F00A16;
-	Mon,  2 Nov 2026 20:03:04 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sm47B42y
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C128A1F00A18;
+	Mon,  2 Nov 2026 20:03:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793649790;
-	bh=8f53qSaOUew/yduHzYAT33Sw2UKphgT8s54cwVuq9zg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=C6Hdo+hzAM2aCE2yQ8wCZI1E6GJUxrrbCQEknhiE/gjw6+GJfM09ra7ImVB1dXmv1
-	 X3nGRPBTQJVmzPrSs/z91HwdgBceJXITyLZ3R1hHYACecmOBgd3tygryGmNZpglEzM
-	 mp5JNuk23aI58tr5io/JBr6I7Nxs9Elc4SGO+NE1H3KhSmnynlwEP4/CFTP1tFTlmJ
-	 xfc83r9QPWcZUhsjIGLxPH7dnrQvoFsew+Kfv2OdzzuuyvR/oNBjCCZDKE5tT/ckTB
-	 0zPhV8w7eEbQo7m4CPyA0QZhqc5JWCPsJhDQyIEOnSE6974xmUcMk1l5P5B1yhiDpf
-	 Gx8L+kVhNHtqQ==
-Date: Mon, 2 Nov 2026 20:03:02 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Kwanghoon Son <asdfkwang@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Paul Walmsley <pjw@kernel.org>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Anup Patel <anup@brainfault.org>, Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 12/12] MAINTAINERS: Add Bouffalo Lab BL808 support
-Message-ID: <20261102-throng-botanical-b244058ecc37@spud>
-References: <20261029-rust-bl808-console-v1-0-b736ee920078@gmail.com>
- <20261029-rust-bl808-console-v1-12-b736ee920078@gmail.com>
- <20261029-spyglass-evasion-772697094cb9@spud>
- <20261029-amuser-savior-6a6ab062f471@spud>
- <auSDJH9V31wmbrYv@debian>
- <20261030-slider-finished-360b10521e0b@spud>
- <auXQaY25XfYzxEb1@debian>
+	s=k20260515; t=1793649797;
+	bh=Hyp8+rljSXdQs1ER/LzKYvKo25DKUPM8AdAgWjwTQeU=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=Sm47B42yo6NPUi85c1N1LJxRMnarbinVWiaPq+V4xXfFmxi1iciruPxf0+cn/9UDs
+	 feAYWTvAmhqMQfP8FWI5svNdmoHVQpD6MrAr0bDgSu8IN2gzW2UyZUVHPISyf2TojU
+	 jwMRIlR8ad68XZzREivdqiNYhiorxItZlpI84NMOeQ7P06IOq61XwqcHP60+z0zF2o
+	 lMtLBAzVTPzjSn+As2U64SXoLo0lxdrfFO9IRt4FXLx1q23OcRNWxUR6OwxpbGcnDf
+	 9fyNsUvSpAnVICU1K7jr24IJON9ALiMXAKGOL30kD4EFW8m5FdWdcXaOiV1PHi1wAs
+	 XdXGGcDg8vq5g==
+Message-ID: <sashiko-outbox-194047@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH RFC v3 09/17] dt-bindings: riscv: add Melon Pi V1 and V2
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Han Gao" <gaohan@iscas.ac.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261103-a210-scmi-v3-9-ee6b31580808@iscas.ac.cn>
+References: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn>
+ <20261103-a210-scmi-v3-9-ee6b31580808@iscas.ac.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 02 Nov 2026 20:03:17 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,49 +59,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="VKJ1YVFC0pQdfxF2"
-Content-Disposition: inline
-In-Reply-To: <auXQaY25XfYzxEb1@debian>
 
---VKJ1YVFC0pQdfxF2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, Oct 31, 2026 at 07:26:33AM -0400, Kwanghoon Son wrote:
-> =20
-> > Okay, that's good - but that's more of a response to my comment down
-> > below about splitting the entry, not a response to what I was asking
-> > here about the lack of a git tree. Are you going to send the SoC
-> > maintainers PRs for this platform or were you expecting someone else to
-> > apply the patches for this platform (IOW, me).
+> From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
 >=20
-> Thanks for clarifying.
+> Add bindings for Melon Pi V1 and V2 with the A210 module. V3 uses the
+> same board compatible as V2.
 >=20
-> Could you take the BL808 platform patches through your tree once they
-> are ready? (If that you okay with this way)
+> Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Co-developed-by: Han Gao <gaohan@iscas.ac.cn>
+> Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
-I'd rather not really. I shouldn't be the maintainer for platforms I do
-not care about, but I will do it if you're unwilling to - in part
-because I expect that the volume for the platform will be pretty low.
+Sashiko has reviewed this patch and found no issues.
 
-Please read through Documentation/process/maintainer-soc.rst to see what
-the expectations for a platform maintainer are.
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261103-a210-scmi-=
+v3-0-ee6b31580808@iscas.ac.cn?part=3D9
 
-Cheers,
-Conor.
-
---VKJ1YVFC0pQdfxF2
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaujsdgAKCRB4tDGHoIJi
-0rvXAQCHO96kr3fe760sxHNQfps8aidw4ByhVix9gyeGS+Q7WwD/XoV2kQ70wj6S
-Ayz1b9AlQkWnpQ7NCsg4w9US5ybLXgQ=
-=TfLH
------END PGP SIGNATURE-----
-
---VKJ1YVFC0pQdfxF2--
