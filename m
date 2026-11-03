@@ -1,52 +1,51 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793704603;
-	b=QYHop3VCU+94x/FOttTyN3FdMrF7srk2965MzWfP37nbi7MuuCDtvBjdQhgSKTmG+kXo
-	 m+iRXpu8LtjLW993DQOMvRySYToMmg3TLTbCrih8tLMwzUweLUlIgsZUv520RJUaiGiVI
-	 x4xMgNK9Jl/YGBVsXDMunb+qbOd4cKlH8z4IGfDaMyPyWmNtwwdnNOBXFO3xKFxkbycqr
-	 rphc4z2jv7fKPWPV49kchwXmPCEhBB6C/oPeWF0OFsOis3+Kpjes+Sf6yrIolMRCwFzfd
-	 IiCRZPVFKvfg4wRSZaE2m0XxPw84QK/vlv9CBmWLE9tgv8eqG/ONo6TNpYAUcz+Agrg==
+	t=1793704605;
+	b=t3MnsUj9X5D5dO2BSFXmIrchGs1oqFgIKA6q1wsE0uP3l3OPIV7rf86Nx8KWQ64cwRU4
+	 wNb75xPc7U+ZoSCh1YxQ9rtg4h4QAuXfLkd5vJiQXQgMM1VMBRLkvTMMtQvUCw38aNFwn
+	 /Ix1LLO6OgCHzwIal8P8XTN5pgccX81TsCNhEXmNMgmlmm+C6lHEHu+5/G59qA5krMd3T
+	 Ius0IweKYr7ujvLu8TVcaUtf2clV8/iMS3vzslCNWvc8UJjUNt+f8CljtMT3l+T+W5QeI
+	 KOg5y76S9DykZXVtkhFCBqtiG9ESvSZ6ERMvlsvZKofZKZFW/s3QW30umy0Ffkqi+Cw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793704603;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793704605;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=zVJJ2NognD1d7d4h1wb/i78OMNjXv23NJUlU7dGwRhI=;
-	b=3t8E+atcgYsgjyP2G8b2L3MjEtxBVcgC44F1aJLp5l6h8hUGNtVKPpC8eau43TG/lKUi
-	 Swko5fyjJo2JrDtZBWGYWGcNw5HxOStYXM6te0jdPk2/IPXSozuNUdv+1Uq21tbQybqq3
-	 RzfN3NKcwOjmZwUaUe209bRrr6O+QoqfJMU2oPM4h18paI+7xHMfemzHKG1adxG+2pw6N
-	 /8Hro8QhpjtYXsULQgWMvwdoaDHzZnhSpGc0Izp3IQu6P+am9VtRKAPbxXv6rMxzFem7g
-	 pVY9JyIPHLEA/4ehMtUl283Lu6vxbdxJ86N6SLxNpeySqD7n32TcYCpVfFO0BGyaRmg==
+	bh=8/YfSRZgXrBKbb1fmLtj8WE3qU5bIJYq+HM8wflcGik=;
+	b=Vw0GgCH6aFWAVzTEpcFxRJ5t7uX6OWxLuWr5rINeioaPdvsRAKRH3SaMb3mGX/mfRRZA
+	 CqFlvXvVZXg2If5dz5v74PHFq/6SPSSO4k5Eu39BVUVxfic9mZQt7b4yxKPf8wsc889Lf
+	 fZASeIVLUR1Ko++/NmnveRqyExwvEotB0qnt0VWigcPu8fkPebCQluyUlaIdtLRcQGezu
+	 Jno+Nj4asfbWh0kUcXxRStN55hI24YWWDcvMXVyIjNslgTttIs6hbGXlMkVX5MqusRMow
+	 OxL2fsm4CixlDE8pac5zmjzXqho9Sq6aScpsE/mSr9y/ixZXZ5Y+AJ5G9lXegh+PBTQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N0wih8F7;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CnrN8NVq;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7387F606C556;
-	Tue,  3 Nov 2026 11:16:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0AEC606C565
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 11:16:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N0wih8F7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 171AF1F00A15;
-	Tue,  3 Nov 2026 11:16:41 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CnrN8NVq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 910931F000C1;
+	Tue,  3 Nov 2026 11:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793704603;
-	bh=zVJJ2NognD1d7d4h1wb/i78OMNjXv23NJUlU7dGwRhI=;
+	s=k20260515; t=1793704604;
+	bh=8/YfSRZgXrBKbb1fmLtj8WE3qU5bIJYq+HM8wflcGik=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=N0wih8F7C0k+SvJJpg2XSwEMtfaq32mt2NPxLBFsr+7FkU2+1uzNWpvrzThpgwaCr
-	 vzudhq3J4o+4toNuJFbO1Jr70Sor+PxArTUti0PCEU1P1GtcQS3INSpPYgyDxXKRjw
-	 W6ZM0ebIlwHG9dGqpHQjt2GVEHAWR2fcark90/Ne3ZOfeWHy0mdQMS8HNOeLM+XFJD
-	 l1JT1kMH9XXEE+51vjBubClW2Lf6Ji07Iap47yQ9pih2GoZJokSKPpejlwpc48gxX1
-	 c5Uqi1zv/MaMCnLmbGRzNwX9XtIZKlHLDeyKnJcKhUZLW/uQSWXExPpbCvSuJ9xmyO
-	 ZER5L9sNuW7oA==
+	b=CnrN8NVqCQxVmVNhkAJximPI3bvH+uS/yygGUPjqlPU7v2vsDVG3vLGIMLj0H1+fX
+	 EG5duE7B/8+yYGqa0ilxxzNe+ZJLxfJQCaFKvru3dgazOtINZ7MfP/kOSKYmsx5Eam
+	 aciFKGDNjCEqeb4EA+6eiXE5ipXZRfHzqQPwVOUp71s1oEsVYPYQoToyQVtvMiPre7
+	 EO0GRDFweTvDZGMWYDei4RWP3z0TexrM6NGrYjBrSkxtLJOXZ6/2AzSb36Rr+uSu61
+	 /KBN1c/VzGtndmEU2H4fNeGqF+a7So1H4SB36dzujbAgESuB3h1oFz0zQGNipxpGcc
+	 AfM0qybdeQNWQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/3] serial: 8250_exar: check priv->gpio properly
-Date: Tue,  3 Nov 2026 12:16:37 +0100
-Message-ID: <28c09cf858795491f66667781bf79fb6a603f159.1793704520.git.jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 2/3] serial: 8250_hp300: reorder HPDCA code
+Date: Tue,  3 Nov 2026 12:16:38 +0100
+Message-ID: <f4dbbb45248771baa130e56bcb0b1916cd909256.1793704520.git.jirislaby@kernel.org>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1793704520.git.jirislaby@kernel.org>
 References: <cover.1793704520.git.jirislaby@kernel.org>
@@ -61,57 +60,100 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-priv->gpio is set by platform_device_register_full(), which returns
-error-encoded pointers on failure, not NULL. Sashiko reported:
+To have less ifdefs (code is now under one) and no forward declarations.
 
-> Does __xr17v35x_register_gpio() return an ERR_PTR if
-> platform_device_register_full() fails?
->
-> If it does, we might be storing an error pointer directly into
-> priv->gpio in xr17v35x_register_gpio() without validating it with
-> IS_ERR(). Because the error is ignored, the device probe
-> successfully continues.
-
-Before commit 1145d1a0703f ("serial: 8250_exar: use
-platform_device_register_full()"), __xr17v35x_register_gpio()
-returned NULL on any failure (platform_device_alloc(),
-device_add_software_node() or platform_device_add() failing were all
-turned into a NULL return). The plain truthy check in
-xr17v35x_unregister_gpio() matched that convention. That commit
-switched registration to platform_device_register_full(), which
-reports failure as an ERR_PTR() instead of NULL, but the unregister
-check was never updated to match. As a result, a failed registration
-left an error pointer in priv->gpio, and unbind would tear it down as
-if it were a real platform_device, dereferencing the encoded error
-value in device_remove_software_node() and
-platform_device_unregister().
-
-Use IS_ERR_OR_NULL() instead, so both the unset (non-EXAR vendor,
-priv->gpio never assigned) and failed-registration (ERR_PTR) cases
-are skipped.
-
-Fixes: 1145d1a0703f ("serial: 8250_exar: use platform_device_register_full()")
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Link: https://lore.kernel.org/all/sashiko-outbox-170895@kernel.org/
 ---
- drivers/tty/serial/8250/8250_exar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_hp300.c | 62 ++++++++++++----------------
+ 1 file changed, 26 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 57847c5bd2fc..b1e20fd4cfd2 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -1181,7 +1181,7 @@ static int xr17v35x_register_gpio(struct exar8250 *priv, struct pci_dev *pcidev,
+diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
+index e9599c5c2fea..68ce5972c296 100644
+--- a/drivers/tty/serial/8250/8250_hp300.c
++++ b/drivers/tty/serial/8250/8250_hp300.c
+@@ -34,29 +34,6 @@ struct hp300_port {
+ static struct hp300_port *hp300_ports;
+ #endif
  
- static void xr17v35x_unregister_gpio(struct exar8250 *priv)
+-#ifdef CONFIG_HPDCA
+-
+-static int hpdca_init_one(struct dio_dev *d,
+-					const struct dio_device_id *ent);
+-static void hpdca_remove_one(struct dio_dev *d);
+-
+-static struct dio_device_id hpdca_dio_tbl[] = {
+-	{ DIO_ID_DCA0 },
+-	{ DIO_ID_DCA0REM },
+-	{ DIO_ID_DCA1 },
+-	{ DIO_ID_DCA1REM },
+-	{ 0 }
+-};
+-
+-static struct dio_driver hpdca_driver = {
+-	.name      = "hpdca",
+-	.id_table  = hpdca_dio_tbl,
+-	.probe     = hpdca_init_one,
+-	.remove    = hpdca_remove_one,
+-};
+-
+-#endif
+-
+ static unsigned int num_ports;
+ 
+ extern int hp300_uart_scode;
+@@ -197,6 +174,32 @@ static int hpdca_init_one(struct dio_dev *d,
+ 
+ 	return 0;
+ }
++
++static void hpdca_remove_one(struct dio_dev *d)
++{
++	struct uart_8250_port *uport = dio_get_drvdata(d);
++
++	if (d->resource.start) {
++		/* Disable board-interrupts */
++		out_8(d->resource.start + DIO_VIRADDRBASE + DCA_IC, 0);
++	}
++	serial8250_unregister_port(uport);
++}
++
++static struct dio_device_id hpdca_dio_tbl[] = {
++	{ DIO_ID_DCA0 },
++	{ DIO_ID_DCA0REM },
++	{ DIO_ID_DCA1 },
++	{ DIO_ID_DCA1REM },
++	{ 0 }
++};
++
++static struct dio_driver hpdca_driver = {
++	.name      = "hpdca",
++	.id_table  = hpdca_dio_tbl,
++	.probe     = hpdca_init_one,
++	.remove    = hpdca_remove_one,
++};
+ #endif
+ 
+ static int __init hp300_8250_init(void)
+@@ -280,19 +283,6 @@ static int __init hp300_8250_init(void)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_HPDCA
+-static void hpdca_remove_one(struct dio_dev *d)
+-{
+-	struct uart_8250_port *uport = dio_get_drvdata(d);
+-
+-	if (d->resource.start) {
+-		/* Disable board-interrupts */
+-		out_8(d->resource.start + DIO_VIRADDRBASE + DCA_IC, 0);
+-	}
+-	serial8250_unregister_port(uport);
+-}
+-#endif
+-
+ static void __exit hp300_8250_exit(void)
  {
--	if (priv->gpio) {
-+	if (!IS_ERR_OR_NULL(priv->gpio)) {
- 		__xr17v35x_unregister_gpio(priv->gpio);
- 		priv->gpio = NULL;
- 	}
+ #ifdef CONFIG_HPAPCI
 -- 
 2.56.0
 
