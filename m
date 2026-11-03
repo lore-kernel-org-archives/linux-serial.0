@@ -1,48 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793717278;
-	b=aXZUcDxyjpHxF9CEDCXgbjtuAkwuX+y9YHGPTSzWrOhRIQZRQn5WDmh2bjwKGsQAdwVf
-	 /2yQFwtuZKRyKPeke7ZNl7V00j2uDRdAjCNPRtCtKH2KeakSKPS4HWqWKPOE50yqMAAG5
-	 HQ5MOrPrBrQwVtCBg4OnJGC86l5pkaw2rXe9+0Ixgz2SrXjIsRhq1mG4kPmE9NsC4no3o
-	 8Vdj9piI6Q47jUr9K9Dtt0dtHFPkYehjpU2XtAmGJdnXVFlr5KED+w1mKczJ3SDU97zcB
-	 REMGVhpG465bz6qDYxH6dq53rlaLJe8DEJOZ8vexbpw318YJ1v3mM5E4LtAVNJxI/Lg==
+	t=1793717288;
+	b=ePcb4R1PV+Umi0MbQn4sU6lDMRP3YXulXPD4EcLAphk/rj3V1TWyHTfoMJtjsdJhdyo+
+	 8HBrBk61+AXIRnnM2bJoK7Bjz3YaswxCWTXPbaYI79nuB7uPYYqR037zp/nhWFLOCTMhb
+	 CaudRzA+3vC12rCuQU90WD9KdrlgMx5+71TsgCg9t7VpwL+jNab+yank+e0auttxR0U1D
+	 nzgcDG5FQQPYnMRFTOt7EXjj9gQ8Bb1nLhtSvzrg1QnmxmDEO4oPZ4WvmRApfPnEoqDbJ
+	 WiljxkitD7tscp5nWtBiO3Mv1UXC8kDIIATg2+6IZYShX0WsvQxQgAJnSTo1nhoJUKA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793717278;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793717288;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=QRmT1dursV1/AbPfdQawgpWX1OE+hs1OgQGe5g88v1g=;
-	b=e0s+a4TvnYATAsD/FiCS/zJKJY/3qaQZaZcp93Y/Evp9IPID4FWYQTrPRuIy9yhhOWCT
-	 uIM2wsdbrGlep+igNFUtRMOs+DEcr9T8VoyoIclb6dHAkWAOVJPCjeNTYun5k42b9Xl0b
-	 +60qrXKMSwZQIl1PfI3z58WweyvYxRMJQ2rQjsE+dunWptf0PJ8EaOOSP1oSyTWfnGQbR
-	 WuQl/cldi/bwfqsPpSvtAKbTRd2UOKFbp2vdpeNpsGUVTkqC5SAOIoL8j2O4hydU/9YR0
-	 /yHWBubaBWPaeDXDTNJhN1U80kHdu/aYP6wx7hXi07MKLMyvFhuS2JdSeFTsLstBrMg==
+	bh=Icn35Mi91pQ+tLfg0mCdB4U+ZmjGBtIaKsilMrrc5tY=;
+	b=UHuLhnuokubDREKU0OoPyz2Y07or7VE+52g8I4n1UaPNKmzK2eUsY6vzCKNkNN2ugJ8C
+	 /CYrb0VzP/T8wacAVpTZAytrsAJW6PJV0HiiA7i0mGOq/3lvVSITThle0NV79cAqY17wg
+	 OdC2WBDN0rOV1VA+dLUoIBKWAHfhmLjiRQokKFb8WfXeWfCfs//7eCg3pQUBcURLGxq9C
+	 /pCn0LTDKQ6qTKAqtOX63PchLkfXFoKNvdseKCx9gMhD1YE19LHfvQYuOU0GraM/tcKRl
+	 jM3HxX5SX7zpLMAaVIf2WCnCB+IPgDP7G35CUYT3/ZyvKJW+AuIzUJoXfU/DLSyly4A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HcJ+JRqm;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dh1dKt+S;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF0E606D832;
-	Tue,  3 Nov 2026 14:47:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCA7160A3833;
+	Tue,  3 Nov 2026 14:48:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HcJ+JRqm
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27D401F00A02;
-	Tue,  3 Nov 2026 14:47:56 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dh1dKt+S
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 441281F00A1E;
+	Tue,  3 Nov 2026 14:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793717277;
-	bh=QRmT1dursV1/AbPfdQawgpWX1OE+hs1OgQGe5g88v1g=;
+	s=k20260515; t=1793717287;
+	bh=Icn35Mi91pQ+tLfg0mCdB4U+ZmjGBtIaKsilMrrc5tY=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=HcJ+JRqmYEiMrWdia1VF/h68+hME8LTqCzLLleewidrGGkT23nLAVx72jBXXGRnJH
-	 deW5WlbJslcCL70kgQE/USZ9Pn2koDB3lf5HMQ+VPVhK2NhZBxXINU1jpYDX7AyCsb
-	 zx7C3NFyw/w3WUfgqJDpNiOEzMi7KG9GL3w92NOCLX5CEQpNgp8ax9OyQnfnVIOmqd
-	 91xXbQvhxesjbGUDIpGvSg5XYWfnpqWG13blZJqrRvr8fqcc4OOCQ4glPo9tDaoFWV
-	 HSEf1t6mQ2mTtiA0x+I9dkOFdgeDd9SF/dvfLBNHVQRjp06VJHYOEXnI2KvV4mwZi0
-	 9BjYRzDu4BVvQ==
-Message-ID: <sashiko-outbox-195487@kernel.org>
+	b=dh1dKt+STUs/pEoLctpFFtQkyKCAxxWJoxXDNG9HNkYmLm1AdEmDmmdWV64Js6Az7
+	 D7xeBzM6wvr24BHDVnxZNsmdK8y72d/Sc8fRWz9vjYY2X1n981YMEB3CvPmhvXhzoT
+	 CdEliGimDf4eL7SpBrWs7GBDY9OjYAOjox1SovFaGTGUyI/vN6Vhs36589r0zEyUdi
+	 mVeMd6wVewqD9lCD3HCijfRClz6bHq3RpQ/3lZQUAdmOC5lUq0F8u4W8MwAYT72JS1
+	 NFUnHmQbjcLibYcuMjtBUE9DfbW903ryc3o/4VSRPIMZquWia85CdIpJWlxt1Ne+x1
+	 8PIhBdEx8sqOA==
+Message-ID: <sashiko-outbox-195492@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 15/38] ntfs3: don't warn when a huge label is
- written
+Subject: Re: [PATCH RFC 20/38] selftests/proc: check a /proc listing while
+ entries come and go
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -55,12 +55,12 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261102-work-procfs-bugfixes-v1-15-59422ed3e465@kernel.org>
+In-Reply-To: <20261102-work-procfs-bugfixes-v1-20-59422ed3e465@kernel.org>
 References: <20261102-work-procfs-bugfixes-v1-0-59422ed3e465@kernel.org>
- <20261102-work-procfs-bugfixes-v1-15-59422ed3e465@kernel.org>
+ <20261102-work-procfs-bugfixes-v1-20-59422ed3e465@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 03 Nov 2026 14:47:55 +0000
+Date: Tue, 03 Nov 2026 14:48:05 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,20 +70,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> ntfs3_label_write() allocates as many bytes as are written with plain
-> kmalloc(). A write that is larger than what kmalloc() can hand out then
-> trips the page allocator's warning, which panics a panic_on_warn kernel.
-> Use memdup_user(), which fails such an allocation quietly with -ENOMEM
-> like before.
+> List /proc/net/dev_snmp6 of a new network namespace while a tun device
+> comes and goes:
 >=20
-> Fixes: 7832e123490a ("fs/ntfs3: Add support /proc/fs/ntfs3/<dev>/volinfo =
-and /proc/fs/ntfs3/<dev>/label")
-> Cc: stable@vger.kernel.org
+> - with a buffer that holds the dots and "lo", add a device whose name
+>   sorts first, finish the listing: "lo" is listed once
+>=20
+> - with that device added and a buffer that holds the dots and it,
+>   remove it, finish the listing: "lo" is still listed
+>=20
+> - with that device added, stall getdents64() on a userfaultfd page
+>   while it writes the device's entry, remove the device, finish the
+>   listing: "lo" is still listed
+>=20
+> All three fail without the fix, the first lists "lo" twice, the other
+> two not at all.
+>=20
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261102-work-procf=
-s-bugfixes-v1-0-59422ed3e465@kernel.org?part=3D15
+s-bugfixes-v1-0-59422ed3e465@kernel.org?part=3D20
 
