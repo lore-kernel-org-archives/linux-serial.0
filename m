@@ -1,82 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793746470;
-	b=1LwZkjCD1OCbY7NGbhWORbQixwBuXXjOjuKWf4KHZ24uGgonAA3rioTS5VtuBRK4m+nP
-	 7Lenn3WoCHHFmN/lsEBWqzT9IVZ2rxH+xM4ryUG/zH55q0PED8ARhpAPbtYPKQnP8SSOp
-	 /pW2dmQN91jqemGb4S6CJBKGuTwDULm/gePOiKbPu4YUoRrimU7+RMLDvnnBYMpGPEIJY
-	 6LzOW5JwhoCaZTlivhF+Jp6dx8vqmZ3dCTfPLpiPabtlavRe8JWIksrEGnsqKsWZQDcxH
-	 1Q2BInq+0rCtjAbg0bDQtnTvaayTUMvk+HRL4eXQr+WyPyl3vG6uDcOLRDeVkjoVAgA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793746470;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:Date:To:cc:
-	 Subject:In-Reply-To:Message-ID:References:MIME-Version:Content-Type;
-	bh=w3oiCq1SMVsjy0c0EBauveDiKsugH8sreTHeU8+sTtc=;
-	b=qm/VH/Lq5m4gm4ATj3Ljmj/Ml44FTJSkE3q7WZUHPtzXhm+IuVyCw1+9Zthb4hSxd4mE
-	 aIIwVc1daznEzPSvYCUIbN3IsfYV4z7CAuDwQintlpw50dWHGqFEYWDRnKrciPxGkcDuu
-	 Y39yqd8/8rXThfLiB1QxJiHp4AJ7hnt9rUQLtVmIJbvG9YrSaNEAeDbhebgiLUUn2NzvM
-	 GvJwbkcA6QPsHE/qKrWHcc/eXcWm57+c9r3PGCb8QCZoHu9miFgbcsTZiS3TBAMLCkGmY
-	 7tBHkdiCA7YQxn0BsvOy0LDhP/fpg6Y9NPEYw0GE7yFG5EIY/Y37BtH5wtSpAAZQqnQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WwFee3lz;
-	arc=none smtp.remote-ip=192.198.163.16
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793749313;
+	b=YIkFuTOicYMJ+5R9euIn3XjfJF7UIlSqVzcii6cKb4C6iyoUSOgY/vvX7ekUa0t1BImD
+	 YTgaPtoNUujoioq1St87IJv+SNCx51H7mTguAQbIGXNUC9As1EV4E2x3994Cba6Y5D7hf
+	 lBCa26a1eMdUvP9SIiF3EGCegQjKN39+Tu7OiQoODt6nprocdTx9DPRIDVD/04U8MGFCc
+	 VaFoTbA2gYPFKIDmuvBWpNC8aUHYUZW+rIdQjnfbpBNW+5QX7RQUQbM99zhwIUfv2qoTb
+	 ZsDzsNxEpzAyMR1S6F3Qnr/bFvQFPM55aNAUjc4VaTxMoCcSEsI94vnGdHe4hxJc5wQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793749313;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=upTfiQRy+DzSxk9UIPPnCZDadurRE8rswVOHeOJf8Eg=;
+	b=lYV6GMn4GzY5YuPAfJbfxRGqxfY2stwZ71Z4tSJbNCe6vxHzB9BvuUhOP4EWwWvyLQau
+	 8BkV/PNIvXKkkq8LzvHVkpzKZB5QVPDqM9yiQFBtlE9uSpaq8RhjhrA1VJW03hKt88vF+
+	 G7jpleVQZkCL9nv3Am6InuUJRDbnXqQBstI2lrN/fZ6xfDYtNsriAyygJZCTbpu3mzAkg
+	 Sn1VFwA+O+hdUzVCiB7MngLJUM74CEIRiPF28DsSb2ruHo3f85iZaHH3ZiOVR/xK5rdfc
+	 BZUAvCEgUzgAvXMQnF5Y2HBbA7rPPPIuL+6iGN3UZYR9momNMpihCEHKNwszx6twvsQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k54oUhuJ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FADF606A326;
-	Tue,  3 Nov 2026 22:54:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3FADF606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F2D606A324;
+	Tue,  3 Nov 2026 23:41:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WwFee3lz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793746470; x=1825282470;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=nDnp/Y+a8TCuPERecuvexpWS6HE8WyH+EY6mbwysYp4=;
-  b=WwFee3lzgkQoL6NRYY31ofD/QM0t18b3HR/ieS412ePFFG1kut3PZE+r
-   mO9h/fE/j2HDcLlOmB9ZpgS2+oUFmsIuSI7jT6RbB+9ETLFvqUPap9J+Z
-   sSznszk/2Y2BYuWurlTTsW/hzWD7ZhGr6htPtgbPLgpCxitHYTCi86QJF
-   cdbQcYqWHTZz0AxtANfhyJkqoPQ6yPeWBVajbzYuc1zZNWtU3uROjrWHa
-   DSrO+/ccLN4tJejGcpIZOpMQX6792xpuUP9gthM+GsuoWeceVogd8u5Kd
-   eDHA+3LtPI/yGU4cx7cl0cJyXT3zMBMYv0rzRCeq+Wo/92JfB86SF78nQ
-   w==;
-X-CSE-ConnectionGUID: PNIxtAV1Ruqc/TVtyl02ig==
-X-CSE-MsgGUID: gvVAxyfbSJuWCxWk6V8QcA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2502800"
-X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
-   d="scan'208";a="2502800"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 14:54:29 -0800
-X-CSE-ConnectionGUID: mZVonL2WRzidEAnxKAtNbA==
-X-CSE-MsgGUID: bWBGoSvYR7KRBrNVQ8whbA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
-   d="scan'208";a="6877328"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.225])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 14:54:25 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 4 Nov 2026 00:54:21 +0200 (EET)
-To: Frank.Li@oss.nxp.com
-cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-    Haoxiang Li <haoxiang_li2024@163.com>, Zhaoyang Yu <2426767509@qq.com>, 
-    John Ogness <john.ogness@linutronix.de>, 
-    "Mike Rapoport (Microsoft)" <rppt@kernel.org>, 
-    "open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>, 
-    "open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>, 
-    imx@lists.linux.dev, vkoul@kernel.org
-Subject: Re: [PATCH 1/1] tty: replace chan->device->dev with
- dmaengine_get_provider_device()
-In-Reply-To: <20261103215949.1827937-1-Frank.Li@oss.nxp.com>
-Message-ID: <4bf08ed3-724f-794a-93a5-87a20569768f@linux.intel.com>
-References: <20261103215949.1827937-1-Frank.Li@oss.nxp.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k54oUhuJ
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793749312;
+	b=dZvFKvjQ+u+IkvmDlv4aIUsT1Xp7/fU5zjxCbOSHljouYuzGiL9RqNXWcWqxTQx3YdCY
+	 eH75yL0Xf1ZllXcwj8SCUah8TaxBQZpjeMVDFtNnO2Z/sHiQpbBbsxWqAB+L2HIbrzC73
+	 Pp4hDygWKHoQzsMsRzyhQClUru0/ZL/WgV0T6hnEwub6MmY3sBKnkwowwLwWTkmQ2wKb0
+	 qsMCgI/Gym2TmH6rfgBRn8PE685sbRO/2oYW23NkB0qLprJu5NjHNjWPeMf142FW26WVy
+	 GgJ8lG1dEytVK95WXohD7s/it3AgcLL0Fx2li+21XV6Xk/RnCeIXzfmpK7Hf/PXVS4w==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793749312;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
+	 Content-Transfer-Encoding;
+	bh=upTfiQRy+DzSxk9UIPPnCZDadurRE8rswVOHeOJf8Eg=;
+	b=QI6XR1YuZTHTvc8NpcgnwTq9lzSxjqz2E3SGyy1vRiL/9pfKhs7SLgq8xPd+KPrbzxWV
+	 jf1Y866vmOeZZCjQjqmY4rRJR0/Pu9WLyaR2AxnyPj/oz5fWpDUa6jOI0+f2mQfqiGh16
+	 cOzxfW1Fk5Hg3HroczIy/S92nTzAt3dBcwYVx65tywUV/CvdG4UzojmX79nn5LapWx637
+	 ynl9/lnHVUTtavQJ5iBTyi1mVBC+sfHrnIN6ePClUdeeLltIYg/hhwVwi9gZ9cm45k8UH
+	 oyGcKLyNT0UWf8u4e0JaXHqMa/2HeYKSWqt9Oz1CXE1twMmSaiE8eLMDYzYAP172c3Q==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 78D541F000C1;
+	Tue,  3 Nov 2026 23:41:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793749312;
+	bh=upTfiQRy+DzSxk9UIPPnCZDadurRE8rswVOHeOJf8Eg=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=k54oUhuJybkreWCynO4qR+7dEnL8a1A9SOIg2LLtzR0OpA9ExXWO+PA5aABf4vVB7
+	 YvoV5cq5wx7rjcqGAklJQvZZ3POXp6xtOPy4jiMJQqR7z9wZwbRUBWhpIarpilMVW8
+	 G6zcIviZMVrq9HqC1WuHoKbkE0F9b3YS5tGk3c4i6DXXE354M+RBpNS/gHIPX2Ye+6
+	 7OYAOqxBL2rRw4+0w2v7X2lsHw/XmxM15mWf463S9H25YHkkh1WiYCtrV4exaPeJO7
+	 jPruAaS/sfavFOYS0KI6cYsK75rU04ToRdUTaTCMtla6Y53ZfZt6GLlxuM31n+Ptgq
+	 FMpo/mfGWDRQA==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id C682C46B87;
+	Tue,  3 Nov 2026 23:41:50 +0000 (UTC)
+From: Joas Antonio dos Santos via B4 Relay <devnull+joasantonio108.gmail.com@kernel.org>
+Date: Tue, 03 Nov 2026 23:41:51 +0000
+Subject: [PATCH] serial: 8250: fix use-after-free of IRQ action name on
+ port removal
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -86,83 +83,123 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261103-serial-8250-irq-uaf-v1-1-24223dcc3119@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAD5x6moC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDQwNjXZD6xBxdCyNTA93MokLd0sQ0XYMUA+M0i0QTi0RLCyWgzoKi1LT
+ MCrCp0bG1tQDmZD5zZQAAAA==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ stable@vger.kernel.org, 
+ syzbot+bc6b37960b1d13f68f9f@syzkaller.appspotmail.com, 
+ Joas Antonio dos Santos <joasantonio108@gmail.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793749310; l=3589;
+ i=joasantonio108@gmail.com; s=20261031; h=from:subject:message-id;
+ bh=Vj1DUOXxenSAPPDmSUT0HtmMZVzSOWReRJpl/rpE5m0=;
+ b=RtK5sce09jMCtpUzz10809eZmaAN2TcxLlFael8IJpcwKhsR0wJZYm3UPfvtQqtuZ2Vjtn6l1
+ 9hl+ZqqFMV+C28dIDEk1Lbxc8PkFg4qTOt6jy+w5m8/sVYfWOeDocGp
+X-Developer-Key: i=joasantonio108@gmail.com; a=ed25519;
+ pk=ZxAznJT/FcPPdzLrDDFJQm4LLjjHVGBBqDSG3TXS23w=
+X-Endpoint-Received: by B4 Relay for joasantonio108@gmail.com/20261031 with
+ auth_id=1371
+X-Original-From: Joas Antonio dos Santos <joasantonio108@gmail.com>
+Reply-To: joasantonio108@gmail.com
+Content-Transfer-Encoding: 7bit
 
-On Tue, 3 Nov 2026, Frank.Li@oss.nxp.com wrote:
+From: Joas Antonio dos Santos <joasantonio108@gmail.com>
 
-> From: Frank Li <Frank.Li@nxp.com>
-> 
-> Use the dmaengine_get_provider_device() API instead of directly
-> accessing chan->device->dev to get the DMA provider device.
-> 
-> No functional change. Prepare make to struct dma_device private to the DMA
-> engine.
-> 
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c   | 2 +-
->  drivers/tty/serial/8250/8250_lpss.c | 2 +-
->  drivers/tty/serial/8250/8250_mid.c  | 2 +-
->  drivers/tty/serial/pch_uart.c       | 2 +-
+serial_link_irq_chain() passes up->port.name directly to request_irq().
+The IRQ subsystem stores this pointer in irqaction->name without copying
+the string.
 
-Please split to 8250 and pch_uart.
+When the port that originally called request_irq() is removed while
+other ports still share the same IRQ:
 
->  4 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index eca02e8bd6d13..9adaf5b5fbd56 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -530,7 +530,7 @@ static bool dw8250_fallback_dma_filter(struct dma_chan *chan, void *param)
->  
->  static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
->  {
-> -	return param == chan->device->dev;
-> +	return param == dmaengine_get_provider_device(chan);
->  }
->  
->  static void dw8250_setup_dma_filter(struct uart_port *p, struct dw8250_data *data)
-> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-> index 7e88f2b793b5a..eed37e8b3e831 100644
-> --- a/drivers/tty/serial/8250/8250_lpss.c
-> +++ b/drivers/tty/serial/8250/8250_lpss.c
-> @@ -269,7 +269,7 @@ static bool lpss8250_dma_filter(struct dma_chan *chan, void *param)
->  {
->  	struct dw_dma_slave *dws = param;
->  
-> -	if (dws->dma_dev != chan->device->dev)
-> +	if (dws->dma_dev != dmaengine_get_provider_device(chan))
->  		return false;
->  
->  	chan->private = dws;
-> diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-> index 44b43163df511..dfd2460983fab 100644
-> --- a/drivers/tty/serial/8250/8250_mid.c
-> +++ b/drivers/tty/serial/8250/8250_mid.c
-> @@ -252,7 +252,7 @@ static bool mid8250_dma_filter(struct dma_chan *chan, void *param)
->  {
->  	struct hsu_dma_slave *s = param;
->  
-> -	if (s->dma_dev != chan->device->dev || s->chan_id != chan->chan_id)
-> +	if (s->dma_dev != dmaengine_get_provider_device(chan) || s->chan_id != chan->chan_id)
->  		return false;
->  
->  	chan->private = s;
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 9505d255f09c5..6d9a88149b407 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -656,7 +656,7 @@ static bool filter(struct dma_chan *chan, void *slave)
->  	struct pch_dma_slave *param = slave;
->  
->  	if ((chan->chan_id == param->chan_id) && (param->dma_dev ==
-> -						  chan->device->dev)) {
-> +						  dmaengine_get_provider_device(chan))) {
+  1. serial_unlink_irq_chain() removes the port from the shared list
+  2. Since other ports remain, free_irq() is NOT called
+  3. irqaction->name still references the removed port's name string
+  4. serial_core_remove_one_port() frees uport->name (kfree at line 3292)
+  5. irqaction->name becomes a dangling pointer
 
-Did you even read this patch yourself? Probably not... :-(
+Any subsequent read of /proc/interrupts dereferences the freed string
+via show_interrupts() -> seq_printf("%s", action->name), triggering a
+KASAN slab-use-after-free on the freed kmalloc-8 object.
 
-The line should be (very obviously) split at &&
+Fix by giving struct irq_info ownership of the name string passed to
+request_irq().  serial_get_or_create_irq_info() now kstrdup()s the port
+name into irq_info->name when creating a new irq_info, and
+serial_do_unlink() frees it alongside the irq_info.  This decouples the
+IRQ action name lifetime from any individual port's lifetime.
 
+Found by LLM-assisted code review of syzbot-reported crash patterns.
+
+Reported-by: syzbot+bc6b37960b1d13f68f9f@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=bc6b37960b1d13f68f9f
+Fixes: f7048b15900f ("tty: serial_core: Add name field to uart_port struct")
+Cc: stable@vger.kernel.org
+Signed-off-by: Joas Antonio dos Santos <joasantonio108@gmail.com>
+---
+serial_link_irq_chain() passes up->port.name directly to request_irq().
+When the first port sharing an IRQ is removed, kfree(uport->name) frees
+the string while irqaction->name still references it.  Reading
+/proc/interrupts then triggers a KASAN slab-use-after-free.
+
+syzbot link: https://syzkaller.appspot.com/bug?extid=bc6b37960b1d13f68f9f
+---
+ drivers/tty/serial/8250/8250_core.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 42319843c..f73113daa 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -47,6 +47,7 @@ struct irq_info {
+ 	int			irq;
+ 	spinlock_t		lock;	/* Protects list not the hash */
+ 	struct list_head	*head;
++	const char		*name;	/* owned copy for request_irq() */
+ };
+ 
+ #define IRQ_HASH_BITS		5	/* Can be adjusted later */
+@@ -122,6 +123,7 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
+ 	/* List empty so throw away the hash node */
+ 	if (i->head == NULL) {
+ 		hlist_del(&i->node);
++		kfree(i->name);
+ 		kfree(i);
+ 	}
+ }
+@@ -145,6 +147,12 @@ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_por
+ 	if (i == NULL)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	i->name = kstrdup(up->port.name, GFP_KERNEL);
++	if (!i->name) {
++		kfree(i);
++		return ERR_PTR(-ENOMEM);
++	}
++
+ 	spin_lock_init(&i->lock);
+ 	i->irq = up->port.irq;
+ 	hash_add(irq_lists, &i->node, i->irq);
+@@ -172,7 +180,7 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 		i->head = &up->list;
+ 	}
+ 
+-	ret = request_irq(up->port.irq, serial8250_interrupt, up->port.irqflags, up->port.name, i);
++	ret = request_irq(up->port.irq, serial8250_interrupt, up->port.irqflags, i->name, i);
+ 	if (ret < 0)
+ 		serial_do_unlink(i, up);
+ 
+
+---
+base-commit: 05441d697f7f9a927264f4058cbbc6a03dfcac9d
+change-id: 20261103-serial-8250-irq-uaf-0d03f8a48a98
+
+Best regards,
 -- 
- i.
+Joas Antonio dos Santos <joasantonio108@gmail.com>
+
 
