@@ -1,48 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793718069;
-	b=dpfB8oklmoTH0RV5K0uReR6Ukg5AcHhGMGbLLI+XAts0frMuOadwrxfK7uHAdEgcQN38
-	 J1Iy+G7Kg7htKzvmvuqkUPbs7mzenN4TJhq2xPbyoKb04YTXs1xRfqeOvNMQttIEemN1V
-	 9mWIGscG3vU5ZeOwfCg+m8wJHUI0LHkzdQ9WYCMQMoXbRKFhaLO+Un6tPickD9pm81sEZ
-	 jlSfoIXS25A+uGqW4fVHVlHC7SDHWoefUkDlsoz16XjKbsAiMtQDgZwINZVMlKYVnr50J
-	 RBYhEH7j7AaQbxTTqrh8uaWa4HbIUckkz0DJzcAg4QCWpgncD5R7AUP2ehhYL+GF/tA==
+	t=1793718071;
+	b=ajIPbWhgeoEwvnw1/unHV4ZrYbkHlBxlGjrRRrrjp7IBCzy46kPzm/b1nw+JfnPRdXPj
+	 fM16bAjtjpN5aE9ZZg2Jd2HZ+q26f1il3vR8VkJ5S8jJf/orBVWIHUNiZAod5505madyb
+	 93nLABTIVzcFVBC3yStbcSCtZ9t4kc8g8K5og/BqWL7rAIKsebINDJxsa36ORTQpI1TXw
+	 dxBJWElH4ATbAmlJC5x6igZcy00Zgxb2rdSHKFfLaaT+t2JORPTHVeurkYfIi7/+w+oMa
+	 rEnICcCDNzm6MmuoawziIQuP5DVC0PdGJ3cMxcguPlssTeWOp+b4wcdECIOXVnoClWw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793718069;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793718071;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=BEajqQ35phGWaUcr3y1eTDvwsu33+Nn0Y7Ck4F/8MEY=;
-	b=JsYWg+Mbx1aNUxYec+NHv0hgOO8q2Te7ZSJ50rp08ulRqtF0In4w8LUhCEvyANOaGdtn
-	 Phwpv88bgnubAFGOdAlH04fF62vCBEb+gO5z7RrER2+d45C3phGwmTTMF9JtQz4DNOfVw
-	 0zNlRgr9LfDZt34Jsp/bIXQfuAoIsKQz42qdKalNkexkpaccnD1WJMbxY7kuiUWqmYrvA
-	 zItIqZXMGth/iio7B6aPmIZsBmmpyyyrQUhbYvg23+UQ7OycPHI/EO4BYh3/1fQaLQ47E
-	 4WbV5XhejVym64IUzvrUmXj65AVaGV4IQ1qmArq8sCWtV5wGGKCx+NzUS2ZyresByjA==
+	bh=paGK4Vm3mtE5b0c2DhkRMvpNzDa4nvSsw4DnEf+BgQc=;
+	b=KzFjSDMnQPMFAzEHOcMPfNRnX9MU+Dq5Ktfrl0rrJ4SEc7DMtJznK9vYRvWgB44rLv46
+	 TF9XoE7TIR31m5c6eu5rcN+R164DshLs1ctaXRqRi1JsehK7sgPv00BfUPBIbuPvUM0Lm
+	 2/xza896AGIcNqax9OXlazr9ELOi0MD15hLcd4D+cny9VgUURpRcV3DZvdnkR5CGAoXYY
+	 eMxiWevA2CUu1rCyux10sYeHoyWRdh/wAlTkyo66JPMeQq5RLt/LNT6kwLuK5TIqB13C5
+	 bEBdViiMuUvx+VQI658cj3dsIPSPATu97/X3WRbA7AcW7GxUbFPasgvlDRnD7bACgnA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VEcq0ggu;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Kz/9BmYM";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FA2F606D836;
-	Tue,  3 Nov 2026 15:01:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61C2F606EEA4;
+	Tue,  3 Nov 2026 15:01:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VEcq0ggu
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFD2F1F000C1;
-	Tue,  3 Nov 2026 15:01:06 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kz/9BmYM
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C80F1F00919;
+	Tue,  3 Nov 2026 15:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793718068;
-	bh=BEajqQ35phGWaUcr3y1eTDvwsu33+Nn0Y7Ck4F/8MEY=;
+	s=k20260515; t=1793718071;
+	bh=paGK4Vm3mtE5b0c2DhkRMvpNzDa4nvSsw4DnEf+BgQc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=VEcq0gguO6/NoWa+wL6fwqCLqkldJUUFWXaU48FgopqIQWVInov4USQPNMlWECfku
-	 tjmmYgoSxJFwLb8AMyTRkOEe9RIAgKCTxUsnF6zQuC56KDIfRvxTZM6B4OGZ+0RxLb
-	 mh81fLroJS4nyQyOkcaBszjAOxkYEOtX3GkPZMu84uutLjUi79KxQ0Ta6LswLb4aME
-	 +9R/WJkvVhkvygnNcEPN9DxaCT6J3JtUHgSP8vKYwTs6rh6No+CNqGd39rP3s8vdpa
-	 CSPispydKapyfU9yanW1YMZNTbAP3BOy5UszvDaukMX2hst4qdOs00Vyn/j4PbSImA
-	 6uri+styQIxoQ==
-Message-ID: <sashiko-outbox-195531@kernel.org>
+	b=Kz/9BmYM8ipZ0nqa4i1SDv6lAnRGk0DIAMwuEMDu9VajUTqnuibPJ60MM7nVnRyWU
+	 0YGeeeZk1WD+5JhFzeeiubPttCRps/6djOG+ittG2lCUSz7LOAZYeKer7ogjO+h2Kf
+	 NysxxWG34bBgucluHmCoqrvXiFc86zWo0lyI1OFo9kGGQlfblamt4HbUkUxT4PE6CV
+	 LOEA6bDUBX8DU55FH/kj+Kw7Csqqg0NGPAkqtEvSpQ2QlNenqLvrP7m5r9qMAJz+Bp
+	 sLUC6fAIW91wbjix1EMEC1iN30+fEqcayJA2ywzzSpskhM1z/zvbwlYUrxSQ32aLe+
+	 VKbU2vNEoY5eQ==
+Message-ID: <sashiko-outbox-195532@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RFC 04/16] proc: let procfs own the seq_file of seq_file
- entries
+Subject: Re: [PATCH RFC 05/16] proc: let procfs own the seq_file of
+ proc_create_seq() and friends
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -51,18 +51,16 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Gleixner" <tglx@kernel.org>, "Al Viro" <viro@zeniv.linux.org.uk>, "Jonathan
  Corbet" <corbet@lwn.net>, "Christoph Hellwig" <hch@lst.de>, "Greg
  Kroah-Hartman" <gregkh@suse.de>, "Joel Granados" <joel.granados@kernel.org>, "Kees
- Cook" <kees@kernel.org>, "Jan Kara" <jack@suse.cz>, "Jan Kara" <jack@suse.com>, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, coreteam@netfilter.org, kexec@lists.infradead.org, linux-pci@vger.kernel.org, linux-sound@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org, linux-mm@kvack.org, linux-usb@vger.kernel.org, samba-technical@lists.samba.org, sparclinux@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org, "Takashi
- Iwai" <tiwai@suse.de>, linux-input@vger.kernel.org, linux-raid@vger.kernel.org, linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, "Chuck
- Lever" <cel@kernel.org>, tytso@mit.edu, dmitry.torokhov@gmail.com, "Petr
- Pavlu" <petr.pavlu@suse.com>, "Anna Schumaker" <anna@kernel.org>, yukuai@fygo.io, "Heiko
+ Cook" <kees@kernel.org>, "Jan Kara" <jack@suse.cz>, "Jan Kara" <jack@suse.com>, linux-s390@vger.kernel.org, coreteam@netfilter.org, kexec@lists.infradead.org, linux-pci@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-usb@vger.kernel.org, samba-technical@lists.samba.org, linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org, "Takashi
+ Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261102-work-procfs-core-v1-4-75df35e4f8b8@kernel.org>
+In-Reply-To: <20261102-work-procfs-core-v1-5-75df35e4f8b8@kernel.org>
 References: <20261102-work-procfs-core-v1-0-75df35e4f8b8@kernel.org>
- <20261102-work-procfs-core-v1-4-75df35e4f8b8@kernel.org>
+ <20261102-work-procfs-core-v1-5-75df35e4f8b8@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 03 Nov 2026 15:01:06 +0000
+Date: Tue, 03 Nov 2026 15:01:09 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -72,97 +70,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] proc: unpinned dereference of pde->seq_ops->next in pde_seq_next()
---
+> proc_create_seq_private(), proc_create_single_data() and their network
+> namespace variants keep the seq_operations or the show function in the
+> entry already. Let procfs own the seq_file for all of them. For the
+> network namespace variants ->proc_open() and ->proc_release() keep
+> taking and dropping the reference to the network namespace.
+>=20
+> That's most of /proc/net, among them the files of xt_hashlimit and
+> /proc/net/dev_snmp6/<dev>. A reader that faults on its buffer no longer
+> holds up their removal.
+>=20
+> Reported-by: Chris Mason <mason@kernel.org>
+> Fixes: 786d7e1612f0 ("Fix rmmod/read/write races in /proc entries")
+> Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
-commit ae41131fe28a1e7fcf9c3b743e2a30697e315fe9
-Author: Christian Brauner <brauner@kernel.org>
-
-proc: let procfs own the seq_file of seq_file entries
-
-This commit allows procfs to own the seq_file for seq_file and single-show
-entries by wrapping their seq_operations and pinning the proc_dir_entry
-only around start, next, show, and stop callbacks rather than across
-userspace copies in seq_read_iter().
-
-> diff --git a/fs/proc/inode.c b/fs/proc/inode.c
-> index 66a3688757dd7..8425465aae5d7 100644
-> --- a/fs/proc/inode.c
-> +++ b/fs/proc/inode.c
-> @@ -218,6 +218,110 @@ static void pde_unpin(struct proc_dir_entry *pde)
->  		unuse_pde(pde);
->  }
-> =20
-
-[ ... ]
-
-> +static void pde_seq_stop_pinned(struct seq_file *m, void *v)
-> +{
-> +	struct proc_dir_entry *pde =3D seq_pde(m);
-> +
-> +	if (pde_has_proc_seq_ops(pde))
-> +		pde->seq_ops->stop(m, v);
-> +	pde_unpin(pde);
-> +}
-> +
-> +static void *pde_seq_start(struct seq_file *m, loff_t *pos)
-> +{
-> +	struct proc_dir_entry *pde =3D seq_pde(m);
-> +	void *v;
-> +
-> +	if (!pde_pin(pde))
-> +		return ERR_PTR(-EIO);
-> +	if (!pde_has_proc_seq_ops(pde))
-> +		return single_start(m, pos);
-> +	v =3D pde->seq_ops->start(m, pos);
-> +	if (v =3D=3D ERR_PTR(-EIO))
-> +		pde_seq_stop_pinned(m, v);
-> +	return v;
-> +}
-> +
-> +static void *pde_seq_next(struct seq_file *m, void *v, loff_t *pos)
-> +{
-> +	struct proc_dir_entry *pde =3D seq_pde(m);
-> +	loff_t old =3D *pos;
-> +
-> +	if (!pde_has_proc_seq_ops(pde)) {
-> +		++*pos;
-> +		return NULL;
-> +	}
-> +	v =3D pde->seq_ops->next(m, v, pos);
-> +	if (v =3D=3D ERR_PTR(-EIO))
-> +		pde_seq_stop_pinned(m, v);
-> +	/* seq_file would blame these seq_operations, blame the entry's */
-> +	if (*pos =3D=3D old) {
-> +		pr_info_ratelimited("buggy .next function %ps did not update position =
-index\n",
-> +				    pde->seq_ops->next);
-> +		++*pos;
-> +	}
-> +	return v;
-> +}
-
-[Severity: High]
-In pde_seq_next(), if pde->seq_ops->next(m, v, pos) returns ERR_PTR(-EIO)
-without advancing *pos, pde_seq_stop_pinned(m, v) is called before the
-if (*pos =3D=3D old) check.
-
-Since pde_seq_stop_pinned() calls pde_unpin(pde), which decrements
-pde->in_use and can complete pde->pde_unload_completion, a concurrent
-remove_proc_entry() waiting in proc_entry_rundown() can finish and allow a
-module to unload or free the memory backing pde->seq_ops before
-pr_info_ratelimited() dereferences pde->seq_ops->next and formats it with
-%ps. In addition, pde->seq_ops->stop(m, v) in pde_seq_stop_pinned() will
-observe the unincremented *pos value.
-
-Could the if (*pos =3D=3D old) check be moved ahead of the
-if (v =3D=3D ERR_PTR(-EIO)) check so that pde->seq_ops->next is only access=
-ed
-while the entry is still pinned and *pos is updated before ->stop() is
-called?
+Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261102-work-procf=
-s-core-v1-0-75df35e4f8b8@kernel.org?part=3D4
+s-core-v1-0-75df35e4f8b8@kernel.org?part=3D5
+
