@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793706209;
-	b=b/B5s59HZ4BrEnbQzT7W62JPndNjuJSWN0E7fmM+3YACj7Pye7ZS9rsz5Z/gN7VvX+ZF
-	 3BFNXttcH2FkDL7pk0rxqEewp75hqi2mOKJfcJ758ITDEaYgB4H9IK4UWyr4n4NBMkenl
-	 dTIfclIaOJYI4HBjRFeuu/yZsDA7X+aSNs/eWTP9cFCITtJSgsBgAs3GU2juV+SsvkEnA
-	 08ui3Usns+N04DJHCWw8wVjZsZ5eoSPRJ+JCyKmdNtSP2RH3+PWAhX4HYI5LFULnGVh99
-	 a3IEs4yBClTzQT0Vkk3OwqJwieqGoE2HudtF0TPwcxsU9tOiyHYZud7uNUuc6O0AObA==
+	t=1793706371;
+	b=Kf4Ev7a7iaCbWmFX+376oILUiw32so32TMxSfS9hWHSMu+/4wXZbRpyKDLakRZ6OYZWA
+	 gFJv/i+C3B0N9Uh6Z7LXH2VxPhQJOLHtbRaQEgk+WHQgi8gzPQS3a4HTfxeuwlknQ2inw
+	 qqmbYYdMgSmWJg2eiM/kx7Ag0yTxpzpyDAp1W5IdtzFkrg+vGbBjrG+92dA4RUwzvQCU7
+	 PSxidXabGWVjhWIOmrg6fTH0yIObxVPJSTSzASn2qgKCTXBCWi/iLb9Qg6e+/6xlZnvAa
+	 eGyUpVceHVAITqcZZvSqJZ3zGGeML9xTMuQYX7PIJVLnnTGHYkEAi08NgPUKPgRd8Xg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793706209;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793706371;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=wNK5yE+IKNHGruns60ZbB24xYrrfVH266RRG8NSyk88=;
-	b=sWwA81/SwS7gNGbjIwZHXYh+hNWVxWj7ie9jKCFqiQjALgZjeT0jS9pStRrQDiG6eshF
-	 6pq4kAMP7bwIRGaHw822Z002qE304qupzf6aRQiwSQmdLFLNXzFtH5epOCNp6Kite2QZR
-	 FpxDcNh3wkBZb2YRO2Okz04ZSONFNpwWDzHJw2US9iBdKlHyoOgunTlI1nr0ypRouLRuN
-	 l9xjojGSxRnQy6qsQTWcdx9JdN31P7/Fd1AIbExDo5ZJ00pNGrhnBAmE/VF/UNIV1HqKU
-	 UOoos87T4HK8vT9LkR4G0Z3YcL58q8ABzLvgIJZDYs3CzOcKoqko6t/a4SvtDgy9lHQ==
+	bh=zRXqrOpqPdyVMxadAbJbOQp1pF8T1j8qh7t5p4OQo+c=;
+	b=Jjhc/A+W2jDZmjm1+5xWY3tefdPMQVdSHrFSDyal2ApQByGC7Eqoq1pTqpWbZlVZGa30
+	 VEpuN7Spr3zw7zCdbGTH5/6Lx170jnV8I9mOdapvUyL4Oc/pyE4cLy5mbp5zXF2+2q975
+	 JDhnJyIDg4L4axGgkuL4lEnfcqs1F2dW4wlnoxhnV6bhtKGN5m/PvHyfM5DyiYpwFGvWt
+	 Xw55cfuhtCBD6+BLwk9uqxoXuznYnvRVrpxBSiTsaEKf3MsUWENXSarftxOANgpxXWouv
+	 qUMAvnhMBSWvVi4kjV25LFuWrYdxpaxe1minpqe4kHbdGxnB6NhJI4xYiC6/2x/+JkQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aAEEOYGb;
-	arc=none smtp.remote-ip=198.175.65.13
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AhfGHXuB;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56236606D802;
-	Tue,  3 Nov 2026 11:43:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 56236606D802
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1921606A33B;
+	Tue,  3 Nov 2026 11:46:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C1921606A33B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aAEEOYGb
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AhfGHXuB
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793706209; x=1825242209;
+  t=1793706371; x=1825242371;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=R33tyjVH912C46YNAFlpD0lwhhatqNbKNycpwT/u6J4=;
-  b=aAEEOYGbU30BV2lyfOht2ih5/h4vqg5XttNIeGCtgiPoNwYF1M9eIuvq
-   rwQOvj9zi48pO4PQDaZ57hlbSyLOx6w9o7VluaLYWb/ZyNT08lwJxq02d
-   YylDAWMyzDK9DOVRowrkI1yXfBWj3pGqltw1dEJDjZEP/ChXfy48DYWcd
-   gygbYLS9ANwTpTvcwtoo1gxMQOy4/OtvILmZU40JcBJAjGdtiTWfBfKZE
-   93RDJnhOjKQbTfvs0Q4Vfkjmag67dzOCd25aptHq5YTusXaR15otezDhT
-   pqrQuQi719W/mJ/v5AsvnBnhAfJsv2jpSVshCjm7/WSvFdLEjJiUZGsbG
-   g==;
-X-CSE-ConnectionGUID: sVc7Rl0eS06+mMF+YTsw0Q==
-X-CSE-MsgGUID: xvMzu2ATTOCXpLrqW8+wmA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2303793"
+  bh=k34J5bk1+MbWLLiN/cBv7+iaC1FJgNw6KnASGpx22VU=;
+  b=AhfGHXuBASUCsFOab01Sha8XssuHLx//1MzS+LmdGqZmfYdyN/VuXqNf
+   2mBzDT7SQnS0LVyiVUh4NYmAGuGUFWpvbJbvooY5h9G/x9ZMJcWmq6Mxf
+   jtY8ilphIKpa4N7/mbXvp9LZmjeV7ZTD/bqn0jvx6vaSzD5FQTCkvCI3o
+   8WY4AIe1nqVrJzuBnGpeRgqy3/Ktngem29IyHrmooNGqDYJ4NVVK8b00G
+   HJ7AizWIoC9o2hdlPvZlDzfMWK2y5HyrIfhaEVYonOwqbevC7L7fqsILo
+   eKM5Fw1qLJ2GkT6ZjWNvRyYp9Oeb4gSvI1nRlX4Ahc85MA0mDkh1ZMePC
+   A==;
+X-CSE-ConnectionGUID: YcHudSiDTI6GUMIO5/D/Aw==
+X-CSE-MsgGUID: j9e2YDKsRIaqA8/+Al69NQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2306705"
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2303793"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 03:43:28 -0800
-X-CSE-ConnectionGUID: 07rTJIgmQNOYDJMCTvmoWA==
-X-CSE-MsgGUID: FLQemTavQVC7wR+jV2LW6w==
+   d="scan'208";a="2306705"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 03:46:10 -0800
+X-CSE-ConnectionGUID: +50rtPemS3qs1F87pbe9vA==
+X-CSE-MsgGUID: 5a1QMZAXRhCgk3MDdtV4fg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6308772"
+   d="scan'208";a="6494861"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 03:43:24 -0800
-Date: Tue, 3 Nov 2026 13:43:22 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 03:46:07 -0800
+Date: Tue, 3 Nov 2026 13:46:04 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: James Hilliard <james.hilliard1@gmail.com>
 Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
@@ -73,11 +73,11 @@ Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v6 1/8] serial: 8250_dw: select port setup through
- platform data
-Message-ID: <aunI2triZPyB3_Dv@ashevche-desk.local>
+Subject: Re: [PATCH v6 2/8] serial: 8250: share the RX trigger conversion
+ helper
+Message-ID: <aunJfAPQMuiiH2N1@ashevche-desk.local>
 References: <20261102-submit-h616-uart-fifo-v1-v6-0-25afcb346b0c@gmail.com>
- <20261102-submit-h616-uart-fifo-v1-v6-1-25afcb346b0c@gmail.com>
+ <20261102-submit-h616-uart-fifo-v1-v6-2-25afcb346b0c@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -89,24 +89,46 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261102-submit-h616-uart-fifo-v1-v6-1-25afcb346b0c@gmail.com>
+In-Reply-To: <20261102-submit-h616-uart-fifo-v1-v6-2-25afcb346b0c@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 02, 2026 at 12:55:16PM -0700, James Hilliard wrote:
-> Select feature discovery and DMA attachment through a platform-data setup
-> callback. The generic callback probes the optional registers and attaches
-> DMA when a FIFO size is available. Integrations with a fixed configuration
-> can supply their own setup before the port is registered. Allow setup to
-> return an error so integrations can reject invalid configuration before
-> registration.
+On Mon, Nov 02, 2026 at 12:55:17PM -0700, James Hilliard wrote:
+> Drivers can supply receive-trigger thresholds through the RX trigger
+> callbacks without adding a legacy port type to uart_config[]. Extract the
+> threshold search into serial8250_bytes_to_fcr() so those drivers can use
+> the same conversion as the generic 8250 implementation.
 > 
-> Replace skip_autocfg with the Octeon setup selection. Octeon is a 64-bit
-> platform and continues to skip optional-register probing while retaining
-> its DMA setup. Select the DMA setup helper directly for this integration.
-> Keep generic setup for devices without matched platform data as well.
+> Keep the implementation in 8250_port.c and export it in the SERIAL_8250
+> namespace. Include the unsupported-table check and preserve the existing
+> nearest-lower selection and highest-encoding fallback.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+...
+
+> -static int bytes_to_fcr_rxtrig(struct uart_8250_port *up, unsigned char bytes)
+> +int serial8250_bytes_to_fcr(const unsigned char *rxtrig_bytes, unsigned char bytes)
+>  {
+> -	const struct serial8250_config *conf_type = &uart_config[up->port.type];
+> -	int i;
+> -
+> -	if (!conf_type->rxtrig_bytes[UART_FCR_R_TRIG_BITS(UART_FCR_R_TRIG_00)])
+> +	if (!rxtrig_bytes[UART_FCR_R_TRIG_BITS(UART_FCR_R_TRIG_00)])
+>  		return -EOPNOTSUPP;
+>  
+> -	for (i = 1; i < UART_FCR_R_TRIG_MAX_STATE; i++) {
+> -		if (bytes < conf_type->rxtrig_bytes[i])
+> +	for (unsigned int i = 1; i < UART_FCR_R_TRIG_MAX_STATE; i++) {
+> +		if (bytes < rxtrig_bytes[i])
+>  			/* Use the nearest lower value */
+> -			return (--i) << UART_FCR_R_TRIG_SHIFT;
+> +			return (i - 1) << UART_FCR_R_TRIG_SHIFT;
+>  	}
+
+Strictly speaking cosmetics should go into a separate patch (for-loop iterator
+locality, (--i) morph).
+
+>  	return UART_FCR_R_TRIG_11;
+>  }
 
 -- 
 With Best Regards,
