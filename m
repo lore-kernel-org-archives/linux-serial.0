@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793745184;
-	b=P9pnEvE+79DU7QpNKxtp8iNRtRyOIp8bOWgkxSNvvhDhu9q2ytPUDcdK6U9x97v1UGvZ
-	 S12n7Srs7Jmu9ygHhySfwq1EWe2ecfOJHq/P4R4IctnVDXS71bewDHCQXF/SlPI4GFIEg
-	 3R6pncy6H7Hpdk+XeW6tq2Ng+pzUD7U19cX+pAXrMONWQziR3VtsY3PAiugVZzy0sXbiR
-	 nnCREqsp8/WDpAsoy7ImZarV/laSgnpK6xnEmE7MRe8J7wLVc43XfwFPGVFlGwCKVqat+
-	 6ymd6lzdl39BlQOkIeivkA+Pd3uFpKnBua960Kf3/MXlOBB1AIVPg/tsFBiQie/HlMg==
+	t=1793745241;
+	b=vSh4tB6Dbml3XhjO83n6FLCVR/opR7oreG89twoZGRzt8LtNJ/oOgpYVN0U7QRivoKjU
+	 5IJ76ugHY6zHI02L0wuxhjillBPvoWz7L7XxHd3cezBoN4kacbm1+Cl3AQ9aUDH5x7dav
+	 aTYw5OVRDRUvQqr1C/sRJjUAvzuPCQaLC5YARJwObxHA3JIiF9dpp1JZaLAWP69KaRDvO
+	 V0MIj17Y++sb9ulJzezakxkO6RZ58czeQENLLuyYIFva1qvNQooUa9QqehOhc4qXfS73Y
+	 PIY7riHnKmpc6DI7dp1D5fAcEPszQeNzh2wgIIhZ7Xu3Np0DpZFXqZe/Er6VNKxnRYQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793745184;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793745241;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=A6GMBZEqkcxB7ZksuM3qTztOdsAPT6gVvyoKXdVdRGg=;
-	b=rkvOA8fG8IaaZRO87FfyyftvPlipDXx80rAQMjE997wPnKU/0YeiVtT4Hw/xcIQVHgOo
-	 J1EZyfJ9Bo/eFyuWWj0O+DsNudLqTFAOIAUT8t5j2UjWWQtBALeULkZXbqnjwdUcpBOPE
-	 Nz2GjCOqE/UtHniSLUFyPc4cBy/eg4pvShDsyEgcl3EKYOxnecnWbzkzUVQuxMt+VaSwW
-	 ir286xihXFOxrOj8LkExdg9h4h2xfaBE8SuPkDUNHjDGPf46celJfsziirEH8zt/vcWcS
-	 crfdZ9QgrSnYM4j+hmK//7scSSHIdtPxtOhS8F5Fxu0FSnuyqsDQ0SA/DGha6vcRAVA==
+	bh=V8tfgVtMUQD/ZsMCDROnZT+B4hzsD5g2G80SBvNK7lc=;
+	b=y7lps0dCfW3iFDkeQhJGkTGoAChQkoeyjJgaOe1SYHAwB/tbVsutFWYOcbZFWY4Czp6c
+	 vbntuZW3EJ3248fT6rQe7yNFgv9ooFBt+xTpjLRNlwGDX0SATMtBPx+YRIb2sSLUAOdK8
+	 Q7V5/l/zELmOd2bItQeKmP78vB38KNcsbw9uOgdnJX2aVYNUaAAequWfouENkPebL4qa2
+	 pDILC99CzPx6C/iMqqaEoE2HGgWKvXR0ZGEu6juWDPOk+E3j6WK+eGpVkHEEXJHSJQX6i
+	 LK5FzYwsDd8gNudVnmdIZUmlKjXSubpCDuoBsbiG3wJO/SLwMD/4BcR6y7THDc+M8pg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lUo52UfI;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CvIp+GbY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 861C1606A324
-	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:33:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD6A7606A31B
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:34:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lUo52UfI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3DD31F000C1;
-	Tue,  3 Nov 2026 22:33:03 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CvIp+GbY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C481F000C1;
+	Tue,  3 Nov 2026 22:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793745184;
-	bh=A6GMBZEqkcxB7ZksuM3qTztOdsAPT6gVvyoKXdVdRGg=;
+	s=k20260515; t=1793745240;
+	bh=V8tfgVtMUQD/ZsMCDROnZT+B4hzsD5g2G80SBvNK7lc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=lUo52UfINN/nJcAVS0+K7rpE99vesSGPgsPT8S5PznpppuDWW4OtnvKJ7QC1zIrP4
-	 uXdLehXJRMidLrG4j/kHx46plcPZE3iRCwhOzu30cazcynLE+A2CjNu5/x2RLJgYmo
-	 oM1fwryOTjL7ueI+6QVx+sNKbr3eNnMbZauXw/Y+OxoCPVT0uYys8LglusTKNS6CQt
-	 TYd72S0nSmnBJ3joWOxIh7D7N7ydjSIu0RruKdtiQJREdeju8xrEHB/dKa2F7rN3Lj
-	 Nv/A6hLFw9sdJ8Gu760nN0YLkRMaNNj0O30xf4y8hqL+KDejBhdcox36UszKEGT/pg
-	 ZoX1wR9sKCyEQ==
-Message-ID: <sashiko-outbox-196122@kernel.org>
+	b=CvIp+GbYIZWCucojYQ4nKW1aMlGg4ScRwslBR5kufmTlTxRBptNUN/qFyqOFVu/k9
+	 tvV+VFMiQF84FIpRvT02TeJHe33OWFfvpM1aO+WuaFyIQnOojDZpu1dtZ2UflKvThb
+	 LTjFUd2gycFaVaTCCQMv1S3RR0fTIfsSQU0jhygznWx6vGk7D8knyjmGExnNMRgcI9
+	 Fuu+TVmykW+TiJZwts6wMSAPp+mFeyYryYSFyBxRVzGJGqru+osx0RCZWVuTPduxZn
+	 X7QuuLJLJi1zY5JI4OVO4fv5VZvZctyyhsCEBJ8SeV/B5D7uk2VCSGjmtMUtqaKsgO
+	 mWwqvJ8F0yxAw==
+Message-ID: <sashiko-outbox-196125@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v6 05/10] dmaengine: dw: calculate residue in the status
- getter
+Subject: Re: [PATCH v6 06/10] dmaengine: dw: simplify transfer-complete
+ handling
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261103-submit-dw-dma-synchronize-v1-v6-5-2ee0c348224d@gmail.com>
+In-Reply-To: <20261103-submit-dw-dma-synchronize-v1-v6-6-2ee0c348224d@gmail.com>
 References: <20261103-submit-dw-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com>
- <20261103-submit-dw-dma-synchronize-v1-v6-5-2ee0c348224d@gmail.com>
+ <20261103-submit-dw-dma-synchronize-v1-v6-6-2ee0c348224d@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 03 Nov 2026 22:33:03 +0000
+Date: Tue, 03 Nov 2026 22:33:59 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,29 +61,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Serge Semin <fancer.lancer@gmail.com>
+> With hardware-LLP residue handled by the status getter, the descriptor
+> scanner only needs to process transfer-complete events. Return through a
+> common unlock path when no event or active descriptor remains, and flatten
+> the completion handling.
 >=20
-> Calculate hardware-LLP residue while looking up the requested cookie under
-> the channel lock. The scanner and the status getter currently take that
-> lock separately, allowing a descriptor to start between the scanner's
-> residue update and the status query.
+> Only one transaction is active on a channel. Detach that descriptor before
+> starting the next queued transfer, keeping cookie completion under the
+> channel lock and client notification outside it. Preserve software-LLP
+> block advancement before completing the transaction.
 >=20
-> Have dwc_get_hard_llp_desc_residue() return a local residue value from a
-> fresh LLP snapshot. Keep the persistent residue field for software-LLP
-> block accounting, subtracting the current block's progress when reporting
-> status. The descriptor scanner continues to advance software-LLP blocks
-> and complete cookies from RAW.XFER, including for polled transfers.
->=20
-> Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA c=
-ontroller")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-> [james: retain polled completion and software-LLP progress]
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261103-submit-dw-=
-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com?part=3D5
+dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com?part=3D6
 
