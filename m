@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793745860;
-	b=eVA5g+AgwkwLechPqpclKjts94KKiLvRmVMY/Pnr6mZ8pz+hhqNC64xQU98i8B8U51xZ
-	 q7eXW+87F+yigsvGPkWuFNGSlvcWH7Ym5cFxAvPR322x96Dbz/dQfIrLS6+xjQhCVt6Yl
-	 4xMmzl8tIqwA9SODT9Z46rTYO3r7nfP/N3un89R4HlLzHuJQgQPc72xSgjG9idvAv5oJi
-	 YyyuOoBuYr675K2aj5AMqYrR75mSh0P7+ufy7deXmjPfkcu+3mhMXI4PxfcgVg/cGzNG+
-	 kvRyNjP5u5VpBZ0pgnVBeVO7fkOZ7Wvz9QdOXpqzbMiP4gqF7zagX8N8mRaiVBo/f6Q==
+	t=1793746031;
+	b=Q78nwf1NdJmobGHrgpqvLi7FCKe07NSJzDtUcmVqixhe85JcNcA6pEen1cBkJVx+OZFM
+	 SKr0COeCiAKVed2r7yOADm+hP79yHul0OxwN+VA6Enplv1X4l90hWan+h6w6W2KIZKBlW
+	 /6qQmuvOTNa9kLtzBX1i+biDUcuuTQxeNB5WuPhQlRKsmK/n9VArzV8IwW84PNssW9Dek
+	 hdiehribbng7+8jKoW/EQcKkFbZDfEv70EwKmgoyrsXTQUAIURv5THELZJPfOlInYw5/i
+	 0kO8nzwpZ0/mKtuCpz+w5kj5glaMn6yPZl+myowqzAqJ3Hy9S0Rv5J9NZ5051HsDtXA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793745860;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=ClY6VcM0L71u4TrDzO9N49R1pUiLahDL6t83GVy/u5o=;
-	b=ZQJbh0keytEb678QAhQ0PCY7yGi1q5FYgruTLX5nQXz/4qdZ1RwsCU9f+iuLHo1Xaxhb
-	 6rY40qvT5t4LNraD1nlY2LfMaCoOV6E3c8oNBn1gFZo9ZjAlIOWp+3655VM1X9xtkMFX/
-	 SL7pW/BLxgQYp+lxg9BELQc7OJpbT4zjLxrPrygOBx2GVvRWTOblkuQDib9gCC3KMolL/
-	 1OIsT7KpghbjyNLSxM9p671p0Ze5OebLJCUgYzSpJDAGEaoBm+03zzBKh4bvC66Lu27vR
-	 9AihPJL+fXny1RrayC5nEw2nXsljkaa+MG8ylR6tzdCpMDJ2ttCbQ8rLLJUpGqo7jYQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793746031;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=gzmBjIJmjosMbPCyc2LuhFNwjbDpwP3uJrpZL7ar/ms=;
+	b=LtaF56iUNUoZCKXyGVBOabm6oY36aRtzWAkx84oLAJ792L9iU4yjoLtrSRnJAz0Day0o
+	 TanHR0bfRkHLVDRaNkDIdDYuREHY2exB2PBaMFkCQp/mMLCB6UQwgYIYcZErvsNl7gMmG
+	 aCpxe+tF3gvPTjYO/8/bfskZOIDKp6QjEp+dcmDfzAaY/X8braNG8WK9Jd9+wTYaExHPE
+	 RkmWWLq8fHttMnDeEit82fP+N8mPQSSOgcHUDGF+Iy3ujAx8JdKk+rM4dVQ2p32XKgIX8
+	 XOp66Bry0CVZUQWDFFIFl0uCdRSA67momcrtys8K9/H+HdxSD1csYt158QZUeH1IZcQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NzMESGxU;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ADZgB7xZ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5850A606A31B;
-	Tue,  3 Nov 2026 22:44:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47DDD606A31B
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:47:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NzMESGxU
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB11C1F00919;
-	Tue,  3 Nov 2026 22:44:19 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ADZgB7xZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A04731F000C1;
+	Tue,  3 Nov 2026 22:47:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793745859;
-	bh=ClY6VcM0L71u4TrDzO9N49R1pUiLahDL6t83GVy/u5o=;
-	h=From:To:Cc:Subject:Date;
-	b=NzMESGxUieHRhVlJc7P8DY1lAEMKYZSwhnQ8vj/8KILknBoYtxShqTn9TwwohTGo1
-	 P9S0gH/lJH/jsPtuuYqxE2oeXegOmV/rSk4QbOHJX+vKS8Qv6+QjTWEHFxStpwxExV
-	 TKS78X1FeGurmTLc0gpoC1BntuE5dbkSoyULT/1DzZzXeSe4q3R+e9+MWTLvbFjr9R
-	 Dkn8HnUKaT6MSXCxBr42m02mb7ibLMb4Ud8sqeQZMx80smh6CZW43rBX/gvQgI1r8W
-	 bnKHbCU4DxIWUiHqYeXTHuUuTMtKe3frztwrXaEfL/vrTPCi4m7ekTk5ZBvMlbVBVV
-	 1IfG0OB6OIjeQ==
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: 8250: Allow unconnected interrupts
-Date: Tue,  3 Nov 2026 16:44:09 -0600
-Message-ID: <20261103224409.865130-1-robh@kernel.org>
-X-Mailer: git-send-email 2.53.0
+	s=k20260515; t=1793746030;
+	bh=gzmBjIJmjosMbPCyc2LuhFNwjbDpwP3uJrpZL7ar/ms=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=ADZgB7xZPwjO5yZn5btXlsiIVFHrRX1Bsv6D/MZ5GSOP9k41WEPFPBVt3EFfQ2hCu
+	 eyWR7oP0Yj4AMVNUZfmaUHDkUFdV1XRvUJ20S7Ml39VrOn3p8RKE0CAhozuFbByMM4
+	 ZdjrSpEiCZafQ3MrhhLTtAbWvE7gtIuG6HyvKmE4PpdsPwj71yiyn0+6qS1wk6uIus
+	 IlhXrBFKPHW+CanTI54APqEdaczHHGNc071oYV5reptjSyqUWzR1kgnR7JuljP0nSc
+	 XczjAy2VN/MUAYvBhmcYPR910DOFTmfJtZHm3oQAaW1A8BTKKqYNg0HGLMvgs8f/hZ
+	 yJYb6pkeu2kmA==
+Message-ID: <sashiko-outbox-196152@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v6 08/10] dmaengine: dw: drain the tasklet before
+ releasing channel resources
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "James Hilliard" <james.hilliard1@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261103-submit-dw-dma-synchronize-v1-v6-8-2ee0c348224d@gmail.com>
+References: <20261103-submit-dw-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com>
+ <20261103-submit-dw-dma-synchronize-v1-v6-8-2ee0c348224d@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 03 Nov 2026 22:47:10 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,30 +60,26 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-8250-compatible UARTs can operate without a connected interrupt, using
-polling. Requiring interrupts rejects valid descriptions such as the
-HIP06 LPC UART.
+> The controller tasklet invokes callbacks after dropping the channel lock.
+> Releasing a channel can therefore clear its configuration and disable the
+> controller while that tasklet run is still using them.
+>=20
+> Disable the tasklet before clearing channel resources and re-enable it
+> after updating the controller's in-use mask. This waits for an executing
+> run while preserving pending schedules for the other channels. Have a
+> pending run return before accessing registers when the last channel has
+> already been released.
+>=20
+> Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA c=
+ontroller")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Frank Li <Frank.Li@nxp.com>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
----
- Documentation/devicetree/bindings/serial/8250.yaml | 1 -
- 1 file changed, 1 deletion(-)
+Sashiko has reviewed this patch and found no issues.
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index 50d5c977afa3..7bc3fa84d3d1 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -322,7 +322,6 @@ properties:
- 
- required:
-   - reg
--  - interrupts
- 
- unevaluatedProperties: false
- 
--- 
-2.53.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261103-submit-dw-=
+dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com?part=3D8
 
