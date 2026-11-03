@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793745092;
-	b=5JktezN7rsPwV5FcpuPQJr7hAkUl/xDxyzKFHJ7cEq3lmP9HOX8vu0+/n98QwcKQ1C5q
-	 YVcEJ7WvLKKw9TMVP6u1iJjFRnvdZZcBa4BPbS0XfWlxIIhypag2nFXu/OF6Of4y47EeH
-	 N5hfIyzkobJJQOBXSuwEh+olm1EAXOFnhBairp0A2vWL7Ea/cHYvx7mrtUboIXOyeT5uA
-	 nDhCxR3cMOCqzLRp080YvblUN0FBXvN1VTiG+IGW3MsfR0/dCOC2zGVSfI9SjgyBOioAC
-	 ZUSNrG7F0Zmn6Ezzz2Bo48WrXAOeni/HfgGo5Wz4EyvUNiNC8qNUB0s8vCXg1DlK59w==
+	t=1793745108;
+	b=oDUchsjJ1Ukr88jePTxOLhhoExlpnQVWjOaI+ce/gLM0YBcuv6MwUQZin7irwaN29P8i
+	 DEHndagivqFawg6fZJCMDgSH92ZgxAsoVeqYrUMy2M0eOFCfGdYA9o9jgLRRJCs//Ukyh
+	 U3X0DDKEpj103s32QuevImlE5auKWq7jT2A/cThy9hceC2672grtN6Ea4taDDF7pJ2CmX
+	 k0FkoeyH4tvyBRRmCLYTFzAHNdBfL+Vb6WT0wQceMGnYKZma4zh+182y/OJ7Ip/3Mk8C2
+	 egBL+tOQqbFEyatN4L2Iu6pssiM+CoPVSktm98+Q+ElVf8hLpyVa8+xqXJ2PrCO+ngw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793745092;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793745108;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Ms7VphJeaavoqp6TUZIc0jlseRy2iyXBIA0lMvXllD4=;
-	b=O5kteUcR0xPX6+qFCtVPBGN6i3pNOCGLCF92TSWvQImn2E68AtLyda7uDFF6CIjVhAqr
-	 tAVpWOL2S6ZSJsgAqBNYkuIPh+4fvO06vRI1DRhKmB9Ook72JB/czWO4tY5BZ766A1XyF
-	 atYkAgsmG+m0VwZVPrxzbeMgj/7k47YtAmaQsKCYLSRhyFjX+d1Az9lyKhb5VGE4kxZFa
-	 gR56Rm5r8eP8ZDKCkJVUyb5gj5sHqqiLQqFZcPs3m5vOpMWmtclvez3dJ8PAKKTUdzYk2
-	 bYdRR8hmVPZdQxoflFbCuPjiaAOf6pxqosbAqug/E8WknVf/74faHakroYhVWOl1Wmg==
+	bh=bPN9LL36+RiRW7xW/dFpxjzYkWKJpsTsMJ3rjfNgYaA=;
+	b=I0ERyBO0qa1KUReYOiPvrKolnzJzHv87He7EmoqbyBkACqg5i9cIUHVTVINmVSJMa6Qc
+	 JjehUeXneuhdSsHNTAOGVW2zjDV6nz5KGUGwbdx2canJrCFYyhCHSrOiVlQ8WMHpq/ekb
+	 bXOnskZKS4M1146HiiXDYwfUvRv2Oo+Ai1tekhskJFbkQF4sduVh+P/yFn7rcfjYwFVF4
+	 caW2Bgps+m/uiuCuQiUDDhiAe8fpGXV7YC3u58vBts61e+cZydavM0odILnG0yXhNxgba
+	 zBcYGwBNg6ctCxs+VchlLyHYqCk5K5F78iXVqDIiJ4oUtzhKS5mvPtYJ17htFSZqAgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g3RL7rbS;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WDXLdhjW;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB22606A31B
-	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:31:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F411F606A31B
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:31:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g3RL7rbS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC32F1F000C1;
-	Tue,  3 Nov 2026 22:31:31 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WDXLdhjW
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EA11F000C1;
+	Tue,  3 Nov 2026 22:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793745091;
-	bh=Ms7VphJeaavoqp6TUZIc0jlseRy2iyXBIA0lMvXllD4=;
+	s=k20260515; t=1793745107;
+	bh=bPN9LL36+RiRW7xW/dFpxjzYkWKJpsTsMJ3rjfNgYaA=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=g3RL7rbSDcnpiF/ptwvy1GOiO/jLN+wPA0yPVWGfztQ+sckS50ZdydiNKbJ6LXX1/
-	 UsYy0U6UvoUnRzHeFGp1qX8Npf1cZo6Kn5nfHOk22Yb3wxpItdQB2AM2VytCK4Ru4b
-	 +TGX552MLsx/p3Fw3Ed3EhSudkswM41H+f4joUvGrUE5QpFqmrTAQKjcf5/HFzSVIj
-	 CwcX2+e8ghtzQLN1ixVDz6W9VSoM/xaqyEMxNZhnQ1+4XVhyHYtZOLmFQDrn+OFi0w
-	 S9EDu3CkgxcdRq3hXWUotyYKcgnZRDneAQpQeXDf8HnyUt6kV6DXbmyM5dFKjlULT0
-	 bdysHpWejHF6g==
-Message-ID: <sashiko-outbox-196118@kernel.org>
+	b=WDXLdhjW+0OSmxDcNyqMOohR80izLcy5QVLiaq/Aodv5GtQCRvikGWJqjuuqjAqsz
+	 Q9BvMReXNoZOhssYL1l2vumerF0Uydqln6aIkiQqvnP8uRH8C/MURvsBqJC2y7nxU0
+	 HK/sIcM4FkHtjt6ka2yzkzMey8XL7cXPX1W1bdxpsAvj/hm6mGfhkSNEJxTYVrs2D5
+	 K+oY03AMlfN9BJziSxG4K2kS9IKiXpJRAnAyo7+KWqPvr6fXMXB576GdI+jJvr6D7j
+	 HkuXUHy3uUc6utIgfWoGjTlVQoFQgYhkuV6rh6CVsADvVpfCPGaMxIIGELD8VQa73R
+	 1FkDpJgkVWdDA==
+Message-ID: <sashiko-outbox-196119@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v6 02/10] dmaengine: dw: serialize error recovery with
- channel termination
+Subject: Re: [PATCH v6 03/10] dmaengine: dw: complete cookies before
+ releasing the channel lock
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261103-submit-dw-dma-synchronize-v1-v6-2-2ee0c348224d@gmail.com>
+In-Reply-To: <20261103-submit-dw-dma-synchronize-v1-v6-3-2ee0c348224d@gmail.com>
 References: <20261103-submit-dw-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com>
- <20261103-submit-dw-dma-synchronize-v1-v6-2-2ee0c348224d@gmail.com>
+ <20261103-submit-dw-dma-synchronize-v1-v6-3-2ee0c348224d@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 03 Nov 2026 22:31:31 +0000
+Date: Tue, 03 Nov 2026 22:31:47 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,29 +61,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The tasklet samples RAW.ERROR before taking the channel lock. A
-> concurrent termination can empty the active list before dwc_handle_error()
-> uses that cached error to select a descriptor. The list head is then
-> interpreted as a descriptor. Even with an active descriptor, moving
-> queue.next unconditionally can put an empty queue's head on the active
-> list and pass it to dwc_dostart().
+> Completion detaches a descriptor from the active list under the channel
+> lock, but updates its cookie later when freeing it. Termination can take
+> the lock in between and complete newer descriptors. Completing the older
+> cookie afterwards moves completed_cookie backwards and makes an already
+> terminated transfer appear outstanding again.
 >=20
-> Recheck the error status under the channel lock and stop the channel
-> before selecting its failed descriptor. Only one transaction is issued
-> at a time, so take that descriptor directly instead of scanning for
-> completions first. The scan can otherwise complete it and start queued
-> work before the error handler has identified the failed transaction.
->=20
-> Detach the failed descriptor under the same lock and use the queued-start
-> helper, which leaves an empty queue alone. Clear the software-LLP flag
-> before restarting so a failed multiblock transfer does not prevent the
-> next transaction from starting. Keep the completion callback outside the
-> lock, with the detached descriptor owned by the tasklet.
+> Complete cookies while detaching descriptors in the completion, error
+> recovery and termination paths. Keep the active-before-queued ordering
+> when terminating so completed_cookie advances in submission order.
+> Descriptor freeing and client notification no longer update cookies.
 >=20
 > Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA c=
 ontroller")
-> Fixes: f336e42f73d9 ("dw_dmac: Move single descriptor from dwc->queue to =
-dwc->active_list in dwc_complete_all")
 > Cc: stable@vger.kernel.org
 > Reviewed-by: Frank Li <Frank.Li@nxp.com>
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
@@ -92,5 +82,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261103-submit-dw-=
-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com?part=3D2
+dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com?part=3D3
 
