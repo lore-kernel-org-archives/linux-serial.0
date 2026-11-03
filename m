@@ -1,83 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793721115;
-	b=TSKZxbmQVs+U/JistQzEsR1KJdkB6snRj2YEgCoOPpEsVOf/CJW3mja2UJAULCdnCkPK
-	 6id9PEgmBVOHSOdsZWsnC5WUJg2CxSd/FZVAVmkM3y3QmGk90jlQ2ON4jDXxSqUMIQF91
-	 akarZL6pjQW6ETE42D3AA8/UQiuQteWoMVci3goQdUc9EArx7439qU6Ir1bU9oumsNcUm
-	 QZnOtNvCK9vr6+S1Ncw5jnlhqKsaz7v6cn6jfgZ/mOGUFA3wqrQM6kqiM8s4sRQFlnczo
-	 oP9vaIRsNLgxDF0UXw32dNX/78HAhuxb0PfmDMRoOoI2sEcxzmJoUS642fu35xwvJQQ==
+	t=1793721121;
+	b=4hxMPArZwOfuyBRu96xSl3K2OXoT1wRZXBgWhX3Xr8+XWbJMPiHsmhIWrxGOyk6ONFqS
+	 fSjuVde/qFpAsBMdNZ1E83yuMcylOpzAMGgc7Zorm0k4InMOLLLFDONQrd/DXyjZ98qbG
+	 +mT/oXw0SHZSgw1XPjKU7MRpLKE8fKP08RvjWnA/M9zGeQJhLrfEIo0nsaphQja4Sf86u
+	 QfoH6MwF/nTX5NuxZbkXlUKvOC8jmC6eTg1Lozr7nYCss3vwOziJcLe6+c3WO8ZM45YQR
+	 1e8xO7rLGYIaQM8AmilYW6W1pzf+K9RLjCj68bm52ADNATEtJnmWL/bO1+5fA2F0CtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793721115;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793721121;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:X-Google-Original-From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=ElunOHsCbJmsk6qqG837NqX15fcbk0oSvq6+bth2r9U=;
-	b=fWIJuraZYPBGl2o8/epxuygVoe4s7IRva8fpjWxis56j8Nbr7qQzgyV5mqOWP9EL6XuR
-	 IZBbqb8a/ndrUn2iPtnCWwNkojobohZZeinhh/CHzQXYr5Sj3WODV6XUBTBcyEcH0ESQS
-	 mBQmTvnUdTzOYpg3CZIlgWXip6H5qdW5A9FHHENFh9gDXlxWA1EvjW5eMV7ErvshGKqCU
-	 XK+4OrtGjaGCZ70DZ6b6u12r5qZXezDjmbuKMqFq9fwK2+BfynnP2pC4hxPEhcVEUTni0
-	 WlthvJuLpgvBzW3xGDSwQ/Mp3WdrR2xifthYsVSpSgcHth1ci9/mjUh1REhh7YxRQ6g==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=oxH63X4dAorJkZztMsnQ7q2lWTpXKUKEQkHtJyrOa4s=;
+	b=whAHX56SoQn9enz+TLmSGlR9MSQMLp1GRg1hqyCwCXUWT3ucW0mAtAqCwzlwuHq9WxuT
+	 NU3UqfUmXHzpwXc0B1qYReaiLmMBlXcBhxIu9GFWI5jqMaIDcRDL9I7ciUGWvupYk2Xkb
+	 CEFXC5eiqM5oWx5Ic6g/T6nRCPe/ct6owVDrry8L/G/R1mej5dd1VRTr6qDcvsEpIdvlE
+	 YJDEzMyxy2k1due+zgmwTufQXEvErD63RdQ27g2aSUeqWUq6tDAuCN6El+zgG4fXLsOL4
+	 ZbJkiAZz0UxqGKn55PFmXEpSdg9WEg/qJIOs/Znuc3AvMrh0Nu717PS0jthjOtTYLcw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=my3X4+Tt;
-	arc=none smtp.remote-ip=209.85.128.50
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0UQbTpRt;
+	arc=none smtp.remote-ip=209.85.128.47
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CEFE606A324
-	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 15:51:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4CEFE606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2905606A330
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 15:51:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F2905606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=my3X4+Tt
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a1b07c3c5fso35524085e9.1
-        for <linux-serial@vger.kernel.org>; Tue, 03 Nov 2026 07:51:55 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0UQbTpRt
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a1b07c3c5fso35524995e9.1
+        for <linux-serial@vger.kernel.org>; Tue, 03 Nov 2026 07:51:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793721114; x=1794325914; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ElunOHsCbJmsk6qqG837NqX15fcbk0oSvq6+bth2r9U=;
-        b=my3X4+TtDs+etsFJM0QPWkM4NeYyEbNHjCYNtWnJnUlBuQxi682Nl2lnTjOA35mrQX
-         6HNYFaYg86KIh3nnQvpw26zuJthu/MISqFjldM19hSY0VLKfqwuf2ufqr4zQhNVg7rQ2
-         hDb7buElKYxoOVIZS3F9b2fPTL2VWXGMVgoywQj0oBxKqThU5l9JzjL8UtUAZDAR4uUP
-         Y58h8Pik/FZqlPNcB4czEP8KwWH2a+O9XNbZA5xMo8esnijDlqYhV53efebJ44um84pC
-         tlI7Sy15vS6QsqlhNMEeoBm3SP1ogWRZxV0Z34LENUdZGvBsxYhDD+1w+aLjHyP3sbSA
-         0pcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793721114; x=1794325914;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1793721118; x=1794325918; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=ElunOHsCbJmsk6qqG837NqX15fcbk0oSvq6+bth2r9U=;
-        b=BXebJ2I+9jVSUoNfhdVNhb4mUJiT57ibXM3xWogX/o89Qzoanxg6MiFKWmIJ7MJcT4
-         ZMvOwMRexYJLhQ2WWUTOQVviSkItAdQKXlVLDt9GShgInalpH70/zUR28jWB5ylNPOgL
-         4QvWglYsafr/PGHTdzz671UoYwn5VX1RyT3pUNG/1m0uQtGXZxICkK5BI+DpPju1FuZO
-         L/b5DeWz+vhxnACq2rzx7d9/bx+FsHkfg1asbRXhUcnp3tKt/wiM/9kAeH7S1TFbzjpi
-         1gUdaCov7LmUUGuvaablDeEQvz2/VrlNHBRVcRFbOqdpGzTDdh8DYSyOlCcr5Bo5uLPa
-         si1g==
-X-Forwarded-Encrypted: i=1; AKwUvBxXx5EBfV4Rfllf7jQ+UEh9TTYMq8rFUF78y6EoqkAWzWVQrJhu2oWzYalvmCACHWvIeH27z4hjp7ZZfkc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9nKZzr8T5At3pkTRxz8jmjwseVYWbE0y9he7nwMermwJFJgGOL
-	EE8wyQweK3skRxVANB2Le/IGFlvRyWaj4NI7Zjjl5XegI9R5Kq6OCWy9
-X-Gm-Gg: AYBFou1mc3953DP+USMbKDEQYPkepjdcDwAKTLRoTzrqtX0aV0RFHkAh8bKiXeYEbj2
-	/cAV1HBYuiMsVLbkdL7SQV7PzaAV2JpLwCLqrFkS5A8JgmOU+yMjAUB4MPXqi/NhfmQ0LjNZBw/
-	WlPbNkD7cxP84/gK6AS1fqjeuI1BhGFDN4E5U7R2ikCJV+4+hvJJT2827LS0RshhHndVn5aimez
-	a1H5tf4iBoaugYK4Gzn88ajmnMRGlsKYGfxkBjNeZWXa20Vh2lgQpI4yINhAaKT9uxBxAh2V4au
-	+caIaxW+tsJbdI9ZESK/y5hRYkX+A1X5a/2ig6X6I7qDdv05iCx1zo3j5eQoHs9jBQ/Ov4KJBdy
-	kniwGoFVTeofOU5aIe6Hpw4bYwkjQqnswTF9DHKzX3EUqBvPTsrCK7mvtT+ZL7uNkXqhMTVImkt
-	qi8cs4/CoMBUQd0Mqe84010fv7XRr5L3sAZP4Q74wRJcoaPaTlRQ8SWPOH4Kj43Zcdn6i7Akl/S
-	4WW0HJhEoMcF81iGE/RO+1s/3MePyRe1gnm7gmq+6syAWln6Px30T+hhCmPFMwis2ccYslnbdDW
-	Y8eFs5Pjg7tG5txKyWevKxrcE5LzjKMvACzB1Flj7/brE/tIQk8ZcfVNHSxuAQgzAOlpNaHmSFI
-	DB45dXJLKsTCyp4MP4PuWKul9m3POHMrgXX81GWX3hjKNak9GBVrw
-X-Received: by 2002:a05:600c:46ce:b0:4a1:f625:2108 with SMTP id 5b1f17b1804b1-4ac18a88820mr316895325e9.33.1793721113383;
-        Tue, 03 Nov 2026 07:51:53 -0800 (PST)
+        bh=oxH63X4dAorJkZztMsnQ7q2lWTpXKUKEQkHtJyrOa4s=;
+        b=0UQbTpRt5x4bFKA10POaXWgH7o2SI4d1Ye/f1CT+wpxWVp2oFRjQXbm1r+VxoUpzL+
+         dctptXzSSZXP8mZmQjwCmrPtv09cKw6ekn5h1gLKabZpAbI0+SX/3+lktdnjEj4IAtyM
+         Hg5BnLmXUuXMt5oiL5KOAMcPK3MPMTztSWnbriOe2R3iYtr5qTf9iu2SdG9P3l3uY6zQ
+         FybEjfEKMnYetiIUeFltwHyzgdM7aGyw73b1OZsT3bHcXUNGO7bAaELgZGd71KaYoi5x
+         lNHacUUFUMH7gRdtMya0yVhDHvw571QfrkAmorD+cdwFBL+tbEFxeIWpubcPt9/g2ALC
+         9E5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793721118; x=1794325918;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=oxH63X4dAorJkZztMsnQ7q2lWTpXKUKEQkHtJyrOa4s=;
+        b=bBmKQDydiKajEbhIC8JIAHq+6gS/d831oMIm2FaBifh9m30ts7qYPXzBA2f5MSWp34
+         wAgEKecoyt9CTfZgDnJgzD6sLrANIch7leWVRUjmfTyhKhKhqMpnCAP0DNxxlrvQ7w2h
+         qknlQ+XyDDeuAZmQf7ygXbNYI//thuoL/p3FEruD1YnQJUxzbzJTa2QESg3B6FAk2Njd
+         SigKdZevtRKXEfPdpF/KenU4jVHwOnOIO5TY0oYZvcAFWDDzJuAgI6nwtXAxAOI3MfvG
+         nX/6gdYYA9KniJTW9zWKuI+pnnsEjmfrz4ugRryky3FnHr/gpObBmfPHf0yAmAHobiw0
+         M/Dw==
+X-Forwarded-Encrypted: i=1; AKwUvBx0lkjzVod0wPXwBXAOyu5DuV8Z93PFNnjC+sCQ+DgpvwrCu/+aKSFKTmfnjIYP5hh/3h3v9a+6FwWfR8g=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/AlGOne4gLjCsSVAy+G2Tnqe7cciFUptjDHDC23ZYP62Jcs/HU
+	Bpwgo/WHsrFDklfR6hHBbpSKRXNrIcZdlGDSeMiExPqyV0YA8LRrM7v2
+X-Gm-Gg: AYBFou3XYbcd3KMsun5CRoKtevkx0JQuma3zC68LRkNKFxzytk6vfSJRFHcmNZ8rJjR
+	fAi0JBgRVvj5ZUWNpFs+uFXBp7fCgV2bDJx3oDZxA3WbXb91k9OUn0p1Dh4MXGH6Bk2tdw/BzXq
+	3r404+FFk9u8LBpr4tivctZmA9ZLZzq4m6/Z6v/wId0+SsPVf0hneIcdUiDV0FuiaGMg/EIIB/X
+	eaxkUi49SWScNzi2xyFHCqKT+AfCWJz0s+YgnzU0QidV/KW9nz2YR31xV4brInhoyJSqCZ6etL4
+	+voEY7v/0h34v4Ul+H/fl1l2aIiQ7mrzA4eRwCFkTx4dcxS6LfpVIS7KK+zdLq/Z1CW6WQ98m7x
+	jT9mlLf79uhAMQ/E/t/fMqKr7Qzj7N/SaO4/xBMi3m+SxGzsz3rkFXc05MDBB+0fTickQW8gIaA
+	1/htOtsty5i4OCHRD+UVRxhnzR8eodX8+i2cPomeq+CF+SoDLHpAGlPWKXbUPUatazMZuMBush6
+	Dpkh2wN3EoxfDxr1B1cmDp3riTKOv+G5sNA5tIZ7SNL8PnMfsLYZvl1j7do3rr4ZqewCYoLHisk
+	fElWAuP4ddOhHtkB2owjrT4Ixl6gopUn25M67kfEuGa1XCB7TO9VbJ5XkIbVPOIgSlk7J+ZCAGx
+	CYcspFU8HJfLmE2Vt6JI88fEb5OUsiuBm9Ai+yyB+8JZvNU9umBU1
+X-Received: by 2002:a05:600c:46ce:b0:4a6:7d6:821f with SMTP id 5b1f17b1804b1-4ac189928e9mr310741055e9.29.1793721118269;
+        Tue, 03 Nov 2026 07:51:58 -0800 (PST)
 Received: from Lord-Beerus.station ([93.66.71.207])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71b964desm25680750f8f.46.2026.11.03.07.51.51
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71b964desm25680750f8f.46.2026.11.03.07.51.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 07:51:52 -0800 (PST)
+        Tue, 03 Nov 2026 07:51:57 -0800 (PST)
 From: Stefano Radaelli <stefano.radaelli21@gmail.com>
 X-Google-Original-From: Stefano Radaelli <stefano.r@variscite.com>
 To: Frank Li <Frank.Li@nxp.com>,
@@ -101,10 +102,12 @@ Cc: luan.r@variscite.com,
 	John Ogness <john.ogness@linutronix.de>,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
 	Fugang Duan <fugang.duan@nxp.com>
-Subject: [PATCH v1 0/3] serial: Support driver-selected TTY wakeup defaults
-Date: Tue,  3 Nov 2026 16:51:24 +0100
-Message-ID: <cover.1793719239.git.stefano.r@variscite.com>
+Subject: [PATCH v1 3/3] serial: fsl_lpuart: Enable TTY wakeup for wakeup-source ports
+Date: Tue,  3 Nov 2026 16:51:27 +0100
+Message-ID: <58d65b44ca054ea83eb835bf5decebd688cad04d.1793719239.git.stefano.r@variscite.com>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <cover.1793719239.git.stefano.r@variscite.com>
+References: <cover.1793719239.git.stefano.r@variscite.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -116,36 +119,42 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The initial goal was to enable TTY wakeup by default on NXP LPUART ports
-marked with wakeup-source, without requiring a userspace write. Instead
-of keeping this entirely within fsl_lpuart, this series introduces a
-common serial core mechanism that other UART drivers can also adopt.
+From: Stefano Radaelli <stefano.r@variscite.com>
 
-The new tty_wakeup_default field in struct uart_port lets a driver request
-wakeup to be enabled when its TTY device is registered. Each driver
-decides whether to use it. This series adds wakeup-source to the LPUART
-binding and makes fsl_lpuart the first user, setting the field from that
-property. Other drivers retain their existing behavior, userspace can
-still change power/wakeup, and serdev wakeup policy is unchanged.
+LPUART checks the TTY wakeup policy when preparing a port for system
+suspend, but does not currently use the wakeup-source DT property.
+Consequently, userspace must enable TTY wakeup even for ports marked as
+wakeup sources.
+
+Set tty_wakeup_default from wakeup-source before registering the port.
+For TTY ports with the property, the serial core then enables wakeup at
+registration. Ports without it keep the existing default, and userspace
+can still disable wakeup through power/wakeup. The port must still be
+open and initialized for receive activity to wake the system.
 
 Tested on a Variscite VAR-SOM-MX93 with a Symphony carrier board using
-LPUART1 (ttyLP0) as the console: with wakeup-source present, power/wakeup
-was enabled after boot, and the board resumed from deep suspend when
-Enter was pressed on the serial console.
+LPUART1 (ttyLP0) as the console. With wakeup-source present, power/wakeup
+was enabled after boot without a userspace write. After requesting deep
+suspend, the board stayed suspended until Enter was pressed on the serial
+console, then resumed.
 
-Stefano Radaelli (3):
-  dt-bindings: serial: fsl-lpuart: Allow wakeup-source
-  serial: core: Allow drivers to enable TTY wakeup at registration
-  serial: fsl_lpuart: Enable TTY wakeup for wakeup-source ports
+Signed-off-by: Stefano Radaelli <stefano.r@variscite.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 2 ++
- drivers/tty/serial/fsl_lpuart.c                          | 1 +
- drivers/tty/serial/serial_core.c                         | 8 ++++++++
- include/linux/serial_core.h                              | 1 +
- 4 files changed, 12 insertions(+)
-
-
-base-commit: 2637bdec0535a2044cd830eba9a79363651d9043
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index c8575c965203..35397152a39b 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2905,6 +2905,7 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		sport->port.ops = &lpuart_pops;
+ 	sport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_FSL_LPUART_CONSOLE);
+ 	sport->port.flags = UPF_BOOT_AUTOCONF;
++	sport->port.tty_wakeup_default = of_property_read_bool(np, "wakeup-source");
+ 
+ 	if (lpuart_is_32(sport))
+ 		sport->port.rs485_config = lpuart32_config_rs485;
 -- 
 2.47.3
 
