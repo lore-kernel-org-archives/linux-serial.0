@@ -1,102 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.180
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.217.51
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793728490;
-	b=KWpKZ/QSPOpqvsVTs6IGel74Bw0kBXul5AMqhu4wPg7ayrt7s3B+EoIcmuVHQJUULTaN
-	 4Fp6BLKlU8tVngUmgPniqcaEZ5FhNMVMOSmhdqCSdtGCjR4hNdTmBoWKmBRE3cXnDB6Ut
-	 sKFukJ6KSGLltB5xQBUgwVX+Z0C14JM28QCM2y/FQWtq+lVOWhKqKxW50O9tAF10NNQMZ
-	 Ngj5epm4/M6n3tg+97kSM1XZlcEUUiE+WBqs0AwaPzf2kYcwtnhZsXBf/Xw8I83/hFAWT
-	 6Z5oJ6Pc106F33uwsyk/7PzQYNRSYJc1IIPJ8BWreJoAKyTK6rYrJfd+2kt+wINLxng==
+	t=1793729157;
+	b=ndmSHXgkrz15GO+T80I8wVS1wwkjR82ey39jujwusiaJWF/yqc2j8vncOMANSO/6oKZ5
+	 SAOWOKXAxKGpgZacWfGXUKKMZf3jWGVSF2nxYcuwJYCj03RyWbwrscNPKvmmnoWX5wIVr
+	 elSdrk6OZzpDRJz+N564BO+ZKHJD6omeeRvaIUnHN1q0HhzLb1VOPL2VcVW1JOscc74TL
+	 eK3/yu7pVfmwX6Pe2+nQyxciWKe5WlMME6bnLgfjwg64LCg2lll0g3AN7j7FZtXvJ8ctG
+	 r4MyYCzA2c3drkUXkGQPxCv2wCTtEt0mK1nMIOV+k77DhDI3+cmFZaKAfYDLxsT456w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793728490;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793729157;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=iwVYSA8m7SCKsjhLjy1thrskeRAGo9CHO3+FfrfRAjg=;
-	b=JjhCCUAwbZ0mDx9i6Rh0KDO2O2DkDsvM+uYPmg7j0Ue/gjfOzKwwnpeCbp6cIlhz3t3O
-	 5ewEPogAVJMyeNlsHDzRenyasrStqr7V55Dca4FlGAEFkI//yx6ptt50BfpETocabPGO2
-	 r9VMAaRQzLgbGT1PO2uUdTVz3N1V0HKnZjQ4IC0xunj0QhTDpLsehHPWizDV4n/a69N5R
-	 usXEXXUn3G2vXVxa5WC74tgBr8AeCmxomLIhbUt5kd8qv/eYgF7Iw7NxRP7/k24niaInm
-	 wmXpTa3xO8TOG2fmolmRuK2LYDz0+cS6Ae3C0laEJmQlU07L0ei3cuW31IUqhSgvEqw==
+	bh=KNbjwm4E9DcWTobQLF+oFd4MAgDdWhobdyNW4zlZws4=;
+	b=zblI+4ddkSKgyY6ixcCX8C+LkY+uCNNOQj6YlAlHcG0Kv6REIL0ZxiRfWJb3/8nkxDsy
+	 Ig0rZP63FqMr1/1KIRYGXfDJTReaP1ncovax53vFwwX2tlHavamG9G6yMtQ/ZgJ0vpqOB
+	 S19cLQ6yL9d6KmREwx2YyKuTGbjczL5igeqAKz7Mn487LzRf+Dw+J4Us8eRGscP0Y/ZUZ
+	 A5c5q3TqkIq6rJDyqdaNk2y1+gyxzZJO1KKPSI8xppcAwlwVQy5X9knnUOp8KBOQy6izL
+	 U7WFG5aSs/mmlYQK7m8srZI4eEe6nN6UrCVI1GCeiZt+pXJuaQ8X/JVVgkbmUjhHqeA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Rm8Q1R2K;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.180
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=eBXg5HLV;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.217.51
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61A66606A328
-	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 17:54:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61A66606A328
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE14C606A328
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 18:05:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EE14C606A328
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Rm8Q1R2K
-Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5eac7220e9cso1601804e0c.3
-        for <linux-serial@vger.kernel.org>; Tue, 03 Nov 2026 09:54:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793728489; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=eBXg5HLV
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-7cc81984fceso1424881137.0
+        for <linux-serial@vger.kernel.org>; Tue, 03 Nov 2026 10:05:56 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793729156; cv=none;
         d=google.com; s=arc-20260327;
-        b=eou/Qq7x3I0IvkGECRIZ2DcFQL0daBnGBl5nTkCI2MH0jl7fesPEBUy25UX6vmbiaa
-         7oWOCk8ax87zE89pV3aI+nyn+NJe04Zf0BawgO8UGjkbL8qyIg3t+LYTqkhEGMEYW0Bz
-         SJJfWdPr393kq0IB/q5T0H1gHiRB8nNE/M6iY/W3FkTXu+pFdtJY4NNSdBVh51AiARR7
-         Y/mxd3RE5oIW/vDxVsRz468lHViWR5WXaPwd/fqWBgwUK5vwPXMbLlSTnOuufNdArMYR
-         +WFwuxiGtwzHDOl4Hvh0XhrfLvDUA7q/Zrou2iGV5cMVZuEu6IgpnNxd2rdcUmKbz5cA
-         kZOg==
+        b=IW6WFtrgyGfn9o94SJq6sfFoApuVxR0asaK5v3Ryfj00h7A4VvKLLZP/4SO70bSLfr
+         jRxXV1oGmt/4Ogf80OYNSZu33sGmZY5N6mqTBPOB/s1KVbiI5dhEfogF7ba/pE4+itW2
+         Y9woPQIFRUwsfN16OrfP5r3w3AovTZoGo3ENu6J17wKaOILCzUzR3DthYlqa3rbzQN4B
+         CVBNuUZBQidwXnvjxAnZl0IX9cpIiadSdNvtFDtll0ItaA6VkMJ6kWJb6UTtxDJ6HSgX
+         p1x5IUz65+1bhoEmWkKJFFtr7zKRfgGI5tURXkfivnutBkcIoxqC3zpXGfCvS1bi+hUZ
+         e9Ng==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=iwVYSA8m7SCKsjhLjy1thrskeRAGo9CHO3+FfrfRAjg=;
-        fh=TCzWtBFUaxnkqfOoYrG34JWIkBm2+NnvE4M4menxw/8=;
-        b=kg1pAqsr7RohrQd7WeFA66fk1WxKGEbZtNFzUi3kQ8QwD7fOv06IpakS1eNbKaBHN2
-         JHnKkXlrGtAklziWc63lzg479vwS3sPCNTbU7/E33s6YxxiA617HnXiVwH/ZMhmBtEFp
-         MuOP60aAQ7Vcl0zeKjcwe3DiZu2qKBt+KLDkkIcMwHM8wmYyQK2L2F4OM097wmUrf9Ai
-         1gIBVcFsdQKO86TX940gxlJCCCpi9bWxXzgl4VqZWs1IQ6Kn4P7p/NmbXDJzJ+DreoH6
-         IcE0z1RbwPw0ozqe3tXOclRIHjiizW7BT7DT0w46pHyHnrauuXNHqXcVqYuXpViVHHEi
-         FF9Q==;
+        bh=KNbjwm4E9DcWTobQLF+oFd4MAgDdWhobdyNW4zlZws4=;
+        fh=VaXw0HLyOBbtOm4AL5trE6BQ5IaEmglWGLoEuqdJdG4=;
+        b=e09s+TasEEEvrOWVwzZz5pnWR8mjWZQ7Pa8ak/7bc1cNCo9v25NYQ2zzOgOAwdHFG3
+         kONJqjW6zVJnCsDGod7JECwxAV/MbAV7OFPwiAOYh3m7zFBFpEpc5VHL5lHbYPfbjcxi
+         wx10nrDHGGDY3KB47fiRLpG1lRGJOEQ2LN+bt2bGqBI5HRjM6h2OiTodQcy/cAj2lCtR
+         7xwidDC0B9eNozFWxxbMLQiJKFDRSF98UtI64Sck8wSbMgFFI3ZKkSdv8+1R06ZTmx64
+         CB407iG3EYv60obGxK07oXnUAa5Dq9DKq/9F2rQS3A8HELTvuhHZbzYn5Wx1yTct7RBZ
+         IBsQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793728489; x=1794333289; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793729156; x=1794333956; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=iwVYSA8m7SCKsjhLjy1thrskeRAGo9CHO3+FfrfRAjg=;
-        b=Rm8Q1R2KU2FCt8pQT5nHvLIBKRrY8F2T4QDWXyM7jymrUkgNV4QXLM7e8LcT5afTZy
-         bqJfBl8hvZAZe/2p31GJMjcSEETfT46LljYiwnOezN8CxWUHK2slrUC3mkPcT6LRSsKR
-         2y/2itzKpPw2dh8H3iysk7uvVeS7sm3NLh8gtidKAvA6elTS/pbMc88dnClaQidD+Tp2
-         4YIGrtjaubkI0yVD+z80rUmXh0gqsO/cxis3dxjS8cDchBafkdxI4S6VrzueFy1gXmH7
-         MuRvmiknLBvJEB2q7+atGp8eT43r6lSr+y0FzUjIyuusjTKWgwF3xJOIrAie/pJSOcWL
-         UZ1Q==
+        bh=KNbjwm4E9DcWTobQLF+oFd4MAgDdWhobdyNW4zlZws4=;
+        b=eBXg5HLVs3+DnyK0HOE1HArp8LeVs07vZX8/90QXs4aNyYpremL/O+2hqZPtnY/Pxt
+         afntlOfHYW5A3PQNeX1Nn0nICWejEG5J/bf59loCPDYM2t9QmhPpo9VG8TbqDjhQ9A/H
+         GRmNSCNJ+hwceiMQg99yXPTWIjbZq5eUSafvD0KyaU+0YsXpil/GuuHhlZydBvt1ECH/
+         VrPgrNzoAZ9iPS+z13CW2aJJs2oDtansUJq3cgqJbiI5m6dxM7QIzdbBCZN8NaZPNjR7
+         5JSEawDva8Iyute9qb+55E8YDfEeKUMnmfcmiBCKrdpOjMv5Y76Zmprh3TZc9buitoW5
+         brYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793728489; x=1794333289;
+        d=1e100.net; s=20260707; t=1793729156; x=1794333956;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=iwVYSA8m7SCKsjhLjy1thrskeRAGo9CHO3+FfrfRAjg=;
-        b=ujJjyL8r3y4KgFfhhFdjyO4DdX6KsKKJ88QVdPoDSYexJ9/y/So2T7AOGn43uiMLUe
-         A/iVyfIeMBW9WYGZ0iMDHIHb8TPY2V+YxsRP+TegmRSu5hR3SXvR/MaVacHJjFncOIjC
-         l6b3/aVjiZm1Jp6+u2+O0bpL/sXChCIrfFx3vsZw6xwnW1aTjGNzxSptHSngFpHNTeHK
-         oS9b0RnAwSD351AW9UMl9YWqHdGfYraDoJbwzY472iYvibj4JJkJ8EYuk7roWcZefVjz
-         B3krF+5XX88Qgp58VH6aoUk++CWGm3sGbgQtIxMC+zT+C9F/04yzZ3c8bi6ljDkmEkEy
-         vtYQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxvhwYlOD7Bu826amPeeBFZpzmyCgLFl/p1OkuVuxaCNm7fZhCHYI64HwCvL8WMGALjA3EHa6uYoYT64LQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8LmZgGWv62CDSNIr/3YXYfJPZechMvzq41znnFOpRO3TVOwy3U
-	FsYRuat1lgVqonTBWO66awwNauyPR1HgwwUKTJ1YGxDPVjtxNEM9vsutOcNDMBN70o0HJRMAmT2
-	6QHJ/RrKHiAW2GyzJ51QzewnOf4iiB2Y=
-X-Gm-Gg: AYBFou1uRQirgg1xfOHWCEyoZ/oglM1mCY338txJ6Y1EPH7ITlX+AgNSl2Xca4TSphw
-	uE6HgN9uI8CICvp3nouXhIHlFWUagZizOpRbrieruRn3nZ3hcVRwtahcpI5eFvizebZKb6xdXJS
-	FFr+un/Kpxhlqa/9GSvKc5kDqZOObDipZHZCEMcCdgGc9VkVSIgTSJsp/6GEZTPOALlPZ9NGPs0
-	koW8sKRQfdj/Zirf7fzsYZtjY8ECQwgkWqD5P0yz+XaY1dMp2BMdGKO4jrC+y0wB7SVC20R0QC8
-	xzMEyx/RwplWQSIiHosZU4/Ef+OacIIwhhuMZFigtZqgbyVS2to06/hCrrysCDoqnH5UitvdpEL
-	PHGmHqkXtkDoWMYRFqIbZbXdeSKXEGMHATXHOjmwtkuS+JO+qUxGPZzmag98r9D9x81x9pGI0B9
-	pYVTu8IdKDS8DChzba3LlBR+twmjzWvK7iMRq3ICR2eO3GOXpMC2zurf7E0C+/dKR07SolOCU8j
-	9j764o64osEXYS+8zl7Px6RMLBsbZc=
-X-Received: by 2002:a05:6122:4697:b0:5ea:fae8:e69e with SMTP id
- 71dfb90a1353d-5ec688311c2mr6169989e0c.11.1793728489195; Tue, 03 Nov 2026
- 09:54:49 -0800 (PST)
+        bh=KNbjwm4E9DcWTobQLF+oFd4MAgDdWhobdyNW4zlZws4=;
+        b=lbK62y3pf+Rpm5j25bTMb1RiTGS1iA0mRvt7vVicI7ADFmO9XWbG+y0yuUl8RHmc0n
+         bb3ktsGnQi0dnn/lVMmEmSQFZXnjLgAAZfLGjDUmf60eopl/9yWBWacIL8l25T6G/eGI
+         Sz5VBx//6qm93NMkPwIXM9aM93mTfUekdc4svWA7h71ZTPdKCgS0tt38IRV3jDJPdomq
+         8790ZYRjQiHcet4uUGyFEHCAwYhQ3J0zq6+h6U2e9M4b7dxLztE4iJHXjSeko12bmDE6
+         2+KvwpLDxvZYjO85j5/znrpu0F/8Ux3eYuqnyy8ovYuviTgap90UQZQxf2BZK0vYEWJI
+         P3Vw==
+X-Forwarded-Encrypted: i=1; AKwUvBwaz4hI4EldVuaJeSat0755YWpm5g5qNPVTFbtbrxxn90es3R4++Lt5gMTHTRoGf5udq9HQ9825h/w5pfI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8XS/i3H7TdEmarKtVOcbAY3nHvkoRRVIy20wD3hE/DBP30m5Px
+	kmq1wcvzkPG4EWUzhLoiXNAGC6l1ibLJliNL9+0WKZ7/grpQLsAz9699JJSVhee20/ZHOoM51MC
+	Hxf0sZgHevSb//K7IJ1AwvTGfatgSt3c=
+X-Gm-Gg: AYBFou37jpYBHkU549xg4Zp+OC2h31ddQsjkzmWz75aKhacplr0J3ZEKmQUbcJ+ar7V
+	W6Y2WcA/dvXQczy6JRhq/9MVJR57EfggncI5C9dVeMVK8cCUTFD/hpI2gF+xAj/T3gzki8hq7E/
+	PMZVphZhvArUH7c1HQQTiStorMrXQKq3byYtkQ5O24iotc9+Sk7uxeopo9O7W9CRfBHLpCzOcNQ
+	05dngWo+CIx/a1wgSrPcLcZbLWtkL8yogsdj9Dr7c3pH/x3hnyn9SodRHiRXz/b94KgMVobEslO
+	gX2nar09Z1Q3GGh3CI0NgoueW5UtzduokWWNrm3s3HEfWe7/v4K6eOzVrIgSKP36WyRAHTx2GKg
+	cTjnXfdFhSWqMmnziP8jWPMB8qOuOxePiWE2F30Rnd9pfuA37UmNQQ4DWu5meoBQcLadGR3e6HK
+	4LKzN4DtRgwostspH0hHmfP1MtPPM9NBsTx0wTNwlCn9ByBFUWvOgkTPQ0IaPKHIJC6gH2+JS8v
+	HHxtiy11NaEz6QG0swtZuO0iuyDyw==
+X-Received: by 2002:a05:6102:5121:b0:7cc:5c9d:7e07 with SMTP id
+ ada2fe7eead31-7d072635de3mr4255291137.11.1793729155740; Tue, 03 Nov 2026
+ 10:05:55 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -107,17 +107,18 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 References: <20261102-submit-serial-8250-dma-cancel-v1-v9-0-9159caade148@gmail.com>
- <20261102-submit-serial-8250-dma-cancel-v1-v9-7-9159caade148@gmail.com> <auoa8OWBxqaQuKRq@ashevche-desk.local>
-In-Reply-To: <auoa8OWBxqaQuKRq@ashevche-desk.local>
+ <20261102-submit-serial-8250-dma-cancel-v1-v9-7-9159caade148@gmail.com> <20261103161104.2449407-7-rrangel@chromium.org>
+In-Reply-To: <20261103161104.2449407-7-rrangel@chromium.org>
 From: James Hilliard <james.hilliard1@gmail.com>
-Date: Tue, 3 Nov 2026 10:54:38 -0700
-X-Gm-Features: AclHuK9I_c4PO4aR4qFDRCjbioBe9CFVnX4O6YbacRovHX2KesJOnpsJ16Nbm6g
-Message-ID: <CADvTj4rL23q6eO8vjVe9vL1g6B8aoZqsbnThi2QJqkj=9e59sw@mail.gmail.com>
+Date: Tue, 3 Nov 2026 11:05:42 -0700
+X-Gm-Features: AclHuK8ExVfXbcYLwfHHnCvMLw6HMi1Pim5AHzKRXmfuq3AFPdi8A4knMcfIqjI
+Message-ID: <CADvTj4qXcOqS-wDrrN-x3sXUQr5BtFBeGzz_wqpW8WJ1DMPg+g@mail.gmail.com>
 Subject: Re: [PATCH v9 7/8] serial: 8250: retire canceled RX DMA before
  reusing the receive buffer
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Raul E Rangel <rrangel@chromium.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Raul E Rangel <rrangel@chromium.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
 	Heikki Krogerus <heikki.krogerus@linux.intel.com>, Tony Lindgren <tony@atomide.com>, 
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Richard Genoud <richard.genoud@bootlin.com>, 
 	Nicolas Ferre <nicolas.ferre@microchip.com>, 
@@ -133,331 +134,146 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kerne
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 3, 2026 at 10:34=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
+On Tue, Nov 3, 2026 at 9:11=E2=80=AFAM Raul E Rangel <rrangel@chromium.org>=
+ wrote:
 >
-> On Mon, Nov 02, 2026 at 04:14:34PM -0700, James Hilliard wrote:
-> > The generic RX timeout path pauses a transfer, copies its data and
-> > terminates it asynchronously. Clearing rx_running at that point lets a
-> > new receive reuse the buffer and cookie while the old callback has not
-> > yet run. Inspecting the new cookie cannot distinguish that callback fro=
-m
-> > the completion of a new transfer.
-> >
-> > Reserve the receive buffer until a worker has drained the canceled
-> > callbacks. Keep FIFO access separate from callback retirement: after a
-> > successful pause and termination, clear rx_running while rx_terminating
-> > prevents another descriptor from reusing the buffer. Deliver the paused
-> > data before allowing the interrupt handler to drain the FIFO through PI=
-O.
-> > Normal retirement only releases ownership and leaves subsequent receive
-> > handling to the UART interrupt.
-> >
-> > Preserve the normal completion-path LSR read and gate DMA resubmission =
-on
-> > the receive interrupt enable, so stop_rx() prevents another transfer wh=
-ile
-> > the status read retains its existing side effects.
-> >
-> > Reject new flush work and PIO receive handling during shutdown, includi=
+> Hi James,
+>
+> Thanks for v9 =E2=80=94 fixing asc_startup() locking in Patch 2/8, waking
+> tty->write_wait for drain waiters in Patch 5/8, splitting OMAP RX locking
+> and IRQ quiescing into Patches 3/8 and 4/8, and adding rx_pause_wait with
+> immediate wakeups from dma_rx_complete() and serial8250_do_shutdown() all
+> look good. Waking rx_pause_wait under port->lock cleanly avoids delaying
+> normal completion or cancel_work_sync(&dma->rx_flush_work) during shutdow=
+n.
+>
+> Two remaining comments on Patch 7/8:
+>
+> 1. Escalating to serial8250_rx_dma_recover() after a bounded pause-stall
+>    window on partial RX transfers:
+>
+>    The commit message notes:
+>    > A provider which never pauses or completes retains RX ownership unti=
+l
+>    > an error or shutdown; a timeout alone cannot establish that discardi=
 ng
-> > late Intel MID DMA timeouts. Stop and drain retirement work before free=
-ing
-> > the channels and buffer. Once RX has stopped, allow the idle flush used=
- by
-> > DesignWare LCR recovery during shutdown. Clear the shutdown guard befor=
+>    > the buffer is safe.
+>
+>    I completely agree that a timeout alone cannot establish that *reusing=
+*
+>    or *freeing* dma->rx_buf is safe while the channel is still running.
+>    However, calling serial8250_rx_dma_recover(p) under p->port.lock once
+>    the retry budget expires does *not* reuse or free dma->rx_buf without
+>    stopping the channel:
+
+Successful dmaengine_terminate_sync() establishes the required stop and
+callback-draining guarantees. The concern is not that the buffer remains
+unsafe after successful termination, but that this recovery path discards
+the pending receive data and disables RX DMA until reopen.
+
+A failed pause followed by an incomplete status can be temporary, including
+when completion has not yet been published. Retrying preserves the chance
+to deliver that transfer without switching to PIO. Memory safety after
+termination and the decision to discard the transfer are separate issues.
+
+>    - Calling serial8250_rx_dma_recover(p) under p->port.lock inside the
+>      worker's retry block sets dma->rx_err =3D true and
+>      dma->rx_terminating =3D true (and keeps RX masked in UART_IER), whic=
+h
+>      causes serial8250_rx_dma_flush_work() to exit the for (;;) loop
+>      (retry =3D false, recover =3D true) and call
+>      dmaengine_terminate_sync(dma->rxchan) outside p->port.lock in proces=
+s
+>      context (8250_dma.c:233-239).
+>    - If dmaengine_terminate_sync(dma->rxchan) succeeds (ret =3D=3D 0), th=
 e
-> > startup configures the UART and tests its interrupts.
-> >
-> > Check pause failures before accessing the buffer. A successful pause is
-> > the quiescence guarantee, even when a provider still reports IN_PROGRES=
-S.
-> > Also accept DMA_COMPLETE after a failed pause: completion can stop the
-> > channel before its callback acquires the port lock, leaving nothing for
-> > the provider to pause. Retire that completed transfer normally.
-> >
-> > A failed pause with an incomplete cookie is ambiguous: hardware may hav=
-e
-> > finished while its completion interrupt is still pending. Canceling tha=
-t
-> > descriptor can discard the entire completed receive buffer and switch
-> > permanently to PIO. Retain the transfer and retry pause and status in t=
-he
-> > worker, with receive interrupts masked to prevent a timeout interrupt
-> > storm. The worker copies only after a successful pause or reported
-> > completion, then terminates and drains the old callback before reuse.
-> > The pending-pause guard keeps callbacks from copying or resubmitting th=
-e
-> > transfer concurrently.
-> >
-> > Start pause retries at 1 ms and double the delay up to one second to li=
-mit
-> > CPU use during persistent failure. Sleep outside the port lock on a tim=
-ed
-> > waitqueue, with completion and shutdown publishing a wakeup under the
-> > same lock as the worker's retry check. This also catches notifications
-> > arriving just before the worker sleeps, avoiding a full backoff delay
-> > after completion or during shutdown. Reset the delay for each new flush=
-.
-> > Report a stall lasting at least one second once per flush, rate-limited
-> > across repeated stalls. A provider which never pauses or completes reta=
-ins
-> > RX ownership until an error or shutdown; a timeout alone cannot establi=
-sh
-> > that discarding the buffer is safe.
-> >
-> > On DMA_ERROR or termination failure, let the worker stop DMA before
-> > handing the FIFO to PIO. Keep the requested enables in the existing IER
-> > shadow and filter hardware writes during pause retries and recovery,
-> > including termios, RS485 and overrun-backoff changes. Apply the current
-> > enables after retirement so stop_rx() and shutdown remain effective.
-> > Hold a runtime PM reference around worker register accesses and keep RX
-> > on PIO until reopen after a confirmed error.
-> >
-> > Abort the DesignWare idle sequence when RX cannot be stopped. Allow
-> > the empty-FIFO timeout workaround once DMA has released the FIFO, inclu=
-ding
-> > while callbacks retire. Exclude FIFO resets during RX DMA recovery. If =
-the
-> > provider still cannot terminate the channel in process context, retain
-> > its buffer and leave receive interrupts masked.
+>      channel is stopped and its callbacks are drained, so clearing
+>      rx_pause_pending/rx_terminating and restoring p->ier safely falls ba=
+ck
+>      to PIO ("RX DMA failed, using PIO\n").
+>    - If dmaengine_terminate_sync(dma->rxchan) also fails (ret !=3D 0),
+>      lines 235-239 already retain dma->rx_buf and return early with RX
+>      interrupts masked.
 >
-> ...
->
-> > +static inline bool serial8250_rx_dma_running(struct uart_8250_port *up=
-)
-> > +{
-> > +     return up->dma && up->dma->rx_running;
-> > +}
-> > +
-> > +static inline bool serial8250_rx_dma_recovering(struct uart_8250_port =
-*up)
-> > +{
-> > +     return up->dma && (up->dma->rx_pause_pending ||
-> > +                        (up->dma->rx_err && up->dma->rx_terminating));
->
-> Slightly better formatting is to put some line breaks.
->
->         return up->dma &&
->                (up->dma->rx_pause_pending || (up->dma->rx_err && up->dma-=
->rx_terminating));
->
-> Alternatively
->
->         if (!up->dma)
->                 return false;
->
->         return up->dma->rx_pause_pending || (up->dma->rx_err && up->dma->=
-rx_terminating);
->
-> > +}
->
-> > +/* Keep the desired enables in up->ier while RX DMA recovery masks har=
-dware. */
-> > +static inline void serial8250_out_IER(struct uart_8250_port *up, u8 ie=
-r)
-> > +{
-> > +     lockdep_assert_held_once(&up->port.lock);
-> > +
-> > +     if (up->dma && up->dma->shutting_down)
-> > +             ier =3D 0;
-> > +     else if (serial8250_rx_dma_recovering(up))
-> > +             ier &=3D ~(UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE)=
-;
-> > +     serial_out(up, UART_IER, ier);
-> > +}
->
-> ...
->
-> >       struct tty_port         *tty_port =3D &p->port.state->port;
-> > -     struct dma_tx_state     state;
-> > -     enum dma_status         dma_status;
-> > -     int                     count;
-> > -
-> > -     /*
-> > -      * New DMA Rx can be started during the completion handler before=
- it
-> > -      * could acquire port's lock and it might still be ongoing. Don't=
- to
-> > -      * anything in such case.
-> > -      */
-> > -     dma_status =3D dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &=
-state);
-> > -     if (dma_status =3D=3D DMA_IN_PROGRESS)
-> > -             return;
-> > -
-> > -     count =3D dma->rx_size - state.residue;
-> > +     size_t                  count =3D dma->rx_size - state->residue;
->
-> No need to put too many spaces between type and variable name.
-> (Yes, the first one will be left untouched.)
->
-> ...
->
-> > +static void serial8250_rx_dma_flush_work(struct work_struct *work)
-> > +{
-> > +     struct uart_8250_dma *dma =3D container_of(work, struct uart_8250=
-_dma, rx_flush_work);
-> > +     struct uart_8250_port *p =3D dma->port;
-> > +     unsigned int delay_us =3D USEC_PER_MSEC;
-> > +     ktime_t start =3D ktime_get();
-> > +     bool recover, retry, restore_rx;
-> > +     bool warned =3D false;
-> > +     int ret;
-> > +
-> > +     guard(serial8250_rpm)(p);
-> > +
-> > +     for (;;) {
-> > +             scoped_guard(uart_port_lock_irqsave, &p->port) {
-> > +                     /* Shutdown cancels this work and drains both DMA=
- channels. */
-> > +                     if (dma->shutting_down)
-> > +                             return;
-> > +                     /* Serialize reset with completion and shutdown n=
-otifications. */
-> > +                     WRITE_ONCE(dma->rx_pause_wakeup, false);
-> > +                     retry =3D dma->rx_pause_pending && !dma->rx_termi=
-nating;
-> > +                     if (retry) {
-> > +                             ret =3D serial8250_rx_dma_try_flush(p);
-> > +                             retry =3D dma->rx_pause_pending && !dma->=
-rx_terminating;
-> > +                     }
-> > +                     recover =3D dma->rx_err;
-> > +             }
-> > +             if (!retry)
-> > +                     break;
-> > +             if (!warned && ktime_ms_delta(ktime_get(), start) >=3D MS=
-EC_PER_SEC) {
-> > +                     dev_warn_ratelimited(p->port.dev,
-> > +                                          "RX DMA pause stalled: %d; r=
-etaining transfer and retrying\n",
-> > +                                          ret);
->
-> _ratelimited() is a slop of AI without understanding the code. It makes n=
-onsense
-> in combination with warned.
+>    Why does this matter in practice?
+>    Look at drivers/dma/tegra186-gpc-dma.c:
+>    - Line 1521 unconditionally assigns .device_pause =3D tegra_dma_device=
+_pause,
+>      so dma_get_slave_caps() (drivers/dma/dmaengine.c:614) sets
+>      caps.cmd_pause =3D true and serial8250_request_dma() enables RX DMA.
+>    - On Tegra186, tegra186_dma_chip_data sets .hw_support_pause =3D false
+>      (line 1351), so tegra_dma_device_pause() (lines 420-423) uncondition=
+ally
+>      returns -ENOSYS. (On Tegra194/234/264, tegra_dma_pause() at lines
+>      389-414 polls TEGRA_GPCDMA_STATUS_BUSY after setting
+>      TEGRA_GPCDMA_CHAN_CSRE_PAUSE for 20 us and returns -ETIMEDOUT if the
+>      channel does not pause.)
 
-The two controls have different scopes. warned is local to one invocation
-of the flush worker and prevents repeated warning attempts while that
-flush remains stalled. A later flush starts with warned cleared again.
+The Tegra186 case is a permanent capability mismatch. dma_get_slave_caps()
+derives cmd_pause from the presence of device_pause, but this provider
+installs that callback even when hw_support_pause is false.
 
-The rate limit applies across worker invocations and UART ports. It limits
-messages from separate stalls, rather than repeated retries of the same
-stall.
+serial8250_request_dma() already rejects RX channels without cmd_pause.
+Correcting the provider's capability reporting would prevent this
+unsupported configuration from being enabled in the first place, rather
+than discovering it after receiving data. That is different from a pause
+timeout on hardware which supports the operation.
 
->
-> > +                     warned =3D true;
->
-> Altogether NIH _once().
+>    When an RX timeout interrupt (UART_IIR_RX_TIMEOUT) fires on a partial
+>    transfer (e.g. a few bytes typed at an interactive console or a short
+>    command waiting for a reply, count < 4096), hardware transfer completi=
+on
+>    will never occur while the remote peer is waiting for our response. Wi=
+th
+>    an unbounded for (;;) loop:
+>    - Those partial bytes in dma->rx_buf are never delivered anyway (even =
+if
+>      we wait forever until the user closes the port, serial8250_release_d=
+ma()
+>      terminates the channel without copying dma->rx_buf).
 
-dev_warn_once() uses a static flag at the call site, shared by all ports.
-After the first warning, subsequent stalls would remain silent even after
-recovery or reopening the port, including stalls on another UART.
+For a provider which never pauses or completes, retries cannot restore
+reception. A request/response peer can indeed leave the descriptor
+incomplete indefinitely, and closing the port then loses those bytes.
+Backoff and diagnostics limit the retry cost and expose the stall; they do
+not solve that liveness problem.
 
-The intended behavior here is at most one warning attempt per prolonged
-stall, while keeping later incidents diagnosable and limiting their
-aggregate logging rate.
+For pause-capable hardware, a recovery timeout does not have to prove
+that the failure is permanent. The concern is what happens after that
+timeout: the current recovery path discards the pending transfer and
+leaves RX on PIO until reopen.
 
+Is there a recovery approach that avoids an indefinite RX stall without
+turning a potentially temporary pause failure into loss of DMA for the
+rest of the open session?
+
+>    - UART RX remains permanently dead with RLSI/RDI masked and never fall=
+s
+>      back to PIO.
+>    - serial8250_rx_dma_flush_work() holds a runtime PM reference
+>      (guard(serial8250_rpm)(p)) for the lifetime of the open port.
+>    - On 8250_dw, dw8250_idle_enter() (8250_dw.c:151) sees
+>      serial8250_rx_dma_flush(up) =3D=3D -EAGAIN and silently aborts
+>      dw8250_set_divisor() and dw8250_check_lcr(), breaking baud-rate and
+>      LCR updates while rx_pause_pending is stuck.
 >
-> > +             }
-> > +             /* Notifications also cover completion or shutdown before=
- sleeping. */
-> > +             wait_event_hrtimeout(dma->rx_pause_wait, READ_ONCE(dma->r=
-x_pause_wakeup),
-> > +                                  ns_to_ktime(delay_us * NSEC_PER_USEC=
-));
-> > +             delay_us =3D min(delay_us * 2, USEC_PER_SEC);
-> > +     }
-> > +
-> > +     if (recover) {
-> > +             ret =3D dmaengine_terminate_sync(dma->rxchan);
-> > +             if (ret) {
-> > +                     /* Retain ownership and keep RX masked if DMA can=
-not be stopped. */
-> > +                     dev_err(p->port.dev, "failed to stop RX DMA: %d\n=
-", ret);
-> > +                     return;
-> > +             }
-> > +     } else {
-> > +             dmaengine_synchronize(dma->rxchan);
-> > +     }
-> > +
-> > +     scoped_guard(uart_port_lock_irqsave, &p->port) {
-> > +             restore_rx =3D recover || dma->rx_pause_pending;
-> > +             dma->rx_pause_pending =3D false;
-> > +             dma->rx_terminating =3D false;
-> > +             dma->rx_running =3D 0;
-> > +             if (dma->shutting_down)
-> > +                     return;
-> > +
-> > +             if (!restore_rx)
-> > +                     return;
-> > +
-> > +             /* Apply the current enables, including any intervening s=
-top_rx(). */
-> > +             serial8250_out_IER(p, p->ier);
-> > +     }
-> > +     if (recover)
-> > +             dev_warn(p->port.dev, "RX DMA failed, using PIO\n");
-> >  }
+>    If serial8250_rx_dma_flush_work() escalates to serial8250_rx_dma_recov=
+er(p)
+>    under p->port.lock once the stall threshold is reached (or immediately=
+ when
+>    dmaengine_pause() returns -ENOSYS / -EOPNOTSUPP), dmaengine_terminate_=
+sync()
+>    safely stops the channel before any buffer state is released and the U=
+ART
+>    recovers on PIO instead of wedging until close().
 >
-> ...
+> 2. Minor nit in drivers/tty/serial/8250/8250_omap.c:783-784:
+>    In omap_8250_shutdown():
+>      WRITE_ONCE(up->dma->rx_pause_wakeup, true);
+>      wake_up(&up->dma->rx_pause_wait);
+>    8250_omap uses its own synchronous omap_8250_rx_dma_flush() and never
+>    schedules rx_flush_work or sleeps on rx_pause_wait, so those two lines
+>    in omap_8250_shutdown() can be dropped.
 >
-> > -void serial8250_rx_dma_flush(struct uart_8250_port *p)
-> > +int serial8250_rx_dma_flush(struct uart_8250_port *p)
-> >  {
-> >       struct uart_8250_dma *dma =3D p->dma;
-> > +     int ret;
-> >
-> > -     if (!dma || !dma->rxchan || !dma->rx_running)
-> > -             return;
-> > +     lockdep_assert_held_once(&p->port.lock);
-> >
-> > -     dmaengine_pause(dma->rxchan);
-> > -     __dma_rx_complete(p);
-> > -     dmaengine_terminate_async(dma->rxchan);
-> > +     if (!dma || !dma->rx_running)
->
-> You introduced a helper serial8250_rx_dma_running(). Use it.
->
-> > +             return 0;
-> > +     /* A late interrupt must not hand a still-active receiver to PIO.=
- */
-> > +     if (dma->shutting_down)
-> > +             return -ESHUTDOWN;
-> > +     if (dma->rx_terminating)
-> > +             return -EIO;
-> > +     if (dma->rx_pause_pending)
-> > +             return -EAGAIN;
-> > +
-> > +     ret =3D serial8250_rx_dma_try_flush(p);
-> > +     schedule_work(&dma->rx_flush_work);
-> > +     return ret;
-> >  }
-> >  EXPORT_SYMBOL_GPL(serial8250_rx_dma_flush);
->
-> ...
->
-> >       /* Manually stop the Rx DMA transfer when acting as flow controll=
-er */
-> > -     if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_ru=
-nning && rx_timeout) {
-> > +     if (quirks & DW_UART_QUIRK_IS_DMA_FC && rx_timeout &&
-> > +         serial8250_rx_dma_running(up) && !up->dma->rx_terminating &&
-> > +         !up->dma->rx_pause_pending) {
->
-> Re-wrap it logically (also be consistent with parentheses
-> when & versus && is used).
->
->         if ((quirks & DW_UART_QUIRK_IS_DMA_FC) && rx_timeout &&
->             serial8250_rx_dma_running(up) &&
->             !up->dma->rx_terminating && !up->dma->rx_pause_pending) {
->
-> >       }
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+> Thanks,
+> Raul
