@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793744566;
-	b=o3nUuJ3D8MRCi94nLgWoHK7A64FMadTCEjccY19+DRu66Fqy3wGHNKi8XH/26RCcbzBL
-	 ry1qD6NKr4MK9QgG23bsV94d3MwkPf3sGyiGUbvy5l2LMd+q048ZiGTnCm3eZc9UKDirX
-	 ptpkteU8wO+cOg49Wo75/oz2voXnUSDHVWNFANoK1QefKQTxGs9RUsRxYCcjtcPiZgOKB
-	 9IHKbpz+FwOdzzpx/uVnn3mMuu721etFqNDKWo/vjvpWlKxS/V5hTP40P2edibhkEe8tO
-	 wEInJuQjGxF5anWgZCffts3yBjCcEQqFQkC0fNrYjkcZ1/pbglHGcSZ6dINh9TtNwfw==
+	t=1793744622;
+	b=yDtKyTEDKlYLDibLSmRlptnWaa4HfSVXYwCB5sI4/dXywzBut793uzN3fVBGVHU8D/8F
+	 hYz/9oycYt6GYa0U68rt9pexmKl8hldm9cwy+J45hgbbhEQfUpMYp0C1VXPTFoYrjsZcg
+	 3xZYHUYA/FO5IMWjZrFkIzmv+aygFNayV7DDNLwsvzjev7HvJAvx/iQ+5ftsduXgk/nrT
+	 2ewz/XM+rvXhKMIWWUUxG0phigcsb/030fGxEmaXBxGfetiU2goO7V9zcO7dBjpnhcUAY
+	 fCJB7uioySH6uj1I2rgSPgzrH8Kaz7cAAHiujZS5wyyZ0cHpS/urFEYvJYoQTd8GbAA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793744566;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793744622;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=WLbtZqIB8ghximvC9Aa0kqq6J8gIe5bRxNbyMhmtFlg=;
-	b=uyai1LODFU+VCS117fk2ORi8gxXmvruTdmo7WrTGKBJwJzxv7WfmlALxFongBIgZDp7+
-	 BwtXta9msEfcTYVu3yigUT2t1vTW95n8EQETeut23V6wb+bF3VABLsALOwqGMOkawfxiN
-	 0JVK1SswiLe6sTZdUP2U+hNPdy872B7ujgl0pf7jg+ClJcfFedqapy7OOau00uGWcJshD
-	 JVGvRhATSKxOVoQlouYp3rvzIjxmB6S3075+Jj4IGQtW2f7KijhMOtWdMxnPZZSPokhmz
-	 nYP38BZkUDWy7c+yygfRpCBAE1iMM8I4o4IWiwklRuBi0gt7y7H9VBv9eMrgNdEvtug==
+	bh=Qa1wzE1kZAxTS+6dzP+AXd2e6bJRsw99UOqzgu8gHJg=;
+	b=0s5JA2ldlM/etx142ICjAc8Dbp60Ey3L1XRdTK/0Pv7DLORC1njPloD0AfAOQ7KW/0vC
+	 Wt7ys3TKcuX6bBrZkJaMDxs8ufva8XzOMNXMMldMXlJgXh9+DlnxKK5B3EgDPXlaPOByH
+	 W7P9TpCGuo8zprCGOqdeTkn1S9TrOXk7g5GzqsL1aXC3fUT19R96X2mwdKdel/tQL8YYH
+	 bHZcl5KAJJ5dPv7dBZ5gAqV363Yli+U5oieCUYsbCWA5ZEgvkZMwIyBCSZ8EQXLoY6eyN
+	 K6RHfjDfiBRRzXtMtxGCDRLoJpQJdOee9AWKedQhP+rrzE+VNG5FCHecRQI+oV+pGkA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=j35CQ0RQ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OZ5mkujz;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAF07606A31B
-	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:22:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54165606A31B
+	for <linux-serial@vger.kernel.org>; Tue,  3 Nov 2026 22:23:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=j35CQ0RQ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DB091F000C1;
-	Tue,  3 Nov 2026 22:22:45 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OZ5mkujz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C44391F00919;
+	Tue,  3 Nov 2026 22:23:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793744565;
-	bh=WLbtZqIB8ghximvC9Aa0kqq6J8gIe5bRxNbyMhmtFlg=;
+	s=k20260515; t=1793744621;
+	bh=Qa1wzE1kZAxTS+6dzP+AXd2e6bJRsw99UOqzgu8gHJg=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=j35CQ0RQ7OYXCSPsVY+6lZRPMrsv3LogwHs90hM4FwaGJvaMkCnG0nLltFVIgGM8B
-	 b6EBrfPz0lsrac2Wd+/dUbxPMJN0siLG4a7obGYS+Fl8u0W/ELYrzP+L0dq+2SKE0e
-	 KJJeqMlEsGbdJT5jra9jSB+jBH69iJ/26cc9lcn+CBBq5cOZ4AEjT56weRbxcGW1Sp
-	 VxPOFjB5uT6PYT8miadclEX9pmV3EFljxHviwXWDGKRRi5IT0ZIXVxkCfz9p50NiSp
-	 5HntiUJxLg2+z0vEIKBqyHkZHOoVG8vRxbJadILmR2DyaUXrDBvo3rza4sT9PNVSj9
-	 727c0Q/cCw+1g==
-Message-ID: <sashiko-outbox-196102@kernel.org>
+	b=OZ5mkujzw933X+CfTiuv+1fH0x/z8Vk3he8Z3fiOXp4HBZkNkPhNkxw74GkCnz7OE
+	 91TOfJeZIAW0TgzpC8wdBoGUZEILpStYBpk39hiOhRQ8pHxj+vTCOeZK5wv7rQAiS0
+	 fCVjFbm/KcmLzLSeebUpsUvMp1hJhMG1ZhZzvLmYs3yGoq2dPaEqExRPzD/+t8/3qh
+	 W1h6A+mTDK92j+lm0c9dX0Hhfas8FplqQlPRiWadIMEGmGpWqOu/32ydHiXEOHnXoZ
+	 GfQPhYW5NyvRhrSBD1pBlkHy5r2BRi3YO54udOEAHJA08WxMFmL9csG2OapWU8j5/Y
+	 jds+WEIFKuQMg==
+Message-ID: <sashiko-outbox-196103@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 2/2] serial: core: Don't clobber the baud rate on
- hangup via B0
+Subject: Re: [PATCH v3 1/2] serial: core: Unify uart_get_baud_rate() success
+ return paths
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Maciej W. Rozycki" <macro@orcam.me.uk>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <alpine.DEB.2.21.2611032050590.15685@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2611032029130.15685@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2611030057510.15685@angie.orcam.me.uk>
- <alpine.DEB.2.21.2611032050590.15685@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2611032029130.15685@angie.orcam.me.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 03 Nov 2026 22:22:44 +0000
+Date: Tue, 03 Nov 2026 22:23:41 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,193 +61,137 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-- [High] serial: core: out-of-range hup_speed on B0 in uart_get_baud_rate_s=
-ave() returns 0
-- [Medium] serial: dz: dz_set_termios() saves unvalidated baud in hup_speed=
- breaking B0
-- [Low] serial: docs: stale uart_get_baud_rate kernel-doc identifier in dri=
-ver.rst
+- [High] serial: core: B0 fallback in uart_get_baud_rate() clobbers termios
 --
 
-commit 73f85543b84c52391e1ff13d5519c702bc72e894
+commit b1a1a662c408c018aa01ee6285ba7172be487d43
 Author: Maciej W. Rozycki <macro@orcam.me.uk>
 
-serial: core: Don't clobber the baud rate on hangup via B0
+serial: core: Unify uart_get_baud_rate() success return paths
 
-This commit saves the most recently selected baud rate in port->hup_speed
-and uses it instead of max(min, 9600) when hangup is requested via B0. It
-also renames uart_get_baud_rate() to uart_get_baud_rate_save() with a save
-parameter so serial8250_console_restore() can avoid modifying
-port->hup_speed without holding port->mutex.
+This commit merges the B0 return path in uart_get_baud_rate() with the
+regular range-checked return path in preparation for adding extra return
+actions.
 
 > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
 _core.c
-> index 012f22cf3a60e..18d42491e86d2 100644
+> index b06d2649be343..012f22cf3a60e 100644
 > --- a/drivers/tty/serial/serial_core.c
 > +++ b/drivers/tty/serial/serial_core.c
-> @@ -458,29 +458,32 @@ uart_update_timeout(struct uart_port *port, unsigne=
-d int cflag,
->  EXPORT_SYMBOL(uart_update_timeout);
-> =20
->  /**
-> - * uart_get_baud_rate - return baud rate for a particular port
-> + * uart_get_baud_rate_save - return baud rate for a particular port
-
-[Severity: Low]
-Does Documentation/driver-api/serial/driver.rst also need to be updated for
-this rename? It still lists uart_get_baud_rate under the kernel-doc
-identifiers for drivers/tty/serial/serial_core.c:
-
-Documentation/driver-api/serial/driver.rst:
-.. kernel-doc:: drivers/tty/serial/serial_core.c
-   :identifiers: uart_update_timeout uart_get_baud_rate uart_get_divisor
-
-which causes a kernel-doc warning when building the documentation and omits
-both uart_get_baud_rate_save() and the new static inline
-uart_get_baud_rate() in include/linux/serial_core.h.
-
-[ ... ]
-
-> @@ -519,10 +522,14 @@ uart_get_baud_rate(struct uart_port *port, struct k=
-termios *termios,
+> @@ -519,7 +519,7 @@ uart_get_baud_rate(struct uart_port *port, struct kte=
+rmios *termios,
 >  		 * Special case: B0 rate.
 >  		 */
 >  		if (baud =3D=3D 0)
-> -			baud =3D max(min, 9600);
-> +			baud =3D (port->hup_speed ?
-> +				port->hup_speed : max(min, 9600));
+> -			return max(min, 9600);
+> +			baud =3D max(min, 9600);
 > =20
-> -		if (baud >=3D min && baud <=3D max)
-> +		if (baud >=3D min && baud <=3D max) {
-> +			if (save)
-> +				port->hup_speed =3D baud;
+>  		if (baud >=3D min && baud <=3D max)
 >  			return baud;
-> +		}
 
 [Severity: High]
-What happens in uart_get_baud_rate_save() when B0 is requested and
-port->hup_speed is outside the [min, max] range passed by the caller?
+Can this break B0 hangup and trigger a division by zero when max is less
+than max(min, 9600)?
 
-Several 8250 drivers dynamically adjust port->uartclk from
-tty_termios_baud_rate(termios) before calling serial8250_do_set_termios() or
-dw8250_do_set_termios(). For example, in drivers/tty/serial/8250/8250_mid.c:
+Commit 091ea8e5d34e ("serial: core: prevent division by zero by always
+returning non-zero baud rate") removed the hung_up guard from the
+out-of-range fallback path in uart_get_baud_rate() because baud =3D=3D 0
+returned max(min, 9600) immediately before reaching the range check. With
+this change, B0 is subject to the baud <=3D max check, and if that fails it
+falls through into the termios-mutating fallback path:
 
-mid8250_set_termios()
-    unsigned int baud =3D tty_termios_baud_rate(termios);
-    ...
-    fuart =3D baud * 16;
-    ...
-    /* Gracefully handle the B0 case: fall back to B9600 */
-    fuart =3D fuart ? fuart : 9600 * 16;
-    ...
-    p->uartclk =3D fuart;
-    serial8250_do_set_termios(p, termios, old);
+drivers/tty/serial/serial_core.c:uart_get_baud_rate() {
+	...
+		if (baud =3D=3D 0)
+			baud =3D max(min, 9600);
 
-Similar logic exists in byt_set_termios() in
-drivers/tty/serial/8250/8250_lpss.c and dw8250_set_termios() in
-drivers/tty/serial/8250/8250_dw.c. In addition, port->uartclk or
-UPF_MAGIC_MULTIPLIER can be changed via uart_set_info() or
-serial8250_update_uartclk().
+		if (baud >=3D min && baud <=3D max)
+			return baud;
 
-If a high baud rate (such as 3000000 on Tangier/Penwell in
-mid8250_set_termios() or 5000000 on BayTrail in byt_set_termios()) is set f=
-irst,
-that speed is saved in port->hup_speed. When B0 is subsequently requested v=
-ia
-uart_set_termios(), port->uartclk is lowered for the B0 call, reducing max =
-in
-serial8250_get_baud_rate() below both port->hup_speed and the speed recorded
-in old:
-
-1. On try =3D=3D 0, baud =3D=3D 0 is replaced with port->hup_speed, which e=
-xceeds max.
-   Execution falls through, clears CBAUD in termios, encodes old's high baud
-   rate into termios (overwriting B0), sets old =3D NULL, and continues.
-2. On try =3D=3D 1, baud from old still exceeds max. Because old is now NUL=
-L, it
-   clips baud to max - 1, encodes that into termios, exits the loop, trigge=
-rs
-   WARN_ON(1), and returns 0.
-
-Returning 0 from uart_get_baud_rate_save() leads to a divide-by-zero in
-callers such as serial8250_get_divisor(), dw8250_get_divisor(), and
-uart_update_timeout(). Furthermore, because B0 in termios->c_cflag was
-overwritten with a non-zero speed, uart_set_termios() in
-drivers/tty/serial/serial_core.c no longer sees (cflag & CBAUD) =3D=3D B0:
-
-uart_set_termios()
-    /* Handle transition to B0 status */
-    if (((old_termios->c_cflag & CBAUD) !=3D B0) && ((cflag & CBAUD) =3D=3D=
- B0))
-        uart_clear_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
-
-so RTS and DTR are not dropped on hangup.
-
-A related issue occurs in mtk8250_set_termios() in
-drivers/tty/serial/8250/8250_mtk.c, which calls serial8250_do_set_termios()
-with old =3D=3D NULL (where max is (port->uartclk + tolerance) / 16) before
-calling uart_get_baud_rate() with max =3D port->uartclk:
-
-mtk8250_set_termios()
-    baud =3D tty_termios_baud_rate(termios);
-    serial8250_do_set_termios(port, termios, NULL);
-    tty_termios_encode_baud_rate(termios, baud, baud);
-    baud =3D uart_get_baud_rate(port, termios, old,
-                              port->uartclk / 16 / UART_DIV_MAX,
-                              port->uartclk);
-
-When a high-speed rate above (port->uartclk + tolerance) / 16 is saved in
-port->hup_speed and B0 is later requested, the first call inside
-serial8250_do_set_termios() sees port->hup_speed > max with old =3D=3D NULL=
- and
-overwrites port->hup_speed with the clipped rate (port->uartclk + tolerance=
-) /
-16 - 1 before mtk8250_set_termios() reaches its second uart_get_baud_rate()
-call.
-
-Should the B0 fallback clamp port->hup_speed to [min, max] (and avoid saving
-back a clamped rate over port->hup_speed when baud =3D=3D 0)?
-
-[Severity: Medium]
-Can saving port->hup_speed inside uart_get_baud_rate_save() also break B0
-hangup in drivers/tty/serial/dz.c when an unsupported baud rate within
-[50, 9600] is requested?
-
-In dz_set_termios():
-
-drivers/tty/serial/dz.c:dz_set_termios() {
-    ...
-    baud =3D uart_get_baud_rate(uport, termios, old_termios, 50, 9600);
-    bflag =3D dz_encode_baud_rate(baud);
-    if (bflag < 0) {
-        if (old_termios) {
-            /* Keep unchanged. */
-            baud =3D tty_termios_baud_rate(old_termios);
-            bflag =3D dz_encode_baud_rate(baud);
-        }
-        if (bflag < 0) {        /* Resort to 9600.  */
-            baud =3D 9600;
-            bflag =3D DZ_B9600;
-        }
-        tty_termios_encode_baud_rate(termios, baud, baud);
-    }
-    ...
+		termios->c_cflag &=3D ~CBAUD;
+		if (old) {
+			baud =3D tty_termios_baud_rate(old);
+			tty_termios_encode_baud_rate(termios, baud, baud);
+			old =3D NULL;
+			continue;
+		}
+	...
 }
 
-If userspace requests a baud rate in [50, 9600] that dz_encode_baud_rate()
-rejects (such as B200), uart_get_baud_rate() saves 200 into uport->hup_speed
-before dz_encode_baud_rate() returns -1 and falls back to old_termios or 96=
-00.
+Several in-tree callers can pass max < max(min, 9600) to
+uart_get_baud_rate():
 
-When B0 is later requested to hang up, uart_get_baud_rate() returns
-uport->hup_speed (200), dz_encode_baud_rate(200) fails again, and the fallb=
-ack
-block calls tty_termios_encode_baud_rate(termios, baud, baud) with the
-non-zero fallback rate. That overwrites B0 in termios->c_cflag, preventing
-uart_set_termios() from clearing TIOCM_RTS | TIOCM_DTR.
+1. In drivers/tty/serial/mvebu-uart.c, mvebu_uart_probe() allows
+   port->uartclk to remain 0 on non-extended UART0 ports when no DT clock
+   is present, and mvebu_uart_set_termios() then passes min_baud =3D 0 and
+   max_baud =3D 0:
+
+   drivers/tty/serial/mvebu-uart.c:mvebu_uart_set_termios() {
+	...
+	min_baud =3D DIV_ROUND_UP(port->uartclk, BRDV_BAUD_MAX *
+				OSAMP_MAX_DIVISOR);
+	max_baud =3D port->uartclk / 80;
+
+	baud =3D uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+	...
+   }
+
+2. When the UART clock is parented to a 32.768 kHz LSE oscillator,
+   stm32_usart_set_termios() in drivers/tty/serial/stm32-usart.c passes
+   max =3D uart_clk / 8 (4096), and lpuart_set_termios() /
+   lpuart32_set_termios() in drivers/tty/serial/fsl_lpuart.c pass
+   max =3D port->uartclk / 16 (2048) or port->uartclk / 4 (8192):
+
+   drivers/tty/serial/stm32-usart.c:stm32_usart_set_termios() {
+	...
+	uart_clk =3D clk_get_rate(stm32_port->clk);
+
+	baud =3D uart_get_baud_rate(port, termios, old, 0, uart_clk / 8);
+	...
+   }
+
+3. In drivers/tty/serial/serial_core.c, uart_set_info() checks
+   new_info->baud_base < 9600 as a signed int before computing
+   uport->uartclk =3D new_info->baud_base * 16 as a 32-bit unsigned int,
+   which can wrap to a small non-zero value (for example, 16 when
+   baud_base is 0x10000001) and yield max =3D 1 in
+   serial8250_get_baud_rate().
+
+When max < max(min, 9600) and userspace requests B0:
+
+- If old has a non-zero baud rate within [min, max], the first iteration
+  clears CBAUD and encodes old's speed into termios. Because B0 is
+  overwritten in termios->c_cflag, uart_set_termios() no longer sees a
+  transition to B0 and fails to drop TIOCM_RTS and TIOCM_DTR:
+
+  drivers/tty/serial/serial_core.c:uart_set_termios() {
+	...
+	/* Handle transition to B0 status */
+	if (((old_termios->c_cflag & CBAUD) !=3D B0) && ((cflag & CBAUD) =3D=3D B0=
+))
+		uart_clear_mctrl(uport, TIOCM_RTS | TIOCM_DTR);
+	...
+  }
+
+- If old is also B0 (or when max =3D=3D 0 in mvebu_uart_set_termios()), both
+  loop iterations fail the baud <=3D max check, clobber termios with
+  max - 1, trigger WARN_ON(1), and return 0. Callers such as
+  stm32_usart_set_termios(), lpuart_set_termios(), and
+  serial8250_do_set_termios() then pass baud =3D 0 to divisor calculations
+  and uart_update_timeout(), resulting in a division by zero.
+
+Note that the follow-up commit "serial: core: Don't clobber the baud rate
+on hangup via B0" changes the B0 assignment to:
+
+	baud =3D port->hup_speed ? port->hup_speed : max(min, 9600);
+
+which still fails the baud <=3D max check whenever port->hup_speed is 0
+(such as before any valid speed has been saved, or when max =3D=3D 0) or wh=
+en
+port->hup_speed exceeds a reduced max.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/alpine.DEB.2.21.261=
-1030057510.15685@angie.orcam.me.uk?part=3D2
+1030057510.15685@angie.orcam.me.uk?part=3D1
