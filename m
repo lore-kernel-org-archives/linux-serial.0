@@ -1,83 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793707806;
-	b=ObatXslvPKM7D2S95UubOd91WFCIc2+GGtwIqjT5MJVyyRQqVR51MLrxHO4caD8s3JWh
-	 H7KkNGdGTKCp7psirSXpmYqwpqpqwhxPRr1no6UjjdERNr6SmMKm0gSFrZnMSHTftvn4r
-	 xKo74+pVPgdkz9AcyOKhn61mFq33D7QBwAxcYwEL1/mZFgv+QL6ppMMPMxbta9zMn8uwn
-	 HfunxRfoaIb1UDOUkhTTAYFNBkMR9fpOtl2nr0JJKrCJLvsQ7Wq8jiLaEiX7TftZlrCaP
-	 WldnngPUgEsEjL1kzSy86XCGW0iVxuIfBpj/CnBEWyBe8o7KN/it79yJzcta2nGPNVQ==
+	t=1793710411;
+	b=GcbmVf9zBZSF2nOfObu8JAlB5ml4Gte95LYWyMfPDCpOvn40tuHo9FySLp/HN2mpmcOe
+	 D8zumuwqnyqNUtLUufj2zNpWphFEy7E4Uhjf/fftnkdqlV+bSkRoPaLbY4fL3ydv3HyF8
+	 8EleP1cqQ3a85Fk9zdHs7On20oFWTH5/gB1BOaTyMQWlF5TSvznwWRzEXIUregjZTJf0f
+	 81zr7wfaNspKGWf59haqriUrStgQvGF27OQRvBO1P4c4pRNEJUX9+7795nn1zcelXsVDm
+	 ETm1uJecR/SU8KnCVu7ROYaIn4fTdH1/Gi2VhxvkHFWnAZze+hCeBYL9ft5GwR0+qGw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793707806;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=lZloWcPDVM4dVpS9WmdN8nPPZc7i9no9wyUqZ5qH2JA=;
-	b=1MsZ+kLj3hbrrt9P9XfbBuFm24cqvfzSb3Bhz6NN8wkVycIPs/lHHxF7I8rcCKFri/1f
-	 pCDZQJEM1J2m5dLUxotEUaRgKL8N2veGFmuMtFfLCkkXAjGwGxpblsBCL6RFRUcAmR3Lu
-	 P656DImofWuZJ0t4NabTCyn9PTo8pdmllFkzKxIw8/xuXFFzSxHHzVR1NohS59PiOf+LZ
-	 yt2yF7oTFgQMxkQMQZJwYkMa/bmw+7WqZRsK3zhkdgG8nvm+NK6T9GTjr4POQpio5X+zk
-	 XWwfWC9MvxzmFF9l/ZG+0oYwix0bs80Y9DHp+Eq86sVnYuC/tZzxGdT+UssODoJgsQg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793710411;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=2S9p5aXlHLJbTEBexyM/MLcY9eb5i/Msz79aoiD2w+k=;
+	b=s27rHFOopdR0G/jUP16YKgTPvOUAGyLL42ne1dZkbxDjLECLz7ECJ/ilQuYPGDEtAjCR
+	 qADTD8hc6VNztoA8TfwRvy81sC/PZWi1QDVo8fxRqOTzgze9MbFFUv9yTiy0JRhNSi5N4
+	 zReMMTSX3HXHO5SL0e/4/sdsJii2Oxn4dfHY+PLqHZ96gKXjMLopVh8LVIvmVjsE8UZql
+	 G0LpfaXfrQGmfekAVlsVuaJkPt8/lHh15MvvnZaNe0h6InCDL6iUwAVkMqQDz+j2r6foZ
+	 T2GDSRAaT2wXjwkvukIqRWzDSU+8uJxSX4LW3fiefY9ZpEYDILcHbQwUBBMcCmBjHqA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Yxima1mh;
-	arc=none smtp.remote-ip=198.175.65.12
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TZiceSfc;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55B80606A324;
-	Tue,  3 Nov 2026 12:10:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55B80606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id E8230606A324;
+	Tue,  3 Nov 2026 12:53:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Yxima1mh
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793707806; x=1825243806;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HPAWnSLRmzqkl6s9RYyuENxxp9+uYSex0FG9pduGwWo=;
-  b=Yxima1mhhhJFWTD6SJx0EVMAxcTojfZzeD9dsfYvryIEFwZYM89QDNw6
-   NhicQr7w59Li1oPVae2DkFy5xad36vwL90SD9KVOrTwrAqu2MJYp6r48V
-   +HuL9GlToqx2h5l36aXaXXIq6Lpy6f9aCNTB/wn8R7pnrvQOmQ3IpgRE1
-   8T4PRtsEirJUrGPaqT6w0tVvG/7jAlzH5suM8sdoOz5n8/SCZRlNqi17L
-   8fxrTklvRAQRhj5QHigYx7cyTq26zupat8vhs3OeZr4czyjuz9nvjOsVs
-   PbAKgW9rVd3QmO+6wEnU+763Rr9SS+RnuZDfnW2+dK5DaNBP70MDHF0ji
-   g==;
-X-CSE-ConnectionGUID: 5iwcUJu1SdqjsioYxJLKcA==
-X-CSE-MsgGUID: AEox1gj8Rl+82Ax2aukMBg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2308614"
-X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2308614"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 04:10:05 -0800
-X-CSE-ConnectionGUID: DLS/RsaYQMKYDRjLO0nS9A==
-X-CSE-MsgGUID: c+UbXbirSpmEEJdXix7DlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6944952"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 04:10:02 -0800
-Date: Tue, 3 Nov 2026 14:09:59 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v6 7/8] serial: 8250_dw: discover Allwinner A523 FIFO
- depths through FCC
-Message-ID: <aunPFy2TCljGvV2q@ashevche-desk.local>
-References: <20261102-submit-h616-uart-fifo-v1-v6-0-25afcb346b0c@gmail.com>
- <20261102-submit-h616-uart-fifo-v1-v6-7-25afcb346b0c@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TZiceSfc
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D3D761F000C1;
+	Tue,  3 Nov 2026 12:53:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793710410;
+	bh=2S9p5aXlHLJbTEBexyM/MLcY9eb5i/Msz79aoiD2w+k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=TZiceSfcAhePpCCKzOQeUoonLbX9iyIJYY9aN1IcwKxQ4fTHOukJ1d0tDWtQXqaHr
+	 +eq2s+JExfXpl2mQKFqKGZnQKLU0shJshWsr/Fb8rfcAP+f5szXdcRqejgbo+mKKqc
+	 xse+Po4s+nc7Ad3EZHZuuyl59u/MYayfudvrGLoL84aUs1FVehcEt0magOHJYqMIOa
+	 fxHbttATmQ7Or0VETvpzaPkpBlfyvdpIIMF4aBzQsrqtyBf/1QM3Rl9x08Gkj8rwTm
+	 d1Gpe6hZPtBb22BTyP5gDab5nxd27B+yLqksfZ7tTdkIqvbd8S9tfiZmoUOczmgX4E
+	 5/wHeHMZqOyuA==
+Date: Tue, 3 Nov 2026 13:53:26 +0100
+From: Bartosz Golaszewski <brgl@kernel.org>
+To: Michael Zaidman <michael.zaidman@gmail.com>
+Cc: Jiri Kosina <jikos@kernel.org>, 
+	Benjamin Tissoires <bentiss@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Raman Varabets <kernel-linux-20260610-80b7ab08@raman.v1.sg>, Germain Hebert <germain.hebert@ca.abb.com>, 
+	Christina Quast <contact@christina-quast.de>, Rio Liu <rio@r26.me>, Bruno Giacomazzi <brunoceg1@gmail.com>, 
+	linux-input@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 03/15] HID: ft260: add GPIO support
+Message-ID: <7a3kc2tj2mh62aklablkma5teiinm6b6z2rlvrfwk76xcnd2rb@xwsgziioxz6u>
+References: <20261030223637.86907-1-michael.zaidman@gmail.com>
+ <20261030223637.86907-4-michael.zaidman@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -89,86 +64,164 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261102-submit-h616-uart-fifo-v1-v6-7-25afcb346b0c@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20261030223637.86907-4-michael.zaidman@gmail.com>
 
-On Mon, Nov 02, 2026 at 12:55:22PM -0700, James Hilliard wrote:
-> The A523 UART integration, also used by A527 and T527, has 64-byte FIFOs
-> on UART0 and 128-byte FIFOs on UART1 through UART7. Each controller reports
-> its TX/RX FIFO depth in bits 31:8 of the FIFO Clock Control register at
-> offset 0xf0. The field holds a byte count, not a logarithmic encoding.
+On Sat, Oct 31, 2026 at 12:36:25AM +0200, Michael Zaidman wrote:
+> Add gpiochip support for the FT260 multifunctional pins, including
+> GPIO2/GPIOA/GPIOG function selection via sysfs, and enable the
+> available GPIOs according to the active UART mode.
 > 
-> Read this field in the sunxi setup callback when platform data does not
-> provide a fixed FIFO size. A fixed size takes precedence, so H616 retains
-> its 256-byte configuration without accessing FCC. The probe has already
-> enabled the clocks and deasserted reset before invoking the callback.
-> Leave the FIFO clock-control bits untouched.
+> This supersedes the earlier pre-UART GPIO series:
+> https://lore.kernel.org/lkml/20230211115752.26276-2-michael.zaidman@gmail.com/
 > 
-> Validate the depth before generating the RX trigger table or setting the
-> transmit load. The quarter-full threshold must be positive and the
-> FIFO-depth-minus-two threshold must fit in the byte-sized table and RX
-> trigger API. Report an invalid depth and fail probe instead of generating
-> zero or truncated thresholds. This bound follows the current 8250
-> table and callback types, not a hardware FIFO-capacity limit; support
-> for larger thresholds would require widening that interface.
+> The gpio_chip.set callback returns int to match the current gpiolib
+> API, based on the adaptation originally contributed by Rio Liu
+> <rio@r26.me>.
 > 
-> Select this setup for the A523 compatible. Derive the transmit load and
-> RX threshold table from the discovered depth using the common sunxi
-> helpers. This handles the different FIFO sizes with one compatible and
-> one receive-trigger mapping.
+> Read the current GPIO state before writing so a set does not clobber
+> other pins with a zero shadow. Apply direction and value in one
+> feature report, and return a failed value write to gpiolib. UART mode
+> OFF clears only UART-owned bits. Reject an out-of-range uart_mode
+> index (reported by Sashiko).
 > 
-> Like H616, this integration has Allwinner-specific debug-divisor and
-> RS485 registers overlapping the generic DesignWare feature probes. Use
-> the common sunxi PIO setup, BUSY-safe integer divisor programming and
-> software RS485 handling. Keep the APB clock gate enabled during termios
-> updates with SKIP_SET_RATE.
+> Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
+> 
+> ---
+
+There's a lot of sashiko comments to address but a few additional nits
+below.
 
 ...
 
->  struct dw8250_platform_data {
->  	u8 usr_reg;
->  	u32 cpr_value;
-> +	/* Fixed FIFO depth; zero selects discovery during setup */
-
-But make the code clearer in this sense.
-
->  	unsigned int fifo_size;
->  	unsigned int quirks;
-
-I'm wondering if we can encode the FIFO size (as power-of-2) into quirks,
-but this might be harder to follow in the code.
-
->  	int (*setup)(struct uart_port *p);
-
->  	p->fifosize = data->pdata->fifo_size;
-> +	if (!p->fifosize) {
-> +		u32 fcc = dw8250_readl_ext(p, SUNXI_UART_FCC);
 > +
-> +		p->fifosize = FIELD_GET(SUNXI_UART_FCC_FIFO_DEPTH, fcc);
+> +static int ft260_gpio_set(struct gpio_chip *gc, u32 offset, int value)
+> +{
+> +	int ret = 0;
+> +	struct ft260_gpio_read_request_report buf;
+> +	struct ft260_gpio_write_request_report rep;
+> +	struct ft260_device *dev = gpiochip_get_data(gc);
+> +	struct hid_device *hdev = dev->hdev;
+> +
+> +	if (offset >= FT260_GPIO_TOTAL) {
+> +		hid_err(hdev, "%s: invalid offset %d\n", __func__, offset);
+> +		return -EINVAL;
 > +	}
-
-	if (data->pdata->fifo_size) {
-		p->fifosize = data->pdata->fifo_size;
-	} else {
-		u32 fcc = dw8250_readl_ext(p, SUNXI_UART_FCC);
-
-		p->fifosize = FIELD_GET(SUNXI_UART_FCC_FIFO_DEPTH, fcc);
-	}
-
-> +	/*
-> +	 * The byte-sized 8250 RX trigger interface requires positive,
-> +	 * representable thresholds. Larger thresholds require widening it.
-> +	 */
-> +	if (p->fifosize < SUNXI_UART_RXTRIG_QUARTER_DIV ||
-> +	    p->fifosize - SUNXI_UART_RXTRIG_FULL_MARGIN > U8_MAX)
-> +		return dev_err_probe(p->dev, -EINVAL,
-> +				     "invalid FIFO size %u\n", p->fifosize);
 > +
->  	up->capabilities = UART_CAP_FIFO | UART_CAP_NOTEMT | UART_CAP_AFE;
+> +	ft260_dbg("offset %d val %d\n", offset, value);
+> +
+> +	mutex_lock(&dev->lock);
 
--- 
-With Best Regards,
-Andy Shevchenko
+Use lock guards from linux/cleanup.h.
 
+> +
+> +	if (!(dev->gpio_en & BIT(offset))) {
+> +		hid_err(hdev, "%s: wrong pin function %d\n", __func__, offset);
+> +		ret = -EINVAL;
+> +		goto exit;
+> +	}
+> +
+> +	ret = ft260_hid_feature_report_get(hdev, FT260_GPIO, (u8 *)&buf,
+> +					   sizeof(buf));
+> +	if (unlikely(ret < 0)) {
+> +		hid_err(hdev, "%s: cannot get GPIO: %d\n", __func__, ret);
+> +		goto exit;
+> +	}
+> +
+> +	rep.report = FT260_GPIO;
+> +	rep.gpio = buf.gpio;
+> +
+> +	if (offset < FT260_GPIO_0_5_COUNT) {
+> +		if (value)
+> +			rep.gpio.vals |= !!value << offset;
+> +		else
+> +			rep.gpio.vals &= ~BIT(offset);
+> +	} else {
+> +		offset = offset - FT260_GPIO_0_5_COUNT;
+> +		if (value)
+> +			rep.gpio.ex_vals |= !!value << offset;
+> +		else
+> +			rep.gpio.ex_vals &= ~BIT(offset);
+> +	}
+> +
+> +	ft260_dbg("dirs %#02x vals %#02x ex_dir %#02x ex_vals %#02x\n",
+> +		  rep.gpio.dirs, rep.gpio.vals,
+> +		  rep.gpio.ex_dirs, rep.gpio.ex_vals);
+> +
+> +	ret = ft260_hid_feature_report_set(hdev, (u8 *)&rep, sizeof(rep));
+> +	if (unlikely(ret < 0)) {
+> +		hid_err(hdev, "%s: cannot set GPIO: %d\n", __func__, ret);
+> +		goto exit;
+> +	}
+> +
+> +	dev->gpio = rep.gpio;
+> +	ret = 0;
+> +exit:
+> +	mutex_unlock(&dev->lock);
 
+That way you'll avoid this label. Same elsewhere.
+
+> +	return ret;
+> +}
+> +
+> +
+> +	hid_info(hdev, "enabled GPIOs: %04x\n", dev->gpio_en);
+> +
+> +	dev->gc = devm_kzalloc(&hdev->dev, sizeof(*dev->gc), GFP_KERNEL);
+> +	if (!dev->gc)
+> +		return -ENOMEM;
+
+Why is this dynamically allocated? Make it part of ft260_device.
+
+> +
+> +	label_sz = strlen(dev_name(&hdev->dev)) + strlen(prefix) + 1;
+> +	label = devm_kzalloc(&hdev->dev, label_sz, GFP_KERNEL);
+> +	if (!label) {
+> +		ret = -ENOMEM;
+> +		goto exit;
+
+Just return here? Why the label?
+
+> +	}
+> +	snprintf(label, label_sz, "%s%s", prefix, dev_name(&hdev->dev));
+
+devm_kasprintf()?
+
+> +	hid_info(hdev, "initialize gpio chip on %s\n", label);
+
+Drop logs like this, they add nothing except useless noise. Same
+elsewhere.
+
+> +
+> +	dev->gc->label			= label;
+> +	dev->gc->direction_input	= ft260_gpio_direction_input;
+> +	dev->gc->direction_output	= ft260_gpio_direction_output;
+> +	dev->gc->get_direction		= ft260_gpio_get_direction;
+> +	dev->gc->set			= ft260_gpio_set;
+> +	dev->gc->get			= ft260_gpio_get;
+> +	dev->gc->base			= -1;
+> +	dev->gc->ngpio			= FT260_GPIO_TOTAL;
+> +	dev->gc->can_sleep		= true;
+> +	dev->gc->parent			= &hdev->dev;
+> +
+> +	/* Wakeup chip */
+> +	(void)ft260_hid_feature_report_get(dev->hdev, FT260_CHIP_VERSION,
+> +					(u8 *)&ver, sizeof(ver));
+> +
+> +	ret = ft260_hid_feature_report_get(hdev, FT260_GPIO, (u8 *)&gbuf,
+> +					   sizeof(gbuf));
+> +	if (ret < 0)
+> +		hid_warn(hdev, "cannot read GPIO state: %d\n", ret);
+> +	else
+> +		dev->gpio = gbuf.gpio;
+> +
+> +	ret = devm_gpiochip_add_data(&hdev->dev, dev->gc, dev);
+> +	if (ret < 0)
+> +		hid_err(hdev, "cannot add GPIO chip %d\n", ret);
+> +exit:
+> +	return ret;
+> +}
+> +
+>  static int ft260_get_system_config(struct hid_device *hdev,
+>  				   struct ft260_get_system_status_report *cfg)
+ 
+Bart
