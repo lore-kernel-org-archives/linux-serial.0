@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793821821;
-	b=nuSNVLWkm+M++bpwVNO/bH3OaNOSQw+e/bmVKPZnictEi3sdOWuJCHlmVm4HMLGACAth
-	 lnWIwYDmZYwwS+gK9MDogoZobHB5jIQF3YfCKobBC5C7JvJsfyZeE6zUbBPrepBWJ6vbw
-	 mjk04ZAt5VxM9GUbF4aJCj0u+hOKzIup7OYOZfdtuKriuVi42SZpbyI4A3Sgwx3QYbmFt
-	 hB50ahpcgj5DFfTC9iHr6JqXF3cjJBUQGqeqKJbYezz8io+dCztr1BQ678kv7K/TvpeyM
-	 +OhUppEVa6Gp6XawGAUqHIZcR56yN2Zr9JmzyvOO+E4IRdoj/p559tiP064KghXd3Fw==
+	t=1793821851;
+	b=Kk2RgUWvA3UdFLgwOiKDD0jwgi6x+WGCzjdiqWW/IuiXVDpI2zzhBks7kq/lkX8toEK0
+	 Jn2/wFBGr3bRvEHrGiN+uDrhZ24nx1mkBqLeHbXOZ/BZLAaT1WveYW+jp0fc3wfpSR8/j
+	 8L3BqcZCLpZBNxXb0J4K2vkuKuf1g2/TENmDa6X1nBhgjts90jtHi1UwhlUJqg5+lKYQi
+	 SXKl8V3opwOoVlOeVHySDqLc2iMdQ/hhuE0KLhCX9maNnCMBAZL4AeYrVHMDVQ/uzTcNG
+	 GDiCVBCf3GrAnDXx4dK/PskacepuHSn6hUd2jpAvVP9DSoKJk5EYiwHEdIM4VlVJ+Kw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793821821;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793821851;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
-	bh=gDybWaXH0yVqSHGh6cSao1kY+huQ+XTPXQ1Vld4D+UM=;
-	b=xvAKJcfcSb8er7MuOaUQcLVttyjSMGxHi8lHi0mxVKthbVNkdruKZBYrQvDxGCb933HB
-	 WM/jSq6qC9lhqKYf8ZyOV9o/we/9mzjBQrYmqKF4jTrAH7+oh1g/abAs4YlMITocR5hCt
-	 e8b22RgBuvqOAO+m8oVAKIEunUGsJKUqXOHtGXuiGIBjD1UwSHxbUpkIw43tObzNyoG9b
-	 kODG2gSdDV2qj4MIGJwY8Fsu7q7j+8JYJv66IFJG2iu7+FyiRwo5QyKqspROQw1t0Qiht
-	 0gyC+0MV2xmQaD2A0WuogR8EStdASdWEKvZFpJdkkUXI1qV7MUO+uH4rP2C91omj4kw==
+	bh=PUZ4tW9HsyUaK/ejkkNMI5ANy0GmRkIlRIJ6yNjac0o=;
+	b=4kNxPO0Esj3RGRZPEswHBDSmiROpcxLXoOT0aE4UqNjBFomPWx07lrCYRH18i5mJubof
+	 qQ8dFM3oy4HdJ4WGIzNCzcbyTjZT6rEC1Z99Umxxe6TNMAoRUsaofurTyWfGrUfKBXQaY
+	 F7/yNLztUBrqq+Y54tuUu5gmaLPr7yEB8bSV4mWLH5manRGU/xJNpd7OU9VZ346wAPhF7
+	 HeWAeXBiFJv1mc49kKyFtG1Io1X7XSmmfKhx5Sf99tWzYsE2Lie11jkEsBvXALiqZkWuT
+	 uX36dNKQoMVk7/opHjRUyOqD2aK5VLNlKBRnhB055cHLZ5wZOFFX2+YU5mREmgw1K1g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ViWv5liE;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iqFhZDQ3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22BA6606A855;
-	Wed,  4 Nov 2026 19:50:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1003F606AC25;
+	Wed,  4 Nov 2026 19:50:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ViWv5liE
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5EE1F000C1;
-	Wed,  4 Nov 2026 19:50:08 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iqFhZDQ3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFEC31F00919;
+	Wed,  4 Nov 2026 19:50:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793821820;
-	bh=gDybWaXH0yVqSHGh6cSao1kY+huQ+XTPXQ1Vld4D+UM=;
+	s=k20260515; t=1793821850;
+	bh=PUZ4tW9HsyUaK/ejkkNMI5ANy0GmRkIlRIJ6yNjac0o=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=ViWv5liEfHdMHPO8R1wapbcJqOA3zpGPpbB02hMT5/E0508nWx30DxqIPL6KtEmgU
-	 u+pmFn3FsOd19p4MgLsNq//oFD4EhVxfbRb3hFQDajUha4PG308MHKfbBxuQRI2T+1
-	 gpfAFci1AHyTvujOOroEbIobGBHWkRbja9thyu+sIlV6GnLkbKj+7KO+0ZAH32xVH8
-	 iBv7uhmdL2bAAOXVUHaVgSNDhqWBsAdgXyxjuxMQt4FvbC+ZMkyYx1jsvDEISH0f4o
-	 af3/XVxyIwOpd+kA2KJQBzwNtAgTJZ+nIEKqRvJiOre/ZrMnKSk9pNUZKOAQUsYWh4
-	 hiwj+uPWiEFJg==
+	b=iqFhZDQ35GfK/vsXy+ylTu3Eh9YrS9nTSq27+28SnBC9XKvW7PfMWDO9W5Ft0iDiC
+	 2su6MPY9k2TxuW2AnVg2vkBoLPH5Ce+Yj7iPgWE1OMfQXuAjt+wKv9ns1AIE6Zh8f2
+	 36rTQxsqFfC8trxeiSZnRnFYf6vYHW9H/wwq7q3bPyDytQtzWderj9LRXTMixQp4Qn
+	 iDLkoWDCDGU0TpyQelcs1HXFXKLJrD35LCYzeMiq0HAZIegNRaAkkGVKs79qb+wzhh
+	 UnoLohKjRfX7+w2z/A62dlh5PLszggZKXcxYK/t9f4zySuslTWVXxeONmWQtVIKX7q
+	 3JuDh2CyL543w==
 From: Christian Brauner <brauner@kernel.org>
 To: linux-fsdevel@vger.kernel.org
 Cc: Linus Torvalds <torvalds@linux-foundation.org>,
@@ -100,9 +100,9 @@ Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	linux-debuggers@vger.kernel.org,
 	"Christian Brauner (Amutable)" <brauner@kernel.org>,
 	Chuck Lever <cel@kernel.org>
-Subject: [PATCH RESEND v2 02/30] jfs: let procfs copy in writes to the loglevel file
-Date: Wed,  4 Nov 2026 20:50:06 +0100
-Message-ID: <20261104-work-procfs-fs-v2-2-319e0f9a8aae@kernel.org>
+Subject: [PATCH RESEND v2 04/30] lockd: let procfs copy out reads of nlm_end_grace
+Date: Wed,  4 Nov 2026 20:50:36 +0100
+Message-ID: <20261104-work-procfs-fs-v2-4-319e0f9a8aae@kernel.org>
 In-Reply-To: <20261104-work-procfs-fs-v2-0-319e0f9a8aae@kernel.org>
 References: <20261104-work-procfs-fs-v2-0-319e0f9a8aae@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -116,49 +116,46 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1370; i=brauner@kernel.org; h=from:subject:message-id; bh=izEZyN2ciF2azWBwOiarD7rxdH5SrLb74RUgxhmuQ3M=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS97tGJzso6nn/w61mbive7Xqy3zX3zdMnSHJ2eBVw3m Q2DcmIjOkpZGMS4GGTFFFkc2k3C5ZbzVGw2ytSAmcPKBDKEgYtTACZyciEjw/nFJ7zrmRr3TTvN 7yT61kBSiuve9sV8G24zvhXijXX584zhr/RSZtXdspF7F/LOFVzmc/vt+qo5X9YsanqxkXF3yLP QUzwA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1305; i=brauner@kernel.org; h=from:subject:message-id; bh=yC83pog7S4Eh2+psAQ8qDYZ/OTNKlefl3tGbza44dqI=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS97tFPEq3Pk861Kea+tknP5Pec7S2X9JWOzJkzvcjg8 eGGlXfdOkpZGMS4GGTFFFkc2k3C5ZbzVGw2ytSAmcPKBDKEgYtTACZS/43hr/CRtGIJZ4n01d4b H1v+y1f677Dj1MpcFgcZT/+6tVNuRDEynBQ9vcEl403OpO9xU4NMHs3nFGp3Oh6vtE0lecu7jQH v+AE=
 X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
 Content-Transfer-Encoding: 8bit
 
-Implement ->proc_write_buf() so procfs copies in what is written before
-it pins the entry, and take the level from that copy. Writes larger than
-PAGE_SIZE - 1 bytes fail with -EINVAL now and so do empty writes, which
-looked at a byte that wasn't written before.
+Implement ->proc_read_buf() so procfs copies what is read to userspace
+after it unpinned the entry.
 
+Acked-by: Chuck Lever <cel@kernel.org>
 Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 ---
- fs/jfs/jfs_debug.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ fs/lockd/procfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/jfs/jfs_debug.c b/fs/jfs/jfs_debug.c
-index 5eb35b0d420f..e1c0211a6a32 100644
---- a/fs/jfs/jfs_debug.c
-+++ b/fs/jfs/jfs_debug.c
-@@ -23,13 +23,10 @@ static int jfs_loglevel_proc_show(struct seq_file *m, void *v)
- 	return 0;
+diff --git a/fs/lockd/procfs.c b/fs/lockd/procfs.c
+index 852cca8c3588..64195c564cd3 100644
+--- a/fs/lockd/procfs.c
++++ b/fs/lockd/procfs.c
+@@ -40,7 +40,7 @@ nlm_end_grace_write(struct file *file, char *buf, size_t size, loff_t *pos)
  }
  
--static ssize_t jfs_loglevel_proc_write(struct file *file,
--		const char __user *buffer, size_t count, loff_t *ppos)
-+static ssize_t jfs_loglevel_proc_write(struct file *file, char *buffer,
-+		size_t count, loff_t *ppos)
+ static ssize_t
+-nlm_end_grace_read(struct file *file, char __user *buf, size_t size,
++nlm_end_grace_read(struct file *file, char *buf, size_t size,
+ 		   loff_t *pos)
  {
--	char c;
--
--	if (get_user(c, buffer))
--		return -EFAULT;
-+	char c = buffer[0];
+ 	struct lockd_net *ln = net_generic(current->nsproxy->net_ns,
+@@ -51,12 +51,12 @@ nlm_end_grace_read(struct file *file, char __user *buf, size_t size,
+ 	resp[1] = '\n';
+ 	resp[2] = '\0';
  
- 	/* yes, I know this is an ASCIIism.  --hch */
- 	if (c < '0' || c > '9')
-@@ -40,7 +37,7 @@ static ssize_t jfs_loglevel_proc_write(struct file *file,
+-	return simple_read_from_buffer(buf, size, pos, resp, sizeof(resp) - 1);
++	return memory_read_from_buffer(buf, size, pos, resp, sizeof(resp) - 1);
+ }
  
- static const struct proc_ops jfs_loglevel_proc_ops = {
- 	.proc_show	= jfs_loglevel_proc_show,
--	.proc_write	= jfs_loglevel_proc_write,
-+	.proc_write_buf	= jfs_loglevel_proc_write,
+ static const struct proc_ops lockd_end_grace_proc_ops = {
+ 	.proc_write_buf	= nlm_end_grace_write,
+-	.proc_read	= nlm_end_grace_read,
++	.proc_read_buf	= nlm_end_grace_read,
+ 	.proc_lseek	= default_llseek,
  };
- #endif
  
 
 -- 
