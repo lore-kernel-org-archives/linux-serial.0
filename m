@@ -1,57 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793789242;
-	b=ebaPUrR+292VoIYM6NuOsCj7PWD8l91X6hBOINySGsO0Mt39zv06ORgNnh2NbSID0xWo
-	 MbAsAWg2vzXKMo2GXS0NOd3hVMbaMCqPRN81gtmBhVO53W26q9a9AI7VqML6I7V/zzbrw
-	 W6kgV5UnfCPznAv6wIg0laXgabw+JijuqdQFq+EABImU+TohTkUsEM40C/Yp6HT87UcvI
-	 pjsiE7F1VxBe9zoBPj5c6STBqlkX4isEXnfLSzunVjWMWkY1ZCuzY7Qcxm3cqM4BzdHRs
-	 iJD7D+Ewjy2RI2hD/EFOP3+zlzFKcElEUILs1ACFopgFE2o75loYeFC6jg1mnop0oYA==
+	t=1793789293;
+	b=vQxo4+wxOTGjogGKXwE3drLGByTXy3HN/yHtoSMkYmhFDo8SliP3VemAI/boEUt4BXBg
+	 7WjV7tg7f3kdYmG7pBbFkgRC6uFs7NKDOuv0mbSP0JL0dQV3kRiIke8nrtbRKljJid3pZ
+	 oXICmVmfizQL30Cabq2lMXj+V1uBD+5rKGnewraSYpYLMq52ae78cQMW2H7HOEwfBtxIN
+	 yebcSkVLlDFc4C8KWjG4KMbuEZXxpx4ttUGQp6W1rF6pMac8iXxKw4mMernavH8tixgeN
+	 2XyZF56+uZEmvyJ1WB/uR92+EZoe2voEng4rhYJvTPqfX+YkyAmbk2daZLAOnVKlEnQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793789242;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=LChWdjSPYOMXY/Lwpo76VTco/6Lcvm8hi4w53u27brQ=;
-	b=bFTr0AO/C+ZdZJC9vOQ0zLbgGycFC+rbDgqHWlSaX7GfC6GaVrPdoliBZOoULX8hCoyF
-	 8p3fXxLdEOykOo2TpKKNDl4efhzFXsEXZjG+5lhBHhiBUEW2qI4YqJz78NWAt9zT6o8lt
-	 LsWk0FUuE6RSELoSjKQARH//pa5Kob2AeO7KaJIRN4xcS0ruQJ+UTfUc/x4OFjZusKCkC
-	 LbuO5B5e1rTdPl0e29x4C1wyRRYRcg3ffJGsQFua4KyxMUNtUIj88pdG4KkKKrkek/xSo
-	 6umRXJkd8Ai65Klx9ZlIMXACEjWmzrR4IgHG9f/r359MLViufEr6NzwR+VWy/ZEpy0g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793789293;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=jozP82KH6glhGWXgzZRzNLlRupxlnORo/58rZr7qZ9M=;
+	b=KFzIaCCFkgA7zb9McA29wji4nd+R/X5IJLAPq3ZzAgQbtlFD9BKxY3t8TJqJlbM73ieB
+	 S4Pw4ZA8APw2YIsOkmkNm2gkng53yaDeJDmbMxfE8WhQgUdzA7ECy7WpHjiMsEyF2UyYe
+	 CkzY3PIH9iYGdX8AKn1LLkmW5JW0+PSAkGJE11HG9CXCIQq27zcV92TzKKyPiHk1oNaP4
+	 AS0u+I2psXHqNmEdt6vFcFniq7Qn3tQ3U2K5FMgzZ3+NYptGc2eBatIAKDacKlhhKmyZ1
+	 LOYEBLdF6rJj9VkbYcYZRn+yCgbLjUvgMCPucQsClsu/uJ6Tg8zYLEWWpy3V4Xw38bw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hQNMIWKS;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fZownUSi;
+	arc=none smtp.remote-ip=192.198.163.16
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D5F7606A326
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 10:47:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D720606A31B;
+	Wed,  4 Nov 2026 10:48:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D720606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hQNMIWKS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95BAC1F000C1;
-	Wed,  4 Nov 2026 10:47:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793789241;
-	bh=LChWdjSPYOMXY/Lwpo76VTco/6Lcvm8hi4w53u27brQ=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=hQNMIWKSPJthQGHptARHbkSH4Wgk+XTntRayjwQaNf1+sPPsR3FoeRx7JNh5PLPaL
-	 9r8syyB9R2/db4cRq7aq+xuyhVnRZBoS7a8NDI3cK8YDJO/FhHavYdntQLECGf3ifg
-	 EEwEIpgHJL59ac3X1GVJx2YbgZ/qRGl/c+KlXK6QwBnvzBYcmNiPYW8yy/q3X84mG+
-	 ywn5N7jv/w+5kDP0iJ4PSxXqXwY2H1oNY/GGHnmpqJuFBNuzAoASd1yulvqqTHNC2b
-	 95rXy8VqkFOf5mvxcwbqEdKe5VpAeN+zc5P0JlAl9f0JFjs0kzAWm2jtf9xCPpuJPz
-	 PfF7h/dv0CtOA==
-Message-ID: <sashiko-outbox-197119@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/2] serial: core: do not hold the port mutex while
- waiting for references
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261104-serial-core-remove-deadlock-v1-1-6a30597adcbf@vaisala.com>
-References: <20261104-serial-core-remove-deadlock-v1-0-6a30597adcbf@vaisala.com>
- <20261104-serial-core-remove-deadlock-v1-1-6a30597adcbf@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 04 Nov 2026 10:47:21 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fZownUSi
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793789293; x=1825325293;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9WOXcToYwIQoz7fhImQHKUc1KH3haX4Er1ncPbI21WA=;
+  b=fZownUSiIhWy1NDFoqIJUMDiCpWvxVAKV9TvP1zyL35DDVrVyUv3NqTF
+   k7eAclEu9pQqpNnsBvFTY9cfJNfZ7rBCTBGei803suZ0PnTxsc+6wg5E0
+   r9JQmVIsNvawtxyQ0aVv1qbcZkbqFIN7nDuhjfcyL7pDYgC6O+O4rdLLE
+   FlOIIlOFwBMgTgGN0wWnqr7Tt7hgolVCkizMtKEovLHiG3CIBgnlb3ej7
+   BB1zGqugEXl9WJjGeFjhD/b27uR6gw1NrJaJQ/+49BVWtUI9Tj6jeqXvO
+   qa9VhvgW/lp2sxoFjvvr4c65VducQT9JsGUfa9DubZUKn8KLAfxNoHvcH
+   A==;
+X-CSE-ConnectionGUID: MBCBN/0iTCu/hPZq7aFqwA==
+X-CSE-MsgGUID: L+tbilk2TkuqeH2cFzEhug==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2552440"
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="2552440"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 02:48:13 -0800
+X-CSE-ConnectionGUID: h8C2zJTFRfq6dw4VZbAfEw==
+X-CSE-MsgGUID: AZLoV3SzT9OTjAmHCmqQ3Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="8558196"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 02:48:09 -0800
+Date: Wed, 4 Nov 2026 12:48:06 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v7 12/12] serial: 8250_dw: configure RX trigger
+ thresholds for Octeon
+Message-ID: <ausNZqZrR3wqQjf7@ashevche-desk.local>
+References: <20261103-submit-h616-uart-fifo-v1-v7-0-c9e248d685c1@gmail.com>
+ <20261103-submit-h616-uart-fifo-v1-v7-12-c9e248d685c1@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,33 +86,40 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261103-submit-h616-uart-fifo-v1-v7-12-c9e248d685c1@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-> serial_core_remove_one_port() takes the port mutex and then waits for
-> the uart_port_ref() holders to drop their references. Since commit
-> 8ca59f7baee7 ("serial: fix ioctl hangup race") uart_wait_until_sent()
-> takes the port mutex on every poll iteration to check for the hangup
-> before it touches the hardware, while holding its reference for the
-> whole wait. A tcdrain() in flight when the port is removed therefore
-> deadlocks: the removal holds the mutex and waits for the reference,
-> the drain holds the reference and waits for the mutex. Both tasks sit
-> uninterruptible, and the port is unusable until a reboot.
->=20
-> Reproduced by unbinding a UART driver while a process drains a few
-> kilobytes at 300 baud: the unbind blocks in wait_event() under the
-> mutex, the drain in mutex_lock(), and reading the driver's proc file
-> blocks on the same mutex.
->=20
-> [ ... ]
-> merge.
->=20
-> Fixes: 8ca59f7baee7 ("serial: fix ioctl hangup race")
-> Cc: <stable@vger.kernel.org> # 6.18.y and older need the open-coded form,=
- see below
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+On Tue, Nov 03, 2026 at 02:40:05PM -0700, James Hilliard wrote:
+> Octeon uses the DesignWare receive-trigger mapping with a 64-byte FIFO,
+> giving thresholds of 1, 16, 32 and 62 bytes. Its setup bypasses
+> dw8250_setup_port(), so it does not install the common trigger callbacks.
+> PORT_OCTEON also has no static trigger table, so rx_trig_bytes is not
+> exposed.
+> 
+> Supply the fixed depth from platform data when firmware has not provided
+> one and initialize the common trigger table before port registration.
+> This makes rx_trig_bytes available while preserving the Octeon port type
+> and register accessors.
+> 
+> Select DMA before filling in the default depth, as before when the 8250
+> core supplied that default during registration. Thus the new trigger
+> setup preserves which ports attach DMA and their existing burst sizes.
 
-Sashiko has reviewed this patch and found no issues.
+...
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104-serial-cor=
-e-remove-deadlock-v1-0-6a30597adcbf@vaisala.com?part=3D1
+> +	if (!p->fifosize)
+> +		p->fifosize = data->pdata->fifo_size;
+
+In this case I would use ternary Elvis:
+
+	p->fifosize = p->fifosize ?: data->pdata->fifo_size;
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
