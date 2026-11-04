@@ -1,55 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793779113;
-	b=i+yOVzDhNAeIv4K/htkaEeHaXCzZwIJh27E0BpOIvvD5fSghZCayHYXwI6nntX0RmkiD
-	 M6XHnB9vbmMskdYFHDBzqNInh5ceoEKHGkDvRA6zIox3HaJvJmOef6ZBrvDviDxrXeVUE
-	 FNBAUPK++wScgqKqzxWQTWbROIy0O6a/Vr3ne81pEYACTa4dS0VxAj/ZI1UR5VfTwe5ud
-	 msA7/9T46b1Sxb8K3xVgW1J4ThnlkZrPWJ+vH1WnKIr9Ggy4oHQ4RJuB/Ro+nTwSLcL9Y
-	 tGlT6plnQhT6rkexEz3zGoiAihRkSK8KBBEvGx1d2R5DRJfDQT/rpDT7qAsX/PrNBZA==
+	t=1793779798;
+	b=sVF6l0c0SrwhhRlWrJ29NCTbsjLHNa1uyjrMCkX8GhCbKntGpG4OCEvoM3GARvxG51rr
+	 CVe6c2J2cRK7Qg7/RLjCsAM7LGzomCnMtnwYj8FlYfoJpLdgOkMbzepsprURUtfEKALW+
+	 QvLso0CCapvcZXDlm0ZIAM/bdZekfT9OZm3ion6gkK3wE47BtRbSYCe5JjxKztz+sYkSC
+	 nbIQyz+hkC/fS/2B2BTJGjj+Zp39cnF8s33VMWzceCDlFh4wlCQGIQbPPrAGNZDIEAAUX
+	 8QfUIKV2Q0cOweYWD0n9OPjqQ+av5b4FLq+dknc5P8QLhw+f0Jx3miYIdKAUk9FxxcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793779113;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=Yzs3TvTUyCNgvkC1v8i5/KukWGuWF2PDxlQsJeMPHXU=;
-	b=xD0Uy1P4/BUyr6zOgOm45ASjPPmxnlUuKN2C2G0xaw8w74UxpD37eoLmMEIPxyu00luW
-	 ZOz2f2s3oiHtLYy8mTcHmfUDx3NV2h5Ahj/F61OulbNGKh9ZyejRI7AmXRi+8I8EiQ6eM
-	 4mSveCAcuNzMNQcwedv6pBpqAOa+DWrTnKvFP9QaEi4wZCnx1i5J8GCB6h5osb1wJmDZO
-	 tMUULcWWz0eqScUX07FTObdmAoqfmr7N0NBIRs/Z72P2jzaJy0K3REuReR8599lzf6p95
-	 MwWICPDGe9BN5N66SzYTYe7dHNsUPo29b89/xdHZqF3skBJ+XtI2d0IkIxXMhiTzIsA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793779798;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=TGjvdT1tSAdYwaRRPqeNTxe41Nk6QGzMso6+8hC+8JM=;
+	b=O2S7xTkZGcy3ZuYji+xdT5GeYzlqDZvQzw1sGJm24ParO1DjysjQ+FU9jYzzWjf5UFgo
+	 knhlpBIA10w9It4qUidYKa9mPNgsQZ5baq7FXQAr/c1C8WDchxJTk2oLHSO+emMLWLkQL
+	 JJzv4nOm/wsp5dbn781Qpr5fBrxtKXs0Sl6i6F1SawBhf8+pj8+L/yEtuWPRkq7eGiKDE
+	 GxCQUZzYLCptlSExebr/Q6FU0i9qQPxH57DKQh77ZbYUKcDV5rySpPXjT5Y0J0DiVSh+f
+	 hnNSlwMHS2P7KOk8VO5BqbgCii51mV9iVoDWgJivVRPNO0H1ZEc5ls5R7XjYhyxL26w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=APD3QMfW;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=S2hDpltL;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2902B606A329
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 07:58:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49BA606A326;
+	Wed,  4 Nov 2026 08:09:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=APD3QMfW
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A94171F0093A
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 07:58:32 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=S2hDpltL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68EC91F000C1;
+	Wed,  4 Nov 2026 08:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793779112;
-	bh=Yzs3TvTUyCNgvkC1v8i5/KukWGuWF2PDxlQsJeMPHXU=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=APD3QMfWSKD1BEqDuFPXE3+ohbtpJ6xbOkKF6/O6IX/sFmf/WP6tCTDPkk7Blzesk
-	 9AEVKiwcntw99HFpLfc/vRRK6t0gNxTIHcHq6gE7VkH0GGGP9gA6kD74UuMoPnvQ0d
-	 aeM08aciNUWSsTLf6qfTtyp8IerYG5yHTVghZ8eNRM61BcV9BHFMi22/mNmPB4rybU
-	 KF5Nvz87trX80hDjstvXlqRP/RjVqVM6sTq+llZVdRujHeg3C+ozXR41e2+7gr+L2C
-	 Kwjz4N1LwdZIcYXIK4HaVufFg8C/SwduBh5RJqtnmLsAfz/WtWsIWMBcNzUdGkFzHC
-	 5L2yR8fY5rTXA==
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b429f71dbeso344227a12.1
-        for <linux-serial@vger.kernel.org>; Tue, 03 Nov 2026 23:58:32 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AKwUvBz9FOKFkk90CiyfWSCS5XVkCvzL5ShIiycK4zjOE1zo8b8K02ZTfVHVZDbVMa93hThiXd9F0g5yDeaj/Zg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+FnVz0boiyqVr0Wc5zzJytOiPdrxkHQ1dNmMvNFxdXjlFec5Tz
-	C5JezJNZul6VClonN6/tXOyZhGxG5l4g4GP5wvIcBTQAKTBX2GgW3z13Tlg1Hw6xcC+rP5OfZqe
-	k8L25ayidZa/wr9ac36vYxX1N+LXgGIY=
-X-Received: by 2002:a05:6402:4608:b0:6b3:dd6e:3dca with SMTP id
- 4fb4d7f45d1cf-6b4d4d82589mr10723248a12.28.1793779111329; Tue, 03 Nov 2026
- 23:58:31 -0800 (PST)
+	s=k20260515; t=1793779797;
+	bh=TGjvdT1tSAdYwaRRPqeNTxe41Nk6QGzMso6+8hC+8JM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=S2hDpltLKFLlVIbuR1j18MJZC7mpen4l/KzEdOo6ODJ7fPWyVH1T3xHmEuPj2AGBJ
+	 ciMtW+NbguZu4JSL73FrnO3H0go8Jbf/JmbB7HTgSr/CDnjh4eYBE/2gTBTrsGkZHX
+	 /b6cOH3BzSCp/P1r/TrgpYXm5hr4RIsaxTanEkES+FQMvIAGToTv2y+n6JMPjbWzqQ
+	 p+tErFSl07e8vD/UsPrUQ7dMqO8NgnjEzCHfVioDgBUuTV5bz93OudbyRmtSwpmx5k
+	 aXDkTTbhN/F0fEbm1FVVyJRArl2Oj6xQSS0PwzU9+p51lsQFnTv/N7Q7pWWpjXBEPI
+	 482rRLXDKTacg==
+Message-ID: <515d0b89-e0c9-4df5-ad6c-756247d9ecb3@kernel.org>
+Date: Wed, 4 Nov 2026 09:09:49 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,60 +51,91 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <cover.1793776192.git.zhoubinbin@loongson.cn>
-In-Reply-To: <cover.1793776192.git.zhoubinbin@loongson.cn>
-From: Huacai Chen <chenhuacai@kernel.org>
-Date: Wed, 4 Nov 2026 15:58:19 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H5xomk3dwDScquwWWCD3_FCoJG8dur0b09j68QUqPT3VQ@mail.gmail.com>
-X-Gm-Features: AclHuK9cpjirvuwWJw1GRdeY1qyvEyu7MaMSjIH4ln9noIFTiQtqfBK6yL3oNPQ
-Message-ID: <CAAhV-H5xomk3dwDScquwWWCD3_FCoJG8dur0b09j68QUqPT3VQ@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: 8250: Add Loongson-2K0300 and Loongson-2K3000
- UART support
-To: Binbin Zhou <zhoubinbin@loongson.cn>
-Cc: Binbin Zhou <zhoubb.aaron@gmail.com>, Huacai Chen <chenhuacai@loongson.cn>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Haowei Zheng <zhenghaowei@loongson.cn>, Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 5/8] arm64: dts: allwinner: h616: describe the UART
+ integration
+To: James Hilliard <james.hilliard1@gmail.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev
+References: <20261029-submit-h616-uart-fifo-v1-v5-0-53b433aebbf8@gmail.com>
+ <20261029-submit-h616-uart-fifo-v1-v5-5-53b433aebbf8@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20261029-submit-h616-uart-fifo-v1-v5-5-53b433aebbf8@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-For this series:
+On 29/10/2026 19:47, James Hilliard wrote:
+> Identify the H616 UART integration on each of the six controllers. The
+> specific compatible describes the fixed FIFO capacity, register layout
+> and receive-trigger mapping.
+> 
+> Retain snps,dw-apb-uart as the generic fallback. H618 includes this DTSI
+> and uses the same UART integration.
+> 
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> ---
+>  arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 
-Reviewed-by: Huacai Chen <chenhuacai@loongson.cn>
 
-On Wed, Nov 4, 2026 at 3:46=E2=80=AFPM Binbin Zhou <zhoubinbin@loongson.cn>=
- wrote:
->
-> Hi all:
->
-> This series adds UART support for two Loongson SoCs.
->
-> The Loongson-2K0300 UART is the same as the one found on the
-> Loongson-2K1500, so it is documented as falling back to
-> "loongson,ls2k1500-uart" and then "ns16550a". No driver changes are
-> needed.
->
-> The Loongson-2K3000 UART differs from earlier Loongson UARTs in that it
-> does not require MCR/MSR signal inversion. It also supports a fractional
-> baud rate divisor. A dedicated compatible and driver data are added so
-> the driver can distinguish it.
->
-> Thanks.
-> Binbin
->
-> Binbin Zhou (3):
->   dt-bindings: serial: 8250: Document Loongson-2K0300 UART compatible
->   dt-bindings: serial: 8250: Add dedicated Loongson-2K3000 UART
->     compatible
->   serial: 8250_loongson: Add Loongson-2K3000 UART support
->
->  Documentation/devicetree/bindings/serial/8250.yaml | 4 ++++
->  drivers/tty/serial/8250/8250_loongson.c            | 7 +++++++
->  2 files changed, 11 insertions(+)
->
->
-> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-> --
-> 2.52.0
->
+DTS cannot be combined in this patchset and must be split. Don't mix
+patches from independent subsystems when you send something explicitly
+targeting only one subsystem.
+See also: Documentation/devicetree/bindings/submitting-patches.rst
+
+
+Best regards,
+Krzysztof
