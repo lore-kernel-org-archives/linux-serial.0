@@ -1,111 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793815021;
-	b=1RtcZ4H7Yvmu7BNfpsOw5R8YNcCL817+lT4MYRI4mwVQ1BOJHjHgqto/jn3NPbKrkVqa
-	 pX1pryw8L1aGPyfITjnIow2nV8l5QWIonz+/3U7gnbHNCAtTCVhuFA8UEmOFHG9/2OslZ
-	 99r5faOy1kNFlSaAbaSPwMhnKfWNIiVobgBLuYi90YbTJWg+vbPiMFgOkq46jxHSKT6kl
-	 S7wxGq7id9JaFTzWxLv3UdplMmBtOEX1CBjUxXf8wbR729aaj926E0+O7nv1/+rezZFKB
-	 ESKUd9hGT8m1HVbvdj4/y3AQb1sTrX+spAcQcH5QNtnmIm9cJxRgZ7EYcsLMJE17Csw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793815021;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
-	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
-	bh=qeQgphPdxdiWtw36JzKqWooMSgzPZU+EeD4NlyLVhDM=;
-	b=hLWmFrbPw7erilaLuXoiV/7HRrwEOrMVpup6UyLm8lHm7YmyiBt+xXFplhDYhCHP3LVS
-	 vynbqIoOhr4+ti6wXyLdyl5iiQHoNj866LJGWssg+f07Q9VHRPBsRyfeNg6QRec0rglK7
-	 mUv07lPvusXTYkekg8Rrtrdf2XIOduIzih/WU7whBaYgURp3v5CfbsTdcnlCenrm/OzXM
-	 27IcMkVM7UyNZ8dgd//cqwN3UXfC63F8vzFaY+V8YIrOQqs7p7tKlQLuNPk/fB/VtKwqi
-	 FzU6kiWXhyWsyBjkk6j7FEzbVcQkjo53dNE1NL3V5Swd+1AkIYQbIcbHOWm3RsPq/kQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jJ+YsSS1;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.182
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793815674;
+	b=FTP5rTw+D0E4mxp3luMJ/NRZ30o/iGTjE67cUcgl/xxTwLjogxIuNQ8jLLILP/P0Ayak
+	 abHys2RFrO1rXWgR9j/11wK5opiG7v4AvbuCGAQCh4wdtMJLeMF0rW4gACrdRammaPXDR
+	 WA9YYg/OJV8P5HTjSGde4ycCo21JnuSeZvCL2z9IrzojrQCh0ZPIk1p7GDrPSKjJEg604
+	 pmcMrA4cLUdS8KliiaBXb5AXIx+VaOQ4jswglNP9CxQ3BzXJLA9GRxAG2cIkQxtf722Si
+	 ToFGMG4K6dr36pZ0+XBJsR4hHYkMJnOL+B9k5b//tmE6/l6kShBEIm73xHYrqz4JbHA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793815674;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=+gQ5Cuyj8b/949TwI5RgIKdEjddDg3DiMb9qtnYfCaQ=;
+	b=QwmWBdXTjd5tgRMQgLGP8QDOqHhMTT8+2GbUCvMdDHUY2eBgy590htviVhJV/94mO1Gq
+	 qbyOWjh7Oh/03CvbQ+SA9A0wmfNMNlgHNwEUfOXpHQtIHKhzsV1q6g0Q5y6PxSKMpe+Uj
+	 laqM1u3yNqOs1413JEKvEkfjzCvEGZEP6yMoI5shZOc/w6B6tw/n1nQJsfsf7LCs9XIEg
+	 0d3jTKzra/7sp1uypi1McwqREr/RcBLLwuMHTC0k0HpJQfxqcm2EYQh7ltVI21a0VMTnD
+	 57dXClaGFDanhx3sTh8VwjpTunLuGdD9ppOFt81I7STJ5Y1xrSawmLVZqAR6p6+z3/w==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OC0GfPy8;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.182
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E895607A3C1;
-	Wed,  4 Nov 2026 17:57:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88AB9607A3CE
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 18:07:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 88AB9607A3CE
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jJ+YsSS1
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0110B1F000C1;
-	Wed,  4 Nov 2026 17:56:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793815020;
-	bh=qeQgphPdxdiWtw36JzKqWooMSgzPZU+EeD4NlyLVhDM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=jJ+YsSS1mKgXVutXvIprPjWbk/f3EaiHLkE0iUZZAD8UlGdeiTsq37AMjiJ1LQO42
-	 s7IKloTcsbSWCr6Lc4020v768o++Pni3fgFkFO5tp1ySQmamfYyvOlYF89oN/AE0uz
-	 cDBLCJtKpTc2bEc32o8AER5NNVvUQIyxG/58XGRNwW4UebnC4TzH2w4THg6Y4IuZEE
-	 HY4QLlr1k8HjiamlPJYs4KZrW3+I6WmOXTXZ8NvkX2h2a4OGzF5wxpPCxFfmNGgkxC
-	 TEjrpd9SN8JK0f/Vf8mgRK+nlmhJ6yDeGzIC6DtBcVm6ZCj3+6Kd0iuDWQx/Ae1YSo
-	 KOmYuIt4jqdDw==
-From: Christian Brauner <brauner@kernel.org>
-To: linux-fsdevel@vger.kernel.org
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Jann Horn <jannh@google.com>,
-	Josef Bacik <josef@toxicpanda.com>,
-	Chris Mason <mason@kernel.org>,
-	Jeff Layton <jlayton@kernel.org>,
-	NeilBrown <neil@brown.name>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Al Viro <viro@zeniv.linux.org.uk>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Christoph Hellwig <hch@lst.de>,
-	Greg Kroah-Hartman <gregkh@suse.de>,
-	Joel Granados <joel.granados@kernel.org>,
-	Kees Cook <kees@kernel.org>,
-	Jan Kara <jack@suse.cz>,
-	Jan Kara <jack@suse.com>,
-	linux-kernel@vger.kernel.org,
-	linux-nfs@vger.kernel.org,
-	linux-acpi@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	linux-s390@vger.kernel.org,
-	linux-scsi@vger.kernel.org,
-	linux-um@lists.infradead.org,
-	linux-wireless@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	netdev@vger.kernel.org,
-	ntfs3@lists.linux.dev,
-	platform-driver-x86@vger.kernel.org,
-	coreteam@netfilter.org,
-	kexec@lists.infradead.org,
-	linux-pci@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	netfilter-devel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	ibm-acpi-devel@lists.sourceforge.net,
-	jfs-discussion@lists.sourceforge.net,
-	linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-cifs@vger.kernel.org,
-	linux-fbdev@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-sh@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	samba-technical@lists.samba.org,
-	sparclinux@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org,
-	linux-doc@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-atm-general@lists.sourceforge.net,
-	Takashi Iwai <tiwai@suse.de>,
-	linux-input@vger.kernel.org,
-	linux-raid@vger.kernel.org,
-	linux-ext4@vger.kernel.org,
-	linux-modules@vger.kernel.org,
-	linux-debuggers@vger.kernel.org,
-	"Christian Brauner (Amutable)" <brauner@kernel.org>,
-	Chuck Lever <cel@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH v2 39/51] powerpc/crash_dump: recover from a machine check in copy_oldmem_page()
-Date: Wed,  4 Nov 2026 18:47:25 +0100
-Message-ID: <20261104-work-procfs-bugfixes-v2-39-bbf7d5546809@kernel.org>
-In-Reply-To: <20261104-work-procfs-bugfixes-v2-0-bbf7d5546809@kernel.org>
-References: <20261104-work-procfs-bugfixes-v2-0-bbf7d5546809@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OC0GfPy8
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-5eae1276409so342491e0c.3
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2026 10:07:53 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793815672; cv=none;
+        d=google.com; s=arc-20260327;
+        b=VjDQcrxLSmFFSQru8FaxdOsfV4vw/0vaRmD52YNEUoBoVbnRT7lLOHcdHo1OXqOI2O
+         0ZyjwyypsLBgxPW2ScEr5jH9pHd/dMFpr76QXGB9zU8cajOYxUQVXiseNM3zl4019Hmy
+         e4Jub8BpMtepMKKWrboVUrKB8lRSXDzV9ibXXZH/evGPXs6hsjagsi/gDbf5Y4dEUYyZ
+         IZKuhLeCxGp7QfuUEGKnrRW2bW48I6MePrtCKUwo8WjTdLCOyrDMwqI81Pt4jnTEuwKs
+         4vJGeGi9GAbs8FB/JL2YvpyNgMBg/bsKSSOgDGM4Vv1rav0AY1XVBF3n/CULuUIubci/
+         Q3sA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=+gQ5Cuyj8b/949TwI5RgIKdEjddDg3DiMb9qtnYfCaQ=;
+        fh=2hbPwCrOjydSaAKVp/xn0r9QhgIo0/lUEuB2+1XJRwA=;
+        b=Qov1XfMHyZdZ2KwV9sTwghMZ1lVTJmAmu7HfNqIWsZHUT4GfawzlPX/nibWgkzecXE
+         3kQTXFO/Nd4dHTwcBscAZxYzDEKNz/+eQDC5mSd276LhdXiMj8KxBCGsYOANrpe97I37
+         g7cFu74ykoYc7+2V6CtuhApCSv9Vs8zrwIX9u+C54lJvQ8DFG52bB2WXzKNeN6PnUq6d
+         lfevIwo/yGKKgJg9azBoV/5N/QxSinLnA5pIUK3o7BsP4JKB7KpmOsHja1Qktr7uwTLV
+         BBtsuY8Xl/BoGXxhgufQdf51U/ChKbDXlxLd7gvW5sdsfjhQXzGnwS4rY3SOa68IZHIB
+         kTkw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793815672; x=1794420472; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=+gQ5Cuyj8b/949TwI5RgIKdEjddDg3DiMb9qtnYfCaQ=;
+        b=OC0GfPy8B6coBFfqqPUhLTgXstjsDDCFbNUJMZTVIqso3hvWFKF0azN0fCUDbJCAAU
+         wfCT/GZi5JrYt7lLimUB14AzLYhqnKi4F59ReUFe3H2Wqu3KJl1X3yj1oYD9Gw9fHvqo
+         qAHOEnBm2uSSdcMiOEflwxmtfXlFNzD+EsyHYZY5Vt5h4ZYcy7uLUmVb+3jq4a4wL8wR
+         MD+Nt/Oe+x8mwWyqP5gaQ6ziv6Sx5dsVMCc3yi3OBc9th0Lq0RA4mVEcC9UWE20fBQGg
+         POAUoS/anoBEGQPi8B4zcNI2L65uHATBiLA6pGDRKqHH2RyPejN6je54qH189TLi3g9B
+         nW+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793815672; x=1794420472;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=+gQ5Cuyj8b/949TwI5RgIKdEjddDg3DiMb9qtnYfCaQ=;
+        b=rfQEYSMdFvmYF3x0779uF4MITWVeX4xCnVwlUDtFVPd+BQyIAqjitmwUIyAoscwTHh
+         TIkJfbnL2yRHpEcPNKxQGMirBo0Tkf0f/vPW+WPYKNExb8fOfp52QqVXYVkTiV9ebz1f
+         QVFyI8zIMs63Rvl6vmqTglECfLjoWLuKE4ohvl5bVBWFIWUkw8i/k93+c8nw7ZNTuPAU
+         e6uhGs5RrsvkIEdoGYuwt9kin7n+eKzfnLIjGIWdkPmFSydMsmL+M1YCFMdGL70JKGHu
+         Ii4vJEMBgBpuX7On/1gyoc+mCX1CBwxAicO+guIdy1w3L0FoUSpCyjz5Ojh4USHkFNA7
+         hF/g==
+X-Forwarded-Encrypted: i=1; AKwUvBwhQctv+eT2lefXpC1tIDXI7bk15k9X6vg89QM57r/8eDWPm8OUCxdpo5qj9UX2KM1YgjG2/bBIHz2XdDs=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+WC2Ky64D2iJmaLP3uaqVXGJLz6dNLOSUOQFPyAMTxNovJA1Xz
+	XluEJtYkymCbcP7lzleA7hO2INN7kqmUngrsGy+sOmdc/avt0o1HC1tbPfEipkrU7R16Js8eYIc
+	SZT7c+HYruLuPPqULvfNMzmnpIRXabd4=
+X-Gm-Gg: AYBFou30+nC3cjfuPRpxY0/LZ2gVls7nxaLklFJDssGkytCwXqdgz1rxGnI+7BqS+ls
+	Bjk8yMk7/vLb9l6fp38Z/vs2CYuI6nipE+1widASDCdAMAf5vs10rxxSi2+nklJM+gN3/dev/IS
+	8uW3Tb7pSmMDh97iP9wUyzIwK57v1M5hNJTuX5qc01WqAWtoDrjigFBfIyxl9YghST4F4YP1rxk
+	RgiCbQJTFZrAg7Uj20bnUnS1D/7tNPDvTSHS58zjAaf0Ljyj6+4/VFUl6igbBREEno9LtlSlN4w
+	xpk+6l2awq60qzFaaf33bcEw9mKBRazxH2LTlEFh1d56BPa693Ztyr8CCUZGGSyAhbqnsjZ88xt
+	OFqGJkxikccHmfTMkhtZBcRSVjFhBrHsaEM1xQJgrdv5W1FzxotS3/l2gRP7KzOZ0xvmAJ58RJw
+	PFM750CD7OpmOj2VbxP7GzHAyz3gBMTH/JvIwyjw0+2uT/O/rpSHi8BSqUSd2LTf3VCKqkk3QOP
+	dBEDqwNoE9gpitfsIHmpEYMvyYlEEjkbz2E20UbjgM8R0Mh3Bk=
+X-Received: by 2002:a05:6122:1794:b0:5c9:a60d:3275 with SMTP id
+ 71dfb90a1353d-5ec6894bafdmr7258349e0c.9.1793815672343; Wed, 04 Nov 2026
+ 10:07:52 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -115,63 +106,133 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2421; i=brauner@kernel.org; h=from:subject:message-id; bh=VIVKq8y+KdCJwnDd/z4L2OCrr1yqDfObdGoCOSjiCdM=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS9znu/ZLFx05xpnp+TTtxLuaWnvKXR5q5SRcWM5RNFJ +7uuXKbraOUhUGMi0FWTJHFod0kXG45T8Vmo0wNmDmsTCBDGLg4BWAi0wIZ/nB7KCi471/L1Nq6 9n0/51Uea/Fd3qy9fnsOr1vwmcnr62yG/yWGkZU+VvatQgcYS97WRSfuKtivn95TcozLZv5XWWl eDgA=
-X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
-Content-Transfer-Encoding: 8bit
+References: <20261103-submit-h616-uart-fifo-v1-v7-0-c9e248d685c1@gmail.com>
+ <20261103-submit-h616-uart-fifo-v1-v7-6-c9e248d685c1@gmail.com> <32461e0e-2512-451a-8eca-f2df63553379@arm.com>
+In-Reply-To: <32461e0e-2512-451a-8eca-f2df63553379@arm.com>
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Wed, 4 Nov 2026 11:07:41 -0700
+X-Gm-Features: AclHuK8w6f78lagZOCqY3kBXvDEG6Z5rWFvxVoRwnTwu0OTjK9VJe-pup1TnDtw
+Message-ID: <CADvTj4qPfWo=w0khBM+vPfT4vxCJVBQsqzAE3C9V+2J7fwq9gQ@mail.gmail.com>
+Subject: Re: [PATCH v7 06/12] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner H616
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A capture kernel reads the memory of the crashed kernel, and that memory
-may well have uncorrectable errors. On powerpc a machine check in the
-kernel is only recovered from if the instruction that took it has an
-exception table entry (cf. mce_common_process_ue()). copy_oldmem_page()
-copies with copy_to_iter(). For a read() of /proc/vmcore that is a user
-copy, all of whose loads have exception table entries, so the machine
-check turns into a short copy and read_from_oldmem() returns -EFAULT.
+On Wed, Nov 4, 2026 at 3:59=E2=80=AFAM Andre Przywara <andre.przywara@arm.c=
+om> wrote:
+>
+> Hi,
+>
+> On 11/3/26 22:39, James Hilliard wrote:
+> > The H616 UART has 256-byte transmit and receive FIFOs, but its DesignWa=
+re
+> > component parameter register does not report the FIFO depth. Its option=
+al
+> > register layout also differs from the generic DesignWare integration.
+> >
+> > Add a specific compatible to identify this fixed configuration, retaini=
+ng
+> > snps,dw-apb-uart as a fallback.
+>
+> I think we should not focus too much on single SoCs here, all the
+> Allwinner UARTs need some care. We should have had SoC specific
+> compatible strings (plus the fallback) from the beginning, but we
+> didn't, mostly for historic reasons and because it just worked (TM).
+>
+> So just from looking at the Allwinner A10 (the first one really
+> supported mainline, since 2012): the manual reports a FIFO size of 64
+> bytes, and it has none of the DW config registers.
+>
+> So I'd suggest:
+> - We add compatible strings for *all* Allwinner SoC's UARTs in here,
 
-But since commit 4a22fd20379c ("vmcore: convert __read_vmcore to use an
-iov_iter") /proc/vmcore can be spliced too, and splice(), sendfile()
-and copy_file_range() copy into kernel pages with memcpy(), which has
-no exception table entries. A machine check there panics the capture
-kernel. The same goes for the reads of the ELF headers and notes that
-vmcore does itself, and those have been memcpy() for as long as
-copy_oldmem_page() has had its kernel buffer branch, since commit
-54c32021eb6f ("[PATCH] powerpc: Add arch-dependent copy_oldmem_page").
+The current series covers H616 and A523, but the setup is structured to
+extend to other integrations. FIFO-depth discovery is separate from the
+shared DesignWare RX-trigger calculation, so adding another compatible
+does not require duplicating the threshold handling.
 
-Copy with _copy_mc_to_iter() instead. PPC64 selects ARCH_HAS_COPY_MC
-and there it uses copy_mc_generic() for kernel and user destinations
-alike, which has the exception table entries. Everywhere else it is
-_copy_to_iter().
+> regardless of whether we currently need a quirk for each of them or not.
+> This is now regarded best practise for DT anyway, we just catch up on thi=
+s.
+>
+> - The FIFO depth is all over the place for the various SoCs, and most of
+> them do not implement the CPR register to announce the size. So we
+> should use the already existing generic DT fifo-size property to
 
-Reported-by: Chris Mason <mason@kernel.org>
-Fixes: 54c32021eb6f ("[PATCH] powerpc: Add arch-dependent copy_oldmem_page")
-Fixes: 4a22fd20379c ("vmcore: convert __read_vmcore to use an iov_iter")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
----
- arch/powerpc/kernel/crash_dump.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v3 actually used fifo-size for H616. Krzysztof requested removing it
+because the fixed 256-byte depth is implied by the compatible [0].
+That is why subsequent revisions supply the H616 depth through platform
+data instead.
 
-diff --git a/arch/powerpc/kernel/crash_dump.c b/arch/powerpc/kernel/crash_dump.c
-index 1543917bd3e1..ca7e019ae3e9 100644
---- a/arch/powerpc/kernel/crash_dump.c
-+++ b/arch/powerpc/kernel/crash_dump.c
-@@ -83,12 +83,12 @@ ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,
- 
- 	if (memblock_is_region_memory(paddr, csize)) {
- 		vaddr = __va(paddr);
--		csize = copy_to_iter(vaddr + offset, csize, iter);
-+		csize = _copy_mc_to_iter(vaddr + offset, csize, iter);
- 	} else {
- 		vaddr = ioremap_cache(paddr, PAGE_SIZE);
- 		if (!vaddr)
- 			return -ENOMEM;
--		csize = copy_to_iter(vaddr + offset, csize, iter);
-+		csize = _copy_mc_to_iter(vaddr + offset, csize, iter);
- 		iounmap(vaddr);
- 	}
- 
+The earlier discussion also covered UART instances with different FIFO
+depths. The feedback was to introduce the property when an integration
+requiring it was added, rather than require it for H616 in anticipation
+of those devices [1].
 
--- 
-2.53.0
+A523 provides a different way to handle that variation: each UART
+reports its depth through FCC. The current series reads that value,
+rather than putting either a per-instance size table in the driver or
+fifo-size properties in DT. H616 does not rely on FCC and retains its
+fixed depth.
 
+Linux already reads fifo-size into uart_port.fifosize, but supplying the
+capacity alone does not handle the other integration differences. The
+H616/A523 setup also avoids generic optional-register probes at offsets
+used for Allwinner registers, and installs the FIFO-relative RX-trigger
+table instead of using the static 16550A thresholds.
+
+Older integrations with a fixed depth implied by their compatible fit
+the same model as H616; they do not need a discovery register.
+Compatible-specific data supplies that fixed depth, while FCC supplies
+it on integrations that expose it in hardware. Adding fifo-size in
+those cases would duplicate information already determined by the
+integration. This is why the current approach uses those two sources
+for the FIFO depth and shares the remaining setup between them.
+
+[0] https://lore.kernel.org/r/20261027-nifty-reliable-octopus-6cbac5@quoll/
+[1] https://lore.kernel.org/r/18f1e637-48de-4962-8a13-65f6597eb2dc@kernel.o=
+rg/
+
+
+> describe the size. This is the simplest, yet most flexible solution, and
+> avoids hardcoding implementation specific values in the driver. And it's
+> friendly to other users of the DT nodes, be it U-Boot, the BSDs or
+> whatever else is out there. IIUC, that should already work out of the
+> box with the current Linux driver?
+> Since we need to touch the DTs anyway, I think this is the best way forwa=
+rd.
+>
+> Cheers,
+> Andre
+>
+> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> > ---
+> >   Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+> >   1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.=
+yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> > index e2ca126d58ba..fc1289073241 100644
+> > --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> > @@ -60,6 +60,7 @@ properties:
+> >             - const: renesas,rzn1-uart
+> >         - items:
+> >             - enum:
+> > +              - allwinner,sun50i-h616-uart
+> >                 - anlogic,dr1v90-uart
+> >                 - brcm,bcm11351-dw-apb-uart
+> >                 - brcm,bcm21664-dw-apb-uart
+> >
+>
