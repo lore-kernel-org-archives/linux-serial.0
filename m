@@ -1,83 +1,75 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793782073;
-	b=MaizY/usGjDEC7T/zGVtvYbRdDXnnPgkQ9Cl3hzWOTN6WGejoQvi0iNsACc4rJB2W3vj
-	 fSP47Ka4TDfwdpMKaNEkSAy9HWq/7voAGUo1ohh5V7Zc4PX6WR51rYr6JJEB0gdwrp+3A
-	 w9OqTmW7piczaxQRj6cgvGnHIhUkV/sEcy46efDMSJdH9mF+emKgYie5devq78+2iBmO0
-	 FPnN25fo8zuerIfxWjFgaQ2BeGw4VylhK72igbteJL8FWlobc0nTLgpB54bSo4R/zscX9
-	 4HOPonCoLIF3P0y9xl4yS3Ixp2lcTpVAV6MLqVCXgCkPOG5Gk0ZvTbnw6HgRsUUo5OQ==
+	t=1793783736;
+	b=heY8DZfjs596eoeBD5Z2sDOUU9B1ozsiyIw9Ub5j5NN18cL3ACo/mUb+8fdUQxz5eknT
+	 AGHLKCBcM82NzD0fuSMaukcw6smbGvzmBLwxSSuq5fKTgnyFK3wIgZtHAwOfjsyOLGNUl
+	 EiCrjnO3XhFFGMySJ3xCOCLWogk3C1BrrMYba4ksBCT8888DurqYn6Vt6hFNjwvkESbOU
+	 /ilzQS+Bmzpgc8XaQVtUdl3qH0LHiLromofkdHAcDZgzYez5ObWIz+6D+m3kF3Mt6fzkT
+	 kzuU+alJ51HWmnUBCnfr72czmjbMxJZizh+ZFsMPXlAwFP7C4rrf0/Ct+Mu9O4f6a7Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793782073;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=gINtp91EmSyPeKHcy9B70GgiKnQ1Mr6rYAdlWmCMvg0=;
-	b=IteczDLdO9mqNHwRmnEo0e/lM9Co4CbRMio9scaoXX0MBSwgWIDOPGunIy7DTPB0K2KU
-	 Xkx+bcDOTTFUexphuRIj2+9m5Ea3CZMyAs/OnvczLLy8byp6UU19brIpNAc8GuRdYD7XJ
-	 1JA1yD4KxzW5esFeosI1LxXtMJmapQdvczAaZy4n5XnB47r60F0JkLROrM9JhIADlNmas
-	 X705ICkFo2D+9HsgkBil45RyBx6VR6KpIw1fc6yRw7/1K0pxXZG4c01U8KnaUxJzP0VkX
-	 Q+VoYQUp2wuO0SaA+JFexiF7Y3QY/LNJArNge2XQrjwiNlC2Aj7Xyr/j6LYaCwxatoA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793783736;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=tun3DxnivT6n8ykyvHDle1jgjloMyn9wMMyaVwUBJtE=;
+	b=xmcr7yec+WPhYpeNieSszKshZJXr/3jZlrcW8PLnr+8Zh4T2kyeXJvf1i/aGPlwa+qVS
+	 R6xPzgd1Ro2Z+SaMXtkyN6ZxEdLAAtVN6DqR2QjzGXvdlwahqdhv6qUOiaQl1kLdUMPPo
+	 svBQYusftCZ8mNsJ9Le9tpJsm1Jf6NSf+sX3zXiHp5gTlqJVORtB3x1oNI6PIm6r1kdGV
+	 PolVhj4xUkvFWlKwY7Lk1oM+acc8YBO0v7qi0n7xFCNGfHNKesXbXw7JqXVKcphP3VWel
+	 PHCWI5ukpuhM5nNOHoVBztxqRAXPCZbK895HWGrw28um8DVKOXnYgI8YqQOODf7vdeA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UrSeuk+E;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QF98rpjB;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 399CB606A31B;
-	Wed,  4 Nov 2026 08:47:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 399CB606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1070606A31B;
+	Wed,  4 Nov 2026 09:15:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UrSeuk+E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793782073; x=1825318073;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sg3KXue8VKK8i5UA15Wz4XJnv1FMQwcpmP18U2pXNVU=;
-  b=UrSeuk+Emvbu2SbuXW7zdmXy2p4QGwEddivQaVIJQ4MjggSeP0mYOrZe
-   D3AcSAL0GBotYyB4N6P1jW5Hk2lNYHZBQmqtBMi0syciOkA3xbjHj+crd
-   zXb1vjKDhcfB7OsknfYLe9nhZ2buURQz1J2inzEPbkBkPpUxDdAQzMZ1J
-   AynYHcWRdBy7NaMblVS1AMM0PD4DxgSpBT6tSx9mzXzwJ256PQBiivc0x
-   Mo/IA7UA8C6gYqAm2j9gW2dW10V4DubqB9ngKWbZCvEmuT4JGSq0CflSt
-   ZgkKy3HPV+HDezTLEQ+70xbvOmIj2XEs5EwTtziqHCj44s9yJt3JrTHEh
-   g==;
-X-CSE-ConnectionGUID: 5NuzVbtpTyWO0CbXdLJt1A==
-X-CSE-MsgGUID: cn35GWeYQO6XE/61/NoRjg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2632306"
-X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
-   d="scan'208";a="2632306"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 00:47:52 -0800
-X-CSE-ConnectionGUID: CZsbyOWITqOYdLdmyUgq3A==
-X-CSE-MsgGUID: 1TVbOk0wSj6xjXfpnJ8grA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
-   d="scan'208";a="6684559"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 00:47:45 -0800
-Date: Wed, 4 Nov 2026 10:47:42 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Frank.Li@oss.nxp.com
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Haoxiang Li <haoxiang_li2024@163.com>,
-	Zhaoyang Yu <2426767509@qq.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>,
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-	imx@lists.linux.dev, vkoul@kernel.org
-Subject: Re: [PATCH 1/1] tty: replace chan->device->dev with
- dmaengine_get_provider_device()
-Message-ID: <aurxLlfOa1fAa19U@ashevche-desk.local>
-References: <20261103215949.1827937-1-Frank.Li@oss.nxp.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QF98rpjB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 786C51F000C1;
+	Wed,  4 Nov 2026 09:15:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793783735;
+	bh=tun3DxnivT6n8ykyvHDle1jgjloMyn9wMMyaVwUBJtE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=QF98rpjBzH7nX1jmz4Zo8ykeu0WPbxz0HGt6XxCXrOQ4V4PB3P/wbn5sluIzZ3bgP
+	 woOpkCVq06Ek6V7bKkHEP2phdvrGGARxXAl1OBE0IhgkRUa/IQ935AFbXxh1YUY5bJ
+	 utfjbIjp7LtybAhtZNGHqFcIoDw2mhpfxaUaUe5IHuBCvHt5tgYAPu/YfrtEAf4jWd
+	 v5zbJS1rE1Hby/io2vM2SNwmccLVR3w7pjdFYCtf7rR4Wu4skeBeZ5GH0Q1ajKmHHR
+	 yetiYqpJqieJOdcKUSYdWCjNW5p22mqd+bHsoVYbOTO4y8Ft2ybe6f5kRc5h/hiSzc
+	 /PiiXfUYZ7Gcw==
+Date: Wed, 4 Nov 2026 10:15:18 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: Florian Westphal <fw@strlen.de>
+Cc: linux-fsdevel@vger.kernel.org, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, Josef Bacik <josef@toxicpanda.com>, 
+	Chris Mason <mason@kernel.org>, Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
+	Eric Dumazet <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Al Viro <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
+	Greg Kroah-Hartman <gregkh@suse.de>, Joel Granados <joel.granados@kernel.org>, 
+	Kees Cook <kees@kernel.org>, Jan Kara <jack@suse.cz>, Jan Kara <jack@suse.com>, 
+	linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, 
+	linux-um@lists.infradead.org, linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	netdev@vger.kernel.org, ntfs3@lists.linux.dev, platform-driver-x86@vger.kernel.org, 
+	coreteam@netfilter.org, kexec@lists.infradead.org, linux-pci@vger.kernel.org, 
+	linux-sound@vger.kernel.org, netfilter-devel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	ibm-acpi-devel@lists.sourceforge.net, jfs-discussion@lists.sourceforge.net, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org, 
+	linux-fbdev@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-mm@kvack.org, 
+	linux-sh@vger.kernel.org, linux-usb@vger.kernel.org, samba-technical@lists.samba.org, 
+	sparclinux@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net, 
+	Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org, linux-raid@vger.kernel.org, 
+	linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, linux-debuggers@vger.kernel.org, 
+	Chuck Lever <cel@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH RFC 03/38] netfilter: xt_recent: don't remove the proc
+ entries under a spinlock
+Message-ID: <20261104-entgangen-nettigkeiten-intuitiv-f39521735261@brauner>
+References: <20261102-work-procfs-bugfixes-v1-0-59422ed3e465@kernel.org>
+ <20261102-work-procfs-bugfixes-v1-3-59422ed3e465@kernel.org>
+ <auig_zhd3L0HEis3@strlen.de>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -87,46 +79,12 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261103215949.1827937-1-Frank.Li@oss.nxp.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <auig_zhd3L0HEis3@strlen.de>
 
-On Tue, Nov 03, 2026 at 04:59:45PM -0500, Frank.Li@oss.nxp.com wrote:
-> 
-> Use the dmaengine_get_provider_device() API instead of directly
-> accessing chan->device->dev to get the DMA provider device.
-> 
-> No functional change. Prepare make to struct dma_device private to the DMA
-> engine.
+On Mon, Nov 02, 2026 at 03:41:03PM +0100, Florian Westphal wrote:
+> Yes, but note that this change is already part of a pending nf -> net
+> merge request.
 
-...
-
->  static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
->  {
-> -	return param == chan->device->dev;
-> +	return param == dmaengine_get_provider_device(chan);
->  }
-
-As mentioned in SPI patch, with another helper this function will gone.
-
-...
-
->  	if ((chan->chan_id == param->chan_id) && (param->dma_dev ==
-> -						  chan->device->dev)) {
-> +						  dmaengine_get_provider_device(chan))) {
-
-Fix indentation while at it.
-
-	if ((chan->chan_id == param->chan_id) &&
-	    (param->dma_dev == dmaengine_get_provider_device(chan))) {
-
->  		chan->private = param;
->  		return true;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Dropped.
