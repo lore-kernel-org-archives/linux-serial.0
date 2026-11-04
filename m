@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793822075;
-	b=yXaPkleNL0gfwywqyESbLoiVXqBbagJJOrXSr5+BUXMVmoIYpqulNlkXBSnNMvIGWoz8
-	 T+PsZ9JDqlc1CwOBA1lsA+30AZBQ1Oy/kd9K60Vs20cWHRyTBg4H1VyidCNpuW6bzQMI1
-	 qbD2wvBUZPXpECE8BE1+ly365OQOHDArBXQ9hwhdL32128Oaa72p6EnNgBZq2RGwdIzro
-	 msTUuOufpzH0emdzDcfJX93hM12uZBJ+VBojooojo8msQfARMr5OR/ov24R8XpGCGja4o
-	 /JosSB5eKtXNRFRmGvozYRgJOYTDHcJEDQMtq8AojrgapVCyquKw+f5aHdMuvJr5rcA==
+	t=1793822104;
+	b=EK0xEZIwgo7+CDSNhWs79kEUy1qJO2kBZdwpAxpKiG5p/0wSPESS/FLxbCwusTJNf/UV
+	 GM9uGlr6BP7qJKfxbjQugt27UZn3ol2WrrhnwCozqIJkV6O7MbJLvYqHrJ3NnRQAPa9bu
+	 BUQxPfo5U/SQHemqO4IZhF8mCqRQhcTAX/jt+iG+gTrRuj1YCvkZEZxwQnuew9GlQGNzn
+	 fY7qEcMmuSBwQPsZudEV9kbwEyCH25+Z75O4rsYX/BU3JZV2J2xBX5YPTz44w8uZ5MIfN
+	 uURtnFuruBscmigZX6BZh3UcbAYWJi9izC4wx7CfQconPyfx0Wjtn8mxwFb2FYqHyIw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793822075;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793822104;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
-	bh=MznRqphvtEZQp5npCZI4V0Q6Ll7VzqUvC+SM21Py/Cg=;
-	b=rjA6373da6kigFVWKi97o8WujZneNvOd2wDLxFksgAHvHpcBQ2J7qYi6p7eU3Gz2GvOg
-	 M10APes13aqrnReba9/vpsO7XdYkkyTA2nYG8CACKg84vD95glOD3Ty745KEOVFcnd43h
-	 lGEf+15bTels1N0x/AsXxiAqUQ+MlbxvQCLJgsKWWMrdSF1AN14um0o7d5nKxP287SMuZ
-	 9KWz7F0qaR+rfFdybC8sqKA4/1UOKRn4CIp5dJcLA/Ex/b7B8avfg87YkPQmRE8tZU3gT
-	 dwpQqGVh7p0vgYDW/OmyOfDob3EAukU4Y0CY+80+P5k/Rzb/r6p8Mfug8OpPxIaMdqA==
+	bh=R1VqjUGL5+J0t5hj5seZeRe1Maiv3S9hp7Jj5OG0/0s=;
+	b=3SPSzTSKxaNaUtepQ25YNGO4bzPgM41gEfDCXxd9korwpqtcm81ui2qGd+GzrHNl+NRR
+	 8Dna2gfayDe51ucia+5m0S/XK/7DYeEWyw0Eup/0/HXORN5K0WzP+u9UK7BbTrwnHLYMA
+	 dTqxpSfo2+7yyBMUZQg4Ux3CsxsluEU8tvmTXd3bw8yJqVSiL2XH82ygjH2eWogOHXYhp
+	 FpuJrQFvN7CmYgjpTZIt0pHeVXqaDO7MvYXSiy0TzH5rxvZvgO/mARejSnarnwISVS3Pi
+	 s1Q0xo4grivYC4UdOqLQLXQ8ha/ZSmwWBzyxVJFaGMir8sx0xUOawasrV2DYlOjiV9w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HAw6s8BB;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JrdQsd6G;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1768C606C59D;
-	Wed,  4 Nov 2026 19:54:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36D5D6098F70;
+	Wed,  4 Nov 2026 19:55:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HAw6s8BB
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA34F1F00919;
-	Wed,  4 Nov 2026 19:54:22 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JrdQsd6G
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BDF51F00A16;
+	Wed,  4 Nov 2026 19:54:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793822074;
-	bh=MznRqphvtEZQp5npCZI4V0Q6Ll7VzqUvC+SM21Py/Cg=;
+	s=k20260515; t=1793822104;
+	bh=R1VqjUGL5+J0t5hj5seZeRe1Maiv3S9hp7Jj5OG0/0s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=HAw6s8BBQpMyHhrBN/asRF3MyBAYmvDQG77oX4IdbQ/Fvo+Dc9HrA+ohRms91kTq1
-	 tGhNQ04Nlq/t5AfIo9I0c2aXY/M5rtDTWUuPNd15k0EftQU6IZz/1TwoK5ymzaduHR
-	 KvYeTEdLCNXdmy5ayLOGUZDs71r+gh7UBQKBI6RxE/xvbUti6reVcmIlIBukQg/oVZ
-	 3GplheA6ivbtF04reRE084gkHonlgWY7/SEBNKSZb4CeUx9EDq8ilSbzdKz6xramV4
-	 xWoLAYuCOzLrRq2otfJd3P7rRpoURXvc8stKQzocl2lC26pljUbnGmCOVptz3/wPze
-	 zCe5glH7FfhIg==
+	b=JrdQsd6GTay34FYuGXCa8EK220wd8dcVKmmCUL2H6AN8qybgYu3VWX8QWdUPAcmTQ
+	 k7Hh4kIxo+HBWYfqIhyCM4t5TutFpDBfRkmXCuGDnrCDs2kRigWisxosjbx2JTilsl
+	 pRLqKsHm9QtEr1md47IXW0nBzRwFYpbJ+AsEXB9Aw5/BASW5ehNYPMEN3WtGHRfiwA
+	 OzbZlgAyMFwrKZD+fvajfs9VLVkX7k/jZfqjP/IWM7eHh8GU1TOBliTxs7YYEjoU7C
+	 tTvFESzDRyM4Rii2YLzF38phnQomDRBM6gq5STKW4qtXTlnb0Rqa4901faLCQGhySy
+	 mMgweD+fFjsdQ==
 From: Christian Brauner <brauner@kernel.org>
 To: linux-fsdevel@vger.kernel.org
 Cc: Linus Torvalds <torvalds@linux-foundation.org>,
@@ -100,9 +100,9 @@ Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	linux-debuggers@vger.kernel.org,
 	"Christian Brauner (Amutable)" <brauner@kernel.org>,
 	Chuck Lever <cel@kernel.org>
-Subject: [PATCH RESEND v2 19/30] sched/psi: mark the pressure files permanent
-Date: Wed,  4 Nov 2026 20:54:20 +0100
-Message-ID: <20261104-work-procfs-fs-v2-19-319e0f9a8aae@kernel.org>
+Subject: [PATCH RESEND v2 21/30] kallsyms: let procfs own the seq_file of /proc/kallsyms
+Date: Wed,  4 Nov 2026 20:54:49 +0100
+Message-ID: <20261104-work-procfs-fs-v2-21-319e0f9a8aae@kernel.org>
 In-Reply-To: <20261104-work-procfs-fs-v2-0-319e0f9a8aae@kernel.org>
 References: <20261104-work-procfs-fs-v2-0-319e0f9a8aae@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -116,63 +116,50 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2074; i=brauner@kernel.org; h=from:subject:message-id; bh=Q4lGavm4ZGBXo39Ieuspgksaf3Gh3Wa2s1ilX3Hj4ok=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS97nE6m3h911tVzfl3TOQ+HGv+VCMdmrs1riUii6Fn/ h6jaTe6O0pZGMS4GGTFFFkc2k3C5ZbzVGw2ytSAmcPKBDKEgYtTACbyOoXhv3tM6SuHq3u6jjOp iTG8jZr+w3t5XtOCK765Bxxfv0uo9GVkmHSW9bDFvZMHG36nuv3fEtB3J4a7ZO+RCd52Z7kzO6s y+AA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1331; i=brauner@kernel.org; h=from:subject:message-id; bh=X1hXUo+P6dAEkQI4HVxBka/iuP3neD063cymPGxvXEU=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS97nH59Orc+7n3eLifScgo8Jj8qyzNWnT19Mol2qc4a 58vWjHboqOUhUGMi0FWTJHFod0kXG45T8Vmo0wNmDmsTCBDGLg4BWAiPWcZ/nCKtL2fd32F2F95 vx9SGZf0t36r5ma6o/N8y3elH9e2NU1l+F8fo55wKcT3fXtS7NoKxUWhugwWHOV/0+b/kah+n3N uBjcA
 X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
 Content-Transfer-Encoding: 8bit
 
-/proc/pressure/* are created when psi initializes and never removed.
-Say so with PROC_ENTRY_PERMANENT, procfs then calls into them without
-pinning them, like it does for /proc/profile.
-
-That also takes care of a rule the files bent. psi_write() takes the
-seq_file's lock to serialize the triggers. A reader holds that lock
-while it copies to userspace, and now that procfs owns the seq_file it
-does that with the entry unpinned. So nothing that runs with the entry
-pinned may wait for that lock, and psi_write() ran pinned. Nothing ever
-waited for it since the files are never removed, but with the files
-permanent nothing runs pinned at all.
+Declare the seq_operations and the size of the iterator and let procfs
+open and free the seq_file. ->proc_open() only initializes the iterator
+now.
 
 Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 ---
- kernel/sched/psi.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/kallsyms.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index 9b99099017e1..cdb7a832333a 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -1622,6 +1622,7 @@ static int psi_fop_release(struct inode *inode, struct file *file)
- }
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index aec2f06858af..2d309fcee730 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -888,10 +888,9 @@ static int kallsyms_open(struct inode *inode, struct file *file)
+ 	 * s_start from where we left off, so we avoid doing
+ 	 * using get_symbol_offset for every symbol.
+ 	 */
+-	struct kallsym_iter *iter;
+-	iter = __seq_open_private(file, &kallsyms_op, sizeof(*iter));
+-	if (!iter)
+-		return -ENOMEM;
++	struct seq_file *m = file->private_data;
++	struct kallsym_iter *iter = m->private;
++
+ 	reset_iter(iter, 0);
  
- static const struct proc_ops psi_io_proc_ops = {
-+	.proc_flags	= PROC_ENTRY_PERMANENT,
- 	.proc_show	= psi_io_show,
- 	.proc_write_buf	= psi_io_write,
- 	.proc_poll	= psi_fop_poll,
-@@ -1629,6 +1630,7 @@ static const struct proc_ops psi_io_proc_ops = {
+ 	/*
+@@ -923,10 +922,9 @@ const char *kdb_walk_kallsyms(loff_t *pos)
+ #endif	/* CONFIG_KGDB_KDB */
+ 
+ static const struct proc_ops kallsyms_proc_ops = {
++	.proc_seq_ops	= &kallsyms_op,
++	.proc_state_size = sizeof(struct kallsym_iter),
+ 	.proc_open	= kallsyms_open,
+-	.proc_read	= seq_read,
+-	.proc_lseek	= seq_lseek,
+-	.proc_release	= seq_release_private,
  };
  
- static const struct proc_ops psi_memory_proc_ops = {
-+	.proc_flags	= PROC_ENTRY_PERMANENT,
- 	.proc_show	= psi_memory_show,
- 	.proc_write_buf	= psi_memory_write,
- 	.proc_poll	= psi_fop_poll,
-@@ -1636,6 +1638,7 @@ static const struct proc_ops psi_memory_proc_ops = {
- };
- 
- static const struct proc_ops psi_cpu_proc_ops = {
-+	.proc_flags	= PROC_ENTRY_PERMANENT,
- 	.proc_show	= psi_cpu_show,
- 	.proc_write_buf	= psi_cpu_write,
- 	.proc_poll	= psi_fop_poll,
-@@ -1655,6 +1658,7 @@ static ssize_t psi_irq_write(struct file *file, char *buf, size_t nbytes,
- }
- 
- static const struct proc_ops psi_irq_proc_ops = {
-+	.proc_flags	= PROC_ENTRY_PERMANENT,
- 	.proc_show	= psi_irq_show,
- 	.proc_write_buf	= psi_irq_write,
- 	.proc_poll	= psi_fop_poll,
+ static int __init kallsyms_init(void)
 
 -- 
 2.53.0
