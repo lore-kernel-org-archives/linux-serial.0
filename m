@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793778562;
-	b=q/cnMitFR0/+MGSybywAyNpC7mbo+1DuTayA4uRqidmxf0bBg3Im0UMGBBbNmrB4S+rE
-	 npOvU7FoWncL35O+Vlu5EMghAS7+7kvve7boSGwy06iSry6Wao3p82QVhgzC+APyzomRO
-	 UoQQajWBaENWvD1/azuJMOtqDyC8T0MstJNHmcK/FhgzpgiZuNZvFg0NKkeLi+dgGEwaH
-	 G0Ke/Ii9UhEUHOVNeKPZhoJRr/zVKE/9BH3POEmDEX5leSY9u/iwblUDiIc0RX1FKWFlg
-	 tjcIVoOBVRpa1TgkXKk9euFztx/e/vBc9BlvlPhfC2SNCs47+Na2/iiprKkrU4BVNow==
+	t=1793778642;
+	b=Up+9WFacw7DJvzCg2SRAKL8/EU9OXuIJ524t5o1nn/N5nMqm2jr86KjQqrdEfFwEBiic
+	 8bo2zC7pUrFsIjWNP5s3r9sVNCQB/yvS6QWiuhh57iGXFku1WJvYnGzGprRzFmORyAzDN
+	 zRtCCwT5IAQN2jtx+Qdji/1/yLpAy50eH7MX0nIHxlZlNusC71NFmdA0BZyGPSjkICVgB
+	 RmtHBXhcWyIbcUq40J0kKAD2704sZ0cGcWYQbUZkcJXMpCG0kcxNSd9AsMgEkve3e9lRm
+	 /TrpEU8dgiP5V45o5dE4m7cO2A7LKDkM9ZhT2/bY1g4Hjw4FMJ5sF7nDhwxXuykBbBA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793778562;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793778642;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=183XKUv62isEReAe8b2vYpq9AReRfUIbMSTtechX0eo=;
-	b=4Jsopseb474+jj/mVlB+2Qri/wYBCrNyKYcwCJxSPZ/BhJNNQGVvX8D/laZtNRzRVa+D
-	 xl5WFXq/F1IQAa1PgkzCQtHmbzscl8qcxsqpVpt7GyDEqrn41rof5klXn6sOy6gljx9nw
-	 yHVqK47zpu/7WQg0A1hQZVPV5Inj+o50GEUtZtiavqvy/Q+UMMzXD1z9pLiwG0ugfc4Z6
-	 XDE7dd3IPOyOxQ8GEHoiapbgvD+Ffy4ZbbF69CFQJFC7zU1UVH1lf1qBLu11thES6er6f
-	 vbvUnn4ip58o0BhPbQ5umQ0znkDHPKsDZX4JHlYtIbaKoAKzkmbqR7McmY71PcHHypw==
+	bh=wJSm27/chnvRcoF2XLH/LNcqPL0SKU8M0rb7auOq+1I=;
+	b=rDoC+pHu4iLjTjhayOJZxClskXu47I6TSgfXE4/r4/FHjUGjiYmici7k+an6Zi3dSHl4
+	 I3/i5hjbkNd+5X7jrANdSl+85bq+QlRp0JO7TaZY26BV0JWPd8JcQO5WcEe8xuMfK95co
+	 Kaw4NqCzHEIqjeKjtBcA4eSPt0Qdf0ZckWhN7MKNM9YoLAknKM7S3nG9TyReUCt5SPbpD
+	 2oy/dxJwWsQm0SqYGUHJDHOiyiXlH5GvKK7qNQcsOWGxE/ukece/afFBawYdHhd1nTIrx
+	 0zy+dBpyTKTgBxHrcuKeVrWTNrhplh7e6nKrWT4I5tYCAGRcKIA0hA7v7id18bC2eAw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I5+DN0QA;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TuXje9lc;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4535606A31B
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 07:49:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B240606A326
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 07:50:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I5+DN0QA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505431F000C1;
-	Wed,  4 Nov 2026 07:49:21 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TuXje9lc
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F36841F000C1;
+	Wed,  4 Nov 2026 07:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793778561;
-	bh=183XKUv62isEReAe8b2vYpq9AReRfUIbMSTtechX0eo=;
+	s=k20260515; t=1793778642;
+	bh=wJSm27/chnvRcoF2XLH/LNcqPL0SKU8M0rb7auOq+1I=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=I5+DN0QAGRdSr/E2SPYubBMgeHDbmnAb7ug3XdTXT0q2T03glz+JD3G2VoX2C1Eaq
-	 fo0dJVfkueVsY6n9o102Czuru2sKnbEYv0DQj3wrfcotNcfyFp9fD2jzXeaO2wJRTw
-	 ZBBhgLK8VAMwXOTv84jJh7gSVxsWoanYeWjuP+pqVipj296OT2VHu23blowN0BRSqF
-	 v1P1R/L1WV1WuucIfkC2CYpHv5XDKmtnJ0vI/iduAw/qeHUTvDqu7xxFNl2WH9Vm6+
-	 sVdg1tw8TS56RRkqU10RPgj8vBQt+kaLG3rSHd/M6AT92RBMQlrRcflMFyX7oLr+gp
-	 bNkGnGapS1k8w==
-Message-ID: <sashiko-outbox-196823@kernel.org>
+	b=TuXje9lcL/3cg1pC6d7B0nn4gInuBJlflqL4RUC66pSeI3EBebEzFFIhduF3V0SND
+	 45IFC8qidBSez/kboYpBYmIOBQoFyh45bYwGxWj+a75ZVNwxRFTwFGVtw41WcVWpzX
+	 cghcdc26V80GC6Xn+la8hx/B0vYOwSpGlIwjEzv+mHg3gf08qf75pTpcqyJpk25i2n
+	 D8q2smE+n6qLQRITQUDBe45KhK0rV/4LHN7tx1eQp2VT2GNd9o/n/FN8rdxXgJlAkx
+	 1G/cDNYNb18XVsHAbXqcwhwC8Snbi5XDjj1u+yPLcRdRZ8T3M7jERCE+x6c8wyuI/6
+	 w5coQ4RTmpT1w==
+Message-ID: <sashiko-outbox-196832@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: serial: 8250: Document Loongson-2K0300
- UART compatible
+Subject: Re: [PATCH 3/3] serial: 8250_loongson: Add Loongson-2K3000 UART
+ support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Binbin Zhou" <zhoubinbin@loongson.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <cf76d5d46eaba55b832287d1193111c369bcf548.1793776192.git.zhoubinbin@loongson.cn>
+In-Reply-To: <de8a92980b5140896ef8bdade1df4d851da9ec0f.1793776192.git.zhoubinbin@loongson.cn>
 References: <cover.1793776192.git.zhoubinbin@loongson.cn>
- <cf76d5d46eaba55b832287d1193111c369bcf548.1793776192.git.zhoubinbin@loongson.cn>
+ <de8a92980b5140896ef8bdade1df4d851da9ec0f.1793776192.git.zhoubinbin@loongson.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 04 Nov 2026 07:49:20 +0000
+Date: Wed, 04 Nov 2026 07:50:40 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,15 +61,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The UART on the Loongson-2K0300 SoC is identical to the Loongson-2K1500
-> UART. Document the SoC-specific compatible `loongson,ls2k0300-uart`
-> with fallback to `loongson,ls2k1500-uart` and then `ns16550a`.
+> The Loongson-2K3000 UART differs from earlier Loongson UARTs in that it
+> does not require MCR/MSR signal inversion. It also supports a fractional
+> baud rate divisor.
 >=20
+> Add the corresponding OF match entry for `loongson,ls2k3000-uart` so the
+> driver can probe with the new driver data.
+>=20
+> Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
 > Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1793776192.gi=
-t.zhoubinbin@loongson.cn?part=3D1
+t.zhoubinbin@loongson.cn?part=3D3
 
