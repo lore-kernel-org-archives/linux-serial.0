@@ -1,56 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793791705;
-	b=sE5oWUG+u7BecKzijwpmjuJnjsiY7UAut2Nj2KsEyuOYuLBycDIntRsKcz1gezC8jODT
-	 o4nTOEBN4VhD7DFyoS+IvYchm1Gj+/XOF71TrmJHYw7SZNOnPs6lAVdlhv3ZVNNlQIU4V
-	 /aTa+45/yzwKRJoRTjt7FqutBsb48S1fjLzOmAH39apkXqm7l6IfwfluE+xeIMwby6SyW
-	 sIPWZM+fCIAB07KUaapHp3YpY9f1kmRERcDyrsL18iM3Ie6gDZyPI46CP2SiTDHoz7WGe
-	 FWAkPsMrwDbWLImiHC8sApQVXPIuDnB6IF08fxCpjOXE7yaagVMy5PjNYp+OZe9vtfg==
+	t=1793793024;
+	b=fQaATW/nbwcorZFhMnKuxsJ2n18Wgq2wmSGhQex6NeMaKC4xuoI5WwDub9KpNZqrx0LG
+	 m7ptxzFIC0ApxmJ0tqhwF1zfOsz19Du14Bae/0GyAp3bpkM+GdFHYBTYJGgVZ+8qLU5qP
+	 N2CNqfCCzzYRdibiHdrnE2jMMVNfy62xvPgEaqIrTAUxV7H9LFEcwxZe0Ql0jh+E4WThZ
+	 JCbMiW0vFNtPN+poSFrg5XzPA+PxPfHkpjyKNhLubbf1Lgak7nT8FBT7Bgv1EQ8aTPo2F
+	 IK/R6yEByQYH6Ir6vkgi1r6ND/RSAzgxrTmAU0Mv42G85cyiaW8xCnsMQwialmHeu4w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793791705;
-	h=Received:DKIM-Signature:Received:Date:From:To:Cc:Subject:Message-ID:
+	a=rsa-sha256; c=relaxed/relaxed; t=1793793024;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=3pWCjooVw0q/IpMWGSgazA9bSaxu/ge4+OXDdrKZltM=;
-	b=TgKvBjQdVd0x3S2yB+s1CjkLPwRe3jP4IxOxhVc1shvnl50+mlp/ii73cVvXgP8OoiAG
-	 jdd1diaaxrZsP2gqBDHwAzgH4HZ1MwH1j3w38R86HyVbwCfCf4CrpkRkUNTK/w63oH+NL
-	 ncwJPD/hClfdxzGEraMavpu5LPeyONCVTA+x6xMiXbFWWAY33dsvgWdeyPhkZrb/XSC7X
-	 E+5GUIIAfkDKTNdzcHE54xHyq6SjiEwFvAscDIPPlo03F3oHHfVLEfO6FGrMxoI+G2vzW
-	 xYge5IrV05kxq2Du/UWHG1AaaPhlGJVWYZo1v1BNFskgZctVGdwTT3cJKiyxFBgs9mA==
+	bh=b4o1817Od6QsvBUN6ocnTBDfr5xBJ5pwP2S51qw16ak=;
+	b=r4QD4BJPOwLv64FJ5cW+x8/Tdq8YeNa//DQB/F6xWvotbSdiRATyOTrKULtdn1D5QBDL
+	 7doCnWz7XxJEblFAFgGwO4E39DhgQOr0tuPI/aBRDXDoy7UwRSpIlXJAeL234gWDSRlA0
+	 TUpAyARoa5yk7A5W6qoQnmVw9HB/Ihzi8n8MQQaRjx9LxWapURqi5lhNgdKPRKW54PjaA
+	 9RTl+gqOiwyDRxCr+kHCLX3I7m0mYFiwZj2Bz6X4i40N4Y8pnxEUQxrt+8IAFNWAzACH/
+	 jICRBfeqF4rC3CxlffyC9299oJ2hZMjDZHN8tL1JZvnAJWFZ4BIeeQvzq+1sfKPAyuA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XqubHYce;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=TvvrhTYB;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50BA3606A326;
-	Wed,  4 Nov 2026 11:28:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EEC606A328;
+	Wed,  4 Nov 2026 11:50:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XqubHYce
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9F81F000C1;
-	Wed,  4 Nov 2026 11:28:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793791705;
-	bh=3pWCjooVw0q/IpMWGSgazA9bSaxu/ge4+OXDdrKZltM=;
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=TvvrhTYB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EB8E1F00919;
+	Wed,  4 Nov 2026 11:50:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1793793023;
+	bh=b4o1817Od6QsvBUN6ocnTBDfr5xBJ5pwP2S51qw16ak=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XqubHYceraAR9Iafr3N7h6UCKyJS3iSZubmetSybSecNol2zEbRRerLhWTa3qjaUd
-	 v9ykZ90InCVylvZ5hHzAsqD7euDrcXVNSN51AxoQfXMpsZOUdFFx/FtX/3H3NZacO+
-	 V2pRDaNSaRoV0YExZOhVB0tjZy8yxkd+Tco+aenHqDysdl98ZPQlyMf24ZXq/23DGF
-	 hdCqi1WkwC9J/Ku/JK9zqlSzCP5Yg2LfdIc5fPSo9s5mvDZT4ENaerXMl/Cve4dikk
-	 BASZVbX5TNBxHHM9KsiZ8kPl5w8JtnwPXrtwidjv8ug78dFyz876atQi87reoy/tku
-	 jZS5vUuLJ2P1A==
-Received: from johan by xi.lan with local (Exim 4.100.1)
-	(envelope-from <johan@kernel.org>)
-	id 1xOZAE-00000007FA8-0uSd;
-	Wed, 04 Nov 2026 12:28:22 +0100
-Date: Wed, 4 Nov 2026 12:28:22 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	b=TvvrhTYBBQf+c3RFjlLTy/vjF/YsnD7BKkoog0WEY5kAQ3ODKxHCJRX8M3WDeoqkp
+	 XBkrxXjOM/EGepO4QIS0wl8GAp6SnGzgkTWYwxehHl9Fv6MHDBsg22RmcCp//zrx60
+	 O4Q342RO7p4Zf+FEonXGBm59Wet2UJqYk12wdd5k=
+Date: Wed, 4 Nov 2026 12:50:21 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Johan Hovold <johan@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
 	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	John Ogness <john.ogness@linutronix.de>,
@@ -58,10 +51,11 @@ Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH v3 2/2] serial: core: Don't clobber the baud rate on
  hangup via B0
-Message-ID: <ausW1pwp2eBCqVsM@hovoldconsulting.com>
+Message-ID: <2026110448-deftly-hassle-ab16@gregkh>
 References: <alpine.DEB.2.21.2611030057510.15685@angie.orcam.me.uk>
  <alpine.DEB.2.21.2611032050590.15685@angie.orcam.me.uk>
  <ausSmrErzTXfKNGU@ashevche-desk.local>
+ <ausW1pwp2eBCqVsM@hovoldconsulting.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -73,23 +67,29 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ausSmrErzTXfKNGU@ashevche-desk.local>
+In-Reply-To: <ausW1pwp2eBCqVsM@hovoldconsulting.com>
 
-On Wed, Nov 04, 2026 at 01:10:18PM +0200, Andy Shevchenko wrote:
-> On Tue, Nov 03, 2026 at 10:07:58PM +0000, Maciej W. Rozycki wrote:
- 
-> >  		if (baud == 0)
-> > -			baud = max(min, 9600);
-> > +			baud = (port->hup_speed ?
-> > +				port->hup_speed : max(min, 9600));
+On Wed, Nov 04, 2026 at 12:28:22PM +0100, Johan Hovold wrote:
+> On Wed, Nov 04, 2026 at 01:10:18PM +0200, Andy Shevchenko wrote:
+> > On Tue, Nov 03, 2026 at 10:07:58PM +0000, Maciej W. Rozycki wrote:
+>  
+> > >  		if (baud == 0)
+> > > -			baud = max(min, 9600);
+> > > +			baud = (port->hup_speed ?
+> > > +				port->hup_speed : max(min, 9600));
+> > 
+> > Outer parentheses are redundant. Also use Elvis.
+> > 
+> > 			baud = port->hup_speed ?: max(min, 9600);
 > 
-> Outer parentheses are redundant. Also use Elvis.
+> No, don't.
 > 
-> 			baud = port->hup_speed ?: max(min, 9600);
+> Don't use the ternary operator at all as it tends to make code less
+> readable.
 
-No, don't.
+I strongly endorse this.  Write code for people first, compilers second.
+? : is not friendly for people.
 
-Don't use the ternary operator at all as it tends to make code less
-readable.
+thanks,
 
-Johan
+greg k-h
