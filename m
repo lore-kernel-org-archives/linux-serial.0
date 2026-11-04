@@ -1,56 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793759596;
-	b=Mi5vpGtRwm2XUGCH7kuqWh75wbrP+9GLfWLnzFGF6hy9esCcCDbq0X0oDoaBKy3rquPb
-	 I+gL0oihrZG33cO3RG47m6/PspHQwsoKNs+0BcPXvngBoVsGoL2mLTtJEur4aqHk0rllv
-	 C2HaWiYw+UG9eSLcxXGh0yUngSX9PYDp4eHHgDM6b+ZY+xuCKx5m94hpfr7SsHxCLd9qf
-	 0gH3Iavil73rDJZN5x6Zi7QAywzcKJHDew1BiqzqKKaBSTZ34ySbt+zXSncUjHynwj8Zw
-	 niQpEPQoFl90Bwuh3MnfCfieDZOltXVfX0Mgf6iHrjBDs4ojwjM+O7TXE1PK0qm7Z9Q==
+	t=1793775758;
+	b=at/Er8WvM/6YZDa7dNsWfWgncQ6qYMv5dA/Bc2ciZtVxPpNynlMW1uNnJZ6xLiFbIP8a
+	 ym6+yCv63qKIUKQW8tnrRjoyW1d5P7Hr3VZOb6uti/HFs2DOmFPJqR5PQzbm1HV9N8NYO
+	 IMtFc29guTuPk9I+IQ1Nq41LnxuNFyr/fcT6UxUOovWs0AqDKvnkvNLsAxvgjiRUH0WMw
+	 LJHPvOUf6z9+ZV+tNaFAdgoodKxbvNGZnU/M22q615wYU3/4TRvFm7PIbX3ULANGfGRxX
+	 3QvAJlf9vVPSHL0TmK8OPtQX9KeIvGPuThU9BcY2uChaIcRmf+spSa6LGqmFfU4gncQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793759596;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=JDDxIUrF8tb8pEdwRthMxrGgkj9rOEQ/nGn0twGKudY=;
-	b=1GqTd3PET9+aBw4hRFPowqNnwkpkgLC4ldiXUXPnekpz+IDzC8UgniPi877D9kID9MEC
-	 wY64w/aV2cu0HvnZLLQhVz63Tr83uhWPisGo2Ef/ax7Z6xJHnPSIFGoxIHFAQrAZlMohe
-	 aIAnzfb2iQzuiZCgMepQmPxkD2swBK9nDnsEDyAe8MZJrEjCzWwFeFz5IatpMWRyPhK1I
-	 8zs3cS005eYnCYHgp7uIP3DgJ5HyOWK2cL+EY5wBRRN78JliEN8n7csbvR6dJXXfcEt1w
-	 wdVeUhXDfez1uwaULP940771Qah4WlOMQ7IG8V6Cv0rPVbWD60ERee2mneMiAdm/4Mw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793775758;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=K6s4lOO67MxeZ2kZUNjXsFE143gts4Ntp0bKcxeuWXY=;
+	b=VtVhrXrrLWK7l4lmdyj+FP16BwOoei4L8YDDmsIIW+rtNqmNrJSpEgttqtlQIkiZVA3s
+	 bouIoX8jpXkInCjSt/slNmUkP0Px5HgHwAEpqbO5FjGsJeOxaHiavXlAJ1CFc6ihLdbmF
+	 z+n7NZIyxLc5xJtAfT7Whi41p1MrUhYddPTZj6Kj0fX4FQEP/7WMRjKgC8keF9vCOMAUB
+	 pHlhW9CMg5JVH/bKcj/sE50LUZ3d1TkcAtc7W8E/TQAeMr3tGcl1UPtxJGOxAQG0I2xa5
+	 yWR5tiQ6Xfop+CqIosKHPvBjd99eMt6A0V0yf6psaf7y/GzmrYc5798rtB9Oqp+OzAQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dbSTM+qV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AG1CIAct;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A48606A32E
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 02:33:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD85F606A31B
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 07:02:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dbSTM+qV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B21A31F000C1;
-	Wed,  4 Nov 2026 02:33:15 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AG1CIAct
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE0E1F000C1;
+	Wed,  4 Nov 2026 07:02:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793759595;
-	bh=JDDxIUrF8tb8pEdwRthMxrGgkj9rOEQ/nGn0twGKudY=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=dbSTM+qV/osARaBA20iC1Scr99ZC5qdF3zssU1vTtDhpi+HkDN9tG6nAGtJM6j7Ip
-	 PQzTalt0wVkGa2EX5JnmrSqfXF0RT2dZRqKVj+0BDI/kVLWpNVcVMT3BOphPiTYsUI
-	 35Hj12ijfRnDFIcDcgVM+QBMGSZQtGB8Fe1LX95FEwqs8jMpEkW97zplMVacX4Qat5
-	 NkEpUYxdG1/sNEZDJkZ644WO1Lpff1cvGRJMstLPIF/55ejtC67JE7j4U7vdeQoNnu
-	 yQK0oeKA7RWfZiM91Lba/jqbT+FtF2PnS7kEwu/pdWCrY1f1or/tZWFjciJzBS8S2K
-	 7x2Mhg4LpaQeQ==
-Message-ID: <sashiko-outbox-196498@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: n_gsm: release the control channel if device
- registration fails
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Wentao Liang" <vulab@iscas.ac.cn>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261104021509.1468558-1-vulab@iscas.ac.cn>
-References: <20261104021509.1468558-1-vulab@iscas.ac.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 04 Nov 2026 02:33:15 +0000
+	s=k20260515; t=1793775757;
+	bh=K6s4lOO67MxeZ2kZUNjXsFE143gts4Ntp0bKcxeuWXY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=AG1CIActR9mqZ3w7p9KYrxKCyFEr07K9s8Tg1edd/dvBLQUpgRWNwIDLZmHr8hA0J
+	 youonnsgIg2Jkkzj0hrbrDzKYT2+i6+gDyEu+m9rEUipKE2RyuG9YOoPrAkQoY48xM
+	 SpjYSFIHsTahiE3pY7cu6jozUJdocbhKpPFpkwJ3WlG1QJgqXA1fzgKlgq4b6Xwlfq
+	 lZN35CWk/yWdzf8Ny9E9agNJNcwRm5t4leHbXG822DMkmdWsmrQZ+rVCQFkB5Hp/2K
+	 EpLOT2V5KDUGE0unr/Kl/ojYujSFTm6ZwD7BNBGyFobdEAKUh6W2PS8OeXbTTrJSyX
+	 k8ZTksvnEurCw==
+Message-ID: <5b741c90-4e57-425e-b3ef-b8d10eac1f33@kernel.org>
+Date: Wed, 4 Nov 2026 08:02:33 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,186 +50,124 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: meson: unregister the UART driver if port
+ registration fails
+To: Wentao Liang <vulab@iscas.ac.cn>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-amlogic@lists.infradead.org
+References: <20261104021501.1468500-1-vulab@iscas.ac.cn>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20261104021501.1468500-1-vulab@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
-s) to consider:
-- [High] tty: n_gsm: NULL deref and DLCI 0 leak in gsm_activate_mux() on re=
--activation
-- [High] tty: n_gsm: race between dlci_put() in gsm_activate_mux() and gsm_=
-queue()
-- [High] tty: n_gsm: concurrent gsm_activate_mux() clears active gsm->dlci[=
-0] to NULL
---
+On 04. 11. 26, 3:15, Wentao Liang wrote:
+> meson_uart_probe() registers the shared uart_driver on the first port and
+> relies on meson_uart_remove() to unregister it once the last port is
+> removed.  If uart_add_one_port() fails, probe returns an error, so remove
+> is never called and the driver stays registered, leaking its tty driver
+> and per-port state.
+> 
+> Remember whether this probe registered the driver and unregister it again
+> when adding the port fails.
+> 
+> Fixes: e71aab9d6132 ("tty: serial: meson: apply ttyS devname instead of ttyAML for new SoCs")
+> Cc: stable@vger.kernel.org
+> Assisted-by: DeepSeek-V4.1-Flash and OpenAI Codex
+> Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
 
-commit 75222737c883df9342677bd8689ca9cd6f7dffbf
-Author: Wentao Liang <vulab@iscas.ac.cn>
+makes sense to me:
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-tty: n_gsm: release the control channel if device registration fails
 
-This commit releases the control channel DLCI 0 via dlci_put() if
-gsm_register_devices() fails in gsm_activate_mux().
-
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index e55779ff0af2b..8ef2c711b2aa0 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -3195,8 +3195,10 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
->  		gsm->receive =3D gsm1_receive;
-> =20
->  	ret =3D gsm_register_devices(gsm_tty_driver, gsm->num);
+> ---
+>   drivers/tty/serial/meson_uart.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index a6cb2a535f9d..a51362f73dee 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -702,6 +702,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	int ret = 0;
+>   	int irq;
+>   	bool has_rtscts;
+> +	bool registered = false;
+>   
+>   	if (pdev->dev.of_node)
+>   		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
+> @@ -753,6 +754,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   		if (ret)
+>   			return dev_err_probe(&pdev->dev, ret,
+>   					     "can't register uart driver\n");
+> +		registered = true;
+>   	}
+>   
+>   	port->iotype = UPIO_MEM;
+> @@ -781,8 +783,11 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	ret = uart_add_one_port(uart_driver, port);
 > -	if (ret)
 > +	if (ret) {
-> +		dlci_put(dlci);
->  		return ret;
+>   		meson_ports[pdev->id] = NULL;
+> +		if (registered)
+> +			uart_unregister_driver(uart_driver);
 > +	}
+>   
+>   	return ret;
+>   }
 
-[Severity: High]
-Can this cause a NULL pointer dereference in gsmtty_cleanup() and leak the
-previous gsm->dlci[0] when re-activating a mux after DLCI 0 closes?
 
-When an active mux has open virtual TTYs (where gsmtty_install() took a
-reference via dlci_get(gsm->dlci[0])) and control channel DLCI 0 closes via
-an incoming DISC or DM frame, CMD_CLD, T1 retry exhaustion, or keep-alive
-timeout, gsm_dlci_close() marks the mux dead without unregistering the tty
-devices or releasing gsm->dlci[0]:
-
-drivers/tty/n_gsm.c:gsm_dlci_close() {
-	if (dlci->addr !=3D 0) {
-		tty_port_tty_hangup(&dlci->port, false);
-		...
-	} else {
-		timer_delete(&dlci->gsm->ka_timer);
-		dlci->gsm->dead =3D true;
-	}
-}
-
-If userspace then calls GSMIOC_SETCONF with unchanged parameters (so
-need_close and need_restart are 0 in gsm_config()) or GSMIOC_SETCONF_EXT
-without GSM_FL_RESTART (so need_restart is false in gsm_config_ext()),
-gsm_cleanup_mux() is skipped and gsm_activate_mux() is called because
-gsm->dead is true:
-
-drivers/tty/n_gsm.c:gsm_config_ext() {
-	if (need_restart)
-		gsm_cleanup_mux(gsm, true);
-	...
-	if (gsm->dead) {
-		int ret =3D gsm_activate_mux(gsm);
-		...
-	}
-}
-
-In gsm_activate_mux(), gsm_dlci_alloc(gsm, 0) unconditionally overwrites
-gsm->dlci[0] with a new struct gsm_dlci (leaking the old gsm->dlci[0] along
-with its tty_port and kfifo), and gsm_register_devices() then fails with
--EEXIST because gsm->has_devices is still true and the minor devices are
-still registered.
-
-Calling dlci_put(dlci) on that error path invokes gsm_dlci_free(), which
-sets dlci->gsm->dlci[0] =3D NULL while the existing virtual TTYs remain ope=
-n:
-
-drivers/tty/n_gsm.c:gsm_dlci_free() {
-	timer_shutdown_sync(&dlci->t1);
-	dlci->gsm->dlci[dlci->addr] =3D NULL;
-	kfifo_free(&dlci->fifo);
-	...
-	kfree(dlci);
-}
-
-When one of those open virtual TTYs is subsequently closed, gsmtty_cleanup()
-dereferences gsm->dlci[0] while it is NULL:
-
-drivers/tty/n_gsm.c:gsmtty_cleanup() {
-	dlci_put(dlci);
-	dlci_put(gsm->dlci[0]);
-	mux_put(gsm);
-}
-
-[Severity: High]
-What prevents a use-after-free in gsm_queue() if data arrives on the
-underlying serial TTY while gsm_register_devices() is running and then fail=
-s?
-
-In gsmld_open(), gsm->receive is initialized when the line discipline is
-attached, and gsm_activate_mux() also sets gsm->receive before calling
-gsm_register_devices(). Meanwhile, gsm_dlci_alloc(gsm, 0) publishes the new
-channel to gsm->dlci[0] before returning:
-
-drivers/tty/n_gsm.c:gsm_dlci_alloc() {
-	...
-	gsm->dlci[addr] =3D dlci;
-	return dlci;
-}
-
-While gsm_register_devices() is running, incoming bytes on the underlying
-TTY invoke gsmld_receive_buf() -> gsm->receive() -> gsm_queue() on another
-CPU without any lock serializing against gsm_activate_mux() and without
-checking gsm->dead:
-
-drivers/tty/n_gsm.c:gsm_queue() {
-	...
-	dlci =3D gsm->dlci[address];
-	...
-}
-
-If gsm_register_devices() fails, dlci_put(dlci) -> gsm_dlci_free() clears
-gsm->dlci[0] =3D NULL and frees dlci via kfree(dlci) while gsm_queue() may =
-be
-concurrently dereferencing dlci (for example in gsm_dlci_open(),
-gsm_dlci_close(), or gsm_dlci_command()). In addition, if an incoming SABM
-frame opened DLCI 0 during that window, gsm_dlci_open() may have armed
-gsm->ka_timer and scheduled gsm->tx_work, which gsm_dlci_free() does not
-cancel, and any subsequent control frame reaching gsm_control_reply() will
-dereference gsm->dlci[0] after it has been set to NULL.
-
-[Severity: High]
-Could two concurrent GSMIOC_SETCONF or GSMIOC_SETCONF_EXT ioctls race in
-gsm_activate_mux() and leave an active mux with gsm->dlci[0] set to NULL?
-
-Neither gsmld_ioctl() nor gsm_config() / gsm_config_ext() holds gsm->mutex
-when checking gsm->dead and calling gsm_activate_mux():
-
-drivers/tty/n_gsm.c:gsm_config() {
-	...
-	if (gsm->dead) {
-		int ret =3D gsm_activate_mux(gsm);
-		if (ret)
-			return ret;
-		if (gsm->initiator)
-			gsm_dlci_begin_open(gsm->dlci[0]);
-	}
-	return 0;
-}
-
-If two threads concurrently issue GSMIOC_SETCONF or GSMIOC_SETCONF_EXT on a
-dead mux:
-
-Thread 1 enters gsm_activate_mux(), allocates dlci1 (setting
-gsm->dlci[0] =3D dlci1), and sleeps inside gsm_register_devices().
-
-Thread 2 still sees gsm->dead =3D=3D true, enters gsm_activate_mux(), alloc=
-ates
-dlci2 (overwriting gsm->dlci[0] =3D dlci2 and leaking dlci1), and calls
-gsm_register_devices(), which fails with -EEXIST because Thread 1 already
-registered the minor numbers for gsm->num.
-
-Thread 2 then calls dlci_put(dlci2) -> gsm_dlci_free(), which sets
-gsm->dlci[0] =3D NULL, while Thread 1 finishes gsm_register_devices() and s=
-ets
-gsm->has_devices =3D true and gsm->dead =3D false. When a virtual TTY is la=
-ter
-opened on the active mux, gsmtty_install() calls dlci_get(gsm->dlci[0]) with
-gsm->dlci[0] =3D=3D NULL:
-
-drivers/tty/n_gsm.c:gsmtty_install() {
-	...
-	dlci_get(dlci);
-	dlci_get(gsm->dlci[0]);
-	mux_get(gsm);
-	...
-}
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104021509.1468=
-558-1-vulab@iscas.ac.cn?part=3D1
+-- 
+js
+suse labs
