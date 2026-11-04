@@ -1,55 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793797526;
-	b=VdeHXSjE3ru8AB4TFxfaQzKAugD+iJTDtAyBtTGr5zdEdIXcY4stVHUHkIEFfWlN/uPd
-	 ECn5udTWI12D1rESAs6q7kkjL+TB9/CQfRy9jdk4CiIzrWYTg6KImgWGK8GJjs/gxg8Lr
-	 XTeiD0XtdcJD5MZXi/pPxGQqRPWfnTlb0cajtrjpSesAd/skAoPQ5yf8A4jmjBRbdl3jz
-	 KxIN228KQCAlhFSu3yFuNYF9J/Sc+YdYO+iWwj/Tcgn8vU1MiTwH/yVRIz/O1+g1Skpp7
-	 F3+hbs9yb/WtxHcQQ4a8boa1LmWhDY9tXrwDDgBp6si0RjZ1yWnp0L1GkHpfDDIbLRw==
+	t=1793798081;
+	b=cI7nqa7/IyxUAslK9NUkaaVnFOoh0QFNjJBRALbVwnwksBIDd6GeG9Vn1US/KLozSdXT
+	 YORQ3kzV47hcIs6GRN6I5KAZywjjFLfP3NzpB9F2QGbNfdN8fBywJiYcozeDo1RHt4H7m
+	 3Goh8Nt1iwWSxm/MTVX8F9Me3F2uJYDrc0mrJo+rc7KWDW/F+fk2fYtSRH6eWbHQ5vMrI
+	 f40ZHQ75GTFhQTMlKYD4QR9LveJCj9aVFACM7rcaUQMBxKBlqoPDhuzt8LOA2eCyaE5Is
+	 gHWhWITGXZUjijP07flz2gTqw+xh0NmkgfIe69OTXBpi3tF0PCjfM73cQ78a1uWdj5g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793797526;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793798081;
 	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
 	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
 	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
 	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=LPKBxmhyg89L22fIaf9IQyOx1ftYYGNVMEyFVHYOx+w=;
-	b=Mh/2qkGLJ5ewML8EkEhDRboMzKwVPRPLgzYBBJzAvBX254bk1CCFSgizHLNspSyShbOV
-	 04UHggQyImY7ky+CHVSsApwCM/Ga3S8bgWhNnUTNvuWcI0DEwuirjA1LLq3SrLE9jqsOX
-	 cACDN7+Z+4mgcqlY+9/8KRwA165N1XlPjZH70freZ4R8jGaIMsPmlxc93uRH4Bx3Uav4o
-	 5AyYJHu2fYtV980qW8YMTZ0K4BvuUFkNdObEtMoYgsWyygm5Bn/+k+2I3R00mWyGRYcSU
-	 vkgWwayj54UUeVN+/re+zp4BZT67X4oJKq3fZPahyeDiojyb1du63N67duSnQQWAd6w==
+	bh=/p5+Pyk6coILlORdcQBpVHNHSFgdC438Pn8Lrp7EWZ4=;
+	b=FHFt6sjvrkN3i/jj12kVH27zZoOM9TJm4dHJC/NJOD5eE6sr2GxJlp/O6T22bkWiQ+5B
+	 9KlQVkeqfTG6+GvcD8EzatjIZsvuKj/eHrGERdiq3Bq5q7Y2x3CKi3L4i8bsY2rgvw0Qq
+	 +HVTOTBEer7E0HMb3tK5teRnVF3VW+v8sWYdgTYrfzZpNnMUxIvgTGaOY9l+VNnvtgRs7
+	 yXE81VLMzRtjCpF6mIehjHDflqcbNHDf3m6EhqBrHFEDLAG70OjgKHj36Y9pdDWriVNmC
+	 iqgDtDJ5qK2ogUB78mD6TOJ8fjxkymq63bV7As/HGtSGHEHZ0k0+9WEm2HaYokvqfoA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RVrWEomG;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PSwVh+0e;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C199606A33C
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 13:05:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 079BC606A33C
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 13:14:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RVrWEomG
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 010C61F01804
-	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 13:05:25 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PSwVh+0e
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A04441F0093A
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 13:14:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793797526;
-	bh=LPKBxmhyg89L22fIaf9IQyOx1ftYYGNVMEyFVHYOx+w=;
+	s=k20260515; t=1793798080;
+	bh=/p5+Pyk6coILlORdcQBpVHNHSFgdC438Pn8Lrp7EWZ4=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=RVrWEomG/IIX5cxMVNeQAJqg14gY31z7wjGrtqlnEeyw4TansTn8u898lZjy38P8l
-	 IOYQ9fyLUGCmGGEPqik0GJA2klQhNatrvFkvVB80aWjIvTHrBVzlCQFszwyf2gduN3
-	 mcROiofudnBjB9++SPu6MauEKpax3EiJo+g3lZKCtLcPdCnZImr7QgHyKGGO6at0N2
-	 O2NmcLOL3Edcev8rg6ppQLVQ+I2k2e6OXcijhVELFd0GgCI9aN8TntOMvjEhPIcvBM
-	 bOQFp7iInM+ZQjXmV7bD/OMvupiiBncz9rL/Q0PN1gE5ALQ0tZr9fLd/jdH6eVQnKV
-	 aRwzuZ249826Q==
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5bcdae234ecso414506e87.3
-        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2026 05:05:25 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AKwUvBwrem42HIZWdgDniDly4kkqF/Z1wp0gaDnFLAWhcXxXHL7vxeoZXHpx2VfFbUWjgjuPmNgVf/6x2dDJ7Jk=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+6Z54J9BCIge9m5EL9sySdgh8E/zoMxtx3OvHB01e47qC4/C/2
-	jwVhT4VQi69g7mBdzBe1wqDGaDTiU6WHVsjid/heG95unQedZkvTRTRgaYL1o8nQxkf7zlq5Qlh
-	Ocn79l6Nr4d3ty9Jp8B0SOKiCWceKZFg=
-X-Received: by 2002:a05:6512:3a89:b0:5bc:c446:760c with SMTP id
- 2adb3069b0e04-5bfd956f3c7mr5830020e87.48.1793797524594; Wed, 04 Nov 2026
- 05:05:24 -0800 (PST)
+	b=PSwVh+0eCTT+b5fCxey1CsR0b6m5BP0NC9rEWv/qGoVAp7z7b/X1baMHbpDnRhHw0
+	 1IlSHrcLAlVsg55IpOJF5Nkvf2vaGC/fHZEyKH+Don9up9zSqgKV37V5nainUewRr1
+	 tAyK+1WI3fZ/i42mU5cbzo+HvC/82f7rkN3yxsVGBPX5SeP8DXJpSKARcrEvAMNSv1
+	 RLgoTtiG3rPcDWuwk0+yNZkdNee1OkZ9GCZo58XY+OQNfYVWhHMw4oNuRfTNNgiFs7
+	 4AkeoxFWz8uacgEWDIjPHFeVRqn52p+Yr5AhY/9vo5pidgnseQ+ftRBNMagtn2p8xU
+	 Pbq1Di/rgQkDA==
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5bcb440d1cbso428130e87.1
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2026 05:14:40 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AKwUvByRjMeWNYlKdVUAimQAKtZ0CSOTAw3mb99YylvmwPGH6N3gnDKc8M2+oQtp+d0gk5MEvZZQ3leXRBMc7To=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8BLpqtG3gkwjdIl5dlTwotPKRCdtxV/qGVmdQUH82TDwCyd5zH
+	wGVAqEJUBIXtSXBv04hZQQfomWcjr3uI868W8cPgx807hBJRy0Q3p1GM5sExdz3blzl5R4eEanS
+	fLtQeK3uy173fTI8WA6AEJVLAUQfeR8Q=
+X-Received: by 2002:a05:6512:3d93:b0:5bf:ac46:c5d6 with SMTP id
+ 2adb3069b0e04-5bfd956d81cmr4929046e87.12.1793798079384; Wed, 04 Nov 2026
+ 05:14:39 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,56 +59,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com> <20261022-add-board-ok3572-c-v1-6-0b0fd85a31ee@qq.com>
-In-Reply-To: <20261022-add-board-ok3572-c-v1-6-0b0fd85a31ee@qq.com>
+References: <20261103-a210-scmi-v3-0-ee6b31580808@iscas.ac.cn> <20261103-a210-scmi-v3-6-ee6b31580808@iscas.ac.cn>
+In-Reply-To: <20261103-a210-scmi-v3-6-ee6b31580808@iscas.ac.cn>
 From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 4 Nov 2026 14:05:11 +0100
-X-Gmail-Original-Message-ID: <CAD++jLkfnsnqr9DeJG1UY1BNPmXV=L1fh0o1fRgq2N70k3Aq2A@mail.gmail.com>
-X-Gm-Features: AclHuK_mv5t_ofBXXvFmTtsscxk8ZZZWMu9yfbYuWEEuKyuLUDpVdyNQz1Is1sQ
-Message-ID: <CAD++jLkfnsnqr9DeJG1UY1BNPmXV=L1fh0o1fRgq2N70k3Aq2A@mail.gmail.com>
-Subject: Re: [PATCH 06/27] dt-bindings: gpio: rockchip: Add RK3572 GPIO banks
-To: 1579567540@qq.com
-Cc: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
-	Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Richard Cochran <richardcochran@gmail.com>, 
-	Ulf Hansson <ulfh@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+Date: Wed, 4 Nov 2026 14:14:27 +0100
+X-Gmail-Original-Message-ID: <CAD++jL=5SypKyjwb71hT2pzTZ3s9qi62JG_EevyjTjGgTZiE8w@mail.gmail.com>
+X-Gm-Features: AclHuK-6MXT5O-NfPKrU9YAGzhqKyzaaZr6RTIvrirwYp92eUVqCIspXmcEerPc
+Message-ID: <CAD++jL=5SypKyjwb71hT2pzTZ3s9qi62JG_EevyjTjGgTZiE8w@mail.gmail.com>
+Subject: Re: [PATCH RFC v3 06/17] dt-bindings: pinctrl: add Zhihe A210 pin controller
+To: gaohan@iscas.ac.cn
+Cc: Sudeep Holla <sudeep.holla@kernel.org>, Cristian Marussi <cristian.marussi@arm.com>, 
+	Michal Simek <michal.simek@amd.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Alexandre Ghiti <alex@ghiti.fr>, Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>, 
+	Samuel Holland <samuel.holland@sifive.com>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
+	Anup Patel <anup@brainfault.org>, Stephen Boyd <sboyd@kernel.org>, 
+	Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>, 
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Jisheng Zhang <jszhang@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, David Wu <david.wu@rock-chips.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
-	Maxime Chevallier <maxime.chevallier@bootlin.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Vinod Koul <vkoul@kernel.org>, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, 
-	Thinh Nguyen <Thinh.Nguyen@synopsys.com>, Jaehoon Chung <jh80.chung@samsung.com>, 
-	Shawn Lin <shawn.lin@rock-chips.com>, linux-clk@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
-	linux-usb@vger.kernel.org
+	Drew Fustini <fustini@kernel.org>, Icenowy Zheng <uwu@icenowy.me>, Inochi Amaoto <inochiama@gmail.com>, 
+	Vivian Wang <wangruikang@iscas.ac.cn>, Yao Zi <me@ziyao.cc>, 
+	Jiaxun Yang <jiaxun.yang@flygoat.com>, arm-scmi@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-gpio@vger.kernel.org, Paul Walmsley <paul.walmsley@sifive.com>, 
+	linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Han Gao <rabenda.cn@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 21, 2026 at 6:12=E2=80=AFPM Cunhao Lu via B4 Relay
-<devnull+1579567540.qq.com@kernel.org> wrote:
+On Mon, Nov 2, 2026 at 8:45=E2=80=AFPM Han Gao via B4 Relay
+<devnull+gaohan.iscas.ac.cn@kernel.org> wrote:
 
-> From: Cunhao Lu <1579567540@qq.com>
+> From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
 >
-> RK3572 GPIO banks have four parent interrupts and a separate debounce
-> clock.
+> Add a binding for the AON, PERI1 and PERI2 pad controllers of the Zhihe
+> A210. Every pad is muxed and configured on its own. Functions of the same
+> kind share one name unless a pad can select more than one instance of
+> them, as with the UARTs.
 >
-> Signed-off-by: Cunhao Lu <1579567540@qq.com>
+> Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
-
-Perhaps Bartosz can just apply this one patch to shrink the series?
+This LGTM, just waiting for a non-RFC version and DT bindings review.
 
 Yours,
 Linus Walleij
