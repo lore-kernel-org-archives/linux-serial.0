@@ -1,58 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=82.195.75.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793789903;
-	b=J2FI+lt34s3Bv/NA5YlSYwB/i3ca5kmEB1zFx7qDIOccn5uNLhWe0OGa86xBiziv2/zJ
-	 YwPbFjELUnDQdj7NOM2Utrv8ArGhswtxa7Hv1x7z0SDBmKsXO0rMWFviPUvmBMwEPicaP
-	 1GNdBrevmRfynqVIoczWmbRpvnz9MGuMuOhvRAxHrDBSUrDjqoa4b5dK2L76jYsMAkqa3
-	 mebWGgpn+n/Ck6M+ZQIe611vvddwmrTNVBucbyugul0CP6+kzwZXTOfh6TUEuswa5YyFV
-	 jmeQTGzgj6iNduXEPqDPZK8ReajjtUdER5urr7F0BuS3MBMl5Gx3S3COX8KdS+6rEPA==
+	t=1793789980;
+	b=IRa+vecje0Nj+dPFWm+fhJ5FnSSMRuwa4w8s3FUxPsOI9cMuO9IMfovLDeXmYzUcFJNQ
+	 6GtxjFjRTXKutFasIbKK2fJL66cX4qFBqZLwvB2UUIfbp3HWIZiLMhOGy+XN/sSPILEjH
+	 hkHOlwBaFnTHE3siqdgCUUy67EEWnHYAVZXn13T7T4KRN0MY982ve5r/pWcizpd6X+ojp
+	 McZC+qIu9w2pYATBp9oz+SSp9Xxya9SfrIfdGWjJAmkNcP1Tz+RJ2z5AtEZDhPrG8N7AH
+	 XgF2SmqOmyKdOb+AGBMes9Pe/gfLNXtA4gAfXuWUW6FGcrYH8MnT0r6BJlzqW4UixFg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793789903;
-	h=DMARC-Filter:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Message-Id:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Debian-User;
-	bh=Bn7S5HHmVBVlB37CW8Co6RM2gzOIX/i6AlDIxMv5sVM=;
-	b=aqZYiTPKQ0gQ/hXFCdLfxUXemkB3Xy4it71iIbXqmqwHCSwzVHLGBJUN/65GCRSR4/r/
-	 qq/EqaRvCANgC9TOx498YmqvPi6gHE83E8Zl8563lIsL9OLiLZDRz5EDDBPTXaUKmtZ+f
-	 5u8OyoNJlQEHJa57aZJq28WJBntTmLHU4jQFIxeyW/R6e8W4robepskVRjVv3lWty+dx9
-	 tOfXSq0UyUdjCYXjqx7j/GVCDJzA2x8fPD4gT/UY/1x7VKn87/dbC689u6zxk7pXCZmYV
-	 TQx3TE79WkB38TxF9LfbT+pfW7xrfJycmPlNbXqV6VvDn8FKJPh8EqRSLOr1KgUVaAQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793789980;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=Awio7RId/8LME8MSZg4JrTdUAU4hYKWNdYybYK4ASqU=;
+	b=iKIHN+DT36X0MtyVpIswp132Wz0nvG2ku0vgS2I9zOP4QTdxOgUxzQ2u03d8bAswZ432
+	 1gnC9aPaNUcycUWAw8IcozLqCJzYLELWfWIP+XWnhXWd41si9I7Z13K72NQs9t3pXnkIp
+	 BOcF8a77uvTBHqtS/4H388rUP//jJn7hNifIDrP64ZJWiyMjAsEFT2xX2NvpXKBTvL7zY
+	 GOUbYrK54pCDCxQTb4knRL4YZANSweUVKE3DqKbpqZ9NV3GCZfjY/Gm1Kn5M/hr4kCRyC
+	 KOAtAgxbuQh5jwHmcgWp1nk5cHBUHn4vueoKftufy05bLX4MTfk2Oj7G6mbQmT3rqCg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=debian.org;
-	spf=pass smtp.mailfrom=debian.org;
-	dkim=pass header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=nTqmGzmy;
-	arc=none smtp.remote-ip=82.195.75.108
-Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7D0C606A31B;
-	Wed,  4 Nov 2026 10:58:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7D0C606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=debian.org
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b="b6/VbMmw";
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76AE6606A330;
+	Wed,  4 Nov 2026 10:59:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 76AE6606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=nTqmGzmy
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
-	s=smtpauto.stravinsky; h=X-Debian-User:Cc:To:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:
-	Reply-To:Content-ID:Content-Description:In-Reply-To:References;
-	bh=Bn7S5HHmVBVlB37CW8Co6RM2gzOIX/i6AlDIxMv5sVM=; b=nTqmGzmyYh6xOs1wwqqf1i1/ki
-	kpK/KS4Iqb5bw4lPth0bvDW4sU7NlGEBpLyrkI+mL3C1cIwgTq3iEoo9+mxydeRee3UrE9CK31sTW
-	oRq5hTD0/6tog4Vq2pOh5cxnGOWrInpyRMBFwaO4xOBxjWugMfvqz7k9JboiKFxhjfNAzWhd9xDv0
-	bh2VYQokBsw4+rLWytyXBD5gOqPv1ACOoZBv0JWMpf8HJXIGa+b+OtuiGhkhbC0mnXmCW6Mkvbh+t
-	rLs7/++ssZj/tPgBuN6dEtK+CLyM63s9mnYZIUdH0riXEBhmBN/M5qUAqm51L+qvSXOfaPA6Pb6bK
-	zFZnFsBQ==;
-Received: from authenticated-user
-	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <leitao@debian.org>)
-	id 1xOYh8-007f9J-1K;
-	Wed, 04 Nov 2026 10:58:18 +0000
-From: Breno Leitao <leitao@debian.org>
-Date: Wed, 04 Nov 2026 02:35:51 -0800
-Subject: [PATCH] serial: amba-pl011: touch the watchdogs in write_atomic()
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=b6/VbMmw
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 78A4222EA;
+	Wed,  4 Nov 2026 02:59:35 -0800 (PST)
+Received: from [192.168.178.24] (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 07FDE3F628;
+	Wed,  4 Nov 2026 02:59:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1793789978; bh=O82otjfYbzrbsMdYHm1dg0YttcpeVMXQMdvlI0lqyik=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=b6/VbMmwviI0PTu9dcW3SXxOUx6kJ9Rv3QIVBQORpkIxWz3lxrsQ69NBzPi1nnHWN
+	 LRgA/d6cItBHCkFCYPGsU6RCpFmPu1J6VNpcyANfbxbCbWHVLwH688T5a5Ms7sKhn+
+	 VMk8LTzzxBPKHpVV88xeJ2Psg+XDTk3ry6uDueLQ=
+Message-ID: <32461e0e-2512-451a-8eca-f2df63553379@arm.com>
+Date: Wed, 4 Nov 2026 11:59:34 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -62,95 +53,84 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 06/12] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner H616
+To: James Hilliard <james.hilliard1@gmail.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev,
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+References: <20261103-submit-h616-uart-fifo-v1-v7-0-c9e248d685c1@gmail.com>
+ <20261103-submit-h616-uart-fifo-v1-v7-6-c9e248d685c1@gmail.com>
+Content-Language: en-GB
+From: Andre Przywara <andre.przywara@arm.com>
+In-Reply-To: <20261103-submit-h616-uart-fifo-v1-v7-6-c9e248d685c1@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261104-pl011_touch-v1-1-e292bd834e14@debian.org>
-X-B4-Tracking: v=1; b=H4sIAIwK62oC/x3MYQqDMAwG0KuE77eFxOkmvYqMUdo4A0OldSKId
- xd8B3gHimbTAk8Hsm5WbJ7gSSpCHMP0VWcJnlBz/RThxi0/Fvms8z+OLrE8ujZyaNMLFWHJOth
- +b/37PC9uHcCCXQAAAA==
-X-Change-ID: 20261104-pl011_touch-d01385c0a5d7
-To: Russell King <linux@armlinux.org.uk>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>, 
- Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>, kernel-team@meta.com, 
- Breno Leitao <leitao@debian.org>
-X-Mailer: b4 0.17-dev-ce4c1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2087; i=leitao@debian.org;
- h=from:subject:message-id; bh=0KqdgEajat62QysY4IlhZoEcd4BHBchm7bTEv+3LG4s=;
- b=owEBbQKS/ZANAwAIATWjk5/8eHdtAcsmYgBq6w/G6SG92rK0Sow+QYO/angzr0E+DRZRVbc/7
- cwO4mpL1GmJAjMEAAEIAB0WIQSshTmm6PRnAspKQ5s1o5Of/Hh3bQUCausPxgAKCRA1o5Of/Hh3
- bXZUD/4lr5ARtRYm3fN2tXLO98iJyaZtds8qlivX8H0PeXh5A7xm4C6bgAttXptKc92/hXUKp8q
- fc9KRfcE+/CmfExTuV/6Y11QAvS/++mChnvYYGs2C/7d8kPx3jw/jSPFXptiVwsegb9rZbYKzzn
- iwUXl9uI1/XuvlGcxRDz6GHP7r1CCzCJ3U1iQ3sUsnGcAohAfC9YAgoeXWs3zIVKy+zuNGQbCs4
- cXeEjLeggzVpH/txu1hkym6sJ9N4VZQOdQULX/1XQZh004fhCrtIreIrAQPO+8cORL+V4smiiEC
- 86wpE6flQ7P37OQ2u3ocNxEBG4z/kaf/gSnDNCzja1T/ZtSiUTF6UKWnXMybtbC7RZkn4FR2lz5
- oWm+p3nvFKAh3klJIg+X04UMq+Pip8+iEoUU4sCjYrPlv1uiJNvAzBNSp9EAUk+5gQF1zZdPpgW
- r90sVcX0A4awK4udzhmQSkWybETPDLrHqyKDzlaE04O7SL2ZlhK8ZwBmTdWxazE/RIF5BsV04IN
- IkXay+rX06rYQJQ1Hs/lN5hxsLoqKMPrL7dkiIibFH8wtdw9P7bV9EYKzo17HqwU9L0BTHekY+V
- W36J417FqkOtgJxbVHwybNsOOoIt5PB1KZ9RGdzOVi9n8x+gxHsDLaOWWeLqFaGToVeRxWHpCWN
- Sj65oa+gqmcdw3A==
-X-Developer-Key: i=leitao@debian.org; a=openpgp;
- fpr=AC8539A6E8F46702CA4A439B35A3939FFC78776D
-X-Debian-User: leitao
 
-In emergency context, such as WARN(), nbcon prints the pending records
-through write_atomic() with preemption disabled.
+Hi,
 
-On arm64, WARN()  can run with IRQs masked, so the whole backlog is
-printed with IRQs off as well.
+On 11/3/26 22:39, James Hilliard wrote:
+> The H616 UART has 256-byte transmit and receive FIFOs, but its DesignWare
+> component parameter register does not report the FIFO depth. Its optional
+> register layout also differs from the generic DesignWare integration.
+> 
+> Add a specific compatible to identify this fixed configuration, retaining
+> snps,dw-apb-uart as a fallback.
 
-Commit 9bd18e1262c0 ("printk/nbcon: Restore IRQ in atomic flush after
-each emitted record") does not help here, as it only restores the
-caller's IRQ state between records.
+I think we should not focus too much on single SoCs here, all the 
+Allwinner UARTs need some care. We should have had SoC specific 
+compatible strings (plus the fallback) from the beginning, but we 
+didn't, mostly for historic reasons and because it just worked (TM).
 
-pl011_console_write_atomic() busy-waits on the UART for every
-character, and at 115200 baud it prints about 11.5KB per second.
-Flushing a few hundred kilobytes outlasts the hard lockup threshold
-(10 seconds by default), so the printing CPU is reported, or the
-machine panics with hardlockup_panic set. See [1].
+So just from looking at the Allwinner A10 (the first one really 
+supported mainline, since 2012): the manual reports a FIFO size of 64 
+bytes, and it has none of the DW config registers.
 
-The 8250 driver avoids this by calling touch_nmi_watchdog() while it
-polls the transmitter. Do the same in pl011_console_write_atomic(),
-once per record.
+So I'd suggest:
+- We add compatible strings for *all* Allwinner SoC's UARTs in here, 
+regardless of whether we currently need a quirk for each of them or not. 
+This is now regarded best practise for DT anyway, we just catch up on this.
 
-Suggested-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/all/87wlqtxb14.fsf@jogness.linutronix.de/ [1]
-Signed-off-by: Breno Leitao <leitao@debian.org>
----
- drivers/tty/serial/amba-pl011.c | 4 ++++
- 1 file changed, 4 insertions(+)
+- The FIFO depth is all over the place for the various SoCs, and most of 
+them do not implement the CPR register to announce the size. So we 
+should use the already existing generic DT fifo-size property to 
+describe the size. This is the simplest, yet most flexible solution, and 
+avoids hardcoding implementation specific values in the driver. And it's 
+friendly to other users of the DT nodes, be it U-Boot, the BSDs or 
+whatever else is out there. IIUC, that should already work out of the 
+box with the current Linux driver?
+Since we need to touch the DTs anyway, I think this is the best way forward.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index e6f652905ca6f1..4fac3bca8f8255 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -41,6 +41,7 @@
- #include <linux/sizes.h>
- #include <linux/io.h>
- #include <linux/acpi.h>
-+#include <linux/nmi.h>
- 
- #define UART_NR			14
- 
-@@ -2734,6 +2735,9 @@ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt
- 	struct uart_amba_port *uap = amba_ports[co->index];
- 	unsigned int old_cr = 0;
- 
-+	/* An atomic flush may print a long backlog with IRQs disabled. */
-+	touch_nmi_watchdog();
-+
- 	if (!nbcon_enter_unsafe(wctxt))
- 		return;
- 
+Cheers,
+Andre
 
----
-base-commit: d6bcfc94eb4da6e089c5473970cd96727292fd97
-base-tree: git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-change-id: 20261104-pl011_touch-d01385c0a5d7
-
-Best regards,
---  
-Breno Leitao <leitao@debian.org>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> ---
+>   Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> index e2ca126d58ba..fc1289073241 100644
+> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> @@ -60,6 +60,7 @@ properties:
+>             - const: renesas,rzn1-uart
+>         - items:
+>             - enum:
+> +              - allwinner,sun50i-h616-uart
+>                 - anlogic,dr1v90-uart
+>                 - brcm,bcm11351-dw-apb-uart
+>                 - brcm,bcm21664-dw-apb-uart
+> 
 
