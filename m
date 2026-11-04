@@ -1,83 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793789293;
-	b=vQxo4+wxOTGjogGKXwE3drLGByTXy3HN/yHtoSMkYmhFDo8SliP3VemAI/boEUt4BXBg
-	 7WjV7tg7f3kdYmG7pBbFkgRC6uFs7NKDOuv0mbSP0JL0dQV3kRiIke8nrtbRKljJid3pZ
-	 oXICmVmfizQL30Cabq2lMXj+V1uBD+5rKGnewraSYpYLMq52ae78cQMW2H7HOEwfBtxIN
-	 yebcSkVLlDFc4C8KWjG4KMbuEZXxpx4ttUGQp6W1rF6pMac8iXxKw4mMernavH8tixgeN
-	 2XyZF56+uZEmvyJ1WB/uR92+EZoe2voEng4rhYJvTPqfX+YkyAmbk2daZLAOnVKlEnQ==
+	t=1793789401;
+	b=j8vLcAwYBPzLBSgA2uLnH5qoQJlnPEigQrByn8P1/LQ8NcKxpVLs4eLx4jtji0xh03ZN
+	 6WbMEcYCu+ZpCncV7OuMXz0MWXH8MK7KlWvkas+2x1oOvv/5bzemWF0aR0P2dMcgIl0TE
+	 /8POR0bgoHViB0eeGBU+KA4T40Fp/GaA54hhaavpxU/Dn8rwvuonlc5QJSA3hZmgJ+pUQ
+	 jC5C4Tcm1N4wGx/RBXWMJdDCcJRo7ZAq5kD0gE2zfIh7pDgGXpKszyZvwKfMp8qTxjLOx
+	 iy1mLmzJz7ruQHz6qh7kihIY0fJ6mGy9WwOpg8kXd1aNKVZ6Z2+TiInwuobuPV7cM8Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793789293;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=jozP82KH6glhGWXgzZRzNLlRupxlnORo/58rZr7qZ9M=;
-	b=KFzIaCCFkgA7zb9McA29wji4nd+R/X5IJLAPq3ZzAgQbtlFD9BKxY3t8TJqJlbM73ieB
-	 S4Pw4ZA8APw2YIsOkmkNm2gkng53yaDeJDmbMxfE8WhQgUdzA7ECy7WpHjiMsEyF2UyYe
-	 CkzY3PIH9iYGdX8AKn1LLkmW5JW0+PSAkGJE11HG9CXCIQq27zcV92TzKKyPiHk1oNaP4
-	 AS0u+I2psXHqNmEdt6vFcFniq7Qn3tQ3U2K5FMgzZ3+NYptGc2eBatIAKDacKlhhKmyZ1
-	 LOYEBLdF6rJj9VkbYcYZRn+yCgbLjUvgMCPucQsClsu/uJ6Tg8zYLEWWpy3V4Xw38bw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793789401;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=jSpBDv8YD607sbMHNbPAeaBjk155ellTG9O/QhQRzvg=;
+	b=CFYO5IuwkVMLinlvS5At34EHuLmdmfbFe8PT2+Vwa7J1VxRQDglAj5PhC02p78nmzGdr
+	 6ODFw223xP4vxEHWeCUO0HbbVjrBwjWnw5lf9mn+Hs/YRD4UmXvRrMYzt3iWghi/BWgBk
+	 RSFkRcAG5PvMVEd4vP7sAhu6+ZBhID2kh0meOLCjsM9pkdfeKE7xU3XXNammZDG69nodO
+	 G9ShckzOiAX6je1g6og3vYllbA/Yc2axLoBH+Sx5+FkQhHRyy0oialUFWCBUGLfMy5lrJ
+	 brOwyBVsP0JLKzDkTvzAg2lYVplEOgEtfkUcHrgWR0Pxv2haM5yTOP9RjJvBV9sqMGQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fZownUSi;
-	arc=none smtp.remote-ip=192.198.163.16
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=lbUKFsIu;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D720606A31B;
-	Wed,  4 Nov 2026 10:48:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D720606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE3BD606A328
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 10:50:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fZownUSi
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793789293; x=1825325293;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9WOXcToYwIQoz7fhImQHKUc1KH3haX4Er1ncPbI21WA=;
-  b=fZownUSiIhWy1NDFoqIJUMDiCpWvxVAKV9TvP1zyL35DDVrVyUv3NqTF
-   k7eAclEu9pQqpNnsBvFTY9cfJNfZ7rBCTBGei803suZ0PnTxsc+6wg5E0
-   r9JQmVIsNvawtxyQ0aVv1qbcZkbqFIN7nDuhjfcyL7pDYgC6O+O4rdLLE
-   FlOIIlOFwBMgTgGN0wWnqr7Tt7hgolVCkizMtKEovLHiG3CIBgnlb3ej7
-   BB1zGqugEXl9WJjGeFjhD/b27uR6gw1NrJaJQ/+49BVWtUI9Tj6jeqXvO
-   qa9VhvgW/lp2sxoFjvvr4c65VducQT9JsGUfa9DubZUKn8KLAfxNoHvcH
-   A==;
-X-CSE-ConnectionGUID: MBCBN/0iTCu/hPZq7aFqwA==
-X-CSE-MsgGUID: L+tbilk2TkuqeH2cFzEhug==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2552440"
-X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="2552440"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 02:48:13 -0800
-X-CSE-ConnectionGUID: h8C2zJTFRfq6dw4VZbAfEw==
-X-CSE-MsgGUID: AZLoV3SzT9OTjAmHCmqQ3Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="8558196"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 02:48:09 -0800
-Date: Wed, 4 Nov 2026 12:48:06 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v7 12/12] serial: 8250_dw: configure RX trigger
- thresholds for Octeon
-Message-ID: <ausNZqZrR3wqQjf7@ashevche-desk.local>
-References: <20261103-submit-h616-uart-fifo-v1-v7-0-c9e248d685c1@gmail.com>
- <20261103-submit-h616-uart-fifo-v1-v7-12-c9e248d685c1@gmail.com>
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=lbUKFsIu
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D6751F00A02;
+	Wed,  4 Nov 2026 10:50:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1793789400;
+	bh=jSpBDv8YD607sbMHNbPAeaBjk155ellTG9O/QhQRzvg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lbUKFsIunVUGOZSNi7sWqUHwAzZz4PFAb4KlEAuVuOkIKPbvA60P86o7vO8vQEVPJ
+	 vZU3/om6CYPX5NLvN99Zq1RDRI3nc05sOqTWuuTBsop8cqhUkMoUktOJa66QL5gVpQ
+	 uHz7ZcOUjgJkNtS8JUaI3060JJzTUqYeqEur+dpY=
+Date: Wed, 4 Nov 2026 11:49:58 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Wentao Liang <vulab@iscas.ac.cn>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH] serial: meson: unregister the UART driver if port
+ registration fails
+Message-ID: <2026110413-delegate-antitoxic-1264@gregkh>
+References: <20261104021501.1468500-1-vulab@iscas.ac.cn>
+ <5b741c90-4e57-425e-b3ef-b8d10eac1f33@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -89,37 +62,31 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261103-submit-h616-uart-fifo-v1-v7-12-c9e248d685c1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <5b741c90-4e57-425e-b3ef-b8d10eac1f33@kernel.org>
 
-On Tue, Nov 03, 2026 at 02:40:05PM -0700, James Hilliard wrote:
-> Octeon uses the DesignWare receive-trigger mapping with a 64-byte FIFO,
-> giving thresholds of 1, 16, 32 and 62 bytes. Its setup bypasses
-> dw8250_setup_port(), so it does not install the common trigger callbacks.
-> PORT_OCTEON also has no static trigger table, so rx_trig_bytes is not
-> exposed.
+On Wed, Nov 04, 2026 at 08:02:33AM +0100, Jiri Slaby wrote:
+> On 04. 11. 26, 3:15, Wentao Liang wrote:
+> > meson_uart_probe() registers the shared uart_driver on the first port and
+> > relies on meson_uart_remove() to unregister it once the last port is
+> > removed.  If uart_add_one_port() fails, probe returns an error, so remove
+> > is never called and the driver stays registered, leaking its tty driver
+> > and per-port state.
+> > 
+> > Remember whether this probe registered the driver and unregister it again
+> > when adding the port fails.
+> > 
+> > Fixes: e71aab9d6132 ("tty: serial: meson: apply ttyS devname instead of ttyAML for new SoCs")
+> > Cc: stable@vger.kernel.org
+> > Assisted-by: DeepSeek-V4.1-Flash and OpenAI Codex
+> > Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
 > 
-> Supply the fixed depth from platform data when firmware has not provided
-> one and initialize the common trigger table before port registration.
-> This makes rx_trig_bytes available while preserving the Octeon port type
-> and register accessors.
-> 
-> Select DMA before filling in the default depth, as before when the 8250
-> core supplied that default during registration. Thus the new trigger
-> setup preserves which ports attach DMA and their existing burst sizes.
+> makes sense to me:
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-...
+Nope, this is a bot, I strongly recommend that everyone just add this
+address to their email killfile as they never respond and spam out tons
+of crap.
 
-> +	if (!p->fifosize)
-> +		p->fifosize = data->pdata->fifo_size;
+thanks,
 
-In this case I would use ternary Elvis:
-
-	p->fifosize = p->fifosize ?: data->pdata->fifo_size;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+greg k-h
