@@ -1,87 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793793183;
-	b=XqyGmQ+fsi+X7MLozYW0epPqqO8wS66U/ErP168YxK/ccMWI0fPiTKxFlW8Wsg1ksgtV
-	 nfXZ40SLFqNbmML6/oyA1la1dXH6WT+jPxbwxOxgGgvmBRIJjpoNcdeAstCD7vHU4/Vyj
-	 xoUztC47wjGMfE8p9LLMDpSFqGu0f5vUTy7dY/68UEeI9XrbR8vLhCIUr39hlQi44Ib5C
-	 R4N+Z7gUPNjKquLzlFHROnRP/chkCcEro8A9SVEkgi+VSGniMwLsZgDpezwedV6HGSwsN
-	 S2UfcYHDe1n00cDEE4QAGbFvnrB9lk9CivHD7L3VWfB+hHyWQvzOYh1qvtezjuPlWbA==
+	t=1793797466;
+	b=VwqxAc1yqZNFb6UrPGLCXb70YhPPNNtLuZr1Fi7Cujgm56BUo8KiEcDIDJWMV5X5cQz+
+	 yB159RVyS4QfFhEBLshI1aP5QoGI/4wiAJhhwQJAkd43q6VinOk7xr8fuOuPlpZv3erOB
+	 EETvB/4Kf3+FTqtG3HwNu+Bsi/DvZK98pfZVkNo4biRmWMyjJcCN7/B21/yw/9r8Exoza
+	 w/NcX82BVEKT91Hsx4SubkskkzLYgRFOtaTdMlaCRpRjnM2lD0s0+Zyt/e1X8XraLCoOG
+	 xFAU34RRHAKs0cAogZRBwFhpKtcR5IbKM/gRke4w1xgwpfrvpTKmE1YCcEeRBm4D+LA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793793183;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-	 Organization;
-	bh=OafKhfZup0pb9AMVxWuUAMn398HyLxVtsw22Ue9382Q=;
-	b=Mf622e9F77FhZHQOK0ngR3lufkJxVDD/gxatVwED7CINZdkwNk6Lo/A02aTsMH+vJJJj
-	 jc2bi9292BHDm3zQ/gzx6l9+lI71wIXZggOz/Ou99RT1P/qhUs1uc3ZfjAKneZ3LOaAKv
-	 WYOeP8G0evrDVoyIV4191bDLQOUUXSs8JJ7KarUAXvBz/iJ/HVTofIVguHurODC9rEZuG
-	 eFteEr45daUIvlm5xzgMw2+NJxCcWmAQ3SJtWO+2hpkggql6qyjf+qrugKUKl5AVN9j8y
-	 zgt/v+WQfNr62/VRPIPKzO7rLv9Baf4KwjEtl7L8qncpj9OtMuHLigAK7RfbT16fi8Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793797466;
+	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=0gGIxmVj15HwpHlgucVC67kzMBeDjNiHcqiz6hAOrv8=;
+	b=Rf7+G63k/aMFcj3xQBFXIhqXrp7Us1amWtk/y8/fAoBIaPwy6qA6+WR3jXZqBBv56VYW
+	 e1WoCyOy9jRihQ3s/9YEJDe2bT4ttvX192js/258/hbFIUAdAfcc1v9szrAxlzTxqy1Me
+	 ApmqMaIcpmvrYGVaiVRL7dTu4/q4PLgu7Kzs183mT/kLyWnaoh+DO8aZHobQ9le7HECaj
+	 dt6H8najQuDy/yRTe6kT9wXvJXy23TFN6Qd5srNECzhwNiWIUL10yGszD5JhKsidebTDo
+	 aGxkrYwjpOjjKsrfuCS8K/md7LvluZTaFiE/sR1XrujIp5Zk6ZLsEyJWXUdhVlYee3A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="KW/OpBVB";
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C182rFoz;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73CBE606A31B;
-	Wed,  4 Nov 2026 11:53:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 73CBE606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687D6606A329
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 13:04:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=KW/OpBVB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793793183; x=1825329183;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=G+7AqyJrDdzfRSDzQ6UDHvBk+LUddlp2efD50yRE/Pk=;
-  b=KW/OpBVB3FoS+43H6uKwABBzXqNVzWgyG15hgt+o3/i3NMF2EGrJRNZG
-   zbcofnMbnnsqwnFxZ9ehsM4N2cs8d693JbBcU71Hg0TWTNHnAug3nL14+
-   2YHQAumQpRBA8Q1j4o+dkP7Mihk0P4rh9LKaGnsP2NezMFMXg805UVNLN
-   hwuM/2SShhOBU/rp6fbQdbeujDKT5dksSXbQO1qSiYOCHRk6yoQKKWoY8
-   QF/lIghwpQFp1k++Y2pBpV/HmpK54OfjaH20B7MWcn9kcbtDx/Pelsa02
-   S9TkQWwvKJSBHeg0XmmFEy+oA6HNav7zOQiqkcCn7DROd2Qbmu0/HNjTg
-   g==;
-X-CSE-ConnectionGUID: D/oxNBWYQke/6G0IU8fp5Q==
-X-CSE-MsgGUID: n6YblDEaSM2m4gRiu2c2oA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2430394"
-X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="2430394"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 03:53:02 -0800
-X-CSE-ConnectionGUID: ArT8u6cTSDmxMjwbYfNTHA==
-X-CSE-MsgGUID: vtoBEoDEQZOuxnY8UQZsYg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="6719717"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 03:52:59 -0800
-Date: Wed, 4 Nov 2026 13:52:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Johan Hovold <johan@kernel.org>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Karl Mehltretter <kmehltretter@gmail.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] serial: core: Don't clobber the baud rate on
- hangup via B0
-Message-ID: <auscmHSl2QlHVI2z@ashevche-desk.local>
-References: <alpine.DEB.2.21.2611030057510.15685@angie.orcam.me.uk>
- <alpine.DEB.2.21.2611032050590.15685@angie.orcam.me.uk>
- <ausSmrErzTXfKNGU@ashevche-desk.local>
- <ausW1pwp2eBCqVsM@hovoldconsulting.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C182rFoz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3225E1F00A2A
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 13:04:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793797466;
+	bh=0gGIxmVj15HwpHlgucVC67kzMBeDjNiHcqiz6hAOrv8=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=C182rFozjpn+i/0Ts1DVq3b+ldJzLaYXncXGSKU5f4XCAI4+yQi49mycFeAVy/gy7
+	 8i034pd2KQtcZ+CDX7gNbb1ARO9RfgRTbhmouZunnvcULJfaG9HPLVwZ3ytUngroM8
+	 egwAbMwpz9XNDrjkbvaFb7ks4aeC1jnf/7xgjiQSSRWyIkLiOi9LhuCZ0m05jFhICK
+	 nr+140ioY7Z+vWkH+hoTBBLG9p9apDmaJAyXwiVWq7Jj1yLXp7seJxi3P3EtW934rg
+	 oWpdYy+4j+63c1HAegqRqhpSl5cl6n6imJzOTlCBDI2RliYbTkTkC1EonSRTyah1Td
+	 f1twz4w1M1Eww==
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5be42ae8eadso444126e87.3
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2026 05:04:26 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AKwUvBxdVVL09YqUKbo6AfojegUSWH/mNJx71y7S/1s6dwTGX69lgpPNU5qLON9hDJww1bt8S6MzQdiw4ep/84c=@vger.kernel.org
+X-Gm-Message-State: APuU4Z92FKzIbxZkZa6w1+7Pb95jDkN7V+C6Q7lTQXV9mDWOcIZ/00Dq
+	Q1f/wH7uyMb/4/Pj+cy5KpqGAMmJ3hGfRFEUoPmqPeynO5FwYtr4V7iJHByccTr/6NqQYGTrpiw
+	5UF6WYEZxW26bFvysUtEnE9xeyozLP/A=
+X-Received: by 2002:a05:6512:39cd:b0:5bf:b166:f58b with SMTP id
+ 2adb3069b0e04-5bfd95782a4mr5476115e87.55.1793797464785; Wed, 04 Nov 2026
+ 05:04:24 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -91,37 +59,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ausW1pwp2eBCqVsM@hovoldconsulting.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com> <20261022-add-board-ok3572-c-v1-5-0b0fd85a31ee@qq.com>
+In-Reply-To: <20261022-add-board-ok3572-c-v1-5-0b0fd85a31ee@qq.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 4 Nov 2026 14:04:12 +0100
+X-Gmail-Original-Message-ID: <CAD++jL=2Z3hP74dHRyE3Aabp+PvpcHX_90PQy+a_HMQwBdNx6g@mail.gmail.com>
+X-Gm-Features: AclHuK9_TlXav34NYeX4rfS2IYWnnq1y5c9wSfeOajfltWQaA7IZMQ4oBhaALpc
+Message-ID: <CAD++jL=2Z3hP74dHRyE3Aabp+PvpcHX_90PQy+a_HMQwBdNx6g@mail.gmail.com>
+Subject: Re: [PATCH 05/27] dt-bindings: pinctrl: rockchip: Add RK3572
+To: 1579567540@qq.com
+Cc: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+	Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Heiko Stuebner <heiko@sntech.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Richard Cochran <richardcochran@gmail.com>, 
+	Ulf Hansson <ulfh@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Jisheng Zhang <jszhang@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, David Wu <david.wu@rock-chips.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
+	Maxime Chevallier <maxime.chevallier@bootlin.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+	Alexandre Torgue <alexandre.torgue@foss.st.com>, Vinod Koul <vkoul@kernel.org>, 
+	Neil Armstrong <neil.armstrong@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, 
+	Thinh Nguyen <Thinh.Nguyen@synopsys.com>, Jaehoon Chung <jh80.chung@samsung.com>, 
+	Shawn Lin <shawn.lin@rock-chips.com>, linux-clk@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org, 
+	linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
+	linux-usb@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 04, 2026 at 12:28:22PM +0100, Johan Hovold wrote:
-> On Wed, Nov 04, 2026 at 01:10:18PM +0200, Andy Shevchenko wrote:
-> > On Tue, Nov 03, 2026 at 10:07:58PM +0000, Maciej W. Rozycki wrote:
+On Wed, Oct 21, 2026 at 6:12=E2=80=AFPM Cunhao Lu via B4 Relay
+<devnull+1579567540.qq.com@kernel.org> wrote:
 
-...
+> From: Cunhao Lu <1579567540@qq.com>
+>
+> Add the RK3572 pinctrl compatible.
+>
+> Signed-off-by: Cunhao Lu <1579567540@qq.com>
 
-> > > -			baud = max(min, 9600);
-> > > +			baud = (port->hup_speed ?
-> > > +				port->hup_speed : max(min, 9600));
-> > 
-> > Outer parentheses are redundant. Also use Elvis.
-> > 
-> > 			baud = port->hup_speed ?: max(min, 9600);
-> 
-> No, don't.
-> 
-> Don't use the ternary operator at all as it tends to make code less
-> readable.
+This patch 5/27 applied to the pinctrl tree.
 
-I disagree. Elvis is readable as in Python, for example, or a simple English.
-"Assign foo to baz OR bar" <——> "foo = baz ?: bar".
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Yours,
+Linus Walleij
