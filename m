@@ -1,60 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=114.242.206.163
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793778385;
-	b=j4JWERQWRLPe8xMj3qkfFoa3Q28u02dJq584Pxh0T/DP3BspSfbMsHhDtdOpRSUP04y4
-	 o1X3iC65hrKi/ZruJuhmLQXwYXkawKn6ExcEglE8usQHAFPleHehD3hLRrr75lGBlAoFA
-	 EL6edOR3lPjaYW71L5SS1dVBj29uvTqK1WPA1z6xWICLyEPB+ZnOMOLIg5T6Hv9fK12za
-	 mCVbx3XdBq+iiroe7Nbg8tdtKMVpni1GCQV9DreVeNZvTWZytfVNBjHsh+l86bLfClW56
-	 gW0/lLRPoAGvSlVQGBHrajadCfjYTlFqdqWB5wNNoW4Qc6GrR+DLljDjUvFs3RwX5Vw==
+	t=1793778562;
+	b=q/cnMitFR0/+MGSybywAyNpC7mbo+1DuTayA4uRqidmxf0bBg3Im0UMGBBbNmrB4S+rE
+	 npOvU7FoWncL35O+Vlu5EMghAS7+7kvve7boSGwy06iSry6Wao3p82QVhgzC+APyzomRO
+	 UoQQajWBaENWvD1/azuJMOtqDyC8T0MstJNHmcK/FhgzpgiZuNZvFg0NKkeLi+dgGEwaH
+	 G0Ke/Ii9UhEUHOVNeKPZhoJRr/zVKE/9BH3POEmDEX5leSY9u/iwblUDiIc0RX1FKWFlg
+	 tjcIVoOBVRpa1TgkXKk9euFztx/e/vBc9BlvlPhfC2SNCs47+Na2/iiprKkrU4BVNow==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793778385;
-	h=DMARC-Filter:Received:Received:From:To:Cc:Subject:Date:Message-ID:
-	 X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:X-CM-TRANSID:X-CM-SenderInfo:
-	 X-Coremail-Antispam;
-	bh=4pIbHn3JO62FcrsS+gZGn0AqvwVBomE3MFPQ8sYkUfw=;
-	b=jKGCXnejgS9zOH60jId2lS2BfFvxgt6tMp6ZuMpTHoNJZVwKy8INFoVrxH3Pmtwut0sI
-	 8pYkZPr2FqjkU5NwDNTtZfPaecwCi0nxsKkEBbIal4SMLmkn77u8dcv8Or6QmtrmlLraN
-	 oW/3Kuk6bOV7GP1hUq6c0+b4Lbuh04SipXsRTDcPtwxO0dTIaIHrmYzRr4YsC3FGZDqrl
-	 PTXRCvwSc9bAREw7PzHPC4x3BN7P/1Srb/7SiehmJGLqoQMz7foSnj9nun530X8NQIwEV
-	 QlC/TupADf59WfzXhWFYsAe9364p/KzMHur0eo0RcoYJ5iIaiKHYJ+QppqumEldAfGA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793778562;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=183XKUv62isEReAe8b2vYpq9AReRfUIbMSTtechX0eo=;
+	b=4Jsopseb474+jj/mVlB+2Qri/wYBCrNyKYcwCJxSPZ/BhJNNQGVvX8D/laZtNRzRVa+D
+	 xl5WFXq/F1IQAa1PgkzCQtHmbzscl8qcxsqpVpt7GyDEqrn41rof5klXn6sOy6gljx9nw
+	 yHVqK47zpu/7WQg0A1hQZVPV5Inj+o50GEUtZtiavqvy/Q+UMMzXD1z9pLiwG0ugfc4Z6
+	 XDE7dd3IPOyOxQ8GEHoiapbgvD+Ffy4ZbbF69CFQJFC7zU1UVH1lf1qBLu11thES6er6f
+	 vbvUnn4ip58o0BhPbQ5umQ0znkDHPKsDZX4JHlYtIbaKoAKzkmbqR7McmY71PcHHypw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=loongson.cn;
-	spf=pass smtp.mailfrom=loongson.cn;
-	arc=none smtp.remote-ip=114.242.206.163
-Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D9B9606A33B;
-	Wed,  4 Nov 2026 07:46:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1D9B9606A33B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
-Received: from loongson.cn (unknown [223.64.69.17])
-	by gateway (Coremail) with SMTP id _____8AxXdLK4upq8TocAA--.16433S3;
-	Wed, 04 Nov 2026 15:46:18 +0800 (CST)
-Received: from kernelserver (unknown [223.64.69.17])
-	by front1 (Coremail) with SMTP id qMiowJDxBc294upqZ0YyAA--.10037S5;
-	Wed, 04 Nov 2026 15:46:18 +0800 (CST)
-From: Binbin Zhou <zhoubinbin@loongson.cn>
-To: Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>
-Cc: Huacai Chen <chenhuacai@kernel.org>,
-	Xuerui Wang <kernel@xen0n.name>,
-	loongarch@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Binbin Zhou <zhoubinbin@loongson.cn>
-Subject: [PATCH 3/3] serial: 8250_loongson: Add Loongson-2K3000 UART support
-Date: Wed,  4 Nov 2026 15:45:47 +0800
-Message-ID: <de8a92980b5140896ef8bdade1df4d851da9ec0f.1793776192.git.zhoubinbin@loongson.cn>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <cover.1793776192.git.zhoubinbin@loongson.cn>
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I5+DN0QA;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4535606A31B
+	for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2026 07:49:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I5+DN0QA
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505431F000C1;
+	Wed,  4 Nov 2026 07:49:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793778561;
+	bh=183XKUv62isEReAe8b2vYpq9AReRfUIbMSTtechX0eo=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=I5+DN0QAGRdSr/E2SPYubBMgeHDbmnAb7ug3XdTXT0q2T03glz+JD3G2VoX2C1Eaq
+	 fo0dJVfkueVsY6n9o102Czuru2sKnbEYv0DQj3wrfcotNcfyFp9fD2jzXeaO2wJRTw
+	 ZBBhgLK8VAMwXOTv84jJh7gSVxsWoanYeWjuP+pqVipj296OT2VHu23blowN0BRSqF
+	 v1P1R/L1WV1WuucIfkC2CYpHv5XDKmtnJ0vI/iduAw/qeHUTvDqu7xxFNl2WH9Vm6+
+	 sVdg1tw8TS56RRkqU10RPgj8vBQt+kaLG3rSHd/M6AT92RBMQlrRcflMFyX7oLr+gp
+	 bNkGnGapS1k8w==
+Message-ID: <sashiko-outbox-196823@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: serial: 8250: Document Loongson-2K0300
+ UART compatible
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Binbin Zhou" <zhoubinbin@loongson.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <cf76d5d46eaba55b832287d1193111c369bcf548.1793776192.git.zhoubinbin@loongson.cn>
 References: <cover.1793776192.git.zhoubinbin@loongson.cn>
+ <cf76d5d46eaba55b832287d1193111c369bcf548.1793776192.git.zhoubinbin@loongson.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 04 Nov 2026 07:49:20 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,66 +60,16 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qMiowJDxBc294upqZ0YyAA--.10037S5
-X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/1tbiAgEBCGrqon0C0AAAsH
-X-Coremail-Antispam: 1Uk129KBj93XoW7tF4kJF47tF4fWry3WFyfuFX_yoW8Xw4xpF
-	nxC3yq9ryjgF17CFn5AFyUAFWF9rWDGF9rKFsrG348KF98J3yUWr1rKF1jvr42ka4rXryI
-	vFy0krWUGa4UWrgCm3ZEXasCq-sJn29KB7ZKAUJUUUUr529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUBIb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AK
-	xVW8Jr0_Cr1UM2kKe7AKxVWUXVWUAwAS0I0E0xvYzxvE52x082IY62kv0487Mc804VCY07
-	AIYIkI8VC2zVCFFI0UMc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
-	tVWrXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
-	AKI48JMxkF7I0En4kS14v26r126r1DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY
-	6r1j6r4UMxCIbckI1I0E14v26r1Y6r17MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7
-	xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xII
-	jxv20xvE14v26ryj6F1UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw2
-	0EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x02
-	67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU0epB3UUUUU==
 
-The Loongson-2K3000 UART differs from earlier Loongson UARTs in that it
-does not require MCR/MSR signal inversion. It also supports a fractional
-baud rate divisor.
+> The UART on the Loongson-2K0300 SoC is identical to the Loongson-2K1500
+> UART. Document the SoC-specific compatible `loongson,ls2k0300-uart`
+> with fallback to `loongson,ls2k1500-uart` and then `ns16550a`.
+>=20
+> Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
 
-Add the corresponding OF match entry for `loongson,ls2k3000-uart` so the
-driver can probe with the new driver data.
+Sashiko has reviewed this patch and found no issues.
 
-Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
-Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
----
- drivers/tty/serial/8250/8250_loongson.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_loongson.c b/drivers/tty/serial/8250/8250_loongson.c
-index 6d06ed28382d..0458a9f82d86 100644
---- a/drivers/tty/serial/8250/8250_loongson.c
-+++ b/drivers/tty/serial/8250/8250_loongson.c
-@@ -43,6 +43,12 @@ static const struct loongson_uart_ddata ls2k1500_uart_data = {
- 	.msr_invert = 0,
- };
- 
-+static const struct loongson_uart_ddata ls2k3000_uart_data = {
-+	.has_frac = true,
-+	.mcr_invert = 0,
-+	.msr_invert = 0,
-+};
-+
- struct loongson_uart_priv {
- 	struct uart_8250_port *uport;
- 	struct clk *clk;
-@@ -216,6 +222,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(loongson_uart_pm_ops, loongson_uart_suspend,
- static const struct of_device_id loongson_uart_of_ids[] = {
- 	{ .compatible = "loongson,ls2k0500-uart", .data = &ls2k0500_uart_data },
- 	{ .compatible = "loongson,ls2k1500-uart", .data = &ls2k1500_uart_data },
-+	{ .compatible = "loongson,ls2k3000-uart", .data = &ls2k3000_uart_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, loongson_uart_of_ids);
--- 
-2.52.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1793776192.gi=
+t.zhoubinbin@loongson.cn?part=3D1
 
