@@ -1,48 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793906967;
-	b=4fc2Q2voM8mvL8cv39y2i+LO4WHsY5fK8k+bnb8Jxh8pyCSK0vBQQTzM79/SL2fLeiEg
-	 wIXh0CgDt9s6PfaznzWQVCHibSkVQENKB7qEK8PzWZb0DYYxcMZvLd5riODuRSffNbWmY
-	 nrBoHV1hHwKXpjcUYzK3nsqGwGKJ9uNRIjMoyDKqMgvZxvQb189ZkmUmzbdyxiXUO/wUy
-	 BltUqO4X06NKz25ip1PL4/mZVlDF9pz6tAJ8WpJzJiYcHluWWmzdPDdSkIzQqWi8btCUP
-	 sTSLcBpNcaUaa3qTI6yoavjUbEhE55/HHXFxWC/otk8hpPYNQokZ2HDVaj1q/4SnEaw==
+	t=1793906978;
+	b=TqQ1fOVFzYXA0/xYnGvRXfrEpCmA9zpRhQqQh3FCp4yPUx8EqiTa6gMLR7t1TfC30pqb
+	 MrrFLyCNpeJMElbDrbJHEi/ahSV28nRXKJqqGZIznleJbB5UdkfdtvQXy2w7ruC+SSYPM
+	 Df478wpUWKSALMc87gI7pxELHx+utiJEzYHE11I2YWtWBxOM5yZQnFrmhq5Tv4Cvcd3pz
+	 UZimW60FXMarvn8SiJbZHXcRxeph74QzTCerLt25YEyTtQZBDTE+zB74R7nnVUGJup7JB
+	 LWF6hSXx7fqQCMj5/QvqWGZ5XSsCaP3+TFI2up7EYLr3ygh3rBMP1wbIhUKj7CiU1iQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793906967;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793906978;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Yw+/Du8pHsdCvYl6IbYLuKH+OGLUIcbJDiY7LJnllJI=;
-	b=lQV3LkIBO4Ge5ToGqnOqeNmY8ccLmu8SqXiTEEFa6SAtyuoR2GV98T634uUw84OKmqWh
-	 ZCSEqCk5ifs1OHPI8pH+NCLEBLTImX9UvBtJXEmsB3Mxt0CUJTl1IcVKw9begPHFAIiiy
-	 Rtm52AXM7SSndnAClsonZ0DqjWJjxgPKTxyWaH8an1M1zHu9Sto9EcpyC0A8Hd1hRvZEV
-	 RmJWvejT0lT5oklHu8CyapQwNWA8ZjdgxnZKICEMzZbi28slKVS5HBtDKX07QVWqhpTKA
-	 xx0S7TieVPdVipu4ydo5WnEbJjOoDDiWpVcKVK5EqBVVq4rscKiWs9MhC2n79qr+jog==
+	bh=UR/bGeijImnk8Wnsd/tmizN5U2rV5dto4UZIl+xyMfM=;
+	b=JV3FA49T7rUGd7uAJKyKlpziGYSYfBgEtVjDV9CJjJnWpfW8EbgC0f/Y5McINY1LwYVu
+	 2jDc/9+MVIuoBY3ZCfoBiFIsoDuAN7KHnI5u02ALkMp+YNSBmli6jSSBCTIRCZoXFxkhl
+	 lhf62PnofOKz0MF9Jb+4TI2uXoYt6IRXZakGtoks79PQ7wPs92uuruH+yv13W6FAbZad/
+	 2l40K4GM/xkikPf71vh5C6Jb03CqVxad2CFRqJQSEtvm3IVxofTqTkowxPI3PW/7L73RO
+	 VEifLoir0TkOkt25FXhwwGHQZbc3ub1j/6r1qQubwJW/26SCGbk7snNFuyRFDUXQx6Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="l4Eko/RK";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CEA606A330;
-	Thu,  5 Nov 2026 19:29:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l4Eko/RK
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDBE1F00919;
-	Thu,  5 Nov 2026 19:29:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AF38606D81D;
+	Thu,  5 Nov 2026 19:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2EA51F00919;
+	Thu,  5 Nov 2026 19:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793906966;
-	bh=Yw+/Du8pHsdCvYl6IbYLuKH+OGLUIcbJDiY7LJnllJI=;
+	s=k20260515; t=1793906978;
+	bh=UR/bGeijImnk8Wnsd/tmizN5U2rV5dto4UZIl+xyMfM=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=l4Eko/RKkbQXervUh+9BCXJ+sLsI4u38jjERwv2HDU2tKr1bCDnCCw/QT/dKc1MrD
-	 nG24sg/ARdKOAaioqHnqlbMFng54iK9sFGR2MBxpRI9bPa3il41oD5LUCxrnPRtNn5
-	 DKJ+CPjlIN85/i9wz8h3zAaLEB0HSX87FOiOgckHHu/HvAH0MfRD7oR6NdGDjHmHBp
-	 bZGWS58CuzW9/drusy9qDOn77viubLposGHA42hn0poE0IRqBJ9Hb2OJZL55U5B7t6
-	 /9ggt31U3dXthnEYRs2zWGFTAlTOnVxIM8pubtNQkp2PuptVcHbgqPWl/ETNFUYpMm
-	 KKXNeYjAU9H1Q==
-Message-ID: <sashiko-outbox-199881@kernel.org>
+	b=VxAzMv7UFsyYnoBiL2vhlW1+tAK1RI3G9hd3638uMnnOa+X1Hd/XqYwSl1li8fliq
+	 01QhsAxeUKmrnct1phcjHiDBlkTHs7H5HFNvKkpojOe2Up47iBr/sA68sM31T/h6S0
+	 s1ItQIwz3EUke9VL6TKuHa6OR4G5BsKdMNyDzHw3sJFWrdLfbdMVss8m2/pslWW3kO
+	 Z2bpNVkFCKMDl6PKap8s1Bfs8w8BOM0UrxtXZUW8aAbl0jCRWy07zKeWwaBY/bqScI
+	 FXVCXKSbBT0TU1OECjLhNsgTdw455Z7U5ly3rnd8TVtw/5tgWX0i1IZgIKT9c/raGT
+	 3wuaupfHri8xg==
+Message-ID: <sashiko-outbox-199887@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RESEND v2 18/51] platform/x86: toshiba_acpi: reject
- malformed brightness and fan writes
+Subject: Re: [PATCH RESEND v2 24/51] scsi: ips: don't return 0 from writes
+ to the proc file
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -55,12 +52,12 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261104-work-procfs-bugfixes-v2-18-021c84d852e0@kernel.org>
+In-Reply-To: <20261104-work-procfs-bugfixes-v2-24-021c84d852e0@kernel.org>
 References: <20261104-work-procfs-bugfixes-v2-0-021c84d852e0@kernel.org>
- <20261104-work-procfs-bugfixes-v2-18-021c84d852e0@kernel.org>
+ <20261104-work-procfs-bugfixes-v2-24-021c84d852e0@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 19:29:24 +0000
+Date: Thu, 05 Nov 2026 19:29:36 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,24 +67,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> When lcd_proc_write() and fan_proc_write() were refactored their checks
-> were inverted but the && stayed. They only fail if sscanf() didn't
-> parse anything and the value is out of range at the same time, and for
-> the brightness value < 0 && value > levels can't be true at all. So an
-> out of range brightness or fan setting is passed on to the hardware,
-> and so is the uninitialized value if nothing could be parsed.
+> ips_write_info() ignores what is written to /proc/scsi/ips/<n> and
+> returns 0. Writers that use stdio, echo for example, take that as no
+> progress and retry forever. Return the number of bytes that were
+> written.
 >=20
-> Restore the checks as they were before the refactoring.
->=20
-> Fixes: e1a949c1b988 ("toshiba_acpi: Refactor *{get, set} functions return=
- value")
-> Fixes: 3e07e5baa2af ("toshiba_acpi: Add set_fan_status function")
-> Cc: stable@vger.kernel.org
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104-work-procf=
-s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D18
+s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D24
 
