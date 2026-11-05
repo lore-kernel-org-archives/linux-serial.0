@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793912969;
-	b=4UVDevKGlwzL8eME17fztIZdxDd5WXnKuRK4RtLLkB6hyYw0PGpQboHc16+FaqP9gG/J
-	 bQ+lUPlmDkpGbUXCsrenpmbuzgwTUymHKjV6e5bu4I4sTCSm0MKfWh0qBTsB1Ahut/M3i
-	 m32FvRion9H76Ei8cUOEQ5pUWFlYY5e3cRSUoRh03LLud+VF6W6xqCX5tF2u4i0C8qF5L
-	 B+c6m0MFh+0yR+O62E181QDaErw0zYKBZojkfNno7z1N9YFIexn/qW0KrAA2vHxl8U6p/
-	 r3K25VDp7baVDVY0WUJqgNM5/KbOaQ2MEtwDfCzvrsiE31XscYQZGYUhA+yQuZT/rtQ==
+	t=1793913085;
+	b=cyEDkPUd+INQIh1xwSyzwrt7hx4YdFz56QL8/JcOkCGF8QRLRafZchxrc09lXW0kRkVh
+	 fG3oGwBWAajI9+JCDNCSez1xfOPAVxxEkZNglrfTkbxcesCLL95bzD1+Q7sj/QEYXRECo
+	 4DO7flVGwF3DJi9WY5VZnChkIETDfaahOawczcH1ubXGNNBv3d+acLyyG0ejkiYtbYT2k
+	 jBtl1lNwtlL3nbIFdxDcmV/QqdPkC7V7HC0+BjbXMJYYq/kVvfAItZsWqolu9A0lHgffc
+	 9XhoeNl3KdcXEAjA4DZR24nvk7zDJFT7dRnyOSvoVUsEOjf3RMGu7rnPllfvc2FxTOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793912969;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793913085;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=0WK48Dr5U3v+7zU08RJSl1PgWmAhZr37y7V0yMCXIeY=;
-	b=dnWQMeXJNiFaryYSuPOoGsNjjEvxkeZ3S9tYsuoQnOr73fZyOuiqTzSs0YKNrEyPtFq2
-	 uESHiVChvIlNAY45QAnQqbD22vwmIBek/3pYv35wjvqnlFcRDVfXg34DFAguKJlBNjWxn
-	 QhndWLAfSx8VjGdbzAd+JJGUCpiCx4NywgXmCeXAKDj3V/2lkwjb6SRECcaFP11S0g4Ib
-	 ti1g/WUY1SQ+qEL+6usldMvf/YgIOyPSxCb5HFXsJDwx8PdX2k3pwSB7T2XyzstrsJ3fj
-	 YOyfrO/TrfHPOdO1gZy++AJjOPPXz8vl522Vogo5oOZjDXYSoY3lyPpgZT9qlMwZrqA==
+	bh=YBePgjCMjblYDXUSGHGhHDdlsXQBMAF3TB31zKMdiNs=;
+	b=tGuNBKlv0kT29sQv4nYhRNClOIX1ReqcjL8CY2oP7iS6cWcXYFVjmYeu80lgrCzqyZ2l
+	 8dQDh0iKr+B0sbI/VRQ1I/mXcJljaOo/fzTuly9f4ha0OmwPT+PiTTrahjpoZRQz0WvLE
+	 BLIJyxw99Ody8n3rh0S+YK338M47d3QzteD0bKXjGfILUw0CjHPE0Gmw3kuzTD3wzSaxQ
+	 m+2OyA5DcEc4XwNS9RgfunYyeUtER1Q3UlcpFaes8qdJacsGJ7Nd7xGZHblZa97eD8BuJ
+	 HxwVbYA5/9nfEEz/E5VgiPY7cQ9YXgUsbmmH2TPmGR0znIikdI9hhNKYqrA9dv47uIA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VGv4pCgo;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ViYa8ADX;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C487606A329
-	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 21:09:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CAD3606A326
+	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 21:11:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VGv4pCgo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FFE41F0089F;
-	Thu,  5 Nov 2026 21:09:28 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ViYa8ADX
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E5C1F0089F;
+	Thu,  5 Nov 2026 21:11:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793912968;
-	bh=0WK48Dr5U3v+7zU08RJSl1PgWmAhZr37y7V0yMCXIeY=;
+	s=k20260515; t=1793913084;
+	bh=YBePgjCMjblYDXUSGHGhHDdlsXQBMAF3TB31zKMdiNs=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=VGv4pCgoPRW/sYdnIeil5Qa5ohQX1mJe2keHu1LOCTcKo1dwS8dtEbXLPFND5yDuD
-	 VKPNXU+zQDdObCaptbvjKVBYfsnpBVZVFF3PHCOUEo2masiib+dELugFnl2NgTdFkn
-	 GIPGL3rgH/abuZLF4kqJ6a9ULQ+TSMWAQqAVfAuTkHwt0HKhwNoR4ilTIjOTbYYuuM
-	 H7CImrEt/KbMvJbGn4XRvjVxusHCtgvZduf6qfxQ7PfVRKbxNKUs6EH+I0h6Vcd6kR
-	 ryr+oD3+tWRPyIAnSh8GzlBgbGZP4NIUmr5BWPRd/8SqLVY9xmqSz9uypC4d2S4zC4
-	 mbemxvyHZxRHA==
-Message-ID: <sashiko-outbox-200197@kernel.org>
+	b=ViYa8ADXzjVEUqfeamSXgJGOV/VZxbZ4vB7bHbWCX8annWad3V9qOKTJCPvwjj9+u
+	 Yc34vlHmsYVkWL4Ud9DvFLd848+Vqw6sOjy5O5fgojB0ItN2Ea1jXa1vvhhUg6cgFa
+	 YzrHH9NEq7wtQA9wM3c5snMIO3UCZJe5o5qJ6ovLalRHaR0XEnGVvcD63Dz2ViRjp/
+	 VtZ+pCOD7w8xXTQEpjeTZivx2U6rDTwgPL8mj6jAcAfYgN3dcZlNRfqlLS9hf11FrO
+	 aRcpr7hqASZ7w6hz6GG7xMyz1lq6iarNyTKFW3Q2g0viVUow+y5LmHjJPfOaQ3cb1L
+	 Cz7+T6g/2EpVw==
+Message-ID: <sashiko-outbox-200199@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/5] dt-bindings: serial: mediatek,uart: Add compatible
- for MT6895
+Subject: Re: [PATCH v8 05/11] serial: 8250: expose RX trigger controls for
+ custom callbacks
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Alexander Letuchiy" <asalde.le1@gmail.com>
+To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261105210622.523747-3-asalde.le1@gmail.com>
-References: <20261105210622.523747-1-asalde.le1@gmail.com>
- <20261105210622.523747-3-asalde.le1@gmail.com>
+In-Reply-To: <20261105-submit-h616-uart-fifo-v1-v8-5-14024d2b184b@gmail.com>
+References: <20261105-submit-h616-uart-fifo-v1-v8-0-14024d2b184b@gmail.com>
+ <20261105-submit-h616-uart-fifo-v1-v8-5-14024d2b184b@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 21:09:28 +0000
+Date: Thu, 05 Nov 2026 21:11:24 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,15 +61,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Add a compatible string for the UART of the MediaTek MT6895 (Dimensity
-> 8100) SoC. It works with the existing driver through the
-> mediatek,mt6577-uart fallback.
+> The rx_trig_bytes attribute dispatches to a port's get_rxtrig and
+> set_rxtrig callbacks when present, but the attribute group is registered
+> only when the port type has a static receive-trigger table.
 >=20
-> Signed-off-by: Alexander Letuchiy <asalde.le1@gmail.com>
+> Allow a port that supplies both callbacks to expose the attribute without
+> a static table. This lets integrations such as Octeon provide their
+> FIFO-relative thresholds through callbacks while retaining their existing
+> port type. Require both callbacks because the attribute is read/write;
+> ports with a static table continue to use the existing fallback handlers.
+>=20
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261105210622.5237=
-47-1-asalde.le1@gmail.com?part=3D2
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261105-submit-h61=
+6-uart-fifo-v1-v8-0-14024d2b184b@gmail.com?part=3D5
 
