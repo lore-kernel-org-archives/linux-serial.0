@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793914027;
-	b=KATUIxSq0+JWQPzry9H3YAfNiHAzTMWxKntGlWVgSPNWEwu4L2dQlMH750WBxoj2/cb6
-	 tR3lmMIPZItKqyzHlHJgJhU91HSzwJpPl8TfaTI8+oEok0xLCsPuWAFrddzUNLZ/l0lpI
-	 q1qWXiuW8ziCFEXSc7phX6+qrsorG/r/ltPi5TVhbVpG1K0Rl/055XlEWhzo7go4TgpuC
-	 MR6UBKV+wuHNWQKorV1dEa5brZeFtXuvQG9X/sdT9A9Joim1TfVF6KP0yKgfufYc8tFPF
-	 qbVoOUgUUyk1ichEuxkdnizWDY7rsE8MFcrnpL9qCxQvIck0GwPQp64iekgvSU4tSKQ==
+	t=1793914278;
+	b=GMfIJE/hiwfdycpgkHaNmtVvZcOfhlNwXeYgN5I3kp0l2Kg6BNrHzgsFGbYLTfYG99wd
+	 FvFt5sWliedjyU179zl7q+2LKqcO9q/t5PSaO7rf2rLe7KKwlkN372cf4C2ctkGokRvsR
+	 6a0adIdPF4AX/IjjXkDM3YphYF3MKSPSgj2tddI5qXiuWSzMSI6ZaYVOUODCLpyFLVOI9
+	 Ir4gMlyJXidxYcCVqQFTe9ZoqIO2tyWsyQvwAGmOA+5+aRhniAmcJWu810Jt0Rt6jaVmz
+	 4CcRPf1nXDZtyJS8CpQQ7CnPPoYTAkhlKXHQAscgiraYpALEhAzYW+XDIOdIuNa1ZHw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793914027;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793914278;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Lw58lpNgMTHTqKaH0dNXqGXWnrIeH/ZJkqpYsFAG9hk=;
-	b=DKlDG1IEYni8WPFAYdvzzsjWtvAq1Z5d2vi9VT726gSxQzbKpvD7sr//Ox0LLnBARs6N
-	 xjc2IjEwc5CQD63fm1cxSThjAmsdmb1j6x4Da+yiT9OPovmg+t4ilpsheO7Hb3P8zgDph
-	 8FsS6ebRL9OpL6BKn8nK2ReTpLiLtUNWqtXzyiPUc+9H+OYfHXzfLTr5kYkIwOFxtruY0
-	 ++u2Q10DsynIoOiRpi1GGjIYSjkRbkMbt2e1XB2xfTUkl/YdxGjZj6binw5mWWD0eTeDj
-	 Lh/l5PREIHXY9zq4Krm33gflZPdSwFTr/a5dMziFYB0mQ/44697zG2pr23nHpsGW5FA==
+	bh=7ojVcfJwkMUs4N4NzXgYW8/NYwCBdSzjABJ/zhhfkyc=;
+	b=1nyiDKGkI/89A80cSTSGGpBo1U7FwQ2LzD2HdsWDXdWII8nPWeIO3wC6pZtnk3+rjILZ
+	 IrE89eE4kK+zQkvcZLVHZS3DYH8l0FtlF+hQInqgiGSyRHLQ0NKsxfjfqAhvtZVRCXSfa
+	 DsrFUCazKRN3EMAFethVRoI8KMPkPbFbqYurS1nwn7sHwSmlJcoSGCzcqvBW98bADDhnS
+	 ZrALjV+dsKRMy32hKV4dMMb8kGa8U16kkKnw2sAmyGrU7qZPDt19eSsUtdMMWyv/uVuas
+	 AXhcx2m3BrbHc4PKmcUybnAYijWxTLnj6Z21wfs6jl2RG3EB1Fbo+zX0xZK5+f2rdTA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bje+xiVE;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N8Pk1BSW;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F791606A328
-	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 21:27:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D95E606A32C
+	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 21:31:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bje+xiVE
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FAF81F008A1;
-	Thu,  5 Nov 2026 21:27:07 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N8Pk1BSW
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D33E1F0089F;
+	Thu,  5 Nov 2026 21:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793914027;
-	bh=Lw58lpNgMTHTqKaH0dNXqGXWnrIeH/ZJkqpYsFAG9hk=;
+	s=k20260515; t=1793914278;
+	bh=7ojVcfJwkMUs4N4NzXgYW8/NYwCBdSzjABJ/zhhfkyc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=bje+xiVEDI40fSdW0elbaItCjCF/3NFIa2fATxStY9v3dJqO+KAoIW1jXPx2eHP8X
-	 wG7SsGUmRH0g85wAiDF30GOCnWfTiAMWPP/ikHXE0rnQ5mu8fUzHaJ9B0rp/tRigZ1
-	 ebguauHk4Zh2Yj10TRGOJnUwETiDba/E+gqF8TK2KaAYJx+rTrFFX+iQMN+iK5RdMa
-	 lM5EDtQYFZrvVaBH5WXCoKkUxUCiD1YMszk57T3vwmxvlerwRwxX4/BHYWXeLxid43
-	 fFuj60zm9UIMBxJ0UJStdPH5tqpFa3n3H3QN/lFVca13DIpeIrcJDaqG9Kf/6j8/Hd
-	 Hw/JWjF97Z45A==
-Message-ID: <sashiko-outbox-200226@kernel.org>
+	b=N8Pk1BSWu6ySf+JSWGvWJVlC++sizj59oSFRdFYof1nWuz6hjPRIDn4zi+eiKVw8W
+	 LeufqKJyoNsB1d+0437VQ7WKmU8Cre5OFx/5j1BV9scSRRvEyBkjhuXnWh5DrVc+2b
+	 f2iKDjE1QKAPr+tr4OrlCP+i3lr+Q0hswZBn5OXZ3NSvMMy/FBTpc4Hn7BdGMywthQ
+	 4Be+ZLxxwcyTNE6XfXmStp8O0P7yvs1vV3LwdqcOJkylTRtN08CnkTIb0uFi4n+ZCX
+	 4qULjUwwnjRywmsbcISMvarVdZ+RIIJwnndgv95nKoS0K/qZAkoWzIGPhz/BHLvKxE
+	 9MEkwxK+T3uaA==
+Message-ID: <sashiko-outbox-200232@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v8 08/11] serial: 8250_dw: configure the Allwinner H616
- UART
+Subject: Re: [PATCH v8 09/11] dt-bindings: serial: snps-dw-apb-uart: add
+ Allwinner A523
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261105-submit-h616-uart-fifo-v1-v8-8-14024d2b184b@gmail.com>
+In-Reply-To: <20261105-submit-h616-uart-fifo-v1-v8-9-14024d2b184b@gmail.com>
 References: <20261105-submit-h616-uart-fifo-v1-v8-0-14024d2b184b@gmail.com>
- <20261105-submit-h616-uart-fifo-v1-v8-8-14024d2b184b@gmail.com>
+ <20261105-submit-h616-uart-fifo-v1-v8-9-14024d2b184b@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 21:27:06 +0000
+Date: Thu, 05 Nov 2026 21:31:17 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,32 +61,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> H616 has 256-byte transmit and receive FIFOs, but its optional DesignWare
-> component parameter register reads as zero. Generic 16550 probing leaves
-> the port using the 16-byte FIFO configuration and its trigger-level table.
+> The A523 UART integration has different FIFO depths across its controllers
+> and reports each controller's depth in the FIFO Clock Control register.
+> The receive thresholds follow the standard DesignWare FIFO-relative
+> mapping, while the optional-register layout differs from the generic
+> DesignWare integration.
 >=20
-> Keep PORT_16550A and supply the fixed FIFO depth through platform data.
-> The 8250 core derives the transmit load from that depth. Use the shared
-> DesignWare receive-trigger setup to describe the 1, 64, 128 and 254-byte
-> thresholds, with the normal half-full FCR setting selecting 128 bytes.
+> Add a compatible for this integration, also used by A527 and T527, with
+> snps,dw-apb-uart as a fallback.
 >=20
-> Advertise automatic flow control so CRTSCTS enables MCR.AFCE, matching the
-> DesignWare termios path for hardware CTS handling.
->=20
-> Select this configuration through the platform setup callback. H616
-> has debug-divisor and RS485 control registers overlapping the optional
-> DesignWare feature probes. Use the fixed configuration with BUSY-safe
-> integer divisor programming and software RS485 handling.
->=20
-> Keep the UART clock enabled during termios changes with SKIP_SET_RATE.
-> Its clock is a gate on the shared APB2 source rather than an independent
-> baud-rate generator.
->=20
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261105-submit-h61=
-6-uart-fifo-v1-v8-0-14024d2b184b@gmail.com?part=3D8
+6-uart-fifo-v1-v8-0-14024d2b184b@gmail.com?part=3D9
 
