@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793888945;
-	b=c3mQQcYcVeMaOvqRiRNoDl4LPnBM4gYdcdEGrRfyg4kjjmH8U8yPN8djXAO6lFdkczXA
-	 T4dHEhTDHqetcPe/k6Mh5thHiNxt5ZFbFH6tozoVjkYi/7nry/3VShwLVry4GRNUDZXSg
-	 4OLKOaYiq6MnGgQ90ICIFHCaPPILFTzG7aIOE81ATA+T+5MhOhqbNGFMCoXT6xJ0urhQU
-	 HrLaMDUEW1hj+pgkbuShjkDXh75lGYdhiyp+GS7N0lIrjIHAxCLIRT+ikLoQ9eI8CQS1P
-	 UAu1Zx8iGFdB5BhkzXVEc15VEF7JmBjN2/0jQtF5wkpV8f05/UJcoxQlya4kacMMP2A==
+	b=fbG2TFiFClVlyubP6y1wZJIQ9RVewHri96s5CuLNA15Jfr7F/V5FgeM2FcUWpHEdU/q1
+	 wx6CVvHD7Kvl0hmfoftOmwyZ5DFdHhPv46cYbwrBfz237gJDUUKIofBJ25l1sAmusfUf/
+	 BPUPhLrFrv0fFC3ddtCfaukrIw+uB0JzQxjfm0HAs5tb6ZOl8Zq04ob9mHk8KHZ7KM914
+	 OzlBxrTcVDaKz658xxo+Hqpvqmxv4p3j+smqVxh/cdyx1s5684qMfAlECMXN/n3GwXE/W
+	 NgtzWtCDqHRBqVDoKNXVuThvYhG0Bp9pxhA8QdSIXPEKfEeawcohKZbuV2TCV5lbkww==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793888945;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=yFXunORW+PuRObaULoq61sL3kviCqA/X6v8YIlM+9ns=;
-	b=jR9zMDd9b5M9947JRWy0Z+mO/W6wfL87rM3FARFVq9ZopYDC1qNuo/IiG6eiAeHZIxzY
-	 Gr2ZpkVok8hBk2LF5GyxiJfeja2TN0isIYUtITpzs9MjSl9CngcYTf1pN9ldvAanP2+Hr
-	 +yvBsSTGZt09vwd2DkHRpii2+vHfF1ArV70HE/agIxwZJbctS0zcIgbAESF7ho2BjQ/nv
-	 1JoiPzEzlKYj9rzD4jfEYOLt49y/C/ef44xPzhM6666528WqTokcRmmzQUBiHa9DumcSW
-	 AVgbt3ZTCbOdpmsbbhJOPbSudMeyQjaB4SU5FSx4xqyIeTGp4akLbBA2hQzpoaSkTNA==
+	bh=e/ChMMTeQfEb3CPDQNx/z+/EfxozOTsC5cPmwjyqKac=;
+	b=lSbfg6tFXCtgu93pDGXzu7Pe1uPaNLLF5YHx1/hv75cWxGa09gGPZ4YqcGCR3kEBLVXU
+	 ZSpplNLilQKaHeEPGQrdVR3I/VESYC5m5ZH0xNwcfT2ZOp5poMKyUnI2e72Jhr0Fw1D/1
+	 hftoS24J0Q349dIqY54xx4cF8IYuKhj8brOp8bpeNzjbQa8K9vjFfnbAkgZBCOx+j43M0
+	 +KT9k9KLQhuZQJxlZwn9Nv+urL8FpjYNZO1ZgNyAlDcKDscT5U3Ab6/rn5MhWOONZ6950
+	 g13kYEgS+wk1buYBOUYuCTqDkBSRI4ov49H+xMYdioGV9eoXBKdffXZyfBvFV+7Cesw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Cpn1rVyq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k43Qo7Lr;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 063B4606D812;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5086A606D817;
 	Thu,  5 Nov 2026 14:29:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Cpn1rVyq
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k43Qo7Lr
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793888944;
-	b=UhXm8sYwmEwysJAV0j2zOxkX2I2dYwoe00VpjFhhdUyjT6rPZY67Bhz6BMZt489Toagb
-	 zZFy6QY1Ejo4YtoemYTFRC/SaCFgkpTK/zsB01wxrdSzesww+yjjqZCQXHYG5lhPwbVeY
-	 ewlB8pAAHOEuRO7G508O1SxoD1y7swn/V9L/b6IVIFa/JAaV4D1X+Dg7noCtb3ao0paTM
-	 zjGfK8cnXJbX647sW56gtN3BBjW4Ndhum2nTmZXp5ZSImxLgL81zMlgxQ1xAFYFBB/GaN
-	 mj8pfDlCBT7pxEgNzwpgPNiCV1bFcoKX9R6L46t6LT59uUiX/HVt72mBqpm8B6r0T1w==
+	t=1793888945;
+	b=VOXyyYF8mG/g9gFLPlnG1kGEBr4FVLK/bHWf19NY2OLnFWM2WHSgFmzHDThaymPjHAii
+	 HrSL1JX6Hwkqtvz/PpL9NOSI1mhTY/2zZqJ6HTbl7BB1PL3KLo2B9F2SB20CAa+Sl5f+J
+	 sAUDa32pS9UJZWGp2iNo2KhX48+5LbDA06KrRk1Yvk5XiXoI3JYEKxHYUuxdiOsU0b2z6
+	 b5PjObMKFhkyAFjKWsDd8gOz/nmwUnnK+9N/wdGhQHnjhzZkjZ+LXP5w8+sEr6GCURz2T
+	 DRDy649L5pImJ1aH5g+rlg+/e7DLKKIGKU2fBSFm8beu2i146QjPUFygCmLPoH3anFA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793888944;
+	c=relaxed/relaxed; t=1793888945;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=yFXunORW+PuRObaULoq61sL3kviCqA/X6v8YIlM+9ns=;
-	b=m2yafq9fB3D2sg7CeJ5Yr7/Cfy0BYHopLNmfjpWHnCeVtgz7l8l39mQhKGqFBK+TGFpD
-	 2hGYcAqBeXdvNCurFIhVguQQ1xcltlYwk7pDWcy2kQNM4V+3U1+ENLH8Jd6VcVf6mp7PY
-	 ATnbAvfuZaTxZU31iA6HEztXSSgt/JHZRHgRGPm1guW5ct9OkLN916g/wGbyDQsmcIaPW
-	 w1H6nZTvB5QVJk2EzvKf8NtA0auErCpodrZABf6w4DVcp533ExjMhN7R0sYsXGClgweVH
-	 hWuFGnnQ+lxOAB1ThRsZmWfiaJnpph/gulb3ZQlrZADUHy9ERi6yGaOLpOyc/MpPsOQ==
+	bh=e/ChMMTeQfEb3CPDQNx/z+/EfxozOTsC5cPmwjyqKac=;
+	b=Inc0iasj0IZbbPgyIMJfiejGGMqocqDF7JR55PQXqJK/uL/2b2yYT0DLsVnAucKZo7Nv
+	 7dqovLlETjDF7vbguX1mMymgyGiPBqWMyWNpwfPhAfsD3nPbxygClDzmHLG1VUBiLiiYA
+	 /RM4xGfYsauSA35bx+JUOqhoUo871DgUT0xOn+iW2qobHwWZk4I0qVEto4coL//UK8/g/
+	 kV1+XiUcFUTpEj5O/FHdwx11ObFA3wM6IdW81XjJl4V9B3jRkQzrwaFUjAp/Ni75PGGNO
+	 jP9irGw0n9LvY55IJvyh65jXHyVARvgDKtF8bnctR6A+Ah7DHiDClgTblFnopRfRj+Q==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id DED9B1F000C1;
-	Thu,  5 Nov 2026 14:29:03 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id B520F1F00A17;
+	Thu,  5 Nov 2026 14:29:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793888944;
-	bh=yFXunORW+PuRObaULoq61sL3kviCqA/X6v8YIlM+9ns=;
+	s=k20260515; t=1793888945;
+	bh=e/ChMMTeQfEb3CPDQNx/z+/EfxozOTsC5cPmwjyqKac=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Cpn1rVyqeyKfx7mc0gXN5uc6z+aLwPgPTzVKcDrrAbPGB86AayOiYqMam8wYZBrga
-	 7llXlw8P6XfZr0WuYgZ3Hb05NyBED6MR++vQotgJU8iFm6c5ve7Rl/hbc+lGLuwbCj
-	 8l9CNeEw1gszgoT3YzhQ4dLx3W182sSDREQPTa5SqBIgRouB1AVeDlXOv+A+uXr47I
-	 kKJw1fVA4INehyl84DTNts3lZ64ikMTcI/mC/lGA6hzdClVsBbv5SWxq29g77yLtXT
-	 iROtwcQWjQyAxG/auzw0dPIzC9KXU5IfVSbwTg2nL33WTiL3XeMAdvbPiMJKGLQcYw
-	 Sb8YlaTw7Z2+w==
+	b=k43Qo7LrWLFlQfZ76OkxWrcoa4gUc8RGLGqcUkFWi+zg0nw4Q3wUfKrYByWT2/Bi5
+	 Si/3hIIWLljVdofkUP+VYbhj9zvm3SrdCcXKgCwVzrxeMPOIwsf4NqEmfAkc8pJhYE
+	 7lzvOJHOLKBBrjwWoWNwn7l+sWos0H6Xnc2iQ7d1b7r8vryv8e+Nb+gj/R7bY9Z8/j
+	 gWbE9TAu9aq3OGXAAFGIJYw6O0+NIHP4dV3LJcsPbYO7Z3coO10I7vHvdCPQAh4F1r
+	 xpDsu/7FkogNlYMKOt+D2kLZHXR9xXtlvPQa8iyvcz6CSSQh/xaBImuxYJCsgDAT5+
+	 jGLAWFMIq2fwQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 62C21472C7;
+	by lkml.kernel.org (Postfix) with ESMTP id 4372B472BF;
 	Thu,  5 Nov 2026 14:29:02 +0000 (UTC)
 From: Ben Grisdale via B4 Relay <devnull+bengris32.protonmail.ch@kernel.org>
-Date: Thu, 05 Nov 2026 14:28:50 +0000
-Subject: [PATCH v2 5/6] arm64: dts: mediatek: Add basic support for MT8163
- SoC
+Date: Thu, 05 Nov 2026 14:28:48 +0000
+Subject: [PATCH v2 3/6] dt-bindings: timer: mediatek,timer: Add MT8163
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261105-arm64-initial-support-for-mediatek-mt8163-soc-v2-5-e68d7d428f99@protonmail.ch>
+Message-Id: <20261105-arm64-initial-support-for-mediatek-mt8163-soc-v2-3-e68d7d428f99@protonmail.ch>
 References: <20261105-arm64-initial-support-for-mediatek-mt8163-soc-v2-0-e68d7d428f99@protonmail.ch>
 In-Reply-To: <20261105-arm64-initial-support-for-mediatek-mt8163-soc-v2-0-e68d7d428f99@protonmail.ch>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -97,13 +96,14 @@ To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Jiri Slaby <jirislaby@kernel.org>
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
- linux-serial@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>
+ linux-serial@vger.kernel.org, Ben Grisdale <bengris32@protonmail.ch>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793888941; l=6537;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793888941; l=1008;
  i=bengris32@protonmail.ch; s=20261018; h=from:subject:message-id;
- bh=14rHWBooScrYpq6ceUihMici2wAk5TROgmMtstlnlWA=;
- b=dsT0Ql+OEsVfaICjAX6vUHztbbGYxVAGY3n+kpdrkpyMvZTT3ec9WsiivohyflVgFRhD9IwOc
- +0nirL4kUvMAiLw5LEvossyvwPHfF8tB7h/NNeb25hwAKRTwqAduU7t
+ bh=dyVoGhC2K4A9ebVKVo2WduqTmMX5amrsOD71wWVM2cs=;
+ b=OTStIQccVtbXfsOKoJMQUEM6nzxD0nG6K5+Y5Ody2l1HoHMDW8gTHIuZ23PFPnh8pwfRID2rZ
+ qXSU98wrc79AoYUMRQONjXK7f+gient4R1vufxCb/2Fq/ryEZmhG9VI
 X-Developer-Key: i=bengris32@protonmail.ch; a=ed25519;
  pk=4ewFRC2yNph/tXokHVzIDlgOA9Hxecf1AlBuD4eOnaU=
 X-Endpoint-Received: by B4 Relay for bengris32@protonmail.ch/20261018 with
@@ -114,263 +114,27 @@ Content-Transfer-Encoding: 7bit
 
 From: Ben Grisdale <bengris32@protonmail.ch>
 
-Add a basic dtsi for the MediaTek MT8163 SoC, describing the CPUs and
-caches, PSCI, interrupt controllers, timers, PMU, watchdog and UARTs.
+Add a compatible string for the general purpose timer (GPT) on the
+MediaTek MT8163 SoC, which is compatible with the MT6577 timer.
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Ben Grisdale <bengris32@protonmail.ch>
 ---
- arch/arm64/boot/dts/mediatek/mt8163.dtsi | 243 +++++++++++++++++++++++++++++++
- 1 file changed, 243 insertions(+)
+ Documentation/devicetree/bindings/timer/mediatek,timer.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8163.dtsi b/arch/arm64/boot/dts/mediatek/mt8163.dtsi
-new file mode 100644
-index 000000000000..645f4e15587b
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8163.dtsi
-@@ -0,0 +1,243 @@
-+// SPDX-License-Identifier: GPL-2.0-only OR MIT
-+/*
-+ * Copyright (c) 2026 Ben Grisdale <bengris32@protonmail.ch>
-+ */
-+
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+/ {
-+	compatible = "mediatek,mt8163";
-+	interrupt-parent = <&sysirq>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	clk32k: clock-32768 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <32768>;
-+		clock-output-names = "clk32k";
-+	};
-+
-+	clk13m: clock-13000000 {
-+		compatible = "fixed-factor-clock";
-+		#clock-cells = <0>;
-+		clocks = <&clk26m>;
-+		clock-div = <2>;
-+		clock-mult = <1>;
-+		clock-output-names = "clk13m";
-+	};
-+
-+	clk26m: clock-26000000 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "clk26m";
-+	};
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x0>;
-+			enable-method = "psci";
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x1>;
-+			enable-method = "psci";
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x2>;
-+			enable-method = "psci";
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x3>;
-+			enable-method = "psci";
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+		};
-+
-+		l2: l2-cache {
-+			compatible = "cache";
-+			cache-level = <2>;
-+			cache-size = <524288>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>;
-+			cache-unified;
-+		};
-+	};
-+
-+	pmu {
-+		compatible = "arm,cortex-a53-pmu";
-+		interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 9 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 10 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 11 IRQ_TYPE_LEVEL_LOW>;
-+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-1.0";
-+		method = "smc";
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		ranges;
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+
-+		watchdog: watchdog@10007000 {
-+			compatible = "mediatek,mt8163-wdt";
-+			reg = <0 0x10007000 0 0x1000>;
-+			interrupts = <GIC_SPI 128 IRQ_TYPE_EDGE_FALLING>;
-+			#reset-cells = <1>;
-+		};
-+
-+		timer: timer@10008000 {
-+			compatible = "mediatek,mt8163-timer",
-+				     "mediatek,mt6577-timer";
-+			reg = <0 0x10008000 0 0x1000>;
-+			interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk13m>, <&clk32k>;
-+			clock-names = "system-clk", "rtc-clk";
-+		};
-+
-+		sysirq: interrupt-controller@10200620 {
-+			compatible = "mediatek,mt8163-sysirq",
-+				     "mediatek,mt6577-sysirq";
-+			reg = <0 0x10200620 0 0x20>;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+		};
-+
-+		gic: interrupt-controller@10221000 {
-+			compatible = "arm,gic-400";
-+			reg = <0 0x10221000 0 0x1000>,
-+			      <0 0x10222000 0 0x2000>,
-+			      <0 0x10224000 0 0x2000>,
-+			      <0 0x10226000 0 0x2000>;
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) |
-+				      IRQ_TYPE_LEVEL_HIGH)>;
-+		};
-+
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt8163-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x400>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt8163-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x400>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt8163-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x400>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@11005000 {
-+			compatible = "mediatek,mt8163-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11005000 0 0x400>;
-+			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+
-+			status = "disabled";
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13
-+			      (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14
-+			      (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11
-+			      (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10
-+			      (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-+		arm,no-tick-in-suspend;
-+	};
-+};
+diff --git a/Documentation/devicetree/bindings/timer/mediatek,timer.yaml b/Documentation/devicetree/bindings/timer/mediatek,timer.yaml
+index 337580dc77d8..fcf4303e1426 100644
+--- a/Documentation/devicetree/bindings/timer/mediatek,timer.yaml
++++ b/Documentation/devicetree/bindings/timer/mediatek,timer.yaml
+@@ -34,6 +34,7 @@ properties:
+               - mediatek,mt7623-timer
+               - mediatek,mt8127-timer
+               - mediatek,mt8135-timer
++              - mediatek,mt8163-timer
+               - mediatek,mt8173-timer
+               - mediatek,mt8516-timer
+           - const: mediatek,mt6577-timer
 
 -- 
 2.56.0
