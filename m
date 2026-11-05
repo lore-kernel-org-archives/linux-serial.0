@@ -1,57 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793863578;
-	b=OvMV3zmHl3SASiZ5ncTedi2+ZxSNrxklanNaHXpmlLagWTtKl7DYigAaOBP9AN0ucOaX
-	 SLlK6+O6JqziE/dME3Z/RqNPE/eUk/xAbWizM9S34jgw6NX9BkhH04FSXOtA57xagZQgZ
-	 QH+12AKxtRcX0KPMrSQ66fLwG4shPWiAKMtYPJLCa9/C+PLOO2eaQdLI/+vTRnBZHJyEg
-	 ZTy3tw7fDpViGwB64fRZKjXy9qRBaeejLYBfxh5W033bsIM+Gp6cH0GUsEcrS/XS7pWMi
-	 gOusGVY7pqEVMhPEhKHJ4FV8zoYsaEa8QhX0BNDr0/Rxbu1BS5aCecVjdYpJ9At3OyQ==
+	t=1793869660;
+	b=eLKNWI3PQn/Jewyb6BUdI0sqzbmNwUQuOmjKsrDFquntDYO7uWqcS0Rgq7d9Rozb+dne
+	 IwJZC2OBznZGB+e62SJfBkRvmj1k61nOXJKPD3oACwu2KRPDXQV9Kbbu+fMKadsicSbuz
+	 oThaVttBKQd6BiVD+NN3ScGw2582ssmlCsDuRw45UkZmQxj7BnN1bzCLtRXOsGf+eCKZx
+	 2uLLQ4OWxfZEt1vjp2fol6DOWhSEqxH89N4p4TsY7Wdv+4v2p78YwpulFmho/AZJdY7Wp
+	 sfEhyVbQ1GdRBlqAoa2MTGPTGlXIORsEGjRl3n4xmTbx7rg6SOyIKkSqhIEhER4y2CQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793863578;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=TtC5hda0oyUqmImH18ufuzJJlwIUVt23JeYLRwQS59c=;
-	b=BMh3Ic2s1f+0M/RwhF4/xZQcFgXToKrwAfIdW1xJ1fZ17CqrMGv/COlHHvnTsGw8kH00
-	 KWYPGksB/ZYbxT3M1eUCA3heGPYMFh7HEm8flTLVULnqihW3x/R9eUV0rt9Yx+8qfqTIV
-	 18bG8S2JDTs21njW7E6MQ5S6oVR3o9X8qDkvooJU36ZRji5dzygyBDdceFMAxYGutrciC
-	 lecdYqCDg0Wx7K8Pxwy+WxwEjSgrdt+vq8Phi8RuTEBgJ+so/uRb+4mzghaKq8N87OX1D
-	 kAronCXno2EitC0w6/TCXWZEyLYwMAotNTN4QWjC54fRVxZG2snFtf4hqNnB0t4rnvQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793869660;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=n2xCmog64AGKMXZW1kunHj4ya5Tb7T8D0cVzpzhIyow=;
+	b=eBDnBe65nIL/RRqlUytWbO39D4rfKURIzhKqq/waQyLOH1A0qHPLZPOdhodeANenxm5m
+	 lyWEkuQyiDohG99X1Q66LDbPpHCn8tvmE4vIn2a/AfDlgYxnSm27FmMh0cz0ZbZkUPoii
+	 +fE0s/sUHjTt1XUAzpk3gJUNlUONSisnwwk0+3BrGsuIeaXFd0uoV0lOuqhPq0wZyeSGO
+	 /jtkaUw8/lybGNqt4GcV1nbkLS01Ragw9ZNlZzj8SbATzc1W0OIyY3+wtWk0iKimEzpGi
+	 2tv9tT5p8pAPY6kDEzJXAbOLSfHyRx2K1XjJAngn8aE/oDK27OEAnIdDCInfv8hEc7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="D+MCvKl/";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Dcd4l0yI;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50DC8606A31B
-	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 07:26:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C497D606A31B;
+	Thu,  5 Nov 2026 09:07:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C497D606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D+MCvKl/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 122981F000C1;
-	Thu,  5 Nov 2026 07:26:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793863578;
-	bh=TtC5hda0oyUqmImH18ufuzJJlwIUVt23JeYLRwQS59c=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=D+MCvKl/HA2u/95ooRgBidIX7znKvF9Rlg3oNx0wxYExDZXk84rmmtZ97fL0lhofL
-	 GiQQY6rz8tjuxiRUhBW9kQmBT3cDX+mjAe7Ou+cVFahc5H3n7mEWpSEbfFw1CrpeLE
-	 rRks5UhNwGr174iEuFP2gcZNeX3+xoWPPbnbKhgZJozhZD2szcv5VVFxhQZ+LYdHB8
-	 ygQI9Y5h20L2eTf/DbCZlOkyV53CXJrUrdI73SsV2qPKEH9vkWb6Y6mELySRV8Suzf
-	 3UXeA2MWBjdGW/Yg799KseCz2haEfpaf3G5Ip+O2LBHwUfUODWW9Jglwla1Ew0nFjt
-	 kreuIKzMrr0GQ==
-Message-ID: <sashiko-outbox-198666@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 3/3] serial: core: Drive the transceiver interface
- select GPIO
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261105-serial-rs485-mode-gpio-v2-3-027e5348892f@vaisala.com>
-References: <20261105-serial-rs485-mode-gpio-v2-0-027e5348892f@vaisala.com>
- <20261105-serial-rs485-mode-gpio-v2-3-027e5348892f@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 07:26:17 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Dcd4l0yI
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793869660; x=1825405660;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YJohrnn0X6YdnhzwUjJAKaTWxHJk2t2HvqKiuYmlRe0=;
+  b=Dcd4l0yIwvkWk4UlAwrOKlv4yacne6B9U8oK4AenNg768gAyTg96uKmX
+   5MX8m9xiQmmm69RRIv9RzPQBBanQIZBO9geEhuRSADMYap2otnqjaqwCw
+   MZ26yJgbKcoDH5Oo8V/qN4k3sQvlZZK92pyijhtVkecuHqBTNF1JI+zRF
+   TiwjIQbet1SVzbYsXluHAgpBJPYv0R2mXxiw0VtWF6Fw7cVkaN+Cx3PON
+   sHCriyAdM72ECQADjzWu/F6Tt869HCoi1lHNfAWKnNK+hCs6g3lgRdJ9Q
+   UDFn2S03VWD6hneoJ850fDzpfwT6b4crQBJ5PwoAyeFoWQVsKe37Pz1LA
+   Q==;
+X-CSE-ConnectionGUID: ho/RIa7qRtubM0r7f4mKRQ==
+X-CSE-MsgGUID: /Jslj6NlR8mPVdgVkF3Chg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2533361"
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="2533361"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 01:07:40 -0800
+X-CSE-ConnectionGUID: LhD/33EfRn6nz2oc2cFwKA==
+X-CSE-MsgGUID: Sg2CeagcTPu0Gp5Gx8AUbw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
+   d="scan'208";a="7514404"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 01:07:37 -0800
+Date: Thu, 5 Nov 2026 11:07:34 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Cc: Frank.Li@oss.nxp.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
+	Zhaoyang Yu <2426767509@qq.com>,
+	Haoxiang Li <haoxiang_li2024@163.com>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+	imx@lists.linux.dev
+Subject: Re: [PATCH v2 1/2] tty: serial: pch_uart: replace chan->device->dev
+ with dmaengine_get_provider_device()
+Message-ID: <auxHVrXvITqUpjzg@ashevche-desk.local>
+References: <20261104145211.3209669-1-Frank.Li@oss.nxp.com>
+ <auuaYxoZm2T25cU5@ashevche-desk.local>
+ <3b390b39-c27b-4b62-aa49-5b1bb56c3cfb@oss.qualcomm.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,32 +87,44 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3b390b39-c27b-4b62-aa49-5b1bb56c3cfb@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-> Multiprotocol transceivers such as the LTC2873 provide both an RS232
-> and an RS485 interface on the same bus pins and choose between them
-> with an interface select input. There is no generic way to drive that
-> input today, so a port wired to such a transceiver is stuck in
-> whichever interface the pin is strapped to.
->=20
-> Add the optional rs485-select-gpios property to the GPIOs acquired by
-> uart_get_rs485_mode() and drive it from the RS485 configuration state:
-> the GPIO is active while RS485 is enabled, which selects the RS485
-> interface, and inactive otherwise, which selects the alternative
-> interface, typically RS232. RS422 is a mode of SER_RS485_ENABLED and
-> therefore selects the RS485 interface as well.
->=20
-> The state is applied in uart_rs485_config() for the boot-time and
-> resume paths and in uart_set_rs485_config() for the ioctl path. Unlike
-> [ ... ]
->=20
-> Drivers calling uart_get_rs485_mode() need no change to support such
-> transceivers.
->=20
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+On Thu, Nov 05, 2026 at 12:04:25AM +0100, Krzysztof Kozlowski wrote:
+> On 04/11/2026 21:49, Andy Shevchenko wrote:
+> > On Wed, Nov 04, 2026 at 09:52:06AM -0500, Frank.Li@oss.nxp.com wrote:
+> >>
+> >> Use the dmaengine_get_provider_device() API instead of directly
+> >> accessing chan->device->dev to get the DMA provider device.
+> >>
+> >> No functional change. Prepare make to struct dma_device private to the DMA
+> >> engine.
+> > 
+> > Krzysztof, this patch was a split from the bundle by a reviewer request (not me
+> > FWIW), and author obeyed. So, you can do the same in cases when you got something
+> > you want to review independently on other content which most likely is a noise
+> > (to you).
+> 
+> Do you propose that I read all patches and complain that partial reviews
+> should be split? How does this proposal solve my complain that:
+> 1. Incomplete/partial reviews will be marked as full review of the commit.
 
-Sashiko has reviewed this patch and found no issues.
+You mean the problem of tooling? Why is it problem of the tag?
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261105-serial-rs4=
-85-mode-gpio-v2-0-027e5348892f@vaisala.com?part=3D3
+> 2. People get same credit even if they intentionally did not read 95% of
+> the patch as the people who read 100% of the patch.
+
+This doesn't stand the same case when patch is split. I will give a Rb for the
+full (but isolated) patch in comparison the same code being reviewed in the big
+bundle. From my perspective (as a reviewer) I have done almost the same work.
+So it's an equivalent.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
