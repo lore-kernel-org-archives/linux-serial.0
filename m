@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=52.101.83.138
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
-	t=1793862786;
-	b=YyYY2M1vRI8ltQhZzLNtb8jRBnsop4fYyWHGS3ahVSGfmtRr4MQxvQmdGoWGkRbkULXj
-	 vBFWIghKyrhCsJgQlS76AZNLQTgeVRqsHfHTsZ08yHvh5qTzCa3WurgCgS9oSniNLoOyF
-	 4M78GZX5m99v31/PZqEzbO2mapcwOMRu7dRhEdzKJBJfysdfY602kBsmbCoTivAcBrNPW
-	 UeOtbTwnAmxRYY1/SRck2jGN1+SmW2Sk405kuiOkAq4h4LqkZ5zPTScIWkf6yX0m4vuAi
-	 RrOl5KlT9h8IRAavkMehbaE9gtAuhje7Z3s1KaqbVCPNz5xoHKILRas1U4hedcEjdVw==
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.83.138
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793862782;
+	b=MM6shPMSN41VJL1zLNCaPCUuHN9Ahgy0FRqEl5pFEOg/dk6c5c82HqQ73yBHGNsGn59S
+	 xX6deBQt3SWu5PvUEXoeho/h8+9iM/dq2Rcfv1gr3aFKTBH9XpyWyJIUsijMAzVHUidzJ
+	 LupNs7VyYDQDyc6tHUkipT34TBmQfRSWGjV8xadUODxcDNFdU9DpYxq5qICj3FtCoC0cH
+	 VLaa64JftBGakOktOylaQ1D8lDutVhm+iLfsanFASf4/pDbr4+2onqDxM/Wlt7234l5om
+	 Y8inUCc/hgOtPxTOIBhaCsxQAF9X3yYeRJLsqKeTIc4U68j9dagzuj6GtHnOLzBwMlw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793862786;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793862782;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Date:Subject:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
@@ -25,61 +25,61 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=NKd0qhh0Mp9LEaBKsFhmgSQ2vmOfq1rjbIvW/25DcN0=;
-	b=5SyfpvNq754vgPpKTeAbXgOEuHc5havEdFEHdqp1gyvr6YC1ahfZYgDQ1Xv4A0TFWqbS
-	 GpIga47BIVFxwn66cN1M0qkfKLsl65OPg22YlPmOz+aGxepcTOlxVkyO1azgrAqJcJS5N
-	 EchmucRLG1yx3sCvmiNeWJ6sVleZqyxkY7hLzka2KnugXeYqYZRe6gQJ05Y8ESiES77wa
-	 O7c2DEUALdZSPJb7ZD/5xtsNpk3IdkBqqx3lalwIieLD4u8zKKKAtBeqEZGK8xmUquXHH
-	 YRxvKpYNvi9iDH7NhtRAAsR4cBwI0qMDfgYMZlZpi7YkYPawI2aDGAxonCaqPhjFm6g==
+	bh=DF+kec1b3UwADrZqzFt+9LW+3EiuvDJ7ZEU7kF4oXrA=;
+	b=1XRFZGKhcQ2VH3jqOu1kjsTsKznfQt1t6AgBcFBKCJEyJ4i4KZEjRCyscXBDVc2yez+D
+	 rUCQ3nWy1e5r+66ofySue2Mk5eUScTF3rtNNqQt0bDkQ7e3a3LCHbMJiezId7yU2X1PTx
+	 9oDcaqKNjyl/TCORe9+659+msctyBemMBlV4z6ZxFKPBEM/HYlKcN/6IvpZdzFs4E65DZ
+	 eQNlkNaGU/ep5VwbJRqrEBMH9+8+PnAdeyRXL9oEDPVZtu6hwA1eCs399o192Y4PbEPpq
+	 XRoPgN+hQgqkFob6+kUGIxFxLF8jGa+hhQSxNQ6+GfFj1YO+8qAaoA9Me6/Ky/f6EQw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=vaisala.com;
 	spf=pass smtp.mailfrom=vaisala.com;
-	dkim=pass header.d=vaisala.com header.i=@vaisala.com header.a=rsa-sha256 header.s=selector1 header.b=H8WuoPfy;
-	arc=fail smtp.remote-ip=52.101.83.138
+	dkim=pass header.d=vaisala.com header.i=@vaisala.com header.a=rsa-sha256 header.s=selector1 header.b=iQz3whcU;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.83.138
 Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11023138.outbound.protection.outlook.com [52.101.83.138])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED414606A328;
-	Thu,  5 Nov 2026 07:13:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ED414606A328
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDF1606A32C;
+	Thu,  5 Nov 2026 07:12:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CBDF1606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vaisala.com header.i=@vaisala.com header.a=rsa-sha256 header.s=selector1 header.b=H8WuoPfy
+	dkim=pass (2048-bit key, unprotected) header.d=vaisala.com header.i=@vaisala.com header.a=rsa-sha256 header.s=selector1 header.b=iQz3whcU
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uUSFTxVERQ72NJKlGH6wU/aSB2+9ZNraiRm7lrOJJw3sq3HoT8k/Re84hGeZZsyXTQZBNqThfKZlpcdIg/P3kwJHGWvi5nYN3P1kBBWLQNii5JLADW9mFtpRBXQ6j87LgkrttWEEL7sLtBeF+lJyc3YiGC/NbNt1LYMaZ7f3uDx25xSZ+ysw8xjmnJhSTeG017MAQxl2mWU1OXKUt8MDmqneGkOsspxTQTbblArK5ZdmgUxBvhmVI2mgfd0RIZZlKd20iHEYVyPvA0LKi72RksaqkFIYpMrJ3cRLnOu1Xdg114lyAV0/Clfy6ONsJA2GF85e6YFh2V/eF0OfBEUbow==
+ b=ifJrPiwwZfeIH+gmXsKrVuilPI6pcG7Lha9UUMwML/IijM6Osjy1zuYC0HCIcnqRmDwXlxrrq9nu4hsYxDoBUnKZjFBJaedfjsa7obJQV/HruUo4Z6S6Mm1kv6z4Jxm50KTf3eK8dfutYOp1V6G7MXqQx8Ug+OXhpnNc5WZwvDpv6OCMBnmQ7ogcfDhqVCe6nWrChaeG9/UE/zLfJfQgwnCs/oo3IrWRZiwcS2+JX/rnjAop3jCrwg+EKJu8Ian0rp6UzOvZJbahrPhi8ArMEk9V5JB4odeN1U8lKed9QwXo339teIJBfp9RyqAtOXtekOJBz7DBQI1a159KcE4oSQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NKd0qhh0Mp9LEaBKsFhmgSQ2vmOfq1rjbIvW/25DcN0=;
- b=mdQ/w8WLD9r9WUNWLb5QveSRKmRwB/d1Y5S8N1kNXcUOqhNFtjV00A6DAeeGDP1oj4kJQuYuvhtId9QdCtWJRUOINpAJfA0jl9C3EGwvLjJcKXPRFQY7uILmNedXnTl4LaZwBJbTuzLbar7D0x4mHHpvJV6H1QKPUkoeAcagYoxahBaV06o1+quMuaNpc+9Zp362KbtFCC8xCNqImrr/CAet8pZkves8uy9mnAmOYgrSiEt4UohMlWIHQiPCUajh31h+3D16mjRcOLNWnHrPSJJknmqJpvmofnl8WMFp3uNquyEkciZqlHO4VSPKjnd8qABQswmZ5ukfqfHQtYksqw==
+ bh=DF+kec1b3UwADrZqzFt+9LW+3EiuvDJ7ZEU7kF4oXrA=;
+ b=I9m8/+ACmFsgtiG45m3yWLcBvWNPfeF7rG6oOtWhvAxvd1lKC7fWxkCcqiAnWiKZtPQRBQyHdddtQR9QzrYMoyqZktwtQygUrktz31HHCYeSDquooBeR2cJ+YYPCuISaGVntTXaZncNcsiunHIdPvXoIcu+glEpvkyhZIKCge4XgSssTnZZpNMq7Zw3guIsWT9JojA+7lrLulRjum8ziRh5qNq5uKl3/zz/5AciziB6PDF+ki9AwFue5+YVCxXN5lo/7E73Og3zOGLfVVjPfzKyXbvqlYJ1Sn3gzQc5j5ZxTQzZHGLJ5zFOlL0OOrQz0smHpclTkxc3O+1tCkRfIdQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
  dkim=pass header.d=vaisala.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NKd0qhh0Mp9LEaBKsFhmgSQ2vmOfq1rjbIvW/25DcN0=;
- b=H8WuoPfyXpvoxffbM5NgQtdh7FaXPS/xOU/JJvYA3vw3AY/a0pBux/ZokB+dqhj5lbtvQ9BkVXdZMgYWfsy3y3HngbZ307fdCs1w0cs0oQyo0smt0Y0wTYLnfzeevzzxTa7li/CgBJGQ+aKz/ZE12636hIaZFw3MYEyB67a/BrvM02Ox7V08epg1AUecwOK1d4tkokyttCwF8bYAe1JvnJ22n8N8rSEYp05XqjMtz1MmaKNudbaXosN0/rLgCk+ikXE6OO/1YoG3GR4VMQi7V1EJjJ7gvf+rSrBiGJ7TmCZ61s1SNx2MHQ0+MD7uSAcYG3SId1YvlprfiqPMRTCBKQ==
+ bh=DF+kec1b3UwADrZqzFt+9LW+3EiuvDJ7ZEU7kF4oXrA=;
+ b=iQz3whcU+3SwAh4cvX08vOCAusDfZm/5bnngz80tUKUO7+w+5kEWW/fKs2jurQpGyYgMSIPr210kqUH6JQaiCG9S4BcFyQr0tbcqySAmsHxA3vRQI5cpsKVtBVRBSC081F7nip5UIF8n4CcyDEEI41QSkm2tGeWqmefEgDwzBtjc4TrBcWl0I2BNuQT5b28FN1/OgQPnHrJdryRwmMmlWo+HZkh84wKLNW2WbozVMQrxa0rGIQOAMTA08LdoLAAczKZhdfNg+SOqZsuWhM4SDVviqOfI/CEAs8Kc2rQAIC2TETWGNTmGCxRb9oEJCLqROXfbuExW5mKJfTpAN+kU9Q==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=vaisala.com;
 Received: from PA2PR06MB9176.eurprd06.prod.outlook.com (2603:10a6:102:407::17)
  by AS8PR06MB7877.eurprd06.prod.outlook.com (2603:10a6:20b:3c1::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Thu, 5 Nov
- 2026 07:12:51 +0000
+ 2026 07:12:50 +0000
 Received: from PA2PR06MB9176.eurprd06.prod.outlook.com
  ([fe80::b6d:8160:d324:3bfc]) by PA2PR06MB9176.eurprd06.prod.outlook.com
  ([fe80::b6d:8160:d324:3bfc%6]) with mapi id 15.21.0592.009; Thu, 5 Nov 2026
- 07:12:51 +0000
+ 07:12:50 +0000
 From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Date: Thu, 05 Nov 2026 07:12:21 +0000
-Subject: [PATCH v2 2/3] dt-bindings: serial: rs485: Add transceiver
- interface select GPIO
+Date: Thu, 05 Nov 2026 07:12:20 +0000
+Subject: [PATCH v2 1/3] serial: core: Forget the RS485 GPIO descriptors
+ when a port is removed
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261105-serial-rs485-mode-gpio-v2-2-027e5348892f@vaisala.com>
+Message-Id: <20261105-serial-rs485-mode-gpio-v2-1-027e5348892f@vaisala.com>
 References: <20261105-serial-rs485-mode-gpio-v2-0-027e5348892f@vaisala.com>
 In-Reply-To: <20261105-serial-rs485-mode-gpio-v2-0-027e5348892f@vaisala.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -94,11 +94,11 @@ Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
  Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
  Tapio Reijonen <tapio.reijonen@vaisala.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793862767; l=1621;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793862767; l=3847;
  i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
- bh=yEC8bjKKaOOGidH4z68y0b0FadnxW+OJXS+c1U1mxPU=;
- b=PLEr4D0UsPsbcvA6o4grxZVf1eDxCrGThkMZkx9S70eTl/0fF/JmbIRNhE7zhVfSenmvTBquy
- bTAwRR8IP6wAja9yVq4Tj/lUGn8Xsg8JgacnHWP3KNQ4bhKdXCNAyfl
+ bh=m65HZntko/Jblu/aGm35WDF7WZnC1nDspD1nI4o0o4M=;
+ b=nweMvU8IfXfO9esDQCXb30eWCRyGsakA2Em9PIysm/9Etxcg25CpzBlje+r55UdZODZwrXbw9
+ 6EVoW4Lnvx6DF9w+uaxKU+O3EJUsisoCnA0hZ3uA02k/JFsu+69oLh5
 X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
  pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
 X-ClientProxiedBy: GV2PEPF00046789.SWEP280.PROD.OUTLOOK.COM
@@ -115,104 +115,158 @@ Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PA2PR06MB9176:EE_|AS8PR06MB7877:EE_
-X-MS-Office365-Filtering-Correlation-Id: c15e9ac2-c22e-4ca9-2d45-08df3b0c346e
+X-MS-Office365-Filtering-Correlation-Id: 874ee62b-a09a-4932-c6eb-08df3b0c339b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|7416014|52116014|376014|1800799024|366016|38350700014|11063799006|56012099006|261102123227099003|261022105027099003|261021121427099003|261022075727099003|261009223027099003|261028144727099003|261026121527099003|261026140227099003|18002099003|10067099003|22082099003|3023799007;
+	BCL:0;ARA:13230040|23010399003|7416014|52116014|376014|1800799024|366016|38350700014|11063799006|5023799004|56012099006|261102123227099003|261022105027099003|261021123027099003|261021121427099003|261022075727099003|261009223027099003|261009221227099003|261028144727099003|261026121527099003|261026140227099003|18002099003|10067099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	p4PTUNgFTcRjwUROGPjUt2chSr5FFRvnuWnI1kArnv7k2dhFjs2f84yHYR/fBgbkRSuqlD4qktYgnF1ZiFpVK5oeU5sZdvsGX5RetYr9MOWjRm8tpOoYgZXFo44yhbPrtl8l4NcS4aBSOPsPkKpyhldb/YYywbZ2iS9DdHVpt640XVxX742QKqUmjt/1/aVgwZljKT/LPS5GTtdges2m3DqGG3gRqqJ1YS+x5E+JZqXLQW43IztaWUM65oeFAKD3heAqt9zPTkos2LJhbpm1d3y5OGPqVGdUYF3L80n9BwC3m3GK2f6AaQUGTMlN9EV92saoBQd4/vtHfdmXpDAtGv8YI7l1QxTA8lHp0vUwL4mylesrQ2oqlhTBvutCJQACwc6B/rSuAgW4JoOZEoK6/HkIY7NITWj1oSzkxkW67iSMOA2TtQs9C9LUgW03Kz6R47Dz1ntTvtjQp6aYzXOamJ7Ezgcpbx+9CCZeZ3OyCq50cGSBPa0OZlj8LhgyKVAjxoBRDzBcE2XeSUjW7Nt4zUTZx4BKG/xlQs2TKxPBfRFKGb7WOUih9hb8xct+3FvWZABqO1jUi/XoNtAsnAbB2vgQ9ozEaIxOAOBWlFWYhBlItcD0aYmDdgFSgfgZWSe9Q8zVfEvKPRYkHqvu0F1HXaBEa6SA0pa/9arwPyE0z1J3z9mG3aUE6pY84XnxX/lDuyUMLqKBWT1vTJL/c95YcQ==
+	AGtqktEnRv1vXksSiryRPiRyHVAtf1ZNJe5FnxJVnnpD90Z4ko9T6oMhq8XK7D8PZBReW79JqF8AAh0CjlMm8xr3Mz8aQLlXCgRXIy0Dg819xmOb4R9PVMY4Z2wUjjP8DKWimaBCNF7bqoVQ+qbpPAZpHWIY6oLSE979j5HFfuK9nQnugKTV/pkvdaFZ3TQLa97UUmfV8XQomZXbkDVAqTpM3BqHoxU4bzluFyb2GCWR5kicoWyQLXaRTLNKKFn+toh4t/GL6MX/xhlqZeSWykxgTidqerW6a7XKmatqnGe+p6ER3M1MDvb8UsI/MtBzLIme4E4fTYfDRmIrPOvn/NVhmYZMN7FUhiPk1KOEreeD1ZWd78YZPceFEem5dp9V9dEQ/DmVYCIpup7BPJdqzP1s48AgY8KqeJ7mB1nSoTFRaE5prWoN3MvkgZgPaHmHTcbOBiBxXL1PjF52A5LM5Snc/1CdkKsdjA+FM11t4RCmixPN9NwER463qn0knyRhWHbq+LkNwisIsZQIALIUOhS5kPbvpfD7G3h6tfVuB4VP5smxsyLO8mTttCIZX8BLQpNmy/Ft4xes94Q1HXkSdEZH4Y6kraAATESiZW4apKOw7o9StIM5janhGPHn6V4KrkfE2jih28kDHoHIUsEKQrt0UFHGJGBVO6gw4aVWY/q0kAz7aaTPbfVbBwoSlb7SFmhsAnWVw6luUmekRCkA94nvvY+1EJi1Zwoa2AOCStw=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA2PR06MB9176.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(52116014)(376014)(1800799024)(366016)(38350700014)(11063799006)(56012099006)(261102123227099003)(261022105027099003)(261021121427099003)(261022075727099003)(261009223027099003)(261028144727099003)(261026121527099003)(261026140227099003)(18002099003)(10067099003)(22082099003)(3023799007);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA2PR06MB9176.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(52116014)(376014)(1800799024)(366016)(38350700014)(11063799006)(5023799004)(56012099006)(261102123227099003)(261022105027099003)(261021123027099003)(261021121427099003)(261022075727099003)(261009223027099003)(261009221227099003)(261028144727099003)(261026121527099003)(261026140227099003)(18002099003)(10067099003)(22082099003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WTFva0xJR0FxaUpPVjEvbVRWSGJmKzY2eEFHbS9KQ1M2NXJONVptb05uZ0N0?=
- =?utf-8?B?cGFQc2JBbTNSQ1d0NmcwbHQ2Y29tUktpNjF0OVl1Rm1ldGpSYjJQUHV4T25K?=
- =?utf-8?B?MXNkY3VuVVd2MVk4dkplOUlrR3RXLzIyWEpzMlhqcVllZ3JLSFZzeWZlcXgr?=
- =?utf-8?B?VXJOaUw2dEI5cjZoZGZlZTZJK2dTYWplaWJGVzRWZitRSjR2Y0NVMVRpRUdu?=
- =?utf-8?B?OUNON2ZSeEVnYzBzcUJ6MS94U0YrbTF4NjNadTQwd3I5Qlg4dmxHdHBiM2ln?=
- =?utf-8?B?aU50RkZ6U0hldlV0NGY1eUdsYUE1MDBQYVFONk9jLzNFM24zemJ3NWQxellP?=
- =?utf-8?B?SUVLRWhUWDNxRXpwRGJwcnRST3lWQUt2aE5ibWkxblcvWUF5dnBWeGhBd3Nl?=
- =?utf-8?B?VnBuSkVoSExRQ3dROGJ2Y01ySWlETE9vSW53aXRMNGtSeCtkc0p5ZkNxNzhl?=
- =?utf-8?B?UXBpblBKckl3YncxbWVRb2RiM0d6a2NNR01TQU5NdzhnaEIxY1A0M3pzZDBT?=
- =?utf-8?B?dUJ6eFFDa3BpckhyOGJNRlVKVlZFdm5XdzhSd1h4NUR6dm10a3N5cEtQa2RI?=
- =?utf-8?B?THVESUwyRzBtSkJlZ3R2MlNVSVJBbzk5K0VnZFVnczNOSW5rN0VRYVJkU1Zn?=
- =?utf-8?B?NXVBcWJhcnV5bDIwUDRLdjBFdEhUZzBmM05wWHFSUG13Vm1SajRYZm5yNW55?=
- =?utf-8?B?cnV6OExtQ0dwWEwzdXBBdWxMalgwKytQS0ZZdXRWbFZEYXlUR3dUWXg5MW5m?=
- =?utf-8?B?YnpHOVdTUEtEdjMyNlp0THlFOWZQc1F6THpwNGtsbHJOd291MU9TS0lIa3da?=
- =?utf-8?B?bEFybGlGeWI0MUhRa1I2cnVnbGUzOHFqL0JrMUg1Y09uV0pIZEtiZEg1a3Bp?=
- =?utf-8?B?VjlMUjFENUN0NS8zN0w2SEdsYVdKV2VrUHhDTHMzOXBuQ0gzRzNiaEh4dXJl?=
- =?utf-8?B?bzBTOUxJSjdySFZ5SVJCNC9ybDlOYUFqQ09IMzVydEpGRjVPTkxBY1Y3ck1l?=
- =?utf-8?B?NjYwYVpTMkR1K0dYanZ2Ym5XTWptMHVYalA0RUhROHlrMENyU2pmWDh1WjVX?=
- =?utf-8?B?Q3RJSkpQUUZuZTVPeG1nT3loZkdQMTdORlh4ZzFLbGx1ZHhieDlWbDBQVUx6?=
- =?utf-8?B?TDJtbkdtaEw5eXlvNHpRUWVLblpKdnNoNFhtaWhHcHVRVVhBOU9QKzFocUV2?=
- =?utf-8?B?TkNxSE0rK3VFOHMzRW9TMWE5OEJJbTRjbG95UjhIcUNXRVBRWm4xN0NtOStV?=
- =?utf-8?B?a1d4S1NQb004ZjcwdFNtdnhHaW5IeDlKK2NrSUltS3ZPTHlqSzlDL1ptTHpv?=
- =?utf-8?B?MkJyd2hsTUpDK3orNUh0aW5RbC9EVWRmZWVQZjEzelU2azVrb3ZORWlpcFRh?=
- =?utf-8?B?NlJMc0toQ2M5TSt2VjMzSDgyMXR2TEpPRys0UUtraW55T2ovelUxdG80OHRv?=
- =?utf-8?B?aEVPUGdxc0xoV2w5cDl0ZGhxT2Z1YmRRWi9IS050R0lGTG11NDh2T1ptV2Jh?=
- =?utf-8?B?Z3BaRC9yMHFRN1E2K3VBREdIWnRlYmV0a2RKM3ZOL1Joc25oZitoNG1jWjJP?=
- =?utf-8?B?SG1SV3FDanpVdEZ5Szh5bTk1YllaRzZpRVk2VjJmNHc1R2o3VW1yTitzNHhR?=
- =?utf-8?B?YWNKVmprOHhwcFdQbG1iTW9XNHpxVWw1bGg1OW9mWmNHa1RuR0ZONWJRclh6?=
- =?utf-8?B?Tm5rVzdTRE1PVWkvQkN4akRVQWN4TnJ3alRGUDVtdkZaQldvYkJ5MXB4bXZt?=
- =?utf-8?B?WXdqcWdoY2JSN2hUNFhPSGFzU2R3VHpXRk5DMlFnbEpHbHRNZTlDZ3dXc2M4?=
- =?utf-8?B?YkxuSkhUTE5FRWVVTUR2eFE2TWppV1RQTmltWHZXOHFWZ3F0bjMrL0JBNUw4?=
- =?utf-8?B?RTA0anZmTkxtUGRjVmRZUCsxaTZRRTdRRlpISVVtWVJEbTFiS0pkRURDc1hT?=
- =?utf-8?B?Wk1ZeDU0d20rckVVckFkYitIeHlGUlVXdi9nSjFHU09idjFXSmtWblVmRUcv?=
- =?utf-8?B?OWU5Z3J6NFlmUFl6bW1IMDl1MHV1ZFBxcTlUT0NxLzNobXRYWWE1Yk5FWHhQ?=
- =?utf-8?B?cmRDVzlnaWVaT1hsN2cveWNrVEJwdlFXV2p3WVYyTytra0VFRENrZmJiZnpj?=
- =?utf-8?B?azN3TUNYZS9yeUJkdWM2SDF0eVZyK013NnVUQTNxUjVMaW5tb3lJeFE3VHg1?=
- =?utf-8?B?VWZGRGJWVHZ2Uk9tc2tONG9hZEluNERDaTZVeWdOY3hYaTFkNVV6eWJFelpP?=
- =?utf-8?B?WVVXamhkeEVHMys5M0lpcDJwOTRrLzd1MGdBZnBUUTBkYXgzMnJGWnRMVTk0?=
- =?utf-8?B?ZklrNitWbUkzbEZaQnVlLzlRS2Y0RG5BUlFlT3pZdml0d1BYdjNTUVBOaXBS?=
- =?utf-8?Q?qmGADHgHJA3pxI0g=3D?=
+	=?utf-8?B?dWkwNDFwKzRvbzNEK25lTXZJUThqSWh3Vm5JYnNpZlZlTVYweWVZamFlZ3U5?=
+ =?utf-8?B?bjQ3TldQT05hNHVJMW5ESS9aL213TU10KzNXbkt2UGFmUG1MVWtNYzcwcndX?=
+ =?utf-8?B?UHhzN3gvNmhGaDBzL2sySzhhS2VmeEZZMjg3NVdBV1JxeE9kOTE4amRFSTBH?=
+ =?utf-8?B?M000NzJIUmhxb2JpRWk2SmFwdktCSEI1YmcxZUxvbVRkUDJURUEzVnh2VGZm?=
+ =?utf-8?B?RnlUcmliaCtQemU2Z1NGT3ZaR1Y2SmwwOVl0RW8xUzFkZ2d2UkdaRmdENTdS?=
+ =?utf-8?B?dXFJOXZObFQ4UVF0ZGxHNHRZNGt4bzJCczMxS3lnYnhhVTVMUEpmV0JPSVJy?=
+ =?utf-8?B?dUpxaExuSTlLMFlVS2FxWW0zZWl6ZnZTeFAvcFpnbEdSejUrSk52NS9PcXJu?=
+ =?utf-8?B?VXBiSkJZM0s0ZjJRZ2tsVGcrV1NqQ3JjaUVPdmNJUUsrZkU2Z0RqUUlLWk9I?=
+ =?utf-8?B?QUhaWGhqS0FIOTk2K3JweDcrdmN6SmxRRWgwVGRzOFBySmwralpXVFFMcm84?=
+ =?utf-8?B?aUpNd1crM05qbGF5eVo4TEFJTXJNeCtnQ3g0R3ZjNlVwbDRJbTRiNytaZTQy?=
+ =?utf-8?B?R08ydjNFcXp4WGVmakNWMFlzc3pZaFhVRS8reXIrbCt6UU5teXhxMVBRaGVD?=
+ =?utf-8?B?NGh1RFdacml2b3ozTHNFbEV5UEJVTWU4M3RMNk11MGtMUWl1dFFnNTE5VjJG?=
+ =?utf-8?B?dHRQL3pjeFdPVkhmUm1hTUNjdW9CaWlpTWcwaHB1VUx3VWRGVFo5aXRIUm1C?=
+ =?utf-8?B?eDZxVGo0MVk4aTU0M3NOQ3pIL0xWbXRRc0FVcWdkdmlPTFNtSzZ4azRxaVZY?=
+ =?utf-8?B?anFmMkFXRGxUNWhKNUtoay9ZbW9pVlNXWlRtQVNNc05yd0dxT0srZE5RQkE1?=
+ =?utf-8?B?UWRsMzZteUh4dEVmTGZPVmk5bkJaNWFaUmlvQ0c4SkNtYjhvUUJ1bE5oUjJO?=
+ =?utf-8?B?dUlmRmdzVCsyS0dDWVBJbGt2Y3kyUmR2dDNFcnVIQ2JydFRLTDVDWUg4YnZm?=
+ =?utf-8?B?NFhkVldkWFRNcHFFSStYd2FhN3dadVZoaWpxVEp1bnFUNEtxa1hvREdIU2VX?=
+ =?utf-8?B?b2JkMVF4UTdZblFCM041dXJXR0pLcXNsUmFwS1c5TXo3SjE1Q1VOZXFreGww?=
+ =?utf-8?B?VlA5NTRHQUlRRUUrcWNSTUNQOXRReGlONy9Yd1FNNllVekRVM3BkZHZQVU5V?=
+ =?utf-8?B?QjF2RjBTZnIvS0VjbEJ5Y0lyOUlVQnY3TElDbTBNYVJ6aUhFSW0yRThlUk1u?=
+ =?utf-8?B?OGRFeTlvYkl0cUM4eG1zQ0kvdTdxZkxnakkzTGF4R2pIcXVuTTFwb0Zmcy8x?=
+ =?utf-8?B?OERuQ3ljYTYraU5OQ2Ezb1J3KzQ2cHF0ckJmeVE5N01zZDFncmNIZlZEN2VP?=
+ =?utf-8?B?WW1yRm5nT3FRRTFuMVBOQ0tqMUlTZXQyOGs2em9CMGJjM3FqT1pSdWhtL3JE?=
+ =?utf-8?B?eDFhN3VhUm5KUXNMNjM0SEt0ZndscVJIQWxVSk92MlBkaEhCb1NiYWZFa2Jz?=
+ =?utf-8?B?TkY4aE41MGhCN2tBUEZRSGpwVkhoL3FnYkgyNjlpcDZGUFgra2UvL2FVNnVl?=
+ =?utf-8?B?MzNVQlhJV3dJNXh1eld1WHo5TEFhNHBGYkhEejF6dVVwcUVQWkU4ZG9Samha?=
+ =?utf-8?B?UER2dFpJbkFUY2xZdDFOVGZ2em9kaTlydkFUQm9mUzVRajluUW1PNXh5WFdL?=
+ =?utf-8?B?RHlKdGdaYVZ2VnRWVWJSYW9MQUhvYVl1RnBYU0h2SEl4WUNubytOWDBwU3JI?=
+ =?utf-8?B?Sm0rbU9rcys5ZjUxcTVGOTlYZS9Scm5aOTg1cHZiNXlvbWxOblFjY3RYRjl2?=
+ =?utf-8?B?L2lEUWhoTWZvOE1VNjVVRkxMKysxclJQN25NSStjQk1oZ0o5bTVKQ3UwaThV?=
+ =?utf-8?B?YVYvOUlrZ3Qxd3hxUkhYU1NuOHd2NXZ0eWtmNWc0ZitHMEFwekZxYWJhaWZl?=
+ =?utf-8?B?ZGJ3b3R5OXdUTFJxaXZReEoreXdSekVLbExxVmpCcXdHWlY5T2lnajlaVlkr?=
+ =?utf-8?B?KzU3MzZLWWQ5MnI3cUpWYk9mWndNNWcyaHVLa0lEanNhR0RTejVTT0VYWkRL?=
+ =?utf-8?B?M0FYNUw1MldhMDIvNk5TZUVJRWhJVlYyV1psZjY0OHp6bi8xS3k3bmxKTVhu?=
+ =?utf-8?B?REw1WUlyK0dTdHlQdDkycG4reHBQMy9iV2tlSWVMUlV1NklPYkxBVHQzK1dV?=
+ =?utf-8?B?UFVBc0xuU0s5WTVEdXZtN1FvR3N4WE5MaVZWRStmUVg5cVl2emFhZVpuZUln?=
+ =?utf-8?B?M1BFKy9XV1NiVkszZURqWTVWZFo3RUpuMVlicU9XRExaSlY3NzVnTHM5VFgw?=
+ =?utf-8?B?WFQ5aWRYMGFSOEpaNlZyRXRSM1BZVFFSemsxcUVJRGtES3NmRnE1YjlpUGd5?=
+ =?utf-8?Q?UeZWbcw2oLib4g7g=3D?=
 X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c15e9ac2-c22e-4ca9-2d45-08df3b0c346e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 874ee62b-a09a-4932-c6eb-08df3b0c339b
 X-MS-Exchange-CrossTenant-AuthSource: PA2PR06MB9176.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 07:12:51.5813
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 07:12:50.2019
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /IcTqw3HXK+QaHxop2WJOWnaP8rIayGqwwT+GiY9ZPGYv73iRpqoWXl/v760OCT0Nn0MiXm2CvP47JaI15KNRfxcxlpmNwrHmhXRMp+qoQ8=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 24k+d/DZlomR5DPZM1ar+m9n6wR+08M8R1c+4qcQtVWZHPkusH/obbz4kdpgjXK145AZyoqGtPrYRlI61jCIID3uuugKDy3pVRxZP95KYmI=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR06MB7877
 
-Multiprotocol transceivers such as the LTC2873 provide both an RS232
-and an RS485 interface on the same bus pins and choose between them
-with an interface select input: on the LTC2873 a logic low on the
-485/232 pin enables RS232 mode and a high enables RS485 mode.
+The RS485 termination and RX-during-TX GPIO descriptors are acquired
+with devm on behalf of the port's device in uart_get_rs485_mode() and
+stored in struct uart_port, but nothing ever clears them. A uart_port
+can outlive the device it was registered with: the 8250 core keeps its
+ports in a static array, re-adds an unregistered entry as a placeholder
+and hands it to the next device that claims the slot. If that device
+has no RS485 support or no firmware node, uart_get_rs485_mode() returns
+before acquiring anything and the stale descriptors stay in place,
+pointing at lines that devres has already released. Enabling RS485 on
+such a port then drives GPIO lines the port no longer owns. The same
+happens when uart_get_rs485_mode() itself fails after the first
+descriptor was acquired.
 
-Add an optional rs485-select-gpios property for that input, next to
-the existing rs485-term-gpios and rs485-rx-during-tx-gpios. The active
-state selects the RS485 interface, the inactive state selects the
-transceiver's alternative interface, RS232 on the LTC2873.
+Forget the descriptors when a port is removed, on entry to
+uart_get_rs485_mode() and on its error paths, so a port only ever
+carries descriptors acquired for its current device.
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 ---
- Documentation/devicetree/bindings/serial/rs485.yaml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/tty/serial/serial_core.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
-index b93254ad2a287ad496f791e3ee90eb9defa0609d..2b5fd405e164f308b6036331edce7eb61da2f3ff 100644
---- a/Documentation/devicetree/bindings/serial/rs485.yaml
-+++ b/Documentation/devicetree/bindings/serial/rs485.yaml
-@@ -60,6 +60,14 @@ properties:
-       the active state enables RX during TX.
-     maxItems: 1
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index c0deec0e6af41db10de15ccca4169c603d9cebf6..9516f50a72139c73d70826f4bb0627aed2d3d310 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1415,6 +1415,17 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
+ 	memset(rs485->padding1, 0, sizeof(rs485->padding1));
+ }
  
-+  rs485-select-gpios:
-+    description: GPIO connected to the interface select input of a
-+      multiprotocol transceiver that provides an RS485 interface and an
-+      alternative interface, typically RS232, on the same bus pins. The
-+      active state selects the RS485 interface, the inactive state selects
-+      the alternative interface.
-+    maxItems: 1
++/*
++ * Drop the port's references to the RS485 GPIOs. Do not touch the
++ * descriptors themselves: they are devres-managed and may already have
++ * been released if the port struct outlived the device it was set up for.
++ */
++static void uart_forget_rs485_gpios(struct uart_port *port)
++{
++	port->rs485_term_gpio = NULL;
++	port->rs485_rx_during_tx_gpio = NULL;
++}
 +
- additionalProperties: true
+ static void uart_set_rs485_termination(struct uart_port *port,
+ 				       const struct serial_rs485 *rs485)
+ {
+@@ -3265,6 +3276,7 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
+ 	 */
+ 	uport->type = PORT_UNKNOWN;
+ 	uport->port_dev = NULL;
++	uart_forget_rs485_gpios(uport);
  
- ...
+ 	guard(mutex)(&port->mutex);
+ 	WARN_ON(atomic_dec_return(&state->refcount) < 0);
+@@ -3579,6 +3591,8 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	u32 rs485_delay[2];
+ 	int ret;
+ 
++	uart_forget_rs485_gpios(port);
++
+ 	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
+ 		return 0;
+ 
+@@ -3628,8 +3642,11 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	 * Works fine for short cables and users may enable for longer cables.
+ 	 */
+ 	desc = devm_gpiod_get_optional(dev, "rs485-term", GPIOD_OUT_LOW);
+-	if (IS_ERR(desc))
+-		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-term-gpios\n");
++	if (IS_ERR(desc)) {
++		uart_forget_rs485_gpios(port);
++		return dev_err_probe(dev, PTR_ERR(desc),
++				     "Cannot get rs485-term-gpios\n");
++	}
+ 	port->rs485_term_gpio = desc;
+ 	if (port->rs485_term_gpio)
+ 		port->rs485_supported.flags |= SER_RS485_TERMINATE_BUS;
+@@ -3637,8 +3654,11 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	dflags = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
+ 		 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
+ 	desc = devm_gpiod_get_optional(dev, "rs485-rx-during-tx", dflags);
+-	if (IS_ERR(desc))
+-		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-rx-during-tx-gpios\n");
++	if (IS_ERR(desc)) {
++		uart_forget_rs485_gpios(port);
++		return dev_err_probe(dev, PTR_ERR(desc),
++				     "Cannot get rs485-rx-during-tx-gpios\n");
++	}
+ 	port->rs485_rx_during_tx_gpio = desc;
+ 	if (port->rs485_rx_during_tx_gpio)
+ 		port->rs485_supported.flags |= SER_RS485_RX_DURING_TX;
 
 -- 
 2.47.3
