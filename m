@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793895688;
-	b=JWx7TM+t95RSat3O33LuoObrKvp8tm+iAo9LWXm4vZ3oD2oHBL7ctUiHxXMLvBcTtyBT
-	 MFOwse1wT+JUPopibtNmvVlhItKAvxXZOOsVKDVvU38g+QRt09LIx6KNyhw2YdLB1knw/
-	 JARGo7lKxpdGXjicbHVCIexa1GWz5RV/3xHBtku0c5xWpWHqLo8XvbpIpF1bem2CCJI+P
-	 VKKot8u+XAlKo2Btnpr6u6B3Ipm5HTc/s2ml4r2RLdHGiOael84GI/1huE9X0suIYING6
-	 SA9jgSl8TETVfybt11Kv0L/EXhdZbRicrQHkUmwYF0DtkccHy06tXqsiJImcQW/z8jw==
+	t=1793896001;
+	b=rcbRbZ2Jgxcf04XEodHMcG4QSD+YEURyOm/kOh38cywr9vRTZPHamsTsIGtcEwLdnMIV
+	 xEaBa3TvC8LoRHmVWvZUo+O6x7HRmSV4MsFdWCXeEDVigK0dRShjM5+AxDQJE0MiBimkM
+	 E0xY61f3JnU31azFALxiCqBbp2YnCaK8Ry6rLTe7ZDCZp3FOMglYYpouNI/zZ79s+S+6y
+	 zXbb0B/6HSQQm5PFoxdRzVgdwT33XR1i3fjInm6eF+zwF+XSKyKTI92ZdE+E6hsQgtd7i
+	 Sv2nGE/a/J6FT4Anmh8ORfqSGoPYgIbW1bIbyh9LLhUM/oAeKJ2EtYRDGxRsFko4J9g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793895688;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793896001;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=WUVt2LLMVvHrNVw+qO0iuw2IcgYL/66FVrlB6ieRXfY=;
-	b=YennwqdRKDIdvayZxrRzMFxUgbkUh7ymacDh1duV/oA62MKGfG8vv/sepkFodUYOwRcb
-	 Sc/lJalVQl8mrERycVKSxe9jc7aMFAgNd/8BKgclHpJbXShTgUdTZ/tcp3XwSpy9C6ynK
-	 EcRspbbOPtb3QRHMIbrQIVoTPNTuodTdG+n4VxxKiihL5a1KZgrSvzcO6//8dqhYCeSJU
-	 Ha206dn3FFIy84FZqRxtIpGwedviifZDg3N2D9NXx1otJ1GVqLGBXE6HZGKxJkas5DLME
-	 8d83tO1vC3S64pjfDQC0ytpLppBfrUAHSbWap8bVXdUR7jw79aNs/X6jKywiPWX33Cg==
+	bh=qtZeTuzPQKYq8eszUqD+SRGzpXOVyxLQWDuwYeTjf5Q=;
+	b=Hwnu30Ha2Z8rzPLjxUJ7J97Y7KDAxmSFJtbkC28/Dn9J/O+DAF+vGEiBdCvOTIwpfKC7
+	 +/8dirYaWSRoZu4M8nNvaa9Zq6KohTjA29aOQnw7MZ8bmeDqyE1VqjmLT8Ps1KhID+GVe
+	 0yAIKDcQHUwHpRfSA1Brdg2l7Eujiw23SLy3yujn9/zW05XgtSdCgtg8677p5tGvAPRCT
+	 Z5T0rXuWreFGJySQhI0FjSGlcGF6oWQa9O8d7TY51CKdqFx03njWW3FY1s+2G2gG/Lvq5
+	 aY1kB93ZI/dGyP88Eq4sGpLw4EMqNndtEG13H6/oww3pAqhehFRCiKau8XnoankPBXA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ty9eJlmk;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PDkW+Dkk;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DBB2606A32D;
-	Thu,  5 Nov 2026 16:21:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F5CE606A32E;
+	Thu,  5 Nov 2026 16:26:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ty9eJlmk
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1551F000C1;
-	Thu,  5 Nov 2026 16:21:08 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PDkW+Dkk
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F641F000C1;
+	Thu,  5 Nov 2026 16:26:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793895687;
-	bh=WUVt2LLMVvHrNVw+qO0iuw2IcgYL/66FVrlB6ieRXfY=;
+	s=k20260515; t=1793896000;
+	bh=qtZeTuzPQKYq8eszUqD+SRGzpXOVyxLQWDuwYeTjf5Q=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Ty9eJlmkotAQ6H6RDI7/0eVAKDXXnes1pK0lQ3RumbfCwKMIJeqBvFe4HvKhAav0c
-	 CqYmSfTJbt/uLP9MGVIT+OooHc1GpQ0bcKNjlI1afclFWUMByQEUS4zcJ4F3Jpqz5Z
-	 39yvn3megrKcZ5j+odLqNetZDaaRldsiamjkz+tsrPL6wXBeYmyQEHtYtFNUamfHeC
-	 EccCYUxsl7PQSGZMk9jaYMq+x+2yiRiWz8c7MiGrDxJrjbIi/v/ntFJQ6gi5NVg5lM
-	 6MN8HQ1Pr96sOQh+zbD8BguuHCtip2OK+FlaSqb0rkNQU9CGEh2LBr4SB5OJWxDanK
-	 YPBuOUkq3NdfQ==
-Message-ID: <2209947d-0b9b-417f-9ffb-1c81790af9db@kernel.org>
-Date: Thu, 5 Nov 2026 17:21:06 +0100
+	b=PDkW+Dkk/ikUA2I2LoBa4am52lL1qxLkqd4GBvnXEVe+byiTsKXFfimedyhcrvPQc
+	 FR6YPClNrMLr4CZq3+hR3d3C/JecDyvomOJh/SqAxwmMYlpSQT5Q7fsJfM5K2syDOQ
+	 3SNVYMOe00GN/HFeEumbSfsrHe/7vPMhI41l6Wf9lJNrd+PRiRyPAF39lHkYcOBk7t
+	 5UdJtsYe5ybmRl8Xmf443CjGgikGHZJiJGfsK7aXp75HE0W2xwXnRHLAmfquYmU9qS
+	 lF+PhjslxoEmgZC8CZrN4Jw9jvhMBB8Qj6aa4ktncYH3ojeaXI9StlXrpwsvhAAL6i
+	 fTsXMP+R25yoA==
+Message-ID: <e515960d-18fb-4d61-8842-beb6a73fbc27@kernel.org>
+Date: Thu, 5 Nov 2026 17:26:18 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -53,9 +53,9 @@ Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 1/1] tty: serial: use dmaengine_desc_set_callback()
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Thierry Reding <thierry.reding@kernel.org>
-Cc: Frank.Li@oss.nxp.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@kernel.org>, Frank.Li@oss.nxp.com,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Matthias Brugger
  <matthias.bgg@gmail.com>,
  AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
@@ -110,7 +110,8 @@ Cc: Frank.Li@oss.nxp.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  <linux-stm32@st-md-mailman.stormreply.com>, vkoul@kernel.org
 References: <20261102175527.3957740-1-Frank.Li@oss.nxp.com>
  <aux2VKHnVLwq_wzi@orome> <auyQEVmA2KeGu9DL@ashevche-desk.local>
- <auyiAE3lhnFahBK2@orome> <auysTnqWgz2kE7e9@ashevche-desk.local>
+ <2e12316d-d079-471f-9c29-ef5fb765216a@kernel.org>
+ <auys4Yg-qAr4Rt5w@ashevche-desk.local>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -156,24 +157,13 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <auysTnqWgz2kE7e9@ashevche-desk.local>
+In-Reply-To: <auys4Yg-qAr4Rt5w@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 05/11/2026 17:18, Andy Shevchenko wrote:
-> On Thu, Nov 05, 2026 at 04:36:38PM +0100, Thierry Reding wrote:
->> On Thu, Nov 05, 2026 at 04:17:53PM +0200, Andy Shevchenko wrote:
->>> On Thu, Nov 05, 2026 at 01:28:46PM +0100, Thierry Reding wrote:
->>>> On Mon, Nov 02, 2026 at 12:54:48PM -0500, Frank.Li@oss.nxp.com wrote:
->>>>>
->>>>> Replace open-coded assignments to callback and callback_param fields
->>>>> of struct dma_async_tx_descriptor with calls to the
->>>>> dmaengine_desc_set_callback() helper across serial drivers.
->>>>>
->>>>> No functional change intended. Prepare to make struct
->>>>> dma_async_tx_descriptor private to the DMA engine.
->>>>>
->>>>> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+On 05/11/2026 17:20, Andy Shevchenko wrote:
+> On Thu, Nov 05, 2026 at 03:35:20PM +0100, Krzysztof Kozlowski wrote:
+>> On 05/11/2026 15:17, Andy Shevchenko wrote:
 >>>>> ---
 >>>>>  drivers/tty/serial/8250/8250_dma.c  | 6 ++----
 >>>>>  drivers/tty/serial/8250/8250_mtk.c  | 3 +--
@@ -199,28 +189,38 @@ On 05/11/2026 17:18, Andy Shevchenko wrote:
 >>> bundle, and for such a case (when tons of independent changes are bundled in
 >>> the same stuff, *every* Rb tag has to be explained on what has been reviewed!
 >>
->> It may be a bit subtle, but the placement of the tag indicates that it
->> applies to the entirety of the changes. I didn't crop the list of
->> changed files, nor did I omit the summary.
+>> I think this case is obvious - Thierry reviewed this patch and gives Rb
+>> tag, according to reviewer's statement of oversight.
 > 
-> This doesn't clarify the question. Wordless Rb tag on a bundles is an oddity.
+> It's unclear from a bare tag, It misses that kind of information. Documentation
+> is also unclear to me as it does *not* describe the case what should I do when
 
-No, it's perfectly normal and typical. I would not expect anything else,
-because writing "LGTM" is pointless. We are experienced reviewers and we
-do understand what Reviewer's statement of oversight means, thus giving
-the tag is obvious, explicit and not odd.
+Documentation is clear and I quote to you multiple times, to which you
+did not respond.
 
-> 
->> That bit of meta-data obviously isn't picked up into the tag line, but
->> I think the default meaning of Reviewed-by is that it applies to the
->> entire thing.
-> 
-> And I interpret it otherwise, because this is a set of independent changes
-> bundled into a single patch!
+"Reviewed-by:, instead, indicates that *the patch* has been reviewed and
+found acceptable according to the Reviewer's Statement:"
 
-It's not set of independent changes, but even if it was then it would
-not matter. We review the code regardless how we actually judge the
-atomicity of a patch.
+Important: "THE PATCH"
+
+Further:
+
+"I state that:
+(a) I have carried out a technical review of *this patch* to evaluate
+its appropriateness and readiness for inclusion into  the mainline kernel."
+
+And further:
+
+"A Reviewed-by tag is a statement of opinion that *the patch* is an"
+
+All of these are exhaustive (as in complete) statements leaving no
+interpretation whether this is part of patch or entire patch. It is THE
+patch, meaning entire patch.
+
+You do not drive your car, as only a wheel. You driver *the car*.
+
+You live in some apartment. *The apartment* is your home, not "piece of
+your apartment is your home".
 
 Best regards,
 Krzysztof
