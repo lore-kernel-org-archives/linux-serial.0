@@ -1,48 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793906987;
-	b=QIjKRFbvyhPfgR631kqXS06gmjq/GLAfBMtYKzI1YP9/p9mtp/imZYt3YkoBJ+7mVxqK
-	 T4D96XrL9e3b86aQWYoJnsDaEkDE6USYJJTQlXQ4NMX33ByN5VBia/S0+RCwTAzZ16TgH
-	 EDP4AaoEryctb5VV95RMJHKsQExyc95CVzsgW72kNA67aSNGtT3H/pBNZBL8JHg+KqxZK
-	 gr9dBWTQrw2pRaC5fjERewbdH7PektDhXeBrfyO64t3TAhCaeWoYuRnPs1FMWxF+Kt3jE
-	 MPr34mijiiH6RHxj9AgREMpwO0qQAlre6JrEi9QqhD6DIEMAQsIeLwZUS8v2XYsmLbA==
+	t=1793906998;
+	b=GlLTFzfX8WKvZFKo9VXxlq7GNKkkD+X0e2kSDSO/Iwi236U3StaaqZ8UE9ywibZeTf9a
+	 cb09utvvTbzF9bcsIL1GMr+KdQUc0+B0D/DDvqvWoO8u2hrW6c3cVh5RrknaK++X5cFia
+	 2r4ibqnYL3cjxVZpSRZgIQdR+Wzp9SP+TQmsGkXqpDAuGj0nCwI5/UCADE6dl6q+veFR9
+	 wle8vjt4ALX1i8fsqZ9A7cY9+KU1HfGKqP2V1fsa4Qw2AyEkP/TaQoLWUDonHURPjNg1K
+	 L/kbzxYkjKcHXDgu8PB5Wloe/lHZOiNXYkXGq9pFwxNoYcZHyY00ITtfX2DwlKBlMXg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793906987;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793906998;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=E7qO1H9A1A9rieSqfjYXZ8cAx/UooTrw7Di+0o9YRTQ=;
-	b=CZ5WGR06BH3clIRxhyKkp7GX4JZtz0SvZbZs6zQlduL8XCoHtn16ybR0t5W/To7VQcJ8
-	 eMu9QcUpUNhDGXYNLTCalndUqJthacUtRUpFmwYHe8Qr8xDBQxNVV9tC0Jm0hhtSwe432
-	 Yr2r4nlKKaEuB0lyywQUfv5t8NWd/bkPZ/HBVEZqlql7d4gpAKxLeP53cuocd+Lag44GU
-	 drjYjYC4P5p3ml2YfH0KXhpF2luxhYZxeVaKO1gIQtdq5WK4hP+bxZGywXkV4KNeUJ1pG
-	 3iAQYps0g0eviQVE9QdpaiJjfHOyiGRA/vigYPvc5jKQAnafLo34ya+MecAA3FpVLUw==
+	bh=99n2ODOrbk/um2zwUpcCRu9OBem/Bf8KyNf1gWCS5EU=;
+	b=DzfcS1D5XOtnuc79B3aBYnEOejHlHHnfxtHx0G1KMGT/X6WDaTqnM+wbkHzVvXpDNTa6
+	 E3O2LenpVf3IVRkiJ/ERB4796dVel1+1QcnR0x3di9Sngc8X4y/XgPSSQerdIS6l7T9lX
+	 mD7DSKriqGrmqDNPkn3NK8N/uw2TD5HvLV+Y1L63cGTyywG/OZtLYRGdU/fxTLOEJEa47
+	 mgWxNsPozVL6I0pB1SBdWzK/F6o1c8AmQGIk9WNdXha4Gc/ITKK/QeEI3hQv75f1zcRgB
+	 1cLFLcfkUc3M788NKoGs4APwdGE9dRo/x666pp5UT9qTYlRchgAkO1i8o0cCpYA40Rg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LTnFsgeX;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="M/LPrtHi";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B03160A261E;
-	Thu,  5 Nov 2026 19:29:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F2660A3836;
+	Thu,  5 Nov 2026 19:29:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LTnFsgeX
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02EDB1F00A15;
-	Thu,  5 Nov 2026 19:29:45 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M/LPrtHi
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6F81F00919;
+	Thu,  5 Nov 2026 19:29:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793906987;
-	bh=E7qO1H9A1A9rieSqfjYXZ8cAx/UooTrw7Di+0o9YRTQ=;
+	s=k20260515; t=1793906998;
+	bh=99n2ODOrbk/um2zwUpcCRu9OBem/Bf8KyNf1gWCS5EU=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LTnFsgeXELuRS1S19Bt/pzQ+cb+pUBBhn3cNJZvSOUysjbUq7RfCfegDbQCabe1Pb
-	 qSe0NkrKJlORAbTMYxgPieHtNxM2nzEmoUwuiF3r26/1OK2XfIdOA+5L1tOq0YmoQv
-	 kS68U1ggMoMNz6N4N4yBl8B2pEM9tNDSdKY9SQ5yrP3x+RqPWA9Q56h+xU/e6TiGG8
-	 sl7lOr3tc8GVntL/4M2vfxQsKG06zotuUAj5ygmG4uiLR8oRC56KdW3GXGEqaLnYx+
-	 SXwoQ9Tsqzr3DNeN0YRvJ+KZeq2LgvQhPsotMl/HyES9FpciEvKivqFYkYflC1YUa1
-	 McABk20UGjloQ==
-Message-ID: <sashiko-outbox-199892@kernel.org>
+	b=M/LPrtHijTR3RtO9AShzhQ19Zy5Kl5YlzepW0MBPoQGraVjX/QE98eHLqfNiVwE2W
+	 C1UMVWmoW+TyJVni1OuvV4a4mXWG+qagXGKRLgUbC4j9LV1740dwMCB8C+TsrHbQTF
+	 2uHmzIHBpCoO+mXz8Z9IsohhYJr1jQBdiHQKaHAIMz4YzzN8aFm39Yp482vS8dhXIB
+	 MXvy6YjsBiCNXf2trYuQ0BhqcErucVFF2clU1PSF3obpkmtHf0jhEvMnYWRJ9cS54E
+	 2jxXTltfO1qXjaW4YvahpH63B9VKj+NIvBinZspqJjXvsxnB9IrHfzidrPZ8jB0NRQ
+	 WxxAtB2Y2uCEw==
+Message-ID: <sashiko-outbox-199897@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RESEND v2 29/51] proc: don't walk through a
- non-directory when resolving a name
+Subject: Re: [PATCH RESEND v2 34/51] proc: let proc_remove() remove the
+ entry it was given
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -55,12 +55,12 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261104-work-procfs-bugfixes-v2-29-021c84d852e0@kernel.org>
+In-Reply-To: <20261104-work-procfs-bugfixes-v2-34-021c84d852e0@kernel.org>
 References: <20261104-work-procfs-bugfixes-v2-0-021c84d852e0@kernel.org>
- <20261104-work-procfs-bugfixes-v2-29-021c84d852e0@kernel.org>
+ <20261104-work-procfs-bugfixes-v2-34-021c84d852e0@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 19:29:45 +0000
+Date: Thu, 05 Nov 2026 19:29:56 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,31 +70,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> __xlate_proc_name() walks the components of a name like "a/b/c" and
-> takes whatever it finds for "a" and "b" as the directory to go on in.
-> It never checks that they actually are directories. So
-> proc_create("file/x") hangs x into the subdir tree of the regular file
-> "file". Nobody can look x up there, but remove_proc_subtree() on the
-> file removes and frees x along with it, behind the back of whoever
-> registered x.
+> proc_remove() looks the entry up by its name in its parent and removes
+> whatever it finds there:
 >=20
-> pktgen passes the name the writer of "add_device" picks to
-> proc_create_data(), and only the part in front of the '@' has to name
-> a network device:
+>   remove_proc_subtree(de->name, de->parent);
 >=20
->   echo "add_device lo@"   > /proc/net/pktgen/kpktgend_0
->   echo "add_device lo@/x" > /proc/net/pktgen/kpktgend_1
->   echo "rem_device_all"   > /proc/net/pktgen/kpktgend_0
-> [ ... ]
+> If the entry was removed already, say along with its parent, that is
+> either nothing or a different entry that got the same name in the
+> meantime, and de->parent may well be gone. Two removals of the same
+> entry are a bug in the caller, but going by the name turns it into
+> removing an entry that belongs to somebody else.
+>=20
+> Since commit 895b4c0c79b0 ("fs/proc: fix uaf in proc_readdir_de()")
+> an entry that was unlinked has an empty rb node. So check for that
+> under proc_subdir_lock and otherwise remove the entry itself, with the
+> loop of remove_proc_subtree() moved into a helper both of them use.
+> Nothing can help a caller that passes an entry that has been freed
+> already.
 >=20
 > Reported-by: Chris Mason <mason@kernel.org>
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Cc: stable@vger.kernel.org
+> Fixes: a8ca16ea7b0a ("proc: Supply a function to remove a proc entry by P=
+DE")
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104-work-procf=
-s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D29
+s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D34
 
