@@ -1,48 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793906943;
-	b=xwQrzQ0YUeiM8vPWfSIR1D6kFusW/lyCtDBndCMQ8ENf5gxPrdJp1Vm/BBYi5H9qLrgG
-	 TS05aehYbJYc376uwmMpYEXUNLMGb3xrxRwmXcIuQV5X1xrKqZATvQbJ0zKB1Qt3ByTPc
-	 7a8/T5dlNFDsYjoLzgkCIDwNU+UNVk6Vd6zZpC/5BZpPsntaZ1wbNiFrvLeCBwXd5I+E0
-	 x1LlwmcUVJacYTzTlAJnfyf7d9fayHrIujC8XiVgDbTJCKyu7dCV4M0/2TRDtup/9wvSl
-	 oNOzH7YiW0DfEaqoqOIMECDL5cwHmEQkroR7YdThmtz64czeMDeqztd/9ayAV80urFA==
+	t=1793906938;
+	b=H/cXtXJ6QloI8XX8nnX6tJu6lHxbBUX3/CBnB2f0HsmoTdWnWs2WZzMQFY49J7st87V9
+	 hlmsJan/xogMv1/TBsjEXZTWiqRTxxO8fM8dn8E00/XeV4Pwvwoc8dlJJZqMOEGfY9HtK
+	 EE1mL1nHP8xtGEvhFHJH8we5WjL0fU+fP1YK7sB2erRk1VY0ZSvLm4KEshMz319WaVxaR
+	 i5ivNacLp/Yok60zwypAPQrQs5PmJ9sGu0ARxDLIE7jdQB9BWn4zFFFuLCiPPciRwZmQl
+	 03mC8kJnBjVHcCUYWfU5VtRfo+ZICt9CkOF9ge7koGjOv1MY1B5bFnUWf2cUzEyKhxA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793906943;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793906938;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=RPopwINq+xMgMWtXglTyha+UOv+CcUS7lcSD7KMhNFg=;
-	b=SpOxT6izbrBwzNrQHarmZN/+fHgRMG+NfIVSf0B+k4ntRk4rxklxUi4rGYzGrdNGaOkZ
-	 9x7f2LZ/rGXUqsAyQ9IWlwdhpCL/QsAyuKl4Z+SapU8Q1JBVTvP3kyE6jiXSEDxTQCQ+t
-	 NLgCH49V55krvjuDe4QGKqNFUHRxHtrskvCEG3tLHdoj9GmAwARKIHE6h+BpsbFMr6pf3
-	 rtPlkxHDyHg6wHXdgvnwarFjbd61/mQfKen0rD+Jhb2PyMIrQFoZ8vR3qyZvTksjD3GWC
-	 LIW1V0zgw6sgRSZr9ABX9kCmFCrlQQC6FB9jzVsaj9kPcSvk6CQSMhC2aCiIM/EBvjQ==
+	bh=8+PUUisCWtmjpXGFSnEzEH85bwtBLwjRqMOjM3Vmjmk=;
+	b=p3Dtm35iJVnkx5GuDvL13D46J87WzRNDyjcphm6KwhqIa+GZsA67Z0QOduE+UjcuSwUA
+	 yNlrLslFP1VkH9MYIQ+1t29jI84CTkrBqsFgsBmbqodMlTHjhL2AKMDJucapdKb4mBHVS
+	 aAse8y5tqZCf7zHYd+SR4Ak1qtQMy2FLI3/aN/FlB8s9pDXt6xptFUI6RDH3Qqvc+HVUr
+	 kU3zyufnOA0josi7IZFSj+OH+pxcYxib7x2y/VDfZBvfNRhHlM6Wm4iTayfd1oDl5db2Z
+	 HZr88XRO89pF5X5yG/JvO+U5uKXS5fJt57NMsvKTPnYMq4k+JPtgq1zKmF+uYd2Cvpg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MRlIi4Su;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGXjVaZA;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53BE606A332;
-	Thu,  5 Nov 2026 19:29:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18AE2606D819;
+	Thu,  5 Nov 2026 19:28:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MRlIi4Su
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB1C1F00A18;
-	Thu,  5 Nov 2026 19:29:00 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGXjVaZA
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680F41F0093A;
+	Thu,  5 Nov 2026 19:28:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793906942;
-	bh=RPopwINq+xMgMWtXglTyha+UOv+CcUS7lcSD7KMhNFg=;
+	s=k20260515; t=1793906938;
+	bh=8+PUUisCWtmjpXGFSnEzEH85bwtBLwjRqMOjM3Vmjmk=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=MRlIi4SuEm+9lYf675R0mxP3GdNLM2xUEtY8ZG2WMxPIoEfeSqyBFYM2gtCBsBs3m
-	 WLw30oAHvmuPRU77FU8jeUvz4+Ind8Zmzv1Ekyjvc/tn8qGqLccX6vUQqQSX7hq1/k
-	 Y8Bgfu+NLVYMkBEN9Y8HxMzqgT+miO99k+v6W3uJKkYJtPSLid+kFxUhwkrKegwdQq
-	 aec8VpuFnlT1J+sjdVpGBEgq/WGixqqQvkO/tslmViTsizxwSIjmrkO988XX0OlAJW
-	 1qP4k5WxxEbBvXF8Yd4+nLhk3lLXIWrGZE5yrlrRH0hPB/6I0M1oCh0q2rmSXP6Ekk
-	 kU0ykjAB0e/9w==
-Message-ID: <sashiko-outbox-199870@kernel.org>
+	b=JGXjVaZAK0CFDggQJdQ+YxBvHhKA1VCtqeH0C7UlBLv6f9VG7skZu2dEAbXlkszW+
+	 sJTw0vxxWmvEmoZ//n7adNnR8rVGdWKpWloXAc/ZnMiIcC1Z7LfAxfJ1lZKXvGWlIS
+	 PhuWRh2l7d+X+aiKaVkZ1til7ZTDouBvsGp4ZrUVot4KXntqybtMcWLZq8dMoH9KMN
+	 yQdRKjUGTGwZGlm1bL3/t2/RiEaT3aD77Fgz7S3aVXIsJYSEDz2AoydnPR6UJrVtty
+	 1L9zuHgLTxVXIrW2mhh+h+95gf4FNjVSdlwVAZRJPDPN2gARWlGlHNxwoYxHNUqah+
+	 h0Hn80dmMBTsA==
+Message-ID: <sashiko-outbox-199868@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RESEND v2 07/51] lockd: don't hand out the terminator of
- nlm_end_grace
+Subject: Re: [PATCH RESEND v2 05/51] xtensa: simdisk: remove the proc entry
+ before the disk
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -55,12 +55,12 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261104-work-procfs-bugfixes-v2-7-021c84d852e0@kernel.org>
+In-Reply-To: <20261104-work-procfs-bugfixes-v2-5-021c84d852e0@kernel.org>
 References: <20261104-work-procfs-bugfixes-v2-0-021c84d852e0@kernel.org>
- <20261104-work-procfs-bugfixes-v2-7-021c84d852e0@kernel.org>
+ <20261104-work-procfs-bugfixes-v2-5-021c84d852e0@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 19:29:00 +0000
+Date: Thu, 05 Nov 2026 19:28:56 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,16 +70,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> nlm_end_grace_read() answers with "Y\n" or "N\n" from a three byte
-> buffer and hands out all three bytes, the terminating NUL included.
-> Leave the NUL out.
+> simdisk_teardown() frees the gendisk and only then removes
+> /proc/simdisk/<n>. A write to that entry in between attaches the file
+> that was written to the disk, and simdisk_attach() sets the capacity of
+> the gendisk that is gone. Remove the entry first, remove_proc_entry()
+> waits for a writer that is in the middle of that.
 >=20
-> Fixes: d68e3c4aa416 ("lockd: add a /proc/fs/lockd/nlm_end_grace file")
+> Fixes: b6c7e873daf7 ("xtensa: ISS: add host file-based simulated disk")
+> Cc: stable@vger.kernel.org
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104-work-procf=
-s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D7
+s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D5
 
