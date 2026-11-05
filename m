@@ -1,76 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793872951;
-	b=PE0GgDOfadrjBtEv9aLIDOhbM/2PnfyBFaLJouGN4Vm/b8e60pGMO080yDjAZHgV+3wG
-	 CBfbV4QGbN8JuysVv1p2uXCnRYndYT/HR8oW6xZPMV3QoQPgauM/5A1zZt0ohvm/sD2DQ
-	 nj4uyRSDHIyC0X/lXyRhYiWVsUR2c6Ej8XCAOutlopPzDE9qHLYaF2ei5eS/G86pKVyNs
-	 NC22UmznJfKfNG0PDjkPu6fyYPgeQ0K7otws9rnB5qoFpwvD/Z5BSnkhZ+eo45tsH0vdY
-	 D4sLgwAUTcDlXGxqG4ELbPE9yFFM8XtS5gMBid55AIFnbdR1nDOjhIr/AW93wsvsP7w==
+	t=1793873323;
+	b=SLfeHR2Z7M9yv7SmDNdDKu8s+r4grdS/JvKRwRXCrP60kHZ1EL2IDB1S1/3PhP1DlotB
+	 teLGstl70VjYEfsduB4c67q8BXbSh92NTrku3omqlUIXqkW9bgHKNG61ioTWTDnvFPT6N
+	 +xA7FutQAGJ2Y79qIFcFznVho91F2tdvsSPKn2zThAmCYhDIY4XJxWPX0UCyyo6DP+Q93
+	 xUrSPzgCDXy6BF1Fr4Zv/AXew0Ap91lUesLF3z9Zl4rTM2WNClYXa0l0kAV9bRyjXWZCp
+	 F9heyQDhacmCObFq5ubMsd8dy8+3ynKUxA85M4/xwyGDMsONnHd53U3EIgMx4vUC9Nw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793872951;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793873323;
 	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
 	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
 	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
 	 Subject:To:Cc:Content-Type;
-	bh=n+1lmuZTLENNkpqKh8T8PUriZ63OKZ7RGcjsYNzzAGM=;
-	b=mjufvZ7WrMHjuHaDzXPiHCu0e+7uXFe8BJ7H3zA6H5bSDr8XoheCKo4L41cfxNGfvD/u
-	 j6cxf3HZrhLwKQkxrEONENwfWomqC68wNwkbF3nl/mNh7BPWLRqhR71y0tOllkrsa9tWK
-	 8SHm2BzENhS92jOSS+Uqjj4BM++2vnlg4w8X+CPJwZO3SaAgtY10/bKLfcEMovbDfQk1P
-	 XxLFP+1yzuNQU9cIld91kOtzMmQU7qLTzxtRSDfitsa54N+7FZQLGO/WV63r0O7ENz+l5
-	 tzz0wN83eDvNlRUSbRhjsW00yqXqmha14zVyOh6eyogVosmc6novfyF2D+Y6cTq3McA==
+	bh=Z2qCIfu1coqF5CKQo/xHkFXbKW7Y+rLlNCa31RZmxiE=;
+	b=1wWYGjxVIzxJXFdcTW++ITy4VdccXs9PAEynVtSH+MFhMWh5twrH+FOahMJhPfZWTPFZ
+	 mJixgEm0NLR4N2vvsg5ktdCsRWjjo5iXnVC15Rtc5NtFFwEohW0MCHwgg5qVJl1oXsu0O
+	 ZkC/NxRxXr419Ziz56qe11DK2LYle4F/u7C/pfdzvaTOngtmvbkWZs9puzZKUNY+E5d+i
+	 2ChJziPJPMKxJPt5fQ43Nj99XEuJFy6h8fNiXLUU55BVO2YyAT6TjoMvKbaXbUxpeGjIu
+	 8OCCCrd4emw5x3C8BVLxchqRWpyeCq+UhCwhYriohFDDK+Aw0/WpChwmlYCDJr5SD+w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=linux-m68k.org;
 	spf=pass smtp.mailfrom=gmail.com;
-	arc=none smtp.remote-ip=209.85.160.182
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	arc=none smtp.remote-ip=209.85.222.47
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA365606A31B
-	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 10:02:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DA365606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F9960A3836
+	for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2026 10:08:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89F9960A3836
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-533778ab0bdso18549861cf.3
-        for <linux-serial@vger.kernel.org>; Thu, 05 Nov 2026 02:02:30 -0800 (PST)
+Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-99075306daaso889563241.3
+        for <linux-serial@vger.kernel.org>; Thu, 05 Nov 2026 02:08:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793872950; x=1794477750;
+        d=1e100.net; s=20260707; t=1793873322; x=1794478122;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=n+1lmuZTLENNkpqKh8T8PUriZ63OKZ7RGcjsYNzzAGM=;
-        b=uocYjVrxTIahJRVnHEjyXNgk+Ndunp38CnOL4KWFzUSL97a8ZnG4dG8svHDYCgGhE0
-         zriH+SXVCrxJ8WFg7wUHDS6HbwwHs8aiEhGRblBkUGUEvlfrklqk6EWTlcr0Fv6xur9x
-         MlXquDtRAt+4tfeRXjkneSLmxVcMP7VtziLR4K5fqUUgzWHpgVjIO8bjCCYRtD9qJZ9q
-         ZdWygYTGEGSvbo6V9tfMRYW4NHWyaxc3XUg6DYP5kO1IifuKJcp+koqfGz9r1RbvKeE0
-         YqHgoNsYMRszDNINa0GprV9Zss84hr4BtQKmQt1hC6XPRXDQS+ujYiM8wU11tuNgXJO9
-         2g4g==
-X-Forwarded-Encrypted: i=1; AKwUvBzHWUn1H6iioBO9BR/80vrDTzeiYdyGP9wN2vOdDh3mEqr6rpdef/dJbAdGKNFpn0D1i8m6w6ToVTVL3Kg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/HZN8ElyIOTEsaey1lkibGp7LYJ7r6iT8F0+ynaEK0TOwP2SAb
-	DqyLeGy6NkAbiAGQCUqPnkH63MV+ErJ7jZQ491TvikvvWaPnUL/rB4Xu4ts2rsfalEc=
-X-Gm-Gg: AYBFou3kW8RSXXoPK7rmrIhN3ctLaeTuHIfGr5J1MCLv3j1+1nxIOCogRab3d6VSoGp
-	njzsSdSMZK/3yqFzadKdarkFPn/lawzKcR+yLWtfN22l9zQ4ziB7THCJOouCC4HzuBHM6vJKMyC
-	+8i2nd+OCorfOERJbH+E77rAk7dDs62ebq0/ObZWjFFlhmGGJqBUqXyqVd3RY9Hhi8zXKeNxQga
-	P36HVKvbc8AqWKK1LHvbe9NC5SSsjFyM5rnPhwbZTKoAuJMVZdKsklFBuuT3jdgDXXe8gXK+BUE
-	RWRQi0u2BKa/6r7xcdHewq+Q5hR5iihXNNzyQ+qz78Wdz6yvnXDJjU2dqNW2CbFuJFAdAvbvEMS
-	h4TKsyKsFb1I+yU/VZiUF7XAPKXlrSrJE1ME3MAVeZn5dht2vLosQMkXGGiujYmzRw02LdO9p2o
-	B55w8XCEi0iUJF73yIO14oXWJxRFk3mCSh8vw4mjlmW/gOnUhQwfaXQw1v+oGr7AKddUaJCT7J4
-	HHxRovX4i9a+XYvXRiypfxT86C6w7ATAnDFz3KnC2prXG6CyuLXLT2/M8AAkSw1+pE3fmeh3CdL
-	YuMxQ8bxS8twxTRz5NZbfkiYCuPwMhfWEIcI7aPAmcLTT/2sxD48t20PgcbdcBE3IQ==
-X-Received: by 2002:ac8:6549:0:b0:536:990d:79a0 with SMTP id d75a77b69052e-542b7523bc1mr311425851cf.49.1793872949884;
-        Thu, 05 Nov 2026 02:02:29 -0800 (PST)
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com. [209.85.219.41])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-54b0d0758e7sm47485781cf.3.2026.11.05.02.02.28
+        bh=Z2qCIfu1coqF5CKQo/xHkFXbKW7Y+rLlNCa31RZmxiE=;
+        b=fxYfHNGZAt6jVlN/k2wzTBqC4iga8hLyhnYB/I3HtPhi3sTPx06Ii5aeEdvYsSS6/y
+         fZNrAlbKRIFJxze6WfdJ1WvAGXdntC1ZQsv3eboUPiQ8OuLRnyhKpqroMgPK4Ogst/bb
+         rmvbK2m71VsdDK8Wr/dS6N01DODAoqB6Qtvu4bgExW9c03NciFaa8weGSGpa8Q+JN/6j
+         swk0yj/FHcFA6WdwNhyD6hWYrFz+0pUapzJwnv9/F7oToiUMQK5WPgm+8Sk3xmCTqBKM
+         HlBdukzPvMeGrrAl6qc9T/axqc9pNknKJtncJqF5PXJN2VXxxduRpulbTGnjOddqr29z
+         9Ucw==
+X-Forwarded-Encrypted: i=1; AKwUvBwuvmfBIwQAMLmu8VOujqVtZrjD6Rl62hhKMx5ULOgNmEkreUKSEE6i757q57dbYipDTfeEaX7Szc4dn+Q=@vger.kernel.org
+X-Gm-Message-State: APuU4Z86PPwa6s20Cak053ThZOSnFxJglOtIDsSek/AmF2sfOz5edszH
+	xnHnPZ+L7q1qGAv6lskjCOZNJpxkXbgT0aLPU0kS4vyBmOz/0xLPKAE6vbW6Ktw42Is=
+X-Gm-Gg: AYBFou2v3WNYmRExEtAYQ7K8vPvtI+FFlQGwILvCeyGJLzhHFsHj8vcT2skw2zV3Nys
+	WIJufG/kymf3wGw/LnRQH6JXPmd0n/4VlfAOCVwTR1iT+MK8n8OAE6WKPIQ1zWVi5sWexOJNQM+
+	sTV8WVJpnkYiYzp/VVBtYcmWJF5YIc6CUcfUx3stmfllcp4iCQJDktaXn8xfxX9StRKYkaGogGJ
+	YdbQdE6tNrnbTe7ksdJuk6P+mIH+zdMAq+lu09U0OwmNe331Y8rm1wfvCOKDbp//bb/hugc6YmJ
+	zSOpM17mRujXGzz5C8wGrtb33eu3Jj436rlaV/djM8FI8GprA8HAXDYPkhNwE1Ao0rp3l0F1M48
+	emPA/T7h3z4Yz6dxDSj/TwtSQq3HQPbzMM97YKS4YVHxzyNn29qA6/z0IoQFX5FO8N8FLjXdIL4
+	ST+BFmZLzb5O34gi6Ez1DqDAA/b/YS1mD6CZQVN0bAE+yanRIRL/ROdRb2GozK29JM9q0CV/J1a
+	3+aOhfRQKGcZ4k+SPJpMTyiQB9NsirH+xnuWHPqR8QgCTKq1PQHedwfb10C3vI7mza2QuwDvrBu
+	L6ZpFmDwD0Gud//TRc5YeENv6sPRmGdUQg1wOmKXl2wbAApzndAdtshSwylupmwm1A==
+X-Received: by 2002:a05:6102:c01:b0:7c3:c0b9:8d50 with SMTP id ada2fe7eead31-7d072c89051mr7720492137.21.1793873322579;
+        Thu, 05 Nov 2026 02:08:42 -0800 (PST)
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7d26fef4ed3sm3840728137.11.2026.11.05.02.08.36
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Nov 2026 02:02:29 -0800 (PST)
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-91c7a0c1617so23383646d6.0
-        for <linux-serial@vger.kernel.org>; Thu, 05 Nov 2026 02:02:28 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AKwUvBwjl85j8babmU14znQ1RIJ28PCdcZPDczAs/q3uvBBCJykwTcxCXVhOLrmUO24UkKa+iIEo2QsJO9DfZuU=@vger.kernel.org
-X-Received: by 2002:a05:6102:6449:b0:7cb:bc5e:7dad with SMTP id
- ada2fe7eead31-7d072baa450mr7614890137.10.1793872492413; Thu, 05 Nov 2026
- 01:54:52 -0800 (PST)
+        Thu, 05 Nov 2026 02:08:38 -0800 (PST)
+Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-990835cec4bso949849241.1
+        for <linux-serial@vger.kernel.org>; Thu, 05 Nov 2026 02:08:36 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AKwUvByTLV9vqhH0Ondu+ebBh/oDxtJ8Enr/oibUzGqJAIncTXqlQADRIC/ybzkOlluWkAP4QirFalYA+dQiyqU=@vger.kernel.org
+X-Received: by 2002:a05:6102:5494:b0:7cb:bc5e:7d9f with SMTP id
+ ada2fe7eead31-7d072bb3829mr8787869137.11.1793873316184; Thu, 05 Nov 2026
+ 02:08:36 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -80,15 +80,15 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261104-work-procfs-arch-v2-0-2aeb952c9597@kernel.org> <20261104-work-procfs-arch-v2-4-2aeb952c9597@kernel.org>
-In-Reply-To: <20261104-work-procfs-arch-v2-4-2aeb952c9597@kernel.org>
+References: <20261104-work-procfs-core-v2-0-76ace653a773@kernel.org> <20261104-work-procfs-core-v2-16-76ace653a773@kernel.org>
+In-Reply-To: <20261104-work-procfs-core-v2-16-76ace653a773@kernel.org>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 5 Nov 2026 10:54:40 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUNBs_NyhFpXonirMXkYptUWsAizMvVpGHUDLzto1LGJg@mail.gmail.com>
-X-Gm-Features: AclHuK_RsrcE7hVRjmpZezBV5tMd490Mza2XAQiqUTgUNqAiHAzRP5z7NIbtMh8
-Message-ID: <CAMuHMdUNBs_NyhFpXonirMXkYptUWsAizMvVpGHUDLzto1LGJg@mail.gmail.com>
-Subject: Re: [PATCH RESEND v2 04/23] m68k/bootinfo: let procfs copy out reads
- of /proc/bootinfo
+Date: Thu, 5 Nov 2026 11:08:25 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXAk9CwoXpak8+EQjdvJ2Ab9fo1bvj_D5GqBzXB7urEUQ@mail.gmail.com>
+X-Gm-Features: AclHuK_D2R6ZzQFy7DOLUQHC3VotRoglnOuhbtIFU-Oniz4UMRG_6kQUnblEqeo
+Message-ID: <CAMuHMdXAk9CwoXpak8+EQjdvJ2Ab9fo1bvj_D5GqBzXB7urEUQ@mail.gmail.com>
+Subject: Re: [PATCH RESEND v2 16/23] proc: let procfs copy out reads that
+ don't go through seq_file
 To: Christian Brauner <brauner@kernel.org>
 Cc: linux-fsdevel@vger.kernel.org, 
 	Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, 
@@ -118,20 +118,83 @@ Cc: linux-fsdevel@vger.kernel.org,
 	linux-debuggers@vger.kernel.org, Chuck Lever <cel@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 4 Nov 2026 at 20:36, Christian Brauner <brauner@kernel.org> wrote:
-> Implement ->proc_read_buf() so procfs copies what is read to userspace
-> after it unpinned the entry.
+Hi Christian,
+
+On Wed, 4 Nov 2026 at 20:33, Christian Brauner <brauner@kernel.org> wrote:
+> proc_reg_read() and proc_reg_read_iter() pin the entry and call
+> ->proc_read() or ->proc_read_iter() which copy to userspace
+> themselves. Like for seq_file reads and for writes, a reader can make
+> a page fault in that copy take as long as it wants and
+> remove_proc_entry() waits for it.
+>
+> So do what kernfs does for these reads as well. An entry that implements
+> ->proc_read_buf() fills a kernel buffer of at most ->proc_read_size
+> bytes, a page if the entry doesn't care, and procfs copies it to
+> userspace after unpinning the entry. The entry moves the position like
+> it did for ->proc_read() but that only sticks if the copy to userspace
+> worked, like in kernfs_file_read_iter(). If the copy fails halfway the
+> read fails with -EFAULT and the position stays, where
+> simple_read_from_buffer() returned what it had copied until then.
+> procfs remembers ->proc_read_size in the entry like ->proc_write_size.
+>
+> Larger reads come up short, like with kernfs. An entry whose readers
+> want all of a large file in one read asks for PROC_ENTRY_FULL_READS and
+> procfs fills the read in pieces of ->proc_read_size, unpinning the entry
+> in between. A piece whose copy fails ends the read with what the pieces
+> before it returned. kexec-tools treats any short read of /proc/vmcore
+> as fatal for example (cf. [1]).
+>
+> These entries are read through ->read_iter() so readv(), splice(), aio,
+> the RWF flags, kernel_read() and io_uring work for them like for the
+> ->proc_read_iter() ones. io_uring's nonblocking attempt gets -EAGAIN
+> though, like loop_rw_iter() gave it for ->proc_read() entries. Neither
+> the allocation nor the entry can honor IOCB_NOWAIT, and io_uring would
+> take a short read of a record file for an unfinished one and glue the
+> next record to it. So it retries from a worker like before.
+>
+> An entry that implements ->proc_read_buf() and also declares a seq_file
+> or one of the other read methods fails to register.
+>
+> No users yet.
+>
+> [1]: https://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git/tree/util_lib/elf_info.c
 >
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Thanks for your patch!
+
+> --- a/include/linux/proc_fs.h
+> +++ b/include/linux/proc_fs.h
+
+> @@ -84,6 +91,15 @@ struct proc_ops {
+>          */
+>         ssize_t (*proc_write_buf)(struct file *, char *, size_t, loff_t *);
+>         unsigned int proc_write_size;
+> +       /*
+> +        * procfs calls ->proc_read_buf() to fill a kernel buffer of at most
+> +        * ->proc_read_size bytes, PAGE_SIZE if that's 0, and copies it to
+> +        * userspace afterwards. Larger reads come up short unless the entry
+> +        * asks for PROC_ENTRY_FULL_READS. The position the entry moves to only
+> +        * sticks if the copy works.
+> +        */
+> +       ssize_t (*proc_read_buf)(struct file *, char *, size_t, loff_t *);
+
+As for proc_write_buf, I think it would be good to use this conversion
+as an opportunity to replace "char *" by "void *", which will probably
+let you drop several casts from users.
+
+> +       unsigned int proc_read_size;
+>  } __randomize_layout;
+>
+>  /* definitions for hide_pid field */
+>
 
 Gr{oetje,eeting}s,
 
                         Geert
 
--- 
+
+--
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
