@@ -1,71 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793895403;
-	b=g7IGqxhSyfevf55VxZzWDlIb+bKmU04Q2t/NtpR6hqYtXiyil2ewmymQCzDtF2WJxD0z
-	 3D/PiCiMXgKRHVYgY5lXXY5+qjRFrtDnN+mTvVws6njQcAWDh82uPE4Kf1eMLpw3kczQ2
-	 43fIXMlHgGYz6E/AnPyASnWhI8/DlMDB1tVu1RYc/jqnItq2rAWbnSiMNUsBeOBVwnDw2
-	 UxifwRjajqzjkcSX5aTrmbIH+KvC+vYh5intIRsYsR2xo7JGLHJ+UZsG4QD6PGPVIn++x
-	 A3KufAQ7zrv4LTXvfOtD1CriKFJ+cvCYtg5r0nHcaoTS818fmnBxoZ7OZFQLho8LBxQ==
+	t=1793895521;
+	b=wwyiCfV0uZpB2Vin4jgvh8gwpGPw5wWaqvRwccVtUg0Lz5QjiCe8HOYbuzPbyF9T0lUA
+	 XiTqISDxZ7OZKH1StT+s/yWHCEIM5gy1Pa2RXWDsQxs70PyoAXZHeDOWBPzX2hseOKIyC
+	 TgC07I+vOPOac9Iii6VQN3G27TJ87W2GfzNsgPaGdpv1vCV6rZkxbykziH2uXvRKYjjHs
+	 694lG5/z4/OeHMXKYnQTreU1Y6+I+FCujj+y7bA9tR8g1lA0gCXbq1dIeyyOmoB6IL1q3
+	 nyvCgE6PT1cV0B3GyRDu/REZQ2DOWvobuThohYDqvER3eW2dxFOcqobUweJKgdBpCzQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793895403;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793895521;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=glWYFJWJY1bRMuBsdlN40Etai5OWB/ptNyzICpjIyVw=;
-	b=YcRyK/qFBbla7e4g3JMhMvmyw6SAQA5jLK4tsyNm3pfU8A15r2lWmNd806G1QRQsBUxq
-	 VJhHy/GWqqX5roSlw8mT49z8+VLzUAap5t+JhuPFgJc1JY+T6m0dmIHUMN358wviKhE6d
-	 qZYL2M9R+oKGvWhkmqVHqvxUelStloFdiJSNG8Xv81lnFr5SAWmPrTtgk8tA/n7cUXfOE
-	 0ev8twGk74lDZdaVMmwMywDf9Yl/sk5i0qQE1Hd6pJogknAF3EBQKGCQ6bselMUwqO4oS
-	 QbehC7zu8PolO2BCwqkABV7t+0voMbvwFgYMakU4H+xlv+5MJr814f+Q+ixvtkfJZqQ==
+	bh=jjGITOFEbZVfMgIGnW+wZ1UcQbDHnChGWTS+tVJ4LPo=;
+	b=bzZsp2uvxC8lmkqMbOoLpfKc9fl7EYupWAyqK/9UIqHDk7VZUdvsLX77YANE+bmGe0Td
+	 eR7ibS5ncA3iPRbt3CobYANv0VM74EwQA2Qcxx4huoNfvSc+PqmKWtngIRAGzfcksM16d
+	 nGkTIK10zSj/zmipsXxHWBm7h2OsVrIlvx1RNCPVEtIafwLi3+QadCwKM3t6Vc3j7yq+g
+	 mMH9B0uXghjat6Uh69XKje3Z/NYKRV7zgUUqwqI5Srue0JVmBgoUJ22GSbryBVYPXB1Eu
+	 zXMcev3bMLaLK78rEMVvNvwtK79c3P6ID1uXP4olSRlwpdBWfjureWR9utFfM5pQ93g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XPgBRsel;
-	arc=none smtp.remote-ip=192.198.163.9
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Fvq8NHo8;
+	arc=none smtp.remote-ip=198.175.65.17
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B33606A31B;
-	Thu,  5 Nov 2026 16:16:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90B33606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F894606EE80;
+	Thu,  5 Nov 2026 16:18:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F894606EE80
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XPgBRsel
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Fvq8NHo8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793895403; x=1825431403;
+  t=1793895521; x=1825431521;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=BkaWXWS96NrFgGNkwhoCJWLY7qJ4X8CCDmsOslperL0=;
-  b=XPgBRseljxXSs2BBm9hhud4jXCu4lyCDyBczvEg5bm+iqJaZg3IlnvBt
-   KsfVSjLQtETzQbWTYSxbZoUBFSNePco+pLruUUnsvza05zrf23vkGGDOn
-   7UUr1wKKpB8UTqwc/lrB1rpj+FCyFofs03RIT/jmHwPHFBOzOelNeJH+z
-   TYMI4CajnAlg/v6c7zphnc242JRW8t2bM9+1pfzFNXIx3Y2TK0M1DdIQq
-   pblLYAYytrAEi27T7MxMnxvKGwy97gtUCp84rfcGpvQQakQ/5kD2jbKcr
-   KF+n122Ya5T4nsm7nO9ppwi63ibTEUrO7Y91X7jbB5DAcYzkhK8PIkpQh
-   A==;
-X-CSE-ConnectionGUID: EVwiwgsXQkShmLQQAh2Oig==
-X-CSE-MsgGUID: fTgBKD3aR5mXa6dn5xPj3w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2568133"
+  bh=+tKMfQT08C0WHdhvauaJZ31Qu1iXJYv2JxCKBEvtIII=;
+  b=Fvq8NHo8O1KWRnK+tcR4pj28wRwvPKHY3g43LZGr1Tn/eFLf8kIfJ695
+   yN8MvlgKSV2c7Njx6WUPmWY9gSkqOeivfVaHByhlKy+hK1L1HV61qPeLh
+   Wfue22cAW9oxNrV2a0UEMW2FVisFf6PLBsEVbCoT0TwxRHQNP+sz4b5rW
+   CKrwjpqFUlvZyM/t2ipLebfaN+qvMviT67RQyzKwIid9Ru1mD+buyIVC3
+   ikt9QJKZToP9ohu1HtA4N0StlWFN/lb+VMJvynMKC6MY8dV6AlSUY+DBv
+   tCkD1VJlECeGGCTk8m+LHRNvdjl4IwByDemrQklHExCRuCGrV88rOZpGT
+   w==;
+X-CSE-ConnectionGUID: ls83FEblQSSfAZC/saqQRw==
+X-CSE-MsgGUID: JGgR8LdoTc6GMBkiMjbs6A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2716024"
 X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2568133"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 08:16:41 -0800
-X-CSE-ConnectionGUID: leBebQCuSFeL56NOhLkwvg==
-X-CSE-MsgGUID: YHmuBu+/RLGamxnWF5zYow==
+   d="scan'208";a="2716024"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 08:18:39 -0800
+X-CSE-ConnectionGUID: VPPaJ+9hRqqWnjtDTyPN5g==
+X-CSE-MsgGUID: 2X+7AsqFSfaAFSLbFky6Xg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="7358773"
+   d="scan'208";a="7368194"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 08:16:28 -0800
-Date: Thu, 5 Nov 2026 18:16:26 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 08:18:24 -0800
+Date: Thu, 5 Nov 2026 18:18:22 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Thierry Reding <thierry.reding@kernel.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Frank.Li@oss.nxp.com,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc: Frank.Li@oss.nxp.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Matthias Brugger <matthias.bgg@gmail.com>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
@@ -77,6 +76,7 @@ Cc: Krzysztof Kozlowski <krzk@kernel.org>, Frank.Li@oss.nxp.com,
 	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
 	Pengutronix Kernel Team <kernel@pengutronix.de>,
 	Fabio Estevam <festevam@gmail.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
 	Peter Griffin <peter.griffin@linaro.org>,
 	Alim Akhtar <alim.akhtar@samsung.com>,
 	Laxman Dewangan <ldewangan@nvidia.com>,
@@ -121,12 +121,11 @@ Cc: Krzysztof Kozlowski <krzk@kernel.org>, Frank.Li@oss.nxp.com,
 	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>,
 	vkoul@kernel.org
 Subject: Re: [PATCH 1/1] tty: serial: use dmaengine_desc_set_callback()
-Message-ID: <auyr2lqlSegIXFnc@ashevche-desk.local>
+Message-ID: <auysTnqWgz2kE7e9@ashevche-desk.local>
 References: <20261102175527.3957740-1-Frank.Li@oss.nxp.com>
  <aux2VKHnVLwq_wzi@orome>
  <auyQEVmA2KeGu9DL@ashevche-desk.local>
- <2e12316d-d079-471f-9c29-ef5fb765216a@kernel.org>
- <auygwakavp_Uk52V@orome>
+ <auyiAE3lhnFahBK2@orome>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -138,69 +137,60 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <auygwakavp_Uk52V@orome>
+In-Reply-To: <auyiAE3lhnFahBK2@orome>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Nov 05, 2026 at 04:34:15PM +0100, Thierry Reding wrote:
-> On Thu, Nov 05, 2026 at 03:35:20PM +0100, Krzysztof Kozlowski wrote:
-> > On 05/11/2026 15:17, Andy Shevchenko wrote:
-> > >>> ---
-> > >>>  drivers/tty/serial/8250/8250_dma.c  | 6 ++----
-> > >>>  drivers/tty/serial/8250/8250_mtk.c  | 3 +--
-> > >>>  drivers/tty/serial/8250/8250_omap.c | 6 ++----
-> > >>>  drivers/tty/serial/amba-pl011.c     | 6 ++----
-> > >>>  drivers/tty/serial/atmel_serial.c   | 6 ++----
-> > >>>  drivers/tty/serial/fsl_lpuart.c     | 6 ++----
-> > >>>  drivers/tty/serial/imx.c            | 6 ++----
-> > >>>  drivers/tty/serial/msm_serial.c     | 6 ++----
-> > >>>  drivers/tty/serial/mxs-auart.c      | 6 ++----
-> > >>>  drivers/tty/serial/pch_uart.c       | 6 ++----
-> > >>>  drivers/tty/serial/samsung_tty.c    | 6 ++----
-> > >>>  drivers/tty/serial/serial-tegra.c   | 6 ++----
-> > >>>  drivers/tty/serial/sh-sci.c         | 9 +++------
-> > >>>  drivers/tty/serial/sprd_serial.c    | 3 +--
-> > >>>  drivers/tty/serial/stm32-usart.c    | 6 ++----
-> > >>>  15 files changed, 29 insertions(+), 58 deletions(-)
-> > >>
-> > >> Reviewed-by: Thierry Reding <treding@nvidia.com>
+On Thu, Nov 05, 2026 at 04:36:38PM +0100, Thierry Reding wrote:
+> On Thu, Nov 05, 2026 at 04:17:53PM +0200, Andy Shevchenko wrote:
+> > On Thu, Nov 05, 2026 at 01:28:46PM +0100, Thierry Reding wrote:
+> > > On Mon, Nov 02, 2026 at 12:54:48PM -0500, Frank.Li@oss.nxp.com wrote:
+> > > > 
+> > > > Replace open-coded assignments to callback and callback_param fields
+> > > > of struct dma_async_tx_descriptor with calls to the
+> > > > dmaengine_desc_set_callback() helper across serial drivers.
+> > > > 
+> > > > No functional change intended. Prepare to make struct
+> > > > dma_async_tx_descriptor private to the DMA engine.
+> > > > 
+> > > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> > > > ---
+> > > >  drivers/tty/serial/8250/8250_dma.c  | 6 ++----
+> > > >  drivers/tty/serial/8250/8250_mtk.c  | 3 +--
+> > > >  drivers/tty/serial/8250/8250_omap.c | 6 ++----
+> > > >  drivers/tty/serial/amba-pl011.c     | 6 ++----
+> > > >  drivers/tty/serial/atmel_serial.c   | 6 ++----
+> > > >  drivers/tty/serial/fsl_lpuart.c     | 6 ++----
+> > > >  drivers/tty/serial/imx.c            | 6 ++----
+> > > >  drivers/tty/serial/msm_serial.c     | 6 ++----
+> > > >  drivers/tty/serial/mxs-auart.c      | 6 ++----
+> > > >  drivers/tty/serial/pch_uart.c       | 6 ++----
+> > > >  drivers/tty/serial/samsung_tty.c    | 6 ++----
+> > > >  drivers/tty/serial/serial-tegra.c   | 6 ++----
+> > > >  drivers/tty/serial/sh-sci.c         | 9 +++------
+> > > >  drivers/tty/serial/sprd_serial.c    | 3 +--
+> > > >  drivers/tty/serial/stm32-usart.c    | 6 ++----
+> > > >  15 files changed, 29 insertions(+), 58 deletions(-)
 > > > 
-> > > Krzysztof, now look at this case. I would argue that this is even less fit than
-> > > # subpart(s) case, because it might imply anything. Again the problem is the
-> > > bundle, and for such a case (when tons of independent changes are bundled in
-> > > the same stuff, *every* Rb tag has to be explained on what has been reviewed!
+> > > Reviewed-by: Thierry Reding <treding@nvidia.com>
 > > 
-> > I think this case is obvious - Thierry reviewed this patch and gives Rb
-> > tag, according to reviewer's statement of oversight. I don't see a
-> > problem here or what is questionable.
+> > Krzysztof, now look at this case. I would argue that this is even less fit than
+> > # subpart(s) case, because it might imply anything. Again the problem is the
+> > bundle, and for such a case (when tons of independent changes are bundled in
+> > the same stuff, *every* Rb tag has to be explained on what has been reviewed!
 > 
-> Correct. I looked at this whole thing and approve of it.
+> It may be a bit subtle, but the placement of the tag indicates that it
+> applies to the entirety of the changes. I didn't crop the list of
+> changed files, nor did I omit the summary.
 
-for this type of bundles it's not obvious.
+This doesn't clarify the question. Wordless Rb tag on a bundles is an oddity.
 
-> If I review only parts of something at most I'll give an Acked-by.
+> That bit of meta-data obviously isn't picked up into the tag line, but
+> I think the default meaning of Reviewed-by is that it applies to the
+> entire thing.
 
-Which is strange, don't you find it? The review is not an acknowledgement.
-These are two different operations.
-
-> I don't think I've ever done partial reviews. I don't think you can reasonably do
-> that
-> because if you don't know what other parts of a patch are doing, how can
-> you say that a specific hunk does what it's supposed to.
-> 
-> Patches are an atomic set of changes,
-
-Of course, not always the case. This patch is a bundle of atomic changes
-in a single drop.
-
-> so I don't think it makes sense to review only parts of it. If you can't be
-> bothered to look at the entirety, that's absolutely fine of course, but in
-> that case don't provide a Reviewed-by.
-> 
-> Or, I suppose, you do and then you bear the consequences of lending
-> credibility to something that you haven't looked at or understood.
-
-No, I review *my* part, that I understand and I confirm.
+And I interpret it otherwise, because this is a set of independent changes
+bundled into a single patch!
 
 -- 
 With Best Regards,
