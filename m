@@ -1,48 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793906938;
-	b=H/cXtXJ6QloI8XX8nnX6tJu6lHxbBUX3/CBnB2f0HsmoTdWnWs2WZzMQFY49J7st87V9
-	 hlmsJan/xogMv1/TBsjEXZTWiqRTxxO8fM8dn8E00/XeV4Pwvwoc8dlJJZqMOEGfY9HtK
-	 EE1mL1nHP8xtGEvhFHJH8we5WjL0fU+fP1YK7sB2erRk1VY0ZSvLm4KEshMz319WaVxaR
-	 i5ivNacLp/Yok60zwypAPQrQs5PmJ9sGu0ARxDLIE7jdQB9BWn4zFFFuLCiPPciRwZmQl
-	 03mC8kJnBjVHcCUYWfU5VtRfo+ZICt9CkOF9ge7koGjOv1MY1B5bFnUWf2cUzEyKhxA==
+	t=1793906954;
+	b=PU1vPAXeR35sW1CYV/IggLEm9Jm0Xce3H5g0BjVo5Ff4XDhdnHAMh55NVlWX755vglmd
+	 /OR1z0eJzHU3sUV+xXYOPGjcLDWvi2kdCDlWax7L9kmWgtZP4n0KpoUrV6w4+7i6UgUwe
+	 AbzxPzEQ8Znir1PknfYs2GoY8gOoPe75+njmdxPflVlRVtHnHq/J98ynwOyiuU2bwWIjJ
+	 oBVkOuaI+sqIHiqyuPej490ItC14a9gA1oEjXJOZZrn6c5pRbikx6yh9DxTCPJKfyOU6K
+	 zB0LBzax7Y0YliJ+6wPfRd0VFnsJ8WXZXKCJRDI6yBkhuVFGpfPiG3pdCr1dCKaVPmg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793906938;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793906954;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=8+PUUisCWtmjpXGFSnEzEH85bwtBLwjRqMOjM3Vmjmk=;
-	b=p3Dtm35iJVnkx5GuDvL13D46J87WzRNDyjcphm6KwhqIa+GZsA67Z0QOduE+UjcuSwUA
-	 yNlrLslFP1VkH9MYIQ+1t29jI84CTkrBqsFgsBmbqodMlTHjhL2AKMDJucapdKb4mBHVS
-	 aAse8y5tqZCf7zHYd+SR4Ak1qtQMy2FLI3/aN/FlB8s9pDXt6xptFUI6RDH3Qqvc+HVUr
-	 kU3zyufnOA0josi7IZFSj+OH+pxcYxib7x2y/VDfZBvfNRhHlM6Wm4iTayfd1oDl5db2Z
-	 HZr88XRO89pF5X5yG/JvO+U5uKXS5fJt57NMsvKTPnYMq4k+JPtgq1zKmF+uYd2Cvpg==
+	bh=qYpt67HnextFoZu9a0KvUobhiMrlWn0ba92Ucxvlod0=;
+	b=lsdeqi2Cm8LCz9GVj1YSdRbKmOLlElSpJnYUqsRN8Y2x00cyhBmos0rf4cubLifFAMQj
+	 8Mi8Q3u7BEEQnIGw/SBwRt51A99PuNHHkdJuIE/vuyJ8vjnpH1eS90bfoXonF4VoLYKtV
+	 n6oZ8d1lg4ssdj4vbMSfYawAsepN+SLO2Hr/E5leaF3z9E1/Qjq4oLYD50/RIwB1qHBeC
+	 C43LBPEnVbmAuWETz1ySifjPV4QR1KFym/VIrVs4XU8KooS2E27hhCtvu+DyaNeJmsFeY
+	 3PlifL8HnDjgSfWJ+mWZTLJ4KZWGPuTdUtOVJ1Tc6LdQySKn3vheld4QjQCTH+Nq0Aw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGXjVaZA;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i9LZ2DKZ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18AE2606D819;
-	Thu,  5 Nov 2026 19:28:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9404606D82D;
+	Thu,  5 Nov 2026 19:29:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGXjVaZA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680F41F0093A;
-	Thu,  5 Nov 2026 19:28:56 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i9LZ2DKZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB4D81F00A02;
+	Thu,  5 Nov 2026 19:29:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793906938;
-	bh=8+PUUisCWtmjpXGFSnEzEH85bwtBLwjRqMOjM3Vmjmk=;
+	s=k20260515; t=1793906953;
+	bh=qYpt67HnextFoZu9a0KvUobhiMrlWn0ba92Ucxvlod0=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=JGXjVaZAK0CFDggQJdQ+YxBvHhKA1VCtqeH0C7UlBLv6f9VG7skZu2dEAbXlkszW+
-	 sJTw0vxxWmvEmoZ//n7adNnR8rVGdWKpWloXAc/ZnMiIcC1Z7LfAxfJ1lZKXvGWlIS
-	 PhuWRh2l7d+X+aiKaVkZ1til7ZTDouBvsGp4ZrUVot4KXntqybtMcWLZq8dMoH9KMN
-	 yQdRKjUGTGwZGlm1bL3/t2/RiEaT3aD77Fgz7S3aVXIsJYSEDz2AoydnPR6UJrVtty
-	 1L9zuHgLTxVXIrW2mhh+h+95gf4FNjVSdlwVAZRJPDPN2gARWlGlHNxwoYxHNUqah+
-	 h0Hn80dmMBTsA==
-Message-ID: <sashiko-outbox-199868@kernel.org>
+	b=i9LZ2DKZwHnYK5IpY8mSgV5ajhfjdPLY2QdoXn1KOHQtU3MNPMIIkqzWJ+l61PaHV
+	 U4dn1Zre5ud+JMQhyzSRt0SahDPp8PERyeSmTGAPSvYaVGithpx7UUiCiDIS5aP7o8
+	 yiknyv3w+lNWb8nJUJPnGF9DnIsx87AjkTzdJfhMDt1aWvCVUScDfBwaHfX8FD/oDj
+	 FjUdNKDwK332+g6e7b3tL5KcI0s45HVKxfoQTPNCErl+nxaNU2QdXrNYqhlAfGWWfV
+	 VnoGmeqjnxuET0EKbWs+mWU2b1yq1VMOdgFBtgPIpmMZpWj0oHgAkiQaF9fwq+c8bn
+	 4Bjmd0UpxAgSw==
+Message-ID: <sashiko-outbox-199875@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RESEND v2 05/51] xtensa: simdisk: remove the proc entry
- before the disk
+Subject: Re: [PATCH RESEND v2 12/51] powerpc/rtas: consume the whole write
+ to /proc/powerpc/rtas/progress
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -55,12 +55,12 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261104-work-procfs-bugfixes-v2-5-021c84d852e0@kernel.org>
+In-Reply-To: <20261104-work-procfs-bugfixes-v2-12-021c84d852e0@kernel.org>
 References: <20261104-work-procfs-bugfixes-v2-0-021c84d852e0@kernel.org>
- <20261104-work-procfs-bugfixes-v2-5-021c84d852e0@kernel.org>
+ <20261104-work-procfs-bugfixes-v2-12-021c84d852e0@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 19:28:56 +0000
+Date: Thu, 05 Nov 2026 19:29:11 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,19 +70,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> simdisk_teardown() frees the gendisk and only then removes
-> /proc/simdisk/<n>. A write to that entry in between attaches the file
-> that was written to the disk, and simdisk_attach() sets the capacity of
-> the gendisk that is gone. Remove the entry first, remove_proc_entry()
-> waits for a writer that is in the middle of that.
+> ppc_rtas_progress_write() shows the first 255 bytes of a write and
+> returns that many, so a writer that loops until everything is written
+> shows the rest as a second message. Return the whole count, the rest is
+> ignored.
 >=20
-> Fixes: b6c7e873daf7 ("xtensa: ISS: add host file-based simulated disk")
-> Cc: stable@vger.kernel.org
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104-work-procf=
-s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D5
+s-bugfixes-v2-0-021c84d852e0@kernel.org?part=3D12
 
