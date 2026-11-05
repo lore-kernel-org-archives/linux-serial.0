@@ -1,56 +1,129 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793879288;
-	b=i++pyaJLp3jsZKBWB7yEM5HmK5nNriJ63Fuoi2jXgT/4ZuwRlGq1TERcGSgeQ2mcXOi5
-	 Z+lpvmHpTxoZGnOBjRNE7v8i96uxwD4AxKKlH2q4/zugs5+WcLxTm22EfSyfqxHt5ApVr
-	 foz925jugfOPLhXPb4oz3T171lV4M73Q8Rx1o+vBbmuW4Tr0eWONVR1oYifb8ae8/8ghY
-	 GEuxKUoQZYxO/0NmOuSpn/IWrkyb7/Jv5DVbyJX4AX++vZF8/JrdLsu81rUdJNuLXaghq
-	 euEymoLgk7Xiay2Uujo+w4xQM9H23013hw2bL/aia3iHCIv/YN0JRUG0Bcj9FwemfKQ==
+	t=1793879572;
+	b=4JqbkshOdncYKl7cacrPwgBzufqc12Lk44fjHRichx049fAY1qLVLqUahSdWsiZ/fZW+
+	 mZhMN9kLdJjwd//Er1PVbCnKNr016ivN5TqHWZF8H7YVb+N69KjEqy4rAKjAmh5iuId6i
+	 bD2koLosDH/qm0AkvByIVKFfvSrLxRfUDT5/7h6CxsiR/4VX5VMZ7VZVhEgx7Jm1Lzkab
+	 658b/sfqZXz035pepENL+wCnv25c0l0rC38Xz749610RbE71Fzj8089HNIFCjjCXpHrMv
+	 PTLodlButNJH3Gfc7hcMGiEZ0Q4jMaNZbLMM0kGtmw5HtQYxYtZOktYSD/Abh82bI3g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793879288;
-	h=Received:DKIM-Signature:Received:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To:User-Agent;
-	bh=UHz6AMzM93tCKEmiVWYUGJVjJ6331bl28dTuRqH9PMY=;
-	b=e0hFz7hZCHzj9cveTYHQ8YDjpgCFJhNeGjzG953TsYCjs4XVWLkuB5Qa6+HYwUmo3MNJ
-	 ts1Ij2yms+/6LJDQR4aD2mnF462F4nvA2SvRWSXU7rxMYIkQeucZHf8uzoeWjBHBxIbgx
-	 J7Pflls5wyv1TA/Okzvctkuz3j5Yf4JU9MNVgsknlOOgIeax8t47ljZYrf3kOunhlpa8B
-	 BlBcgXz4gSduE0bU0xc/K0sgDoTR2fER6KK7rLeCAWZqTYC1F3xpgXx2kTz1Lo97npppx
-	 9Ap2tWYjYcVqUmBjU/bLbiV0GoKsBngKWK8i7d2LGezVJdo4WKhPjLOs5Vfv3jwkVFg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793879572;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To:X-Spamd-Result:X-Rspamd-Server:X-Rspamd-Action:
+	 X-Spam-Flag:X-Spam-Score:X-Spam-Level:X-Rspamd-Queue-Id;
+	bh=XTBVvV1llMrY8oPUgGAOljMGttnFmdc1n4iSvCofGvk=;
+	b=bpbI65RtQw/CHNKvst6gx6u/5xAlZclCad2cXmhfIa/E+iVhCEUm2lbB24CpWi8HydGk
+	 zpvZAayd2Gzyi2D6O43V46cg7aMZEb8zkgacd4ZLyEnIkjd1VH1OqfvDmIJaCSwy7q5u1
+	 XvU7HPN7h967dINDKt6quRu8OE1TKeW06LoK0ARMXfCg+fsyfA+6akgehaJOoXTfjzgH4
+	 za5UaBzPrWA5Sg+eRfKMXz+03xHoqGoQzBvM+ChP2PSjEuNsnv5lgkj69oVAWdPyYLA3b
+	 pO2QGSet2rsG1pQ+q52POQpu9XfAMQ26CKnqH6LvblzpUD2UYd2xFpml7i3TT5pe1yQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NkWQKk1e;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=none header.from=suse.cz;
+	spf=pass smtp.mailfrom=suse.cz;
+	dkim=pass header.d=suse.cz header.i=@suse.cz header.a=rsa-sha256 header.s=susede2_rsa header.b=IlDc2Fvh;
+	dkim=pass header.d=suse.cz header.i=@suse.cz header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=vvDSWJYG;
+	dkim=pass header.d=suse.cz header.i=@suse.cz header.a=rsa-sha256 header.s=susede2_rsa header.b=IlDc2Fvh;
+	dkim=neutral header.d=suse.cz header.i=@suse.cz header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=vvDSWJYG;
+	arc=none smtp.remote-ip=195.135.223.131
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28471606B57E;
-	Thu,  5 Nov 2026 11:48:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15BC0606A33C;
+	Thu,  5 Nov 2026 11:52:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15BC0606A33C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NkWQKk1e
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5716A1F000C1;
-	Thu,  5 Nov 2026 11:48:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793879287;
-	bh=UHz6AMzM93tCKEmiVWYUGJVjJ6331bl28dTuRqH9PMY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=NkWQKk1eDpVDkTkyffjFSgbMXS+MdiyDL50DVuWxPq0DemLDhz0ZsBZ/5BwyCQqus
-	 ZIdDPCKXSc306r51dm+OY4sL8Gyg9rxw4lXbCPnoSo0tepGZ6wlv+MrNgXsfJGEb38
-	 I0xRjasgDrh2ZLnmLFkOh/i4i4boDSftiF3BCO26Ne4oXh1h7qYaAl1wYH4QLPXx3t
-	 BkKF3tMk4ivdXIHveFTZlr27cip4Bcqd6W5G0d1TRIl7s4FWuNqda9/OYMF8+W01qA
-	 AIPN0CGX14EUKPhbBzoUZUQk/RlWmvgdrd2UmHjhoki4kSPl+nCrQWpzuEEccoGKFi
-	 jApbyZYMiK/YQ==
-Received: by pali.im (Postfix)
-	id E1D10524; Thu,  5 Nov 2026 12:48:04 +0100 (CET)
-Date: Thu, 5 Nov 2026 12:48:04 +0100
-From: Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To: Bramwel Barack <bramwelbarack89@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] tty: serial: mvebu-uart: use device_get_match_data()
-Message-ID: <20261105114804.vqbs6ooleagwutal@pali>
-References: <20261103201305.18963-1-bramwelbarack89@gmail.com>
+	dkim=pass (1024-bit key, unprotected) header.d=suse.cz header.i=@suse.cz header.a=rsa-sha256 header.s=susede2_rsa header.b=IlDc2Fvh;
+	dkim=pass header.d=suse.cz header.i=@suse.cz header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=vvDSWJYG;
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.a=rsa-sha256 header.s=susede2_rsa header.b=IlDc2Fvh;
+	dkim=neutral header.d=suse.cz header.i=@suse.cz header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=vvDSWJYG
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 090681F785;
+	Thu,  5 Nov 2026 11:52:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1793879570; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XTBVvV1llMrY8oPUgGAOljMGttnFmdc1n4iSvCofGvk=;
+	b=IlDc2FvhESlDd8QXX4z/a9lq2dVMhaxW+HuiTJo6x+4vVVqrVz8k3f/Wr+Mze0vHlceBFP
+	JaL/+k/+YFdhkL/6vCq7Bg2Jyl3kffnaUQoNLw7CYQNpyydj2pmW97ukL1Mouho+skqqWs
+	9mNCq/qpRDGAphiHFTSprMwCLm6e0Vk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1793879570;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XTBVvV1llMrY8oPUgGAOljMGttnFmdc1n4iSvCofGvk=;
+	b=vvDSWJYGu2lVXhJVWrbpDbn5nEUGh3VUqLxrYRbdmdLlIIqOha94poMzPs0o88aMpXXTQC
+	GveF9mKsY1fCOgBQ==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=IlDc2Fvh;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=vvDSWJYG
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1793879570; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XTBVvV1llMrY8oPUgGAOljMGttnFmdc1n4iSvCofGvk=;
+	b=IlDc2FvhESlDd8QXX4z/a9lq2dVMhaxW+HuiTJo6x+4vVVqrVz8k3f/Wr+Mze0vHlceBFP
+	JaL/+k/+YFdhkL/6vCq7Bg2Jyl3kffnaUQoNLw7CYQNpyydj2pmW97ukL1Mouho+skqqWs
+	9mNCq/qpRDGAphiHFTSprMwCLm6e0Vk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1793879570;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XTBVvV1llMrY8oPUgGAOljMGttnFmdc1n4iSvCofGvk=;
+	b=vvDSWJYGu2lVXhJVWrbpDbn5nEUGh3VUqLxrYRbdmdLlIIqOha94poMzPs0o88aMpXXTQC
+	GveF9mKsY1fCOgBQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id CB5FC134F4;
+	Thu,  5 Nov 2026 11:52:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id FWlQIxFu7GoAAwAAD6G6ig
+	(envelope-from <jack@suse.cz>); Thu, 05 Nov 2026 11:52:49 +0000
+Received: by quack.suse.cz (Postfix, from userid 1000)
+	id 45F61B6C1; Thu, 05 Nov 2026 12:52:41 +0100 (CET)
+Date: Thu, 5 Nov 2026 12:52:41 +0100
+From: Jan Kara <jack@suse.cz>
+To: Christian Brauner <brauner@kernel.org>
+Cc: linux-fsdevel@vger.kernel.org, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, Josef Bacik <josef@toxicpanda.com>, 
+	Chris Mason <mason@kernel.org>, Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
+	Eric Dumazet <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Al Viro <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
+	Greg Kroah-Hartman <gregkh@suse.de>, Joel Granados <joel.granados@kernel.org>, 
+	Kees Cook <kees@kernel.org>, Jan Kara <jack@suse.cz>, Jan Kara <jack@suse.com>, 
+	linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, 
+	linux-um@lists.infradead.org, linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	netdev@vger.kernel.org, ntfs3@lists.linux.dev, platform-driver-x86@vger.kernel.org, 
+	coreteam@netfilter.org, kexec@lists.infradead.org, linux-pci@vger.kernel.org, 
+	linux-sound@vger.kernel.org, netfilter-devel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	ibm-acpi-devel@lists.sourceforge.net, jfs-discussion@lists.sourceforge.net, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org, 
+	linux-fbdev@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-mm@kvack.org, 
+	linux-sh@vger.kernel.org, linux-usb@vger.kernel.org, samba-technical@lists.samba.org, 
+	sparclinux@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net, 
+	Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org, linux-raid@vger.kernel.org, 
+	linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, linux-debuggers@vger.kernel.org, 
+	Chuck Lever <cel@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH RFC 18/38] proc: don't WARN about a name that is already
+ registered
+Message-ID: <qaqawx4ajooiiqzu3ngxc46khpnq74u6sl5tz6az4uyssxzly4@346lsx342het>
+References: <20261102-work-procfs-bugfixes-v1-0-59422ed3e465@kernel.org>
+ <20261102-work-procfs-bugfixes-v1-18-59422ed3e465@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,99 +133,113 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261103201305.18963-1-bramwelbarack89@gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20261102-work-procfs-bugfixes-v1-18-59422ed3e465@kernel.org>
+X-Spamd-Result: default: False [-11.51 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RCVD_TLS_LAST(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_COUNT_THREE(0.00)[3];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	R_RATELIMIT(0.00)[to_ip_from(RLpnapcpkwxdkc5mopt1ezhhna)];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[60];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MISSING_XM_UA(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email,suse.cz:dkim,suse.com:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Flag: NO
+X-Spam-Score: -11.51
+X-Spam-Level: 
+X-Rspamd-Queue-Id: 090681F785
 
-On Tuesday 03 November 2026 23:13:05 Bramwel Barack wrote:
-> Modernize the driver by replacing the legacy of_match_device() call
-> with the modern device_get_match_data() helper API. This cleans up
-> the boilerplate code by extracting the match driver data configuration
-> directly.
+On Mon 02-11-26 15:21:33, Christian Brauner wrote:
+> proc_register() WARNs when the directory already has an entry of the
+> same name and fails the registration. Callers that pick their names
+> themselves should never get there but some take names from userspace.
+> pktgen creates a file for each device a writer of "add_device" adds,
+> named after the device. A device can have any name, including "pgctrl"
+> or "kpktgend_0", the names of pktgen's own files:
 > 
-> Consequently, drop the explicit inclusions of <linux/of_device.h> and
-> <linux/of_platform.h> as they are no longer required by the driver.
-> This allows us to also remove a now-redundant forward declaration and
->  drop the problematic of_match_ptr() macro wrapper.
+>   ip link set lo name pgctrl
+>   ip link set pgctrl up
+>   echo "add_device pgctrl" > /proc/net/pktgen/kpktgend_0
 > 
-> Signed-off-by: Bramwel Barack <bramwelbarack89@gmail.com>
+>   proc_dir_entry 'pktgen/pgctrl' already registered
+>   WARNING: fs/proc/generic.c:404 at proc_register+0x555/0x8b0, CPU#0: bash/241
+>   Call Trace:
+>    proc_create_data+0x9f/0xf0
+>    pktgen_thread_write+0xd9b/0x1780
+>    proc_reg_write+0x1c2/0x3c0
+>    vfs_write+0x1cd/0xfa0
+> 
+> The files of a network namespace belong to the root of its user
+> namespace and none of this requires a capability. So once pktgen is
+> loaded an unprivileged user can taint the kernel, or crash it with
+> panic_on_warn, from namespaces of its own. pktgen itself copes with
+> the failed registration just fine.
+> 
+> So go back to what proc_register() did before commit 6c2f91e077f1
+> ("proc: use WARN() rather than printk+backtrace") and what
+> sysfs_warn_dup() does for sysfs: report the name with pr_warn() and
+> dump the stack. While at it, do that after dropping proc_subdir_lock
+> instead of printing a backtrace while holding the lock that every
+> lookup and readdir in procfs needs.
+> 
+> Reported-by: Chris Mason <mason@kernel.org>
+> Fixes: 6c2f91e077f1 ("proc: use WARN() rather than printk+backtrace")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
-Looks good,
+Makes sense. Feel free to add:
 
-Acked-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
 
 > ---
-> Changes in v3:
->   - Removed the redundant type cast from device_get_match_data() assignment as suggested by Jiri Slaby.
->   - Marked the data pointer in struct mvebu_uart as const to match the return type of device_get_match_data() and prevent build errors.
+>  fs/proc/generic.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> Changes in v2:
->   - Dropped the redundant forward declaration of mvebu_uart_of_match.
->   - Removed the of_match_ptr() macro wrapper from the platform driver structure
->     to prevent build warnings when compiling with CONFIG_OF disabled.
-> ---
->  drivers/tty/serial/mvebu-uart.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
+> diff --git a/fs/proc/generic.c b/fs/proc/generic.c
+> index c560c96a64eb..ef804cd3ec45 100644
+> --- a/fs/proc/generic.c
+> +++ b/fs/proc/generic.c
+> @@ -401,9 +401,10 @@ struct proc_dir_entry *proc_register(struct proc_dir_entry *dir,
+>  	write_lock(&proc_subdir_lock);
+>  	dp->parent = dir;
+>  	if (pde_subdir_insert(dir, dp) == false) {
+> -		WARN(1, "proc_dir_entry '%s/%s' already registered\n",
+> -		     dir->name, dp->name);
+>  		write_unlock(&proc_subdir_lock);
+> +		pr_warn("proc_dir_entry '%s/%s' already registered\n",
+> +			dir->name, dp->name);
+> +		dump_stack();
+>  		goto out_free_inum;
+>  	}
+>  	write_unlock(&proc_subdir_lock);
 > 
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index 33ea496c93b2..fcb8f3d52df8 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -18,9 +18,7 @@
->  #include <linux/math64.h>
->  #include <linux/of.h>
->  #include <linux/of_address.h>
-> -#include <linux/of_device.h>
->  #include <linux/of_irq.h>
-> -#include <linux/of_platform.h>
->  #include <linux/platform_device.h>
->  #include <linux/serial.h>
->  #include <linux/serial_core.h>
-> @@ -154,7 +152,7 @@ struct mvebu_uart {
->  	struct uart_port *port;
->  	struct clk *clk;
->  	int irq[UART_IRQ_COUNT];
-> -	struct mvebu_uart_driver_data *data;
-> +	const struct mvebu_uart_driver_data *data;
->  #if defined(CONFIG_PM)
->  	struct mvebu_uart_pm_regs pm_regs;
->  #endif /* CONFIG_PM */
-> @@ -859,15 +857,12 @@ static const struct dev_pm_ops mvebu_uart_pm_ops = {
->  };
->  #endif /* CONFIG_PM */
->  
-> -static const struct of_device_id mvebu_uart_of_match[];
->  
->  /* Counter to keep track of each UART port id when not using CONFIG_OF */
->  static int uart_num_counter;
->  
->  static int mvebu_uart_probe(struct platform_device *pdev)
->  {
-> -	const struct of_device_id *match = of_match_device(mvebu_uart_of_match,
-> -							   &pdev->dev);
->  	struct uart_port *port;
->  	struct mvebu_uart *mvuart;
->  	struct resource *reg;
-> @@ -919,7 +914,7 @@ static int mvebu_uart_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  
->  	/* Get controller data depending on the compatible string */
-> -	mvuart->data = (struct mvebu_uart_driver_data *)match->data;
-> +	mvuart->data = device_get_match_data(&pdev->dev);
->  	mvuart->port = port;
->  
->  	port->private_data = mvuart;
-> @@ -1016,7 +1011,7 @@ static struct platform_driver mvebu_uart_platform_driver = {
->  	.probe	= mvebu_uart_probe,
->  	.driver	= {
->  		.name  = "mvebu-uart",
-> -		.of_match_table = of_match_ptr(mvebu_uart_of_match),
-> +		.of_match_table = mvebu_uart_of_match,
->  		.suppress_bind_attrs = true,
->  #if defined(CONFIG_PM)
->  		.pm	= &mvebu_uart_pm_ops,
 > -- 
-> 2.56.0
+> 2.53.0
 > 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
