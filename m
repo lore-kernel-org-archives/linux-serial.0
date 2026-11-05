@@ -1,48 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793908173;
-	b=5Vl6AiBGwTDwTt8JJvASb4IXZKVQ/ySBIMIkRqDTi3mQec0LPZ2ATANdXiDbg+4tSc18
-	 yOxsFGIg5x7cmDLlvf/jr8qYxZT4+IdBlH2zs9+6UBvmITt2epYQTqzVP9dN7CCzGfsjQ
-	 HGZWplrW0QY+1HUI6tuBeOAoh1CwEFbyKUHtEqcwOVd50rOmPU9b0dlc58yDB54Y+Hzhg
-	 iJdglPo2KMsYAiF4lNbQTiLu/c8NRHM7K8+XmX0NucwEMqIBOwhkHiO79kK4Iff0yB9nN
-	 VBONjgB/BBnsIrcC0BJEwswlfMLJJqAfww4YBHRQYIMuQrf+6x4yrTAUqpgPPQn7V+w==
+	t=1793908183;
+	b=qjQYerDbWGwT+0HnKTHsk5soO09gCqdxxlk3g6ZWa5UFvwGSL1fRqNvGgNfGREE0yxxm
+	 R7BW7G4RblF+Ozpb6HTbEv8CFqa+d/7j9ezQNjspe+MNEbiK+kOuGiJ4xqc2Zo4ONAESq
+	 RF0vVKINsIoCxFUHORyEo4aj8+pobPmsArhOBZmd/ONSwrIBJiJffztUR6zslRTSf1784
+	 ROOIFHEfdCTC/xyVwqlCtJPxAWhfwsNV4N5t9CHLLLmYvij0zMxTD7ELI5ppGuJ+0cbnx
+	 1Asj31ZRbXZj6gycg+n7Aw4tIxOUqTDaXgvptTTxzQ///CG3NEbHElXEufxKV8TkWLg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793908173;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793908183;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=lQ8JIZZ5kxkUAmXk+xiS/+ArzA9TFxFnFqVMIk+xVec=;
-	b=0xdhcpt6k5RQRoPlasUQlY0gHRLgQJS5H0n76w3eOKRre/0OVqYF54HyJUByLM50fRYg
-	 OXhXMurW2lILdqooQ5FtofhyvQiz7NB/cccbOfVEIc3gNlQ+N03dbAPhp5BOduUgK0gIt
-	 +QwIkIuldAPv/x/OLsmEi/qDbzHH+6+kP/1tdz+CORE+ApxpzVkjjPikLxspCOlG50nnt
-	 oTC2fS1620/EfNLgyQGt6ozCKkBnkiLFxHLku/+M6wUWJkyWbtyLhJXzr0Chv5bw2p/V5
-	 60PCay/1Ku9n9YIE1mRauDk0lj7QbMUvADBPXel+z6OpSAgb1LVktzQKi3I8hd7Fkww==
+	bh=y30rUmZBthh2E7w+0fysBQcYWUpkGcdPObgng4j+tIg=;
+	b=SnGnilO6ptC2DMVETJxhp1zbLfC2Zty/SjGboaXDi7unjLzfZUqxMt4lT/2Xms3Pmywf
+	 38wTBI/jwA4/6PtMjrEVnLyNPrtBU5D60NGwgW9E6O2GJMPT+ekohwacCvN+lsEt5KSvW
+	 +aoYV+yyyoZIMaf18L4sXBl1GUOfr2oX3DLLle7xeV3KHa4VJ3I9XSIs8xcsGIDSDyIdz
+	 XxUkz67iKynYKzLH2muarl1wQI3NuMBz9m1Ata4FhN/YsYs1FcSs13BMhMiidOZDTcFbl
+	 iRApn5tLpQ3wmCjMFl1t6ZY4vWOBaC8TbJy9VODrxHYpzADIBpMLisxuYf+uAl1uHtw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=j23WgGy3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="b/w2E8Lv";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADE76072C68;
-	Thu,  5 Nov 2026 19:49:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22AB96075329;
+	Thu,  5 Nov 2026 19:49:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=j23WgGy3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C52EE1F0089F;
-	Thu,  5 Nov 2026 19:49:30 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b/w2E8Lv
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748201F008A1;
+	Thu,  5 Nov 2026 19:49:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793908172;
-	bh=lQ8JIZZ5kxkUAmXk+xiS/+ArzA9TFxFnFqVMIk+xVec=;
+	s=k20260515; t=1793908183;
+	bh=y30rUmZBthh2E7w+0fysBQcYWUpkGcdPObgng4j+tIg=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=j23WgGy3ZqOpo9kyAHUXU5TgvkUzhD6a54kglnxcdgVHF5WgUmqLTvnUkLSBL02NN
-	 ZdW0u6lyXYxXcbzgP4wZH3y1mtnPgrg5z7WwxtjxTC0MXuUY7FZBiGNIJN33actq5M
-	 5yEtX7ikb+TeUy83H9n+K05TTJFiakZeU4BBjUvK8gx/zO1ZuKoWzEZSfEaKAkxDJ2
-	 KAukZAJBis282pacUrKrUpdcLpMu2c+LVBvHUNQoV0aMN6jIUx+dB0vbXhUvz3bUUN
-	 fJ/2AAVIZ6++OWfNDvCq5yu5I3y9gI6EpRYBWpZ5gmuqjIbW8UEqzGQ4UAADKdqsI3
-	 MtbtxRO6ZwLEg==
-Message-ID: <sashiko-outbox-199998@kernel.org>
+	b=b/w2E8LvVx8iHqx7D9Ue0CrcEJDGjUmIXNOxnXqQGdQ8CRIytdZZV0C3FEoMsADj/
+	 nJYY3Wvl7EF2S79oY2/r4412cFfniNBCO+blsAIXkdBnMSFelCv83eSKqxIwYS1DBa
+	 FPl9MuYwM3scd8uuhT1rCemD0JfzZMYYMzmX1Z0qT2M0a2NUJGjRPdvuZLc4+h5oUx
+	 +WIsia2dVnilP+Ymj37NjDa8uQIEaGtGt+DsnH3VmLYTfspWj4RkA0GcSkDRaFFEOH
+	 YgWmHOGaCFnkKHRaeEP37l0Lf9NgIcgl4tZVX60AUyS0L+5dBRmBr414+nePdIbpxh
+	 ylPy64WGp8cug==
+Message-ID: <sashiko-outbox-200003@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH RESEND v2 12/26] selftests/proc: check that a faulting
- writer doesn't hold up removal
+Subject: Re: [PATCH RESEND v2 17/26] fbdev: viafb: let procfs copy in writes
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Christian Brauner" <brauner@kernel.org>
 Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.com>, "Josef
@@ -55,12 +54,12 @@ Cc: "Linus Torvalds" <torvalds@linux-foundation.org>, "Jann Horn" <jannh@google.
  Iwai" <tiwai@suse.de>, linux-ext4@vger.kernel.org, "Chuck Lever" <cel@kernel.org>, tytso@mit.edu, "Heiko
  Carstens" <hca@linux.ibm.com>, "Vasily Gorbik" <gor@linux.ibm.com>, "Alexander
  Gordeev" <agordeev@linux.ibm.com>, "Christian Borntraeger" <borntraeger@linux.ibm.com>
-In-Reply-To: <20261104-work-procfs-drivers-v2-12-245e54e87116@kernel.org>
+In-Reply-To: <20261104-work-procfs-drivers-v2-17-245e54e87116@kernel.org>
 References: <20261104-work-procfs-drivers-v2-0-245e54e87116@kernel.org>
- <20261104-work-procfs-drivers-v2-12-245e54e87116@kernel.org>
+ <20261104-work-procfs-drivers-v2-17-245e54e87116@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 05 Nov 2026 19:49:30 +0000
+Date: Thu, 05 Nov 2026 19:49:41 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -70,16 +69,12 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Write to /proc/scsi/scsi_debug/<host> from a buffer whose page is backed
-> by userfaultfd and remove the host while procfs copies in what is
-> written:
->=20
-> - removing the entry doesn't wait for the writer
->=20
-> - the write fails with -EIO once the fault is resolved
->=20
-> The test loads scsi_debug if it isn't there and skips without it or
-> without /proc/scsi.
+> Implement ->proc_write_buf() for the files in /proc/viafb so procfs
+> copies in what is written before it pins the entry, and parse what was
+> written from that copy. Writes larger than PAGE_SIZE - 1 bytes fail with
+> -EINVAL now, the output device files refused anything over 63 bytes
+> already. kstrtou8_from_user() looked at the first 10 bytes of what was
+> written to dfph and dfpl, now the whole write is parsed.
 >=20
 > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
@@ -87,5 +82,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261104-work-procf=
-s-drivers-v2-0-245e54e87116@kernel.org?part=3D12
+s-drivers-v2-0-245e54e87116@kernel.org?part=3D17
 
