@@ -1,91 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793968818;
-	b=hIGG+3nxwXJBc9wJU34AWH+DVNU4jck7g8lKBP2ttSWaM9tqTQBsEl6yui0lxzrPkzra
-	 yRrXekml2zZ2E8Etstp1xz+dE3oU7N93JwHkesaUy6wHRnVA0bmM8nFprkwvk7fN2gSG4
-	 PZuXYfU1uvc3RsBmmCK5vzlxLZp1xcP1Q8jj6baPh4xmux7loL0foHyzPFxM+21GCcEeK
-	 AMYo8qkMd3PU2LGFtCri9Lw5JkML4BzFUKhmcLOX9ryWNnMV2B2JAReYCbdmjiFD1NqLR
-	 CmL5NSqLCcmBUIrLpUimG6FY2l3IAr5GTB117zi+6Mpkl9Z0wtqZDRUX0zAyQEJStIg==
+	t=1793969632;
+	b=pHicn4k8k7GAhDV5ZciGK7VXPsi1N60/+4etlxf5RkfSguI7w7SRjKnrpzSMIMIZxEWW
+	 o2/Hl422VP83525zt2dEOcjPiICncUPmhrJVjX1mzUDZod8PA8zJz50C19pR8/pSP0Zkg
+	 lHIvDFUK2KpS3/bOBhTxMjQNV88Ch8sQW70fkaHKfN7Amj/IKuwbkeNRWwXMOtJyWKFYh
+	 /7ZRsPDaWWIN+MSMw1ztU0PdJPfE+7xUdlV+cnHrcVdLcX22IZzVOZvj/oKqVvszzNsrP
+	 1kbtG0KClc9LDAZVNFCsTjh364xKQ/3NPKMRLz8mfTRqrQa4zCkrAj6fRRuXo1DU7bw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793968818;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=I7rpnBx9YoXkP8aLjecj2KvEgsGyzrkFXLzcIf+WpQs=;
-	b=tjwfW5ZjMhz/fZkH23sHOIErQBrB/TgBAoZbdfaKAlw4vblVwvw+MpKbHMnGf1jVVCsp
-	 FbJYF14oftGdvaza21jB1Yw/dYsI77zT1BBPf4rxPCje2/ELTZBrrxI+JAGXCzQUjSvkP
-	 uZtl+2Kf25J1B/YAj9/uCXZDRK2P8/Ua0he52PQCGbekJCIDfKa+PvFaDbW6W+PjIbGdg
-	 Q0xSwwaMI022i2k/VLZsQj+XrbJQIEf5yFqHbvVtoWthssq4bzt4LmaeH2NkRbPEFcEg7
-	 XALqGQ6mnu1tma7yqLEPJ0s+MtRePD28AXPiH8VJi3DKlJK6Oh36LlcUYIWm3V+B3Hg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793969632;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=oTHjiyDX2guT5VBDXE9scu6NOC96wb99UsVWoSwnSP0=;
+	b=JcSBvmS5eIV+hEbwHEz/oexXT+S134IXp7TK87gBzye2htK4FHyf32KJ1yDcJJvkhIfS
+	 6AFM/1gcjC/ejltwIUyqtk2Lzq0l64hqD9Bq1cn4i6t5+6TWpvtnAWpVL8CqNpAGU/e+U
+	 tUEjMgK7lGKlxvFeRTrtvKtLVIKla/Q5jrDM4Q1/dvuBjFKqbdzTzYYLoxhqHSCVnU/WG
+	 phAhqSUKVCqnjdGCnxbKOY15HJouBBofEZcDQe7ZZ1HgjaiqCeMOs636APJUwXtvbONQR
+	 H71TwyGDsrnvCbqNwm7Eb8sBAGlA1aTZyBVLL3SLfDy2ES0KX/kaV4m++CDTsp6EaGg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="cv0gq7//";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RTQOMoxi;
+	arc=none smtp.remote-ip=209.85.128.51
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D630606A326;
-	Fri,  6 Nov 2026 12:40:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66683606A336
+	for <linux-serial@vger.kernel.org>; Fri,  6 Nov 2026 12:53:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 66683606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cv0gq7//
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744301F0089F;
-	Fri,  6 Nov 2026 12:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793968818;
-	bh=I7rpnBx9YoXkP8aLjecj2KvEgsGyzrkFXLzcIf+WpQs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=cv0gq7//oTp0dAwoAY2P60tkzG7qOXixypboCv6somxbv4RJe5y516ibiIt9yil0y
-	 6Xus26S5S7CjxFEgzJ6hZni98dpD8Y/omMUtCqA4qji8MxkiTaYplwOOW48zZztgn9
-	 biJBA8ky84yjfhdUFX9fRCe+oS8D893fUM9AYufhLCP12MMbLUTZ8mXNG/OPBCvc1G
-	 DIevwtEp6pl4GRQg1cF62xWNKe0C2Oa7ePx8fTta9k3W+1zeQkAVQDl44kBiPO2/LG
-	 dx8EhOOPaR6wOfy/YLyX01VcjVuebpZVFEllgtNJqAQKSVIn+yFsCLndqNWCvS3rdQ
-	 Fk78GnOIw8FXg==
-Date: Fri, 6 Nov 2026 13:40:15 +0100
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Frank.Li@oss.nxp.com, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Russell King <linux@armlinux.org.uk>, 
-	Richard Genoud <richard.genoud@bootlin.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
-	Peter Griffin <peter.griffin@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Laxman Dewangan <ldewangan@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	Chunyan Zhang <zhang.lyra@gmail.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Cunhao Lu <1579567540@qq.com>, 
-	Raul E Rangel <rrangel@chromium.org>, Yenchia Chen <yenchia.chen@mediatek.com>, 
-	Zhiyong Tao <zhiyong.tao@mediatek.com>, Carlo Caione <ccaione@baylibre.com>, Moteen Shah <m-shah@ti.com>, 
-	Kendall Willis <k-willis@ti.com>, Kartik Rajput <kkartik@nvidia.com>, Fan Wu <fanwu01@zju.edu.cn>, 
-	Nicolai Buchwitz <nb@tipi-net.de>, Karl Mehltretter <kmehltretter@gmail.com>, 
-	Stefan =?utf-8?B?RMO2c2luZ2Vy?= <stefandoesinger@gmail.com>, Shitalkumar Gandhi <shital.gandhi45@gmail.com>, 
-	Peng Fan <peng.fan@nxp.com>, Sherry Sun <sherry.sun@nxp.com>, 
-	John Ogness <john.ogness@linutronix.de>, Pan Chuang <panchuang@vivo.com>, Petr Mladek <pmladek@suse.com>, 
-	Robin Gong <yibin.gong@nxp.com>, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
-	Stephan Gerhold <stephan.gerhold@linaro.org>, Zhaoyang Yu <2426767509@qq.com>, 
-	"Nikola Z. Ivanov" <zlatistiv@gmail.com>, Haoxiang Li <haoxiang_li2024@163.com>, 
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Myeonghun Pak <mhun512@gmail.com>, 
-	Wenhua Lin <Wenhua.Lin@unisoc.com>, Cixi Geng <cixi.geng@linux.dev>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>, 
-	"moderated list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>, 
-	"moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, 
-	"open list:ARM/FREESCALE IMX / MXC / LAYERSCAPE ARM ARCHIT..." <imx@lists.linux.dev>, 
-	"open list:ARM/QUALCOMM MAILING LIST" <linux-arm-msm@vger.kernel.org>, 
-	"open list:ARM/SAMSUNG S3C, S5P AND EXYNOS ARM ARCHITECTURES" <linux-samsung-soc@vger.kernel.org>, 
-	"open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>, 
-	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>, vkoul@kernel.org
-Subject: Re: [PATCH 1/1] tty: serial: use dmaengine_desc_set_callback()
-Message-ID: <au3GYOP5P7B90-bX@orome>
-References: <20261102175527.3957740-1-Frank.Li@oss.nxp.com>
- <aux2VKHnVLwq_wzi@orome>
- <auyQEVmA2KeGu9DL@ashevche-desk.local>
- <auyiAE3lhnFahBK2@orome>
- <auysTnqWgz2kE7e9@ashevche-desk.local>
- <2209947d-0b9b-417f-9ffb-1c81790af9db@kernel.org>
- <auzEupFd_Ek2HpLG@ashevche-desk.local>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RTQOMoxi
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a214af2076so4045825e9.0
+        for <linux-serial@vger.kernel.org>; Fri, 06 Nov 2026 04:53:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793969631; x=1794574431; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=oTHjiyDX2guT5VBDXE9scu6NOC96wb99UsVWoSwnSP0=;
+        b=RTQOMoxix56I3khgiwxSLlG6MqNj4SnKFN0SBhox6cEqvgnl7JGomA1wRtDOmcDzLn
+         SMJbxP2clNS4vp9IEQIfNqOTQieTPb/o/DkCapHlrMzsPu6UpPko7DR4mpB3S63dhpsA
+         yQIBpXjJ5HgVWdunVyqSVTnmQDD07f5uSMGGmNBys+TeI0//Lgvjg03DukZF8YSSjcXa
+         6iBj+12ApuubwP4ZWxCaiBMjqjQQa1joZPEi92XjrxUdybrBwYF7+rkj8D7F62pL697Z
+         Dm7VhyarpKwTU6Om6ty0AEYYTNZ8YrIxmj2NZuNBefTI3ypgkCjCScMTGyRuYCr0YEb0
+         v0YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793969631; x=1794574431;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=oTHjiyDX2guT5VBDXE9scu6NOC96wb99UsVWoSwnSP0=;
+        b=UtWBuSLmDvIUHSXo7B4rB2HND5yRVF5lIRpa6wnAw+hZ0G9eKdFSsSq0urqIoo8Zkt
+         9YS+Hi7miE1gnVWgDzKHeS/maMvuv9XOzjA2OaneWsKVHV6wOozY4EegKg/+R/0ILf8l
+         9CGONTpntyrQL5RzZMWUenA8avK5tsuRE09pm+AasKX+fGN2/SvBGKCTQCVPsIcCHMBk
+         Bp4EP4E6XG1iKI6KjyP0e/oFLQMaYeb/1lS4Sy23cznjK+OENDRAkJg01H7znDFFQlnb
+         7TkhJjEamB4/Y928BnuET96wzDhiZQqRs3PQw3MNfa7R/PFbIsLG7WugXVtwA05zXKId
+         O6OQ==
+X-Forwarded-Encrypted: i=1; AKwUvByPflI3IZ8rUlyESm5jPzMdhhtRWW2w7MPdfwlkpWSEgGV/09EglZkUCDHfnrGFoZ3Wotilr2PsGFFypSc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/0TK/09JiF7btiATpHZCLgBI/7KgQeh4NNGFilurzBv00QsrV2
+	moUi0r1LgIQb1Pj5auzP2Q+PIeRplnQAo/F5o6sLOnA2tNZ16QMt0/MuRC2nvDmJsFs=
+X-Gm-Gg: AYBFou3Z23D0vMLpdklbfVSIR5ssXKdTJsbCgjLZ1r0uu1uC8JLxT0Rj/Un/ZR4fDMm
+	ziFMsp+F7PMqtXVAbocR4ZO12gAa4af3hXCdHycuMIcnNU1LWX4geHSc9lHRqmaer9hxs0S+EsN
+	m9x4QFUQApB7JQTP5dBuysdiTjar00DV96YuwyOOiG9jML8HslbfsGJU/JToTISofRGkCxD/dO/
+	16r3rkh1Kmwfai3TdHGyRQKtakLLXH7Tcpv2ElkFOcmBg8bxatjipY48McEd9GXMYd0BDV2muNw
+	prhVI6dCYmIs4zjWO7PnHTXboY2av/EWuMQ3zZhCTs/HvwtKKy/4NionG+4olxLCRqLNE179Y6M
+	a89avpJH3t19pSSzw9nWg1j3k+cNIabzhAkaE+vq7Z+DdPwIZFHFQMoQfs6Ki4BXpPgyG46zcNM
+	KifBETQfmp8CjLbMtyE/IZm/Vxfw/7/+mQBx5EzPjVDjDSWZGiI9hbD6FDIuh6fv5CfTmDfMv7p
+	fIWvsTn5tyqyTiybUdJfJboNPoZ+8+N6/12RdhrXhsA7co2U38DKh5T+QWIhcICmf4xyRDOhrdI
+	6+KvlkocmflFDdaM7JJ6E7xI6UQy
+X-Received: by 2002:a05:600c:1913:b0:4a2:1398:dd05 with SMTP id 5b1f17b1804b1-4b6de0ce791mr41196125e9.16.1793969630568;
+        Fri, 06 Nov 2026 04:53:50 -0800 (PST)
+Received: from m2.. ([37.142.148.124])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4b6e1b5d676sm58687815e9.7.2026.11.06.04.53.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2026 04:53:49 -0800 (PST)
+From: Michael Zaidman <michael.zaidman@gmail.com>
+To: Bartosz Golaszewski <brgl@kernel.org>
+Cc: Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Raman Varabets <kernel-linux-20260610-80b7ab08@raman.v1.sg>,
+	Germain Hebert <germain.hebert@ca.abb.com>,
+	Christina Quast <contact@christina-quast.de>,
+	Rio Liu <rio@r26.me>,
+	Bruno Giacomazzi <brunoceg1@gmail.com>,
+	linux-input@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Michael Zaidman <michael.zaidman@gmail.com>
+Subject: Re: [PATCH v2 03/15] HID: ft260: add GPIO support
+Date: Fri,  6 Nov 2026 14:53:40 +0200
+Message-ID: <20261106125340.18483-1-michael.zaidman@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <7a3kc2tj2mh62aklablkma5teiinm6b6z2rlvrfwk76xcnd2rb@xwsgziioxz6u>
+References: <7a3kc2tj2mh62aklablkma5teiinm6b6z2rlvrfwk76xcnd2rb@xwsgziioxz6u>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -95,155 +111,73 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bfkiplbygfje4qbi"
-Content-Disposition: inline
-In-Reply-To: <auzEupFd_Ek2HpLG@ashevche-desk.local>
+Content-Transfer-Encoding: 8bit
 
+On Tue, Nov 03, 2026 at 01:53:26PM +0100, Bartosz Golaszewski wrote:
+> There's a lot of sashiko comments to address but a few additional nits
+> below.
 
---bfkiplbygfje4qbi
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 1/1] tty: serial: use dmaengine_desc_set_callback()
-MIME-Version: 1.0
+Thank you for the review. I am working through the Sashiko findings
+for v3. Below is what I plan for each of your points.
 
-On Thu, Nov 05, 2026 at 08:02:34PM +0200, Andy Shevchenko wrote:
-> On Thu, Nov 05, 2026 at 05:21:06PM +0100, Krzysztof Kozlowski wrote:
-> > On 05/11/2026 17:18, Andy Shevchenko wrote:
-> > > On Thu, Nov 05, 2026 at 04:36:38PM +0100, Thierry Reding wrote:
-> > >> On Thu, Nov 05, 2026 at 04:17:53PM +0200, Andy Shevchenko wrote:
-> > >>> On Thu, Nov 05, 2026 at 01:28:46PM +0100, Thierry Reding wrote:
-> > >>>> On Mon, Nov 02, 2026 at 12:54:48PM -0500, Frank.Li@oss.nxp.com wro=
-te:
-> > >>>>>
-> > >>>>> Replace open-coded assignments to callback and callback_param fie=
-lds
-> > >>>>> of struct dma_async_tx_descriptor with calls to the
-> > >>>>> dmaengine_desc_set_callback() helper across serial drivers.
-> > >>>>>
-> > >>>>> No functional change intended. Prepare to make struct
-> > >>>>> dma_async_tx_descriptor private to the DMA engine.
-> > >>>>>
-> > >>>>> Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> > >>>>> ---
-> > >>>>>  drivers/tty/serial/8250/8250_dma.c  | 6 ++----
-> > >>>>>  drivers/tty/serial/8250/8250_mtk.c  | 3 +--
-> > >>>>>  drivers/tty/serial/8250/8250_omap.c | 6 ++----
-> > >>>>>  drivers/tty/serial/amba-pl011.c     | 6 ++----
-> > >>>>>  drivers/tty/serial/atmel_serial.c   | 6 ++----
-> > >>>>>  drivers/tty/serial/fsl_lpuart.c     | 6 ++----
-> > >>>>>  drivers/tty/serial/imx.c            | 6 ++----
-> > >>>>>  drivers/tty/serial/msm_serial.c     | 6 ++----
-> > >>>>>  drivers/tty/serial/mxs-auart.c      | 6 ++----
-> > >>>>>  drivers/tty/serial/pch_uart.c       | 6 ++----
-> > >>>>>  drivers/tty/serial/samsung_tty.c    | 6 ++----
-> > >>>>>  drivers/tty/serial/serial-tegra.c   | 6 ++----
-> > >>>>>  drivers/tty/serial/sh-sci.c         | 9 +++------
-> > >>>>>  drivers/tty/serial/sprd_serial.c    | 3 +--
-> > >>>>>  drivers/tty/serial/stm32-usart.c    | 6 ++----
-> > >>>>>  15 files changed, 29 insertions(+), 58 deletions(-)
-> > >>>>
-> > >>>> Reviewed-by: Thierry Reding <treding@nvidia.com>
-> > >>>
-> > >>> Krzysztof, now look at this case. I would argue that this is even l=
-ess fit than
-> > >>> # subpart(s) case, because it might imply anything. Again the probl=
-em is the
-> > >>> bundle, and for such a case (when tons of independent changes are b=
-undled in
-> > >>> the same stuff, *every* Rb tag has to be explained on what has been=
- reviewed!
-> > >>
-> > >> It may be a bit subtle, but the placement of the tag indicates that =
-it
-> > >> applies to the entirety of the changes. I didn't crop the list of
-> > >> changed files, nor did I omit the summary.
-> > >=20
-> > > This doesn't clarify the question. Wordless Rb tag on a bundles is an=
- oddity.
-> >=20
-> > No, it's perfectly normal and typical. I would not expect anything else,
-> > because writing "LGTM" is pointless. We are experienced reviewers and we
-> > do understand what Reviewer's statement of oversight means, thus giving
-> > the tag is obvious, explicit and not odd.
-> >=20
-> > >=20
-> > >> That bit of meta-data obviously isn't picked up into the tag line, b=
-ut
-> > >> I think the default meaning of Reviewed-by is that it applies to the
-> > >> entire thing.
-> > >=20
-> > > And I interpret it otherwise, because this is a set of independent ch=
-anges
-> > > bundled into a single patch!
-> >=20
-> > It's not set of independent changes, but even if it was then it would
-> > not matter. We review the code regardless how we actually judge the
-> > atomicity of a patch.
->=20
-> And I confront exactly that! When the patch may be split it has to. This =
-is
-> seems the outcome of this discussion to me. From now on I think I will NAK
-> any bundle patch until piece that I in charge to is split from the bundle.
+>> +	mutex_lock(&dev->lock);
+>
+> Use lock guards from linux/cleanup.h.
 
-I'd like to caution against this. There's effectively one change in this
-patch and it converts all the drivers in the same way. This was probably
-generated using a script or semantic patch. Requiring this to be split
-up is going to make the author spend a lot of time creating 15 patches
-instead of just one. They will have to write the same commit message
-with tiny variations, which they'll most likely just use a script for
-because it's tedious. Or they don't use a script and likely get at least
-one commit message wrong. And then we're not reviewing a patch for
-technical correctness anymore but waste a lot of time on nit-picking on
-a subject or commit message. Each of these commit messages is not going
-to add any new information either, so the only thing you really achieve
-is to increase the signal-to-noise ratio.
+[...]
 
-That's completely absurd.
+>> +exit:
+>> +	mutex_unlock(&dev->lock);
+>
+> That way you'll avoid this label. Same elsewhere.
 
-Also, reviewing 15 miniature patches is going to take much more time
-that reviewing this monolithic one, so I suspect potential reviewers are
-more likely to just stay away from it to begin with.
+I plan to do this as one new patch at the end of v3, which converts
+the whole driver to guard(), and to remove these labels there.
 
-In the end you make life miserable for everyone. Well, except for
-individual driver maintainers that want a quick and easy way to slap
-their approval onto only the one driver change that they really care
-about.
+The reason is that I also maintain an out-of-tree version of this
+driver for kernels older than 6.5, which do not have linux/cleanup.h.
+With the conversion as the last patch, the code before it becomes the
+base for that version. It builds on older kernels with small changes,
+and I can simply leave the last patch out there.
 
-But there's already a way that they can do that. Acked-by can just mean
-"I maintain this driver and I agree with the direction, but I haven't
-bothered to do a full technical review". That's what most of these
-"partial" Reviewed-bys are, so why not just use that existing tool?
+>> +	dev->gc = devm_kzalloc(&hdev->dev, sizeof(*dev->gc), GFP_KERNEL);
+>> +	if (!dev->gc)
+>> +		return -ENOMEM;
+>
+> Why is this dynamically allocated? Make it part of ft260_device.
 
-And I'm saying all of this without judgement, because sometimes you do
-not have the time to do a full review but you still want to lend your
-support to ongoing work. I do that quite often myself.
+Will do in v3.
 
-But at other times I do want to look at something in more detail, or
-just ended up looking thoroughly enough for it to count as a full review
-and when I do I'll let people know with a Reviewed-by.
+>> +	if (!label) {
+>> +		ret = -ENOMEM;
+>> +		goto exit;
+>
+> Just return here? Why the label?
 
-Thierry
+Right, it will return directly.
 
---bfkiplbygfje4qbi
-Content-Type: application/pgp-signature; name="signature.asc"
+>> +	snprintf(label, label_sz, "%s%s", prefix, dev_name(&hdev->dev));
+>
+> devm_kasprintf()?
 
------BEGIN PGP SIGNATURE-----
+Yes, v3 uses devm_kasprintf().
 
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmrtyq0ACgkQ3SOs138+
-s6Fr4A/9FKItEmEcI7D1clbCnePcAJeqtYQ0rYq/qZQPbKo0mPQbeN5qKa1XDgHO
-o3ylZ3Piqsnzv+NNOe6cmtCjzv4Bb82/Z9g8metI4jz4gOraKos+oVhk2EIMFv7f
-yrPVGwcvgtlSnx6MO/kFoS+1JYbWlZ9JA7jJCTcXBUF28R780a2elyHAnxamdAQZ
-TrzhhmaRmsdt2TLYxJRPlrKWjfzhl/2HKGfFTTROXgaiaj8oQeCNcBGC1TKKtGls
-g4MQJ6AZ1Ke58gd3O1sYh3QUlOUewNawK+LOsDoGjooF6zg2loLypU6twHl7cBdH
-GoFRsLUImQvYXNUYhDxGCxNZ3OvMyIM+8X3G2xIJuHY8MEbJY5ukp/rPKi/4CQyK
-VxwvkHMoAX705PtVMKdY2ddQt9ceif+v7ohWDmce8B3NOopq0itUXxcU8Z2MWw99
-qEl1IoIYVXBYiJeaIcLzjSPmJeFPAJ49cJhNeqpH190C5hIqxPK75Jyh7+Pokx+y
-yWFEIla8n0+o14XOP9M2wnrvJ34EQI4aW8Ia/nFn3b1oONvBu+q8h8wMH5hH2fvJ
-O3QCmMyze7y03zKMQL2w8jE7qniSfi+wUNb318xOlXRqBKHTSGv7IEu5try/XdKo
-L8B242zIrUhLZ8MWwNSUfjq9qIT7PSG50W3uNxTv0hduJXFO13c=
-=a1fc
------END PGP SIGNATURE-----
+>> +	hid_info(hdev, "initialize gpio chip on %s\n", label);
+>
+> Drop logs like this, they add nothing except useless noise. Same
+> elsewhere.
 
---bfkiplbygfje4qbi--
+Agreed. In v3 I drop both "initialize gpio chip" messages.
+
+The "enabled GPIOs" message moves from info to debug verbosity. It is
+off by default. I would like to keep it there, because my hardware
+tests read the GPIO mask from it.
+
+Two messages stay at info level. "registering device /dev/ttyFT%d" is
+the only one that tells which tty belongs to which device, like
+"converter now attached to ttyUSB%d" in the USB serial core.
+"chip code" was in the driver before this series, and it is the only
+place that prints the chip version.
+
+Thanks,
+Michael
