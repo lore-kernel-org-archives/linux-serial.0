@@ -1,61 +1,83 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794064874;
-	b=MylW/3/f97SttG8NyuSFCKZv9lXNi2/M1MD7Ughm9OLgPpBXdnQDQBtgWedwytj1444Z
-	 W/04jwFCmWdbh18I9Uvg3bTmgON5jSv02GzSf0btZS8MuN99xixGfBzS2qCrSUDHRB+Io
-	 IsoFH8TfBv71XZc4XNjnx6E7aIq+XvEZPsVVgw6q5NN787qWtXAFNtf1xBrTs6q/ASOzL
-	 IZo1sUBcZSArsQg4THpIRaYABinKxpdg/UU/s1f/RyiC/hC8CQZwhrHCdICoGqXqAAPIf
-	 eimzxG5fISKl5AHSSvnNXn44XOxFVZx8q4ibVjee+ynAIFAH2ca6VYOol5FgIFdvqtw==
+	t=1794067831;
+	b=bNxXRcSiB2KxYU6KuGyhC9en7XoDmWzzcR388479PW0tmUdI+RXMzPpDqNWFuhT2sKxn
+	 dLWq5pmZUZ7k+aOtnIgKFa8BY0Ssf8PImSyremihV8AQ4F/jw71e0X3ttZCKWdaRyB0e7
+	 24xda3EoCCMQbDkJ9Iw7drLUImHu1HFDSL58DQq+XezsZ8JM3zDgmR3k8o2biH6kmfLFl
+	 YaUhTWbRCXr+r98GwPddMaTCs+1S1C70pTsY2s4chuqac9GVuCAhtm+txweFz8saksCgs
+	 6ODSdgMtA2tO481B0bGMzf23loTkjhxfwdXLTRUHNGBgyT1eX9bzxyjL6CWG9rpwGVA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794064874;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:User-Agent:X-stable:X-Patchwork-Hint:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=1+ukuAyRYzkxFt0XT5dxiduhN+VE+RHr8nHFCwg/ME4=;
-	b=M7+seql8ryUb/9mLkfFLxcindsVQWein3cgELS9OH9EuRr6gUFZRY49pBkctX0Rmo3tz
-	 aGM8i5pFdS8Rwox3j6ZjI/CnXNeBNKSIoDYGiFzYqQUKSN7yMsXPHxidtFstv4ui7DIm/
-	 kEnosdwVRmU0TSUGeEQXQEIbqzymKFg83kwRKNdZEmfU+m1o54/gcdS8hQIqWk6scCbbF
-	 XaAdCiZXi6WQyhHV4vH/S5pI1Xq63SF1S4t0QG8EneRkWVT/mYw2lhqH7L/Vnpm9aAf44
-	 wjQBHcaMtTUWJaquQS4PjnxddhPck3d9bempGGPN2PyT70VurXFWJiz47fabtnshicw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794067831;
+	h=Received:DKIM-Signature:Date:From:To:CC:Subject:User-Agent:
+	 In-Reply-To:References:Message-ID:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=yrl1fDgvB8SejpyA+O0u1vRjlm41/COeTHtKBCR1yZ8=;
+	b=d47J0q+aIryhgPNg1v3RSp7XlziOAmnEFxpZGzixZr2xD77Okt9aKdWK7/U2EAw6Sxnd
+	 gnVNkM6Ip3sqMV0NVxuRMglW5I3reCGX+RaBtzSHox0h37bC4Szlf+119hQPDqt7grncw
+	 x4edcJjoLTU85MLqkeORDmWw3CSUjLgw1oD6p0hmhwwWSZLcoAvWsnITKhmfjmCkbrNmH
+	 VkNzq88oXosfg6unlxHTOYHHQs4VoPyc0Vq0UWvkdyeEhtPDnDVyZEo/O9UUjjgV+zU28
+	 2i7i0mUGA4YrXpwMUoPpM3WC8+qaDgMzwrY/U6APzyriQz5YvrhLoLlXJsx2N/4dUsQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=hZEdKcbZ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DudqRbSQ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4634606CE4A;
-	Sat,  7 Nov 2026 15:21:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98E27606A32C;
+	Sat,  7 Nov 2026 16:10:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=hZEdKcbZ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E841F0089F;
-	Sat,  7 Nov 2026 15:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1794064873;
-	bh=1+ukuAyRYzkxFt0XT5dxiduhN+VE+RHr8nHFCwg/ME4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=hZEdKcbZ4s3w5zn/WNlbH+OGqjlVIphaa1urvBS1tw6WsxsxRcnd2NiVE2C5kFHe7
-	 Xb50Am8yyf5cSdAejReNz/sN9JVFsDfydtgVYUySJp6vY4U4h7HkZKzchoHtdkZYOb
-	 0/xPkWaNLIcjkPFgmLyTv2w+u1x7UT7Oe5LAbfF4=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: stable@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	patches@lists.linux.dev,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	stable@kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-serial@vger.kernel.org,
-	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 7.3 0752/1257] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
-Date: Sat,  7 Nov 2026 08:50:48 -0500
-Message-ID: <20261107135000.057796246@linuxfoundation.org>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261107134939.434104957@linuxfoundation.org>
-References: <20261107134939.434104957@linuxfoundation.org>
-User-Agent: quilt/0.69
-X-stable: review
-X-Patchwork-Hint: ignore
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DudqRbSQ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1758C1F0089F;
+	Sat,  7 Nov 2026 16:10:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794067830;
+	bh=yrl1fDgvB8SejpyA+O0u1vRjlm41/COeTHtKBCR1yZ8=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References;
+	b=DudqRbSQXCpr6NhdcgkB28/OJ09fv/xb+ZGVAY2ZZcm0NtXYxKjH24XfLPv1YVH+1
+	 N2Smc+eQQaJmUtmHSjIuIOHPbXtdHkwnaUWqwn18l1Zgme7MhVjd/tmwPXx2sHiZmJ
+	 bVG7HcpDVP0TwBfdMqAH6zxIyHwUkaCeHOVhR2aYppt91bZLwCTiFYtodZA1aRzQhT
+	 JFzXQc4CJvaSMHUeBSzyyst4sJaPobtuTL08pUib1PO2/6JKi1TR0Oc7vVJSOMiTRg
+	 di9pOtOgBcjQKNqN/zgV0r2ojSo7IUXfYme+kVAZvSpJolvZJtmmOXjKLjiXPaiu1m
+	 qPutBKIcKy2tg==
+Date: Sat, 07 Nov 2026 08:10:28 -0800
+From: Kees Cook <kees@kernel.org>
+To: Christian Brauner <brauner@kernel.org>, linux-fsdevel@vger.kernel.org
+CC: Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>,
+ Josef Bacik <josef@toxicpanda.com>, Chris Mason <mason@kernel.org>,
+ Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>,
+ Eric Dumazet <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
+ Al Viro <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>,
+ Christoph Hellwig <hch@lst.de>, Greg Kroah-Hartman <gregkh@suse.de>,
+ Joel Granados <joel.granados@kernel.org>, Jan Kara <jack@suse.cz>,
+ Jan Kara <jack@suse.com>, linux-kernel@vger.kernel.org,
+ linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-um@lists.infradead.org,
+ linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ netdev@vger.kernel.org, ntfs3@lists.linux.dev,
+ platform-driver-x86@vger.kernel.org, coreteam@netfilter.org,
+ kexec@lists.infradead.org, linux-pci@vger.kernel.org,
+ linux-sound@vger.kernel.org, netfilter-devel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, ibm-acpi-devel@lists.sourceforge.net,
+ jfs-discussion@lists.sourceforge.net, linux-alpha@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org,
+ linux-fbdev@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-mm@kvack.org,
+ linux-sh@vger.kernel.org, linux-usb@vger.kernel.org,
+ samba-technical@lists.samba.org, sparclinux@vger.kernel.org,
+ linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
+ Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org,
+ linux-raid@vger.kernel.org, linux-ext4@vger.kernel.org,
+ linux-modules@vger.kernel.org, linux-debuggers@vger.kernel.org,
+ "Christian Brauner (Amutable)" <brauner@kernel.org>,
+ Chuck Lever <cel@kernel.org>
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_RESEND_v2_07/23=5D_proc=3A_let_pr?=
+ =?US-ASCII?Q?ocfs_own_the_seq=5Ffile_of_seq=5Ffile_entries?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20261104-work-procfs-core-v2-7-76ace653a773@kernel.org>
+References: <20261104-work-procfs-core-v2-0-76ace653a773@kernel.org> <20261104-work-procfs-core-v2-7-76ace653a773@kernel.org>
+Message-ID: <8A21EE2A-F392-40B7-9152-CBC440FDDA70@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -65,70 +87,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-7.3-stable review patch.  If anyone has any objections, please let me know.
-
-------------------
-
-From: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-
-[ Upstream commit 3e3ae95a3d84a6028f37a07ab7ad78bb14689f2e ]
-
-lpss8250_probe() calls lpss->board->exit() on its error path. For the
-EHL board, that is ehl_serial_exit() and it does:
-serial8250_get_port(lpss->data.line)->dma = NULL;
-
-But when lpss8250_dma_setup() or serial8250_register_8250_port() fails,
-lpss->data.line was never assigned. As lpss is kzalloc()ed, line is 0
-and ehl_serial_exit() clears the dma pointer of an unrelated port --
-serial8250_ports[0], i.e. ttyS0, which is often the console.
-
-Initialize lpss->data.line to -1 in probe and skip the clearing in
-ehl_serial_exit() if no port was registered.
-
-Fixes: 5318f70da7e8 ("serial: 8250_lpss: Balance reference count for PCI DMA device")
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Assisted-by: LLM
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: stable@kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org
-Link: https://patch.msgid.link/f389df34aaa538270313ebd4cea75c2baaf46b95.1791873876.git.jirislaby@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_lpss.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 776ec1ef29d62..325e587ae2c42 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -183,9 +183,8 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 
- static void ehl_serial_exit(struct lpss8250 *lpss)
- {
--	struct uart_8250_port *up = serial8250_get_port(lpss->data.line);
--
--	up->dma = NULL;
-+	if (lpss->data.line >= 0)
-+		serial8250_get_port(lpss->data.line)->dma = NULL;
- }
- 
- #ifdef CONFIG_SERIAL_8250_DMA
-@@ -329,6 +328,8 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return ret;
- 
- 	lpss->board = (struct lpss8250_board *)id->driver_data;
-+	/* for tests in lpss->board->exit() */
-+	lpss->data.line = -1;
- 
- 	memset(&uart, 0, sizeof(struct uart_8250_port));
- 
--- 
-2.53.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
 
+On November 4, 2026 11:30:58 AM PST, Christian Brauner <brauner@kernel=2Eo=
+rg> wrote:
+> [=2E=2E=2E]
+>+static int pde_init_seq_direct(struct proc_dir_entry *pde)
+>+{
+>+	struct seq_operations *ops;
+>+
+>+	if (!pde_is_seq_file(pde))
+>+		return 0;
+>+	ops =3D kmalloc(sizeof(*ops), GFP_KERNEL);
+
+Please use the new style typed allocation calls for objects:
+
+ops =3D kmalloc_obj(*ops);
+
+(This happened to jump out at me, but please check the other patches for t=
+his pattern=2E)
+
+> 		dp->open =3D kzalloc(sizeof(*dp->open), GFP_KERNEL);
+
+Same, etc=2E
+
+--=20
+Kees Cook
