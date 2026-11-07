@@ -1,42 +1,42 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794063372;
-	b=zlP38iFbBC7aAtrex1RyU8TUHxWVgVS9IoZUsaklsDZjYCy7NdfKGdzHVzaP0RvUF+e2
-	 3I/89YX/WFoOZ+x8BD26mVwoEckF9i6YzFPeZaJIGb/4mNbGE13hq7Qa3K1283im8LT/Q
-	 NSupQtlI9C1I8DE+1p2x4LrVuC++XIi3ijICnwppKpO3Pe024pxGt/mpdQ1uK+sN8UjeV
-	 PxEffG/Zf1G+F99jIyoqt/FgXqpmnioGP9iePSpWrC6gQOmirg1v+A6YhuNm23U7TByOW
-	 QeFpUSX/CXTeFzkBJnkWjOOkdewEo8rkNyzdTDbAG8G8svsDoP0Nm7w/r5yW2fT0iVA==
+	t=1794064874;
+	b=MylW/3/f97SttG8NyuSFCKZv9lXNi2/M1MD7Ughm9OLgPpBXdnQDQBtgWedwytj1444Z
+	 W/04jwFCmWdbh18I9Uvg3bTmgON5jSv02GzSf0btZS8MuN99xixGfBzS2qCrSUDHRB+Io
+	 IsoFH8TfBv71XZc4XNjnx6E7aIq+XvEZPsVVgw6q5NN787qWtXAFNtf1xBrTs6q/ASOzL
+	 IZo1sUBcZSArsQg4THpIRaYABinKxpdg/UU/s1f/RyiC/hC8CQZwhrHCdICoGqXqAAPIf
+	 eimzxG5fISKl5AHSSvnNXn44XOxFVZx8q4ibVjee+ynAIFAH2ca6VYOol5FgIFdvqtw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794063372;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794064874;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:User-Agent:X-stable:X-Patchwork-Hint:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=AZGuGPrOdNqJbNT839VEOn2Z8cWP25W4LTsq1eigXZE=;
-	b=Tl9i0NDxzRpSc0C0vlf9HJ3yE/Lj7Tm96SgfUcXK0sPvLmfJkCm7uU71hqHmHw7/g1mj
-	 1CsZSd2oNba+Lm9qqQbzGIN/TMn/RFBtxz04xLUQbqUcaH2ifC4k2fIaEQ84biWVjRn9t
-	 LtrqyW0mCt1B4A9X7CAGUrCrmWRuibmIBLwpKLbu9tqahJJWS7P86SemSF0ZhtmwLHRWz
-	 TqVKSLOArRz4LtkgkJvsW2WbRnvE0xrTpwhTEqkkovV6lfs/c2aKxyQDBLvU+35gxRN+2
-	 rgnaXe2mNAZz3vIl+B1c2orHc8JcSSPiST1f9EjLvUjXl3Szq0N8/yx8N1V4cw8Lphw==
+	bh=1+ukuAyRYzkxFt0XT5dxiduhN+VE+RHr8nHFCwg/ME4=;
+	b=M7+seql8ryUb/9mLkfFLxcindsVQWein3cgELS9OH9EuRr6gUFZRY49pBkctX0Rmo3tz
+	 aGM8i5pFdS8Rwox3j6ZjI/CnXNeBNKSIoDYGiFzYqQUKSN7yMsXPHxidtFstv4ui7DIm/
+	 kEnosdwVRmU0TSUGeEQXQEIbqzymKFg83kwRKNdZEmfU+m1o54/gcdS8hQIqWk6scCbbF
+	 XaAdCiZXi6WQyhHV4vH/S5pI1Xq63SF1S4t0QG8EneRkWVT/mYw2lhqH7L/Vnpm9aAf44
+	 wjQBHcaMtTUWJaquQS4PjnxddhPck3d9bempGGPN2PyT70VurXFWJiz47fabtnshicw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=zyKOv06j;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=hZEdKcbZ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DEE9606D801;
-	Sat,  7 Nov 2026 14:56:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4634606CE4A;
+	Sat,  7 Nov 2026 15:21:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=zyKOv06j
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F23C91F008A1;
-	Sat,  7 Nov 2026 14:56:11 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=hZEdKcbZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E841F0089F;
+	Sat,  7 Nov 2026 15:21:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1794063372;
-	bh=AZGuGPrOdNqJbNT839VEOn2Z8cWP25W4LTsq1eigXZE=;
+	s=korg; t=1794064873;
+	bh=1+ukuAyRYzkxFt0XT5dxiduhN+VE+RHr8nHFCwg/ME4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=zyKOv06jgbCucj65a4X2QwPadGQKl4DAdhCfvTZQasJU8kLBduh8Ux1bamTHoC/Xl
-	 gEo+VnXaKWtBMY9zbnk00qzJS4z7ej1N5HWVfAtIReol0N4ts1qLTr08yithJaG3zn
-	 WX3DgWkcvhISN79Xn5wxepu8xyYLc81kLZ0OP5Aw=
+	b=hZEdKcbZ4s3w5zn/WNlbH+OGqjlVIphaa1urvBS1tw6WsxsxRcnd2NiVE2C5kFHe7
+	 Xb50Am8yyf5cSdAejReNz/sN9JVFsDfydtgVYUySJp6vY4U4h7HkZKzchoHtdkZYOb
+	 0/xPkWaNLIcjkPFgmLyTv2w+u1x7UT7Oe5LAbfF4=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: stable@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -47,12 +47,12 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-serial@vger.kernel.org,
 	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 6.18 547/869] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
-Date: Sat,  7 Nov 2026 08:53:49 -0500
-Message-ID: <20261107134911.932469580@linuxfoundation.org>
+Subject: [PATCH 7.3 0752/1257] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
+Date: Sat,  7 Nov 2026 08:50:48 -0500
+Message-ID: <20261107135000.057796246@linuxfoundation.org>
 X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261107134852.069646174@linuxfoundation.org>
-References: <20261107134852.069646174@linuxfoundation.org>
+In-Reply-To: <20261107134939.434104957@linuxfoundation.org>
+References: <20261107134939.434104957@linuxfoundation.org>
 User-Agent: quilt/0.69
 X-stable: review
 X-Patchwork-Hint: ignore
@@ -68,7 +68,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-6.18-stable review patch.  If anyone has any objections, please let me know.
+7.3-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
