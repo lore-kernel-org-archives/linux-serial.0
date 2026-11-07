@@ -1,60 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.70.43.102
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794060058;
-	b=fm8NX0NQTYediZi5m+sdEcwuJLJNhQTv4fP/tNoGpaptnAtj+XjV5+3+KVgNNwydv0PV
-	 DE2C+tz82FYjNIzu74SWfPYYaIGICLvdb0tLsGs6VqSsKWd3qyzVIV6mYp0wNWC3oVmC3
-	 72/t4K/et7Jupd7u2LfwnGZF5qe2EfedzcNt399n1GUB2qQ3q57T3c3vepvfXbB6+XOMj
-	 ngpZAT0f1M0e2M5/sTfQUYzHexczKZjPxfiEZro1AoXYHOrcvVCfDmyR6SGaHnj6JEBhw
-	 tn8IH12u4nZvkAtd7xb5S5CF+4dZwVaEqiH90PF1U0niK9+13fqxo6zVO3tcl2Nhfiw==
+	t=1794062363;
+	b=zys/YkWEChFoVctflkipGZMtgRYncVC1M34V3AtViNAEcbcxyoPeU00RdAZrmpr5uwPB
+	 T+JoCl2YAa5vu8e+ouZR3hdSHHoaDnFIP4HKAeo1C6AX2p75hRrueZ5DqCrzh5bwn0FCT
+	 2VNu+cV2Mx2adkjd4GbWPKt5VzJJSeZfkGXGt0WJmHJFB0Kx1FI4JFwPFp6dlffFYUwDz
+	 fMsiVC5rW/m8Glug8DPYz0e3IvJyrHd5bP2rM3rTsmFvDCQ1d8NOH5lxpY1MR9pythMZ/
+	 fbSNENsyjrs7eUxGDxHyzqXA7ur98XS014SqE1ZW4MRUxZGlRxHy32WZdoEun99DMZg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794060058;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=P3/ZtZc9uaQGFY2ihIoiddTSKQLXeow2WIExumNjyWU=;
-	b=DrMkW0sjSlNqXbDhL4HBwcZxibs7+KLP1AOP8FkTzzmARUz/o8LAHIP2+ly89lv1rkvS
-	 O9boStbRh+XUm+E4tXm5NgnJFZAM1XE9gZrRdCKxVqAHrXRo4eTNbQiLfJ+F0Y/SVDTpv
-	 ewgish2uSuz17wNqKmMve9rvhNPLvz4WaYajrAfOZT41XBg2IA1Q1HVCb/PxrDG5I+M+k
-	 tjWvPRJDTVK//V3Syb9Epg+2pshOFGP/fYa0bAjbB+YB/yIwkThEP8wiewJy644qxaROc
-	 JCrZxL0olfOeAseu3sjxJ7epkh7hjdc6OTmwv3cuLdHO/uLU1Qi5o8Px+sWlVmTOCyg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794062363;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:User-Agent:X-stable:X-Patchwork-Hint:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=Ls5BRhSYSI0gcpnIOZQtowd/5AQvXl8HTPjDPFRYrzg=;
+	b=eTS5tCvQOr4sHQLApJBpHXwJTnoUG8MTEY21SsBbseXEc3vMVPDpJb2gKdMKedIU75vq
+	 aukC8zSYB4Fcl2RL93olNjkPDIb/NYHoZZ0nZfllgHbm4soMhQLkOqICT1qpks3yC67F5
+	 +HodD0TQCwemIj+Cfw2UocAOR07O7mJrms/oFafkuNodR/XD6CDyl0mDXrr0V7JWZh2im
+	 BPNUjBQyAFaE+ZilaKQ8O/OeZj/E4GHfkEZZfHohCAQizz2uz9XcVoOkJi1RNNwEO2OA2
+	 my62i/g8lIVryXr1h1jlcqk5gysaogzM6BZwjAZVNvHqdyxLnptaJ+NSyrD2RlHClQQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b="kFb/dtKx";
-	arc=none smtp.remote-ip=185.70.43.102
-Received: from mail-43102.protonmail.ch (mail-43102.protonmail.ch [185.70.43.102])
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=W2Kp0mic;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D26E3606A326;
-	Sat,  7 Nov 2026 14:00:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D26E3606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 397086082BEB;
+	Sat,  7 Nov 2026 14:39:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=kFb/dtKx
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1794060055; x=1794319255;
-	bh=P3/ZtZc9uaQGFY2ihIoiddTSKQLXeow2WIExumNjyWU=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=kFb/dtKx0W21Hwap+7+8lga1HqsD4gxpdPl50pcvQ9e3S9KwwoYRPhb+Qrjm/49s7
-	 7v9iGvxAW1p6TPLAUNDvDrRdgxAZHAoHpDMTfczNMAWo36XQCGKYb49v5VAkfu9y1c
-	 gWdcVMQK+fAd0PlZgH/c7L6TxTYZvl+M4FVDX/qLL+Gr19LCcIqcK7zEBFxxu6MRxC
-	 XATdPMFns2C+Oc9Fs+aTx5LUI0iDzaPlXsjviuVz1G+qfHrO8iIcPQigRxdD4d4d15
-	 1jGpyBtntJOIQx7cMcbGAV266k+totjlYOv+551esKm92NBCxSd7lN8+5I5HPaELud
-	 6sVHHm5qnQ/1Q==
-Date: Sat, 07 Nov 2026 14:00:47 +0000
-To: i@udp0.com
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@mediatek.com>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: serial: mediatek,uart: Add MT6833
-Message-ID: <joJnuIX4efIyYGdLotFbhAL7aSeQCOCIdfbE2p1dI3CIEHZuJ6cLh_xF34joTacjhgeBgBC_5AQfceHf9sCsdCStHhTeJSujzY7UNuVADps=@protonmail.com>
-In-Reply-To: <20261107-mt6833-base-v1-3-bda21083e9f3@udp0.com>
-References: <20261107-mt6833-base-v1-0-bda21083e9f3@udp0.com> <20261107-mt6833-base-v1-3-bda21083e9f3@udp0.com>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: 68a5641e2b162357b5d491fe81981b1fa2444ff5
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=W2Kp0mic
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E105C1F0089F;
+	Sat,  7 Nov 2026 14:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1794062363;
+	bh=Ls5BRhSYSI0gcpnIOZQtowd/5AQvXl8HTPjDPFRYrzg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=W2Kp0micySuNSQ1cZwA22XJqtrHNQeCjLWhMRjYx+IFI3p3AIB+6LYs4idLqrCLdB
+	 2maXUFB6UpqS+RWA1Eb9yqPsGHW1ClMEKtp8RbyFv4yyX8y0vMGtIAiv6OCZ1JKOTR
+	 z//wG8VAX4DUJdujiBZE/9LvsQ9WRgJPhgRMFyts=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: stable@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	patches@lists.linux.dev,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	stable@kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-serial@vger.kernel.org,
+	Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 6.12 1289/1536] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
+Date: Sat,  7 Nov 2026 08:55:05 -0500
+Message-ID: <20261107135033.990470483@linuxfoundation.org>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261107134957.653319350@linuxfoundation.org>
+References: <20261107134957.653319350@linuxfoundation.org>
+User-Agent: quilt/0.69
+X-stable: review
+X-Patchwork-Hint: ignore
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -64,45 +65,70 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Saturday, November 7th, 2026 at 2:22 PM, Rui Cao via B4 Relay <devnull+i=
-.udp0.com@kernel.org> wrote:
+6.12-stable review patch.  If anyone has any objections, please let me know.
 
-> From: Rui Cao <i@udp0.com>
->=20
-> Add MediaTek's MT6833 (Dimensity 700). Its UARTs are MT6577-compatible:
-> MediaTek's MT6833 device tree gives them "mediatek,mt6577-uart" alone.
->=20
-> Signed-off-by: Rui Cao <i@udp0.com>
+------------------
 
-Reviewed-by: Roman Vivchar <rva333@protonmail.com>
+From: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-Best regards,
-Roman
+[ Upstream commit 3e3ae95a3d84a6028f37a07ab7ad78bb14689f2e ]
 
-> ---
->  Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml =
-b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> index 5bd8a8853ae..8fb793c3408 100644
-> --- a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> @@ -34,6 +34,7 @@ properties:
->                - mediatek,mt6779-uart
->                - mediatek,mt6795-uart
->                - mediatek,mt6797-uart
-> +              - mediatek,mt6833-uart
->                - mediatek,mt6893-uart
->                - mediatek,mt7622-uart
->                - mediatek,mt7623-uart
->=20
-> --
-> Git-157)
->=20
->=20
->=20
->
+lpss8250_probe() calls lpss->board->exit() on its error path. For the
+EHL board, that is ehl_serial_exit() and it does:
+serial8250_get_port(lpss->data.line)->dma = NULL;
+
+But when lpss8250_dma_setup() or serial8250_register_8250_port() fails,
+lpss->data.line was never assigned. As lpss is kzalloc()ed, line is 0
+and ehl_serial_exit() clears the dma pointer of an unrelated port --
+serial8250_ports[0], i.e. ttyS0, which is often the console.
+
+Initialize lpss->data.line to -1 in probe and skip the clearing in
+ehl_serial_exit() if no port was registered.
+
+Fixes: 5318f70da7e8 ("serial: 8250_lpss: Balance reference count for PCI DMA device")
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Assisted-by: LLM
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: stable@kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
+Link: https://patch.msgid.link/f389df34aaa538270313ebd4cea75c2baaf46b95.1791873876.git.jirislaby@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/8250/8250_lpss.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 776ec1ef29d62..325e587ae2c42 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -183,9 +183,8 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 
+ static void ehl_serial_exit(struct lpss8250 *lpss)
+ {
+-	struct uart_8250_port *up = serial8250_get_port(lpss->data.line);
+-
+-	up->dma = NULL;
++	if (lpss->data.line >= 0)
++		serial8250_get_port(lpss->data.line)->dma = NULL;
+ }
+ 
+ #ifdef CONFIG_SERIAL_8250_DMA
+@@ -329,6 +328,8 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return ret;
+ 
+ 	lpss->board = (struct lpss8250_board *)id->driver_data;
++	/* for tests in lpss->board->exit() */
++	lpss->data.line = -1;
+ 
+ 	memset(&uart, 0, sizeof(struct uart_8250_port));
+ 
+-- 
+2.53.0
+
+
+
