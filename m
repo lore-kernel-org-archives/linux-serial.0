@@ -1,57 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794140829;
-	b=c10QoMykjAutul1Qwdl6o0D6p+laoULhRtztbhIYr+gobQDdvRilnxXdppzJkXxrkhen
-	 fkahAGxapewdpKcXQ1GbOCgQdFigY6csB9+nij1JmBmLACcb3m3eSSOoDlqzjv0OL8gLF
-	 f68F2MZIy+zrS7pnoNOAJVKXeopz+fAuvcReZFO+qdlMss8QI6yTBewiFSNbFlkwZmIt7
-	 2k/tootilRlsP5l3cLdBgpWcciQsWdRF+e/YvPiTGTQ6EqFgRa0BPvumEUO0wFLzW6fiM
-	 n1muhF+q7DWeKp2d12bzxIA6IctRVsPn94gRldC92KYKZ/yfsNbpJUwJdBjaLzH0cag==
+	t=1794142257;
+	b=HPEZEFyoySZabt1M0+A5AMG6gFidUtin4WeL+bkziEJN6+lsruBF3OB5iVOr1fTPKFjU
+	 zhrB1Wpvf4fYBozp7mdKuGFCGDXwWBQ0msq0j0rr/+7CtKKqed0SKJ5ovR9x20NXA9EcG
+	 kvk+rwsbdCBPTxkvuRC8duc6QfRdz3ew6sZliAAPUj5q2f8wgmnLonolSgTtlMcp1sr3a
+	 GJ02n+YT+q/pMr9KY0aSbzkqjCcW4PIES9nk1tw9Le8s2OdO2uPpD419PpUIxL5ZsmtNP
+	 ibeGgjnqYhlMmghoAm0H0KDcfHIh3hTW5o6Jsn8pmwyXfrYmFr2MwXievMYmcL3N8kQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794140829;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=80YuNoiLYzeYuqTx7CbDOCsOUCcJq50vLqiJKxIoxX4=;
-	b=qlrViAt5liUSmLxTcxfYl6Hrd6IKbR80zcgejYkEVjZhLoV1et/ZEi9iJL99/NRiqrBC
-	 hxdmdBL0tChXAc7GMJeefO5mN2rZndEVm9aYQEFUlKGk8QJEe8VsHxGkzTPdyvcRlDMMW
-	 EJfzvrz8IiQ1I8NRZQBV1b0TtKA8jkl7jkYSLIafzS15mQzscIqc8vtCTchmwxRtYXGrW
-	 oQz23/HyM8llnsGpjFK7N8HKrY82y5X+FAw8wIhIDq0ZFDtX91eSirg4X6ips91ONWs+0
-	 gYsH7arnrrZYq5c5lGhSNpP00Ccy23a5YPLpjD7qfLQnPjTu4SGNYzBdoGbcbXjmi/g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794142257;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=CBqySVJkYZ3V4pcutw3q75Mc5exUd/PgRrxhtsJ1kBg=;
+	b=aobTV6WxObX/X+g5UhNFzNNErdmKHJ5LtXpW7lPICDYI9Yy83UfNOrvHNYzFnfvS8sjJ
+	 ICcYM3uBlBlWqWH2stEAvUvqSMZPBuE1HX3iUBezArSp+cjRmxI1I1valy4MMU4QDVV7E
+	 poXc1Omv6xcauxRMTa3zGsTy6m/0EuKX70YTRUpIjIaMsN6OYBaIr54NlgxcmLUh3QN5N
+	 9VDKtPnwtkzI6WVzfqnsZNcknmoLUe0AmVxJCLj/IcXvJmm55j4Vtam5iADFSnYmWgV2u
+	 EaQ2LIlohViWz0sb2+v1tVzcsjxKBkmSd7nZyT4wwIL/pgQKCW4Q039l3SeiK/fVqeA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WnPYStJ7;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="uepg/btE";
+	arc=none smtp.remote-ip=209.85.221.50
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 874D5606A31C
-	for <linux-serial@vger.kernel.org>; Sun,  8 Nov 2026 12:27:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0CE4606A334
+	for <linux-serial@vger.kernel.org>; Sun,  8 Nov 2026 12:50:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A0CE4606A334
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WnPYStJ7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05CDF1F0089F;
-	Sun,  8 Nov 2026 12:27:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794140829;
-	bh=80YuNoiLYzeYuqTx7CbDOCsOUCcJq50vLqiJKxIoxX4=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=WnPYStJ7r+ktJf2usevrGusRIdzpAozjjYp2dvG43+VCPL1cyDXG1tZAqBPg7qaeh
-	 49MfmvhRO++/f+67CoZ5Olak9I4vlugElkKhnMHpctuICb/lOpc5gCskFNkbZ+zfPS
-	 mCeqCcNZeOkPqO/fTvvUVCsWLUS/4ht0YmN84P/fseqv4CETIeZUKutJwopDMWk7Vt
-	 SWddgOwVnJAjoy0G1KTiNWW2DEf+iWcPyvRNYf9E/cCAJdlbRLGkOmNtRzouJ/QtfZ
-	 qKwOzkI0AO3LKazonFb4XsDiCNW8sbTgwtr9XrK1e4LZd1rTuEGYiwDjnaOn/ce4Kd
-	 5rpxrksxzHMrA==
-Message-ID: <sashiko-outbox-203729@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: vt8500: Use devm_clk_get_enabled()
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Wentao Liang" <vulab@iscas.ac.cn>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <1794138380.2883200.vulab@iscas.ac.cn>
-References: <20260917155834.2161361-1-vulab@iscas.ac.cn>
- <CABjd4Yy-9A0xWCDfZemHOTZDrDdtdO05nUjmN=w=sLwYjzZn8Q@mail.gmail.com>
- <1794138380.2883200.vulab@iscas.ac.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sun, 08 Nov 2026 12:27:08 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=uepg/btE
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-491f34b4e0fso21571f8f.2
+        for <linux-serial@vger.kernel.org>; Sun, 08 Nov 2026 04:50:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794142255; x=1794747055; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=CBqySVJkYZ3V4pcutw3q75Mc5exUd/PgRrxhtsJ1kBg=;
+        b=uepg/btEh1J6bzh+gCN9Zj151yxywAD+XZyJKu18FAlnmkYGvq9vMoe6aQHBM1R6uF
+         AnFnlIyP2ySnYWchtG2uv4R6ZSxMvxqSAh33/wTEqSI1NGBHxaGoQKNrG2ro2fwHqQg5
+         jfNoUQ/LZi9mi2IZdDIv8eaya8PVhQKP3xG7uYj8v29Fdgdjym5PRGWjQKk0DIqdeX2G
+         bcmgmsb0hjv1ENLFfU+sILBcNSwGPGHniEziDKM2XXmbIGo9k+B6GskpKTTGXdQ7QHv9
+         2laYe09lrVfLN/6gJtUR3JUO+IMnPbyAp2ZF9WQMGDTb976f4wZ+7N9NYUgofancqiEP
+         QjPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794142255; x=1794747055;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CBqySVJkYZ3V4pcutw3q75Mc5exUd/PgRrxhtsJ1kBg=;
+        b=Sv6Vy6EHisHDDCqnQIzcOphmzPTYIH205+4yhrdOfFDQ4dJ635jviWU/gotqWyG2cK
+         k7Una5wpkI7o8vYirOaEr6WXklN3ju1y2XM7Abb1uNoj5iiH/DS80/Thp79QL0aK4Yd7
+         GP7FElTF3X5R/Xdf3ThL6v7mJvWEBVCOlnkmYmQvpsIYh9GMMhNYi49eWRCvfT18zYEj
+         9HjTD+Oh5NNjndKjuz/RhmuGuvZ1C9IktGTdO5imgy1mIjq7oMqyv+eHDR5hsukoVuY5
+         /l9TroM5TeRaMbYYZkWHmwtqtYTJQRsTlmR+vz/oooAbPAU9F8G4spuX/0zp3yeuGjg3
+         bHIA==
+X-Forwarded-Encrypted: i=1; AL+hErGwiCHNU+ANSP/i6gbLW/h3+vQWT6KqAZjuOcpQgdfKB0bFhgkmBzBYh+kVQJMoB/EbA18CkD1l7u0EKhM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/29BLSXg3C+bDVUETViLLeI02EvJh28ousw+8/iScMF1uECnD5
+	Q9L6BZxOMy0denvvqjid9VQAorFIMy5Z1bSd+L3XmQE0nCdJn7C0thkv
+X-Gm-Gg: AYBFou0VVFIRkpmz/jETG1eln5eXazoEJJPwHjAGF9RFpB7tLvU7XFQBz5BjCnr5nj3
+	N9mtanqO/PZxjTaMA9HXrN7JCxSEYqE1ojGSLw/rya9xYnD78vIBBXzBYfbLchBjeCodAMmhmVX
+	plF9cLfW8ucmt/k+Hlm91ADPUmKplt8EH+pJWUXv28/FUa6qgo1dd0Qpqu2iVfyRFSp/9l7QR/c
+	LgQzih+tNV/4YT2UNqRPT5SvCEcnSJc6Z+N4JNKsOoyQRx1H1y7FjzABcnkja3dDe5g8X/dV0He
+	iaLgMJldSkZuOH++RnUWGzhMEo4Fd3Bfln4GyT/mU4LaY7MnBvZ3tXlc8y6i39QrJ+n4PvuaV6A
+	2K5/UQl3rLs0WesRZlJVO0D9sRRSOkwtnjqVLgssWnDHL43K6baRtY6A6sotV35lq3t+i/w/N3l
+	7GIhf+aqjC3oa4tmkt6ID9qTtwcUFnb9YxTNHViZR3THnAZ4gBMH9kJ7LfKJPsjEb50WDMiO0E8
+	zzqngF0EZnSOSFT1YPBDwUSJ/v6nMuwmVKy7Ybj/qHQz2xeQ1EpwnoCnIuz7F4AZohM4Q1KURu+
+	yJv+a2OgTkfNH1IRfoEbgAgjk2O8PWKo+7JHdTbZKsw=
+X-Received: by 2002:a05:6000:2881:b0:488:89c7:31aa with SMTP id ffacd0b85a97d-495842b8bc6mr3133440f8f.39.1794142254769;
+        Sun, 08 Nov 2026 04:50:54 -0800 (PST)
+Received: from fedora.jkuat.ac.ke ([41.204.187.5])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-495e725c4ccsm2177680f8f.53.2026.11.08.04.50.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2026 04:50:54 -0800 (PST)
+From: Bramwel Barack <bramwelbarack89@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Bramwel Barack <bramwelbarack89@gmail.com>
+Subject: [PATCH] tty: n_null: remove legacy BUG_ON() from module initialization
+Date: Sun,  8 Nov 2026 15:50:31 +0300
+Message-ID: <20261108125031.33753-1-bramwelbarack89@gmail.com>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,125 +95,43 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential
-issue to consider:
-- [Low] serial: vt8500: malformed commit message and missing
-  Signed-off-by
-It also noticed 1 related pre-existing issue this patch does not
-introduce:
-- [Medium] serial: vt8500: port index leak in vt8500_serial_probe() [1]
---
+The use of BUG_ON() in module initialization paths is heavily deprecated
+as it triggers a kernel panic and crashes the entire system for non-fatal
+registration failures. If tty_register_ldisc() fails (e.g., if the slot
+is already occupied), it should be handled gracefully.
 
-commit 8b3881e4e3251512b27bf8982412d7a23856190f
-Author: Wentao Liang <vulab@iscas.ac.cn>
+Modernize the initialization path by capturing the return value of
+tty_register_ldisc(), logging a clean error message via pr_err(), and
+propagating the error code back up to the module loader.
 
-> serial: vt8500: Use devm_clk_get_enabled()
->
-> Hi Alexey,
->
-> Sorry for the very late reply. Working through the review comments I got
-> in September has taken me far longer than it should have.
->
-> Your suggestion was right, but the leak fix went in before I could act on
-> it: it is commit 9d8955281d92 ("serial: vt8500: Fix clock reference leak
-> in vt8500_serial_probe()") in mainline, and it kept the clk_put() you
-> asked me to replace. It has been backported to the stable trees by now as
-> well. So the patch below is not a v2 of that one, which would only resend
-> something that is already applied, but a follow-up that does the
-> conversion on top of it.
->
-> devm_clk_get_enabled() gets the clock and enables it in one call and
-> registers the disable and put with devm, so both the manual error handling
-> and the clk_put() go away. Probe now returns the error code from the clock
-> lookup instead of a hard-coded -EINVAL, and the clock is released
-> automatically through devres. The success path is unchanged and nothing
-> else in the driver is touched.
->
-> For the record on where this came from: the candidate came from our static
-> analysis tooling, and DeepSeek and GPT-6.1 Sol were used to audit it and =
-to
-> help write the change. I reviewed the result and I am responsible for it.
-> The patch is build-tested only: it compiles cleanly with W=3D1 for arm
-> (vt8500_v6_v7_defconfig, CONFIG_SERIAL_VT8500=3Dy) and passes
-> checkpatch.pl --strict; I have no VT8500 hardware to test it on.
->
-> Thanks for the review,
-> Wentao
->
-> From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-> From: Wentao Liang <vulab@iscas.ac.cn>
-> Date: Sun, 8 Nov 2026 11:41:30 +0000
-> Subject: [PATCH] serial: vt8500: Use devm_clk_get_enabled()
->
-> vt8500_serial_probe() gets the clock with of_clk_get() and enables it
-> with clk_prepare_enable(), so the reference has to be dropped by hand on
-> the error path, and the clock is never disabled or released afterwards,
-> even though the rest of the probe is devm-managed.
->
-> Use devm_clk_get_enabled() instead, which gets and enables the clock in
-> one call and registers the teardown with devm. The manual error handling
-> and the clk_put() can then go, and probe returns the actual error code
-> from the clock lookup rather than a hard-coded -EINVAL.
->
-> The clock still stays enabled as long as the port is in use, so the
-> success path is unchanged.
+Signed-off-by: Bramwel Barack <bramwelbarack89@gmail.com>
+---
+ drivers/tty/n_null.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-[Severity: Low]
-The commit message contains an unstripped email reply and embedded git
-format-patch headers, and is missing a Signed-off-by: trailer. Personal
-commentary and build-testing notes belong below the --- separator (or
-above a scissors line) so they do not end up in the permanent git log.
+diff --git a/drivers/tty/n_null.c b/drivers/tty/n_null.c
+index 5a429d923eb3..886f6789f872 100644
+--- a/drivers/tty/n_null.c
++++ b/drivers/tty/n_null.c
+@@ -32,7 +32,14 @@ static struct tty_ldisc_ops null_ldisc = {
+ 
+ static int __init n_null_init(void)
+ {
+-	BUG_ON(tty_register_ldisc(&null_ldisc));
++	int ret;
++
++	ret = tty_register_ldisc(&null_ldisc);
++	if (ret) {
++		pr_err("n_null: failed to register line discipline (%d)\n", ret);
++		return ret;
++	}
++
+ 	return 0;
+ }
+ 
+-- 
+2.56.0
 
-> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt85=
-00_serial.c
-> index fc6fdc751b167..73922523dff64 100644
-> --- a/drivers/tty/serial/vt8500_serial.c
-> +++ b/drivers/tty/serial/vt8500_serial.c
-[ ... ]
-> @@ -647,17 +646,10 @@ static int vt8500_serial_probe(struct platform_devi=
-ce *pdev)
->  	if (IS_ERR(vt8500_port->uart.membase))
->  		return PTR_ERR(vt8500_port->uart.membase);
-> =20
-> -	vt8500_port->clk =3D of_clk_get(pdev->dev.of_node, 0);
-> +	vt8500_port->clk =3D devm_clk_get_enabled(&pdev->dev, NULL);
->  	if (IS_ERR(vt8500_port->clk)) {
->  		dev_err(&pdev->dev, "failed to get clock\n");
-> -		return  -EINVAL;
-> -	}
-> -
-> -	ret =3D clk_prepare_enable(vt8500_port->clk);
-> -	if (ret) {
-> -		dev_err(&pdev->dev, "failed to enable clock\n");
-> -		clk_put(vt8500_port->clk);
-> -		return ret;
-> +		return PTR_ERR(vt8500_port->clk);
->  	}
-
-[Severity: Medium]
-This problem wasn't introduced by this patch, but does returning on error
-here (or from the earlier devm_kzalloc() and
-devm_platform_get_and_ioremap_resource() checks) leak the port index in
-vt8500_ports_in_use [1]?
-
-drivers/tty/serial/vt8500_serial.c:vt8500_serial_probe() {
-	...
-	/* reserve the port id */
-	if (test_and_set_bit(port, vt8500_ports_in_use)) {
-		/* port already in use - shouldn't really happen */
-		return -EBUSY;
-	}
-	...
-}
-
-If devm_clk_get_enabled() fails (for example with -EPROBE_DEFER), the bit
-in vt8500_ports_in_use is never cleared, so a later retry or re-bind will
-find the port still marked in use and fail with -EBUSY (or exhaust
-VT8500_MAX_PORTS for dynamically assigned ports).
-
-[1] https://sashiko.dev/#/bug/linux-ca000721-4a5b-4d88-bdb8-7f1e438dc81e
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/1794138380.2883200.=
-vulab@iscas.ac.cn?part=3D1
