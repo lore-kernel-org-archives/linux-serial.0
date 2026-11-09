@@ -1,100 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=74.125.82.171
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
-	t=1794192611;
-	b=3vkooLCVkuvqmQhduh0ioaYjXpx0sMOE6TlpEffobGAjVth/TGwQOom8wya4E+ajOiQD
-	 t+dAhGRKBl8jY3rfWHFozzgNuXxH24vMAv4mJ2r451gjnd+vLpU89hiWMOiwiRwfKa0Nt
-	 bl1AS+UqtRsNiip5rMmjHEM4rRfdvhAjd2lWqqvXccrZaqysTft7/7uDyLtPfIO66TLX1
-	 PV6co9Zj7UhfTZSFItMk+4+QYtyu9pceAz3UqIj5OX2sTMqWELeMkRtfkMrhpe4V30Fcs
-	 PBWFxvIdRmICH+qDXDeyMGIP9/MIWbpRxU2xRtaLHb9pZsQk9Z2/j3dZTcKQbfv5E/Q==
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.172
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794192870;
+	b=QFv8bMfD+U41YJZnnJZq5N+8XYHJHonpGpmbQfhdD5weCfMYAIoobCI9drCqHaXpTFyw
+	 4k/5gLff+0g6N/o2kSDsyqSL285Pu4s5kRotf6iIv3/9uj1sWnCkHa0FuW2fJZn6trP5q
+	 oCmmsMwD4QYk1z0Mt2vUh4nv4KTMb85sED78WgJafavJRcnBFkEDoY9oqIyh6R1+eHJEh
+	 H8DcEPgUYh2zU2q7UlbDVGyhxE6QAQNsMRvV+KeyT3Arbr7eNXqxCx2MkGFqKv4wHKDeL
+	 slFIoi/iDxwrNpsdlDsVM80abzoPbASRICngTi5yPtcXQD0pJEPTF8hjtblVZge3r4Q==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794192611;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794192870;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
-	b=14FqNePWly3Yz2PEhCRvm5vt4YNhrtTz5HgwLxRF5v5Fcj4ZBr5Od3+gAF22q8RdpxWf
-	 6LKlr8yD9AiWjHr37VW1y7/CCs30UXcRCnRfI4dN49wzsa5TXzuZBqO2e5nQZHerI0/hX
-	 KblGzRzwjUl7eRfwYkgZL53PSTIYXOdldGwxJt7940Xm3E25RHOgeFzRUg0jXqr/0GSGq
-	 lNFDe3tZ3areBwAegO3TpW51rOqsC5AwWfrfOaE8aXOVYh1s0v30DMdOfRhIHhAZV0Jz2
-	 k/UOgjQOEmj+R363Xe/99YRXO46FF3yqcYQxB0hlaDjTsPOFhRFnGmk0KfhOJ68nFFA==
+	bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
+	b=i2acFTDIYVFxW/su3YiYev1ScRHs5AkBntWM/r2NE+Ko7c59iwaaOvC2J2E/v9YeuAul
+	 9G82z2r17uTYHz0L58sTqJMe2Q3Pt8ED/B414Z7JWiMg2o+Xc0/k73lYRrRuDDs7AcKw3
+	 eC93vQ2FXzk/Ltq7+o+qKvRuPa9O5+AoXHwr3lpBwG6QT1x6+M+zGm611vMIB7g5k/6oS
+	 ptu/10k/0kYrmRioY5cAF25Gl2M+/8HwpanWY1JeOspKMYRd5T8ShUDRLexs6yE5JHNJW
+	 eQ7EGlVE5QZ4871BZyYhj5igup2XWypMkB/oCxf2FYG4EVGuGRy23Hjgo29cus/hDkg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=spacemachines.com;
 	spf=pass smtp.mailfrom=spacemachines.com;
-	dkim=pass header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b="ILww/xj7";
-	arc=fail smtp.remote-ip=74.125.82.171
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
+	dkim=pass header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=A+XTWgLg;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.172
+Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D053606A321
-	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 02:50:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2D053606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B81606A321
+	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 02:54:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02B81606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=spacemachines.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=spacemachines.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=ILww/xj7
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-36ff9c9da34so708735eec.1
-        for <linux-serial@vger.kernel.org>; Sun, 08 Nov 2026 18:50:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794192610; cv=none;
+	dkim=pass (2048-bit key) header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=A+XTWgLg
+Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-36dbde64409so726587eec.0
+        for <linux-serial@vger.kernel.org>; Sun, 08 Nov 2026 18:54:29 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794192869; cv=none;
         d=google.com; s=arc-20260327;
-        b=gMBJ+bh5+ftWERnvbq7hEZb0dPTujCP0L7FxbPJKREaEeQnl/FfLoYxfaraMyP0SHL
-         dc1joWlAygjD2cmSn1xuQOx10kGULQZPMgOQjByxd1Bz8tTczgMM0UVOwydMibzNhq9B
-         GYBadgeKlMVsU1QXCY++L50rQknhpLU46PssPXhgPCokH7q0N2Sawlw3q4p+vCAgEjC3
-         cXoiYXU9jL/5OHXaNP9Nvq3uMF2SNuErYYyu6LHGACMM/eEB5l4GlWM/EBwBCi9oYuo0
-         LYlw5KBAA6+sOuL0y7BiZWuSzHsHI3snvOeOgJj3lEPR3+Xk0FPdagyd0+Fyb2G01k7q
-         kQyA==
+        b=gLJ9YcMwHWeQ68ObntcnRXiB0c+OJH5hhnLQhWXNQyxqDpqzMzCMXflkSQcoQUNIva
+         AzSPbYBYptZJyaBQErb0LangSe+5Rc6L9aMX614OD0i8geu7Jog97zfjN0EGsGmq571n
+         4NO6EbUXjsYS+BniQrJ1kWJeyL9TS3tEloJg/XLeiTDUx+35eC7Q2TSo74cwqTx3gO3F
+         ayufXGzt9maXC7g+Vg/2rnOjh2qN7eZFRN+wpo7o1lnHKSw5k54Zum+d00ACBD1eaIQz
+         5omoxKsZm1zHHzFrcRAtX/v0GOB6l6pEz8HV3fLB61s3skMHQX44IHuJFxZSkepQukV6
+         0jtQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
-        fh=Gx6wiB5X8iXrAdXYJfI1PujcaB8gRYoqErrZHfI1wkE=;
-        b=mYCYYaMOa/m8MBGRrmBDil+8YcIbOvk//1K/iP0/465pJ7PMAonDFQFxQ+MuY66aua
-         lRh+vdOoFGyq/RIRCEVq89BdV9si+nVm7cEKdHWACan4FijIAxCelbOj5xdvyA9q1rKJ
-         VIsrzL6uOka+TAA63ad4x8WqCb2E4L66xHo7di8hs8X/KeDfn/MrlHBHyosQE342PzYg
-         ndy8PZdoQYY72tIgmVzKmdLLK+fuMkuRSNOjWjn1uShHTpcN/kyzRnXyG7JoAS+LRy3Q
-         +DDPViFk8K4w0BOLRhv8n8sysLDWeZl/wsn+f+p4tZsh8MSDvGnp+HYCXzClxQfGOlXu
-         SHkg==;
+        bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
+        fh=qB58Nx0XMn4q7gdM4oF2IJ91t5QIjxfdSanyE56Aon8=;
+        b=YdqojiOcbQVavDf5p6vVtoetyokPdipCHP/Tx+lX8zvipmMBj+bXP8YaeHqVbudWR6
+         w9sLzLee5tXNDY0sqzuOqWM+qnjFnjLTrdUl7bY8GDDG28Kq9XcMBJCXIXqawk79YPIy
+         ANpPGSoDLFNGSvoKdLDGpWjAfTDymtqyUHJz2W/UMnAdPZXwbEicOV72WXjC79ujyvWE
+         prx+m8NSS1VvblFMW1jrIAk0ou+nnCwdyLtpO76yhmrP3KwqvFzngdHhJUL/0OsO9/ME
+         5i6NlWB3XfVExaj7A2vxyNiSJ1hYY7Cywrmz9+Iouox5/jq5lIpyytJWmMxGkDxo+3l7
+         oM9w==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=spacemachines-com.20260707.gappssmtp.com; s=20260707; t=1794192610; x=1794797410; darn=vger.kernel.org;
+        d=spacemachines-com.20260707.gappssmtp.com; s=20260707; t=1794192869; x=1794797669; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
-        b=ILww/xj7Xp3Hs4hWMpGlZDMA45MuHuRp7Ipq58oF5l0mbLOZqesuXhF665BfF9E4AZ
-         GYmh5WB3sKwWpNZ/ezUO0PaM/8pgWL5R+HgDwghrPsONKKRJkUsH2Ghz+H6Kb/56iaMz
-         7jkCjhYFAeHfnBrQRZEHf9shrfVul3oIQBDK4vbU4AFbz88u0tuedCpNf0eZE6aMqy0B
-         KOM0mtWX84JxVM+zeDlrKw7D0sMCMoyUjsiO/K4iDy+lCywxvLxj2XVGvEliSRCP9N4l
-         bfJoas6JHUf5UwxjsrtGyn19Xo97S8ccWIpjh8bs02zBw8PnoqL95m5jYnBJnaOXy5ML
-         OlxA==
+        bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
+        b=A+XTWgLgnrqW+PCT7TIAIIkFzWhX5Buzzt2ApyCVF0MOnlG8Gi+M4EE5q0NaLoq1Ev
+         xPip4ML5lUHUiyZ5x2ApGnQrswnqqbtWfN2F+BglB0yjDc9W9JAFdOKJ/zYrzqQ6ttTg
+         X8qJUTdRDoFWV/PWbsOfYGw5P8h78PMyfkEHIr9suaJUzbKVw6eNzHnjgP3qtWwAxR2w
+         45q+B2oG8EoKqIsvtsVYgUDP1lNJve7W4l4p+hUagMNxjJbaE6XNu6ujr1KEzzK/fyr5
+         UG2R31p4ny/82LbEIp9YTBUJgH/cqrS5+HMPMK8IEhvuspgz01J7cId5LwMTWfx3w+1Z
+         OHqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794192610; x=1794797410;
+        d=1e100.net; s=20260707; t=1794192869; x=1794797669;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
-        b=QXQzkMpd7c4f8UshMefzq+X+Z7+buguAzK/l5Fa16ZgbKAzAQ5/q2uIrawPFKGCCVf
-         fSozvMoUsYOtHNgf+F6wykv5jBAR+LLe9GGBLy3i/Olu8ZmilJzqYxXYoEhHhwSjVHdS
-         Y/+q0Sva5vetbhdvMJSe0l92cSFaRcf7bq7xCIt8Qb3HvvEzyBoH4+94wBb4Omai4Ft5
-         wfq2i17Xa/eNVYi2mgKR5wqhtzwIR2UvFq6cqxeyePopActAz+niCN4RWbrEjMxUQIHq
-         uc9JMz6uwgpxJQhE+rLnPh/V5p/WDEgcjQEabkNLmxneTTcBdnCjp/dmDtsHRXiXdYfB
-         glfA==
-X-Forwarded-Encrypted: i=1; AL+hErGmea7VaGbzDDXx0LtY8UV5GJATEwUdklVggjQElCCrdtfjU1C6NCWDyfvienJAmXdy7YNePjTFCdPC3sE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+KIVp9H/qiFnPH3HoWXEJpLj8tLcM8Sv7y9EikXfC20ImC023l
-	XnUJLakqPIsNJSi19k4XKUrgkHDwnfv1gXNd4TWSLuso7wsMJYcRhZOey1VHNRBl0LKuZ9tVi1K
-	SICPB3Ltv9JxLEsYWdsBsvGyHKZ+sZ41v2/s1OYO4vw==
-X-Gm-Gg: AYBFou1jwdkAkxhiiCLOQ2T4DDHeR8bJ+/2XL3nCtR4N4BafadRBUcAaW9f6p9c3kDj
-	uNCYts+BZsrgbHAr/WqDiYyj46KfLFt0AWb9IZTnWuxEZ3DbsIh7Fnx59BJqczepB+qZImIE0EG
-	wnk5eeXlmpqczgyy9ovQiwpxlfU6hwEr55dvKyg774mG166Wh0PJBaS3z5P3nj4WoyJUl0iSW/V
-	DPYYCUHvudbVKacxhq77ST3YfLbgLPX4vwnBmTfm73wQqdOnp+jhEHLkKZyltlVYLM6dMgStK1k
-	UiUn+6ZZ3RRYTXbbN3l6As0OzcqULyDkB9v9Dv3/oNJqoQir/EUg37LdQxUNKPMzxsCY+S9sv0b
-	ZX2sm+NM3fmvoCBu1oDScbErEP4vY+/wZh0fRLQ==
-X-Received: by 2002:a05:7301:f29:b0:36e:b3e6:ebe7 with SMTP id
- 5a478bee46e88-37256bf3a85mr5778794eec.26.1794192610085; Sun, 08 Nov 2026
- 18:50:10 -0800 (PST)
+        bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
+        b=DxvaJLhNwq9yxZrbtamXbSoViPzBAIynUI1WfdS/leQD0TVxIkbaDA7RvZkVnFscY1
+         RQalXI5sfLB6m1EogIakjLkujJx4/2jxHdG4L77lbBSNAMdGkqvVPosbNw2FTDenyZI+
+         954wDdJx5/UVP9FpXkLuA6/P8AqnoXMM2BoLAMk0BCTRS2BRP24SXyNir6mbXi9Y/aqw
+         rqo21TEhpkRO7G8gxPZq8YjpEoRBLzi7Nd1arI4uTtRzcN8B9sKdMNTVXbdJfQOZ7c2l
+         n5CTHC+KUPN28uu1NCtD9FUzw+7V+ThhoGfoFCI2y7ljQxTXJEOgv3u64i+alPD+Gw8U
+         3Ecw==
+X-Forwarded-Encrypted: i=1; AL+hErFZf71m/Sayu+xY8xNJUc2949W1BpoD2uETE+Nxxrun4FAkj6RDXFnF2yhYAVJdAhRqZd/DDhCZpcCdIsQ=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9g6SVrRJppR1YOZ0VXRB0or2slGZzj/Qj2kXk3OHYrjdR+iLJM
+	Z2GR94dy798uc1B1pqEch4Qz1SpGvOs8Q2Mz8/alu/3J+XX87XxNjnSFi/PjOrHcvOQPkqk4Mnw
+	fpu4+m/AQzZ4O1w8zimVnWCSx/W8+hr1dVkE6SNdqZw==
+X-Gm-Gg: AYBFou3a/p/HgjzyRhSRVYNbLt1cvLegbLKozb+v9EOa6G0jIhXgrrPvGw2LXWZuzDp
+	Pz/sdpjNfWfpHZ1FC9T4u9Z51cE4EyUsEQ29XhAFUDEXDvaZLS3bF1sZvMSC2eyYAWTQgmvu1TK
+	gT48mCkxD6NVXU0im50TyHIy+V/Q6gDWjdn1yGr3PqQ16dQc8pVogGfl/vjE7Uz2tRBX5b6Sq+k
+	REakNPtURmUJhHfZJMvfW779MHcxFCJPRnZeUh2hI+XcM08vuBh134bxyR/0V5/WVKBEOanqyMi
+	jPuLGxdwNMygCmb59yaEb29y22HvcP7rrtq69oRxhsbftuge6SZ1bfaGp9DYJVDTR5P9yTMgGCc
+	zA0ca8JcJd7EI+A0jih24+FxGvznFvZdi2bKSgw==
+X-Received: by 2002:a05:7301:4601:b0:369:f9da:a70f with SMTP id
+ 5a478bee46e88-372579ada0cmr5004293eec.17.1794192868908; Sun, 08 Nov 2026
+ 18:54:28 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -105,13 +105,13 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 References: <20261103-core16550-rs485-v1-0-6d15ebe1e5b9@spacemachines.com>
- <20261103-core16550-rs485-v1-2-6d15ebe1e5b9@spacemachines.com> <20261104-aqueduct-caregiver-1513775dd0f8@spud>
-In-Reply-To: <20261104-aqueduct-caregiver-1513775dd0f8@spud>
+ <20261103-core16550-rs485-v1-1-6d15ebe1e5b9@spacemachines.com> <20261104-zen-aloha-35da49a7e72c@spud>
+In-Reply-To: <20261104-zen-aloha-35da49a7e72c@spud>
 From: Kohei Otsuka <kohei@spacemachines.com>
-Date: Mon, 9 Nov 2026 13:49:58 +1100
-X-Gm-Features: AclHuK_TaLU_humEBm6TAF3Q-YezCM8lbSJnIvWc-8zfqGYMOgplq9g4PPOrSlU
-Message-ID: <CADMKYUBHCG3h4tGuDTZUyrLSK1UJmDZvTAvVtmZchtPBTy2WwA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] serial: 8250_of: drop RS-485 RTS on Microchip Core16550
+Date: Mon, 9 Nov 2026 13:54:17 +1100
+X-Gm-Features: AclHuK-Q4F2OkjltIrYE04Gknko9UUPJ0_lJdkzGPXUFMua3_w-rpVx6FPuUaIQ
+Message-ID: <CADMKYUAc3QPCdpH8JL9VHk4d0iETsUL2ao2i4OhoHYoZGoAnnQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250: add Microchip Core16550
 To: Conor Dooley <conor@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
 	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
@@ -120,97 +120,65 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kerne
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 5, 2026 at 3:28=E2=80=AFAM Conor Dooley <conor@kernel.org> wrot=
+On Thu, Nov 5, 2026 at 3:20=E2=80=AFAM Conor Dooley <conor@kernel.org> wrot=
 e:
 >
-> On Tue, Nov 03, 2026 at 11:11:32AM +1100, Kohei Otsuka wrote:
-> > Core16550, a 16550-compatible UART for Microchip FPGAs, interrupts on
-> > THRE but not on TEMT. When the last character moves from the FIFO into
-> > the shift register, the THRE interrupt calls __stop_tx(), which finds
-> > TEMT clear and, without UART_CAP_NOTEMT, returns to wait for a TEMT
-> > interrupt that never comes. RTS, and with it the RS-485 driver enable,
-> > then stays asserted after the frame, and receive interrupts, disabled
-> > for the half-duplex transmission, stay off.
+> On Tue, Nov 03, 2026 at 11:11:31AM +1100, Kohei Otsuka wrote:
+> > Core16550 is a 16550-compatible UART soft IP core for Microchip FPGAs,
+> > including the fabric of PolarFire SoC. Its registers follow the 16550A,
+> > so ns16550a stays the fallback, but
+>
+> > it raises no interrupt on TEMT,
+> > which the driver has to know about to support RS-485 on it.
+>
+> Doesn't this exclude using the fallback to ns16550a, since it requires
+> specific interrupt handling?
+>
+Everything a plain ns16550a driver does works on
+Core16550 including transmit, receive, FIFOs, modem control and the baud ra=
+te
+divisor. The only thing that needs the specific compatible string is
+software RS-485
+(em485), which waits for a TEMT interrupt the core doesn=E2=80=99t raise.
+Without the patch, RS-485 direction control is missing, but the UART
+otherwise works. If you=E2=80=99d rather
+not have the fallback, I can match the compatible in 8250_of directly.
+
+
 > >
-> > Set UART_CAP_NOTEMT for nodes compatible with "microchip,core16550",
-> > so em485 drops RTS from its stop timer one frame time (plus 1/7) after
-> > THRE, as it does for DesignWare UARTs.
-> >
-> > Set UART_CAP_FIFO as well: with the capabilities already non-zero,
-> > serial8250_do_startup() no longer fills in the PORT_16550A default,
-> > and without UART_CAP_FIFO serial8250_clear_fifos() does nothing, so
-> > the RX FIFO is not flushed at the end of a half-duplex transmission.
+> > Add microchip,core16550 with ns16550a as the fallback.
 > >
 > > Link: https://github.com/linux4microchip/meta-mchp/issues/5
->
-> It's worth noting that in that GitHub link I pointed out that the time I
-> recall this core being used they required changes to the baud rate logic
-> in the driver and that there were differences between how the baud rate
-> is actually determined from the input clock:
-> | The docs for core16550 say:
-> |
-> | This block takes the input PCLK and divides it by a programmed value (f=
-rom 1 to 216 =E2=80=93 1). The result
-> | is divided by 16 to create the transmission clock (BAUDOUT)
-> |
-> | whereas ns16550a docs say:
-> |
-> | The UART includes a programmable baud rate generator
-> | that is capable of dividing the timing reference clock input
-> | by divisors of 1 to (216-1 ), and producing a 16 x clock for
-> | driving the internal transmitter logic. Provisions are also included to=
- use this 16 x clock to drive the receiver logic.
->
-> Kohei reported not being affected by this, but I figured it was worth
-> mentioning.
-
-Thanks for flagging it. As I read the two quotes, they describe the
-same arithmetic: Core16550 divides PCLK by the divisor and then by 16,
-and the 16550 divides its reference clock by the divisor to get a 16x
-clock. Both give baud =3D clk / (16 * divisor), which is what the 8250
-driver programs.
-
-That matches what we see. With PCLK at 50 MHz, the driver programs a
-divisor of 27 for 115200 (115741 baud, +0.47%), and all four ports
-exchange data cleanly with external USB-RS485 and USB-RS422 adapters.
-They wouldn=E2=80=99t if the core divided differently.
-
-
->
-> Cheers,
-> Conor.
->
 > > Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
 > > ---
-> >  drivers/tty/serial/8250/8250_of.c | 9 +++++++++
-> >  1 file changed, 9 insertions(+)
+> >  Documentation/devicetree/bindings/serial/8250.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
 > >
-> > diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/825=
-0/8250_of.c
-> > index b41ca604083f..2f1f505501a2 100644
-> > --- a/drivers/tty/serial/8250/8250_of.c
-> > +++ b/drivers/tty/serial/8250/8250_of.c
-> > @@ -278,6 +278,15 @@ static int of_platform_serial_probe(struct platfor=
-m_device *ofdev)
-> >       if (port8250.port.fifosize)
-> >               port8250.capabilities =3D UART_CAP_FIFO;
-> >
-> > +     /*
-> > +      * Core16550 has no TEMT interrupt: without UART_CAP_NOTEMT the e=
-m485
-> > +      * code waits for one after the last THRE interrupt and never dro=
-ps RTS.
-> > +      * Set UART_CAP_FIFO too, because a non-zero value stops
-> > +      * serial8250_do_startup() filling in the PORT_16550A default.
-> > +      */
-> > +     if (of_device_is_compatible(ofdev->dev.of_node, "microchip,core16=
-550"))
-> > +             port8250.capabilities |=3D UART_CAP_FIFO | UART_CAP_NOTEM=
-T;
-> > +
-> >       /* Check for TX FIFO threshold & set tx_loadsz */
-> >       if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
-> >                                 &tx_threshold) =3D=3D 0) &&
+> > diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Docum=
+entation/devicetree/bindings/serial/8250.yaml
+> > index 50d5c977afa3..33a5929bdaa6 100644
+> > --- a/Documentation/devicetree/bindings/serial/8250.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+> > @@ -137,6 +137,7 @@ properties:
+> >                - ti,da830-uart
+> >                - loongson,ls2k0500-uart
+> >                - loongson,ls2k1500-uart
+> > +              - microchip,core16550
+>
+> This needs a -rtl-vX suffix on the end, as is used for other fabric
+> cores - see microchip,corei2c.yaml for an example.
+>
+
+v2 will use microchip,core16550-rtl-v3, thanks.
+
+> pw-bot: changes-requested
+>
+> Thanks,
+> Conor.
+>
+> >            - const: ns16550a
+> >        - items:
+> >            - enum:
 > >
 > > --
 > > 2.53.0
