@@ -1,99 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794265083;
-	b=tGv9Dz0OJnVkOjafyNlAK0YbahQREt4b5joTjw8Qfgn0f2prLMP4XCvt1yGOyVJkK8+U
-	 PNEXzdiUTw2FXIGMMQqxk/iGV1fbS7roBIE4WDCAVQ5/5IQ2JdbZurI8+1Ut3qZ4h489Q
-	 t9RtabahXUurgGvGcTESbTF6aasQRsk5WHI+x9NDSFe4Jx4b001ZgobIeaUoaylz8RKc2
-	 LsOMNqz+xw4a/zG2g7EPK3hNC6X9IGrYTXRN+jw1JSnFQD4plrqbdkjj3Ffh8pC5F8NzX
-	 6GmwNYObEgS/FyUoyDZ4zRh2EzRimNHCydc6/2/pRiFnIp86EDZHtm96SS/K+hohTHA==
+	t=1794265530;
+	b=K+q3gFRJfVqKLmbPcIjYEg0qkpJGWVYozPPXlfA7CiwAINSzYP7CTz2zFAlYbWBtt69l
+	 GLMC/JPpBWQn2J4+/xD3vJn1SssysX4i+sXIeEOXS7vfNRoj1ZGbsIZ6EwNEOTaG/rQIw
+	 R0DyBEeFgbX59tvFWS1/05aSoJioP1SOwEHAJMZEmNzEJtyQncs5Asa6nP7mnGMYGrzCc
+	 7jtQSiHcMkZ4nQt/dMH0PZC9fkRPKr18n35CdpbLF5EevTuEC163fBgJouVCNa2HdLTaY
+	 WRFPUxc4ccfrQ49E5BuhfHHvSrqp/EkoYZEiW4LF++AdK6CuSi3YefyagIZs8kzLpCQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794265083;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794265530;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=APuVGr9Syfi20cMf1JwWjHvFw/aqU07E3GrFheF9DSw=;
-	b=Zv8ggkBCd3t+4p8Ak3++YL2rdv8XryP2ROHpAYUSQAcez2EGaRykLMracd0jlyv7CO+w
-	 pW6PYIDDdkr4tBfXziXiGkIAn6jPShBgdL0IP3cFKH1cvIXH5nXZFC58ZTXXWHFufvXFR
-	 94DUkaRbnXvqpJwd/Kb6DB156x2uCW9em9dKhvqXlnWbOQgBeR1RNc/ND2ajlW/hK28jp
-	 iZ0VbeKrNdKwd87hH+Z1Al69zK/j62h+W2ORZYfYR7DkThXzfUQTlTkDdjUl/eSCJvFMs
-	 KSejXg/nDcOCEqjovBz+d8q5Gcq8yCahZxPR2bSAVfaeRjZqP8WCwB7SHu6P14RQEwQ==
+	bh=4FhdLPD0grYX+522WudA2QHSLtTJRmqNQOiiL/At1p0=;
+	b=nZbN3JxnUtADvMLh5VQ8G6YablnR2ed5GUxCE1oaiHCMLGEjAg5U/CNkXrZZk0b3pDWs
+	 684OwrYxZQ+Yc0FdEnn4u2mt8WwTwI9DPLWwtkzEFvWOJV88kmOaXjwoAQc7s7gWtii0j
+	 SCSQJh7nLzgdUd/ClTTy1ysEAGjS3aBV5kCeg6ccW/zLJtvYTglPBVPMg8p30FYh9VhmW
+	 CdPTnpDY+NUeWhsruABg/RsnTgTFEOzC9c9t1p3L33Xu0xd/Zpzs/FFDFCp5xza7YgpOD
+	 /iyiaSRG8J2GH+1GTv9sgvpJN0SyNYWpmkKjttGzIhV1n4XXDETpI/G/LjZEXxUhZ3A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=P2o3myNT;
-	arc=none smtp.remote-ip=192.198.163.10
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cDog95Vw;
+	arc=none smtp.remote-ip=198.175.65.17
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C279B606A321;
-	Mon,  9 Nov 2026 22:58:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C279B606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1216606A321;
+	Mon,  9 Nov 2026 23:05:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1216606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=P2o3myNT
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cDog95Vw
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794265083; x=1825801083;
+  t=1794265530; x=1825801530;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=gLk2yVe76ajtu1KrWCk+zmfgNuAUqzVJtyq7tY5vbag=;
-  b=P2o3myNTBMmgQCZWcFtsSLgSIu6plTgz4TwXfcWlrOzcv8TQwJ46cMgQ
-   qjrCqW9gh804hq+oqdxlEm276NGvCYukickQw83yR9S1lnbnZeMMFjtOD
-   z7cc2MJ2gLcAS0V5Zuz/bBAJcfsZZwKawd+9mva+C3CdpbEk+YdVn4QTF
-   B4Oyh0zNOuNOeu+fVBm4eQJAv4fw03EIvIzXl20QS5ZIH4JXenbr7S4yk
-   0mE0dOLZ4whIk6kPOwBWpHTfR7RTSxUlEVMEWLrZUGP6502r+VcANu+54
-   rZyAFgNedEN0fLy5YVzoosE1MYWpVSjysa/OXw5qeANcRGQEE1DV5JU+C
-   g==;
-X-CSE-ConnectionGUID: fPjr6SLlSjaLljuMwHkDmw==
-X-CSE-MsgGUID: 9jsOWlZUQmCAo/+21NSL1A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2899342"
+  bh=fA/YuYOZqr8nX95JQI9ayGBQbBahOSJO/lfwcBjsiT4=;
+  b=cDog95VwMtwqTZNfRxKUH2i74IhEEGM0vN/T/6svPCn2qc3CFEZ1P2w6
+   Ed8g+pa37ROwgiqavvWEUARqsQ3D+rYMk4uaDZyty8tWaxgEZ6e6iUiVb
+   DbxKKQMOkbawPCLLeU5ok7cDAcMdBq9N2YhAHWxwPTELA2Bm3cTfPNkBv
+   K5rsP5tNjp1Wgm60Tf62lH1hGDJvST5PDKRCJBCUzbhJfHyL/EZQAGUpG
+   in1i8Vlv5S8znI6gXBFjTPiD8lYuCmZ2QAY/eS1OOpkutLlPGX5moqZiz
+   MSVH+QsL41316pYSKWtFFWhD5iIJd2zoRKQFHlREgTw060+/LU1ntnHG2
+   A==;
+X-CSE-ConnectionGUID: NUEuXk9AT/2kg4UHPKzLZg==
+X-CSE-MsgGUID: NpPTSRPDRy60frr9uzp8iQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3029789"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2899342"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 14:58:02 -0800
-X-CSE-ConnectionGUID: T3RHJ0ZVRUiHpNbWBPbDdg==
-X-CSE-MsgGUID: /OnDlxXBTTKRLkahbt7bZw==
+   d="scan'208";a="3029789"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:05:29 -0800
+X-CSE-ConnectionGUID: O1fhqldaSzi1N7PVHOdtOg==
+X-CSE-MsgGUID: XivK/JkIRVmktnl1NeCaEA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="7998415"
+   d="scan'208";a="9845093"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 14:57:55 -0800
-Date: Tue, 10 Nov 2026 00:57:53 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:05:24 -0800
+Date: Tue, 10 Nov 2026 01:05:22 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Raul E Rangel <rrangel@chromium.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Richard Genoud <richard.genoud@bootlin.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>,
-	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>,
-	Timur Tabi <timur@kernel.org>,
-	Peter Ujfalusi <peter.ujfalusi@ti.com>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Patrice Chotard <patrice.chotard@foss.st.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v10 2/8] serial: serialize asynchronous write wakeups
- with the port lock
-Message-ID: <avJP8Sym_LQX9UVc@ashevche-desk.local>
-References: <20261108-submit-serial-8250-dma-cancel-v1-v10-0-e6227ddb95b1@gmail.com>
- <20261108-submit-serial-8250-dma-cancel-v1-v10-2-e6227ddb95b1@gmail.com>
+Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v8 01/11] serial: 8250_dw: allow port setup to report
+ errors
+Message-ID: <avJRsij5P7Ch3tqE@ashevche-desk.local>
+References: <20261105-submit-h616-uart-fifo-v1-v8-0-14024d2b184b@gmail.com>
+ <20261105-submit-h616-uart-fifo-v1-v8-1-14024d2b184b@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -105,127 +89,34 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261108-submit-serial-8250-dma-cancel-v1-v10-2-e6227ddb95b1@gmail.com>
+In-Reply-To: <20261105-submit-h616-uart-fifo-v1-v8-1-14024d2b184b@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 08, 2026 at 08:50:11PM -0700, James Hilliard wrote:
-> uart_write_wakeup() expects the UART port lock to be held. Several worker,
-> DMA completion and interrupt paths call it without that lock, including
-> indirect calls from uart_handle_cts_change() and the transmit helpers.
+On Thu, Nov 05, 2026 at 01:52:02PM -0700, James Hilliard wrote:
+> Return a status from dw8250_setup_port() and propagate failures through
+> the DW and LPSS probe paths before registering the UART. Use the existing
+> LPSS cleanup path to release board resources and IRQ vectors on failure.
 > 
-> Take the port lock around these notifications or their transmit helper.
-> Keep sleeping SPI and regmap accesses outside the locked region, and keep
-> the FSL LPUART completion lock held through its wakeup. Acquire the port
-> lock after releasing private channel locks to preserve the ordering used
-> by UART callbacks. In the MUX timer, publish available FIFO space under
-> the port lock and keep the hardware FIFO-drain wait outside it.
-> 
-> Use plain port locking in hard-IRQ handlers and in helpers whose callers
-> already mask interrupts. Atmel status handling is also called during
-> resume, where lock_suspended is acquired with interrupts disabled; JSM
-> interrupt processing holds its IRQ-saving board lock. Keep IRQ-saving
-> locking in workers, tasklets and other mixed-context paths.
-> 
-> Take the port lock after requesting the ST ASC interrupt and hold it
-> through startup's transmit servicing and RX interrupt enable. The transmit
-> helper can notify writers even when the FIFO is empty, and serial core
-> calls startup without holding the port spinlock.
-> 
-> Use IRQ-safe locking in the Atmel RX and TX tasklets and SB1250 termios
-> path, since their interrupt handlers now acquire the same port lock.
-> Preserve the caller's interrupt state when releasing those locks.
-> 
-> On SB1250, lock modem-state updates after reading and filtering the change
-> status, and wake modem-status waiters after unlocking. Take the TX lock
-> inside its service routine so RX-only interrupts need no acquisition.
-> Keep that lock across x_char handling, FIFO consumption and the decision
-> to mask TX interrupts: a writer must not enqueue data and enable TX between
-> the empty-FIFO check and the interrupt-mask write. Each TX invocation sends
-> at most one character.
-> 
-> Serialize CLPS711x TX servicing and its interrupt-enable state with the
-> port lock. Disable TX interrupts without waiting in stop_tx(), since a
-> threaded handler may need that same lock. Have an already queued handler
-> leave stopped output untouched, and drain it outside the lock during
-> shutdown before the transmit FIFO can be released.
-> 
-> SCCNXP handles interrupts under a controller lock which its UART callbacks
-> acquire with the port lock already held. Collect the ports needing wakeups
-> in an unsigned long bitmap while servicing the controller, then release
-> that lock before visiting the set bits, taking each port lock and
-> rechecking the wakeup threshold. Removal drains the IRQ or timer before
-> unregistering the ports.
-> 
-> This serializes write notifications with port-locked serial-core state
-> changes, allowing readiness and transmit-storage reservations to gate the
-> notification without a check-versus-shutdown race.
-> 
-> Cover DZ TX servicing and JSM Classic modem notifications as well. On
-> DECstation ZS, acquire the port lock before the SCC lock and notify writers
-> after releasing the SCC lock. Defer normal TX restart after console output
-> to a worker, since console output can already run under the port lock.
-> Check transmitter readiness before consuming another character and drain
-> the restart worker during shutdown and removal. Release Lantiq's hardware
-> lock through the transmit helper's completion hook before notifying the
-> line discipline.
+> Keep the current setup behavior by returning zero on both successful
+> paths. This separates error propagation from the configuration validation
+> that will use it.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+after addressing below piece.
 
 ...
 
-> --- a/drivers/tty/serial/sb1250-duart.c
-> +++ b/drivers/tty/serial/sb1250-duart.c
-
-> -	if (delta & (M_DUART_IN_PIN0_VAL << S_DUART_IN_PIN_CHNG))
-> -		uart_handle_cts_change(uport, !(delta & M_DUART_IN_PIN0_VAL));
-> +	if (!(delta & ((M_DUART_IN_PIN2_VAL | M_DUART_IN_PIN0_VAL) <<
-> +		       S_DUART_IN_PIN_CHNG)))
-
-Just keep it a single line.
-
-> +		return;
->  
-> -	if (delta & (M_DUART_IN_PIN2_VAL << S_DUART_IN_PIN_CHNG))
-> -		uport->icount.dsr++;
-> +	scoped_guard(uart_port_lock, uport) {
-> +		if (delta & (M_DUART_IN_PIN0_VAL << S_DUART_IN_PIN_CHNG))
-> +			uart_handle_cts_change(uport, !(delta & M_DUART_IN_PIN0_VAL));
->  
-> -	if (delta & ((M_DUART_IN_PIN2_VAL | M_DUART_IN_PIN0_VAL) <<
-> -		     S_DUART_IN_PIN_CHNG))
-> -		wake_up_interruptible(&uport->state->port.delta_msr_wait);
-> +		if (delta & (M_DUART_IN_PIN2_VAL << S_DUART_IN_PIN_CHNG))
-> +			uport->icount.dsr++;
+> -	if (!data->skip_autocfg)
+> -		dw8250_setup_port(p);
+> +	if (!data->skip_autocfg) {
+> +		err = dw8250_setup_port(p);
+> +		if (err)
+> +			return err;
 > +	}
 
-...
-
-> --- a/drivers/tty/serial/sccnxp.c
-> +++ b/drivers/tty/serial/sccnxp.c
-
-> -static void sccnxp_handle_events(struct sccnxp_port *s)
-> +static unsigned long sccnxp_handle_events(struct sccnxp_port *s)
->  {
-> +	unsigned long wakeup = 0;
->  	int i;
->  	u8 isr;
->  
-> @@ -491,20 +492,40 @@ static void sccnxp_handle_events(struct sccnxp_port *s)
->  		for (i = 0; i < s->uart.nr; i++) {
->  			if (s->opened[i] && (isr & ISR_RXRDY(i)))
->  				sccnxp_handle_rx(&s->port[i]);
-> -			if (s->opened[i] && (isr & ISR_TXRDY(i)))
-> -				sccnxp_handle_tx(&s->port[i]);
-> +			if (s->opened[i] && (isr & ISR_TXRDY(i)) &&
-> +			    sccnxp_handle_tx(&s->port[i]))
-> +				wakeup |= BIT(i);
-
-__set_bit()
-
->  		}
->  	} while (1);
-> +
-> +	return wakeup;
-> +}
+No, don't change it here, the return value will be simply ignored until the
+change that will make use of it.
 
 -- 
 With Best Regards,
