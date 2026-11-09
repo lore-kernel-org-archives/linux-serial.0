@@ -1,56 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794262421;
-	b=pFzlmRc+cyvphbA9iLybJh4DoelA5LJKqFMtTY0cSCmRihYvWqCylvAwccOie4bS/2NS
-	 rN6c53Hs3QEFRVVppk1WIEvrxPzFlYBfzLKJqqx7aAdrkZ/gbNyGurHF6t1+16xARtoyJ
-	 c7KX8rtMGljrlFMGMmSQpBIZ3t99gUYLYTKGMGk9TK3PikVGWtOoPu4AOBFUaMm3x9rFP
-	 0do2IBwZjRSD9l4e0KOan4dKKOhTKz0UIEK1I3n7T0SeqagsgWANsEOe80Jd8udIBljlq
-	 2D7Se07P8iOEp0XbdRqMNqNcBTzOaWc6ikO6+35nbN4tXlkiPYJPYne7ZX3oe+e93Rg==
+	t=1794265083;
+	b=tGv9Dz0OJnVkOjafyNlAK0YbahQREt4b5joTjw8Qfgn0f2prLMP4XCvt1yGOyVJkK8+U
+	 PNEXzdiUTw2FXIGMMQqxk/iGV1fbS7roBIE4WDCAVQ5/5IQ2JdbZurI8+1Ut3qZ4h489Q
+	 t9RtabahXUurgGvGcTESbTF6aasQRsk5WHI+x9NDSFe4Jx4b001ZgobIeaUoaylz8RKc2
+	 LsOMNqz+xw4a/zG2g7EPK3hNC6X9IGrYTXRN+jw1JSnFQD4plrqbdkjj3Ffh8pC5F8NzX
+	 6GmwNYObEgS/FyUoyDZ4zRh2EzRimNHCydc6/2/pRiFnIp86EDZHtm96SS/K+hohTHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794262421;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=cr6TeSdNfMHw/1nJfKi3H064sp9lIKphveB9fXNWYOo=;
-	b=chWUFVhVyvIiWauUMDEQ4ePCOpc63p3NEbN2SztPEaXj6CwfWzqWcgjSznlM8kyuTD7Y
-	 9nAQxw9/hIYBiOc9hxCfdAQ2dmZ2bF3sYLWsdQvQ9ka7Grh/eVRL92Sa+4IVwuqFtm0to
-	 RzoTuMzfq5XNxVxAWt6KlkzprhKzngqrUexfOOLNbOMnZDiWMgJSGb3xr/s7ZWIFNYPP3
-	 Z0aVMQExoDbS4U/XPIwbvc+TPe4FwFIQqlwa/ili/pCAlMI3UMHb8Hhf0C8qy4O8KwySk
-	 2EwuC9xhqniVQzthumcmbdPdd+IbQ9K8T75vvBaEUN49ckUCt4wtuv/VTt7ECfXFkoQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794265083;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=APuVGr9Syfi20cMf1JwWjHvFw/aqU07E3GrFheF9DSw=;
+	b=Zv8ggkBCd3t+4p8Ak3++YL2rdv8XryP2ROHpAYUSQAcez2EGaRykLMracd0jlyv7CO+w
+	 pW6PYIDDdkr4tBfXziXiGkIAn6jPShBgdL0IP3cFKH1cvIXH5nXZFC58ZTXXWHFufvXFR
+	 94DUkaRbnXvqpJwd/Kb6DB156x2uCW9em9dKhvqXlnWbOQgBeR1RNc/ND2ajlW/hK28jp
+	 iZ0VbeKrNdKwd87hH+Z1Al69zK/j62h+W2ORZYfYR7DkThXzfUQTlTkDdjUl/eSCJvFMs
+	 KSejXg/nDcOCEqjovBz+d8q5Gcq8yCahZxPR2bSAVfaeRjZqP8WCwB7SHu6P14RQEwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="RX/YzDpP";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=P2o3myNT;
+	arc=none smtp.remote-ip=192.198.163.10
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AFC5606A33F
-	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 22:13:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C279B606A321;
+	Mon,  9 Nov 2026 22:58:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C279B606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RX/YzDpP
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597621F008A4;
-	Mon,  9 Nov 2026 22:13:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794262421;
-	bh=cr6TeSdNfMHw/1nJfKi3H064sp9lIKphveB9fXNWYOo=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=RX/YzDpPIhZApjeX/R+y8AKAVrNWU9j9eFknu45NhduEpDn4T+LUAmTzRucD+8dDD
-	 og/bLMrP+pqfyMVMt0OEi71zkD+TXc/QfqQAKyUVU+QvEZ69v6BETliP5qhLOFYjPy
-	 +c1BaTN+7oE7JlotVpD1+Fs6+zctlREOhWWiXN1U8drr3/Ol9/EbmbQUd9ACSwWHiF
-	 YuBe5iBuUXSFpHAkypg3HecYa2q6DRwnHWsgDBLiopd2NWSLzokz0xGEbMQQkw1GEg
-	 CEdWY2q9QYXQv9Fvn3gWbuWzHUQMMkICuq1UeB9i/jw761fYo7j+P7I0xYJsWLcss9
-	 d27O7VpQLRuhg==
-Message-ID: <sashiko-outbox-205706@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 2/2] serial: 8250_of: add Microchip Core16550
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Kohei Otsuka" <kohei@spacemachines.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261110-core16550-rs485-v3-2-4294334243fa@spacemachines.com>
-References: <20261110-core16550-rs485-v3-0-4294334243fa@spacemachines.com>
- <20261110-core16550-rs485-v3-2-4294334243fa@spacemachines.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 09 Nov 2026 22:13:40 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=P2o3myNT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794265083; x=1825801083;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gLk2yVe76ajtu1KrWCk+zmfgNuAUqzVJtyq7tY5vbag=;
+  b=P2o3myNTBMmgQCZWcFtsSLgSIu6plTgz4TwXfcWlrOzcv8TQwJ46cMgQ
+   qjrCqW9gh804hq+oqdxlEm276NGvCYukickQw83yR9S1lnbnZeMMFjtOD
+   z7cc2MJ2gLcAS0V5Zuz/bBAJcfsZZwKawd+9mva+C3CdpbEk+YdVn4QTF
+   B4Oyh0zNOuNOeu+fVBm4eQJAv4fw03EIvIzXl20QS5ZIH4JXenbr7S4yk
+   0mE0dOLZ4whIk6kPOwBWpHTfR7RTSxUlEVMEWLrZUGP6502r+VcANu+54
+   rZyAFgNedEN0fLy5YVzoosE1MYWpVSjysa/OXw5qeANcRGQEE1DV5JU+C
+   g==;
+X-CSE-ConnectionGUID: fPjr6SLlSjaLljuMwHkDmw==
+X-CSE-MsgGUID: 9jsOWlZUQmCAo/+21NSL1A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2899342"
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="2899342"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 14:58:02 -0800
+X-CSE-ConnectionGUID: T3RHJ0ZVRUiHpNbWBPbDdg==
+X-CSE-MsgGUID: /OnDlxXBTTKRLkahbt7bZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="7998415"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 14:57:55 -0800
+Date: Tue, 10 Nov 2026 00:57:53 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Raul E Rangel <rrangel@chromium.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Timur Tabi <timur@kernel.org>,
+	Peter Ujfalusi <peter.ujfalusi@ti.com>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v10 2/8] serial: serialize asynchronous write wakeups
+ with the port lock
+Message-ID: <avJP8Sym_LQX9UVc@ashevche-desk.local>
+References: <20261108-submit-serial-8250-dma-cancel-v1-v10-0-e6227ddb95b1@gmail.com>
+ <20261108-submit-serial-8250-dma-cancel-v1-v10-2-e6227ddb95b1@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,32 +102,133 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261108-submit-serial-8250-dma-cancel-v1-v10-2-e6227ddb95b1@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-> From: Kohei Otsuka <kohei@spacemachines.com>
->=20
-> Core16550, a 16550-compatible UART for Microchip FPGAs, interrupts on
-> THRE but not on TEMT. When the last character moves from the FIFO into
-> the shift register, the THRE interrupt calls __stop_tx(), which finds
-> TEMT clear and, without UART_CAP_NOTEMT, returns to wait for a TEMT
-> interrupt that never comes. RTS, and with it the RS-485 driver enable,
-> then stays asserted after the frame, and receive interrupts, disabled
-> for the half-duplex transmission, stay off.
->=20
-> Match "microchip,core16550-rtl-v3" as a PORT_16550A, and set
-> UART_CAP_NOTEMT for it, so em485 drops RTS from its stop timer one
-> frame time (plus 1/7) after THRE, as it does for DesignWare UARTs.
->=20
-> Set UART_CAP_FIFO as well: with the capabilities already non-zero,
-> serial8250_do_startup() no longer fills in the PORT_16550A default,
-> and without UART_CAP_FIFO serial8250_clear_fifos() does nothing, so
-> the RX FIFO is not flushed at the end of a half-duplex transmission.
->=20
-> Link: https://github.com/linux4microchip/meta-mchp/issues/5
-> Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
+On Sun, Nov 08, 2026 at 08:50:11PM -0700, James Hilliard wrote:
+> uart_write_wakeup() expects the UART port lock to be held. Several worker,
+> DMA completion and interrupt paths call it without that lock, including
+> indirect calls from uart_handle_cts_change() and the transmit helpers.
+> 
+> Take the port lock around these notifications or their transmit helper.
+> Keep sleeping SPI and regmap accesses outside the locked region, and keep
+> the FSL LPUART completion lock held through its wakeup. Acquire the port
+> lock after releasing private channel locks to preserve the ordering used
+> by UART callbacks. In the MUX timer, publish available FIFO space under
+> the port lock and keep the hardware FIFO-drain wait outside it.
+> 
+> Use plain port locking in hard-IRQ handlers and in helpers whose callers
+> already mask interrupts. Atmel status handling is also called during
+> resume, where lock_suspended is acquired with interrupts disabled; JSM
+> interrupt processing holds its IRQ-saving board lock. Keep IRQ-saving
+> locking in workers, tasklets and other mixed-context paths.
+> 
+> Take the port lock after requesting the ST ASC interrupt and hold it
+> through startup's transmit servicing and RX interrupt enable. The transmit
+> helper can notify writers even when the FIFO is empty, and serial core
+> calls startup without holding the port spinlock.
+> 
+> Use IRQ-safe locking in the Atmel RX and TX tasklets and SB1250 termios
+> path, since their interrupt handlers now acquire the same port lock.
+> Preserve the caller's interrupt state when releasing those locks.
+> 
+> On SB1250, lock modem-state updates after reading and filtering the change
+> status, and wake modem-status waiters after unlocking. Take the TX lock
+> inside its service routine so RX-only interrupts need no acquisition.
+> Keep that lock across x_char handling, FIFO consumption and the decision
+> to mask TX interrupts: a writer must not enqueue data and enable TX between
+> the empty-FIFO check and the interrupt-mask write. Each TX invocation sends
+> at most one character.
+> 
+> Serialize CLPS711x TX servicing and its interrupt-enable state with the
+> port lock. Disable TX interrupts without waiting in stop_tx(), since a
+> threaded handler may need that same lock. Have an already queued handler
+> leave stopped output untouched, and drain it outside the lock during
+> shutdown before the transmit FIFO can be released.
+> 
+> SCCNXP handles interrupts under a controller lock which its UART callbacks
+> acquire with the port lock already held. Collect the ports needing wakeups
+> in an unsigned long bitmap while servicing the controller, then release
+> that lock before visiting the set bits, taking each port lock and
+> rechecking the wakeup threshold. Removal drains the IRQ or timer before
+> unregistering the ports.
+> 
+> This serializes write notifications with port-locked serial-core state
+> changes, allowing readiness and transmit-storage reservations to gate the
+> notification without a check-versus-shutdown race.
+> 
+> Cover DZ TX servicing and JSM Classic modem notifications as well. On
+> DECstation ZS, acquire the port lock before the SCC lock and notify writers
+> after releasing the SCC lock. Defer normal TX restart after console output
+> to a worker, since console output can already run under the port lock.
+> Check transmitter readiness before consuming another character and drain
+> the restart worker during shutdown and removal. Release Lantiq's hardware
+> lock through the transmit helper's completion hook before notifying the
+> line discipline.
 
-Sashiko has reviewed this patch and found no issues.
+...
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261110-core16550-=
-rs485-v3-0-4294334243fa@spacemachines.com?part=3D2
+> --- a/drivers/tty/serial/sb1250-duart.c
+> +++ b/drivers/tty/serial/sb1250-duart.c
+
+> -	if (delta & (M_DUART_IN_PIN0_VAL << S_DUART_IN_PIN_CHNG))
+> -		uart_handle_cts_change(uport, !(delta & M_DUART_IN_PIN0_VAL));
+> +	if (!(delta & ((M_DUART_IN_PIN2_VAL | M_DUART_IN_PIN0_VAL) <<
+> +		       S_DUART_IN_PIN_CHNG)))
+
+Just keep it a single line.
+
+> +		return;
+>  
+> -	if (delta & (M_DUART_IN_PIN2_VAL << S_DUART_IN_PIN_CHNG))
+> -		uport->icount.dsr++;
+> +	scoped_guard(uart_port_lock, uport) {
+> +		if (delta & (M_DUART_IN_PIN0_VAL << S_DUART_IN_PIN_CHNG))
+> +			uart_handle_cts_change(uport, !(delta & M_DUART_IN_PIN0_VAL));
+>  
+> -	if (delta & ((M_DUART_IN_PIN2_VAL | M_DUART_IN_PIN0_VAL) <<
+> -		     S_DUART_IN_PIN_CHNG))
+> -		wake_up_interruptible(&uport->state->port.delta_msr_wait);
+> +		if (delta & (M_DUART_IN_PIN2_VAL << S_DUART_IN_PIN_CHNG))
+> +			uport->icount.dsr++;
+> +	}
+
+...
+
+> --- a/drivers/tty/serial/sccnxp.c
+> +++ b/drivers/tty/serial/sccnxp.c
+
+> -static void sccnxp_handle_events(struct sccnxp_port *s)
+> +static unsigned long sccnxp_handle_events(struct sccnxp_port *s)
+>  {
+> +	unsigned long wakeup = 0;
+>  	int i;
+>  	u8 isr;
+>  
+> @@ -491,20 +492,40 @@ static void sccnxp_handle_events(struct sccnxp_port *s)
+>  		for (i = 0; i < s->uart.nr; i++) {
+>  			if (s->opened[i] && (isr & ISR_RXRDY(i)))
+>  				sccnxp_handle_rx(&s->port[i]);
+> -			if (s->opened[i] && (isr & ISR_TXRDY(i)))
+> -				sccnxp_handle_tx(&s->port[i]);
+> +			if (s->opened[i] && (isr & ISR_TXRDY(i)) &&
+> +			    sccnxp_handle_tx(&s->port[i]))
+> +				wakeup |= BIT(i);
+
+__set_bit()
+
+>  		}
+>  	} while (1);
+> +
+> +	return wakeup;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
