@@ -1,125 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794164398;
-	b=HeYlq8MXd+2khGvk8fEmJmWg3PHGeK9o0FRDu0vrOJGTNxbyk9XtNWL/wckm1YU06oz0
-	 MzBqGI+e8UN7MLT4bRiNnUzJ6YGK73+SgzFdR4MfuiBMHRg4M4JDRCNt2pUr3sAkXzMq7
-	 Vw2lD7rXwy568KG71oqX++sOrPjhv1qZvyydgLBF51oi2Wgqs0sgKzkZQxGw1ZLi2AnID
-	 V2Ivose3B7wYDbrkSE2KW5YKS9keYgLz13I0PVWvatxa6IjiL2Gle743RM8O8qkpFUZZH
-	 Ib7xBgb8x3ch8HHSmfoloU1oGkEXZgtsQ8NcBaqNkjYejbzsr3/K+pheZWZpYIcb+/w==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794164398;
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=74.125.82.171
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
+	t=1794192611;
+	b=3vkooLCVkuvqmQhduh0ioaYjXpx0sMOE6TlpEffobGAjVth/TGwQOom8wya4E+ajOiQD
+	 t+dAhGRKBl8jY3rfWHFozzgNuXxH24vMAv4mJ2r451gjnd+vLpU89hiWMOiwiRwfKa0Nt
+	 bl1AS+UqtRsNiip5rMmjHEM4rRfdvhAjd2lWqqvXccrZaqysTft7/7uDyLtPfIO66TLX1
+	 PV6co9Zj7UhfTZSFItMk+4+QYtyu9pceAz3UqIj5OX2sTMqWELeMkRtfkMrhpe4V30Fcs
+	 PBWFxvIdRmICH+qDXDeyMGIP9/MIWbpRxU2xRtaLHb9pZsQk9Z2/j3dZTcKQbfv5E/Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794192611;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=JLhUwzup1lwefYy8NOOFjthYnrByVfTsqIe79kkV+Lk=;
-	b=x3HTVAFt3gz2PZW7Y5fY9SgF/jTaPUk68NVUWoNFVvJz2SWakfmRdYpdntEx61UEkleL
-	 /2d9MtgxrnwxgBHJFVVdQdNHbi6oqiNx8jBzybiL10PM1hMW2J297/d4xFiTQstPP/Asj
-	 A1MgWVISIYsBd2cPKAf876Tya++TvGTHo+M4HF9AOrtvrdXIyQAvnRNrCqUWOOsuCV2qX
-	 JdYUJIgFEAXCp6qZGDg32j247JRNSbXNp5UXzLC9xgKu8eIhbnDUnPbtPBNJ57OuvD3N3
-	 cFMnPV2qm89kv4OWQ0lFTxr4R646PHWHy/TFJM7BaSqQ28Qey9rJ8xWsXqBSaROQywg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XrEUEgHU;
-	arc=none smtp.remote-ip=209.85.128.50
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
+	b=14FqNePWly3Yz2PEhCRvm5vt4YNhrtTz5HgwLxRF5v5Fcj4ZBr5Od3+gAF22q8RdpxWf
+	 6LKlr8yD9AiWjHr37VW1y7/CCs30UXcRCnRfI4dN49wzsa5TXzuZBqO2e5nQZHerI0/hX
+	 KblGzRzwjUl7eRfwYkgZL53PSTIYXOdldGwxJt7940Xm3E25RHOgeFzRUg0jXqr/0GSGq
+	 lNFDe3tZ3areBwAegO3TpW51rOqsC5AwWfrfOaE8aXOVYh1s0v30DMdOfRhIHhAZV0Jz2
+	 k/UOgjQOEmj+R363Xe/99YRXO46FF3yqcYQxB0hlaDjTsPOFhRFnGmk0KfhOJ68nFFA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=spacemachines.com;
+	spf=pass smtp.mailfrom=spacemachines.com;
+	dkim=pass header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b="ILww/xj7";
+	arc=fail smtp.remote-ip=74.125.82.171
+Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3575E606A333
-	for <linux-serial@vger.kernel.org>; Sun,  8 Nov 2026 18:59:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3575E606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D053606A321
+	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 02:50:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2D053606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=spacemachines.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=spacemachines.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XrEUEgHU
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a35ac4475dso1148465e9.2
-        for <linux-serial@vger.kernel.org>; Sun, 08 Nov 2026 10:59:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=ILww/xj7
+Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-36ff9c9da34so708735eec.1
+        for <linux-serial@vger.kernel.org>; Sun, 08 Nov 2026 18:50:10 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794192610; cv=none;
+        d=google.com; s=arc-20260327;
+        b=gMBJ+bh5+ftWERnvbq7hEZb0dPTujCP0L7FxbPJKREaEeQnl/FfLoYxfaraMyP0SHL
+         dc1joWlAygjD2cmSn1xuQOx10kGULQZPMgOQjByxd1Bz8tTczgMM0UVOwydMibzNhq9B
+         GYBadgeKlMVsU1QXCY++L50rQknhpLU46PssPXhgPCokH7q0N2Sawlw3q4p+vCAgEjC3
+         cXoiYXU9jL/5OHXaNP9Nvq3uMF2SNuErYYyu6LHGACMM/eEB5l4GlWM/EBwBCi9oYuo0
+         LYlw5KBAA6+sOuL0y7BiZWuSzHsHI3snvOeOgJj3lEPR3+Xk0FPdagyd0+Fyb2G01k7q
+         kQyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
+        fh=Gx6wiB5X8iXrAdXYJfI1PujcaB8gRYoqErrZHfI1wkE=;
+        b=mYCYYaMOa/m8MBGRrmBDil+8YcIbOvk//1K/iP0/465pJ7PMAonDFQFxQ+MuY66aua
+         lRh+vdOoFGyq/RIRCEVq89BdV9si+nVm7cEKdHWACan4FijIAxCelbOj5xdvyA9q1rKJ
+         VIsrzL6uOka+TAA63ad4x8WqCb2E4L66xHo7di8hs8X/KeDfn/MrlHBHyosQE342PzYg
+         ndy8PZdoQYY72tIgmVzKmdLLK+fuMkuRSNOjWjn1uShHTpcN/kyzRnXyG7JoAS+LRy3Q
+         +DDPViFk8K4w0BOLRhv8n8sysLDWeZl/wsn+f+p4tZsh8MSDvGnp+HYCXzClxQfGOlXu
+         SHkg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794164397; x=1794769197; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=spacemachines-com.20260707.gappssmtp.com; s=20260707; t=1794192610; x=1794797410; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=JLhUwzup1lwefYy8NOOFjthYnrByVfTsqIe79kkV+Lk=;
-        b=XrEUEgHUwv+lt2Z0T4RzlOQuYT1yMbnY/MJrtF5HY2pc8m0ujKE+1IGJbqc3A1SsPJ
-         Pz+po0Wh7ECcrOl1hyNdZBme+OsO/r11IeCA1lW9KMbstFhlOkC0Hm7Ef+TTavGsfrDk
-         7T2AE8nlcorDhYFpLo0KTCt4xOv09AacMRilfH2h4PS2mZ0iBReAF8XAcgtI3iT+qlRY
-         EJQPYUIUlDRCCjadf1+24R8V0flZyhCZpLCroCVsidoQ510350k4POOaAcSXgGRrBTWF
-         rbpUnz5O6K0TOR8uz/zwLHiObwDAqnCJFWP0+ssCNYCBYnXJwQ2yMfUqdKkv6ro/lp/q
-         XMaA==
+        bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
+        b=ILww/xj7Xp3Hs4hWMpGlZDMA45MuHuRp7Ipq58oF5l0mbLOZqesuXhF665BfF9E4AZ
+         GYmh5WB3sKwWpNZ/ezUO0PaM/8pgWL5R+HgDwghrPsONKKRJkUsH2Ghz+H6Kb/56iaMz
+         7jkCjhYFAeHfnBrQRZEHf9shrfVul3oIQBDK4vbU4AFbz88u0tuedCpNf0eZE6aMqy0B
+         KOM0mtWX84JxVM+zeDlrKw7D0sMCMoyUjsiO/K4iDy+lCywxvLxj2XVGvEliSRCP9N4l
+         bfJoas6JHUf5UwxjsrtGyn19Xo97S8ccWIpjh8bs02zBw8PnoqL95m5jYnBJnaOXy5ML
+         OlxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794164397; x=1794769197;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1794192610; x=1794797410;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=JLhUwzup1lwefYy8NOOFjthYnrByVfTsqIe79kkV+Lk=;
-        b=DTwSTP1A1I4l3He2nGegkDdN4j+YmhztjXv4LqYacikMv38BO7Er/Fksg443lK7yOC
-         pjO+VTVDwHIO8dpM5oQBjaRgk713UAeaF8c/SCKwFJt7sUbld9VtKZfKgvIPe9Ly/dnZ
-         DhiOT5fX5t3Ku2ysYd2yrxDYRKEe2OjR6EE/J31eascyY86q24/w4XIhGuJArFSZdkD3
-         9+a7MOkqtJbtIoRPW2XqMB+lL96AfEwOPaVMBod4IODEAuX5Jf4tkjjN5Rw2MhcnNsrn
-         NmV5KzAV2yWRQj+36Y/dwB965NGJpRCZkx2rEy0r59i6XM4zxek7+wPPnArSBYHBE0fy
-         L0rg==
-X-Forwarded-Encrypted: i=1; AL+hErHS+fR8NpaclZJEoGMKTAlww8iSHqOyLfc2aFY7t+q2yw3F5TayRM7zz6typdqzMjrMrTSdGAefE37Hlag=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/oRghlh4z94SGqYL80cHLnv4QbEEuEWRzcsL331mytOgOveAVP
-	orlRAz5KNI9fuCCRThtQZnjTbveZY0iGtUbNlwnGkl+1nUZ0aVPCHAH4
-X-Gm-Gg: AYBFou3VDceU/yCQid3wdgTolOBRgmN98roEw6XTG/N+elgxRChHQ03iI+walrStpJc
-	PuhSP1LLXKcKI54aflW2SCL8KKVyPETvg7/AJOZlnVsOXEMuTf4FKBFIIVy/GBW3uc+dNzV06Dk
-	LZIUaY27t6sLoBE1cGk2M9EHWv87AlAX1d95lfQYC3aDn+pwxDSDobz89tpxhlvvP6N+058A6gB
-	su8b9IUnuU0Db/FB9jtKjLxBSAcgH2px8oNE+VyPAEgodFs0RpUwmcKhkE9Xlnsymb+VTp55Uy7
-	q6GOXT7A+6doop17XIMv29hGf2BvCL2qGXHFTgGO1YIQ/yZdRAC1YQjTReZ55CCXutZr3KqL4Tf
-	8i4ez6zVvbp4e5ohp1CTdRdPSzAj4NEnnx9tPJulNVqgSdOzdlzUWvoX8BZ3Y2rQK/E34UGvVJZ
-	EavlOJBb8lgARk+rbQ34+Jfon069jVXJJZ3GWYYkJ5cN5T8cvXoX+KjdYo7/sr98PO/MlM7Nfcw
-	iaV3pkZLa3Z+La9HzRjIaPBKaftSwMeQZBjIf0K0pHBHUbWVBDzRX3tqnPjm1jZL+KVdOnq51yf
-	o/h3mV9uc/5fiWeTsOOBQYhTSxsdBJAQ60cwsqX5KMvALsXxQ13yljt2X4at8ua4
-X-Received: by 2002:a05:600c:468f:b0:4a1:7e77:c382 with SMTP id 5b1f17b1804b1-4b960d9b170mr35982125e9.5.1794164396406;
-        Sun, 08 Nov 2026 10:59:56 -0800 (PST)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b7efb1f3acsm185228445e9.14.2026.11.08.10.59.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Nov 2026 10:59:56 -0800 (PST)
-Date: Sun, 8 Nov 2026 18:59:53 +0000
-From: David Laight <david.laight.linux@gmail.com>
-To: Christian Brauner <brauner@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
- linux-fsdevel@vger.kernel.org, Linus Torvalds
- <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, Josef Bacik
- <josef@toxicpanda.com>, Chris Mason <mason@kernel.org>, Jeff Layton
- <jlayton@kernel.org>, NeilBrown <neil@brown.name>, Eric Dumazet
- <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>, Al Viro
- <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Christoph
- Hellwig <hch@lst.de>, Greg Kroah-Hartman <gregkh@suse.de>, Joel Granados
- <joel.granados@kernel.org>, Kees Cook <kees@kernel.org>, Jan Kara
- <jack@suse.cz>, Jan Kara <jack@suse.com>, linux-kernel@vger.kernel.org,
- linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-um@lists.infradead.org,
- linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- netdev@vger.kernel.org, ntfs3@lists.linux.dev,
- platform-driver-x86@vger.kernel.org, coreteam@netfilter.org,
- kexec@lists.infradead.org, linux-pci@vger.kernel.org,
- linux-sound@vger.kernel.org, netfilter-devel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, ibm-acpi-devel@lists.sourceforge.net,
- jfs-discussion@lists.sourceforge.net, linux-alpha@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org,
- linux-fbdev@vger.kernel.org, linux-hwmon@vger.kernel.org,
- linux-mm@kvack.org, linux-sh@vger.kernel.org, linux-usb@vger.kernel.org,
- samba-technical@lists.samba.org, sparclinux@vger.kernel.org,
- linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
- Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org,
- linux-raid@vger.kernel.org, linux-ext4@vger.kernel.org,
- linux-modules@vger.kernel.org, linux-debuggers@vger.kernel.org, Chuck Lever
- <cel@kernel.org>
-Subject: Re: [PATCH RESEND v2 14/23] proc: let procfs copy in writes before
- pinning the entry
-Message-ID: <20261108185953.28054fb3@pumpkin>
-In-Reply-To: <20261107-akteur-gemieden-eckdaten-21304d085e35@brauner>
-References: <20261104-work-procfs-core-v2-14-76ace653a773@kernel.org>
-	<CAMuHMdVfakapgBK6TBhO1iWX8qzvLDk8jzRS=t2MVa5G=MCUeg@mail.gmail.com>
-	<20261107-akteur-gemieden-eckdaten-21304d085e35@brauner>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        bh=ed7qSEh0MYcYsCSvjaeOTvgwKguOiXkGsv7GSaDrJYQ=;
+        b=QXQzkMpd7c4f8UshMefzq+X+Z7+buguAzK/l5Fa16ZgbKAzAQ5/q2uIrawPFKGCCVf
+         fSozvMoUsYOtHNgf+F6wykv5jBAR+LLe9GGBLy3i/Olu8ZmilJzqYxXYoEhHhwSjVHdS
+         Y/+q0Sva5vetbhdvMJSe0l92cSFaRcf7bq7xCIt8Qb3HvvEzyBoH4+94wBb4Omai4Ft5
+         wfq2i17Xa/eNVYi2mgKR5wqhtzwIR2UvFq6cqxeyePopActAz+niCN4RWbrEjMxUQIHq
+         uc9JMz6uwgpxJQhE+rLnPh/V5p/WDEgcjQEabkNLmxneTTcBdnCjp/dmDtsHRXiXdYfB
+         glfA==
+X-Forwarded-Encrypted: i=1; AL+hErGmea7VaGbzDDXx0LtY8UV5GJATEwUdklVggjQElCCrdtfjU1C6NCWDyfvienJAmXdy7YNePjTFCdPC3sE=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+KIVp9H/qiFnPH3HoWXEJpLj8tLcM8Sv7y9EikXfC20ImC023l
+	XnUJLakqPIsNJSi19k4XKUrgkHDwnfv1gXNd4TWSLuso7wsMJYcRhZOey1VHNRBl0LKuZ9tVi1K
+	SICPB3Ltv9JxLEsYWdsBsvGyHKZ+sZ41v2/s1OYO4vw==
+X-Gm-Gg: AYBFou1jwdkAkxhiiCLOQ2T4DDHeR8bJ+/2XL3nCtR4N4BafadRBUcAaW9f6p9c3kDj
+	uNCYts+BZsrgbHAr/WqDiYyj46KfLFt0AWb9IZTnWuxEZ3DbsIh7Fnx59BJqczepB+qZImIE0EG
+	wnk5eeXlmpqczgyy9ovQiwpxlfU6hwEr55dvKyg774mG166Wh0PJBaS3z5P3nj4WoyJUl0iSW/V
+	DPYYCUHvudbVKacxhq77ST3YfLbgLPX4vwnBmTfm73wQqdOnp+jhEHLkKZyltlVYLM6dMgStK1k
+	UiUn+6ZZ3RRYTXbbN3l6As0OzcqULyDkB9v9Dv3/oNJqoQir/EUg37LdQxUNKPMzxsCY+S9sv0b
+	ZX2sm+NM3fmvoCBu1oDScbErEP4vY+/wZh0fRLQ==
+X-Received: by 2002:a05:7301:f29:b0:36e:b3e6:ebe7 with SMTP id
+ 5a478bee46e88-37256bf3a85mr5778794eec.26.1794192610085; Sun, 08 Nov 2026
+ 18:50:10 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -129,19 +104,126 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20261103-core16550-rs485-v1-0-6d15ebe1e5b9@spacemachines.com>
+ <20261103-core16550-rs485-v1-2-6d15ebe1e5b9@spacemachines.com> <20261104-aqueduct-caregiver-1513775dd0f8@spud>
+In-Reply-To: <20261104-aqueduct-caregiver-1513775dd0f8@spud>
+From: Kohei Otsuka <kohei@spacemachines.com>
+Date: Mon, 9 Nov 2026 13:49:58 +1100
+X-Gm-Features: AclHuK_TaLU_humEBm6TAF3Q-YezCM8lbSJnIvWc-8zfqGYMOgplq9g4PPOrSlU
+Message-ID: <CADMKYUBHCG3h4tGuDTZUyrLSK1UJmDZvTAvVtmZchtPBTy2WwA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] serial: 8250_of: drop RS-485 RTS on Microchip Core16550
+To: Conor Dooley <conor@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, conor.dooley@microchip.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 7 Nov 2026 10:48:35 +0100
-Christian Brauner <brauner@kernel.org> wrote:
+On Thu, Nov 5, 2026 at 3:28=E2=80=AFAM Conor Dooley <conor@kernel.org> wrot=
+e:
+>
+> On Tue, Nov 03, 2026 at 11:11:32AM +1100, Kohei Otsuka wrote:
+> > Core16550, a 16550-compatible UART for Microchip FPGAs, interrupts on
+> > THRE but not on TEMT. When the last character moves from the FIFO into
+> > the shift register, the THRE interrupt calls __stop_tx(), which finds
+> > TEMT clear and, without UART_CAP_NOTEMT, returns to wait for a TEMT
+> > interrupt that never comes. RTS, and with it the RS-485 driver enable,
+> > then stays asserted after the frame, and receive interrupts, disabled
+> > for the half-duplex transmission, stay off.
+> >
+> > Set UART_CAP_NOTEMT for nodes compatible with "microchip,core16550",
+> > so em485 drops RTS from its stop timer one frame time (plus 1/7) after
+> > THRE, as it does for DesignWare UARTs.
+> >
+> > Set UART_CAP_FIFO as well: with the capabilities already non-zero,
+> > serial8250_do_startup() no longer fills in the PORT_16550A default,
+> > and without UART_CAP_FIFO serial8250_clear_fifos() does nothing, so
+> > the RX FIFO is not flushed at the end of a half-duplex transmission.
+> >
+> > Link: https://github.com/linux4microchip/meta-mchp/issues/5
+>
+> It's worth noting that in that GitHub link I pointed out that the time I
+> recall this core being used they required changes to the baud rate logic
+> in the driver and that there were differences between how the baud rate
+> is actually determined from the input clock:
+> | The docs for core16550 say:
+> |
+> | This block takes the input PCLK and divides it by a programmed value (f=
+rom 1 to 216 =E2=80=93 1). The result
+> | is divided by 16 to create the transmission clock (BAUDOUT)
+> |
+> | whereas ns16550a docs say:
+> |
+> | The UART includes a programmable baud rate generator
+> | that is capable of dividing the timing reference clock input
+> | by divisors of 1 to (216-1 ), and producing a 16 x clock for
+> | driving the internal transmitter logic. Provisions are also included to=
+ use this 16 x clock to drive the receiver logic.
+>
+> Kohei reported not being affected by this, but I figured it was worth
+> mentioning.
 
-> > While at it, I think it would be good to use this conversion as an
-> > opportunity to replace "char *" by "void *", which will probably let
-> > you drop several casts from users.  
-> 
-> So I tried that too. The thing is it drops exactly one u8 * cast in
-> ntfs3's label write. 
+Thanks for flagging it. As I read the two quotes, they describe the
+same arithmetic: Core16550 divides PCLK by the divisor and then by 16,
+and the 16550 divides its reference clock by the divisor to get a 16x
+clock. Both give baud =3D clk / (16 * divisor), which is what the 8250
+driver programs.
 
-Since char is now unsigned that one isn't even needed...
+That matches what we see. With PCLK at 50 MHz, the driver programs a
+divisor of 27 for 115200 (115741 baud, +0.47%), and all four ports
+exchange data cleanly with external USB-RS485 and USB-RS422 adapters.
+They wouldn=E2=80=99t if the core divided differently.
 
-David
+
+>
+> Cheers,
+> Conor.
+>
+> > Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_of.c | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/825=
+0/8250_of.c
+> > index b41ca604083f..2f1f505501a2 100644
+> > --- a/drivers/tty/serial/8250/8250_of.c
+> > +++ b/drivers/tty/serial/8250/8250_of.c
+> > @@ -278,6 +278,15 @@ static int of_platform_serial_probe(struct platfor=
+m_device *ofdev)
+> >       if (port8250.port.fifosize)
+> >               port8250.capabilities =3D UART_CAP_FIFO;
+> >
+> > +     /*
+> > +      * Core16550 has no TEMT interrupt: without UART_CAP_NOTEMT the e=
+m485
+> > +      * code waits for one after the last THRE interrupt and never dro=
+ps RTS.
+> > +      * Set UART_CAP_FIFO too, because a non-zero value stops
+> > +      * serial8250_do_startup() filling in the PORT_16550A default.
+> > +      */
+> > +     if (of_device_is_compatible(ofdev->dev.of_node, "microchip,core16=
+550"))
+> > +             port8250.capabilities |=3D UART_CAP_FIFO | UART_CAP_NOTEM=
+T;
+> > +
+> >       /* Check for TX FIFO threshold & set tx_loadsz */
+> >       if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
+> >                                 &tx_threshold) =3D=3D 0) &&
+> >
+> > --
+> > 2.53.0
+> >
+
+
+
+--=20
+
+
+Kohei Otsuka
+Satellite Flight Software Team Lead
+
+  koheio@spacemachines.com   spacemachines.com
+
+ UTS Tech Lab, 36-38 Lord Street, Botany NSW 2019
