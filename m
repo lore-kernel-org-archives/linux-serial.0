@@ -1,113 +1,135 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=194.104.109.113
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794242646;
-	b=Fy7S2/IzNp++z7Xz2Mc3qhStN0tox650yjFjU6G+gZsNt/ZJ9KTt54PiXYLQmmtSaTnO
-	 cCcADe8Km0ARqJGMlVD0NkQnJB2EzhixXp4YbFArj9psDg/BV7S1t1VThHSR56AKRuu43
-	 XWg/Wzjd4cztpWf/AqEtz3Dkk2x23VMlUy79gJuMQ5IAiLlNYYz4ftlr4I62aBsgYBQPz
-	 C8EpG1J363nQDgwK6oaUbSzNHX2sZ0V6hXrhKKQh7MEulvUYuJxM6h/Jh1Eu6WcsApPs/
-	 3LMBsK4zgcpNlznaiTtHfkToGrJqRtk6FQJvpUhc8U8gQMjr/YUzTlenSesqUAYXfSA==
+	t=1794247364;
+	b=b4OWW67ffupy/FsUxfnHvU4i/x+Gq1SwWjoFQS76S5bCYApb+BVjvPXoVEHe1gS6RKrD
+	 qK29UPnwf7Y6B2eLjRv40rVKiA8mSXq8Vazb7UBTvRQHgFleWzEYcX7//VeKMNLq7jb3l
+	 h+ymWqiKSK3pvaR6XQtTP4UhzjmOL97uuQh1Tgtvp1UfjMe2UqvuhJCgAKGhKEibvin/r
+	 05qhAQFyym/6DIg4/U0qROeCIw3EEJUJLA7zY4Cxgy1LztAhQefvNKYCd+7+AhN72uHwP
+	 qmk/Z7PtJSR94+tjZI1QT4+xHspEm/RTIjEWZO5E7TCV7QDQaLA1DVxCtUFDT4Vgg5A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794242646;
-	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-Exchange-RoutingPolicyChecked:
-	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
-	 X-Mimecast-Spam-Score:X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding;
-	bh=lKdeNI2C1JIdHaqLbneHv1qoNsRo1CMptwMq1YCRXUc=;
-	b=GEPKea7f+jtdCBp+e2nsrcqY9nxzkNvM3aEcniMZTlBJ3iXQ8L42E9VMBJrcz9uEwJXE
-	 fw1e5/3DN2yrpl16MIOhWPwKPHKgzu2ElnKK7eNAqYTVq20GNqZtW8Y21KHozAUac7kQq
-	 R76wudfTn7kMdYON8T51Bx1mFgovPzdRptP7a07S7wHwGwHN1G3hE29ZjzDLMtxdOLxsU
-	 IFhMfNO3VhjMwVH5p86wyjJbdLSYL1GnPbib1XzkqY1ylXqkohjpIMe0OXXjTqccfOzDh
-	 03j3b6bDOQXJy10w65ur1NE1XSrs2mxSXWjswBN83XpY3On62rY2TnK1rMwcjs07GWg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794247364;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=qBL546n84kVw8zSWbG66JT4Kv5FLqZ7Q9evIqEtakAI=;
+	b=Q8G6SWchbnoWwtiyriNMIV56wMtXGba+7ZlUQ5+OlPywGvVmT4jehEqGwMC7oEyp7Wbv
+	 dhVTGdbi1/5clYtnt5lKgzFIluXl/DzwNZxCwiYY6knvJXcYCvLHqGJuwWwLCVHnENNGW
+	 D7tcju+6LL6eg7lcBz/E8dFfLK845C91bzQBjFo2go6k9KiTMhUxL4LCGrNsmK/0Iphi3
+	 RJZiDx5iMu8Ig1zxlE7PHV62YTG2Uu7STq+nxp7fbMmZyCIlqE5w8xFuwIj2yqfPpJ6Cn
+	 ColJGCWi6oCHaA6wO76C4kxg17/XxBYPXYYw5Eobbgi+/4YhhE4JEUuge5cnCVLD7HQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=toradex.com;
-	spf=pass smtp.mailfrom=toradex.com;
-	dkim=pass header.d=toradex.com header.i=@toradex.com header.a=rsa-sha256 header.s=toradex-com header.b=lcH6mcvo;
-	arc=none smtp.remote-ip=194.104.109.113
-Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.109.113])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hPUAT6pN;
+	arc=none smtp.remote-ip=198.175.65.9
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4D2606A326
-	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 16:44:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7D4D2606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=toradex.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=toradex.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1703606A31C;
+	Mon,  9 Nov 2026 18:02:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F1703606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=toradex.com header.i=@toradex.com header.a=rsa-sha256 header.s=toradex-com header.b=lcH6mcvo
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com; s=toradex-com;
-	t=1794242638;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=lKdeNI2C1JIdHaqLbneHv1qoNsRo1CMptwMq1YCRXUc=;
-	b=lcH6mcvoxIIjXb6i9biWj95wit3tZ0+J2Yi424qoEDd2f3+3yJ8L1jut/UrsNE6e0c4UHh
-	8WUTEVsGiWJHvg2SNRtrMdlcmedsFlaBijAJxHmBtEy/vb0gV8fiJkxaBC5GpI9GsI7cvo
-	txCgnBcceychlxLfL6RCXJrEM+IHmqs=
-Received: from ZRZP278CU001.outbound.protection.outlook.com
- (mail-switzerlandnorthazon11021072.outbound.protection.outlook.com
- [40.107.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- de-mta-55-xo4ETarDPvKSOxY18QZSIA-1; Mon, 09 Nov 2026 17:43:52 +0100
-X-MC-Unique: xo4ETarDPvKSOxY18QZSIA-1
-X-Mimecast-MFC-AGG-ID: xo4ETarDPvKSOxY18QZSIA_1794242631
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- ZR3P278MB2228.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:c1::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.13; Mon, 9 Nov 2026 16:43:50 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::88:6821:13f5:a5b2]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::88:6821:13f5:a5b2%3]) with mapi id 15.21.0592.010; Mon, 9 Nov 2026
- 16:43:50 +0000
-Date: Mon, 9 Nov 2026 17:43:48 +0100
-From: Francesco Dolcini <francesco.dolcini@toradex.com>
-To: Borislav Petkov <bp@alien8.de>
-Cc: Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	"biju.das.au" <biju.das.au@gmail.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hPUAT6pN
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794247364; x=1825783364;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lTSpr2GI78io7MkEyt4FUNnh+Ze4ac0+NixA3FDB8nQ=;
+  b=hPUAT6pNnAAXuCbbSaMn7A7ZCgJeYFp4TqWM/FQSenOO+rFJQnnJFzaZ
+   fj+D4UpxG59VfudicEQQx3szJXRsC9uhrCN+iNVgVEBb9AFyMAGloMy4j
+   7nE8OugbUDRLcggkaRjxxjtdaLW6DeUbhivQJbzE5TRSieIcOiDORoqrH
+   0eZzUpzXz41x2EE7b2wjdqlVZzVJ+rMaBH3QVtKoTBeT7IaCiHVTYJe6g
+   /JBBjxSJOQYx37yDyTLBPADZeuHCu+ncEcxNVB2Ekjw9KyOko5WQ31QZ2
+   UdgBwXxayhyuS+HdvtiS9L2sUjaDkilPA1cj0VM6XyqFNOd8GnPnLT7ml
+   Q==;
+X-CSE-ConnectionGUID: DAeR/2IJSKy2IuQuaol87Q==
+X-CSE-MsgGUID: yoEV1Q2SSO23ROYphxvXIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2877428"
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="2877428"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 10:02:43 -0800
+X-CSE-ConnectionGUID: kh6S7vkjRge2Au/8/Y2xMw==
+X-CSE-MsgGUID: Z/nSAtfmRl2XXURKPF7N5A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="8243221"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 10:02:29 -0800
+Date: Mon, 9 Nov 2026 20:02:27 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Thierry Reding <thierry.reding@kernel.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Frank.Li@oss.nxp.com,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Au Dang <au.dang.jx@renesas.com>
-Subject: Re: [PATCH -v2] MAINTAINERS: Fix Intel TDX kernel file patterns
-Message-ID: <avH4RI_0OyePjWJp@francesco-nb>
-References: <20261027055750.GBauA9XlPykc1c1Xhv@fat_crate.local>
- <TY3PR01MB113468FBD8E5EFA65C4B4E5EB86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <072dd88c-4ca1-4c8a-98b1-7783bc43c1c5@kernel.org>
- <TY3PR01MB11346BAE55FF22F66E86A6F8B86602@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <afdf1864-4721-4177-bc18-2a5821d97559@kernel.org>
- <20261027205411.GAauEPc4AtLwvrDfFr@fat_crate.local>
- <7b0a2e98-c614-4cdd-8604-3b5b21e8474f@kernel.org>
- <20261028154743.GCauIZH3pZm24jCX9b@fat_crate.local>
- <20261030023338.GGauQCAuYyXGwIhlqX@fat_crate.local>
- <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
-In-Reply-To: <20261031030112.GHauVZ-OI2KjdkjrcY@fat_crate.local>
-X-ClientProxiedBy: ZRAP278CA0003.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:10::13) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Cunhao Lu <1579567540@qq.com>, Raul E Rangel <rrangel@chromium.org>,
+	Yenchia Chen <yenchia.chen@mediatek.com>,
+	Zhiyong Tao <zhiyong.tao@mediatek.com>,
+	Carlo Caione <ccaione@baylibre.com>, Moteen Shah <m-shah@ti.com>,
+	Kendall Willis <k-willis@ti.com>,
+	Kartik Rajput <kkartik@nvidia.com>, Fan Wu <fanwu01@zju.edu.cn>,
+	Nicolai Buchwitz <nb@tipi-net.de>,
+	Karl Mehltretter <kmehltretter@gmail.com>,
+	Stefan =?iso-8859-1?Q?D=F6singer?= <stefandoesinger@gmail.com>,
+	Shitalkumar Gandhi <shital.gandhi45@gmail.com>,
+	Peng Fan <peng.fan@nxp.com>, Sherry Sun <sherry.sun@nxp.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Pan Chuang <panchuang@vivo.com>, Petr Mladek <pmladek@suse.com>,
+	Robin Gong <yibin.gong@nxp.com>,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	Stephan Gerhold <stephan.gerhold@linaro.org>,
+	Zhaoyang Yu <2426767509@qq.com>,
+	"Nikola Z. Ivanov" <zlatistiv@gmail.com>,
+	Haoxiang Li <haoxiang_li2024@163.com>,
+	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Myeonghun Pak <mhun512@gmail.com>,
+	Wenhua Lin <Wenhua.Lin@unisoc.com>, Cixi Geng <cixi.geng@linux.dev>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+	"moderated list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>,
+	"moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+	"open list:ARM/FREESCALE IMX / MXC / LAYERSCAPE ARM ARCHIT..." <imx@lists.linux.dev>,
+	"open list:ARM/QUALCOMM MAILING LIST" <linux-arm-msm@vger.kernel.org>,
+	"open list:ARM/SAMSUNG S3C, S5P AND EXYNOS ARM ARCHITECTURES" <linux-samsung-soc@vger.kernel.org>,
+	"open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
+	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>,
+	vkoul@kernel.org
+Subject: Re: [PATCH 1/1] tty: serial: use dmaengine_desc_set_callback()
+Message-ID: <avIKs_b3cxRLXpGm@ashevche-desk.local>
+References: <20261102175527.3957740-1-Frank.Li@oss.nxp.com>
+ <aux2VKHnVLwq_wzi@orome>
+ <auyQEVmA2KeGu9DL@ashevche-desk.local>
+ <auyiAE3lhnFahBK2@orome>
+ <auysTnqWgz2kE7e9@ashevche-desk.local>
+ <2209947d-0b9b-417f-9ffb-1c81790af9db@kernel.org>
+ <auzEupFd_Ek2HpLG@ashevche-desk.local>
+ <au3GYOP5P7B90-bX@orome>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -117,97 +139,126 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: ZRAP278MB0495:EE_|ZR3P278MB2228:EE_
-X-MS-Office365-Filtering-Correlation-Id: edbe18ad-fb95-4ae8-d02d-08df3e80a1a2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|23010399003|366016|376014|7416014|1800799024|18002099003|22082099003|4143699003|56012099006|10067099003|261028144727099003|261026121527099003|261022105027099003|261026140227099003|261009223027099003
-X-Microsoft-Antispam-Message-Info: 56GL8oGC2yEDqmb8N7M1t2kMdMWGUO+gWwesE8UvW5zx3vgUAAHGesqXYM5hAMMlXleQBDItFtdhSQje29SOm8inJHv+dBXDHgW+pUEJT4zCvfJ4894MuBs1AzevnfLXGL4OLR9jGn24ztJzOyJYtIfqKXkUBgct6S3PQVkpclMRYzChKUuHFy61f6sHlrZXBEeMoC7JE/MoZlRL/13fp4tFZOG7Lmau4W96tNkV3LdtWsnoMfLsPth4eH8SH0PWZA7JE6xiegmGezpIbnywne/RV175031JuodVsMb4w6FMtgOpli7ZT3TI+6YRQMx6BSpgUNHWMUAWIdnV+9KKBf0xRoglZ6eR/Yy/mFfguFgyNUyvLTwCrJs6ROJMEQF1upidD/lO2RdhSKQkxWuZK7uy0VfHAco9n6BqF1bVYlZqbcy9YgbrgPXtF8t+ITx3PqYYYwsAPNAH4/aRD6sGUQbu5hNhQbsETrvbQuloZ9hBaiP+be10qocbxUsYNGDpVZ+ZaAxiKvBtXNRDaUCzOr3KZKDqoSKciIUfW6iRZrO2iSl5EItDHR637NHD+K+dtdJvDru7dGAG8oVfWyndOCNPzy2hF6LnBytP+F2ODdH/kUXzzOvm+2H+lcGBolPl
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(376014)(7416014)(1800799024)(18002099003)(22082099003)(4143699003)(56012099006)(10067099003)(261028144727099003)(261026121527099003)(261022105027099003)(261026140227099003)(261009223027099003);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LCEAcxvzyEtBtO+G6cawy93DBu5qalvdWsLLNrPFFKr6li0dr5Q+ML5Z1cnz?=
- =?us-ascii?Q?51YgrqSrwLhvGXDyP1fynC9/9hruzKtqZ7BqiqXf5lrFfHzVZjiVcA8mqll0?=
- =?us-ascii?Q?s+ltYCgJiheAWcaDPCPirg7vBg7batNHnWWls/xWk5sk/jkyIasefIXyVbkk?=
- =?us-ascii?Q?zo01cArCzzHTfLTI2WE+qUlfDw5/C1ffqo+2OQF3Ug/yTeO9SRNzVlLFCcQU?=
- =?us-ascii?Q?L9gvj55T98kTCtniGgssfOkgydxW5eiDYd2WfNJOXWeWB7Bjh+Iq7XLkbMrH?=
- =?us-ascii?Q?fECz8ABP9OdflbS2SyySDFrOrTOGsFKxKY+KSLyNOzKCg+LAw39bI3fBToFJ?=
- =?us-ascii?Q?oYBMGKE+N6V5lKjkbuMJT95tKDNHw89d5ZzJr+mdqmHZdGSq5u+7fH4zFxDn?=
- =?us-ascii?Q?wyjViqUJTL8PE7tKbcDEBnueyJb7UQ+KzFout4c+67HMHaUvqkQ9uTYtDQFm?=
- =?us-ascii?Q?KcVfc0hVogYG9G6vMiDhW3w1oJN/1EITK9x5Zox6/wIE7ZAoqqQ7j+QEw1rW?=
- =?us-ascii?Q?+3xTErM00AJ6rJ6qnoTK/m2OQErkJ5BCKF3B5vrA2gp+DJ3Kc50/E+1Cg9Xq?=
- =?us-ascii?Q?9oxcapyI+8gh0E96sfgd9ntFeQ+4FHVl8sXnIivrXUjyi4GDGrId8P1Se36g?=
- =?us-ascii?Q?cg9Bx7BNRCDNYR/t0Q4y9bv/tKQR4dAC4LirUbQBE/LarLPwLhBKEQxjeImB?=
- =?us-ascii?Q?ICqAysEAE9DSfqC6B2x3MieUhj0C6iqa3XMRavASLLxRtFSQA1/kYcNbwLNy?=
- =?us-ascii?Q?XpTgfl6t3MdRFamqULMCGmK8lUbv66YWZ2zIae/GeHY1bCiJtJRxXoQAAbJm?=
- =?us-ascii?Q?+PxR5Owl5W6peSi4/6XK/7PCZrfAlIlNhX8KA/4nukvukipktQOmpYy71s7G?=
- =?us-ascii?Q?VdiGTtk2EEeS9age8hmW87n6IcSyedocgiE5CcB5XZfAi6D1APvmi7GSVxc/?=
- =?us-ascii?Q?UivkdiD705v2xUQBxp+Al5TL8Tc1XaLoYvuIcZ0754TAbY22Fer71gbJyCBX?=
- =?us-ascii?Q?fQrv1jCDuvZ32C/meJPcK8XzOZGOeWMXdlxcgkv+YDzLukTVyvSSyPnlLOK7?=
- =?us-ascii?Q?YqAI3Qzv2D9+OVfU0XZ03Hrvy32pEb/7gTaCsAlYzhbdubY8/dz1k6kjJQS8?=
- =?us-ascii?Q?rFBpIXwAQ6f8Uj4pftLoQBxhaWpVw2X0GsJ/wQn07FKWeKo50PQPl6dk5v8s?=
- =?us-ascii?Q?bOHby3zkiYx2KiePq0Z5uiFleNjdcHZYbByl9VQPJiETLMC5xhmWIEVqY7Vi?=
- =?us-ascii?Q?J4OenlN9Fyh7lILh/C3jiCbIDHYFfv357an/npmptkf3mjaQHhD//b93FYv4?=
- =?us-ascii?Q?th4U0VQtmpmAowurAWeGX+Sf5Y+hXZd3iOMgCi5n8WWXYx4eCPAnzI/1Che8?=
- =?us-ascii?Q?AoLwV8TC8b6YQhCxWXjE8zp3VRNtpsnVrKnMLc+D6xNqL+GepBhVoZldW40H?=
- =?us-ascii?Q?bLtSZFLNuYP46CQYP1EnXoRX8i8/o4GWcpjNXny8x68Xgl/zXCNKPryWkN0P?=
- =?us-ascii?Q?dS/U5SpuePy2lufcg8idPQa847QCIIoHiESluO9oYS067lOyqTxUjYc4zCos?=
- =?us-ascii?Q?BflCTSobJcuRoBwbD98OyCroJY4ojRN4diZTvYOR+nXigBVkiQ0L8IZLgf6Q?=
- =?us-ascii?Q?YeCs8cnPwxDid9zGavmK8n9U8qpmSHvxuqlc47kmfaeT9nCsprUV9rNtJ64k?=
- =?us-ascii?Q?l81aP4o8CpCcQ++WdfreuncW5oS6djZm5ZHnN9TDW5Q0C/yuu1qNHaCuWxt1?=
- =?us-ascii?Q?pJb7Q6qSwpGAJCSjaeIMQkKb/UiVHxk=3D?=
-X-Exchange-RoutingPolicyChecked: m5sPu7HIxuavy5SeRnreUmRrHx5zD1+LhHxAkXSiWzNQWm6+k2vDUID1pLdJ7fONq65l+B+k94QRxmhv0zY4Ws+rXJrrXBk7cZbdzxdHwHAN6SKHOTllhqZ78Xq8llWIrUJ8pvhKDyBqnjI+ixyAjKBH79UGBAWbh6PiRolrVrE/ivzYMbDB7Htc678OR2uuc01bVFEtIzoflYUmlmt6bhotmR9JFlrAvVFcbkID9y/UjaG+SfxgwN6RhHXSaqK6GANu9SUe5c1eGfBK4uKnw6ABnFJteMqs54aXqlk7Ross4J2YPA0mMsyw7nfiGx5In4z33rCbK0QDNOAkvQfQxA==
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edbe18ad-fb95-4ae8-d02d-08df3e80a1a2
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2026 16:43:50.2200
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ecjeyswKGG4MFLOhx4KvTy8J4ENIFLWbwTKvqkD/jiSMhOQ+ksfAJzJDM1f0h5by6GqfSLGwvVO0b9f/Q21crzlMlKyVzomc1RykppHbQe0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR3P278MB2228
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: mb9NSRn9PM-ppj4Hk6mYzfqm0plj5HBtLbPpvzRdQPs_1794242631
-X-Mimecast-Originator: toradex.com
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <au3GYOP5P7B90-bX@orome>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hello,
+On Fri, Nov 06, 2026 at 01:40:15PM +0100, Thierry Reding wrote:
+> On Thu, Nov 05, 2026 at 08:02:34PM +0200, Andy Shevchenko wrote:
+> > On Thu, Nov 05, 2026 at 05:21:06PM +0100, Krzysztof Kozlowski wrote:
+> > > On 05/11/2026 17:18, Andy Shevchenko wrote:
+> > > > On Thu, Nov 05, 2026 at 04:36:38PM +0100, Thierry Reding wrote:
+> > > >> On Thu, Nov 05, 2026 at 04:17:53PM +0200, Andy Shevchenko wrote:
+> > > >>> On Thu, Nov 05, 2026 at 01:28:46PM +0100, Thierry Reding wrote:
+> > > >>>> On Mon, Nov 02, 2026 at 12:54:48PM -0500, Frank.Li@oss.nxp.com wrote:
+> > > >>>>>
+> > > >>>>> Replace open-coded assignments to callback and callback_param fields
+> > > >>>>> of struct dma_async_tx_descriptor with calls to the
+> > > >>>>> dmaengine_desc_set_callback() helper across serial drivers.
+> > > >>>>>
+> > > >>>>> No functional change intended. Prepare to make struct
+> > > >>>>> dma_async_tx_descriptor private to the DMA engine.
+> > > >>>>>
+> > > >>>>> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> > > >>>>> ---
+> > > >>>>>  drivers/tty/serial/8250/8250_dma.c  | 6 ++----
+> > > >>>>>  drivers/tty/serial/8250/8250_mtk.c  | 3 +--
+> > > >>>>>  drivers/tty/serial/8250/8250_omap.c | 6 ++----
+> > > >>>>>  drivers/tty/serial/amba-pl011.c     | 6 ++----
+> > > >>>>>  drivers/tty/serial/atmel_serial.c   | 6 ++----
+> > > >>>>>  drivers/tty/serial/fsl_lpuart.c     | 6 ++----
+> > > >>>>>  drivers/tty/serial/imx.c            | 6 ++----
+> > > >>>>>  drivers/tty/serial/msm_serial.c     | 6 ++----
+> > > >>>>>  drivers/tty/serial/mxs-auart.c      | 6 ++----
+> > > >>>>>  drivers/tty/serial/pch_uart.c       | 6 ++----
+> > > >>>>>  drivers/tty/serial/samsung_tty.c    | 6 ++----
+> > > >>>>>  drivers/tty/serial/serial-tegra.c   | 6 ++----
+> > > >>>>>  drivers/tty/serial/sh-sci.c         | 9 +++------
+> > > >>>>>  drivers/tty/serial/sprd_serial.c    | 3 +--
+> > > >>>>>  drivers/tty/serial/stm32-usart.c    | 6 ++----
+> > > >>>>>  15 files changed, 29 insertions(+), 58 deletions(-)
+> > > >>>>
+> > > >>>> Reviewed-by: Thierry Reding <treding@nvidia.com>
+> > > >>>
+> > > >>> Krzysztof, now look at this case. I would argue that this is even less fit than
+> > > >>> # subpart(s) case, because it might imply anything. Again the problem is the
+> > > >>> bundle, and for such a case (when tons of independent changes are bundled in
+> > > >>> the same stuff, *every* Rb tag has to be explained on what has been reviewed!
+> > > >>
+> > > >> It may be a bit subtle, but the placement of the tag indicates that it
+> > > >> applies to the entirety of the changes. I didn't crop the list of
+> > > >> changed files, nor did I omit the summary.
+> > > > 
+> > > > This doesn't clarify the question. Wordless Rb tag on a bundles is an oddity.
+> > > 
+> > > No, it's perfectly normal and typical. I would not expect anything else,
+> > > because writing "LGTM" is pointless. We are experienced reviewers and we
+> > > do understand what Reviewer's statement of oversight means, thus giving
+> > > the tag is obvious, explicit and not odd.
+> > > 
+> > > > 
+> > > >> That bit of meta-data obviously isn't picked up into the tag line, but
+> > > >> I think the default meaning of Reviewed-by is that it applies to the
+> > > >> entire thing.
+> > > > 
+> > > > And I interpret it otherwise, because this is a set of independent changes
+> > > > bundled into a single patch!
+> > > 
+> > > It's not set of independent changes, but even if it was then it would
+> > > not matter. We review the code regardless how we actually judge the
+> > > atomicity of a patch.
+> > 
+> > And I confront exactly that! When the patch may be split it has to. This is
+> > seems the outcome of this discussion to me. From now on I think I will NAK
+> > any bundle patch until piece that I in charge to is split from the bundle.
+> 
+> I'd like to caution against this. There's effectively one change in this
+> patch and it converts all the drivers in the same way. This was probably
+> generated using a script or semantic patch. Requiring this to be split
+> up is going to make the author spend a lot of time creating 15 patches
+> instead of just one. They will have to write the same commit message
+> with tiny variations, which they'll most likely just use a script for
+> because it's tedious. Or they don't use a script and likely get at least
+> one commit message wrong. And then we're not reviewing a patch for
+> technical correctness anymore but waste a lot of time on nit-picking on
+> a subject or commit message. Each of these commit messages is not going
+> to add any new information either, so the only thing you really achieve
+> is to increase the signal-to-noise ratio.
+> 
+> That's completely absurd.
+> 
+> Also, reviewing 15 miniature patches is going to take much more time
+> that reviewing this monolithic one, so I suspect potential reviewers are
+> more likely to just stay away from it to begin with.
+> 
+> In the end you make life miserable for everyone. Well, except for
+> individual driver maintainers that want a quick and easy way to slap
+> their approval onto only the one driver change that they really care
+> about.
+> 
+> But there's already a way that they can do that. Acked-by can just mean
+> "I maintain this driver and I agree with the direction, but I haven't
+> bothered to do a full technical review". That's what most of these
+> "partial" Reviewed-bys are, so why not just use that existing tool?
+> 
+> And I'm saying all of this without judgement, because sometimes you do
+> not have the time to do a full review but you still want to lend your
+> support to ongoing work. I do that quite often myself.
+> 
+> But at other times I do want to look at something in more detail, or
+> just ended up looking thoroughly enough for it to count as a full review
+> and when I do I'll let people know with a Reviewed-by.
 
-On Fri, Oct 30, 2026 at 08:01:12PM -0700, Borislav Petkov wrote:
-> From: "Borislav Petkov (AMD)" <bp@alien8.de>
->=20
-> A K: is a content regex file pattern which matches any text in a patch
-> so if a commit message contains "tdx" as in
->=20
->   has_tdxe_auto_clear
->=20
-> for example, see
->=20
->   https://lore.kernel.org/r/20261026-g2ul_sci-v3-3-b3097163edd5@bp.renesa=
-s.com
->=20
-> get_maintainer.pl erroneously adds the x86 gang to the Cc list for what
-> obviously is a completely unrelated patch.
->=20
-> The same happens when someone uses it to check
->=20
->   drivers/power/reset/tdx-ec-poweroff.c
+Okay, the only way I see now is to ignore bundles where patches have different
+maintainers. Or NAK, or request to split (depending on the content).
 
-And I just send more unrelated patches ... "tdx" is just the short form
-for Toradex (since 2003 ;-)
+Ignoring is an easy way out, of course. Makes me more time for something more
+useful. Thanks folks, for the fruitful discussion.
 
-> So switch the x86 TDX patterns to files and directories (F:) wildcard
-> type patterns and group them by path, for less false positives.
->=20
-> Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
-> Link: https://lore.kernel.org/r/20261027055750.GBauA9XlPykc1c1Xhv@fat_cra=
-te.local
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Acked-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-
-Francesco
 
