@@ -1,89 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794238666;
-	b=2de22Nfu6Zs1iI83W6MX7aaJTgstcZWq28BJ5+eqMHvhDjW9Q7vPbQViJrmS/DOLF/Rm
-	 ojHlBFvqwZy4CHn3uztFfIcSwb8ZZveEXxeqjBYw9AuW9EQnI6qREsfijHmOWd2qgSKtD
-	 DTeusDeEUwdoGFl8rHoudw/yoOBE1JqipfSg9FYCAGFQZq9kYCjXV9Jp2B+dFnhCzvXEq
-	 IxbFEAeWLQSm6f+/pUgJma8C5lzizg2GWmimCSRuhk1SqjdiQA2CevMRb3ozabfqa/OHm
-	 QuCWXlYAhRFqwGSN0zm3C32tOdWV791WNRVIZpGYgA6NV3b+7ixY0G0UApMruVoJLyg==
+	t=1794239514;
+	b=E3FZO6eIw0zCDdtEZP3Jt95VAnAEyZyeRvBNjRUQ/Y+c9bbKn5ZMLIkZd081jSjGxEC0
+	 ZydF9hGRqLlHauwe41bjmpNsl3UydhcMCEhIFvX1uB+5SvA8dmxPvGDLmDLTZb5NDV38R
+	 M1fFl8Btop3R9WfLh1hRHWw2MJxVMdJwA9+YC1WXff+PB8BmnNLc3eUPK8wzFjakqJNyk
+	 AR54hbkzu3G7zOFN/RNAYVrqfAv3xYmkqwv6HT2wBEuz4/GqHRvGse0ru5mu0ryYm/axQ
+	 7asStaUWAHWFrtUjoDh7ahJ7uUwZ2JbNS3zsuIpIpzx6Cj6unx+puQKvn9jILA7FyWg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794238666;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794239514;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:Cc:References:
+	 Content-Language:To:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=Ydw1s0x1RNP+qqUMo8W/mYY50hHq5MXJ/cd70aJJung=;
-	b=t+0oRAOV0OIOPBfzKXF7qAEJAwNO98RQ+lYDxfOXa/AX9OuSAwm4xbm82bnNWJOCNh+/
-	 YnKVZVZQOhsqL7/5Z4Fv8OkMbS5Rxlis2boAXIrONw3kSvG61fLnafXBpnglw/xsGLf2O
-	 NhO/KvST3Hae2veP5e0SUamtJgP31glOYWnAfgMmd8q5kWBew7+Gyw3Yubvuui+5G6B9e
-	 q5AVESnV+dR8HhAmSEv1QqzR2RtFqiQJQZMBFDS5acxdgXGD99IF3ijZczDPrIb2om//g
-	 kNibK1NG5nGwlG+cfWy24QJwauYyzAXLYpxYNBcfY1LZTt+M74sPVLPTtxtAbjkINxA==
+	bh=GqcUVOE8YZm1FPDzDze4+rCKgn8rK0xiBVztztTok30=;
+	b=B1nCqHICzR6tKEmYPREV4J7N07JvgwR5coaEvE/TxZBbn2k5hCGclhPGpveHNkFYBaTs
+	 dKkurWX4An0FV1gCkXqfpV9EqcAVAKMPiRun+kaKgZmsMnPfMrLOdVuB/hqQeS8Vtzf0X
+	 WiqiZcq/aXOkl6W8y7VSHa+RHwYGkrSyhRoF+JzzHHisrOmuurUdRPwBBD2IAS8MBqYR5
+	 1V8uLkqclzW838VtVFn/F8BUVW5E3Jd/b5AY13ZEmmgnQLfcypPnBucc1QP4GJKZelFVi
+	 BMijbViYhjnNduHCVIciEuZOdX02L/bBPCrlAt8OZL/QrDCVd9C5xfuRvNparXmE1Rw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YHPQDxth;
-	arc=none smtp.remote-ip=209.85.128.46
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	dmarc=pass header.from=suse.com;
+	spf=pass smtp.mailfrom=suse.com;
+	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=I6Gf+TJ+;
+	arc=none smtp.remote-ip=209.85.221.49
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47E36606A32A
-	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 15:37:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 47E36606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0325606A31C
+	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 15:51:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D0325606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YHPQDxth
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4a214c5c4c0so10427725e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 09 Nov 2026 07:37:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=I6Gf+TJ+
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-48e3b22e971so563439f8f.0
+        for <linux-serial@vger.kernel.org>; Mon, 09 Nov 2026 07:51:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794238665; x=1794843465; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ydw1s0x1RNP+qqUMo8W/mYY50hHq5MXJ/cd70aJJung=;
-        b=YHPQDxthLio9qZlx+pNRhCp+dyzli9PQSWNVxlSCobZwRcJs2KDBi2hZOZbOS7+uKr
-         IBKS67wExr9rulZ+CSFJhK0U9+LlBdvyMgV37JyqRyhlYb4mCDkI3lZY79aI3UTai4W0
-         +ulLYRw0kL0ztF5ZBQQiQY3A2/3jx5JbzXXFy8OHR/SqQDGP6bBjreUS/YpehI29x9/O
-         MDwUIAZGlm4OLHtxXRtUythH6nVQLiocdzeHZJxpMkThGf4/BNuhsEtW+C4VJ3iJozxl
-         qOZREYqGSTjJ2O12wXvUp/u8ETZYXLjuM7xGEszXZPcWAyPggG1QgL9LEgsTXy80fxkL
-         OUWQ==
+        d=suse.com; s=google; t=1794239511; x=1794844311; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from:to
+         :content-language:references:cc:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=GqcUVOE8YZm1FPDzDze4+rCKgn8rK0xiBVztztTok30=;
+        b=I6Gf+TJ+xx28C6M6wGa7IriJIxP64CATq5xKa5KY4/dVEF70L68u8oNbC3qDhkhEI7
+         7ia14iP5TbkPq0pUWtgTMNnR57unFzAtVelBZ6VlJdQ4CrgVYgxw4RobiXpnUn7hkB+D
+         nzTyACD0+MFjBaqWPAWXlFUgKFrj/LJmZ6fQQvFA0wYX9Z+YdDx7xP/wSzXM8J7jhI3Y
+         cnv1opUi8bNDC5CGiUC5RyhE5sufSwg94ps4g0+w/MIT3GHEM+nHtCTD6yBD+zcjVMzC
+         KM6SnUFC/LBhWAJoh5/3RAr1pEMN+dTTDdPPEWzL92kIaF0QNP3pX9QYFDhi6xIlcLq5
+         xWjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794238665; x=1794843465;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20260707; t=1794239511; x=1794844311;
+        h=content-transfer-encoding:content-type:in-reply-to:from:to
+         :content-language:references:cc:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Ydw1s0x1RNP+qqUMo8W/mYY50hHq5MXJ/cd70aJJung=;
-        b=bN7YErX8o5CeXyWb9c+THfHq689Gn2IVvH779rwsmSA6KdgbxCdckjPZ6zwOOYF4KB
-         mf6YhEUv7+gvmh2ueSOFHTZqWZyuMOHVDsyi42aSB00Q50Fg3KjCk6FSpoAMAB4d0UGN
-         Aj1IwtBlL//vzvMhPTkf3ppZxbVMjTSeEoxmQvsKZbuDKzt3XnyMhBSxvwxrPzCSuVht
-         0su75A59HnrV+aj58hO49T4xPlRWDo/qo5DDuNsVNxZVI8EefdI1lefWQi9ewss59UPS
-         bcNFSaEOwjnb/GXBfKUgGmIl/Ns0p8Rs+gR918TRZ3lcclncZ9y2JEdzSx6eRAUUEvGE
-         VhfA==
-X-Forwarded-Encrypted: i=1; AL+hErGNmamYIYc0FYUwUB1K0OSYOGEqHf+kaNfSM0oKB9TlATz5gSBJbf6c+FeHGrMexsCpj3tRaaMJsxSdpLc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+oL9LlmYFfNlK2h7I1O6WeC90ZQk1rFrub8QSspSAJybHbuyuw
-	n1/xglcJo0KcwXramlURnjX2ajp+84I91b9i/YxKziLXi4xazxAwSIhiy4ysdZN4
-X-Gm-Gg: AYBFou0a4ZhWWZehNIwo83iVgk61hs0ehWDDbXcvypSnaZFGkiwcNsRDjey7A56E40s
-	O/g59l7u2zH2YAm9G3YrRruMMxffMgU0ZIOO7Qy38m2BMs+FweLX8/a5vtEVW9aPAza4D8a/CO8
-	durXQK4SF0CsqyBopWcguGBAFAebkyM9G6iTUayCcYfYrjOfVj3LiCTQoDv0xzxHqEaZ5w+0ZhG
-	AtBpGdR1xlTSjjrppatUDaYAfchz2ua/DlZhl0uzLxlnk89B+hz6h9rfQfi8Fo0rqLWotdpJEpf
-	gve8dQeoHZtBoFNoCay7ikvj4lHvDrR12PSGO75JE89BRrV1FiMz8pS1OrRdBTD4lLnHM/JGbpd
-	4xa/MYEqFgayrcBbuGB90kNHecVeQ7tUGYBm10xg4cAUjRrNfABYLlBsOwztGUdCFPnxaDkvZ1z
-	GzJhpKi6hy7T0iTJNWkE3q+JKLx1gBCBkUmcDmLVtU4W0Pco4Qfqt3aCWNqJIAGmNXSQY1S5hNP
-	jnRdtMCLsHUjRvdhRzol2DwvYKr5622BXsFB2DnRKIc/NaMgq1UglaQRAeBQTcx9Q4U1sfFSzKe
-	vuvhymzlyoYVnq5OjqTiTrJbR8lC7CuGjnBusaA5HTF1cVuq3jIdR9L/Eke8kXCcUqGiH0cRa3S
-	PfQ==
-X-Received: by 2002:a05:600c:37c3:b0:4a3:d327:6ed with SMTP id 5b1f17b1804b1-4b963c89ef2mr78509805e9.17.1794238664475;
-        Mon, 09 Nov 2026 07:37:44 -0800 (PST)
-Received: from ?IPV6:2a02:e98:40:8091:f0f7:91a3:e60:541a? ([2a02:e98:40:8091:f0f7:91a3:e60:541a])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b90619bbd2sm149230065e9.1.2026.11.09.07.37.43
+        bh=GqcUVOE8YZm1FPDzDze4+rCKgn8rK0xiBVztztTok30=;
+        b=byJGk+qkml/YRoHshqTQNSY8kImABqNrUoALR2uvghl8ViEH6KCnT439cVh87U5eo+
+         WziJc5Y45oT7pi0qjE74xkpgNKruh+UnxOfxZ5UgdYkZFqxrdnx3iktGoSCDn2sUraxb
+         TAI8MnTdjjPtYw2kda7KpCQF4cFXPIsOjTK5FZGoR1QQrRKFy/5Y7z/YW3adXT7ozqJf
+         2f/ub/YQExO4bHLIMZhhWe5BkxNF7urT2srryDs5ZSh1tJHWH6wTNO+caKFBxJhZK3i3
+         xYrxNDYU5r++T7/Wut30VMMKVePOoe/jeLvSMke1XwZewZLVirFMdVDe9oHE/yF30zEu
+         OpkA==
+X-Forwarded-Encrypted: i=1; AL+hErGgFF/66hqGLl9rjwbrfgz+ShuYzFcATieYHsdXhuY1d9n/mUvcAk9zhpQLVqOZpgY0ZG0WUPOuqDrfpDI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z985/NEFytXH/AJc1/z732uqp8s5uleMRupWl8xhqDyP5DRXzgU
+	raAwDMNrXHb4jAOVClKz+iLG3b/IicZDpCkGDGDcopnfwKrbiiqndPJK0NtR/F0Ncis=
+X-Gm-Gg: AYBFou0HzwvdXc96p+jif1pTzd75cpaLSRdTsLxCq5pWHBgx1EevFlERRvfa0TOTghF
+	jSD+IS/sIYtD47tc1HttmliDzSP/6dZBrqomlZwkZq5eRws94+pQHjjTDi9WnJ8fdfhP27kiLwe
+	LaGL2w2LUEkechdUS8ugORKu5p+OXh0/i4Zjp67Rp/CUPSJsMQs0ZSXHFbNVrNy6Yo4XIiRaoIm
+	ykUQm66VA/NtKyOW4y1eFlfyVFrKPKAo5U3cgP0BPI5fQ7rxNtXl+jsQUr8Pzh94vucO8g2QYZ/
+	bwrxgFw33CSpaqs1SU7maOo+BQMaV6pMv4KPmueXMrSqgT5jJaNQZK5EGEwJoIfpq4jp6U8qMyx
+	9kN+oE/nbbuSEEzYEoFHlCv2JVhPaQtas7+gOBxqENnpFJfIBRTVHd17kZruZIlcHJKIaqQpVo4
+	X4VDlA90nvPK25+pGB7FQmBjQW2H5r3pSUURbUFzn83ExpPJklsbuaiH+IOpNNoTgI9haqaKs97
+	Anfv7yp+7H/TGFdTr709wL5+WFPLgcg5lwTO1/WNTyJWVHGeJpn61k8IVwG/e696LPVUqznhsCg
+	rmHcQYPnV4ZStwz/ZmxKAoIo75kX4znRyWvlQH8HogDppaiVKi2zcdNtyBkJQBdg
+X-Received: by 2002:a05:6000:25f5:b0:492:e1a6:90eb with SMTP id ffacd0b85a97d-49582e8e516mr8245452f8f.10.1794239511204;
+        Mon, 09 Nov 2026 07:51:51 -0800 (PST)
+Received: from ?IPV6:2a07:de40:8100:0:89a9:fd0e:583d:4a53? ([2001:af0:8000:1409:193:86:92:181])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49597186eb9sm10435718f8f.35.2026.11.09.07.51.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Nov 2026 07:37:44 -0800 (PST)
-Message-ID: <800f8d42-e35d-47ec-bbe6-e437a86d6e70@gmail.com>
-Date: Mon, 9 Nov 2026 16:37:43 +0100
+        Mon, 09 Nov 2026 07:51:50 -0800 (PST)
+Message-ID: <a190f981-d668-4208-8148-f4e50adb31a6@suse.com>
+Date: Mon, 9 Nov 2026 16:51:48 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -94,72 +92,67 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] serial: 8250: Add RX trigger levels for U6_16550A
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- LKML <linux-kernel@vger.kernel.org>,
- linux-serial <linux-serial@vger.kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- Miroslav Ondra <ondra@faster.cz>
-References: <20261109-8250-select-u6-64bit-v1-0-04bc8332fa34@gmail.com>
- <20261109-8250-select-u6-64bit-v1-1-04bc8332fa34@gmail.com>
- <469362ef-f0c5-45f2-746a-b4a3c51876a4@linux.intel.com>
-Content-Language: cs
-From: =?UTF-8?B?S3J5xaF0b2YgxIxlcm7DvQ==?= <cleverline1mc@gmail.com>
-In-Reply-To: <469362ef-f0c5-45f2-746a-b4a3c51876a4@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/3] Remove obsolete __MODULE_STRING()
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>,
+ Guenter Roeck <linux@roeck-us.net>, Ian Abbott <abbotti@mev.co.uk>,
+ H Hartley Sweeten <hsweeten@visionengravers.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Rudolf Marek <r.marek@assembler.cz>, Andi Shyti <andi.shyti@kernel.org>,
+ Chris Snook <chris.snook@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Tony Nguyen <anthony.l.nguyen@intel.com>,
+ Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+ =?UTF-8?Q?Marek_Beh=C3=BAn?= <kabel@kernel.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Andreas Noever <andreas.noever@gmail.com>,
+ Mika Westerberg <westeri@kernel.org>, Yehezkel Bernat
+ <YehezkelShB@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Duncan Sands <duncan.sands@free.fr>,
+ Chas Williams <3chas3@gmail.com>, Luis Chamberlain <mcgrof@kernel.org>,
+ Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen <samitolvanen@google.com>,
+ Aaron Tomlin <atomlin@atomlin.com>,
+ Wolfram Sang <wsa+renesas@sang-engineering.com>,
+ linux-watchdog@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+ netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+ linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
+ linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20261002-module-string-v2-0-fc7438acaf4d@suse.com>
+ <2e88806e-57dd-47e0-a9ef-a8507d22aa3e@suse.com>
+Content-Language: en-US
+To: Petr Pavlu <petr.pavlu@suse.com>
+From: Petr Pavlu <petr.pavlu@suse.com>
+In-Reply-To: <2e88806e-57dd-47e0-a9ef-a8507d22aa3e@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 10/14/26 11:36 AM, Petr Pavlu wrote:
+> On 10/2/26 10:31 AM, Petr Pavlu wrote:
+>> __MODULE_STRING() has been an alias for __stringify() since "[PATCH]
+>> MODULE_PARM support for older modules" [1] in 2002-12. That change also
+>> moved it to the graveyard section at the end of linux/module.h
+>>
+>> Replace the remaining uses of __MODULE_STRING() with __stringify() and
+>> remove the macro.
+>>
+>> Apologies for the wide distribution. Acked-bys are appreciated.
+>>
+>> [1] https://git.kernel.org/tglx/history/c/136839a1b4
+> 
+> I've queued the second patch ("drivers: Replace __MODULE_STRING() with
+> __stringify()") on modules-next for v7.4-rc1. Thanks for the Acked-byes
+> and reviews.
+> 
+> The first patch ("hwmon: Replace __MODULE_STRING() with __stringify()")
+> should go through the hwmon tree. Once these changes are in mainline,
+> I plan to pick up the final patch ("module: Remove obsolete
+> __MODULE_STRING()").
 
-> On Mon, 9 Nov 2026, Kryštof Černý via B4 Relay wrote:
-> 
->> From: Kryštof Černý <cleverline1mc@gmail.com>
->>
->> PORT_U6_16550A has a 64-byte FIFO but no rxtrig_bytes table, so the
->> rx_trig_bytes sysfs attribute is not registered for ports of this type
->> and the RX trigger level cannot be read or changed from userspace.
->>
->> Add a table with 1, 16, 32 and 62 bytes, i.e. 1 character, FIFO 1/4
->> full, FIFO 1/2 full and FIFO 2 less than full. These are the levels the
->> Synopsys DesignWare UART uses for a 64-byte FIFO, and they match the
->> existing PORT_ALTR_16550_F64 table.
->>
->> The default FCR value of the type is unchanged, so the trigger level a
->> port starts with stays at 1/2 full. The only visible change for ports
->> already detected as U6_16550A by autoconfig is the new sysfs attribute.
->>
->> This prepares for 8250_dw selecting PORT_U6_16550A for DesignWare UARTs
->> with a 64-byte FIFO.
->>
->> Co-developed-by: Miroslav Ondra <ondra@faster.cz>
->> Signed-off-by: Miroslav Ondra <ondra@faster.cz>
->> Signed-off-by: Kryštof Černý <cleverline1mc@gmail.com>
->> ---
->>   drivers/tty/serial/8250/8250_port.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> index 36b2b0a2c05c..a7acede62f40 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -163,6 +163,7 @@ static const struct serial8250_config uart_config[] = {
->>   		.fifo_size	= 64,
->>   		.tx_loadsz	= 64,
->>   		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
->> +		.rxtrig_bytes	= {1, 16, 32, 62},
-> 
-> Reusing U6 entry for DW UARTs seems misleading.
-> 
-> We've better mechanism coming up for defining rxtrig in a one pending
-> series so this constant friction with the uart config types can be put
-> into rest.
-> 
-> Please build on top of that other series and help in testing and reviewing
-> it.
+v7.4-rc1 no longer contains any __MODULE_STRING() calls, so I've queued
+the final removal in patch 3 on modules-next for 7.5-rc1.
 
-Thanks for the information, I started the work about a month ago
-and not sure if the patch existed before. I will test the other series 
-on my hardware. I like that approach more.
-
+-- Petr
