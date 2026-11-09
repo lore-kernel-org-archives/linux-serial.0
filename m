@@ -1,100 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.172
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794192870;
-	b=QFv8bMfD+U41YJZnnJZq5N+8XYHJHonpGpmbQfhdD5weCfMYAIoobCI9drCqHaXpTFyw
-	 4k/5gLff+0g6N/o2kSDsyqSL285Pu4s5kRotf6iIv3/9uj1sWnCkHa0FuW2fJZn6trP5q
-	 oCmmsMwD4QYk1z0Mt2vUh4nv4KTMb85sED78WgJafavJRcnBFkEDoY9oqIyh6R1+eHJEh
-	 H8DcEPgUYh2zU2q7UlbDVGyhxE6QAQNsMRvV+KeyT3Arbr7eNXqxCx2MkGFqKv4wHKDeL
-	 slFIoi/iDxwrNpsdlDsVM80abzoPbASRICngTi5yPtcXQD0pJEPTF8hjtblVZge3r4Q==
+	t=1794192909;
+	b=ouDr1+walAUZw5JFWN/p1IJkI6MU1zt304HxcJSc52/mqY8dCaS2NIGkzidD7a22rxwT
+	 eGi291sXtWfjWhFFJ15mb+AZXF6kGr1MjY9+RmP3m467RhLff0hkZ1PnCu0ei/Fl1t8UZ
+	 5kGX2EGTTaRtoHN396dqk4aQeM5qTyfj8IZOsa8rmx0n4N0AXqyOm3v5b9PBPpxKbL4Ra
+	 RuOEmkZ9vklWJeQ1lD299gHmQRjAItd6mspcUPLb0iu9l8Q7nm2SsXP5ZpW1g+O0PaJcp
+	 ncrOpy/YEOlY9J1ZO3b/s6PRpuxN/Zw4Sn14VJCQUvH8bYHqMOVl2IWa1zEsHRamdAg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794192870;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
-	b=i2acFTDIYVFxW/su3YiYev1ScRHs5AkBntWM/r2NE+Ko7c59iwaaOvC2J2E/v9YeuAul
-	 9G82z2r17uTYHz0L58sTqJMe2Q3Pt8ED/B414Z7JWiMg2o+Xc0/k73lYRrRuDDs7AcKw3
-	 eC93vQ2FXzk/Ltq7+o+qKvRuPa9O5+AoXHwr3lpBwG6QT1x6+M+zGm611vMIB7g5k/6oS
-	 ptu/10k/0kYrmRioY5cAF25Gl2M+/8HwpanWY1JeOspKMYRd5T8ShUDRLexs6yE5JHNJW
-	 eQ7EGlVE5QZ4871BZyYhj5igup2XWypMkB/oCxf2FYG4EVGuGRy23Hjgo29cus/hDkg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794192909;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=v0dZEvGHVJY0R9uWYe8/mOz/5B0p+NtTR15YHC7b/7E=;
+	b=YQ/I7p+6TPHpsFMGvXEdW0hmsC2ObzHKujgFXioybx8ziVez33XX2iFBE2+AwkQ3uF6N
+	 NOQAulIMhSUTtM7dFpNviF3RjNJR+6Tj6seyQKAFfDDQyLLd6wd8RgmKf3ax6Yj6VeAvY
+	 7Kyhx/XEEWTkZe+NPkp/1HTw6qmyO99vbaoB4RUwoWq3EHTS2PrPidYxTd5jpSl63TUlU
+	 jw/W1I+CJI4ssJnvNUgQ9KxbJPxss1qtFLPHmBGRxlxVpbjN+B3Cin6hEgFlOLDF5tDaX
+	 I2y7gNsKBPiXg0wwuKixJs1F+KgS6HQ6nGK/1YjACURX5YHXPdpOTTb7HvWLTEbPhxA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=spacemachines.com;
-	spf=pass smtp.mailfrom=spacemachines.com;
-	dkim=pass header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=A+XTWgLg;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.172
-Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OFY3xNiF;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C20D9606A32A;
+	Mon,  9 Nov 2026 02:55:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OFY3xNiF
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794192908;
+	b=NVni0Q+Dg/0T5AQ+IorIMXr/VwFJsDCBVAzfJuVd+s146hCqUQKgAxfQ7gxI7je9sFjk
+	 xFz/g+g+UjPWQ7qwVtBQjiFY7tlKR4tt6nUyARI3RgaUl+k0FOijUMmP3GpHyjyDTcMOX
+	 Cd0SiQUzJDNKSr4ofNB1vMbaZcQqi0CeCjmjm3Dt3G3GOQ37v9PWFuLNtdkwPorQg/w5A
+	 pCyPs1GNkD92R0RyZygVLCjgnBtGznuPjE1Sh8xn5s85lInhf3DemEElapYxI6sA2qGAv
+	 x6Y0CsREUzeZ1ZVUUSw7GJbaD4OJ0Mba/fQ39oXct9ObQmPeQM36PC+FwDnCT4RCVeQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794192908;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=v0dZEvGHVJY0R9uWYe8/mOz/5B0p+NtTR15YHC7b/7E=;
+	b=DOd0OCp1ROban3TLQFp1RdyHFXorMLOip99oERp5E6mnT7vJ4UYrQxxTIsNuhm1N3tD+
+	 OhCa+TBQdVKMAI+YPJVgB4ztUF1UuAw4MneoS1CoFNJH+iANd6e2iBuAMUNd6TZo+yjHu
+	 7+NovemF7VMmcMEPuOYsFQN29UaGPHDnX3sxvH2qCtJP+mAZUq1+uaUtf5smHpFpirdpj
+	 eoiG9qWNAeeuJzcsL4ybqCJn5TAdP3TGnpQiUq0h+xOgak+1NHskh5eXcUPkkdmXE58rI
+	 /khB7DKPzoV4Q89rTOChweKkG1UCWEU0Ib4h4PQv63lR03PoPnX2rS/rnOWIgFR1imA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B81606A321
-	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 02:54:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02B81606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=spacemachines.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=spacemachines.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=spacemachines-com.20260707.gappssmtp.com header.i=@spacemachines-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=A+XTWgLg
-Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-36dbde64409so726587eec.0
-        for <linux-serial@vger.kernel.org>; Sun, 08 Nov 2026 18:54:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794192869; cv=none;
-        d=google.com; s=arc-20260327;
-        b=gLJ9YcMwHWeQ68ObntcnRXiB0c+OJH5hhnLQhWXNQyxqDpqzMzCMXflkSQcoQUNIva
-         AzSPbYBYptZJyaBQErb0LangSe+5Rc6L9aMX614OD0i8geu7Jog97zfjN0EGsGmq571n
-         4NO6EbUXjsYS+BniQrJ1kWJeyL9TS3tEloJg/XLeiTDUx+35eC7Q2TSo74cwqTx3gO3F
-         ayufXGzt9maXC7g+Vg/2rnOjh2qN7eZFRN+wpo7o1lnHKSw5k54Zum+d00ACBD1eaIQz
-         5omoxKsZm1zHHzFrcRAtX/v0GOB6l6pEz8HV3fLB61s3skMHQX44IHuJFxZSkepQukV6
-         0jtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
-        fh=qB58Nx0XMn4q7gdM4oF2IJ91t5QIjxfdSanyE56Aon8=;
-        b=YdqojiOcbQVavDf5p6vVtoetyokPdipCHP/Tx+lX8zvipmMBj+bXP8YaeHqVbudWR6
-         w9sLzLee5tXNDY0sqzuOqWM+qnjFnjLTrdUl7bY8GDDG28Kq9XcMBJCXIXqawk79YPIy
-         ANpPGSoDLFNGSvoKdLDGpWjAfTDymtqyUHJz2W/UMnAdPZXwbEicOV72WXjC79ujyvWE
-         prx+m8NSS1VvblFMW1jrIAk0ou+nnCwdyLtpO76yhmrP3KwqvFzngdHhJUL/0OsO9/ME
-         5i6NlWB3XfVExaj7A2vxyNiSJ1hYY7Cywrmz9+Iouox5/jq5lIpyytJWmMxGkDxo+3l7
-         oM9w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=spacemachines-com.20260707.gappssmtp.com; s=20260707; t=1794192869; x=1794797669; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
-        b=A+XTWgLgnrqW+PCT7TIAIIkFzWhX5Buzzt2ApyCVF0MOnlG8Gi+M4EE5q0NaLoq1Ev
-         xPip4ML5lUHUiyZ5x2ApGnQrswnqqbtWfN2F+BglB0yjDc9W9JAFdOKJ/zYrzqQ6ttTg
-         X8qJUTdRDoFWV/PWbsOfYGw5P8h78PMyfkEHIr9suaJUzbKVw6eNzHnjgP3qtWwAxR2w
-         45q+B2oG8EoKqIsvtsVYgUDP1lNJve7W4l4p+hUagMNxjJbaE6XNu6ujr1KEzzK/fyr5
-         UG2R31p4ny/82LbEIp9YTBUJgH/cqrS5+HMPMK8IEhvuspgz01J7cId5LwMTWfx3w+1Z
-         OHqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794192869; x=1794797669;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Qz3NR7MGSXJNdrY+IV5qaIakyyfe+n06O6AowRbO9CQ=;
-        b=DxvaJLhNwq9yxZrbtamXbSoViPzBAIynUI1WfdS/leQD0TVxIkbaDA7RvZkVnFscY1
-         RQalXI5sfLB6m1EogIakjLkujJx4/2jxHdG4L77lbBSNAMdGkqvVPosbNw2FTDenyZI+
-         954wDdJx5/UVP9FpXkLuA6/P8AqnoXMM2BoLAMk0BCTRS2BRP24SXyNir6mbXi9Y/aqw
-         rqo21TEhpkRO7G8gxPZq8YjpEoRBLzi7Nd1arI4uTtRzcN8B9sKdMNTVXbdJfQOZ7c2l
-         n5CTHC+KUPN28uu1NCtD9FUzw+7V+ThhoGfoFCI2y7ljQxTXJEOgv3u64i+alPD+Gw8U
-         3Ecw==
-X-Forwarded-Encrypted: i=1; AL+hErFZf71m/Sayu+xY8xNJUc2949W1BpoD2uETE+Nxxrun4FAkj6RDXFnF2yhYAVJdAhRqZd/DDhCZpcCdIsQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9g6SVrRJppR1YOZ0VXRB0or2slGZzj/Qj2kXk3OHYrjdR+iLJM
-	Z2GR94dy798uc1B1pqEch4Qz1SpGvOs8Q2Mz8/alu/3J+XX87XxNjnSFi/PjOrHcvOQPkqk4Mnw
-	fpu4+m/AQzZ4O1w8zimVnWCSx/W8+hr1dVkE6SNdqZw==
-X-Gm-Gg: AYBFou3a/p/HgjzyRhSRVYNbLt1cvLegbLKozb+v9EOa6G0jIhXgrrPvGw2LXWZuzDp
-	Pz/sdpjNfWfpHZ1FC9T4u9Z51cE4EyUsEQ29XhAFUDEXDvaZLS3bF1sZvMSC2eyYAWTQgmvu1TK
-	gT48mCkxD6NVXU0im50TyHIy+V/Q6gDWjdn1yGr3PqQ16dQc8pVogGfl/vjE7Uz2tRBX5b6Sq+k
-	REakNPtURmUJhHfZJMvfW779MHcxFCJPRnZeUh2hI+XcM08vuBh134bxyR/0V5/WVKBEOanqyMi
-	jPuLGxdwNMygCmb59yaEb29y22HvcP7rrtq69oRxhsbftuge6SZ1bfaGp9DYJVDTR5P9yTMgGCc
-	zA0ca8JcJd7EI+A0jih24+FxGvznFvZdi2bKSgw==
-X-Received: by 2002:a05:7301:4601:b0:369:f9da:a70f with SMTP id
- 5a478bee46e88-372579ada0cmr5004293eec.17.1794192868908; Sun, 08 Nov 2026
- 18:54:28 -0800 (PST)
+	by smtp.kernel.org (Postfix) with ESMTPS id 880091F008A2;
+	Mon,  9 Nov 2026 02:55:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794192908;
+	bh=v0dZEvGHVJY0R9uWYe8/mOz/5B0p+NtTR15YHC7b/7E=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=OFY3xNiFVpzUo7Hax9OsqusU4FRbHqcBufYXDb/rtFfwV8JFm8E/j78ENBSTO9zm7
+	 3ToEXz8f19F3gRLIS/XDil5H3RmpEdokQyl91ZRlnq1e/WSaTz9AhJRdeUb4YNfLrt
+	 TpKisNql9k8zHN61mbsLTGDEi3QLlY+SNsyQpZA20TU4DgrKWt4IkOEQoUbqci7aNb
+	 wIpRWqLbEpzOEVqN5VEghnhse97knnErz7xVankIT7efgU/aWQBwMUTDd3ZRuTneQP
+	 pRvoIgo8WIl96TYa4XuuYWq2EjuEfqFDr0FlzaggkB9zbotvAPVTZUeDumO4JyT5b5
+	 rFo5QLe+p/g0w==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 155EA48243;
+	Mon,  9 Nov 2026 02:55:07 +0000 (UTC)
+From: Kohei Otsuka via B4 Relay <devnull+kohei.spacemachines.com@kernel.org>
+Date: Mon, 09 Nov 2026 13:55:06 +1100
+Subject: [PATCH v2 2/2] serial: 8250_of: drop RS-485 RTS on Microchip
+ Core16550
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -104,94 +83,79 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261103-core16550-rs485-v1-0-6d15ebe1e5b9@spacemachines.com>
- <20261103-core16550-rs485-v1-1-6d15ebe1e5b9@spacemachines.com> <20261104-zen-aloha-35da49a7e72c@spud>
-In-Reply-To: <20261104-zen-aloha-35da49a7e72c@spud>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261109-core16550-rs485-v2-2-a15933c7b907@spacemachines.com>
+References: <20261109-core16550-rs485-v2-0-a15933c7b907@spacemachines.com>
+In-Reply-To: <20261109-core16550-rs485-v2-0-a15933c7b907@spacemachines.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, 
+ devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ conor.dooley@microchip.com, Kohei Otsuka <kohei@spacemachines.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794192905; l=2135;
+ i=kohei@spacemachines.com; s=20261103; h=from:subject:message-id;
+ bh=zB2zzCjY5jGdBW3bz8SbL+SIiy1mkD1eN/4HcK9U8ig=;
+ b=ikHWkWqXRfD6U4iTaFAtEZY2wJSVCDiHhxCGbkCs0FjWMkuRay/J+3i1gyFsThiAEzWWoDevG
+ ZTYnB7S2hdYCfgm7NuIAq/SiYzTjpYUqggc+E3W/3EEnjZKWRiG6v6C
+X-Developer-Key: i=kohei@spacemachines.com; a=ed25519;
+ pk=1kit/vmX5JiLGH9NPcqlvT55ISWaLmNipdL5VrriRt0=
+X-Endpoint-Received: by B4 Relay for kohei@spacemachines.com/20261103 with
+ auth_id=1385
+X-Original-From: Kohei Otsuka <kohei@spacemachines.com>
+Reply-To: kohei@spacemachines.com
+Content-Transfer-Encoding: 7bit
+
 From: Kohei Otsuka <kohei@spacemachines.com>
-Date: Mon, 9 Nov 2026 13:54:17 +1100
-X-Gm-Features: AclHuK-Q4F2OkjltIrYE04Gknko9UUPJ0_lJdkzGPXUFMua3_w-rpVx6FPuUaIQ
-Message-ID: <CADMKYUAc3QPCdpH8JL9VHk4d0iETsUL2ao2i4OhoHYoZGoAnnQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250: add Microchip Core16550
-To: Conor Dooley <conor@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, conor.dooley@microchip.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 5, 2026 at 3:20=E2=80=AFAM Conor Dooley <conor@kernel.org> wrot=
-e:
->
-> On Tue, Nov 03, 2026 at 11:11:31AM +1100, Kohei Otsuka wrote:
-> > Core16550 is a 16550-compatible UART soft IP core for Microchip FPGAs,
-> > including the fabric of PolarFire SoC. Its registers follow the 16550A,
-> > so ns16550a stays the fallback, but
->
-> > it raises no interrupt on TEMT,
-> > which the driver has to know about to support RS-485 on it.
->
-> Doesn't this exclude using the fallback to ns16550a, since it requires
-> specific interrupt handling?
->
-Everything a plain ns16550a driver does works on
-Core16550 including transmit, receive, FIFOs, modem control and the baud ra=
-te
-divisor. The only thing that needs the specific compatible string is
-software RS-485
-(em485), which waits for a TEMT interrupt the core doesn=E2=80=99t raise.
-Without the patch, RS-485 direction control is missing, but the UART
-otherwise works. If you=E2=80=99d rather
-not have the fallback, I can match the compatible in 8250_of directly.
+Core16550, a 16550-compatible UART for Microchip FPGAs, interrupts on
+THRE but not on TEMT. When the last character moves from the FIFO into
+the shift register, the THRE interrupt calls __stop_tx(), which finds
+TEMT clear and, without UART_CAP_NOTEMT, returns to wait for a TEMT
+interrupt that never comes. RTS, and with it the RS-485 driver enable,
+then stays asserted after the frame, and receive interrupts, disabled
+for the half-duplex transmission, stay off.
 
+Set UART_CAP_NOTEMT for nodes compatible with
+"microchip,core16550-rtl-v3", so em485 drops RTS from its stop timer
+one frame time (plus 1/7) after THRE, as it does for DesignWare UARTs.
 
-> >
-> > Add microchip,core16550 with ns16550a as the fallback.
-> >
-> > Link: https://github.com/linux4microchip/meta-mchp/issues/5
-> > Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
-> > ---
-> >  Documentation/devicetree/bindings/serial/8250.yaml | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Docum=
-entation/devicetree/bindings/serial/8250.yaml
-> > index 50d5c977afa3..33a5929bdaa6 100644
-> > --- a/Documentation/devicetree/bindings/serial/8250.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/8250.yaml
-> > @@ -137,6 +137,7 @@ properties:
-> >                - ti,da830-uart
-> >                - loongson,ls2k0500-uart
-> >                - loongson,ls2k1500-uart
-> > +              - microchip,core16550
->
-> This needs a -rtl-vX suffix on the end, as is used for other fabric
-> cores - see microchip,corei2c.yaml for an example.
->
+Set UART_CAP_FIFO as well: with the capabilities already non-zero,
+serial8250_do_startup() no longer fills in the PORT_16550A default,
+and without UART_CAP_FIFO serial8250_clear_fifos() does nothing, so
+the RX FIFO is not flushed at the end of a half-duplex transmission.
 
-v2 will use microchip,core16550-rtl-v3, thanks.
+Link: https://github.com/linux4microchip/meta-mchp/issues/5
+Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
+---
+ drivers/tty/serial/8250/8250_of.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-> pw-bot: changes-requested
->
-> Thanks,
-> Conor.
->
-> >            - const: ns16550a
-> >        - items:
-> >            - enum:
-> >
-> > --
-> > 2.53.0
-> >
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index b41ca604083f..e23539b2fda3 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -278,6 +278,16 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	if (port8250.port.fifosize)
+ 		port8250.capabilities = UART_CAP_FIFO;
+ 
++	/*
++	 * Core16550 has no TEMT interrupt: without UART_CAP_NOTEMT the em485
++	 * code waits for one after the last THRE interrupt and never drops RTS.
++	 * Set UART_CAP_FIFO too, because a non-zero value stops
++	 * serial8250_do_startup() filling in the PORT_16550A default.
++	 */
++	if (of_device_is_compatible(ofdev->dev.of_node,
++				    "microchip,core16550-rtl-v3"))
++		port8250.capabilities |= UART_CAP_FIFO | UART_CAP_NOTEMT;
++
+ 	/* Check for TX FIFO threshold & set tx_loadsz */
+ 	if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
+ 				  &tx_threshold) == 0) &&
+
+-- 
+2.53.0
 
 
-
---=20
-
-
-Kohei Otsuka
-Satellite Flight Software Team Lead
-
-  koheio@spacemachines.com   spacemachines.com
-
- UTS Tech Lab, 36-38 Lord Street, Botany NSW 2019
