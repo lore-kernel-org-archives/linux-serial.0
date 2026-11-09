@@ -1,104 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794247691;
-	b=aVpbieldmcYU17f+d9zsetxI+RqK7lZBA41OytWLSDFnOZdUTqabVk2TMfxXD0lwHozU
-	 6W2ik3ycQwP3YVOvDU05r9KeZ0YtHPeRsiNh4OoLW41sOmBz0xQdYmvMrUrPJjyHgXEDT
-	 8lG8t8oD9emmXZxyEdzDV7bc6VhC0zNcLmsvqtO1fKPT6iYkbuwXHAMnIZHqYcFrMtPZ1
-	 eSTTkk6gfaz5yjgqF1CisEEdkCgqBAkzAssvWFnSOINK4ncHFCZU+8ma0s1d4w5JpwJCi
-	 Yzjkq/F27VS435XqJBxSaUx/6Wy0IhWHD3b+GaJwUPM1gbu5UyyIcfeqB0wpL6IHESg==
+	t=1794252955;
+	b=yliMYeE94zLK9I9V8Z7UHWkisR+tLMYwxagp/HBe0V48QdzwMlRMAGPMKA0En06ArvAh
+	 bAOXaYxUiuAzWbRkDGyLy08liEJEOc9XqQj0sxXLzyZxY/EkOZn0uHAi0/xQ5HoMvFOTO
+	 dutFKbGi1mIRdPW09JMlmbS97Aa1MBNZ3kCRVRz1BU3lEDEYvseh68MAQ9PexpVfYWu7K
+	 vNpt3DjqtCfKzmwbAG8MaQ3hpHbgy+rjUt1V7kFsri88I/2+BQSyigLkUFPhC4n2zfknI
+	 RV27A5geqkpZkHzac+w4Le8Xmwm1LtNb/lRIWCV42Ya3AXhoXQhI+0LETz8x9XTnqzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794247691;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
-	 In-Reply-To:Organization:References:Date:Message-ID:MIME-Version:
-	 Content-Type;
-	bh=s7U/x5CE+niXpSBFgBUHJahPZfA7nFuXi/iUGvk2YDg=;
-	b=j/Buw4lHRWZmII5hShFBtLq+bIMvLla8pe4WlITN2TFhdciVHL3dZsT7hDXIMC8S5zEF
-	 cFlwy6BxhIrV9KBjvfq4+lT8WAOR2gVtd9q7KBqRlxrsoZrhRvbiVXTn6oH5qZ92Mai9c
-	 Gz2JD3+57stYEXDfpPwKkiLv4W4LSuZY3Y11arpqinai4xbPn76swOQrThf4I4sS6xfyw
-	 66/DV6HTsUuv3hw1Pir7wEqTYUqwNRvP+CLtA3e0iGPj2iNE5GYhwVAGTNO0sJbqDqabJ
-	 WcJJ6jHBXeOEBv57ETWcG+pzZqCJHZFVuQCHBMDkMFnothPtr0vhTN7RkhycURWHsDw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794252955;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=GvJbX8tFvo6M8knK9lWgArZHC9iXmXi9MSIFfMGb9XA=;
+	b=ToHJHRqAxGSC39GN7i+DOW7u9HsPxoEdzF941mysQG5Zfm9BsHiwbnLrIuqSuMrRhAnk
+	 MQpBvK04HowRLXVxvemOt9T0xJ4VY+kvzkjpTT+o/TsTItduKxuaTFBrKxTZXUP9eRhc+
+	 t2WFSHS5BwsouOL0pxCnRknw6SmvRp2DFB8rDNzxUSM+aXvNyaRmj4PXuZH58OKJDDCpo
+	 ijWpruhL7uvLyvaNmKefD/H0jW/ybFIvu/aUqsuD7g4Qnue+1zIN6Cz4R08whyaCpHAvB
+	 3/DkeGIaARiqzpw+N3PIbcGWpYJWqE7bJuSFVT1x9oOmoEw4FkFeopSwbvl74mo75EA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IP9SxyfD;
-	arc=none smtp.remote-ip=192.198.163.11
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HmVvzcKy;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F481606A325;
-	Mon,  9 Nov 2026 18:08:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8F481606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00406606A321;
+	Mon,  9 Nov 2026 19:35:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IP9SxyfD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794247691; x=1825783691;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=wfrbeowEpzlsOOtS5Xzt/Z99rOONWv91scfsMt1LT1o=;
-  b=IP9SxyfDSB6EGFGs7A0bVCps7q2rwZcFhAiDYps8uP26aAu5UsHuIxSf
-   tlmYluqa8O0Vkzw3iTrVKhijz+FC+kmiN5XaQ71GLb+8eONi8JfI0J27i
-   gAac0Ey+5zHnjNqUoGr9URlzdDJ+F39/qK50JinS21ss/u/G8rc4vPQ7x
-   mqFEASpQPYKebvqnlIxIvZKEEeurzQ5f47Zp+zwzxQZxNVFZvEO6oQe8W
-   qyB2XD0JMOX45lgejPKqDw7YfMTajxl51pPK45w+PADjiswcG2ePqK5eB
-   51DxM3/Q69Vre2Thnw8Y200cdNemMOs78amfHRZkMWzOSK6HYmZMgrBl8
-   w==;
-X-CSE-ConnectionGUID: KecGYyTSRKKI8ipgzy4cvw==
-X-CSE-MsgGUID: CyDqiia7S7WO37n5QGEFUw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2894249"
-X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2894249"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 10:08:09 -0800
-X-CSE-ConnectionGUID: REOqqbgbSlKUYG/hgL23ew==
-X-CSE-MsgGUID: M/rq1zH2TtK3zErWiBcqiA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8094048"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 10:07:59 -0800
-From: Jani Nikula <jani.nikula@linux.intel.com>
-To: Petr Pavlu <petr.pavlu@suse.com>, Petr Pavlu <petr.pavlu@suse.com>
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
- <linux@roeck-us.net>, Ian Abbott <abbotti@mev.co.uk>, H Hartley Sweeten
- <hsweeten@visionengravers.com>, Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>, Rudolf Marek <r.marek@assembler.cz>, Andi
- Shyti <andi.shyti@kernel.org>, Chris Snook <chris.snook@gmail.com>, Andrew
- Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Tony Nguyen <anthony.l.nguyen@intel.com>,
- Przemek Kitszel <przemyslaw.kitszel@intel.com>, Marek =?utf-8?Q?Beh=C3=BA?=
- =?utf-8?Q?n?=
- <kabel@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Andreas Noever <andreas.noever@gmail.com>, Mika Westerberg
- <westeri@kernel.org>, Yehezkel Bernat <YehezkelShB@gmail.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Duncan Sands <duncan.sands@free.fr>, Chas Williams
- <3chas3@gmail.com>, Luis Chamberlain <mcgrof@kernel.org>, Daniel Gomez
- <da.gomez@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Aaron
- Tomlin <atomlin@atomlin.com>, Wolfram Sang
- <wsa+renesas@sang-engineering.com>, linux-watchdog@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
- linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
- intel-wired-lan@lists.osuosl.org, linux-rtc@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-atm-general@lists.sourceforge.net, linux-modules@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] Remove obsolete __MODULE_STRING()
-In-Reply-To: <a190f981-d668-4208-8148-f4e50adb31a6@suse.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park,
- 6 krs Bertel Jungin Aukio 5, 02600 Espoo, Finland
-References: <20261002-module-string-v2-0-fc7438acaf4d@suse.com>
- <2e88806e-57dd-47e0-a9ef-a8507d22aa3e@suse.com>
- <a190f981-d668-4208-8148-f4e50adb31a6@suse.com>
-Date: Mon, 09 Nov 2026 20:07:56 +0200
-Message-ID: <6c00fc009f4e61e87895eb2dd3d77c5dfb28183d@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HmVvzcKy
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 602811F0089F;
+	Mon,  9 Nov 2026 19:35:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794252954;
+	bh=GvJbX8tFvo6M8knK9lWgArZHC9iXmXi9MSIFfMGb9XA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=HmVvzcKyyZYSYuEpcGH68C/7nyBvNxOyBaQVvhMISdKwW+YpdA+1Kjxjuor7HcxXp
+	 f7HDEoOL91u1jRv2JBFUNyMcw3x6M3sDW78TtDI2QxIzMcWtSxIWYOFTCzOyLVteXD
+	 NQdhoTn+MvEaIyCmZxGCCFyDQ0SEtC7dztX2Mv+oiBTGZCF2D6fYFI9MspIKCFMgKC
+	 3OBMOqfwd1M8JxZxjnSpXeXQOBGMp59hlIgRISZibX2jOGrGJ9jIxU6SEArS2vt41m
+	 d9sH6E9YomHdAHFYSNu4pNZgnJx4zBXbEL7dFDEtI1udb8TCLqnJulwZ1YYrbO9F0w
+	 pnfCjx2Q2C+oQ==
+Date: Mon, 9 Nov 2026 19:35:50 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Kohei Otsuka <kohei@spacemachines.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, conor.dooley@microchip.com
+Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250: add Microchip Core16550
+Message-ID: <20261109-sheath-companion-d7063fcbdbfa@spud>
+References: <20261103-core16550-rs485-v1-0-6d15ebe1e5b9@spacemachines.com>
+ <20261103-core16550-rs485-v1-1-6d15ebe1e5b9@spacemachines.com>
+ <20261104-zen-aloha-35da49a7e72c@spud>
+ <CADMKYUAc3QPCdpH8JL9VHk4d0iETsUL2ao2i4OhoHYoZGoAnnQ@mail.gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -108,40 +63,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="Xk0qMBEm0ZJtSjIi"
+Content-Disposition: inline
+In-Reply-To: <CADMKYUAc3QPCdpH8JL9VHk4d0iETsUL2ao2i4OhoHYoZGoAnnQ@mail.gmail.com>
 
-On Mon, 09 Nov 2026, Petr Pavlu <petr.pavlu@suse.com> wrote:
-> On 10/14/26 11:36 AM, Petr Pavlu wrote:
->> On 10/2/26 10:31 AM, Petr Pavlu wrote:
->>> __MODULE_STRING() has been an alias for __stringify() since "[PATCH]
->>> MODULE_PARM support for older modules" [1] in 2002-12. That change also
->>> moved it to the graveyard section at the end of linux/module.h
->>>
->>> Replace the remaining uses of __MODULE_STRING() with __stringify() and
->>> remove the macro.
->>>
->>> Apologies for the wide distribution. Acked-bys are appreciated.
->>>
->>> [1] https://git.kernel.org/tglx/history/c/136839a1b4
->> 
->> I've queued the second patch ("drivers: Replace __MODULE_STRING() with
->> __stringify()") on modules-next for v7.4-rc1. Thanks for the Acked-byes
->> and reviews.
->> 
->> The first patch ("hwmon: Replace __MODULE_STRING() with __stringify()")
->> should go through the hwmon tree. Once these changes are in mainline,
->> I plan to pick up the final patch ("module: Remove obsolete
->> __MODULE_STRING()").
->
-> v7.4-rc1 no longer contains any __MODULE_STRING() calls, so I've queued
-> the final removal in patch 3 on modules-next for 7.5-rc1.
+--Xk0qMBEm0ZJtSjIi
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Perhaps send it for v7.4-rc3 to prevent *new* __MODULE_STRING() users
-from cropping up between now and v7.5-rc1?
+On Mon, Nov 09, 2026 at 01:54:17PM +1100, Kohei Otsuka wrote:
+> On Thu, Nov 5, 2026 at 3:20=E2=80=AFAM Conor Dooley <conor@kernel.org> wr=
+ote:
+> >
+> > On Tue, Nov 03, 2026 at 11:11:31AM +1100, Kohei Otsuka wrote:
+> > > Core16550 is a 16550-compatible UART soft IP core for Microchip FPGAs,
+> > > including the fabric of PolarFire SoC. Its registers follow the 16550=
+A,
+> > > so ns16550a stays the fallback, but
+> >
+> > > it raises no interrupt on TEMT,
+> > > which the driver has to know about to support RS-485 on it.
+> >
+> > Doesn't this exclude using the fallback to ns16550a, since it requires
+> > specific interrupt handling?
+> >
+> Everything a plain ns16550a driver does works on
+> Core16550 including transmit, receive, FIFOs, modem control and the baud =
+rate
+> divisor. The only thing that needs the specific compatible string is
+> software RS-485
+> (em485), which waits for a TEMT interrupt the core doesn=E2=80=99t raise.
+> Without the patch, RS-485 direction control is missing, but the UART
+> otherwise works. If you=E2=80=99d rather
+> not have the fallback, I can match the compatible in 8250_of directly.
 
-BR,
-Jani.
+In my opinion, this is enough to invalidate the ns16550a fallback.
 
+--Xk0qMBEm0ZJtSjIi
+Content-Type: application/pgp-signature; name=signature.asc
 
--- 
-Jani Nikula, Intel
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCavIglgAKCRB4tDGHoIJi
+0t2WAQDr+SJzkU/53V56nypiHHoTlra6oqrdLRlSDdP/xbYZlQEAoYodUZrV5P8J
+rwEeTsutW32XJGvJzzg/+7yWStxKbg8=
+=yd+m
+-----END PGP SIGNATURE-----
+
+--Xk0qMBEm0ZJtSjIi--
