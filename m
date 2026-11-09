@@ -1,57 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794262243;
-	b=qvU85iJMs/rYf+xGb28pywkU676YhIoPhI0wbTaBRtaDOr3xQf3uRhmkJue1bmrcUUzG
-	 fqNxgIIUOsNhyNUk1MTCdMoVL90+MPSM95EaztNgYPzor9gmeSsDFgsLuHTV4QHSIUTQd
-	 CDr1WOOFa04AqDS7jkPw5tFbrFYPgWd0VRmcbh7Degoz0pkX5qn0faCIyMyNxopiZdCqw
-	 YOkidIyfP9c3lw3H6UV3wACwNEEb8vT7dyS0w5T7pihVi6XDXfgvU5blGOtZryROXzvOA
-	 0UqVW4sigj2i3ifRG9tneDvOw+4q7LfQ3eO4DpXEDqxqNbVPg0lHInfrK4Ir6ysHmEQ==
+	t=1794262421;
+	b=pFzlmRc+cyvphbA9iLybJh4DoelA5LJKqFMtTY0cSCmRihYvWqCylvAwccOie4bS/2NS
+	 rN6c53Hs3QEFRVVppk1WIEvrxPzFlYBfzLKJqqx7aAdrkZ/gbNyGurHF6t1+16xARtoyJ
+	 c7KX8rtMGljrlFMGMmSQpBIZ3t99gUYLYTKGMGk9TK3PikVGWtOoPu4AOBFUaMm3x9rFP
+	 0do2IBwZjRSD9l4e0KOan4dKKOhTKz0UIEK1I3n7T0SeqagsgWANsEOe80Jd8udIBljlq
+	 2D7Se07P8iOEp0XbdRqMNqNcBTzOaWc6ikO6+35nbN4tXlkiPYJPYne7ZX3oe+e93Rg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794262243;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794262421;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=XoUyAMixz7DHGWfNIApkw+orQbVsL0/3G3TDbj7pUjE=;
-	b=dp3eEvUhep2Yn5hSeqPTLox6QXtEy+tkAoM1/m1jEhyQpy5dE0RbltJQuw2yLCNoTpCV
-	 r/JqAW2mvmq9ExlJBNw0hTmVsWedMsRqW1GZmwhpUUGIZnpM8SMQEdUIvFXryPesOiOY8
-	 JosVKGNLcZtCDlfUcN7IRqE89PUuKJvk2XDMpD+XiDgL0YM4nIeL8iZeznBAsSQkKID/j
-	 s508/FMeHASwA4zVmeWd+eSMgDlDlFyVpq3mewBzzJwrwgFo88EUOCQqqOjmjhEQ0t2Zx
-	 1P2d+WFqjrt+EXhOiXmrV6ZEQZ8LuQxhBMS/L05QXqE0nOUmmcr86t3Dwm2QgtQKgnQ==
+	bh=cr6TeSdNfMHw/1nJfKi3H064sp9lIKphveB9fXNWYOo=;
+	b=chWUFVhVyvIiWauUMDEQ4ePCOpc63p3NEbN2SztPEaXj6CwfWzqWcgjSznlM8kyuTD7Y
+	 9nAQxw9/hIYBiOc9hxCfdAQ2dmZ2bF3sYLWsdQvQ9ka7Grh/eVRL92Sa+4IVwuqFtm0to
+	 RzoTuMzfq5XNxVxAWt6KlkzprhKzngqrUexfOOLNbOMnZDiWMgJSGb3xr/s7ZWIFNYPP3
+	 Z0aVMQExoDbS4U/XPIwbvc+TPe4FwFIQqlwa/ili/pCAlMI3UMHb8Hhf0C8qy4O8KwySk
+	 2EwuC9xhqniVQzthumcmbdPdd+IbQ9K8T75vvBaEUN49ckUCt4wtuv/VTt7ECfXFkoQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dEMnKdGj;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="RX/YzDpP";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FEA2606A31C
-	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 22:10:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AFC5606A33F
+	for <linux-serial@vger.kernel.org>; Mon,  9 Nov 2026 22:13:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dEMnKdGj
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963551F008A1;
-	Mon,  9 Nov 2026 22:10:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RX/YzDpP
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597621F008A4;
+	Mon,  9 Nov 2026 22:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794262242;
-	bh=XoUyAMixz7DHGWfNIApkw+orQbVsL0/3G3TDbj7pUjE=;
+	s=k20260515; t=1794262421;
+	bh=cr6TeSdNfMHw/1nJfKi3H064sp9lIKphveB9fXNWYOo=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=dEMnKdGjO1MInffzYAlerY8pOUp/orryRwOtoHvWYIH5YVptxcKsHYQD+dqkBgzPJ
-	 cKT9LBxWRJKstpvYEtuNpNzE38+il5s9iQEEgruylTbFVjquIP/S8OdTrqxZk1VQSc
-	 qa7vLq122ffakmmw1MwFfE5ln9IuTEq9NTlcHKr9N8J0x7/MzRJPhFfB/OGIfBL7AT
-	 P+ervlS9stl+bPu4ETA/izQCxmwE5b+fQmJiAnB/mCD4ClJLLMCkjV6T9ttyT1f1DB
-	 ++0q2s9xysIpuKd2kgkVtAmV+4A5sY2jd2bq/f+r8WDT2vwPwTHz1uoQDiLFwVJDl1
-	 oalj9D/W8EnOA==
-Message-ID: <sashiko-outbox-205703@kernel.org>
+	b=RX/YzDpPIhZApjeX/R+y8AKAVrNWU9j9eFknu45NhduEpDn4T+LUAmTzRucD+8dDD
+	 og/bLMrP+pqfyMVMt0OEi71zkD+TXc/QfqQAKyUVU+QvEZ69v6BETliP5qhLOFYjPy
+	 +c1BaTN+7oE7JlotVpD1+Fs6+zctlREOhWWiXN1U8drr3/Ol9/EbmbQUd9ACSwWHiF
+	 YuBe5iBuUXSFpHAkypg3HecYa2q6DRwnHWsgDBLiopd2NWSLzokz0xGEbMQQkw1GEg
+	 CEdWY2q9QYXQv9Fvn3gWbuWzHUQMMkICuq1UeB9i/jw761fYo7j+P7I0xYJsWLcss9
+	 d27O7VpQLRuhg==
+Message-ID: <sashiko-outbox-205706@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: 8250: add Microchip
- Core16550
+Subject: Re: [PATCH v3 2/2] serial: 8250_of: add Microchip Core16550
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Kohei Otsuka" <kohei@spacemachines.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261110-core16550-rs485-v3-1-4294334243fa@spacemachines.com>
+In-Reply-To: <20261110-core16550-rs485-v3-2-4294334243fa@spacemachines.com>
 References: <20261110-core16550-rs485-v3-0-4294334243fa@spacemachines.com>
- <20261110-core16550-rs485-v3-1-4294334243fa@spacemachines.com>
+ <20261110-core16550-rs485-v3-2-4294334243fa@spacemachines.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 09 Nov 2026 22:10:42 +0000
+Date: Mon, 09 Nov 2026 22:13:40 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,16 +62,22 @@ Precedence: list
 
 > From: Kohei Otsuka <kohei@spacemachines.com>
 >=20
-> Core16550 is a 16550-compatible UART soft IP core for Microchip FPGAs,
-> including the fabric of PolarFire SoC. Its registers follow the 16550A,
-> but it raises no interrupt on TEMT. A driver that knows only ns16550a
-> waits for one in software RS-485 mode (em485), so RTS stays asserted
-> after the first frame and the port stops receiving. ns16550a is
-> therefore not a valid fallback.
+> Core16550, a 16550-compatible UART for Microchip FPGAs, interrupts on
+> THRE but not on TEMT. When the last character moves from the FIFO into
+> the shift register, the THRE interrupt calls __stop_tx(), which finds
+> TEMT clear and, without UART_CAP_NOTEMT, returns to wait for a TEMT
+> interrupt that never comes. RTS, and with it the RS-485 driver enable,
+> then stays asserted after the frame, and receive interrupts, disabled
+> for the half-duplex transmission, stay off.
 >=20
-> Add microchip,core16550-rtl-v3 as a compatible of its own. As for
-> Microchip's other FPGA fabric cores, the -rtl-v3 suffix is the major
-> RTL version of the IP, Core16550 3.x.
+> Match "microchip,core16550-rtl-v3" as a PORT_16550A, and set
+> UART_CAP_NOTEMT for it, so em485 drops RTS from its stop timer one
+> frame time (plus 1/7) after THRE, as it does for DesignWare UARTs.
+>=20
+> Set UART_CAP_FIFO as well: with the capabilities already non-zero,
+> serial8250_do_startup() no longer fills in the PORT_16550A default,
+> and without UART_CAP_FIFO serial8250_clear_fifos() does nothing, so
+> the RX FIFO is not flushed at the end of a half-duplex transmission.
 >=20
 > Link: https://github.com/linux4microchip/meta-mchp/issues/5
 > Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
@@ -81,5 +86,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261110-core16550-=
-rs485-v3-0-4294334243fa@spacemachines.com?part=3D1
+rs485-v3-0-4294334243fa@spacemachines.com?part=3D2
 
