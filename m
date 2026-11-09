@@ -1,75 +1,51 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=45.254.49.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794223657;
-	b=spEtiLHs1vykCb7mu18k+fj5gS7BEkKaMdlKxXuZJw3m5VVuJjpOfkW4LAMFYy+Mly6E
-	 VZKQbyZF2edVcC2p8IWqFFLV1YOlSllKdKV/KNi86+yQ9vWNWc9G9wgPMVVGLrMpuOU3s
-	 g01geXp53SmaWi3iH5M0YLchwGkOSqRtXngI8Gy+F8sRhrqFmOTJr1/xm7/7x8/Zn/SS+
-	 T+y62K9SOKsPGV5pY8CNL3u2US196cooTgHmR6ypd+jSSRn/H5IN5QHvbvg4V3ubmStst
-	 PYejedaFY/tIGx9zQ5yBtUVV0s8UZkV9Lp0tO+as/awA/wK8fpPtrRtwfN7L4q+M7yQ==
+	t=1794229796;
+	b=HaFhvcAInXKj7RJr8UBkmIRYLZTBciw6x2bD93gPj29VOs4ZSi1VatuZPQw3KMNugADJ
+	 V6weKhAbmWOdPBCtJ+PEGM69dAGazXUoehTybN7jHJ9iIKOY7YfVvfK1Q8M2C3GXRWysX
+	 y7VGe5/vzXkq7OsGyBYA5GSKL2rmkWGMDTPRraDwum/eOQf1jC5YMYipzE801s0lcct3j
+	 /wGnYJ3rRROo+Qiz1voIxRo89IsaHOGdicwzcoM7cKUJpHsxr5rRTyukvdw8bGj2JwajQ
+	 C/Yzq3zLNpxCF3GJMxholvEk3FSjexwkJdyD65iMdSfCwCxRXvI2AsMMiFtDVJOn0oA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794223657;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=GTe3rVqqBFubJwfvXPNDDRZX+sidHXepwnZzWomDy5A=;
-	b=NfU9kT2bZiORXw5zCXCda/QL8aJYOgH2BUdYtc79k8w+H+He5VhdNu9Cnf2/2IcxBuZu
-	 whoIpQKrD35eFow0FLSeMsppAHs7T/JowXmdaEvnahhYKBHCrBHaeXZYVCvXSKNKTWszk
-	 Bu8qi6oDSgI1VXT2Gz0/7R+qYdNY941e6XcKfGF8hCMO9ChGo+afDYbgil6zPxFQW8Ini
-	 zhqGLTzGo1Higv2QnpkZm+THa5sLuSQ314SC+lkWoKCvQA7uNE01oHPo+7+uf7W7pI2vb
-	 YaXO+uRyI3C57qCB2gf8wMWl5rPrj/0D0L6RxC02HaZZJotqm2D1dRWZD7LMkPwW/AA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794229796;
+	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-HM-Tid:
+	 X-HM-MType:X-HM-Spam-Status:DKIM-Signature;
+	bh=f+8E0s5Zue5uHtaK5KTCTkEmSgDAkRA+JcPbsxori10=;
+	b=2LRTziv6hkRFErjlqaVpg+YTtPUjmrsPG+mBpk4fAxOiJ3sSwoQMWjOxMXWi8vtbqiPn
+	 SMcUh4VSfDDDl/vz214sSEmybvbj+rJb4Fr+pl147f5V6wrOHrQS4CyewVdsD+9t9lHQf
+	 cQatvI7QET7IfSeR9uWH82ZKDwiAdJ25Hv10j1tVaiPhtZeMsO2/5GcR0sLyo5CUFP8vd
+	 ZU/H1JO+wLX1Y7zz0S0l0OjN7/sUlfByWb/ykU7Clf+5juqj+kZPfcklnYNugWMVwf6Ey
+	 8OYy4Uugn5t5loa0N+5t1oYSbMUiXz/iDxgWjLmBwJQNIO/jYnE6QceALCFun8+vO5Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iU5O51DC;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=mail.sdu.edu.cn;
+	spf=pass smtp.mailfrom=mail.sdu.edu.cn;
+	dkim=pass header.d=mail.sdu.edu.cn header.i=@mail.sdu.edu.cn header.a=rsa-sha256 header.s=default header.b=N6KnvR8W;
+	arc=none smtp.remote-ip=45.254.49.197
+Received: from mail-m49197.qiye.163.com (mail-m49197.qiye.163.com [45.254.49.197])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54B7606A31C;
-	Mon,  9 Nov 2026 11:27:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A5C5606A33B;
+	Mon,  9 Nov 2026 13:09:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8A5C5606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mail.sdu.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mail.sdu.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iU5O51DC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96EA41F0089F;
-	Mon,  9 Nov 2026 11:27:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794223656;
-	bh=GTe3rVqqBFubJwfvXPNDDRZX+sidHXepwnZzWomDy5A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iU5O51DC6zVVQKzDHuys9tIxjfbSOhYw8z0UcE86pb//wkXavh32S2N8S2PUurU2A
-	 o1E3RopKG7W94xtmWo25LA834OkIsoplK5Zc5sWRxNqoMBKXFQxzncUeAVAHVqzYUN
-	 x0xzl99BebTVjgItzYyFM18S+rvSgi3xMyTZJ/jJZ69X0Gf56Vq2vszIAP9EEsAUq5
-	 YP1A5SHoyPmQVAQUq/DaV61yYmuj4yVaaeC+HIcZMJhadQiWUxN4AW86j7fp4xdZK/
-	 SKtdAofdOgM6AVAC0cEZ3+8Z/6By8LpM/kvwzBv9E4RtCHAt3TdDxZIlKuxADBPb0I
-	 863RWmyUQ6DWA==
-Date: Mon, 9 Nov 2026 12:27:22 +0100
-From: Christian Brauner <brauner@kernel.org>
-To: Kees Cook <kees@kernel.org>
-Cc: linux-fsdevel@vger.kernel.org, 
-	Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, Josef Bacik <josef@toxicpanda.com>, 
-	Chris Mason <mason@kernel.org>, Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
-	Eric Dumazet <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Al Viro <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
-	Greg Kroah-Hartman <gregkh@suse.de>, Joel Granados <joel.granados@kernel.org>, 
-	Jan Kara <jack@suse.cz>, Jan Kara <jack@suse.com>, linux-kernel@vger.kernel.org, 
-	linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, linux-um@lists.infradead.org, 
-	linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org, 
-	ntfs3@lists.linux.dev, platform-driver-x86@vger.kernel.org, coreteam@netfilter.org, 
-	kexec@lists.infradead.org, linux-pci@vger.kernel.org, linux-sound@vger.kernel.org, 
-	netfilter-devel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	ibm-acpi-devel@lists.sourceforge.net, jfs-discussion@lists.sourceforge.net, 
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org, 
-	linux-fbdev@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-mm@kvack.org, 
-	linux-sh@vger.kernel.org, linux-usb@vger.kernel.org, samba-technical@lists.samba.org, 
-	sparclinux@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net, 
-	Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org, linux-raid@vger.kernel.org, 
-	linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, linux-debuggers@vger.kernel.org, 
-	Chuck Lever <cel@kernel.org>
-Subject: Re: [PATCH RESEND v2 07/23] proc: let procfs own the seq_file of
- seq_file entries
-Message-ID: <20261109-atemberaubend-begabung-bedienen-85aade0f99b4@brauner>
-References: <20261104-work-procfs-core-v2-0-76ace653a773@kernel.org>
- <20261104-work-procfs-core-v2-7-76ace653a773@kernel.org>
- <8A21EE2A-F392-40B7-9152-CBC440FDDA70@kernel.org>
+	dkim=pass (1024-bit key) header.d=mail.sdu.edu.cn header.i=@mail.sdu.edu.cn header.a=rsa-sha256 header.s=default header.b=N6KnvR8W
+Received: from lgs.. (unknown [101.76.249.61])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 54050f33f;
+	Mon, 9 Nov 2026 21:09:44 +0800 (GMT+08:00)
+From: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH] serial: sccnxp: Fix potential stale ports after IRQ request failure
+Date: Mon,  9 Nov 2026 21:09:43 +0800
+Message-ID: <20261109-21df1234b2-serial-sccnxp@mail.sdu.edu.cn>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -79,37 +55,61 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8A21EE2A-F392-40B7-9152-CBC440FDDA70@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0aa1c06dd09103a1kunmf9615dd512147e
+X-HM-MType: 10
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaT0JMVhlDSBhLH0sYSk1NT1YeHw
+	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlKS0pVTE1VSU9CVU1KWVdZFhoPEhUdFFlBWU9LSFVKS0lCQ0
+	NMVUpLS1VLWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=N6KnvR8Wd9zieM82mRNyS0/wFuf4dZPUy7MvpF1sjobIDmh15WZuMPFqUd3UchKURok0pF1gvN69pohNyfrLOrYJx+UVfef6Vh3V1fdkkGOgGWIPpbkocKFL8Xm7DTZBHhlLFNaGrxSvrNZqyeqxWNrI1XBR+nGkpXhbvw5vUc4=; s=default; c=relaxed/relaxed; d=mail.sdu.edu.cn; v=1;
+	bh=f+8E0s5Zue5uHtaK5KTCTkEmSgDAkRA+JcPbsxori10=;
+	h=date:mime-version:subject:message-id:from;
 
-On Sat, Nov 07, 2026 at 08:10:28AM -0800, Kees Cook wrote:
-> Please use the new style typed allocation calls for objects:
-> 
-> ops = kmalloc_obj(*ops);
-> 
-> (This happened to jump out at me, but please check the other patches for this pattern.)
+The ports are registered before the interrupt is requested. If that
+request fails, unregistering the UART driver frees its state array
+while the registered ports still refer to it.
 
-Done, there are 5 of them in total:
+Check each port registration and remove the ports already registered
+before unwinding the UART driver on either failure path.
 
-proc: resume readdir after the last name it returned
--		cursor = kmalloc(sizeof(*cursor), GFP_KERNEL_ACCOUNT);
-+		cursor = kmalloc_obj(*cursor, GFP_KERNEL_ACCOUNT);
+This issue was found by our static analysis tool under development.
 
-proc: sysctl: resume readdir after the last name it returned
--		cursor = kmalloc(sizeof(*cursor), GFP_KERNEL_ACCOUNT);
-+		cursor = kmalloc_obj(*cursor, GFP_KERNEL_ACCOUNT);
+Fixes: 1d65c0b12656 ("serial: New serial driver SCCNXP")
+Cc: stable@vger.kernel.org
+Signed-off-by: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
+---
+ drivers/tty/serial/sccnxp.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-proc: keep the open files of an entry in an open node
--		dp->open = kzalloc(sizeof(*dp->open), GFP_KERNEL);
-+		dp->open = kzalloc_obj(*dp->open);
-
-proc: own the wait queue of an entry with a ->proc_poll()
--	on = kzalloc(sizeof(*on), GFP_KERNEL);
-+	on = kzalloc_obj(*on);
-
-proc: let procfs own the seq_file of seq_file entries
--	ops = kmalloc(sizeof(*ops), GFP_KERNEL);
-+	ops = kmalloc_obj(*ops);
-
+diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
+index cb31e3aceb62..502f8ebe265b 100644
+--- a/drivers/tty/serial/sccnxp.c
++++ b/drivers/tty/serial/sccnxp.c
+@@ -989,7 +989,9 @@ static int sccnxp_probe(struct platform_device *pdev)
+ 		s->port[i].uartclk	= uartclk;
+ 		s->port[i].ops		= &sccnxp_ops;
+ 		s->port[i].has_sysrq = IS_ENABLED(CONFIG_SERIAL_SCCNXP_CONSOLE);
+-		uart_add_one_port(&s->uart, &s->port[i]);
++		ret = uart_add_one_port(&s->uart, &s->port[i]);
++		if (ret)
++			goto err_remove_ports;
+ 		/* Set direction to input */
+ 		if (s->chip->flags & SCCNXP_HAVE_IO)
+ 			sccnxp_set_bit(&s->port[i], DIR_OP, 0);
+@@ -1016,6 +1018,10 @@ static int sccnxp_probe(struct platform_device *pdev)
+ 		return 0;
+ 	}
+ 
++err_remove_ports:
++	while (i--)
++		uart_remove_one_port(&s->uart, &s->port[i]);
++
+ 	uart_unregister_driver(&s->uart);
+ err_out:
+ 	if (!IS_ERR(s->regulator))
 -- 
+2.43.0
+
