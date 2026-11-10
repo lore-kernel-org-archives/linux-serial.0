@@ -1,57 +1,119 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.161.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794334584;
-	b=eoGdcdc/FNA7Sf94hqu7URz5Foy+YQ03p5HOTKIVNzx74SBi71h7BtNe4KfH1V+Oje5C
-	 GUFELUQ8PV2NUuzEis5oHwNNib8aMdb3X5DJTA445WgrWBGErjUFtpyHVHjpO8YGAokkQ
-	 kfszD2aFwEBQ3CIVBjcwxXb7q/RALOWndYXTI7IkRaJ8Jc4tqFMmDu5cuxpxp408lNVJQ
-	 GdDb6epXNwTpWN+aKJg8OAluCcPasi8Uw6blfoJoDd4AgP23TfJRs5Usta08t1DGMah/T
-	 6GG+YRTzapZspa9GfP9VgHFWYo9dbeeZooqpHZwXdk7dheGBEtaPV58+xRIQCLyQYLg==
+	t=1794344720;
+	b=GTBH8uDCYf1uzI7/MXQezVKhaaX5zs+kTY2f8ZuRjgLDnGN5c3nETG6otGKjMeujvWzf
+	 1R+gr13xMHEX72zYZjuW+JcEXWY8mdqp93jdXcTZSYtEGw93SSLzJVmoN32kECTHbIzJJ
+	 Ei1RJmvn+Q9jMYqDSGb9631NxjHbhW8q0bsJrbUlu9EKtzepP5yjLeOjALjg9XuBIsshz
+	 dOnPmxw7z24sZ26hZ2qdtGWTTTabSBU13zj+JlPVJKm196pc3YyGAAm8McuBdmj5AUiwi
+	 BYbIu+RQxKP+5HF/+NxsmY1eDdZDHHpTaZf/yyC2BrQkEcU9Cuyws9HlLZ45kBmOZbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794334584;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=WOswCe00ecth5aegw9K1yzGGEgL8XZ5Bn4726F7aM/M=;
-	b=RF5lnT8Y+wALlV+DxuZmWLJLogUctBKOMk6H90m5osjYaMpD++wIWSEO/EEggTv27kwu
-	 J/Y3Ye5NH1qVyzg56chHJ2m5blMKMKYRKkUliYHfWmed5vkYr+VEjEIVHidYc2r3IDH8r
-	 tjbssbpInnvNJs8rMrIFxwx1ipyDpUJIftgrjCXXM4op2Nm46y0XKCWE8RVu6DxSEnpzU
-	 +QHEHB+X/gseiXzgtoRO5hINMbNMGcasrgY2m+RT4wpVfz66CIQLlN47o9htoUpdv9Puq
-	 5L4FSpbIKoTBkqMkoMH6WiVAhKsBF+fmCBPxXZib1pr9D9ao/1guWHNkzalUXpvErsg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794344720;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=r0F/G1/cCd6YtCyJox781fOcwZWIec41wc+ColCaqik=;
+	b=VVT4JenNYSRIyW5gtbZfBI4aw8+uXyxI+ir2+cQRFb5dVg+xZ/+3ztGASSsIcdORLr15
+	 H8jIzbOlvP3HpwL6Bs0PSrB5LcD7O4g7CvYMt0zFozjQ3Za256l/vNozLIvJdqiOqTqBj
+	 Y9QKuPxshfdNBStiK2wXVMxKmVYE9pckKOkAMvv9FEeXzQIhjPGDBv0ohQuoJ4N86eQIi
+	 XnB82eij/8MJAgmZ82Q1xIErYgonZ7U3BqobosfB1NYnFbo+lD1cyg/t4lf6wf7fOWBTQ
+	 2q+N7/xvWTA+kIXL5Ew3iJxBSwvBOccKQURWb5uNF4ryxQGLkLSQqUEKk4UZxIxZr6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LCkXlZHo;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b="PZdH/bDB";
+	arc=none smtp.remote-ip=209.85.161.47
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3319606A31C;
-	Tue, 10 Nov 2026 18:16:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 538F3606A320
+	for <linux-serial@vger.kernel.org>; Tue, 10 Nov 2026 21:05:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 538F3606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LCkXlZHo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260641F008A1;
-	Tue, 10 Nov 2026 18:16:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794334583;
-	bh=WOswCe00ecth5aegw9K1yzGGEgL8XZ5Bn4726F7aM/M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=LCkXlZHovhXIEMkXyHaLIoiLZziXCf5ktPbVRuney59bKd3vZcA+KXDhc/H83FMEk
-	 jFuIo4HTN7InXDDc+UGiTHBakPkz5vJSl/6Z7d4w+j3dpRQkAauRhMzZyDBLCYQlOL
-	 8RZIq369C9kUf46m9S/dOkAhg/op4aFOwwloUzfldj/8KqIo+XOWRE7ZoNYZ3qwOkK
-	 1p6wQ0TKq8Tbw0tlMQjY2nccZIKESS/KYDK85SYLEbUDr9au0yUabufFucp30J9Ctu
-	 M4NjYNx5kldzJ8oagpAimob0D9oasNsRZVjbe+wPc/5omaGFhIDL9e3ZPlQD5Z6GD7
-	 6R8RjjrsZyliQ==
-Date: Tue, 10 Nov 2026 18:16:19 +0000
-From: Conor Dooley <conor@kernel.org>
-To: kohei@spacemachines.com
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, conor.dooley@microchip.com
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: 8250: add Microchip Core16550
-Message-ID: <20261110-appease-euphemism-0bd52845b396@spud>
-References: <20261110-core16550-rs485-v3-0-4294334243fa@spacemachines.com>
- <20261110-core16550-rs485-v3-1-4294334243fa@spacemachines.com>
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=PZdH/bDB
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-70b875f6f1fso1912105eaf.2
+        for <linux-serial@vger.kernel.org>; Tue, 10 Nov 2026 13:05:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1794344719; x=1794949519; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=r0F/G1/cCd6YtCyJox781fOcwZWIec41wc+ColCaqik=;
+        b=PZdH/bDBU0lpZSlz4yodAHwL9jtp4rhFJ8Q1un4mwvO/Ewao3DxkA1kNgF5+cfG5o3
+         LufBZBRx1MhkyneStZl7gy+ur90mFuYctHSOJeuoc/CscRm/3ELlZtO49Twv/eVa60LP
+         Hqnk9yTRpBGM4BiBsPW15Ac9x6q6bxrizHrKg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794344719; x=1794949519;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=r0F/G1/cCd6YtCyJox781fOcwZWIec41wc+ColCaqik=;
+        b=Ptbf1WToiLozFvDNCpxY5Ayz6dK/m3OB9wA//ITIQRu3pcjqBidAIt+M6ju7OWYDPj
+         C8XUcXOKBRUdRBSSKP9f4jnfNO1+Io1iUF/bjR5PS1zq/W32uk9SeDL3ur90wv0x0UjZ
+         zprCHacABwi2EDqDo1zqglWAhiFd2c9WIVIo7615s1XR/OZ0WwepGmhRrgGYPbJGZdCY
+         kebFOfCf7TY+Etg8puorwsdq80Ozg9s2EmvShw1tuodBkH/jX1zEq6JHnnugyf8wurbv
+         OE0Eb4Qnd4hYPTLGK3HrgE+eK6zn8jZP2x8u+E2/4v49g84OuFDkH4KUFdzP5nUFAQfe
+         +Cyw==
+X-Forwarded-Encrypted: i=1; AL+hErFTKmLDteAXqhBvQtZmVBcfLBhd9Yuru+Sz3npiK7v8q7ecXVM9i25OWPKUIA6jWp+bQPM826zX90augtc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+mbRMaQpCSjDlZbecKCUGpc6Eh6nbDvmrxQ/OPWnMsEUGeRi0P
+	kD9FByIINa+u+6P6iXc8+/bSpNgg+yWE0BF+33Ckv9UijO0It1P6RHqH3My6IeIWVQ==
+X-Gm-Gg: AYBFou3AkFyAhQM0hMu+emNgW9qtXusYBY3RjCqGzuWi22CvyqCQ/yT2RPOpzuND9+j
+	Vz0WJRAq1pkAyZJkkqhwdlPy+sy+9qSInaEDqUfzgYs0B4qbq+/4BIrqHH2uMwR6gaX8UBELR7x
+	lzB/378W0wCTAvbHM/XD+5sRg0gJtmFkP0M1bklFaJQSQhA2rDOyYOIPAQSRfwUdlvcKaIAFYP+
+	AVZsQpADAsgpjDOwDqReZ4Ozl1vGG31HZDN/kysCHnfOnlPCno8S+Zo/BnjCXKO2jQc/1vBbw7W
+	/RhGEIJFrWwWipEiniEIQQjsYq0yKl1JBnwRrAOZnk9fjVDWh3GX1IWsfvF3odlbEvZxE8efRc1
+	i+R6CDBv9+Tkb0HmLPw0Bs7Bxy8xt+pTADdYRWF5rEX+ReAF7v5214f86pZibngCsRM/DDB52nv
+	E1UtOWFC+sVMb2XxVpVjPrUGlN310lxhC3GY6MU8gH1ILCxRWmZx2p9LJg9L6guDIaUL0KMq7km
+	+PeOkd2WrBDezj66Z3JTKQpIwWsB1FBn57xlvwnigPaAd3+WN5QncI2qBnR/yMvhUWXMcv8NkBf
+	5T/TaEeJDcerOsMIVRt1nYYdII+3AdwzWldLuN+s1FKx/2g3u1P/jA9dnjJfShEPtF9ibx6DDbi
+	vsHcg9epYgcw/j7Fx1fCd7VU0CwY2ZTi7cvjB9Q==
+X-Received: by 2002:a05:6820:c44a:20b0:6d9:979e:22ad with SMTP id 006d021491bc7-71917934e44mr119108eaf.54.1794344719257;
+        Tue, 10 Nov 2026 13:05:19 -0800 (PST)
+Received: from rrangel.c.googlers.com.com (57.128.170.34.bc.googleusercontent.com. [34.170.128.57])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-860dcb62443sm2856553a34.6.2026.11.10.13.05.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2026 13:05:17 -0800 (PST)
+From: Raul E Rangel <rrangel@chromium.org>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Raul E Rangel <rrangel@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	=?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Timur Tabi <timur@kernel.org>,
+	Peter Ujfalusi <peter.ujfalusi@ti.com>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	imx@lists.linux.dev,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v11 7/8] serial: 8250: retire canceled RX DMA before reusing the receive buffer
+Date: Tue, 10 Nov 2026 14:05:14 -0700
+Message-ID: <20261110210514.1091741-1-rrangel@chromium.org>
+X-Mailer: git-send-email 2.56.0.212.g129ede20d9-goog
+In-Reply-To: <20261109-submit-serial-8250-dma-cancel-v1-v11-7-6364edca63d6@gmail.com>
+References: <20261109-submit-serial-8250-dma-cancel-v1-v11-0-6364edca63d6@gmail.com> <20261109-submit-serial-8250-dma-cancel-v1-v11-7-6364edca63d6@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,73 +123,18 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="5peolnbzRFGeN4F6"
-Content-Disposition: inline
-In-Reply-To: <20261110-core16550-rs485-v3-1-4294334243fa@spacemachines.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
---5peolnbzRFGeN4F6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, Nov 09, 2026 at 09:00:22PM -0700, James Hilliard wrote:
+> After one second of unsuccessful pause retries, stop the transfer with
+> dmaengine_terminate_sync() outside the port lock. An indefinite wait could
+> otherwise leave a request/response peer waiting for data that is stuck in
+> a partial DMA buffer. Report that recovery discards the pending payload:
+> without a stable residue it cannot safely be copied. Keep rx_running,
+> rx_pause_pending and rx_terminating set until termination has stopped DMA
+> and drained its callbacks. Then restore receive handling and allow another
+> DMA descriptor, without latching a permanent PIO fallback for a pause
+> timeout. This trades the stalled transfer's data for continued reception.
 
-On Tue, Nov 10, 2026 at 09:06:48AM +1100, Kohei Otsuka via B4 Relay wrote:
-> From: Kohei Otsuka <kohei@spacemachines.com>
->=20
-> Core16550 is a 16550-compatible UART soft IP core for Microchip FPGAs,
-> including the fabric of PolarFire SoC. Its registers follow the 16550A,
-> but it raises no interrupt on TEMT. A driver that knows only ns16550a
-> waits for one in software RS-485 mode (em485), so RTS stays asserted
-> after the first frame and the port stops receiving. ns16550a is
-> therefore not a valid fallback.
->=20
-> Add microchip,core16550-rtl-v3 as a compatible of its own. As for
-> Microchip's other FPGA fabric cores, the -rtl-v3 suffix is the major
-> RTL version of the IP, Core16550 3.x.
->=20
-> Link: https://github.com/linux4microchip/meta-mchp/issues/5
-> Signed-off-by: Kohei Otsuka <kohei@spacemachines.com>
-
-With both dt-binding maintainer and microchip fpga hats on:
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
-Thanks,
-Conor.
-
-> ---
->  Documentation/devicetree/bindings/serial/8250.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documen=
-tation/devicetree/bindings/serial/8250.yaml
-> index 50d5c977afa3..d9ee14f7b694 100644
-> --- a/Documentation/devicetree/bindings/serial/8250.yaml
-> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
-> @@ -111,6 +111,7 @@ properties:
->            - aspeed,ast2400-vuart
->            - aspeed,ast2500-vuart
->            - intel,xscale-uart
-> +          - microchip,core16550-rtl-v3
->            - mrvl,pxa-uart
->            - nuvoton,npcm750-uart
->            - nuvoton,wpcm450-uart
->=20
-> --=20
-> 2.53.0
->=20
->=20
->=20
-
---5peolnbzRFGeN4F6
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCavNfcwAKCRB4tDGHoIJi
-0oevAP9+B2mKIfIt9MlyTQPo2uuhkDjROEjGArmWBz+UubfWDQD+MAPDc1uACvh4
-EuiIKGiMg36T/N1hXY55h64GA4xRMAM=
-=YANR
------END PGP SIGNATURE-----
-
---5peolnbzRFGeN4F6--
+Reviewed-by: Raul E Rangel <rrangel@chromium.org>
