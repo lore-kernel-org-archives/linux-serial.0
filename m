@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794401742;
-	b=EqvXjY01FsN7supEuXKUNnuScjgFIgwXbsdypRB7Z+jhD76/WmQSCzA6IAWs+r09am5H
-	 iK08gkWne8p5ulhoupTK5LmbXMgdwwNN494kHoHSm8sXvkb4v4LJnC0k/t9mPfzr7eWg8
-	 4JF2zO+o7iNgT+Lz1YXgHaK+g/hsEPy/zfvaQMfrFlBQavibSN6bujd5aUo2rJLTHNyrM
-	 Y7kyk/wxoyDtvPvkdvFTWrRutTIXAo+kqblvAFYohDYjYP8GFAo6y4Ageg5jCFA61JSLO
-	 4XiVh8zwF00RCA/ttmC8hlACf4ZW4IQT44wFghu9gVohATTPXhlntrJjcnSwjc+Xdjw==
+	t=1794402025;
+	b=Fhb7x/w9kgwTJWVdhoukISvw/cjXx26DyfVJB4bjOJiNuojoUakviS8Km+zcEh3ifBUh
+	 a9UMy9n5/+aHKame06ojyRYHXqvkjadIvVdZGhVaUms2VZlxqPmd6r8VP/eQXJgquXZ2y
+	 CYYL7VrAaeycNPKoInFeYpHCEuyRYypJOg7LXx65gGqXI2aBPOQ5cU4cQyQWzO6X70jcR
+	 kJkpbJ3ZTUI8S9yapIDDrd4ccykoLhyMLDm3F98q3PVPZFN2RcEpPxEC5pZyincee7wW0
+	 dG3qrYqKRz8HjXsHkqZqhKrRnbM/6MwjzyIZ6n9LkxDlCz0h8J3792FARnPBrYaR9sg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794401742;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=+pblwYSJLKxBTIRGJkAt9nYpTpjvt2/HTCvGVRa40wY=;
-	b=XfRcdrONOgIdaLiOGjOalfa8fXPpg9MuxqYBu2lBQFmwyoOB3Tv2R4gJDqF+SzsrqOv9
-	 Fv2mGAY+fpEBIhYor+PuaiyTAeIvRfZZTbLsHLqV3JsduMnF4c16sGfC0BQCLcI/15CMc
-	 MF4ab7fe9OW+oOtZ84s2fQuvhYM1LdK2JNbilcntmPdawQLMDvl8YhJcyCRMcjmHrkoL+
-	 ULym9PCBntNYjZSihdy6Xo5uM2EEQjPnM2lf2hYtBfCkhPn117Ci1z4eOqWQ08lnzMFWX
-	 PQnJN7zpWXqNdd1Jxtjq6oTpKPmEMl6xy9n+QhWlUEkOkkvByFbOSxKIpIYOryFSHKw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794402025;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=7mgWr1pZb7yNWIt4OPiuVc2e09ECAvShm7sgjMRNlNQ=;
+	b=zmCL+63575eNnobjDyioixK9fh2WlqRu3fTGnCjhvolymOJ89QOICcvgxwEggFxupQrf
+	 DtJwdgBDByWgSHdwmZ2qFrIxj+Xenxs3lD22NfQGFFrqzFBAHCmQqlNAKtBcqoDh+xIoJ
+	 j4PQuv0yc/lgUpf9B2c2V8pkSsPrRoSCZ6B0lI32cb2Y/BApjr26rWAGQVos12S2XT9/X
+	 DB4M8i34EgWohUBESFdl1rPcXbOfuCHGM2kq2DPRHL7jZnJHzbDEISb0ZoEL/o5XahLrn
+	 qyoQxAq0nDsO49z4EUcwmFnPkGNoeg0PFQLKl1+X2aMHMDeQFKxQauAhEbCybRUtMWQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DxFY+JH7;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fo3Hj1SD;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61CE6606A31C
-	for <linux-serial@vger.kernel.org>; Wed, 11 Nov 2026 12:55:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC690606A327;
+	Wed, 11 Nov 2026 13:00:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DxFY+JH7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D20FA1F00A05;
-	Wed, 11 Nov 2026 12:55:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fo3Hj1SD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D9DF1F00A05;
+	Wed, 11 Nov 2026 13:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794401742;
-	bh=+pblwYSJLKxBTIRGJkAt9nYpTpjvt2/HTCvGVRa40wY=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=DxFY+JH7wC92mMypWGNAqKWoAY7pW8MlYwWD6IBN+gBEuwy59gCIzzrGDOZM7dMAF
-	 KYBSZVzX7RoFXQAgbWBQR5BeF58jmfpnktgxZi5CjjnRTLq7dy4siE0fQis/QdtqUE
-	 eUecfu/g1BOUQsHETe1GfAZE5I3LzQ393GkEPETgAVjIbT3nS25Tl/8BlJ6Ieht3di
-	 F1VbAMFDH8HkX9kfSndL8z6KJqIA6QBTWZc8j90NIctKgVCsU0nZWG9fDwXnbP2+fj
-	 6ZyJaozLH3DL1lmIuMIZWZSyr2qgj+iD5LKttryYULTxMpyHZeGbv9UmJG+4KFS6/K
-	 JlkAN67Hq8MDw==
-Message-ID: <sashiko-outbox-209025@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 3/7] dt-bindings: serial: sc16is7xx: Disallow
- transceiver GPIO on dual parts
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261111-serial-transceiver-supply-v1-3-40bad0f912f2@vaisala.com>
-References: <20261111-serial-transceiver-supply-v1-0-40bad0f912f2@vaisala.com>
- <20261111-serial-transceiver-supply-v1-3-40bad0f912f2@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 11 Nov 2026 12:55:41 +0000
+	s=k20260515; t=1794402025;
+	bh=7mgWr1pZb7yNWIt4OPiuVc2e09ECAvShm7sgjMRNlNQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=fo3Hj1SDwn8RxIMwTVvbptNy74Dg9lfDShmeUDHRK0LWAKBI2JcdNsKcsfM2LBoqm
+	 VJh1Z3JR89/h1hzLWgtwWb1n53WOD9pFD2QenXg9lh+xAmwDA/Sj1SCV25W9gXLJdo
+	 H9iaIsuEwP1pzEpJKwggSUat4m9tiiXDGad6u6M6viXklRc2PllfoGwk53NnX5F8YW
+	 FNIV9xSdC7eamI8fVGkuG2Puw4mfgk6ZiVLWeDNTaZughW+kM882xvCVeRiE2sDS2P
+	 upODuQhTU5gmaoxSUFXNYRN0OEsREreowqmDcfsTmFwf3B/akJA4qw2rU5fMnE0oqF
+	 XUAzPuZboR7OQ==
+Date: Wed, 11 Nov 2026 14:00:21 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Rui Cao <i@udp0.com>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@mediatek.com>, 
+	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: arm: mediatek: Add MT6833 and the
+ Xiaomi Redmi Note 13 5G
+Message-ID: <20261111-manipulative-fulmar-of-lightning-34bee8@quoll>
+References: <20261107-mt6833-base-v1-0-bda21083e9f3@udp0.com>
+ <20261107-mt6833-base-v1-1-bda21083e9f3@udp0.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,20 +63,22 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261107-mt6833-base-v1-1-bda21083e9f3@udp0.com>
 
-> The SC16IS752 and SC16IS762 describe both of their channels in the one
-> node that references serial.yaml, so transceiver-enable-gpios validates
-> on it, while the GPIO belongs to one port: the driver gives both ports
-> the same device, serial core requests the line once per port, and the
-> second request fails with -EBUSY, which fails the probe of the whole
-> chip. Reject the transceiver properties on these parts until their
-> channels have nodes of their own.
->=20
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+On Sat, Nov 07, 2026 at 08:21:58PM +0800, Rui Cao wrote:
+> Add MediaTek's MT6833 (Dimensity 700) and the Xiaomi Redmi Note 13 5G,
+> codenamed gold, which is built on it.
+> 
+> Signed-off-by: Rui Cao <i@udp0.com>
+> ---
+>  Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-Sashiko has reviewed this patch and found no issues.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111-serial-tra=
-nsceiver-supply-v1-0-40bad0f912f2@vaisala.com?part=3D3
+Best regards,
+Krzysztof
 
