@@ -1,66 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.137
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794386488;
-	b=t3JM/rf0KJ8J3xUrerzoHFz/unFxuemcc5C1EQcjH2+vmji+Fcje959AsE6Z83H2SJMZ
-	 LDnxWivA9HTLqdgdja6X42Po+KP2BL3jefL3cs7cXKN1D8RQ9td9Gg6p58zfzUExsrb1r
-	 L6oEYuz59dQERYcDEzn8r9zs58CXsz0OfIu0jBYZym9hpuvEbaPkMuVf4rQjMD9N4VdKz
-	 E3DwRfZIZr/hVhRaZo86oscqMIbKdDS/LQRxXuw2XwTZlKaHxHBeHjvLvz/UWPsy+KuyL
-	 OhpUfaGj3qBZiwh5A0RS4KupkPidz2mTgSX8WlFdUehm7ZOdvKTaH7SrHCpbXvl9Ldw==
+	t=1794386987;
+	b=lL3hoOb5T0sm4VOwwMaySAYpbJX8mMTf+6MAlIMMn5jogA5RJxPP29IqDSbPOEO/OIMB
+	 rBHMDlgNIJ6QhCtq/RXWvjhIdXo2CTPnULgMHi29ghMjYQPHnzEnVKgvgMSw8V9socdoO
+	 EMgHsikvvAldwwuqxwDRTDu+RIe467HnFNu4NmN3h/anuVuC6XhzI/k7vpmtGi0hivabb
+	 htEgDO8+4zDuuXZPMFVPGxvBEvGKkEWB+LQN5fcxn+ztFfhuZQygRB90X4aaQq0IXCI+I
+	 cAATXcabcGxEnobrTubwgBbjIszaqrWKecekSWTEwBtw9BHUpZoN8urt51up9YvWExg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794386488;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=cZcyq30jjTKYEIFBW131vcxGcQvJvhGY/ctk/bOWy4w=;
-	b=jFEtDcsUwTD8NGt/ryPwVGTvdo/EAwB5pI8ArlSB7ygIiuYl/vJ77Wu9L/1eyL5bFBF0
-	 75MZ1ZDB5jJXq9b+1j/MDdwdt+BRzCpBswg1H7+06qXAs60OeBqh1ozaBFFOG6dpQYJCs
-	 pNzuZPv3Ozh1C/eiZu8vol3pLfC4QPK0Dxz8IENZUYP8BYtI7MWCXEqg0esYr8HE/fk/S
-	 QL4BBB1l6L/AUeJQqi36kt383+sIaA77koVCX/WhXjLl5iNxbXUP4LSRSF4joHOwzJmef
-	 3/LNiPdlT3uk2m7L0lNPOByiTd4uEeA8ag8Hx1QuwAQJamXEBnFpan0avWM2Z4Pbe4w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794386987;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=6al8Jm3E6mhk0qJw3i0NxAfHn8a5rd9VCCJAjesgmzs=;
+	b=F3ULV31qfPruSVq27s5vGD7t7uapdoDMq3xOeIVsRV+MHX7Z2lv6LTnWXMmz4W9Pv4sV
+	 rGE21a5uhHuJmG1+s43QstjMjOIBWcHahhMJNxZX6FtwHvV3SxZqajPLGlYwdx5nd6MIH
+	 KGit4FQ+QM4spmm12Oo+7TVcIS8fv/aVvXOOFBWK/zghZ+PXLo2yuaDaQMsff24Dmd8cv
+	 TWrDPL3Y6GYCjtJ6NLPBqRfNXZpQTf1qv3SuiC3dAeafJxkLSFpxdHy1TwytlJWtBRGsy
+	 MVLdSglpxIM9/LdmVDdF2nLX2ChiIs/bNyCo9Wo4dP2VvL6+7MjJoASEVNaPU7f3NwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=M9n+b1Qj;
-	arc=none smtp.remote-ip=111.22.67.137
-Received: from cmccmta4.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 55D85606A32A;
-	Wed, 11 Nov 2026 08:41:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55D85606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="CZLJJ/Rn";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB8D606A32E
+	for <linux-serial@vger.kernel.org>; Wed, 11 Nov 2026 08:49:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=M9n+b1Qj
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=M9n+b1QjQxdgJsrl8DDX5/YwVOnK/rPuQsL9Qg75nvy4vnoVjE1QQP5ix+oT5UJlJvSmRPgRyhzIY
-	 Ft/R/xmJoo0hMTaEKQ6Uz6u0Q4KmcbArkhphhSdvGQl7rb/pH8SInz8IPR8iVz5ZRVk/BphJDsfQ5k
-	 8GZTM16MCo6yS47A=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app04-12004 (RichMail) with SMTP id 2ee46af42a35aa3-76952;
-	Wed, 11 Nov 2026 16:41:26 +0800 (CST)
-X-RM-TRANSID:2ee46af42a35aa3-76952
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from devin-VMware-Virtual-Platform.localdomain (unknown[10.55.1.72])
-	by rmsmtp-syy-appsvr10-12010 (RichMail) with SMTP id 2eea6af42a352cf-d54de;
-	Wed, 11 Nov 2026 16:41:26 +0800 (CST)
-X-RM-TRANSID:2eea6af42a352cf-d54de
-From: Zhu Jun <zhujun2@cmss.chinamobile.com>
-To: jirislaby@kernel.org
-Cc: gregkh@linuxfoundation.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot+eebcc2b949c1c7663850@syzkaller.appspotmail.com,
-	Zhu Jun <zhujun2@cmss.chinamobile.com>
-Subject: [PATCH] serial: 8250: Lock saved status flag resets during startup
-Date: Wed, 11 Nov 2026 16:41:25 +0800
-Message-ID: <20261111084125.80910-1-zhujun2@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CZLJJ/Rn
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BA371F00A08;
+	Wed, 11 Nov 2026 08:49:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794386987;
+	bh=6al8Jm3E6mhk0qJw3i0NxAfHn8a5rd9VCCJAjesgmzs=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=CZLJJ/RnBtbtQKl3qC/k5+CiGhWSNaIKm56GO4ryE+YoqCTqpO0iEx8nLW8kqODhP
+	 0Hjdes6FLHyP3k2OkmTtajBEcYei5+5xS4Ra8dHf/u6w3it3TPD0i8u01WhKX1bBSj
+	 ylREmvZpax1RmjllIQENKCdLka/NJzlM6QuKzWaQgq5U7AtBvNpQ8XYRVkjqH//wq5
+	 xNObu5t2FtRhmcLikkwy6wyp1C/lbNsZCYHWD9ukK+D8189uWnaQIY6E4DHbGjV8Nw
+	 4wOAFNsAK1nib4NsDTLQ0VSYqEJt1W1QIjMbN7dgNRyuQs1RWZTN3nM+0qNBlioOSj
+	 FDMGZOQcb3ajg==
+Message-ID: <sashiko-outbox-208634@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] tty: n_tty: Protect poll input checks against termios
+ changes
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Zhu Jun" <zhujun2@cmss.chinamobile.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261111084116.80897-1-zhujun2@cmss.chinamobile.com>
+References: <20261111084116.80897-1-zhujun2@cmss.chinamobile.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 11 Nov 2026 08:49:46 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -69,44 +59,22 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-serial8250_do_startup() clears lsr_saved_flags and msr_saved_flags after
-installing the IRQ handler and starting the port timer. An interrupt or
-console write can access these flags concurrently under the port lock,
-as reported by KCSAN.
+> n_tty_poll() calls input_available_p() without holding termios_rwsem.
+> It can therefore race with n_tty_set_termios() changing the canonical
+> mode and resetting the buffer indices. In particular, the availability
+> check can combine one input mode with indices from the other mode.
+>=20
+> Take the read side of termios_rwsem for each poll input check, as the
+> read path already does. Release it before flushing the receive worker,
+> since that worker also needs termios_rwsem.
+>=20
+> Fixes: 1da177e4c3f41 ("Linux-2.6.12-rc2")
+> Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
 
-Hold the port lock while clearing the interrupt registers and resetting
-the saved flags, so the reset is serialized with their other users.
+Sashiko has reviewed this patch and found no issues.
 
-Fixes: ad4c2aa6354f ("Serial 8250: handle saving the clear-on-read bits from the LSR and MSR")
-Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
----
- drivers/tty/serial/8250/8250_port.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 36b2b0a2c05c..dc5e002332be 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2386,9 +2386,11 @@ int serial8250_do_startup(struct uart_port *port)
- 	 * saved flags to avoid getting false values from polling
- 	 * routines or the previous session.
- 	 */
--	serial8250_clear_interrupts(port);
--	up->lsr_saved_flags = 0;
--	up->msr_saved_flags = 0;
-+	scoped_guard(uart_port_lock_irqsave, port) {
-+		serial8250_clear_interrupts(port);
-+		up->lsr_saved_flags = 0;
-+		up->msr_saved_flags = 0;
-+	}
- 
- 	/*
- 	 * Request DMA channels for both RX and TX.
--- 
-2.51.0
-
-
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111084116.8089=
+7-1-zhujun2@cmss.chinamobile.com?part=3D1
 
