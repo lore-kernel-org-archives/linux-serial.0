@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794403814;
-	b=XzWx7q/j6w6vrbvpnDtw5F6MJDSrDhGqCetSZ0ViF11HMpWwe+ixel452FPMTMU4mVK4
-	 wWakKQNWNaLDlada1GXqTuBhbF2f9XZC7EbsmwtK9dJRVXn07D1GSOPO37ELthVXWjmyL
-	 8UIRqXfWBhAI3azJnW4BWhxRXX6WMJw9hAwRJPxxnSsnRZHTmTIrltZTqSb2mKHd3oMW7
-	 EKCjBpfrk2qUB7XJ9HU0py8LanihViJD7uHc3s7gMnwbEfaa8JVqJy2z2d3JK4UVaJwzP
-	 fN6GUdlNB1fByPHHmPthAig5T6GRbZWRPlmTSNsAq7LaHoYvUoCb78XnPOh+6eOL+0w==
+	t=1794404514;
+	b=MOUQWHX0ciS/mk/HZIMnEI1gW288M9fQG74F2Rdv3yHhzzNn0InT4/66//6Ml2EaPDjx
+	 HldZR9mZKHHQrfMitJDHU597DvwXr04bx+H1y30Pu/iKWyKMNeO0kH1cRyJbWvk7R2Qsn
+	 KEG35QFKa821jnxqidDYTQL5iWqRxQ8r0TtMpJEQfhrk+TKLTThjqCpW1603rIJwvacd/
+	 NxXMLvFq6w4ZUMGkduddARzR0OogQ3rVHAnqCOV2KVFmmW67pGi5IMXDTQjI3xPn5r7qD
+	 3AsHeatNP36GdHIaFgUgxkTS6FpODkvWX0AqYx1sARM+rATISsh6N/KSJcF2gwUqxkA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794403814;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794404514;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=F5TTd5Iiwh5j7lSxj42pjzub+W+SZ23Dblb5ymM1U3k=;
-	b=Do47T6R+oN3IRHPik7SgTQcjPShHDNHjX+ZBHkHV4m0y2VnW1quS2x9fuCFLC6jQeZkF
-	 I4A8U8rJtTiil5FbPAINPVx9okEIibHqmZoL9qEjBAO3uEcN8SKfmj5kjfKpfx2g5eC66
-	 i2XcpVVf7thR9DFjB417uUIJpsqwWR+r8c/grHAfHIZkbBfS0+itqGBZpsumU49/0gtd9
-	 l9v1RV0NapmHClNljplk619Qr89rvxbbxHjUp3tN1zbtTMBX3USFV7KtNRZzUVO0WtP+q
-	 sfoWcmMbJILKQ1YDRZDKfxI9fWpw9Doh+0FdMe7shPQvnxCViV7mYW4eD9/vVNdW6YQ==
+	bh=peVhtf4XfYHkW4k+nb45IGPeZdoa9Je+MSIYyAMzxPg=;
+	b=LOBCKUFgu+xwlvyfAnbUgdO/rcUholwpz/liBZVGT2l7we+fHtjVBzQ54u9ilEtzDKNv
+	 C9EXeUy+6JOCOBZCcMwZ5TiwomssV7orO63Hzoh+Alku9qzc5FsbXyoLF0bn38KjSFfFV
+	 Xv+5pvSYoUrCbGf4evtKFDEr6k0MTEVqyM1MxM6MWewC7dRlNgbEn323yqsvlyzmzcSXU
+	 MKT6CD90WppBC79mQLdZJyYXTVl/kJmCHPD7uqkE7hQc/C8GBGNr7X/YgUEZB1hG17ZAp
+	 pULYPmJ1qXsRX8sUgu/qjCCdZLlGw/JiSVlDq578C0ubyptkl1kDXR7qBx0oiu1kjsg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="DMy/yMWd";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F6gF+t9V;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0E02606A31C
-	for <linux-serial@vger.kernel.org>; Wed, 11 Nov 2026 13:30:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 863D6606A31C
+	for <linux-serial@vger.kernel.org>; Wed, 11 Nov 2026 13:41:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DMy/yMWd
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAFD1F00A05;
-	Wed, 11 Nov 2026 13:30:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F6gF+t9V
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B1821F00A05;
+	Wed, 11 Nov 2026 13:41:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794403814;
-	bh=F5TTd5Iiwh5j7lSxj42pjzub+W+SZ23Dblb5ymM1U3k=;
+	s=k20260515; t=1794404514;
+	bh=peVhtf4XfYHkW4k+nb45IGPeZdoa9Je+MSIYyAMzxPg=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=DMy/yMWdyebX2iDv8xy+lJsN/jr/Ww8mUiQXGahEJsQWFR55k2tofC7Y3oWAAW4v7
-	 yDu8NqbCM7VSdZfzBKguQaLaYLMXzjUFOpb6Omfs+Uyu1YLnsENyIQKEsbJBcPxVif
-	 hWisj9W/TXk6IURR3B3Ys7OB13/nhbGyw/uTHZ+4whEHL3UYbYjeNTcX/FCD41ovak
-	 A6r5D7tpJsPANQ4JJqHFBtjPymTlYaTI6Q4bQqdq6NnmdRqL1gZDIcUKCdn36eqYmo
-	 qz9poHoToKSH49rXBT5upLELOtfSwGT9fQRjMVmXgqQGUkOdLJrv097e+af/LhrZWR
-	 1Am/n5uYXA4Rg==
-Message-ID: <sashiko-outbox-209074@kernel.org>
+	b=F6gF+t9VRy4LmGHHupXgbFbTqkSi/j9IWfBAH/jKRr26n07Vif2wB7dhDx7j2yr1M
+	 v96FUdXmBiaKR2q/rxudkP1C9jTvmSjMY0Pzg5KtLNB44nrjkjaRi4j0upuoelnogv
+	 Gju+Bapnmv8LemUW4PIiLGnqZGDo9Tt2xB39SMalSc6uZEB5zEoAyEH6E7AViZ7qyK
+	 dNOLg/1n4pCexYedjJ7Z7z5Ye1vTiL/fZhL250MQSNyk0m8JXZ5nz+Jh/w4z6OdWMr
+	 Q/QK4FH+RkPw+CI1FjK5jEIIpMpLVqJN53pMYj+66LHsDKaGW2CCdNCnvJZKB/nSsy
+	 n6Xnodognmxwg==
+Message-ID: <sashiko-outbox-209082@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 5/7] serial: max310x: Request the line transceiver per
- port
+Subject: Re: [PATCH 6/7] dt-bindings: serial: max310x: Add
+ maxim,tristate-when-closed
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261111-serial-transceiver-supply-v1-5-40bad0f912f2@vaisala.com>
+In-Reply-To: <20261111-serial-transceiver-supply-v1-6-40bad0f912f2@vaisala.com>
 References: <20261111-serial-transceiver-supply-v1-0-40bad0f912f2@vaisala.com>
- <20261111-serial-transceiver-supply-v1-5-40bad0f912f2@vaisala.com>
+ <20261111-serial-transceiver-supply-v1-6-40bad0f912f2@vaisala.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 11 Nov 2026 13:30:13 +0000
+Date: Wed, 11 Nov 2026 13:41:53 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,15 +61,11 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Serial core requests the transceiver GPIO through the port's device
-> when the port is added, which for this driver is the chip: the
-> per-port "serial@N" subnodes, where the transceiver of a multi-channel
-> part is described, are out of its reach. Request it the way the RS485
-> properties are requested, while the device's firmware node is
-> temporarily retargeted at the subnode, so each channel gets its own.
-> Single-channel variants have no subnode; request it from the chip node
-> there, so the transceiver is known before uart_add_one_port() for
-> every variant.
+> The MAX310x UARTs can three-state TX and RTS per channel. Add a
+> per-channel flag asking for that whenever the port is not open, for
+> boards where the outputs must stay undriven then: a driven output
+> would back-feed an unpowered part behind the pins, or fight another
+> device driving the line.
 >=20
 > Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 
@@ -77,5 +73,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111-serial-tra=
-nsceiver-supply-v1-0-40bad0f912f2@vaisala.com?part=3D5
+nsceiver-supply-v1-0-40bad0f912f2@vaisala.com?part=3D6
 
