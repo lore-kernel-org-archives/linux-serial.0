@@ -1,57 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794405264;
-	b=v3ThTH9fg14EQQg4FXBNTkLLVJKI/aR57l4frqi2bb2cFSlrja13p+TY3r660wFO5nv3
-	 J0hl+dzaqXVwgVMJyn/Zo+F4dZe3pa7paLEzwL0RDWN836WGFKHSbUhHnFlFLWsyiVccQ
-	 cfJC1Pkae7JJWqH67f4I4NOh8i9/iFwbEl5vBoqaJxT+niN7rWy36HmgOIrxgOm++VkHX
-	 maZSTTqWKmqkhL/FMMhm1Rv7BZ1Qf6Gwn+4vNsJj0tvAEgHlHnkH48cbJOza8bS2Dfbvj
-	 b7OiRnxQKdB+NlCOjPo5LXDLuhzlbeZbiTW77gxnxjHTdAKDMn5T7KUCN7n3hAcWaeA==
+	t=1794406628;
+	b=2KyjS2naZsbGBWDxcBmWFHHdWS3Fbx7xB33bg6VyX0lKXyarDe8JaqgEnwDCbIyoSzMu
+	 dTFaRwEcB1bK/1mVkgQzokAEeHMGY5GZJfUCyj9D2wPztfjkMMxymZfMGrWRzuvrk+fBF
+	 dFfEX/UL8iIXPvpcCgdeZNIAA3PN1GmdvRuizKG3FqwOYELKiB1jE0tTTcGcckMplQMyz
+	 GyR9TdZFLT6DtAxAjVKSmKgXULzQuK+z7a/bTvAzB6WHZNWiRD6y3GeULpMZ2z/IGwsvu
+	 xyg1e0GFcjmVM8tPLhJgMM77m7CXv53qh8FSI3QcWy2vquFebk8caRhxLKeF+RKs9Yw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794405264;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=nA/zlXU6Xew09Ln4IFeStcoHiX9bHaGdV6JF2CsO+4Q=;
-	b=YSi3tBZxBJvOTla+79ICMpBhy2h5UIUVv9bZoCBWGj1vQeWppCjkUsxTiBb5ECMh/HLe
-	 0corHxh9lQy9pCyNIOKMY8Zv4GEOywJb06ZbJ8wt7QQKgPQvSC5qyooZNUW6rh0shzMal
-	 lIJ0kQNqfytjCCDWRbVpmtqSVtJa/c7DwTviqL6NBJgGC5g7JDf4j9z+drosrgCm+IuAO
-	 ikdJHUDbgcPDcmNb180NF1IqfN2Jp5rc7fWq/HIYr8gNL7s7oaBXaoQSp7xcrwqMqDp6v
-	 c6DMug35TJ/6UL/6tbouadKJ+hGPA0TcArAjRpmVLfV+kYjAuSiKm9mt/pEjZF0cqXg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794406628;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=rhhgs3SOKWlfwatuwxS7aRDVfjVPDbWLqI/UBAGOHnE=;
+	b=ybNvyNn8xq8T4wJN/N41uFuN0od0v6fTqQwoEIib7r/e7k5UrkJPFvOBwKjAgmpglEUH
+	 l2+Aw2YpLEugJ7z7noxAxPqbiMMfZhKWNl0LnRkPg0ML1GL3JnxwsyaME4qPEckz7KlJA
+	 n5udZF/No27KAQOeckIlfRNDwnmt6+p41TiDTprMfKS422Aw3ITNhRrCDqkfNUKCbSC8i
+	 +Lx2hJfLyDSQyRdZwHiYt658NXHF0uA1KjzvdkKF/xEONZpOHz3nGsv8+lrdMgbaJu2G+
+	 0z/MQ7rRRWxGvKZK0Mt+Cx2ncRiWUz7PIK49DC3/J9z13G4yi34v4GFnXuVIdeNk2pw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FDu1yb7c;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D795606A33C;
-	Wed, 11 Nov 2026 13:54:24 +0000 (UTC)
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Aks+70oq;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9C3C606A324;
+	Wed, 11 Nov 2026 14:17:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A9C3C606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FDu1yb7c
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D751F00A07;
-	Wed, 11 Nov 2026 13:54:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794405264;
-	bh=nA/zlXU6Xew09Ln4IFeStcoHiX9bHaGdV6JF2CsO+4Q=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=FDu1yb7cbPII0cHrbQ6RzX+CfY91xAcNFZe9hScONs2YlRmmLE5jE6r185121EPpr
-	 m6Qd4rtjr0938NL67cyyqfKdZHg6B1t8hCxsl+xjWuRMVjj1zOiSXfSRiAydz6Ehri
-	 K8XkHuHOC/boH+fqsbTTeRfPRXLUG/yGjAJuvTUdzyCPBj4A8mFVMdPTKu0X+ZICJv
-	 wMNR2gWkQ6AxAGr/1S9GvPyd7NFEnYXj/DFUYqADt3m2OVWuvelIAsdsToh47qNX27
-	 +jdwRvM3uAuiu7oo9+ppOZzbe6y/8PmgvkxP1JiXUqa3hL9EUpGQKD/Ow9BsJkiW2E
-	 ICeVZt2RN0ZZw==
-Message-ID: <sashiko-outbox-209112@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 7/7] serial: max310x: Three-state TX and RTS while the
- port is closed
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20261111-serial-transceiver-supply-v1-7-40bad0f912f2@vaisala.com>
-References: <20261111-serial-transceiver-supply-v1-0-40bad0f912f2@vaisala.com>
- <20261111-serial-transceiver-supply-v1-7-40bad0f912f2@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 11 Nov 2026 13:54:19 +0000
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Aks+70oq
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BF00A1576;
+	Wed, 11 Nov 2026 06:17:03 -0800 (PST)
+Received: from [10.0.154.42] (e121487-lin.cambridge.arm.com [10.0.154.42])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EAFBC3F632;
+	Wed, 11 Nov 2026 06:17:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1794406626; bh=tT/KoO/QdKIgG6YIe8GqMisCkeUut2m9Zpo7qT+ZkAY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Aks+70oqj5nGSTTUzaQusoPGxfXAt6zjVCn/VlBAfLLe48wlQToWbbbfQuR4KhtdH
+	 CGRglsv9NvJxgj3OY6wKcTU3iG2fBrGtt8wITDWsRplJ9MAAjdDKlUGZlvAtrw7yWF
+	 PtbUTAiE6T1XMBpmVx7spKUO0VqR5EPUkYM/c184=
+Message-ID: <89544da0-7c18-4fe5-8005-131760a2b8b5@arm.com>
+Date: Wed, 11 Nov 2026 14:17:02 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,53 +52,120 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: mps2-uart: Remove the ports_idr entry when probe
+ fails
+To: Changyul Lee <lcy8047@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, arnd@kernel.org
+Cc: Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla
+ <sudeep.holla@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20261106010611.1708587-1-lcy8047@gmail.com>
+Content-Language: en-GB
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+In-Reply-To: <20261106010611.1708587-1-lcy8047@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found no new issues
-in this patch, but noticed 1 related pre-existing issue it does not
-introduce:
-- [Medium] serial: max310x: phantom break on TX line in
-  max310x_startup() [1]
---
+On 11/6/26 01:06, Changyul Lee wrote:
+> mps2_of_get_port() adds mps_port to ports_idr, but mps2_serial_probe()
+> does not remove the entry when mps2_init_port() or uart_add_one_port()
+> fails. mps_port is allocated with devm_kzalloc(), so devres frees it
+> when probe fails, while ports_idr still points to it. When another port
+> later registers the console, mps2_uart_console_setup() looks up the
+> console index in ports_idr and uses the freed mps_port:
+> 
+>   BUG: KASAN: slab-use-after-free in uart_set_options+0x650/0x7a4
+>   Read of size 8 at addr ffff0000018c41a0 by task swapper/0/1
+>   Call trace:
+>    uart_set_options
+>    mps2_uart_console_setup
+>    try_enable_preferred_console
+>    register_console
+>    serial_core_register_port
+>    serial_ctrl_register_port
+>    uart_add_one_port
+>    mps2_serial_probe
+>   ...
+>   Freed by task 1:
+>    kfree
+>    dr_node_free
+>    devres_release_all
+>    device_unbind_cleanup
+>    really_probe
+> 
+> The stale entry also keeps the ID in use. A re-probe of the port (e.g.
+> after -EPROBE_DEFER) then gets a different ID than its alias.
+> 
+> Remove the entry on both error paths.
+> 
+> Fixes: 9f25e07b882b ("serial: mps2-uart: move to dynamic port allocation")
+> Signed-off-by: Changyul Lee <lcy8047@gmail.com>
+> ---
+> 
+> Notes:
+>     Found with a static analysis tool we are developing.
+>     
+>     Reproduced in QEMU (arm64 virt, CONFIG_COMPILE_TEST, KASAN) with two
+>     arm,mps2-uart nodes added to the device tree: serial0 without a
+>     "clocks" property, so devm_clk_get() fails after the ID is allocated,
+>     and serial1 with a fixed clock, booted with console=ttyMPS0. Without
+>     this patch KASAN reports the use-after-free above. With it, there is no
+>     KASAN report and the boot goes on until it looks for a root filesystem
+>     (the test has none).
+>     Not tested on MPS2 hardware.
 
-commit e4e606eca28fdbe85b131fef6cbe0acf9223f301
-Author: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Before getting into the review, I'd like to clarify a few things:
 
-serial: max310x: Three-state TX and RTS while the port is closed
+- This driver is only used on a NOMMU platform, where any code
+  can write to any memory location, so the security impact of
+  this issue is likely minimal
 
-This commit implements the maxim,tristate-when-closed property to keep TX a=
-nd
-RTS three-stated in MODE1 while the UART port is closed.
+- The only platform that uses this driver is deprecated and
+  scheduled for removal [1], with the driver to be removed
+  afterwards
 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 876bdd1f5496d..d5884c870d8e0 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
+@Arnd, could you please advise on how to proceed? Should we
+review the patch, leave things as they are, or take a different
+approach?
 
-[ ... ]
+[1] https://lore.kernel.org/linux-arm-kernel/20260908152808.3928630-12-arnd@kernel.org/
 
-> @@ -1542,6 +1557,7 @@ static int max310x_startup(struct uart_port *port)
->  	struct max310x_one *one =3D to_max310x_port(port);
->  	unsigned int val;
-> =20
-> +	max310x_set_tristate(port, false);
->  	max310x_power(port, 1);
-> =20
->  	/*
+> 
+>  drivers/tty/serial/mps2-uart.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+> index 2a4c09f3a834..c39aa534b822 100644
+> --- a/drivers/tty/serial/mps2-uart.c
+> +++ b/drivers/tty/serial/mps2-uart.c
+> @@ -590,15 +590,19 @@ static int mps2_serial_probe(struct platform_device *pdev)
+>  
+>  	ret = mps2_init_port(pdev, mps_port);
+>  	if (ret)
+> -		return ret;
+> +		goto err_remove_id;
+>  
+>  	ret = uart_add_one_port(&mps2_uart_driver, &mps_port->port);
+>  	if (ret)
+> -		return ret;
+> +		goto err_remove_id;
+>  
+>  	platform_set_drvdata(pdev, mps_port);
+>  
+>  	return 0;
+> +
+> +err_remove_id:
+> +	idr_remove(&ports_idr, mps_port->port.line);
+> +	return ret;
+>  }
+>  
+>  #ifdef CONFIG_OF
+> 
+> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+> -- 2.43.0
+> 
 
-[Severity: Medium]
-This problem wasn't introduced by this patch, but can max310x_startup()
-transmit a 50ms phantom break on the TX line [1] when reopening a port
-that was closed with a break condition still asserted?
-
-MAX310X_LCR_TXBREAK_BIT is only cleared in MAX310X_LCR_REG after
-max310x_power(port, 1) returns.  Because max310x_power(port, 1) sleeps for
-50ms via msleep(50) while waking the device, the newly enabled TX pin drives
-the latched break state across the entire 50ms settle window, which can cau=
-se
-framing errors or data corruption on the remote receiver.
-
-[1] https://sashiko.dev/#/bug/linux-48f66bf9-1d5f-4959-b6b9-bc3800762a8e
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111-serial-tra=
-nsceiver-supply-v1-0-40bad0f912f2@vaisala.com?part=3D7
