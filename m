@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794401523;
-	b=PfAIQq9LUjcfTPu/uEIC7jIohgDlWLod74pPd+mpXGz+Aq9JRPxQziLpbKyULH8uIw8t
-	 tzneXNLpuIaQ3hyypydVJdYH/kYWmON63cxK7Y8qZd6gaS3oDr2inxEr/QQDDwBy82nJI
-	 DbzC1ZdD3FEFVjnFS3eA0PCZbtHTp8mfVXRPs1+760Xt6vdSlqdLGc9FaejzZ3XlrwoP9
-	 1Hze5sxOt0dB8P4Ha9W0o4pBxHOeNQVi12F48iUrJCM8Z6uR8pgofyCWowsqsSgLcqKnd
-	 6DVCu5CoquAh9/IsE55TJUL4zMI7dJ6UzOr91cXvTqPh1OiM9xQX5hPo/F4HopcZkHg==
+	t=1794401619;
+	b=woxwl7i0diH0fhBK2KdDArQZhTaFU9E7CqJ5fccwMP9y8WiAJ92Jz/0eAn9M0lSgcaMB
+	 Dx0AHwRhDwFOiNqIEUj/AxoiKAtr0RbKbei14f2h6XaLdvjV6GazgQ+dxNmvqrEAEHZ4D
+	 OMjoBqNyXCj8SKXUm5z5Vo6/eWzNnqOT98E23MEWA4bQNCbAve+KyVQ08rSI4aTpRGD5A
+	 Z5Y1JpUyKBATnApEkc5sXYx1mzGLFWLd6XlDk5vLnfcqAbSVzyT+OzWHgO6WXj6RNxK7y
+	 zbHP4yZfQtuFkx4K+xLwAGN9dtneCwZwESiTv0GzMorHhPiuS4ngixuwNiPZGFLDhzQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794401523;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794401619;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=nmgIIyXSKCqoL5vDpUmPRAotLBqbwg3zUdjAJ0vNH2A=;
-	b=24/RE7db5pn0E68rVRKsVmT8cmwqC5AslafmIEhPKifNAOWsCRtRaLAIvTd3n+EV3FNa
-	 MaO8hHYzC7T2hQJWoD5MhlpfO1DQB1lQKp3RYiuNS+UlYgFpAAAYD0KGhYIgIT+Uv/2SJ
-	 YqmQMJaoQSzcADxk1ft2P5VR1utkTigFPsBSE7hNTMd6h0Uml/7M4XpnLMLsKQoNySqdk
-	 cERRvsGACsotBweutyVTUK4unTncIaUGjpEQgoQp/xUbHNIcbhYSeZIt/AOAMB7wPqUp+
-	 t6D5riQ5OfdyWSkjRfoEhdzVo6qwIYtnssCXWZU1QQJpbp/sAJinIabJxKnEaxiRz4g==
+	bh=SVO4JREjdPswGkLuqdoICEAR5hACf015ahHUYKivr3k=;
+	b=CbTXfDNVaZEgyZJ+YVg6badxPjf+4oKv5f1XP0PaHfwpUfImHpzl0+ibgN3AJapZKGrL
+	 +qEdSX0SsRiUZqb5mMqF8SUkNI/nEwXfx95MuZmWJXF9Lva312Qn7VcuRxErLj298o8Rz
+	 AU0Md1/R0LtVq3tEQvWCVUTrYjD/MOWPy+j1mHMuQi0CgZ3nM/ncHv553uajVcYnlPnGE
+	 GXqQI4Am+Pq00b7RMC7yv5QHoAFnfFwBVaR+hD1J9gxYUYlJrw2elF3CowuTzr6XIjWAi
+	 5lBdd2Ng33AfQDHPErWRFjREBoI6tC1dqG8UcXjvhxzdQmh9ZeBpou2QRo8Evzc2NgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hBqMcbWL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eNl3yGK6;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 279A0606A324;
-	Wed, 11 Nov 2026 12:52:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE70B606A324
+	for <linux-serial@vger.kernel.org>; Wed, 11 Nov 2026 12:53:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hBqMcbWL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EB5A1F00A06;
-	Wed, 11 Nov 2026 12:52:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eNl3yGK6
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D111F00A05;
+	Wed, 11 Nov 2026 12:53:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794401522;
-	bh=nmgIIyXSKCqoL5vDpUmPRAotLBqbwg3zUdjAJ0vNH2A=;
+	s=k20260515; t=1794401619;
+	bh=SVO4JREjdPswGkLuqdoICEAR5hACf015ahHUYKivr3k=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=hBqMcbWLtKe1moIKqFmt5+gNZBNmhAaQ+nNj3LuIpf34HgtyRDxIBgrnUg7eFlIre
-	 d3vvDqjvhnZ+am/WnyhDYW7//+LZmpGa2Ld4YnxDz7s5udUSoAZcBo+J8Byj/JXHLS
-	 fzgw7obGSAx6DAgVci5eWQ2IosRwVabOITLdK1x3Dm6ore0GejpvDuReFcBabBiTbS
-	 egxpVTb6Ng87epBCAG3n4NYF3q75MyMtafZbE9g3YYPIB9m7ouJ5W9vSmDCv/Nl1ck
-	 QggHk16CIlysRHuGXFcwfF13f6o5T/6vbned8m7lsECj77QhZzzQWTEsPSkFoHFIHQ
-	 MsrklcAnyyxFw==
-Message-ID: <sashiko-outbox-209020@kernel.org>
+	b=eNl3yGK6tTa9UOaZ+LxGeBEArWxr8JZSerPKTJIontQs3lT84BMPmbuQwBF3HMO/T
+	 D7AolBIWqkDJrFXuM62uq6Q61R2K8+0q17beplkMcvQpI3m2ui+mATD1FNpbx5SecZ
+	 D+YuFlKX3XEHxGskwJ2+qCI//VNKbU1OKNhuAJLR+2rmcPM0sIjrv0P/gmR1VstyDL
+	 pn+Rr+t1CprLJnmkqNHQhENHJrFiGkQy1Kx4ezvxm+w4TU2xUWl/JeKJjgM/1DdA3/
+	 5mp+zSG6z8p4BGC3/3vdm53z/RTL+dcj6Cm2S/NjKK/1cWeC9Wtyx06Zk2x5b78We7
+	 pDxUbKlEvS42A==
+Message-ID: <sashiko-outbox-209021@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/7] serial: max310x: Look up all channels before adding
- any port
+Subject: Re: [PATCH 2/7] dt-bindings: serial: Add the line transceiver
+ enable GPIO
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20261111-serial-transceiver-supply-v1-1-40bad0f912f2@vaisala.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261111-serial-transceiver-supply-v1-2-40bad0f912f2@vaisala.com>
 References: <20261111-serial-transceiver-supply-v1-0-40bad0f912f2@vaisala.com>
- <20261111-serial-transceiver-supply-v1-1-40bad0f912f2@vaisala.com>
+ <20261111-serial-transceiver-supply-v1-2-40bad0f912f2@vaisala.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 11 Nov 2026 12:52:01 +0000
+Date: Wed, 11 Nov 2026 12:53:38 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,85 +61,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found no new issues
-in this patch, but noticed 1 related pre-existing issue it does not
-introduce:
-- [High] serial: max310x: null pointer dereference in max310x_rs_proc()
-  [1]
---
+> A UART's line transceiver (RS-232, RS-485, an isolated or a
+> multiprotocol part) is a dumb device with no node of its own, yet on
+> many boards it is the largest consumer behind the port and can be
+> switched off, through a shutdown input of the part or a switch in its
+> supply. Device trees have no way to say so, and the transceiver stays
+> powered for as long as the system is up, whether or not the port is
+> open.
+>=20
+> Add transceiver-enable-gpios, the GPIO that turns the transceiver on,
+> as a property of the UART node alongside the transceiver pins that
+> rs485.yaml already describes, and transceiver-startup-delay-us for the
+> time the part needs to become operational: a transceiver that
+> generates its own supplies behind a shutdown input can take a
+> millisecond until they are up. The GPIO belongs to one port; on a
+> multi-port controller it is a property of the port's child node. A
+> serial device with a driver of its own, such as a Bluetooth module,
+> remains a child node of the UART.
+>=20
+> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 
-commit c564df97d56ed8d392fe2d422cb99ad90eb2aa67
-Author: Tapio Reijonen <tapio.reijonen@vaisala.com>
-
-serial: max310x: Look up all channels before adding any port
-
-This commit splits the per-channel loop in max310x_probe() so that RS485
-device tree properties and GPIOs are looked up for all channels before
-registering any UART ports with uart_add_one_port().
-
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index a0ed70185555e..bdfdf4a9000bb 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-[ ... ]
-> @@ -2050,12 +2043,23 @@ static int max310x_probe(struct device *dev, cons=
-t struct max310x_devtype *devty
->  			device_set_node(dev, saved_fwnode);
->  			of_node_put(port_np);
->  			if (ret)
-> -				goto out_uart;
-> +				goto out_clk;
->  		} else if (devtype->nr =3D=3D 1) {
->  			ret =3D uart_get_rs485_mode(&s->p[i].port);
->  			if (ret)
-> -				goto out_uart;
-> +				goto out_clk;
->  		}
-> +	}
-> +
-> +	for (i =3D 0; i < devtype->nr; i++) {
-> +		unsigned int line;
-> +
-> +		line =3D find_first_zero_bit(max310x_lines, MAX310X_UART_NRMAX);
-> +		if (line =3D=3D MAX310X_UART_NRMAX) {
-> +			ret =3D -ERANGE;
-> +			goto out_uart;
-> +		}
-> +		s->p[i].port.line =3D line;
-> =20
->  		/* Register port */
->  		ret =3D uart_add_one_port(&max310x_uart, &s->p[i].port);
-
-[Severity: High]
-This problem wasn't introduced by this patch, but can jumping to out_uart
-after uart_add_one_port() cause a NULL pointer dereference in
-max310x_rs_proc() [1]?
-
-When RS485 is enabled in the device tree, uart_add_one_port() calls
-max310x_rs485_config(), which schedules s->p[i].rs_work.  If a later step in
-max310x_probe() fails (such as registering a subsequent port or requesting =
-the
-IRQ), the out_uart cleanup loop calls uart_remove_one_port() without
-cancelling rs_work first:
-
-drivers/tty/serial/max310x.c:max310x_probe() {
-    ...
-out_uart:
-	for (i =3D 0; i < devtype->nr; i++) {
-		if (test_and_clear_bit(s->p[i].port.line, max310x_lines))
-			uart_remove_one_port(&max310x_uart, &s->p[i].port);
-	}
-    ...
-}
-
-uart_remove_one_port() clears port.state to NULL, so when max310x_rs_proc()
-runs, it dereferences NULL at &one->port.state->port.mutex (and before devr=
-es
-frees s, or into freed memory afterward).  Should out_uart cancel rs_work
-before calling uart_remove_one_port(), as max310x_remove() does?
-
-[1] https://sashiko.dev/#/bug/linux-0992a296-a8ff-4396-990f-c73ea073185b
+Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111-serial-tra=
-nsceiver-supply-v1-0-40bad0f912f2@vaisala.com?part=3D1
+nsceiver-supply-v1-0-40bad0f912f2@vaisala.com?part=3D2
+
