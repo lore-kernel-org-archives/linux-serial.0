@@ -1,49 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794406628;
-	b=2KyjS2naZsbGBWDxcBmWFHHdWS3Fbx7xB33bg6VyX0lKXyarDe8JaqgEnwDCbIyoSzMu
-	 dTFaRwEcB1bK/1mVkgQzokAEeHMGY5GZJfUCyj9D2wPztfjkMMxymZfMGrWRzuvrk+fBF
-	 dFfEX/UL8iIXPvpcCgdeZNIAA3PN1GmdvRuizKG3FqwOYELKiB1jE0tTTcGcckMplQMyz
-	 GyR9TdZFLT6DtAxAjVKSmKgXULzQuK+z7a/bTvAzB6WHZNWiRD6y3GeULpMZ2z/IGwsvu
-	 xyg1e0GFcjmVM8tPLhJgMM77m7CXv53qh8FSI3QcWy2vquFebk8caRhxLKeF+RKs9Yw==
+	t=1794408652;
+	b=Dn/8Y5+M8iT6frLDHbRctMduGJ4FNzVFaqvfa1EkTNnTAMsaZIYj3NOS3IJyf4NT3H40
+	 a9mclZrBOcAALmiATgH/ipSC7MjcTUg1aVu6KYPP+gfYGr7um4akdPg4quEOz/eKhgV4a
+	 bAGT5rE/aQTy8ve4DFwsuTMJR7pgh1StoJIWEz+2HPKx9Mx7KV9P+M5cCTRUL9xYl9Pwr
+	 5F3RgD9OWXebpgpeHTrqPAH/C7drCny2BVH57cFG+r6+uFD+D6P1M8qm64uoRHCRZUAsr
+	 Jmug5y6WFUX9fDG3nU+vbasUjAQYtymtMgFIALa0iHt8ae5Dbtx12IiTzdnDWCHFoLQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794406628;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=rhhgs3SOKWlfwatuwxS7aRDVfjVPDbWLqI/UBAGOHnE=;
-	b=ybNvyNn8xq8T4wJN/N41uFuN0od0v6fTqQwoEIib7r/e7k5UrkJPFvOBwKjAgmpglEUH
-	 l2+Aw2YpLEugJ7z7noxAxPqbiMMfZhKWNl0LnRkPg0ML1GL3JnxwsyaME4qPEckz7KlJA
-	 n5udZF/No27KAQOeckIlfRNDwnmt6+p41TiDTprMfKS422Aw3ITNhRrCDqkfNUKCbSC8i
-	 +Lx2hJfLyDSQyRdZwHiYt658NXHF0uA1KjzvdkKF/xEONZpOHz3nGsv8+lrdMgbaJu2G+
-	 0z/MQ7rRRWxGvKZK0Mt+Cx2ncRiWUz7PIK49DC3/J9z13G4yi34v4GFnXuVIdeNk2pw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794408652;
+	h=Received:DKIM-Signature:Received:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=CRO5Tel1RjzXs1ay2+39z6lAjKHeD4/T/34ACHBY2o0=;
+	b=4/dJutJjEn37O8iCF5nVfQ9zvO6ZE3ZY6KWj9Oacyy47k5T4ezjxSfgdG+kdVi799Gd6
+	 Kzv1Sf09I+bdCC/+7ud4MVJV1Rduzon/AYbSOcJdvWDGgqvA949xYo8HUCNajQVgDzi4h
+	 9bFv1whcIfIWkhXSsn8LaX6Km9EhaOqoIhcn1ePSDbwullry0K5M1SGVoj8qoIiibzuN0
+	 wzZUOfik/3K8gMnABI3x+Pk0kvW74DuZQ2B4l78/oQYIZbdE9UllS7V04GV4Cj4YNE4Tv
+	 WhH6L/jc8r03Rl0IYvP2VIz+j7yk0W9OdvWjz0Hiy7YPh9pi/66xUsKHczpsrzOAR7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Aks+70oq;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9C3C606A324;
-	Wed, 11 Nov 2026 14:17:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A9C3C606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oquIw1Lu;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7A74606A33E;
+	Wed, 11 Nov 2026 14:50:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Aks+70oq
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BF00A1576;
-	Wed, 11 Nov 2026 06:17:03 -0800 (PST)
-Received: from [10.0.154.42] (e121487-lin.cambridge.arm.com [10.0.154.42])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EAFBC3F632;
-	Wed, 11 Nov 2026 06:17:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1794406626; bh=tT/KoO/QdKIgG6YIe8GqMisCkeUut2m9Zpo7qT+ZkAY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Aks+70oqj5nGSTTUzaQusoPGxfXAt6zjVCn/VlBAfLLe48wlQToWbbbfQuR4KhtdH
-	 CGRglsv9NvJxgj3OY6wKcTU3iG2fBrGtt8wITDWsRplJ9MAAjdDKlUGZlvAtrw7yWF
-	 PtbUTAiE6T1XMBpmVx7spKUO0VqR5EPUkYM/c184=
-Message-ID: <89544da0-7c18-4fe5-8005-131760a2b8b5@arm.com>
-Date: Wed, 11 Nov 2026 14:17:02 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oquIw1Lu
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CCB71F00A07;
+	Wed, 11 Nov 2026 14:50:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794408652;
+	bh=CRO5Tel1RjzXs1ay2+39z6lAjKHeD4/T/34ACHBY2o0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=oquIw1LuPko9xQrUJELBnwskn345Pa0CjNLnbaWuTe1gPG46TRshOlT3TQTMUsqWr
+	 H5HPwgGE2gaTAEiCIIPcRxefE/kDsuVfCrlIruA+VfqXzNAE+AZqo1RBFiaP9D64+X
+	 chT/Mt7RzF/In9eWtub/qYXtnu7lb18rmyQtPEC+na4fQBU00FTD0BjKK79DNcz3py
+	 ker3YOqseqzE5f9NMCriCvAZJKaA1plKrNeZJiPPPj2anRJ3lLh3FpFXfKyiOQUM4A
+	 zpEvBx9/ykoYnWsNrmihF87OpWsKUmIJYkwO+ng+MmQP0mIXpEDwVBaG57p/04JaT4
+	 ftu1eTthVnb7g==
+Received: from johan by xi.lan with local (Exim 4.100.1)
+	(envelope-from <johan@kernel.org>)
+	id 1xR9ez-00000000VcO-449A;
+	Wed, 11 Nov 2026 15:50:49 +0100
+Date: Wed, 11 Nov 2026 15:50:49 +0100
+From: Johan Hovold <johan@kernel.org>
+To: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, stable@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/2] serial: core: do not hold the port mutex while
+ waiting for references
+Message-ID: <avSAyV6QE0Id3rAk@hovoldconsulting.com>
+References: <20261104-serial-core-remove-deadlock-v1-0-6a30597adcbf@vaisala.com>
+ <20261104-serial-core-remove-deadlock-v1-1-6a30597adcbf@vaisala.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -53,119 +63,58 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: mps2-uart: Remove the ports_idr entry when probe
- fails
-To: Changyul Lee <lcy8047@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, arnd@kernel.org
-Cc: Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla
- <sudeep.holla@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-References: <20261106010611.1708587-1-lcy8047@gmail.com>
-Content-Language: en-GB
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-In-Reply-To: <20261106010611.1708587-1-lcy8047@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261104-serial-core-remove-deadlock-v1-1-6a30597adcbf@vaisala.com>
 
-On 11/6/26 01:06, Changyul Lee wrote:
-> mps2_of_get_port() adds mps_port to ports_idr, but mps2_serial_probe()
-> does not remove the entry when mps2_init_port() or uart_add_one_port()
-> fails. mps_port is allocated with devm_kzalloc(), so devres frees it
-> when probe fails, while ports_idr still points to it. When another port
-> later registers the console, mps2_uart_console_setup() looks up the
-> console index in ports_idr and uses the freed mps_port:
+On Wed, Nov 04, 2026 at 10:27:15AM +0000, Tapio Reijonen wrote:
+> serial_core_remove_one_port() takes the port mutex and then waits for
+> the uart_port_ref() holders to drop their references. Since commit
+> 8ca59f7baee7 ("serial: fix ioctl hangup race") uart_wait_until_sent()
+> takes the port mutex on every poll iteration to check for the hangup
+> before it touches the hardware, while holding its reference for the
+> whole wait. A tcdrain() in flight when the port is removed therefore
+> deadlocks: the removal holds the mutex and waits for the reference,
+> the drain holds the reference and waits for the mutex. Both tasks sit
+> uninterruptible, and the port is unusable until a reboot.
 > 
->   BUG: KASAN: slab-use-after-free in uart_set_options+0x650/0x7a4
->   Read of size 8 at addr ffff0000018c41a0 by task swapper/0/1
->   Call trace:
->    uart_set_options
->    mps2_uart_console_setup
->    try_enable_preferred_console
->    register_console
->    serial_core_register_port
->    serial_ctrl_register_port
->    uart_add_one_port
->    mps2_serial_probe
->   ...
->   Freed by task 1:
->    kfree
->    dr_node_free
->    devres_release_all
->    device_unbind_cleanup
->    really_probe
+> Reproduced by unbinding a UART driver while a process drains a few
+> kilobytes at 300 baud: the unbind blocks in wait_event() under the
+> mutex, the drain in mutex_lock(), and reading the driver's proc file
+> blocks on the same mutex.
 > 
-> The stale entry also keeps the ID in use. A re-probe of the port (e.g.
-> after -EPROBE_DEFER) then gets a different ID than its alias.
-> 
-> Remove the entry on both error paths.
-> 
-> Fixes: 9f25e07b882b ("serial: mps2-uart: move to dynamic port allocation")
-> Signed-off-by: Changyul Lee <lcy8047@gmail.com>
-> ---
-> 
-> Notes:
->     Found with a static analysis tool we are developing.
->     
->     Reproduced in QEMU (arm64 virt, CONFIG_COMPILE_TEST, KASAN) with two
->     arm,mps2-uart nodes added to the device tree: serial0 without a
->     "clocks" property, so devm_clk_get() fails after the ID is allocated,
->     and serial1 with a fixed clock, booted with console=ttyMPS0. Without
->     this patch KASAN reports the use-after-free above. With it, there is no
->     KASAN report and the boot goes on until it looks for a root filesystem
->     (the test has none).
->     Not tested on MPS2 hardware.
+> Drop the mutex around the decrement and the wait. The decrement is an
+> atomic paired with uart_port_ref() and uart_port_deref(), which never
+> take the mutex; the clearing of the port pointer stays under it, where
+> uart_port_check() readers expect it. Between the hangup and this wait
+> the removal already runs without the mutex, so a mutex holder seeing
+> the released port is not a new state.
+> uart_wait_modem_status() takes a reference and then the mutex in the
+> same way, with a smaller window, and is covered by the same change.
 
-Before getting into the review, I'd like to clarify a few things:
+Thanks for catching this. I can reproduce it here as well, and we should
+fix it even this is hardly something anyone would hit during any kind of
+normal use.
 
-- This driver is only used on a NOMMU platform, where any code
-  can write to any memory location, so the security impact of
-  this issue is likely minimal
+> Stable trees before the guard() conversion of this function need the
+> same change with explicit calls: mutex_unlock() before the
+> wait_event(), mutex_lock() around the store of the port pointer.
+> 7.3.y has the guard() form and takes the patch with a three-way
+> merge.
 
-- The only platform that uses this driver is deprecated and
-  scheduled for removal [1], with the driver to be removed
-  afterwards
+Right, the guard conversion makes any backport a bit harder, but that's
+something for the stable team to deal with. So you can drop this
+paragraph.
 
-@Arnd, could you please advise on how to proceed? Should we
-review the patch, leave things as they are, or take a different
-approach?
+> Fixes: 8ca59f7baee7 ("serial: fix ioctl hangup race")
+> Cc: <stable@vger.kernel.org> # 6.18.y and older need the open-coded form, see below
 
-[1] https://lore.kernel.org/linux-arm-kernel/20260908152808.3928630-12-arnd@kernel.org/
+And just drop the comment here, and if you want to help, send a backport
+when the fix fails to apply to older trees.
 
-> 
->  drivers/tty/serial/mps2-uart.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
-> index 2a4c09f3a834..c39aa534b822 100644
-> --- a/drivers/tty/serial/mps2-uart.c
-> +++ b/drivers/tty/serial/mps2-uart.c
-> @@ -590,15 +590,19 @@ static int mps2_serial_probe(struct platform_device *pdev)
->  
->  	ret = mps2_init_port(pdev, mps_port);
->  	if (ret)
-> -		return ret;
-> +		goto err_remove_id;
->  
->  	ret = uart_add_one_port(&mps2_uart_driver, &mps_port->port);
->  	if (ret)
-> -		return ret;
-> +		goto err_remove_id;
->  
->  	platform_set_drvdata(pdev, mps_port);
->  
->  	return 0;
-> +
-> +err_remove_id:
-> +	idr_remove(&ports_idr, mps_port->port.line);
-> +	return ret;
->  }
->  
->  #ifdef CONFIG_OF
-> 
-> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-> -- 2.43.0
-> 
+> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 
+Reviewed-by: Johan Hovold <johan@kernel.org>
+Tested-by: Johan Hovold <johan@kernel.org>
+
+Johan
