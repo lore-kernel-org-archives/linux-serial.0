@@ -1,90 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794497619;
-	b=oNlypgZTmet5bfzpxytQBpQcl74tKq+2hu76+CpCUN1v2222KrxiPQ7xjR/2J4iGpHYX
-	 JpgWoiFKR1vLZ6WwobQKRd7gradAnSm7TJyg9R9JEWbIoMjLfszQYvRk0TZFxgHmazw2m
-	 xwWTVIHO9+1ZsQHh57mSPEwU2qVi/QLSB6slknqp/Vx55RVl3lSI9c5MO07hZpeD4CPjZ
-	 +XpTcbuMoTRdtkoZOT/8c0yjuTr3A6z8RJ/BgD7570+M8GpjzCgouo18HwdBHqTVHAhf4
-	 JttsWnS1MuQeTsBMeV5Ioi3vDM00tkMQfjREmWHkHM47ELOiUJN2oJ0YRq1kl3p9NmQ==
+	t=1794497627;
+	b=2KXkyVT1AkdR5jiFuGaBsts4fx2VoE/0doYwdpfG4uaxYLq0Wh6MOxwCt/151QsaPkkJ
+	 dKXVZoaqswN7SMVun5yxBxjGKXGkomDIqMCBDzmH1wFJqRC5gNf+o2hh6vgXOFOpGYidA
+	 0fHO4zAxfClA+3OHfMRiaTZ3VAF0rthUqyyzOSiDaib37qT32Ymz/GVEEajbieastKUfA
+	 Q2HGnoos1gCM88skAehgDBY8nUbOHqda26cReF/932anSqCtUXBQykmcrX9BAC0b/lmC3
+	 TgrnuM6apfakQegVo1v/jB3gHLxk3QDOkNlPbEVutRM253HgyiLtArNtjG9Qr6afUKg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794497619;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794497627;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=z3BbB7EvRhTQxsA7XhxXSS2tjjNrAp5pTR6enOtvXX4=;
-	b=nP4sJ3Z8k0KVupYtdJwg8MKJEeZ0f6FUhsStCw/COaOipLRAqIUkork+B8V8Hc0eRsxG
-	 gCjyKYUyw8kYd1OYkl0fgJjP1KaAmRjkP2/8ia3McBlDWhGc/dTy25JWaQgsoR7hxKvs3
-	 jZo8rfU4KwOQdgaQZl9dHX0u2/xGL2wTdWt5mM9G0a5CTC79ozHCmwAPKdT0QBDv26dhP
-	 CwRBNRVaxWgZUlhHpqDnGvcKQ3+Xetu5D3hK5ZVm+kbTk4lvqhdUQkWMPKy2z5kLMWsLc
-	 o5GDMsHqBwAOXNbjJ8R1dzU4CJhhQ7IW8YhmgEYs9uBwsFh+Hjy9zwuEvMan300mWVw==
+	bh=gOHeB5d4ws3WTTlDcSY7S8wi2CUUdkygOoZR8h/O8BQ=;
+	b=rO3kQS/4NJnbtnzBDHEFDQ2Q1AbUK9tyXzn8g2L8XfvCcVQVVkskIU4t9bOyMiYmOT/9
+	 gU0YUI1SPh/atcn20pXcmEKyCuBsbldyF6hAhCgQo9wAC8Gp+Uw46Nn0v9AKRITEoz6E3
+	 7QpvhmYQhEjRUCJ/UIosOG0vns+Z8zjUM9p1o+QP4Lbr0+mEFdEbqNgEwyULJwt+a5iiL
+	 K2szXln0bsrmEXqm0gz6bKmDnW6LSQHrdXS9v7eRbaXmEeZC0wDTzx/xYqFe2xXcI7VMS
+	 RscJDCEWWmbwmobcflqv36BPvmRhDBlWRWXCI1Z/DrByvfOqA3KQdzvTkOQ6Cd5rGIg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=blkGwaC4;
-	arc=none smtp.remote-ip=209.85.128.42
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=n1h9wnUs;
+	arc=none smtp.remote-ip=209.85.128.49
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4F76606A336
-	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 15:33:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E4F76606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8610560A3807
+	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 15:33:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8610560A3807
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=blkGwaC4
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4b4571ff080so48629295e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 07:33:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=n1h9wnUs
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4a5177d78c7so39063395e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 07:33:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794497617; x=1795102417; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=z3BbB7EvRhTQxsA7XhxXSS2tjjNrAp5pTR6enOtvXX4=;
-        b=blkGwaC45pAUAFc/Wlj1uixQFN4RUlHtDjh9yZVXAuD4P2MKVCs57p1aE+XgBXNRhk
-         AfNZDi226a4w/oOXHZa7dPbHDJ6oe61N/VmwylWp2RZkFqr1bOPPztXtS7Hyamburovc
-         ViUDrACCcXvOjXXdZoqe0oUjFxYWn6hIKblLYJC4RklKszf5ZlVz+1SBuJ7jo+GiNezP
-         Fv6RFXBkBeHqBU7zV7Q2Ov1qwlh3FmKI+Xb/R+puSpVVUOyQcZnytsBZQYoSrnM+zjEx
-         rgXSxgNPLuugdYJhPRY3mTS7i/xFC5pLRnKwerU+HnqV2Kc1jBUTSsZsApY6SBp+7Are
-         YX5w==
+        d=gmail.com; s=20260707; t=1794497625; x=1795102425; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=gOHeB5d4ws3WTTlDcSY7S8wi2CUUdkygOoZR8h/O8BQ=;
+        b=n1h9wnUs9bbG2WTNcgtnq21djsXCZZ6P+seSlzXn5nUhKbsFqP/qGNfeM6E75lv2Cu
+         /ddQVSwlZrO8cPWVRyd/U0fMu5j3TJNRrdJCsJKZcZSKncDEYq/J0Qz6hVsmreF3mV/X
+         tJ0UfR6PiZ1ely4JxcStXx17Dg8fRLVeMi+uge/0Y8KxZ8wt2bC8SSdL62Bt8gSSPCQv
+         W1VNItGKqvuXDxYa4Pwoiyu8MtTS8KVDAxteohoFI5z6I4uBr/3iuNQNOsPufL19hh+7
+         zF2DKKmoraXPIAIbSjXSL1dZxt3nB9oUDNCtksHcc++vfir5zqHyRYm9+kd71VwJRZQS
+         Ib8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794497617; x=1795102417;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=z3BbB7EvRhTQxsA7XhxXSS2tjjNrAp5pTR6enOtvXX4=;
-        b=wGl52oBbx4ka2ArXlgeTcfKMhWRTjzSbUVzaqyfLkCWJLBPKleSU3fg/Uc6w95tEr5
-         pmp0Ax9I+EQk5SS9oOHScfwECR9dB5Xd+qXRm+cwlZnWSyR5eSZP2cMuCfro1J3lAuP4
-         H6rCGY8q4wHLqU9Y+Nd9hCQYEII9XTEKQETS3/wAn8IiHDWSK5uAPwSx2zVq0L9EWvZw
-         7BPj9tl7EzxCoSgGbRQTqbUERdW/uIcJD1WOHFoQ6NewXY7AnivF656pcOu3/V72oya3
-         VHcfoeUBxA5xB17YyEijx5mZZf1F5hz0OflZKb39DqymBrnJnuXN0UGzwbCVKZDufFkH
-         2RSw==
-X-Forwarded-Encrypted: i=1; AL+hErH6U6iRJF23LDMUAbBFMHga7x7KkVoRRW199wVtLebOlrmE1/vHSGKYtkw0RRRxvYFyr9f8wXZjY+eYvpI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/AoX6aSBUa5Wo97TcOhymIVNmZvofg//1aa/YFecWmx0n/FGBn
-	tjGaPEYk+bYCWVJ/rayg26yFduPsZG5eSi8syvVxLMgKsTnCh8H7Uq7s
-X-Gm-Gg: AYBFou3ZTrtW39SBHmoAMLj1HRA3od6R4m/DxCEelWcWdtEzqseBROQAS1N3xjgUCPb
-	LzJQLAwRF8Wyypa6oqvPQIAhIWgNvmIDgFnFv6SXKmMbbBx5Ar9oCi5Uwr79JWbScnZm4Dt3qyw
-	keC9+6pVzSJq58znAJ4m6siUz/+PDlTDEH6Pn2xURByHmhmmpGz5cURkeBfPjlJl++OXj6o2rpb
-	XjeI6U6g1aLAjpr0qjRYyKEMTTunG/s41cHxuTd4lVjSM0m0Ybpqj/sPxpmzmimFonLveXVnlvs
-	M0UrX+Lzx6cmh0yckTNHsabkNNbjInnoJOjjDFoPVfhlzkq3wcqSCsestuEoXyQgUS1SGTF5SJp
-	q854QD4V6y04LVN+cVXjtxjUcJEb252+7rWYchicg0PtL4qsRmn/7uIfeKpx+0mBCUeUXMOj0lz
-	BIuDgxNyttFZVfzM13GTnffH3j62WvW9B6UeTsH7wLX2yjnT5hTTUnS0RRWZ8MObWoKqhmcq7LV
-	SoJYum7Jff53jgI1PAP4u6WekLp97PY9Beqn69vgZLjf1nd41X+83OksCKWFw/FSY2JdzB8E7je
-	jQ2U04ba6Xhof40dBLuoChIxfTDO+XWzcH9BNkWLv3ss5sPeNAnag62QbQUWoCodAbREluIG805
-	Z/J3M6A==
-X-Received: by 2002:a05:600c:4f4a:b0:4a1:f68a:9736 with SMTP id 5b1f17b1804b1-4ba0939726dmr133509675e9.26.1794497616817;
-        Thu, 12 Nov 2026 07:33:36 -0800 (PST)
+        d=1e100.net; s=20260707; t=1794497625; x=1795102425;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=gOHeB5d4ws3WTTlDcSY7S8wi2CUUdkygOoZR8h/O8BQ=;
+        b=DHeoE7V1wLvx6rwcCemyvKATPVQjKG846ujMndOke8SROZHuxknxnhkBQP7cYTSfB6
+         7pS081jCu6e0YPI5VXXGMLU55SfxSUAEWN2m3qWyp/EWi33pmLso/6HIThV5dIqVMACM
+         nCAbKrAqr4JqhwRAdcLCBY51dAwHAcoFDqZ5PZ12OYtQIxPdCanKBf0nGBjnkEMSNVyU
+         x+6xKKfvpdYRQvhOkbFbNYzmgjW4zoF8+gzZi9DF/jLIlC/duVUy+85GOOiVLWglQEOw
+         YTtMG0q+qgOTOT8kuqbZyN44e4JE9O2OefeCyHAQ3wx/dNX7nhAfDuqErMvH3yQbf4qy
+         fvRA==
+X-Forwarded-Encrypted: i=1; AL+hErF3Cr/Skc8mbvzgSqG1f2rEiIIgYSzXGxrfKf3akwzLsHIkDYrJfrXVgRGnVpww2S6Dv0TIPYkNTvybkN8=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8CIC0LoQWJVxBqHFzZgw4L932xiYPRF8sbFj9CmFgG8QVHlhIM
+	v5n3ZrRojXBhmeOfN0YGQPUZfP/Yluu2+FhOyQNsn2TXnt8SirsvO2nr
+X-Gm-Gg: AYBFou2bVsCRIRO+GAnBojX8naFdnGRDCC82ZH7HKy46qsQx0OgOuZqH4Bpa19INARI
+	On+Q/YNIP0Gd3dpuL2stsOFGsQwmwdNEfDoPH/PavM2goEN+Z7Lq2QDu2laeaQ1ebhoSl2yjDre
+	EvLGfuELIUwrkYrfFxRfC9FfOOBMA0mWNZzcvoM9Pjq8coxQJtaJDHuEN0sPoz6n9Rp8koVBxLe
+	4wS0FAYoVTjSBW/u8JDw4XZ/1I4aNJRw0Z2dMw/GpISAcU/tnuDXbnwKWrVUaU+VSUQFMhCdMH8
+	rYM5mtE2d4SCEIw4uh538ISQOKRFjm79JXoCf9bd51YBjpPA4pcZ3f6yh6SUxyEfnf76YGS4xdI
+	okZlcktrofdqd3NCjY7bJILzls5RbVLuQxGQcvVzNQbzynO0pR/sACVcN0kIvhLLW5ZQcBIn358
+	qnKyjCwkoI6Y3rSlF2V/3Bx8S5qN5XsfynxHusM+wshQUiPegsE6G66xjkvCnd5dSW1SOZeh/Ri
+	6b+zVBTx8IRzASEqDu8R3wuyv4ESD9OJI3lu/vjhPm9Xg7/HiGs4ExoSaleWwNVV4wi3VmNcyM1
+	9JM5puay7yMW97VyXgAE8O5C2HrGe7BrpyeMTjDLAKifpp32/7TlyGYFue8AdeQsFeMeyuIy3oG
+	9s4XFRg==
+X-Received: by 2002:a05:600c:698e:b0:4a3:12fb:1ee7 with SMTP id 5b1f17b1804b1-4ba09383e08mr115598955e9.25.1794497624825;
+        Thu, 12 Nov 2026 07:33:44 -0800 (PST)
 Received: from alchark-surface.localdomain (bba-86-98-194-229.alshamil.net.ae. [86.98.194.229])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e2593e4sm87105855e9.5.2026.11.12.07.33.30
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e2593e4sm87105855e9.5.2026.11.12.07.33.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2026 07:33:34 -0800 (PST)
+        Thu, 12 Nov 2026 07:33:39 -0800 (PST)
 From: Alexey Charkov <alchark@gmail.com>
-Subject: [PATCH v2 0/6] serial: vt8500: Clean up the probe using devm and
- new serial core helpers
-Date: Thu, 12 Nov 2026 19:33:08 +0400
-Message-Id: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
+Date: Thu, 12 Nov 2026 19:33:09 +0400
+Subject: [PATCH v2 1/6] serial: core: Add uart_console_port()
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -96,11 +95,9 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNSw6CMBRFt0I69pm2iHxG7sMwKO0DnuGXFhoNY
- e+2uADv7CT33Lszh5bQsSrZmUVPjuYpgLwkTPdq6hDIBGaSy7sIAb8WGecQNTWAHlBN2wKm1WW
- eCjQm5yy4i8WW3ufus/6x25oX6jWOxUZPbp3t5zz2Ivb+fXgBHJo0zcqbkllb5I9uVDRc9Tyy+
- jiOL5E4i57MAAAA
-X-Change-ID: 20261111-vt8500-serial-cleanup-dfc9731edd70
+Message-Id: <20261112-vt8500-serial-cleanup-v2-1-36b258e0c0dd@gmail.com>
+References: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
+In-Reply-To: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
 To: Alexey Charkov <alchark@gmail.com>, 
  Krzysztof Kozlowski <krzk@kernel.org>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -108,57 +105,78 @@ To: Alexey Charkov <alchark@gmail.com>,
  Alan Cox <alan@linux.intel.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, 
- Wentao Liang <vulab@iscas.ac.cn>, Sashiko <sashiko-bot@kernel.org>
+ Wentao Liang <vulab@iscas.ac.cn>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1926; i=alchark@gmail.com;
- h=from:subject:message-id; bh=8PpJS3y5hC3pEkcD/IutXHMoQpc5qWIJgmCmvXikxks=;
- b=owGbwMvMwCW2adGNfoHIK0sZT6slMWR9veP5PV5iUoGy76ensRUHhHWvxfbKKS60yGSMN3S0+
- yPpO0WnYyILgxgXg6WYIsvcb0tspxrxzdrl4fEVZg4rE8gQaZEGBiBgYeDLTcwrNdIx0jPVNtQz
- NNIx1jFi4OIUgKkWSWb4K9rzrGPTod57hzf3xLrv1/JYef1olm7KDG2OshviDyY5RzH8My6PCQ3
- fvbBfNFEw8l5M7xaxBJclqx+6nl57QO/apsRwDgA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2599; i=alchark@gmail.com;
+ h=from:subject:message-id; bh=axSnBeslNCexms4qsSumKGe3yRSirau1N9EJqbpzpbk=;
+ b=owGbwMvMwCW2adGNfoHIK0sZT6slMWR9veP5wMhIM9FtplyeqkXsedYffPteyhVOmmASsXyuS
+ Jxn1WbLjoksDGJcDJZiiixzvy2xnWrEN2uXh8dXmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
+ 0EjHWMeIgYtTAKZ63myG/1XZLH2TLTLO5O8+z5x1/HQnE88Lc87Z52/d8FRaFaR1dgMjw0ebfaE
+ LKhm7D3sl7Tf//nbfL5OJzVcm3dM0OaDitTCghwcA
 X-Developer-Key: i=alchark@gmail.com; a=openpgp;
  fpr=9DF6A43D95320E9ABA4848F5B2A2D88F1059D4A5
 
-The driver has been carrying legacy vestiges in the form of a bitmask and
-a local array to track which ports should be numbered which, both of them
-not really needed anymore with DT aliases and existing in-core tracking.
+Console ->setup() and ->write() callbacks need the port behind
+co->index. Most drivers keep a static port array just for that lookup,
+and the few that skip it read the uart_driver state table, which the
+header reserves for the core.
 
-Remove them altogether to simplify the driver and get rid of leaks Sashiko
-found. While here, also convert the clock handling to use the resource
-managed API, and propagate errors from uart_add_one_port().
-
-This hinges upon two new reusable helpers in the serial core which allow
-getting the console port for a given line number per driver, and another
-one to auto-assign line numbers for which drivers currently keep an
-assortment of local accounting boilerplate (some with locking and leaking
-issues, such as vt8500 to date).
+Provide the lookup next to uart_console_device(), which already relies
+on co->data pointing at the uart_driver. The core links a port into the
+state table before registering its console and unregisters the console
+before unlinking the port, so the result stays valid in both callbacks.
 
 Signed-off-by: Alexey Charkov <alchark@gmail.com>
 ---
-Changes in v2:
-- Added a core helper to get the console port for a given line number per driver
-- Added UART_LINE_AUTO support for automatic line number assignment when no OF
-  alias is provided
-- Link to v1: https://patch.msgid.link/20261111-vt8500-serial-cleanup-v1-0-b33594a25f87@gmail.com
+ drivers/tty/serial/serial_core.c | 21 +++++++++++++++++++++
+ include/linux/serial_core.h      |  1 +
+ 2 files changed, 22 insertions(+)
 
----
-Alexey Charkov (6):
-      serial: core: Add uart_console_port()
-      serial: core: Allocate a free line for UART_LINE_AUTO ports
-      serial: vt8500: Look up console ports with uart_console_port()
-      serial: vt8500: Drop the port index bitmap
-      serial: vt8500: Use devm_clk_get_enabled()
-      serial: vt8500: Handle uart_add_one_port() failure
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b06d2649be34..683ffb4fda92 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2890,6 +2890,27 @@ struct tty_driver *uart_console_device(struct console *co, int *index)
+ }
+ EXPORT_SYMBOL_GPL(uart_console_device);
+ 
++/**
++ * uart_console_port - look up the port behind a console
++ * @co: console whose @data points at its &struct uart_driver
++ *
++ * Serial core registers a port's console only after linking the port into
++ * the driver's state table, and unregisters it before unlinking the port, so
++ * the result stays valid for the console's ->setup() and ->write() callbacks.
++ *
++ * Return: the port registered on line @co->index, or %NULL if there is none.
++ */
++struct uart_port *uart_console_port(struct console *co)
++{
++	struct uart_driver *drv = co->data;
++
++	if (co->index < 0 || co->index >= drv->nr)
++		return NULL;
++
++	return drv->state[co->index].uart_port;
++}
++EXPORT_SYMBOL_GPL(uart_console_port);
++
+ static ssize_t uartclk_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 4eeb8253752a..9ac1ce1c10b5 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -1127,6 +1127,7 @@ void uart_parse_options(const char *options, int *baud, int *parity, int *bits,
+ int uart_set_options(struct uart_port *port, struct console *co, int baud,
+ 		     int parity, int bits, int flow);
+ struct tty_driver *uart_console_device(struct console *co, int *index);
++struct uart_port *uart_console_port(struct console *co);
+ void uart_console_write(struct uart_port *port, const char *s,
+ 			unsigned int count,
+ 			void (*putchar)(struct uart_port *, unsigned char));
 
- drivers/tty/serial/serial_core.c   | 89 +++++++++++++++++++++++++++++++++++++-
- drivers/tty/serial/vt8500_serial.c | 89 +++++++++-----------------------------
- include/linux/serial_core.h        |  5 +++
- 3 files changed, 112 insertions(+), 71 deletions(-)
----
-base-commit: aaa2f954c21b205a0bcd0961e5b2be4e82e58455
-change-id: 20261111-vt8500-serial-cleanup-dfc9731edd70
-
-Best regards,
---  
-Alexey Charkov <alchark@gmail.com>
+-- 
+2.56.0
 
