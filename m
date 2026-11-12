@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794499872;
-	b=jnGLTih06H9FaHhMHksbutEwA1VmfRS9dThPU+YaR7iqWbKk1UevxuaW+pqN+ZV4RxKY
-	 LCQDQzc4ue2LuWhLoGTbRKDYa/AIaiWr6niymOYgRF6QhuzZFCiCGgGpzidoHBwB/4EwR
-	 KDUOuUYNMr778zdMMQ+XlGT+JMyhr66Z+vDL5MvVb9jCVl41FyKkpQzk1e1ZK7ygYPGBI
-	 7sCYYBvsqlEfIyJbqGgLpAGFWDfcS1NIdJ1/dHGT8ZZja0wYn4CCUDT7JZfEvePH96Fwi
-	 X58lA4C7FQAUX3w6qRYT7UWwuz5QYSwDozFfdi1MpTUmAtGE+7MpucEcThXw0dPAjBA==
+	t=1794500039;
+	b=1mwhqrcbLU5BdEFtdo+3JLWv/9lgg9ohRCLNDJtiVj4ymj2X0lLNagu3VJiZfTA5NzW4
+	 u04QytcJzxQZO8imQEfmduLwr4v/FAQD5Qo7V5jqqYn8wTaXW/7Nf02KXDL/N6kXNn7uq
+	 eYHEg+NEaXMVGaY/ZGfwyzJP2O1t/lRVfgw/R3YlufaeP9/9csSqTFu2M8NADulis34yB
+	 sJSMYwvG+6u+S9SYEJmPJUW0lLbg3gBCeYIsbrAEzad2XMcVXJ/np6mz++t7iV3sMEgmZ
+	 VmTZiv0v1rXlZslULcPfpgnujgR7FbcaCuZPbLB0I8MDbaA0huvTwpFDmFgTfr5MRNQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794499872;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794500039;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=wYw3PsXp2ITZe1gp5kAYVuoE8XjZzVKbPqIuhL3V96o=;
-	b=qExcIAb2tQ0s0b4dDpNrUbW7uVqVcULDxyIHEgrjWP6JeoTlgqxdWj3J7NbWBNP3ay+k
-	 TQWJey+QLXlmBzPwi0bGZkIWiXyAjiFWwuqzNgXHKByX8Aq1MMHw5pPYwdCqasBeLY54P
-	 YHycvm+hpyNh/fqoWYHgQUOYEHdUw+7mwHDcvsQfMHD51d/3M8ZosOxqIhV6lqOLaBLqa
-	 1M7WhBuDZTHEKJCJD3U2aWrfXBQyQv+G0h7GI1g/7UzyYiYeCocxNnc6R7yb07IeptqmT
-	 vPNYtjOl+GY7tRSe/decdhlbEF3OVwoT9s2Zj1jK5mOsO8iK/NjgKcmQb0f9ITTDQiw==
+	bh=c4OknN5YfqROvQIcmXbW+MOiSND7LTxhC21JuzqOEYM=;
+	b=cBaBsxuFF0W2RRH66LBuytV0AiVo8Ea0aCK3fxwArX9O6Exr0osqeaqHDbszyHPRSIzB
+	 aaZCBDSbo1LXOL7IBVQL99BDLF9r2MhPOo8weTCOfnOV5xQhLYHZH0Wt8UbqhuWu51y0k
+	 0/nQbj0/fQXbv406r54HJXI9+AqXiOQi9uIY/MoXqgBlp0/gUv+1gA3rV71n64zhIGUeb
+	 1dkA2ACAoXL4tYZ5at1IL9zSM/utYcKPzIJ/PasfyKXt+KKvx3HtZE1l5eXhnVLpTmLMK
+	 yYHIbVWSMPqTIK0soeyQTjFtzprC8YnHDhzeMm7L5uCa8tmUKo8oRaTqqPgUEwA+XSg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cMYLfVHK;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BBJqyU5j;
+	arc=none smtp.remote-ip=192.198.163.11
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95363606A32D;
-	Thu, 12 Nov 2026 16:11:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95363606A32D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8686E606A32A;
+	Thu, 12 Nov 2026 16:13:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8686E606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cMYLfVHK
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BBJqyU5j
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794499871; x=1826035871;
+  t=1794500039; x=1826036039;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=KBEV1+wJUVkGmgDR8fswFDchKVGVUIlgzz8KWBVWUnM=;
-  b=cMYLfVHK9WPN2A+BuwPuIZKO6WwHhurVDDdEiHrw6NceT6VWuosz/oLH
-   WX/peTt7AFl59skSRGKT/4FuSdY42SiUbhIAhX67LFS+GGNpsPC6vVKku
-   9BaY2o2xDkJfGi8IwsXik4dM2Iv9zpiyN3BHcKDdjN0+RmnuOWvaDdBDD
-   vnATdeu8wd1mjyzyEFWjPXUbPAMYlwFHlHr9DMtig779lqyOeNE3ye9zt
-   QiQLTa+yJXB7oIIVFQS+Q/9YuJFN7v0tbXIG0uxK4CsI2a8Ko/vErAmm1
-   M9biIJ4b1qLaOjVUZham12Nr5MjiYB97j1klDhfyyoKNROO03iKTiEpkk
-   w==;
-X-CSE-ConnectionGUID: yuxLcX2kSRydLlOW/T10uQ==
-X-CSE-MsgGUID: 8zmbViNHQUuqvbVeOkRlxg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11964"; a="3389985"
+  bh=P3eY0n6vlSPXz45ttiFWukVb0XOFJGYuxSNON9DZg6w=;
+  b=BBJqyU5jLzrqm3uwjT8AVddpzs6xLM8oFHeV/3JM0OWnv6lEME/tTfZJ
+   Xn6400iOKCX88MED6MoPk3FYQ0zdrkDZGxsUjNtG0e25R54yH/O3a2E46
+   GAuAs6bHW0R+2xXOi/St9t3Eg+qiWIj2HoA6rtdryL2OB1PQdRIaez/hv
+   a8tosv6hDYtU52S3dIqto5b2vh0xk/EEyegzTx8CZxXbJMaf1V2CNqTQl
+   AkQ/o2rhOJHqOH+F7ic/RRiYUpyfT9VjlG4vX9bDxAnkCZM/h+wu8v9nM
+   iBzBihdV3WW0Qa/rv1Uwg4lhB/3piVvncgup9e/HEUSwjKG+CWQjA+Dnq
+   A==;
+X-CSE-ConnectionGUID: enQjiMIpRJWEae4mN7CqDQ==
+X-CSE-MsgGUID: o7d23q4JThKh0PPbaBJNUg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11964"; a="3210554"
 X-IronPort-AV: E=Sophos;i="6.27,210,1787036400"; 
-   d="scan'208";a="3389985"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:11:10 -0800
-X-CSE-ConnectionGUID: Ar7wg5q8RPSLm90mcDK6lQ==
-X-CSE-MsgGUID: BqOUjxi1T12vvGwXG4HdSg==
+   d="scan'208";a="3210554"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:13:58 -0800
+X-CSE-ConnectionGUID: YpTlbcAPQJGxf1iKlOYuBw==
+X-CSE-MsgGUID: 7vG+U6ikQHSqNIVXrFRQLg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,210,1787036400"; 
-   d="scan'208";a="8860902"
+   d="scan'208";a="8519157"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.6])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:11:04 -0800
-Date: Thu, 12 Nov 2026 18:11:02 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:13:51 -0800
+Date: Thu, 12 Nov 2026 18:13:49 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: James Hilliard <james.hilliard1@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -89,11 +89,11 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
 	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v12 2/8] serial: serialize asynchronous write wakeups
- with the port lock
-Message-ID: <avXlFo0UJRGwWT2B@ashevche-desk.local>
+Subject: Re: [PATCH v12 5/8] serial: core: allow drivers to reserve flushed
+ transmit storage
+Message-ID: <avXlve7ROG9jb6AH@ashevche-desk.local>
 References: <20261111-submit-serial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com>
- <20261111-submit-serial-8250-dma-cancel-v1-v12-2-9e3456bc2555@gmail.com>
+ <20261111-submit-serial-8250-dma-cancel-v1-v12-5-9e3456bc2555@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -105,87 +105,80 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261111-submit-serial-8250-dma-cancel-v1-v12-2-9e3456bc2555@gmail.com>
+In-Reply-To: <20261111-submit-serial-8250-dma-cancel-v1-v12-5-9e3456bc2555@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Nov 11, 2026 at 03:16:27PM -0700, James Hilliard wrote:
-> uart_write_wakeup() expects the UART port lock to be held. Several worker,
-> DMA completion and interrupt paths call it without that lock, including
-> indirect calls from uart_handle_cts_change() and the transmit helpers.
+On Wed, Nov 11, 2026 at 03:16:30PM -0700, James Hilliard wrote:
+> uart_flush_buffer() resets the transmit FIFO before calling the driver's
+> flush callback. An asynchronous DMA transfer can still access that storage
+> after the callback returns, while a new write can immediately reuse it.
 > 
-> Take the port lock around these notifications or their transmit helper.
-> Keep sleeping SPI and regmap accesses outside the locked region, and keep
-> the FSL LPUART completion lock held through its wakeup. Acquire the port
-> lock after releasing private channel locks to preserve the ordering used
-> by UART callbacks. In the MUX timer, publish available FIFO space under
-> the port lock and keep the hardware FIFO-drain wait outside it.
+> Add uart_xmit_block() and uart_xmit_unblock() so a driver can reserve the
+> flushed storage until its transfer and completion callbacks have retired.
+> Serialize the reservation with FIFO producers using the port lock.
 > 
-> Use plain port locking in hard-IRQ handlers and in helpers whose callers
-> already mask interrupts. Atmel status handling is also called during
-> resume, where lock_suspended is acquired with interrupts disabled; JSM
-> interrupt processing holds its IRQ-saving board lock. Keep IRQ-saving
-> locking in workers, tasklets and other mixed-context paths.
+> While the storage is reserved, write_room() reports no space and write()
+> and put_char() accept no data. Defer write-ready notifications until the
+> reservation is released, preserving one-shot TTY wakeups. Keep the flush's
+> write-ready notification under the port lock so it cannot race another
+> reservation.
 > 
-> Take the port lock after requesting the ST ASC interrupt and hold it
-> through startup's transmit servicing and RX interrupt enable. The transmit
-> helper can notify writers even when the FIFO is empty, and serial core
-> calls startup without holding the port spinlock.
+> Wake tty->write_wait after flushing even when writes remain blocked.
+> tty_wait_until_sent() waits for the logical FIFO to empty, independently
+> of whether its storage can be reused. Notify these drain waiters without
+> invoking the line discipline's write_wakeup() callback, so a reservation
+> does not prevent a completed logical flush from waking a drain waiter or
+> consume a one-shot write-ready notification prematurely.
 > 
-> Use IRQ-safe locking in the Atmel RX and TX tasklets and SB1250 termios
-> path, since their interrupt handlers now acquire the same port lock.
-> Preserve the caller's interrupt state when releasing those locks.
+> Suppress ordinary TX starts while the FIFO storage is blocked. Preserve
+> high-priority flow-control characters, which use separate storage.
+> Releasing the reservation wakes writers through the existing TTY wakeup
+> path. This preserves immediate logical flushing while applying write
+> backpressure until the storage is reusable.
 > 
-> On SB1250, lock modem-state updates after reading and filtering the change
-> status, and wake modem-status waiters after unlocking. Take the TX lock
-> inside its service routine so RX-only interrupts need no acquisition.
-> Keep that lock across x_char handling, FIFO consumption and the decision
-> to mask TX interrupts: a writer must not enqueue data and enable TX between
-> the empty-FIFO check and the interrupt-mask write. Each TX invocation sends
-> at most one character.
+> Track port readiness separately from DMA ownership. Retirement releases the
+> reservation even during startup or shutdown, while writes and wakeups stay
+> gated until successful startup or resume. Reopening or restarting a port
+> wakes deferred writers with either a new or retained FIFO. Restart queued
+> output when reusing a FIFO after suspension. Keep its write-ready
+> notification pending until the retained output drains below the normal
+> wakeup threshold. Share that threshold check with generic 8250 and OMAP
+> TX DMA completion through uart_write_wakeup_if_needed().
 > 
-> Serialize CLPS711x TX servicing and its interrupt-enable state with the
-> port lock. Disable TX interrupts without waiting in stop_tx(), since a
-> threaded handler may need that same lock. Have an already queued handler
-> leave stopped output untouched, and drain it outside the lock during
-> shutdown before the transmit FIFO can be released.
+> Publish resume readiness under the same port lock as the TX restart,
+> without clearing any reservation. A concurrent flush can then reserve a
+> new transfer without resume releasing its storage prematurely.
 > 
-> SCCNXP handles interrupts under a controller lock which its UART callbacks
-> acquire with the port lock already held. Collect the ports needing wakeups
-> in an unsigned long bitmap while servicing the controller, then release
-> that lock before visiting the set bits, taking each port lock and
-> rechecking the wakeup threshold. Removal drains the IRQ or timer before
-> unregistering the ports.
-> 
-> This serializes write notifications with port-locked serial-core state
-> changes, allowing readiness and transmit-storage reservations to gate the
-> notification without a check-versus-shutdown race.
-> 
-> Cover DZ TX servicing and JSM Classic modem notifications as well. On
-> DECstation ZS, acquire the port lock before the SCC lock and notify writers
-> after releasing the SCC lock. Defer normal TX restart after console output
-> to a worker, since console output can already run under the port lock.
-> Check transmitter readiness before consuming another character and drain
-> the restart worker during shutdown and removal. Release Lantiq's hardware
-> lock through the transmit helper's completion hook before notifying the
-> line discipline.
+> Assert the port-lock requirement at uart_write_wakeup(), alongside the
+> reservation helpers, so callers cannot inspect readiness or release a
+> one-shot notification concurrently with a reservation change.
 
 ...
 
-> static inline void dz_transmit_chars(struct dz_mux *mux)
+>  void uart_write_wakeup(struct uart_port *port);
 
->  	status = dz_in(dport, DZ_CSR);
->  	dport = &mux->dport[LINE(status)];
+> +void uart_xmit_block(struct uart_port *port);
+> +void uart_xmit_unblock(struct uart_port *port);
 
-+ blank line to make guard()() visible at a glance.
+These are not used in the below helper, so, move them after it, with that
+the uart_xmit_*() and uart_write_*() will be grouped.
 
-(no need to resend just for this, though)
-
-> +	guard(uart_port_lock)(&dport->port);
-> +
->  	tport = &dport->port.state->port;
->  
->  	if (dport->port.x_char) {		/* XON/XOFF chars */
+> +/**
+> + * uart_write_wakeup_if_needed - notify writers when queued output is low
+> + * @port: port to be processed
+> + *
+> + * Keep one-shot write-wakeup notifications pending until fewer than
+> + * %WAKEUP_CHARS remain in the transmit FIFO. This also applies to output
+> + * retained across suspend and resume.
+> + *
+> + * Context: @port->lock held.
+> + */
+> +static inline void uart_write_wakeup_if_needed(struct uart_port *port)
+> +{
+> +	if (kfifo_len(&port->state->port.xmit_fifo) < WAKEUP_CHARS)
+> +		uart_write_wakeup(port);
+> +}
 
 -- 
 With Best Regards,
