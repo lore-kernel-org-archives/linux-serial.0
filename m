@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794458507;
-	b=Wgt9oTl0Kml7oyPquTPMrLk5AfOn/KvHxAfWjVEgo/NaT5YAcztThmJzzTLZiGTJiyiD
-	 O9s8BxNRjxxnmMlQUAjohv3G9ZJBR0RXe0MLZXTwOhN42v9FvY4pfi+s8covD2FwveDdc
-	 hpSQOoHZRfmHXDGVMmpzT5Z44sYedfZXyJySD2wpV/+FMbSALEb8bw/lDlflFzQkdaqlI
-	 4NdziDmkMhee60NbB08eyIZjlaRrcGkXMRQh8/c1pC4en2lKYRaZoQawIHgxes+1XrgGo
-	 kYkq9HDFzsRERhn7P3mLULV6E/RGX+YNRFOY0OKKhAShOlY4ML8LPfpSXV2yCUFvbmg==
+	t=1794459163;
+	b=iXz+fBluk6Aizox2sW1+5j+gOAYO/ZJNrnglf4HIsSnCSGflszeDfhd/GxJTEoYiqoWP
+	 IOdkZYTYKn4veNwSF2Q0UjxlEQ4aLAMxAu4+6oRxIzGz6OJm9DOc18LCqVW/ir1KssdVF
+	 nFdb+p+HfTminNo/b3keP3F2CjJ1bOjTEjdbzUzEmOI8nyGMYdWCyoI1l2xUEpufc7qRp
+	 0Y5tyAOCB6JgJ6DXCnuMGVFP8d4qSocNAwvC1c6u9F+imw004l065HebYH5kVziADLwr1
+	 EGbDrLD0mxWZBAkomOVZt4qJ364EUECmzYyqWE7VhhRnUIjo2WgZEIolaulNzY3nvBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794458507;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794459163;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=YqyV26qgPWN9fkM56uLf4+0K80gX4I292zWG2QLfVwU=;
-	b=EDpUJs0JK1LJo6Pj9RjYfHgVUfwhprINzxS9BHNVbvv3rrATfj1bm0h+F/Y8e1g0/AsM
-	 hHLprKzqlEqjnhuhTD9g6E05hbFesDpgz1pbMYeVo7yZRnFP5znB9ZXYQAXPCOH7zLaoH
-	 GfWnqmD+/+JnBcMRL22io9+vwzj6AX3q5DTYLhLX2rbfCIL82EW0+bP6r6aHrjzhzQM92
-	 aNBb2tNjphigm2qvet3Uxm6Q9e52ZExEJR328O50il3ztmof0G521FWDuuf1DEy4LiKuR
-	 5flWpS55V3HZj7AX9A8kJZCZfnL3rmZAsCSYfIUzDl6wMIgx2G8jBRskRtc/MMzY3MQ==
+	bh=sPXftoChLni9IHCsaEj3W8Fustwsmyr3s5NXA4C88Sc=;
+	b=aW3OlUBfEb58k1C6VXlJm/Ohb7tb2KA2dwTEZNtnUrrJ5axsg1fqPFXskxr+qeH3oUuN
+	 fiZUctCBEjYk6djj4uwGBXrLyw9UyK6cKaKaem626w6acAUiuFpLrv/AVPGPnpZvcNptx
+	 DuwsDYasRyA2R8CsiCog9rSiio2+OTxNTf1UczZko5zQUI955L+4TCtwQ1WcMRd8Gia2j
+	 tSXzyT5M6okz3ZZW7jawTGJPCrEJVmRtasZUbGThLBl/bCLsffpJo5oc/AVHtlCJQzIHD
+	 Q1yU5gIGAMQKFpwKtu4nnrYqRfnVVvBV5Da27nvvL1+r7iS3AWgtI2SUGlX6qolOIuA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IU9Tz6DW;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="ViLw/gdF";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB63606A32A
-	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 04:41:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55DFA606A31C
+	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 04:52:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IU9Tz6DW
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D13F1F00A05;
-	Thu, 12 Nov 2026 04:41:46 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ViLw/gdF
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDB361F00A05;
+	Thu, 12 Nov 2026 04:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794458507;
-	bh=YqyV26qgPWN9fkM56uLf4+0K80gX4I292zWG2QLfVwU=;
+	s=k20260515; t=1794459162;
+	bh=sPXftoChLni9IHCsaEj3W8Fustwsmyr3s5NXA4C88Sc=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=IU9Tz6DWA/ti1Xs98IXt+Ac0Xllg3MEd7GuzW69PVADayoj7HBmV1sMmsO8g8oBCK
-	 m0pj1L3W0dhP+z3tMWYJ9MeoGUgvx4XzOVCOfdKrqHd9wIS1mOaghI+b994nT4oLvK
-	 4uUUyaznJS+5H135jsZirRx+wt10Bg3dxu4cWEDosCW8qTIna2KrPVpRBD7NzNXpY3
-	 J1mZW/OHQvBbTsIEf1Ntcy1fqtPe3mLSCwLdVtQy1SKGphQocoFAZLKVOb7cfCdDYq
-	 rw4ZLJmp2RAQAi50vxeWbBLwwVWrF1BkrmrlaRv8+S0kr/i3YwXU4ZVPzcPQQfCu/s
-	 fW6IGL8hly9Nw==
-Message-ID: <sashiko-outbox-210378@kernel.org>
+	b=ViLw/gdFWvgN6X9CwwNgjxsugfYJ2eyEttL0B/0L9cAIXzxYVs8SqISlVrrTYluGU
+	 z5NUO1GW229gQGRTK/IDZ4XI6tWS58S5sSSR7nNOKK6trGehInUcE+il3SMCe8RfCW
+	 JwkygBqgHvPfwrM2iXt5OqWSXUzkFnNNXtuXIitYdv/lkPR46TN5uwxITMpPulPGWg
+	 xCY0suKsMNXDnE880EUqu+DB/Ln9PZ+ytkWsP0/gMWVJl/PQQRm67AwrLOJFvb5tyD
+	 SuNfEX0ZwIKpdtL27o/7HRUEwprh9ACehagFMj8nY1XftHiX6cxJttyt1KbmfXiAck
+	 OjL6FhPZo4uOQ==
+Message-ID: <sashiko-outbox-210398@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/2] serial: core: do not touch the port after
- dropping the last reference
+Subject: Re: [PATCH v2 1/2] serial: core: do not hold the port mutex while
+ waiting for references
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261112-serial-core-remove-deadlock-v2-2-d3ee4ccec37a@vaisala.com>
+In-Reply-To: <20261112-serial-core-remove-deadlock-v2-1-d3ee4ccec37a@vaisala.com>
 References: <20261112-serial-core-remove-deadlock-v2-0-d3ee4ccec37a@vaisala.com>
- <20261112-serial-core-remove-deadlock-v2-2-d3ee4ccec37a@vaisala.com>
+ <20261112-serial-core-remove-deadlock-v2-1-d3ee4ccec37a@vaisala.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 12 Nov 2026 04:41:44 +0000
+Date: Thu, 12 Nov 2026 04:52:42 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,31 +61,39 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> uart_port_deref() decrements the reference count through uport->state
-> and then reads uport->state again for the wake_up(). The last
-> decrement is what lets serial_core_remove_one_port() return, and the
-> driver may free its struct uart_port right after that. A reference
-> holder that drops the last reference can therefore read the freed port
-> on its way to the wake_up().
+> serial_core_remove_one_port() takes the port mutex and then waits for
+> the uart_port_ref() holders to drop their references. Since commit
+> 8ca59f7baee7 ("serial: fix ioctl hangup race") uart_wait_until_sent()
+> takes the port mutex on every poll iteration to check for the hangup
+> before it touches the hardware, while holding its reference for the
+> whole wait. A tcdrain() in flight when the port is removed therefore
+> deadlocks: the removal holds the mutex and waits for the reference,
+> the drain holds the reference and waits for the mutex. Both tasks sit
+> uninterruptible, and the port is unusable until a reboot.
 >=20
-> Read the state pointer once, before the decrement. The uart_state
-> belongs to the uart_driver and lives until uart_unregister_driver(),
-> so the wake_up() target outlives the port. Drivers that unregister the
-> uart_driver in the same remove() are a separate matter and not changed
-> here.
+> Reproduced by unbinding a UART driver while a process drains a few
+> kilobytes at 300 baud: the unbind blocks in wait_event() under the
+> mutex, the drain in mutex_lock(), and reading the driver's proc file
+> blocks on the same mutex.
 >=20
-> Found by review of the removal path while fixing the deadlock between
-> port removal and a blocked tcdrain(); not reproduced.
+> Drop the mutex around the decrement and the wait. The decrement is an
+> atomic paired with uart_port_ref() and uart_port_deref(), which never
+> take the mutex; the clearing of the port pointer stays under it, where
+> uart_port_check() readers expect it. Between the hangup and this wait
+> the removal already runs without the mutex, so a mutex holder seeing
+> the released port is not a new state.
+> uart_wait_modem_status() takes a reference and then the mutex in the
+> same way, with a smaller window, and is covered by the same change.
 >=20
-> Fixes: 9ed19428a51d ("serial: core: Prevent unsafe uart port access, part=
- 2")
-> Cc: stable@vger.kernel.org
+> Fixes: 8ca59f7baee7 ("serial: fix ioctl hangup race")
+> Cc: <stable@vger.kernel.org>
 > Reviewed-by: Johan Hovold <johan@kernel.org>
+> Tested-by: Johan Hovold <johan@kernel.org>
 > Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261112-serial-cor=
-e-remove-deadlock-v2-0-d3ee4ccec37a@vaisala.com?part=3D2
+e-remove-deadlock-v2-0-d3ee4ccec37a@vaisala.com?part=3D1
 
