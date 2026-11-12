@@ -1,89 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794497654;
-	b=VKEiNhV8pwg/TY4AlzM1avp8jGrguFZeXZ/4dL+rhGtVm54CQREk0vA1fTTq2XyHaGun
-	 Nsa0m7jjHRKXLQzdM+ikRCiYvd9wI1SFEjt8JXPcKKYyI8pJ8qvwB+UA9N3Qm0T+fMZom
-	 dVKvNiq4a+r5gBWlae2wPoI5IphXXORs6m8p+x4IXK7zgJW55a68Z0IPrnd6Z/lxvKQyw
-	 Gp9joKe9n9CJNY14mtX6GDSkIaaVec4RJ1anixCc7Y0hvzKG5WsAJFMdgz9HlAo/odBTP
-	 giCh4mri+BsobQqXR4tFq1u+4RAMCtYRqOe2WAyoF8nBx5sQe74t03Vk87UpDrRKRtg==
+	t=1794499872;
+	b=jnGLTih06H9FaHhMHksbutEwA1VmfRS9dThPU+YaR7iqWbKk1UevxuaW+pqN+ZV4RxKY
+	 LCQDQzc4ue2LuWhLoGTbRKDYa/AIaiWr6niymOYgRF6QhuzZFCiCGgGpzidoHBwB/4EwR
+	 KDUOuUYNMr778zdMMQ+XlGT+JMyhr66Z+vDL5MvVb9jCVl41FyKkpQzk1e1ZK7ygYPGBI
+	 7sCYYBvsqlEfIyJbqGgLpAGFWDfcS1NIdJ1/dHGT8ZZja0wYn4CCUDT7JZfEvePH96Fwi
+	 X58lA4C7FQAUX3w6qRYT7UWwuz5QYSwDozFfdi1MpTUmAtGE+7MpucEcThXw0dPAjBA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794497654;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key;
-	bh=Z786jydQGlTUZe6eFhOSbcyh7Kt9O55C4cUyVpre+Gg=;
-	b=2sfOc3kDrqV1ZVOhY8FtlNrxn916NGDQF9hVGeLvXir0HTzDBnpX8XrFfh14zmjqLkc3
-	 lTfEtm35g8leJLWyk/fA1Txd9LAUqpWYPJ6UPu3tUXQQ7x8mEGq0ALxb+9jz91eK2ldqO
-	 fICH6R7h035JTXwRAnpM/OTR+WuYPRrtHIhInd9tgWZA9W1QOkPCC4D1XWQe1P7A8FjLB
-	 cjbibdblvnHgYyolpn+yrG74DLgvzhXDxcTjlqhUIqfq0fuS4LxEd7grvThpUVndnGhfp
-	 SVghjx1yOWVGwoPCggHs42fWDZjpFH1N4iSWFZMdOZESKzBfCVOSAA8MOMwgAuOlMIw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794499872;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=wYw3PsXp2ITZe1gp5kAYVuoE8XjZzVKbPqIuhL3V96o=;
+	b=qExcIAb2tQ0s0b4dDpNrUbW7uVqVcULDxyIHEgrjWP6JeoTlgqxdWj3J7NbWBNP3ay+k
+	 TQWJey+QLXlmBzPwi0bGZkIWiXyAjiFWwuqzNgXHKByX8Aq1MMHw5pPYwdCqasBeLY54P
+	 YHycvm+hpyNh/fqoWYHgQUOYEHdUw+7mwHDcvsQfMHD51d/3M8ZosOxqIhV6lqOLaBLqa
+	 1M7WhBuDZTHEKJCJD3U2aWrfXBQyQv+G0h7GI1g/7UzyYiYeCocxNnc6R7yb07IeptqmT
+	 vPNYtjOl+GY7tRSe/decdhlbEF3OVwoT9s2Zj1jK5mOsO8iK/NjgKcmQb0f9ITTDQiw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=sxNjbwmZ;
-	arc=none smtp.remote-ip=209.85.128.44
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cMYLfVHK;
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD64606A332
-	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 15:34:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FD64606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95363606A32D;
+	Thu, 12 Nov 2026 16:11:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95363606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=sxNjbwmZ
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a3517554f7so46741425e9.2
-        for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 07:34:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794497653; x=1795102453; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Z786jydQGlTUZe6eFhOSbcyh7Kt9O55C4cUyVpre+Gg=;
-        b=sxNjbwmZPaQyz+cBwcCUG/xCJj8iBZiKeb3p2u1UTSsQbYc29isVuWPu7oefWSAQkU
-         MJgvbvhqxRkt6r8tr66j5UudouwUcD03S19gbhncBpgZa5jJlUhwt9Et8N1Oq3oKTtNG
-         6YHmPaftP9DgVcPd+6qLm/CxGS7XROmekVuWR8gEfIgFiLgHmQq42UaHUHaaPBYR1fiP
-         4+Ws/JD5tza3DW3iY88EheqTzQeH0voyeijOs2Q+xBt+aNwGg0aUonjtAGnafFNKn3Bb
-         nkAYQormY0SfWsBFx7xADXnjZjahbU/7tW+DhODgmzXbG113IEJ63HlN/nw2iMgegXLz
-         dOIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794497653; x=1795102453;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Z786jydQGlTUZe6eFhOSbcyh7Kt9O55C4cUyVpre+Gg=;
-        b=rhoffMKxRiyv5EmKDUJIFBe48WETaqrJNDzzfXL8gt+mD4sLZTK2DqHPo1R0p9+B/P
-         TJ4RDfBi7D9tiyiptLFuuGJN1gmy/EU9f8nqErtRmXSqbGKYEMifEnkJi0EuCvd1e58r
-         QJsvYpffNXVXjKgRJuLAVdzr1vyCFqo9NoQMIuKZanAXhLAaHaRi5L/NAHqvuALlwr6c
-         FMGTYB8BAmcizeeBoiHcSXXLXXYebLDoFN//vKy5Vhsm+7AC1waOCc2wM3NC6xqneFNx
-         qNfI/RAzDwBhxhjWjC7fzSsjtUXKsq9kD3f//JzTDEeO9hnKKAU+pDHkKx34/rdtlYx2
-         Hk/Q==
-X-Forwarded-Encrypted: i=1; AL+hErEmTjUhr0ZqbsqIPukhG9cgSdrMfQpRuDEzbTWcI4pj4Ss7cvT43P9IG+x0YGN7yIbfGQ1tXXrXplG/apM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8AwDWQp4StnZ5MEiUBW5xeTjJvMEQN/wd3oStRTEI8sHeL8SLz
-	ytJHvCkBAOiE0+zDL5ru2lr9uG64V56jnU+sfOQgPVCJBslOWXrP/Yvr
-X-Gm-Gg: AYBFou3NX0hp3LCfHN03OW/W90ReAVtXfO5vAxG8ZqvVHjQH0LIZG0eyRPs9PDXLdmF
-	E/GTXBRa6PP8py03+IAPQ8vvxEAWUeIUSIR9lQjx5f8p3Y1onnHnULs+ncpmZJt+ojxS589FnrU
-	+deWFw9rWl3mZv7ygz3r8icKldUJZMRIbsjK+rafBzhkXI5Po8eaTQMxS8GxtmMiKV56faHk6bT
-	s/CzGbpDU/M6b5VWKtPk/CLTkDSFM+LFx/5l/i3uLC5uTfXvtTLZbBo1yDm/etm6T09Z3bSLYax
-	Gdi+ChSjXW2sDf3uEGsBnHoSPjyU7uSfXEUBAbSP5CCDM4nmlJog0iySFh/7qc59G0rL4oT6klN
-	HXR1ZbapeVG/UWBhUIUAil8il9Ls+aihl0NV7qicQ4jMu+baqNd/bTXfpI0K03oJE0RByO/q8R7
-	MvjslzwGBe2BVRZhhYEpWCRUlnWg25YtCMSl9tV7x6RYjt5bKMThyVk59TX/AHT6OR+O3Zj6aap
-	YVY72usFftgPw1H/3F21ZtG3FYWxPJx30/D0zv6WIvAraMJml2ArviaJ8w+xcds+8JjjjFMArVj
-	ZE+bqbx54D/hAAqHmiQZK1z/v65bbsqQ0Kl+YAtlxhLxbF1LbLJxdCuiHoipswxRp7KtfzKsb8P
-	5a5OdtA==
-X-Received: by 2002:a05:600c:a00d:b0:4a2:1a:a129 with SMTP id 5b1f17b1804b1-4ba093b7ffcmr114576005e9.35.1794497652296;
-        Thu, 12 Nov 2026 07:34:12 -0800 (PST)
-Received: from alchark-surface.localdomain (bba-86-98-194-229.alshamil.net.ae. [86.98.194.229])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e2593e4sm87105855e9.5.2026.11.12.07.34.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2026 07:34:09 -0800 (PST)
-From: Alexey Charkov <alchark@gmail.com>
-Date: Thu, 12 Nov 2026 19:33:14 +0400
-Subject: [PATCH v2 6/6] serial: vt8500: Handle uart_add_one_port() failure
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cMYLfVHK
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794499871; x=1826035871;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KBEV1+wJUVkGmgDR8fswFDchKVGVUIlgzz8KWBVWUnM=;
+  b=cMYLfVHK9WPN2A+BuwPuIZKO6WwHhurVDDdEiHrw6NceT6VWuosz/oLH
+   WX/peTt7AFl59skSRGKT/4FuSdY42SiUbhIAhX67LFS+GGNpsPC6vVKku
+   9BaY2o2xDkJfGi8IwsXik4dM2Iv9zpiyN3BHcKDdjN0+RmnuOWvaDdBDD
+   vnATdeu8wd1mjyzyEFWjPXUbPAMYlwFHlHr9DMtig779lqyOeNE3ye9zt
+   QiQLTa+yJXB7oIIVFQS+Q/9YuJFN7v0tbXIG0uxK4CsI2a8Ko/vErAmm1
+   M9biIJ4b1qLaOjVUZham12Nr5MjiYB97j1klDhfyyoKNROO03iKTiEpkk
+   w==;
+X-CSE-ConnectionGUID: yuxLcX2kSRydLlOW/T10uQ==
+X-CSE-MsgGUID: 8zmbViNHQUuqvbVeOkRlxg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11964"; a="3389985"
+X-IronPort-AV: E=Sophos;i="6.27,210,1787036400"; 
+   d="scan'208";a="3389985"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:11:10 -0800
+X-CSE-ConnectionGUID: Ar7wg5q8RPSLm90mcDK6lQ==
+X-CSE-MsgGUID: BqOUjxi1T12vvGwXG4HdSg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,210,1787036400"; 
+   d="scan'208";a="8860902"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.6])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:11:04 -0800
+Date: Thu, 12 Nov 2026 18:11:02 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Raul E Rangel <rrangel@chromium.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Timur Tabi <timur@kernel.org>,
+	Peter Ujfalusi <peter.ujfalusi@ti.com>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v12 2/8] serial: serialize asynchronous write wakeups
+ with the port lock
+Message-ID: <avXlFo0UJRGwWT2B@ashevche-desk.local>
+References: <20261111-submit-serial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com>
+ <20261111-submit-serial-8250-dma-cancel-v1-v12-2-9e3456bc2555@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -93,63 +103,92 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261112-vt8500-serial-cleanup-v2-6-36b258e0c0dd@gmail.com>
-References: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
-In-Reply-To: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
-To: Alexey Charkov <alchark@gmail.com>, 
- Krzysztof Kozlowski <krzk@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Tony Prisk <linux@prisktech.co.nz>, 
- Alan Cox <alan@linux.intel.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, 
- Wentao Liang <vulab@iscas.ac.cn>, Sashiko <sashiko-bot@kernel.org>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1364; i=alchark@gmail.com;
- h=from:subject:message-id; bh=/WGEv9BtvlhkUu2E+CsLY3dFd8QUnBePGzr3E+nbquM=;
- b=owGbwMvMwCW2adGNfoHIK0sZT6slMWR9veP17z5jzOYvTpkJb0xrDz56ee/dzoAVgo4cWs3TJ
- 3HoKd8Q6ZjIwiDGxWAppsgy99sS26lGfLN2eXh8hZnDygQyRFqkgQEIWBj4chPzSo10jPRMtQ31
- DI10jHWMGLg4BWCqNzExMvQUmYR4zN+dtzf+5ffcF2lcUex5zfdiSzK+CVkfYXk35Rojw+wew89
- mbfOOKyTG2Iaask549vvYmi3Hlz3xnd/WfyRhAj8A
-X-Developer-Key: i=alchark@gmail.com; a=openpgp;
- fpr=9DF6A43D95320E9ABA4848F5B2A2D88F1059D4A5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261111-submit-serial-8250-dma-cancel-v1-v12-2-9e3456bc2555@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Return the error from uart_add_one_port() instead of reporting a bound
-device for a port that never registered, which would keep its clock
-running for nothing. Let devres release the clock and the remaining
-resources on that path.
+On Wed, Nov 11, 2026 at 03:16:27PM -0700, James Hilliard wrote:
+> uart_write_wakeup() expects the UART port lock to be held. Several worker,
+> DMA completion and interrupt paths call it without that lock, including
+> indirect calls from uart_handle_cts_change() and the transmit helpers.
+> 
+> Take the port lock around these notifications or their transmit helper.
+> Keep sleeping SPI and regmap accesses outside the locked region, and keep
+> the FSL LPUART completion lock held through its wakeup. Acquire the port
+> lock after releasing private channel locks to preserve the ordering used
+> by UART callbacks. In the MUX timer, publish available FIFO space under
+> the port lock and keep the hardware FIFO-drain wait outside it.
+> 
+> Use plain port locking in hard-IRQ handlers and in helpers whose callers
+> already mask interrupts. Atmel status handling is also called during
+> resume, where lock_suspended is acquired with interrupts disabled; JSM
+> interrupt processing holds its IRQ-saving board lock. Keep IRQ-saving
+> locking in workers, tasklets and other mixed-context paths.
+> 
+> Take the port lock after requesting the ST ASC interrupt and hold it
+> through startup's transmit servicing and RX interrupt enable. The transmit
+> helper can notify writers even when the FIFO is empty, and serial core
+> calls startup without holding the port spinlock.
+> 
+> Use IRQ-safe locking in the Atmel RX and TX tasklets and SB1250 termios
+> path, since their interrupt handlers now acquire the same port lock.
+> Preserve the caller's interrupt state when releasing those locks.
+> 
+> On SB1250, lock modem-state updates after reading and filtering the change
+> status, and wake modem-status waiters after unlocking. Take the TX lock
+> inside its service routine so RX-only interrupts need no acquisition.
+> Keep that lock across x_char handling, FIFO consumption and the decision
+> to mask TX interrupts: a writer must not enqueue data and enable TX between
+> the empty-FIFO check and the interrupt-mask write. Each TX invocation sends
+> at most one character.
+> 
+> Serialize CLPS711x TX servicing and its interrupt-enable state with the
+> port lock. Disable TX interrupts without waiting in stop_tx(), since a
+> threaded handler may need that same lock. Have an already queued handler
+> leave stopped output untouched, and drain it outside the lock during
+> shutdown before the transmit FIFO can be released.
+> 
+> SCCNXP handles interrupts under a controller lock which its UART callbacks
+> acquire with the port lock already held. Collect the ports needing wakeups
+> in an unsigned long bitmap while servicing the controller, then release
+> that lock before visiting the set bits, taking each port lock and
+> rechecking the wakeup threshold. Removal drains the IRQ or timer before
+> unregistering the ports.
+> 
+> This serializes write notifications with port-locked serial-core state
+> changes, allowing readiness and transmit-storage reservations to gate the
+> notification without a check-versus-shutdown race.
+> 
+> Cover DZ TX servicing and JSM Classic modem notifications as well. On
+> DECstation ZS, acquire the port lock before the SCC lock and notify writers
+> after releasing the SCC lock. Defer normal TX restart after console output
+> to a worker, since console output can already run under the port lock.
+> Check transmitter readiness before consuming another character and drain
+> the restart worker during shutdown and removal. Release Lantiq's hardware
+> lock through the transmit helper's completion hook before notifying the
+> line discipline.
 
-Set the driver data before adding the port, so that the probe can end
-on the registration call.
+...
 
-Fixes: 304e12665a4a ("serial: Add support for UART on VIA VT8500 and compatibles")
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/bug/linux-ce64cdae-9faa-4109-b7da-29b8a8c99e76
-Signed-off-by: Alexey Charkov <alchark@gmail.com>
----
- drivers/tty/serial/vt8500_serial.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> static inline void dz_transmit_chars(struct dz_mux *mux)
 
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index cd5188282f64..906b8dd2f4ff 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -638,11 +638,9 @@ static int vt8500_serial_probe(struct platform_device *pdev)
- 	snprintf(vt8500_port->name, sizeof(vt8500_port->name),
- 		 "VT8500 UART%d", pdev->id);
- 
--	uart_add_one_port(&vt8500_uart_driver, &vt8500_port->uart);
--
- 	platform_set_drvdata(pdev, vt8500_port);
- 
--	return 0;
-+	return uart_add_one_port(&vt8500_uart_driver, &vt8500_port->uart);
- }
- 
- static struct platform_driver vt8500_platform_driver = {
+>  	status = dz_in(dport, DZ_CSR);
+>  	dport = &mux->dport[LINE(status)];
+
++ blank line to make guard()() visible at a glance.
+
+(no need to resend just for this, though)
+
+> +	guard(uart_port_lock)(&dport->port);
+> +
+>  	tport = &dport->port.state->port;
+>  
+>  	if (dport->port.x_char) {		/* XON/XOFF chars */
 
 -- 
-2.56.0
+With Best Regards,
+Andy Shevchenko
+
 
