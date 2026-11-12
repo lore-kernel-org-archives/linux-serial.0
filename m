@@ -1,56 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794448074;
-	b=V0OhKOw0OqgOc/3O7t/28nn5KXx9nOE7O8FflQR3/I5t3l51E8SCh24mJr2Wk8K3tQV+
-	 aDZlbyHfWDGbX2JoKMLT57SBnrVn9W9cHwWwWs+6PBQ4v8eqWkjm23Tz7mUJgYO/MlnRk
-	 /Kej5v81rZv/EXjrqcagwnwvqjnIqo4mqHwjg2+YM78NMbUofNapLXVEnwR8Il/5pbJec
-	 CGaRuUInaXfGc02KoZPStJ6ySTR1pTT2b1d9BOWJdpvWr7mSeY4IrdoWCzqpDprxdlUG+
-	 YU4PgAc7PmP/AUuh/gq5DLMgl1++JRdYhwzVQvCNGbzxlv4ITQXYZOdxaY1ZL4PygdA==
+	t=1794448212;
+	b=Cxp/A7cjdQSrkwigtsQOl13wt3FmCT4Xti4zuT6eQnc6+JekuE2orcUphZsvDmE6Ap0n
+	 C6VujZJx5kZ4BseoxW3X6x0ht4xdRgSm2JQ6CG7hryDGMBF5dFZseGB561wquhEpobwHU
+	 IBoI7IybS28Stb4BGouzn/QSaSBZ16uY7yqPXFuj/FrBHr0/PCUpDRIDv7g/Itb/DXJSg
+	 kVuK7GynF4UBcRJlzYDwphzs0lTqM/qE1Aofp6fKdCGPVOixyOJCdGAvAuNhMhiGq6C+S
+	 8eqGhTmPtl4KJcpbDCYpmGLrJO097QLCkzbqWpV7dh9zugMyh4cqX4KOac3B4zT0vvw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794448074;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794448212;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=p5n7ewt6sUsyIn8Vt7iEbtT2eE2+PKwMHmyfddh20ww=;
-	b=NQ+veTctp2iJ++8ZKSYx0J+GvA1myor0XanUY0g7rAHBIe8CN0yAsojtEKvUuORs2MET
-	 Twv/nPcjKHgAar0MB4vlBOR1Ab7b/PQx919WyH0rYIo5hz9ghkK0Hca9wE85Q+LIdM+Li
-	 5c1tvS0SrK1x4aAWSS0cnkkd0z258qTPpoFj57GXyQ35bnLYJD7heqHlmfeKMtwJ/vwuR
-	 zKd9k2lp5oWEmMCHdrs59x5+PMR3rX7wHnJ2mBuOmjJYOhtFOGADOmj6KPH8UqkV/SlQn
-	 W77cN39FqQiwKcYqlnZOz0NuriGsUfLmlcbNbVKOgnPrp2tGe7KJricpYCjiT53riPg==
+	bh=lk+HoAcUwejdcTZGV+Ml4e4AVI80zBKE+96+aBMiF8M=;
+	b=Kr3XmNxmWRiHWI+RjKeVBrTzUdb00NvXoXaHOHuphRjhL4o4T5pLZ+Cnsq4ZhDGCYgzH
+	 9uIY2nSL1ZRsAmTPGwo+HGCbAh43kP8mfU2vC0PrRnFaQlYe42eBdpDb8ogAuQyVbxNOc
+	 BM+IRqbY8qHjTbExyBK9Ji2KLN4JddOYxejpnmNvb1wUWWxVwcPwca/rIRbAzgtzFuDya
+	 2c2PN5Z/5w7tv46ir4zx5ZyBFaIa9i9TVJppw6ZSFZlz80qaS7WrQ9MApsnISpKE0D32+
+	 QasGi7pPGvF44O4G8+MbPbhdBFcCDRavN/aHIhbz4Ym6iJC53zdLgN+vrqD8C45u3ow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="iQ5ad/Rw";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="J/kTnL8Y";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81940606A31C;
-	Thu, 12 Nov 2026 01:47:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173E2606A321
+	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 01:50:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iQ5ad/Rw
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F2551F00A05;
-	Thu, 12 Nov 2026 01:47:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=J/kTnL8Y
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA40B1F00A06;
+	Thu, 12 Nov 2026 01:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794448074;
-	bh=p5n7ewt6sUsyIn8Vt7iEbtT2eE2+PKwMHmyfddh20ww=;
+	s=k20260515; t=1794448211;
+	bh=lk+HoAcUwejdcTZGV+Ml4e4AVI80zBKE+96+aBMiF8M=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=iQ5ad/RwiUnFncOL6/f+YtzHHw18K7dYBAQfKzba8jDy9gTLPPQi1f+vATCqVMkUt
-	 BadSu3BCEZ7M5onp55N05CUy4Vm0XXvyRV0P5dTiKpDRJH7sX/3kg1uRS8nmaEU4rS
-	 PyE4s53qmr0pPSW0m7smL/wyKaIJ8O6+CbU0sYYvdELh/onTVIgDGgSrmsz/Af3J8z
-	 ETwemIF6tBszwQAfFsV4cgqD3ha/hhV+b65V5v+MgRTMGdTu9SfgU+pHxmLCeWPObH
-	 QyL9oTT+1FpfqurJSE6I5PDSLkK+yTtdwDyTSmms7JF8CMxpzLEFBf2VbkEcMGCkP0
-	 TWpE+eIQBJx1Q==
-Message-ID: <sashiko-outbox-210094@kernel.org>
+	b=J/kTnL8YTJV7ZJ+1MVqw3+sLJlL6aALSgwoMTPbt/CPX3+EBGNnjkrakwMQ10XRSh
+	 QPWWa5MHtx5zYq0Kg3hL/x1Y4GT+6y2wTpC75EcCKay3vaqMJMtIssks9TmWPDWll6
+	 mwMJN1aF3eKQ7pCSZkHtqZ5rwJ097exhaqNUA4TRyVXe8eCxBfFZusFnarkZu/4oUT
+	 T0X5BHuGTolIKpp4BVDAVLIhhLMqvo94EzdEinA9SlMms3oIofY7u2YPriA+8CySPt
+	 Ym5BLguRGoJABrEgRyvRrobmBUp7Qb5owuJBc4vqvUJw3Qbjyz7tyNLLozdMio2hpU
+	 X+VdaRqdv1LLQ==
+Message-ID: <sashiko-outbox-210099@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 4/7] rust: serdev: remove the unbind() callback
+Subject: Re: [PATCH v12 7/8] serial: 8250: retire canceled RX DMA before
+ reusing the receive buffer
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Danilo Krummrich" <dakr@kernel.org>
-Cc: linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, ojeda@kernel.org, gary@garyguo.net
-In-Reply-To: <20261112005455.1224352-5-dakr@kernel.org>
-References: <20261112005455.1224352-1-dakr@kernel.org>
- <20261112005455.1224352-5-dakr@kernel.org>
+To: "James Hilliard" <james.hilliard1@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261111-submit-serial-8250-dma-cancel-v1-v12-7-9e3456bc2555@gmail.com>
+References: <20261111-submit-serial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com>
+ <20261111-submit-serial-8250-dma-cancel-v1-v12-7-9e3456bc2555@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 12 Nov 2026 01:47:52 +0000
+Date: Thu, 12 Nov 2026 01:50:11 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,112 +61,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found no new issues
-in this patch, but noticed 1 related pre-existing issue it does not
-introduce:
-- [High] rust: serdev: null pointer dereference in
-  receive_buf_callback() [1]
---
+> The generic RX timeout path pauses a transfer, copies its data and
+> terminates it asynchronously. Clearing rx_running at that point lets a
+> new receive reuse the buffer and cookie while the old callback has not
+> yet run. Inspecting the new cookie cannot distinguish that callback from
+> the completion of a new transfer.
+>=20
+> Reserve the receive buffer until a worker has drained the canceled
+> callbacks. Keep FIFO access separate from callback retirement: after a
+> successful pause and termination, clear rx_running while rx_terminating
+> prevents another descriptor from reusing the buffer. Deliver the paused
+> data before allowing the interrupt handler to drain the FIFO through PIO.
+> Normal retirement only releases ownership and leaves subsequent receive
+> handling to the UART interrupt.
+>=20
+> Preserve the normal completion-path LSR read and gate DMA resubmission on
+> [ ... ]
+> Fixes: 9ee4b83e51f7 ("serial: 8250: Add support for dmaengine")
+> Suggested-by: Raul E Rangel <rrangel@chromium.org>
+> Link: https://lore.kernel.org/r/20261109162135.906262-1-rrangel@chromium.=
+org/
+> Reviewed-by: Raul E Rangel <rrangel@chromium.org>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-commit 957ca5c83392506736074a2417dcd46b9e299666
-Author: Danilo Krummrich <dakr@kernel.org>
-
-rust: serdev: remove the unbind() callback
-
-This commit removes the serdev::Driver::unbind() callback and the
-corresponding adapter remove_callback(), documenting that device teardown
-belongs in Drop or PinnedDrop.
-
-> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-> index 17ca504b7f8d6..fd998b68b74f3 100644
-> --- a/rust/kernel/serdev.rs
-> +++ b/rust/kernel/serdev.rs
-[ ... ]
-> @@ -210,29 +209,6 @@ extern "C" fn probe_callback(sdev: *mut bindings::se=
-rdev_device) -> kernel::ffi:
->          })
->      }
-> =20
-> -    extern "C" fn remove_callback(sdev: *mut bindings::serdev_device) {
-> -        // SAFETY: The serial device bus only ever calls the remove call=
-back with a valid pointer
-> -        // to a `struct serdev_device`.
-> -        //
-> -        // INVARIANT: `sdev` is valid for the duration of `remove_callba=
-ck()`.
-> -        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreInternal<=
-'_>>>() };
-> -
-> -        // SAFETY: `remove_callback` is only ever called after a success=
-ful call to
-> -        // `probe_callback`, hence it's guaranteed that `Device::set_drv=
-data()` has been called
-> -        // and stored a `Pin<KBox<PrivateData<'_, T>>>`.
-> -        let private_data =3D unsafe { sdev.as_ref().drvdata_borrow::<Pri=
-vateData<'_, T>>() };
-> -
-> -        // SAFETY: No one has exclusive access to `private_data.driver`.
-> -        let data =3D unsafe { &*private_data.driver.get() };
-> -        // SAFETY:
-> -        // - `private_data.driver` is pinned.
-> -        // - `remove_callback` is only ever called after a successful ca=
-ll to `probe_callback`,
-> -        //   hence it's guaranteed that `private_data.driver` was initia=
-lized.
-> -        let data_pinned =3D unsafe { Pin::new_unchecked(data.assume_init=
-_ref()) };
-> -
-> -        T::unbind(sdev, data_pinned);
-> -    }
-> -
->      extern "C" fn receive_buf_callback(
->          sdev: *mut bindings::serdev_device,
->          buf: *const u8,
-
-[Severity: High]
-This problem wasn't introduced by this patch, but can receive_buf_callback()
-trigger a NULL pointer dereference [1] if T::probe() fails after the
-serdev device has been opened?
-
-In probe_callback(), the error-path ScopeGuard calls drvdata_obtain(), which
-clears the device's drvdata pointer to NULL before dropping PrivateData and
-calling serdev_device_close():
-
-CPU0                                CPU1
-probe_callback()
-  serdev_device_open()
-  T::probe() fails
-  ScopeGuard::drop()
-    drvdata_obtain() // sets NULL
-                                    receive_buf_callback()
-                                      drvdata_borrow() <-- NULL deref
-    PrivateData::drop()
-      serdev_device_close()
-
-rust/kernel/serdev.rs:probe_callback() {
-    ...
-            let private_data =3D ScopeGuard::new_with_data(private_data, |_=
-| {
-                // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
-                drop(unsafe { sdev.as_ref().drvdata_obtain::<PrivateData<'_=
-, T>>() });
-            });
-    ...
-}
-
-rust/kernel/serdev.rs:receive_buf_callback() {
-    ...
-        let private_data =3D unsafe { sdev.as_ref().drvdata_borrow::<Privat=
-eData<'_, T>>() };
-    ...
-}
-
-If a serial RX interrupt arrives between drvdata_obtain() and
-serdev_device_close(), receive_buf_callback() dereferences the NULL drvdata
-pointer.
-
-[1] https://sashiko.dev/#/bug/linux-790dcb6c-6485-4b14-be30-8851e99a0542
+Sashiko has reviewed this patch and found no issues.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261112005455.1224=
-352-1-dakr@kernel.org?part=3D4
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111-submit-ser=
+ial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com?part=3D7
+
