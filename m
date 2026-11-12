@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794443563;
-	b=mQrZWs6HJ4camKcw8G4ZnAi00fJSYfwDyWbQW9e7XZ6X/RRT5TFMXaE2UOa5WjU1tYI+
-	 +/3OCR1dWoLcsN8AptQu1RAzsL0dLXMFsnWRC121lPryHpPV06521dhI/fZN29dbfnP10
-	 1rDdiwzgdczcD7D4J7vpR3bqPovcWcQPgV9Fcq5JWWePFf4XT0CvayaSniukREa5UzqmA
-	 FErXvKz0raCFjHmDMiqdizAX4waYb9strOLWe1SXbz7T59NfU6ryZtfbmTtQ5BSbPPYvP
-	 CkmJ+9rMqBl6pE/cwf3m19vN9G89+/mU7QBr57u/d7wDzb4PjkQfx7Utc7EiaQWCnqQ==
+	t=1794444287;
+	b=c2XSvll4hDkqGD2GQ3XpUJGCWB/x7maz3nesDYnIy7L2wJ77byiJ8W6pRPwVjSR5n5Oh
+	 7lBLr8Jf434cLJQRDIcafaDkKmsfM0O/eLL5y25e14of6v26xEZVoAC5bifQwcInYrSlx
+	 bNX/MV4nmyUiNesazoJSyUlpwfla+8yMZ6exHNUTo5+va5wOWDlgMTnPiFW1mSheJIXRv
+	 FH3DYLvj9kHLnYPZj5+runzJ4IihbilZB7LJ74Cq15JO8LtpR3nEEp/gwydIxqS040u2s
+	 o26tGatBXjpjHxcvVqE2Ji2rdj97SiNrooaLMiF1hxkD+hzwodf5UeSRdra5tajn08w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794443563;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794444287;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=ZRBbcWOveZR1OW1FA8QwKkdoaYWhbFMDqc/6d2mS8mQ=;
-	b=OTuXuhNJ9c1nakjv/NcKnpdt1J9nbs38oDp2cvuy40bAziINX2o+6RXSNMVK2gvzh0H/
-	 Yfdqgg/djCRs/ibubYbEz60WqhMzKMOEA0keOHMVMxH5Vsa/R7K2RIiJlGOp/0Fs8Q3X5
-	 Ckn+RuaYoVbKZmADgCaiwa7ffCuXEmH6CmqNj1E/+IkhyugIBIRUSjT6/O/mn390ScU3D
-	 BuXoCkA9YjXuIdL6ZXCs+WYBWk4nXtXQRVHIEvxat0oPcrctMm/V4v7g8fe7qwiPv/A/x
-	 wCA6gV1RWunCoup8iqGUzL+2mQlX+i8F5FR6UHkPW4lGNfVjmN0qe//QvnMkDmXIOrw==
+	bh=0ly2BjLWmj2JjNwYWe/ZdUdRWiClMcD92BjL+iV7LfU=;
+	b=Wz/b22kCTIzfUT3BNP7KLzJsWiZi6NvzlarS3OZJ7QRBTi1xK5+DBGi1YhL5FId/mH1b
+	 Im4zG5/9/fsbyAnwSkCK7V5+Fs4O6Stb3deUECjhZ1Z3TOv6ZauTHiD7IQD9N6SFFjPHA
+	 c53KUrmNvL1ojy4PXiieFuw13NHO5miHzPDDS3UER7b3XiyN5NDg8COm86gizaLhnQ1rp
+	 WO0ivTwT426fqqJCkqt2dikqgyguLJ1kUs55AOY8XbovNWQx9KHX1fHovHpKhXR2XFb6N
+	 tQtO/CpYt40uJw81oVBT2g/3WOo9w+DvGHIdWTPnHFDDihUDexNaAEja23y24vSB0uw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="cyDsAA/o";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RchNDmm2;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46614606A321
-	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 00:32:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99AAD606A31C
+	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 00:44:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cyDsAA/o
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60591F00A05;
-	Thu, 12 Nov 2026 00:32:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RchNDmm2
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 179B01F00A05;
+	Thu, 12 Nov 2026 00:44:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794443562;
-	bh=ZRBbcWOveZR1OW1FA8QwKkdoaYWhbFMDqc/6d2mS8mQ=;
+	s=k20260515; t=1794444287;
+	bh=0ly2BjLWmj2JjNwYWe/ZdUdRWiClMcD92BjL+iV7LfU=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=cyDsAA/oYbOtRpujmJitV6UEbTHeY9ea5sIoQLQXuR0KBLIWDp1nZ/4jjD/qyuFTD
-	 4PZ4bbVGH8bR75tsDkKnspOC3xk+4s7x68yDveugN373hPrxmNQHbb0nNmdFNX0y3F
-	 CuUaq7tA+3TBUGWmYWYnVWUQphElOs62GC7gkgpTrrZDPWkk8qk2i7dPO8rJHukxw1
-	 gcZc+itoiLOCun1zLERjlgA3HN7Q6BO+Keo7EI+gSEN2/3xak9Jg6jf6L7aLS8l+Lg
-	 w8dQX+sO95b1Z6aJUwdC2ornmq4/7wJKOsK84ijIv1CtnerNcWUV8293MNlcmc+git
-	 nCmJxm/l/eiRg==
-Message-ID: <sashiko-outbox-209955@kernel.org>
+	b=RchNDmm2gcgRra6mED5Mp2vzgsxQ9vcBZiPVkegtn2guKYLVNBLnI1tBweBR0pywA
+	 T8P0naZNUbo/eM6mKxRQtcDXrcFhBpth3oGh040nElad2U2YL6gYpj2CCpYdLpSR6n
+	 z4kO92GXyoOLl3i3izn9bMqbzq7YoHW6E6IahLDZsl526KNARHD+pVoSvmucPh/3uV
+	 k2su1iQwWI/XbAjHy3/M1jTHCGpBCSKg2pt255SU9Ovj+v/rWY9rrQSqUAayWJ3uuA
+	 CTIxogRt82eCxwqmEk8qyNwLzSqg7DAq2BFTgYE4dgLWtqtEJDErHkUO570/9nOUjB
+	 TLjyWxkH/DxGQ==
+Message-ID: <sashiko-outbox-209982@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v12 3/8] serial: 8250_omap: serialize RX DMA completion
- and flushing
+Subject: Re: [PATCH v12 4/8] serial: 8250_omap: quiesce DMA IRQ handling
+ before shutdown
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261111-submit-serial-8250-dma-cancel-v1-v12-3-9e3456bc2555@gmail.com>
+In-Reply-To: <20261111-submit-serial-8250-dma-cancel-v1-v12-4-9e3456bc2555@gmail.com>
 References: <20261111-submit-serial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com>
- <20261111-submit-serial-8250-dma-cancel-v1-v12-3-9e3456bc2555@gmail.com>
+ <20261111-submit-serial-8250-dma-cancel-v1-v12-4-9e3456bc2555@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 12 Nov 2026 00:32:42 +0000
+Date: Thu, 12 Nov 2026 00:44:46 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,20 +61,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Moving RX DMA locking out of __dma_rx_do_complete() left the DMA
-> completion callback calling it without rx_dma_lock. Shutdown and runtime
-> suspend flush RX under rx_dma_lock but without the port lock, allowing
-> these paths to overlap the callback's buffer accounting and flip-buffer
-> insertion. RX submission and UART interrupt handling also require the
-> port lock.
+> disable_irq_nosync() masks the UART interrupt without waiting for a
+> running handler. That handler can have observed up->dma and continue
+> using it while shutdown releases the DMA channels and clears the pointer.
+> Synchronizing the IRQ later in serial core does not protect those accesse=
+s.
 >=20
-> Take rx_dma_lock inside the port lock in the completion callback. Hold
-> the port lock around the shutdown and runtime-suspend flushes, matching
-> the existing interrupt-path lock order. Assert both locks in the common
-> completion helper and the port lock at the flush entry point.
+> Publish the DMA shutdown gate under the port lock before the final RX
+> flush and interrupt masking. Have DMA IRQ handling check the same gate
+> under the lock, so a queued interrupt cannot restart receive processing
+> after the final flush.
 >=20
-> Fixes: 789898416749 ("serial: 8250: 8250_omap: Move locking out from __dm=
-a_rx_do_complete()")
+> Drain the UART IRQ outside the port lock before releasing DMA state.
+> The lock excludes competing RX processing during the flush, while
+> disable_irq() also waits for a handler that observed up->dma before
+> acquiring the lock.
+>=20
+> Clear EFR2 after draining the IRQ so an in-flight handler cannot restore
+> TIMEOUT_BEHAVE after shutdown has cleared it. This also waits for the PIO
+> timeout workaround, which updates EFR2 outside the port lock.
+>=20
+> Fixes: fef4f600319e ("serial: 8250: omap: Fix life cycle issues for inter=
+rupt handlers")
+> Closes: https://lore.kernel.org/r/sashiko-outbox-206203@kernel.org/
 > Reviewed-by: Raul E Rangel <rrangel@chromium.org>
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
@@ -82,5 +91,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261111-submit-ser=
-ial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com?part=3D3
+ial-8250-dma-cancel-v1-v12-0-9e3456bc2555@gmail.com?part=3D4
 
