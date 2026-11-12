@@ -1,90 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794497633;
-	b=CKzk2odyVFaMhgpaYwiuMhO+MgB0jPvVV0B+EAZsRQvS1IeUzwjC9PBqNKGMNoSz6y4t
-	 s0CYJIkYCuyO7B64fEZ4u/aDg+ytxBFSqO70CJTYJYSK+Wzm51SsaaxmZ99kqWD3Z3ba0
-	 pR1U9jZlWvtaiVfTMiZ5tdzH09du3/zR5pgqrWD2BhXgB/QZ+whHUlEieNg35462sqPHL
-	 PYTKxz5i3QhSqCOwkIuZ7bKGjWOM+CfgqKyH4N1qnS5Duw31tGoK9YUa/kZ0EFgJhUOzR
-	 Qy5Z4bF1VYro/x8yetOw8aMshWOK2UbYw7zqIEAl2BzHjAI5sGjeO/iAmzuhSvbMjCg==
+	t=1794497637;
+	b=TP+4nFs0Pc0B/jrkShhbx0wKAlO79toQlW8ocQaTnDrHPTpxWrG8Rbamy6BVYWhTKi1x
+	 bvAa1RXPrIX1fL1bOmcETA1ffPbabN4odsE8eL5ieVhquBI/v01dZ4Zpwh6w3BTCyL83H
+	 cVw4voAWJUZqzlB2YaM9cCBK/VQCnqTjLo8htzUfQWuu5+f6rV8kJLthU+GjguzPuApM/
+	 wIy20hsJYF2qRmkWcZwCGq/ghNT7W8vuyVBs+0S2aBXL8/Qi+chXXIJBOf1T+PZ/fzGwE
+	 LMcoOdxTcii+zeUgEJnyfK5GoraJbNkiyOfRsUwJD2HKoxPi5piKRk8S40v+XW7268w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794497633;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794497637;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=L1LMY5qyBag2HeM/ukaz5enhzW6oSXExQCIV3gTZALI=;
-	b=dHy7gs2rGv/b7qEtczguzpt6gc+ljHBF9qj228OcgjRBb5qU1A88hEiClmdpjgZgHk0Y
-	 zslYbD2j22hmlutAffRQbepswoiD6t9RGW94DOzx4D/1KJlzgT6br5O94mhX7DkyCaxJf
-	 7haLZnhYSJu/uv9/HHogsCion6aIHOrtBgZWd+vuX/1gzxjEldQiT16r7EC2SmvsqVhR9
-	 da2YeicezQHFbDbQJEqGxLcSY/agQgmLEQrhyWX9BedZBLzrx0K5OC13VBuDIJ0M/QBjH
-	 FZred8Su9aOggR2HXqFWXCA9/XYCXZO6sB/UBu5W9Kz1/4Xsbi816lCZL5mH72D2Bwg==
+	bh=VvrdohMl1QV4VMTfBknOdBjsvgvvJgr+uP4Xo2NyrYU=;
+	b=gFDOKOy9z+o5FA8zAgbqCA19CWAbwy8gG1IDUQXfL+alJugOlU1SCYi95qxV0oeno3xG
+	 AB7cMXPbxRVi0G7YWq09Ivjbrfw0AgX8VK82YG0jKNnYkhrfntCQCZ1CQ2ZzVMVu6/GV8
+	 VVPe7/HIdJaripSSL2sBZQilAlO2C0vAeKCSACAYIodQZh+bD2kZ34S0kRtgblGOIkua3
+	 jz01gALEzDQTA/iruKBLr9Fb1Gi+Xq+rdV0SYbc2mYyFWedeib0feQjMCR1K/6zyfiIvz
+	 xbmg+0NaaMKos7UM9HrIpIGRXHT6aCPjrQPZhfTv8VyILU4HSJBZCXd8ykuxZMIKjuw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="lfKwIr/O";
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="ZrF3GV/I";
+	arc=none smtp.remote-ip=209.85.128.42
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB40F606A88D
-	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 15:33:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EB40F606A88D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 995AF606A88E
+	for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 15:33:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 995AF606A88E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=lfKwIr/O
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a9a8d6cea8so12172965e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 07:33:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ZrF3GV/I
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4a1b07c3c5fso42179385e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 12 Nov 2026 07:33:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794497631; x=1795102431; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794497635; x=1795102435; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=L1LMY5qyBag2HeM/ukaz5enhzW6oSXExQCIV3gTZALI=;
-        b=lfKwIr/OGjtUqZfBmMJ/Aoplfh1BTyYUXKrttf4X09PBZXTQGCYXKkij1nUQcLeXRc
-         inG51u9HVJXkmXrMhR3iTOSJ9N5bwyAXcgUYLTGZ8VkaJlaWidxW4XvEf72ncHKOXbeT
-         8hR1uLic3QgXHHeWr7lab4WNwLXsWrmprfdPihCKEU4JrNywYT4P9yGRm+gxzoW3fN7L
-         wMluG88gjZM4tCZtP4LdXArB/drZ5VVuihte/WpjiUjLt7oHw391+WTxkCBkpikNUAjt
-         e/DV3seGgOEsSf7QCOMtr9DMecbE3D4aqds9KgJ0D1iY99oaXkbXAuhA9Deh7XlmA2w6
-         2/yw==
+        bh=VvrdohMl1QV4VMTfBknOdBjsvgvvJgr+uP4Xo2NyrYU=;
+        b=ZrF3GV/Ijit5cJpcLlKNZMUbCXcWY75b4SvDZpmXFxNzmsuovLiNt1bxikbiuBa003
+         pneT3M9Tn+sbVERHYmDWxbPBfDY+T8kl9kQtEY7ffhGUvjvzS5d0+mETI/wZbOyPf1Kv
+         fr05Pkt61gl0So+rLDR2kqU8ofpFotF7RXYP3Yneu6oBIWmnaIb2z3ZNVTNGBBo1yd9W
+         P+JoaRIY+A/TBpP/oXB5bkh/j8WgGbWQOEc+ND92WaMNQTSB5nKxa305l1v9VEAsQDM/
+         k8p1CqodAf8cIRDsb7towDhb1101qe6rd9+Snh1WA1a0LX2yoP+Zga+NJsf8WnBR5yUs
+         VjGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794497631; x=1795102431;
+        d=1e100.net; s=20260707; t=1794497635; x=1795102435;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=L1LMY5qyBag2HeM/ukaz5enhzW6oSXExQCIV3gTZALI=;
-        b=0ND8LXFmSZWleVjgw/fuW8AGZswqPhyec9aAHevpjrx3ocQKUSxLO7vCnDD1vQVgca
-         5UXAeipGOrf43a8kINwsJSbXkHSqM5h1gHvFeQ8UXwKU7HxTh/lBMWzdlLUKO+jUC3lB
-         kaw6Erk0fVpMTu5LRjfUSsChsqy1EbajWFBHq9DB9R0CzzAv/T4hEK9LJ/cVoiRCCXap
-         vZCSg9v3IRJbjvrBvzH/XmIDTqNU13SahXFLQv6ExE6/K5kdAWSR8wvsMLCjmnHjF7sL
-         pUCRpz6C9dsE3ZsK+CG0ce/77vjejJ+xqno9n0x5vIB7OUgsJyaEQ7G9qtGuNvb3QFJI
-         9dDQ==
-X-Forwarded-Encrypted: i=1; AL+hErGNiQY+KR+Jtvy86ndKGKn5O98l2TzN1T05R2VNYBwTDGtPnQuzOFTU7VGkURvhYUBCU0W8dbMBzgQyOd4=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/tuXsi1r6mGkhTcDpcD38H53d9OQG/oMg8O/Dxn5eDliXlxnPo
-	R3hZzOSlIL4IpdTXpMUzFsFZfMoo4lOmXfKxJuFY9lQY6Mela4L7DEjf
-X-Gm-Gg: AYBFou300izn1B6GLi4XikTpx8AseoOkw+WBwsCafSJtKszadneVfqMixHJLDInCpG5
-	SLcB3qB6KL1ZUCYF8xzRUfUot3YX/H/rzjAa4WilxrSeThAKD8LhU9roH7YNrsr8dJ0tlxa+g7r
-	CYtqlP1jxg/AlBEPWL5AficISJ7nUv7RCLZooZWvqgHlisbOO0kWUB3fNW5deCt/SeMy6fZK6Vv
-	2sjGBz/BGlOT+sOVxABYU8ofxgW3IewCMT2kqkeEZ/fcMBJm4GeBCq6rF1XMKlHOD3CVORABo+2
-	oiQTJFx5hPwBuluKmCfiCjMtY2z3UbwtOS2WnS6YVMsVUcf50ImBEK+YQzhPlk639S0vnABkfG2
-	g58OCVxfkkYWEDFTum4/2KKOr/DBJflHb/sRsIpT36uCWt1SpBuiyhvvyRI4ZmLde0lqkA1e1DZ
-	PMOM9cNsdpA/SQVqwci8BhsK4qBwW12VdFeqwdlHegZqEQBEDJghX8yI6iH5zuQKVpQiGu/l/9G
-	aWcUJsE4rSblKWcxz2lHG7pCCOD+W6sRcUwDrEjRe5+Z04XfuAZEsIch4Ux14lCia6UqBGwTcqo
-	0Ae3y4sTm+m+5c59UCPuTjj9iWZmM4sz/uXA+6QRQn0c8f64Bi0DWGsvxYOUmdnh4EqvVjmkp8e
-	s5vLdKQ==
-X-Received: by 2002:a05:600c:a31c:b0:4bb:53e4:a7c5 with SMTP id 5b1f17b1804b1-4bb53e4a861mr15636085e9.14.1794497631072;
-        Thu, 12 Nov 2026 07:33:51 -0800 (PST)
+        bh=VvrdohMl1QV4VMTfBknOdBjsvgvvJgr+uP4Xo2NyrYU=;
+        b=Lsf+PATpXjkyn6oZ6T5m6GjGNnmrnufGXDbBJ6VdZDJ0AdnIAhI3fe7MjlO+gHJIC+
+         8D60zzsyLK7JcSjBGFmJcmCypFh0jCCzPkl0tcQGdX2BZUJg/8AydKp1IWt8bsUAYqh2
+         6NvW8VJ7BU7Yoxo3U2wGEW33MPvy1zcbjMwQl9SOhXTjDV00pN53U4XJG1I38JL7akTe
+         UoqTzpW/muiPGkV8IPVO/aZbo8cVtAFYIGArTwRJKHBNH2gGv1qLJJ/BRcB0mkivhdyn
+         0GBY5PzUZi+RNt9jhBynuX9LkGcPPdhnmBjwaGf9XgidHbcFNcmyu9qIaatl/GqhyVD0
+         RmMw==
+X-Forwarded-Encrypted: i=1; AL+hErH5/ydPfys+bVMc2nFwcorMKXYO78QaiStGasGRmKXJs+TgoMiKrZ9VOWzxb8InNhUKVJKDZOyAcBsLFlI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/uzdB3n4mUtPnv1UDv25maQRR83C8M1rx84OvmN7JRcIgMcBIA
+	pWdwXG8rFO4xrmhn9DUIKv55IFsu0JZXeN0GJHWT8rWbd1Na+QxV/hwJ
+X-Gm-Gg: AYBFou02iTUIqhd/kvmWl/5avvf9G2Re10Pz/GxbNcTVNtZoZFhm75ns1pY27+WUKMW
+	F68B0G9iawTQYIPCuwPiRVrPIhUhpv7cGPFkwB7z6VP7PigMHTDEm4k/tHtEHZQlkB8xjRakEYR
+	xKJgBLZcVMFNLFIlH9ZKQBqMmJff8eXUg/wF0vCLhhgsx8gGgMFiBGDRxthI8aajeyODw39e+n6
+	v4o6nVZ/7DuRTWOb/dy5EfPzzQzGkMU7VJJcYH9vQfms/eqLrshyGm4cPh2eG6o/x5SCqov1ah1
+	bpgIPl+g5rrBevVQY+6mJwSKufy5SU5b3uxF3bj9HlRqKMVGcBbyRxailTkSsBfUTE+J/RcWPLb
+	C30uDPLjDa1Fx15Rs7lTNn64K9frOI1LKMzug6l22fjuGreTa8eBNAeOzx6lj1gFXIiWqmjyPrI
+	ppPdUsURJh80VF2FF86g7aJga6jxgiT+hJ49Z9l3+bGMp5xQD0z0k9dt29keoo4lz3m63bwhGTN
+	cbPdzkc3Gy+C7tOvytLaTJcUhvYKFAcL7uWVBTOhCNEYWWPWHxlOSqlQdmmDqDe/tbMzrudTJwV
+	4/dBcrkIdv4VCOI0Ge5rzlqdkzOk6df80n1HoAUNHqKpxBBJDv2MPPdIbSaRc8807lLGFgCzgVO
+	foyV5ST0=
+X-Received: by 2002:a05:600c:1c01:b0:4b0:bc65:b9b5 with SMTP id 5b1f17b1804b1-4ba09395574mr132571925e9.35.1794497635084;
+        Thu, 12 Nov 2026 07:33:55 -0800 (PST)
 Received: from alchark-surface.localdomain (bba-86-98-194-229.alshamil.net.ae. [86.98.194.229])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e2593e4sm87105855e9.5.2026.11.12.07.33.45
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e2593e4sm87105855e9.5.2026.11.12.07.33.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2026 07:33:47 -0800 (PST)
+        Thu, 12 Nov 2026 07:33:53 -0800 (PST)
 From: Alexey Charkov <alchark@gmail.com>
-Date: Thu, 12 Nov 2026 19:33:10 +0400
-Subject: [PATCH v2 2/6] serial: core: Allocate a free line for
- UART_LINE_AUTO ports
+Date: Thu, 12 Nov 2026 19:33:11 +0400
+Subject: [PATCH v2 3/6] serial: vt8500: Look up console ports with
+ uart_console_port()
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -96,7 +96,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261112-vt8500-serial-cleanup-v2-2-36b258e0c0dd@gmail.com>
+Message-Id: <20261112-vt8500-serial-cleanup-v2-3-36b258e0c0dd@gmail.com>
 References: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
 In-Reply-To: <20261112-vt8500-serial-cleanup-v2-0-36b258e0c0dd@gmail.com>
 To: Alexey Charkov <alchark@gmail.com>, 
@@ -108,155 +108,105 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, 
  Wentao Liang <vulab@iscas.ac.cn>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4704; i=alchark@gmail.com;
- h=from:subject:message-id; bh=V3K8xL7bNVN+ns8AQIHh0AGuzdUIQXbz5k/DUkYJUmI=;
- b=owGbwMvMwCW2adGNfoHIK0sZT6slMWR9veM16cHDd2d+W8cyNDpPTSmbuSrnR+2eDdNnb1Ve+
- 3q7bZRXWMdEFgYxLgZLMUWWud+W2E414pu1y8PjK8wcViaQIdIiDQxAwMLAl5uYV2qkY6Rnqm2o
- Z2ikY6xjxMDFKQBTLcrIyPC5XujIgXAeXYcPEwyi+D5sl/maHD7JMzV8adzxxbytIVWMDN3Lpa2
- bI6rWsx2dPsNptpXTS/WZsiuZ/vo8+t+4pn/nFG4A
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3052; i=alchark@gmail.com;
+ h=from:subject:message-id; bh=3liCMnx0+/nFxGsSTGfQu36lLL1bgD05zvuvM2xQkgE=;
+ b=owGbwMvMwCW2adGNfoHIK0sZT6slMWR9vePFvWXRnptJkmJnv8UtXvbDco7zgzAHp9aHWw6Zy
+ nEV37A92zGRhUGMi8FSTJFl7rcltlON+Gbt8vD4CjOHlQlkiLRIAwMQsDDw5SbmlRrpGOmZahvq
+ GRrpGOsYMXBxCsBUH/rC8L/sSa3g6x7lMwryTiW136IWf8zIrmGN2nTRQXWzZ6yUWwLD/2qp/a/
+ yOLe2/fzZn/esX+xGv/XpkrhOx4NRx997H9nByA0A
 X-Developer-Key: i=alchark@gmail.com; a=openpgp;
  fpr=9DF6A43D95320E9ABA4848F5B2A2D88F1059D4A5
 
-Drivers that accept ports without a "serial" alias each carry their own
-line allocator, be it a bitmap, an IDA or a scan of a static port array.
-Each one has to get locking against concurrent probes and release on
-failed registration right by itself, and the state table already holds
-the same information.
+Ask the serial core for the console's port, which it registers before
+the console, and drop the private vt8500_uart_ports[] array that only
+mirrors the core state and gets in the way.
 
-Let such drivers set the line to UART_LINE_AUTO and pick it while
-registering the port under port_mutex, which serialises every change to
-the state table, so the choice cannot race another registration and
-needs no separate bookkeeping. Skip lines that an enabled device claims
-through a "serial" alias, so that the device still finds its line free
-if it probes later, and hand those out only once no other line is free.
-
-Restore UART_LINE_AUTO when registration fails, so that a retry with the
-same port allocates afresh.
+The helper also range-checks the console index, which makes the checks
+in the console callbacks redundant.
 
 Signed-off-by: Alexey Charkov <alchark@gmail.com>
 ---
- drivers/tty/serial/serial_core.c | 68 ++++++++++++++++++++++++++++++++++++++--
- include/linux/serial_core.h      |  4 +++
- 2 files changed, 70 insertions(+), 2 deletions(-)
+ drivers/tty/serial/vt8500_serial.c | 31 ++++++++++---------------------
+ 1 file changed, 10 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 683ffb4fda92..e0f9551ff7f8 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3351,16 +3351,73 @@ static int serial_core_port_device_add(struct serial_ctrl_device *ctrl_dev,
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index a7f167a73416..4abd4a8d5ef3 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -444,7 +444,6 @@ static int vt8500_verify_port(struct uart_port *port,
  	return 0;
  }
  
-+/* Whether an enabled device claims @line through a "serial" alias */
-+static bool serial_core_line_is_aliased(unsigned int line)
-+{
-+	char alias[sizeof("serial") + 10];
-+	struct device_node *np;
-+	bool available;
-+
-+	snprintf(alias, sizeof(alias), "serial%u", line);
-+	np = of_find_node_by_path(alias);
-+	available = of_device_is_available(np);
-+	of_node_put(np);
-+
-+	return available;
-+}
-+
-+/*
-+ * Pick a line for a port registered with UART_LINE_AUTO. Skip lines that an
-+ * enabled device claims through a "serial" alias, so that the device still
-+ * finds its line free if it probes later, and hand one of them out only when
-+ * no other line is free. Caller must hold port_mutex, which serialises every
-+ * change to the driver's state table.
-+ */
-+static int serial_core_alloc_line(struct uart_driver *drv,
-+				  struct uart_port *port)
-+{
-+	unsigned int line, fallback = drv->nr;
-+
-+	lockdep_assert_held(&port_mutex);
-+
-+	for (line = 0; line < drv->nr; line++) {
-+		if (drv->state[line].uart_port)
-+			continue;
-+
-+		if (!serial_core_line_is_aliased(line))
-+			break;
-+
-+		if (fallback == drv->nr)
-+			fallback = line;
-+	}
-+
-+	if (line == drv->nr)
-+		line = fallback;
-+	if (line == drv->nr)
-+		return -ENOSPC;
-+
-+	port->line = line;
-+
-+	return 0;
-+}
-+
- /*
-  * Initialize a serial core port device, and a controller device if needed.
-  */
- int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
+-static struct vt8500_port *vt8500_uart_ports[VT8500_MAX_PORTS];
+ static struct uart_driver vt8500_uart_driver;
+ 
+ #ifdef CONFIG_SERIAL_VT8500_CONSOLE
+@@ -472,46 +471,38 @@ static void vt8500_console_putchar(struct uart_port *port, unsigned char c)
+ static void vt8500_console_write(struct console *co, const char *s,
+ 			      unsigned int count)
  {
- 	struct serial_ctrl_device *ctrl_dev, *new_ctrl_dev = NULL;
-+	bool auto_line = port->line == UART_LINE_AUTO;
- 	int ret;
+-	struct vt8500_port *vt8500_port = vt8500_uart_ports[co->index];
++	struct uart_port *port = uart_console_port(co);
+ 	unsigned long ier;
  
- 	guard(mutex)(&port_mutex);
+-	BUG_ON(co->index < 0 || co->index >= vt8500_uart_driver.nr);
++	ier = vt8500_read(port, VT8500_URIER);
++	vt8500_write(port, VT8500_URIER, 0);
  
-+	if (auto_line) {
-+		ret = serial_core_alloc_line(drv, port);
-+		if (ret)
-+			return ret;
-+	}
-+
+-	ier = vt8500_read(&vt8500_port->uart, VT8500_URIER);
+-	vt8500_write(&vt8500_port->uart, VT8500_URIER, 0);
+-
+-	uart_console_write(&vt8500_port->uart, s, count,
+-			   vt8500_console_putchar);
++	uart_console_write(port, s, count, vt8500_console_putchar);
+ 
  	/*
- 	 * Prevent serial_port_runtime_resume() from trying to use the port
- 	 * until serial_core_add_one_port() has completed
-@@ -3371,8 +3428,10 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
- 	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
- 	if (!ctrl_dev) {
- 		new_ctrl_dev = serial_core_ctrl_device_add(port);
--		if (IS_ERR(new_ctrl_dev))
--			return PTR_ERR(new_ctrl_dev);
-+		if (IS_ERR(new_ctrl_dev)) {
-+			ret = PTR_ERR(new_ctrl_dev);
-+			goto err_free_line;
-+		}
- 		ctrl_dev = new_ctrl_dev;
- 	}
- 
-@@ -3402,6 +3461,11 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
- err_unregister_ctrl_dev:
- 	serial_base_ctrl_device_remove(new_ctrl_dev);
- 
-+err_free_line:
-+	/* Let a retry with the same port pick a line afresh */
-+	if (auto_line)
-+		port->line = UART_LINE_AUTO;
-+
- 	return ret;
+ 	 *	Finally, wait for transmitter to become empty
+ 	 *	and switch back to FIFO
+ 	 */
+-	wait_for_xmitr(&vt8500_port->uart);
+-	vt8500_write(&vt8500_port->uart, VT8500_URIER, ier);
++	wait_for_xmitr(port);
++	vt8500_write(port, VT8500_URIER, ier);
  }
  
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 9ac1ce1c10b5..a6955c446eaf 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -1135,6 +1135,10 @@ void uart_console_write(struct uart_port *port, const char *s,
- /*
-  * Port/driver registration/removal
-  */
-+
-+/* Set uart_port.line to this to have uart_add_one_port() pick a free line */
-+#define UART_LINE_AUTO		UINT_MAX
-+
- int uart_register_driver(struct uart_driver *uart);
- void uart_unregister_driver(struct uart_driver *uart);
- int uart_add_one_port(struct uart_driver *reg, struct uart_port *port);
+ static int __init vt8500_console_setup(struct console *co, char *options)
+ {
+-	struct vt8500_port *vt8500_port;
++	struct uart_port *port;
+ 	int baud = 9600;
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
+ 
+-	if (unlikely(co->index >= vt8500_uart_driver.nr || co->index < 0))
+-		return -ENXIO;
+-
+-	vt8500_port = vt8500_uart_ports[co->index];
+-
+-	if (!vt8500_port)
++	port = uart_console_port(co);
++	if (!port)
+ 		return -ENODEV;
+ 
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 
+-	return uart_set_options(&vt8500_port->uart,
+-				 co, baud, parity, bits, flow);
++	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
+ static struct console vt8500_console = {
+@@ -683,8 +674,6 @@ static int vt8500_serial_probe(struct platform_device *pdev)
+ 	snprintf(vt8500_port->name, sizeof(vt8500_port->name),
+ 		 "VT8500 UART%d", pdev->id);
+ 
+-	vt8500_uart_ports[port] = vt8500_port;
+-
+ 	uart_add_one_port(&vt8500_uart_driver, &vt8500_port->uart);
+ 
+ 	platform_set_drvdata(pdev, vt8500_port);
 
 -- 
 2.56.0
