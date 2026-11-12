@@ -1,56 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.135
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794448253;
-	b=dHUcSX7L6zyTmUg2qtp7TK8lYqEoZerjUWf3nhKzHTz0i3PCy0P2iLd1dr2+yEKHWg4I
-	 0rtzp7ATJP87kwzmZK+Xe54fGrLrIgneu+NEcsWdnH747CVjiadNBDYf8+WhDA3bu1x8+
-	 1adMQJMa52qKwQuNAEWehtSG7Me0n5h8ZcOq3USf1Qym9U+vEiu6BjXOgpkMj7Txj33gl
-	 k0WhYouLg4E2YV0KN6KAkF0pCeKM+k5EpaNbsOJqUlB70rU1FEhgbM5nGMvOQ6fOK9uL/
-	 M5ZPmfIGC2VK+DkxGhS/VyuRpe37MYxCWPv1Fj+5IKpgtTpvaYB56APmWiIu9BNFTag==
+	t=1794449622;
+	b=x9jXC8/5hBRbiw3VMLG13N9PUUyCo6PKfcqxrSoxVyX9VvI2qDBitgmO5XZehqkO/vRK
+	 ai9lao3uUVRkPDMFXFaYGJ/oAIngmZg/KV9cpc5hm5j8+GRUNw6N0ZGEGVxX2ChFhCIaN
+	 ChGwJ6NB3zHfoiEIGREUNQsyZojL2n09IesRGye8+ympMlQGSwAFziqwahcP67LpeeedQ
+	 wpEtEk5zPjsLO764KmRlcATttT9vvo/Um2RHRRG7lTSniZejjcL5WAp8KqkI4jGtMo6HL
+	 oShtyZkoHb0+eT5LM2LOP7Ynz+WKFnhT6hxDLTO9YALHhi0WaDzIP1vC9Isy+1kmqZw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794448253;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=5ZYy7ctc7utUoIVhnyDGifPpeprYczBSsfkhk/+gwZs=;
-	b=KH8QhELBX/f1cX2hwzOfW9R2hfRoJfXBeZtEFC43IU/iumV3TmIFYExuNxvX2akoMVSB
-	 T698GZ8157lDG3Pe0MrRcsCH8tWmXpaLabRXyYSr1msQpWMp4PcAFwQ0jRkNvRIWrynNE
-	 LxRADsVMLcvHmRYg+qe7JXgdWiQBCXtxEEyLzQUatCYrZA7D4xcgCR5fXWqe3x8N4WixM
-	 PG9BWQD6/jhVTgD+DQqVZg3KgGz3yFzfSsYuDfa1FZNElK65CaKbWffk+gK2aCT7P4XJN
-	 yNdW3Rszi4wgzJK9D0sgOD3Q91ckOKjVLvV1fTXePi8vlI20O0odyerD6QJuosXc3gw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794449622;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=hL2POtwbIEe+4GWOCdTadB+dlLerSVJ0joNIPqXJqYs=;
+	b=HF15iwyqOE/otQeaOOWnuMMWsisv0xyiLjDbJnZuS9OnYtTvIzXcPo1tP1W4AEG3cF21
+	 sBtAP7n59OY1b0TzTddExum9wPlcgSyXe7aztZ9IBOeDa0wAjOQhS49roy/nZnBmt2b1x
+	 9DaFMd4xJ4s3JFZH7blDoszAAUqB5v5NxJWDw2/oVzoXTjfPxDTWdpIqewqqNt3G19FzD
+	 0qGlX5zkCTYWMw5R5xENjucE3F2Tm9+XbwYIl+Lbm1kIjX4sssOqBQRMX10pOu3kogv65
+	 AD9vnzAx27Aaft0AA/duhP8XyCE11ZaZXoDTUt+sYV1TArNIwcH6XdKH8pGobrq2OlQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N7EhVmQS;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F6E3606A88E;
-	Thu, 12 Nov 2026 01:50:53 +0000 (UTC)
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b="g/Qu7+pv";
+	arc=none smtp.remote-ip=111.22.67.135
+Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [111.22.67.135])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BB16606A31C;
+	Thu, 12 Nov 2026 02:13:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3BB16606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N7EhVmQS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B855A1F00A05;
-	Thu, 12 Nov 2026 01:50:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794448253;
-	bh=5ZYy7ctc7utUoIVhnyDGifPpeprYczBSsfkhk/+gwZs=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=N7EhVmQSaYXYi85isumOgVusEFVRh7hwRMPi7KX4YI5bXir0N6C9Z7DcoHc2Na9QQ
-	 kKEDr6p177/6y93P848ruzaYb4r3gckLtJRxZZ2hjqwQ3WlQMzk0MkXqmCXW8y17DZ
-	 AQBKU7bMh9FRUyDR63mjcYxrgyONB5gg9XlJI1RAC5oyklde/6JEZQp/BcTmaczOLH
-	 Ik10ihXe/1ZmcuUwH2XBWtGoUuKLg5l+AiCRtT92tmiJOg6gCvEfpS9B/FedmnWWYC
-	 L3OsRUkjhlGW44vT4wP9EmD4jZDcziqPvhyJt509zVkI13cqlCXePZ2Slevil3tDKz
-	 Un04PHga+YYbA==
-Message-ID: <sashiko-outbox-210101@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 6/7] rust: usb: remove the disconnect() callback
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Danilo Krummrich" <dakr@kernel.org>
-Cc: linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, ojeda@kernel.org, gary@garyguo.net
-In-Reply-To: <20261112005455.1224352-7-dakr@kernel.org>
-References: <20261112005455.1224352-1-dakr@kernel.org>
- <20261112005455.1224352-7-dakr@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 12 Nov 2026 01:50:52 +0000
+	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=g/Qu7+pv
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=g/Qu7+pv/7Dri6YXRy8F6sJgfgt8+bT93rGqrYfBwLwasrx3VXXCz+cLCy7F+jePk36UNkdCfCSd4
+	 E2aQcnJCrCJdhFJKjChFQG/uPjJs1LW6rUio/Mm0LxDKVoJVaiciL6GkJEpVqHjsUDk9BQUo3zBShJ
+	 Fw05TMjn2iVKUrsQ=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app07-12007 (RichMail) with SMTP id 2ee76af520d170e-dd134;
+	Thu, 12 Nov 2026 10:13:37 +0800 (CST)
+X-RM-TRANSID:2ee76af520d170e-dd134
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.98])
+	by rmsmtp-syy-appsvr09-12009 (RichMail) with SMTP id 2ee96af520cf9df-eee49;
+	Thu, 12 Nov 2026 10:13:36 +0800 (CST)
+X-RM-TRANSID:2ee96af520cf9df-eee49
+From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: sc16is7xx: Fix clock leak on invalid clock frequency
+Date: Thu, 12 Nov 2026 10:13:34 +0800
+Message-ID: <20261112021335.1774-1-laixiangwu@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.50.1.windows.1
+In-Reply-To: <2026111106-drowsily-dexterity-bddd@gregkh>
+References: <2026111106-drowsily-dexterity-bddd@gregkh>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,51 +70,29 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential
-issue to consider:
-- [Medium] rust: usb: missing Sync impl for Interface<Bound> breaks
-  Driver::Data
---
+Hi Greg,
 
-commit 92376533106fabfcec7a799d05c1ddbb68a85c37
-Author: Danilo Krummrich <dakr@kernel.org>
+sorry for the missing context.  The patch I was pinging is:
 
-rust: usb: remove the disconnect() callback
+  serial: sc16is7xx: Fix clock leak on invalid clock frequency
+  https://lore.kernel.org/all/20261030085508.1882-1-laixiangwu@cmss.chinamobile.com/
 
-This commit removes the usb::Driver::disconnect() callback and updates
-the trait documentation and USB sample driver to perform device teardown
-in Drop or PinnedDrop instead.
+sc16is7xx_probe() enables the clock with clk_prepare_enable() early
+in the probe path.  If the clock frequency cannot be determined
+(neither from the clock itself, nor from the "clock-frequency"
+property or platform data), the driver bails out with -EINVAL
+without disabling the clock again, while the later error paths of
+the probe already jump to the out_clk label.  The patch makes this
+error path jump to out_clk as well, so the clock is disabled like
+on the other error paths.
 
-> diff --git a/rust/kernel/usb.rs b/rust/kernel/usb.rs
-> index 993760ff332b8..2126378abc959 100644
-> --- a/rust/kernel/usb.rs
-> +++ b/rust/kernel/usb.rs
+It was submitted on Oct 30.  Is there anything blocking it, or does
+it just need more time?
 
-[ ... ]
+Best regards,
+Xiangwu Lai
 
-> @@ -291,6 +271,10 @@ pub trait Driver {
->      type IdInfo: 'static;
-> =20
->      /// The type of the driver's bus device private data.
-> +    ///
-> +    /// Device teardown should be performed in [`Drop`] or [`PinnedDrop`=
-](pin_init::PinnedDrop)
-> +    /// for this type. The `'bound` lifetime allows the data to retain d=
-evice resources and an
-> +    /// [`Interface<device::Bound>`] reference for use during teardown.
->      type Data<'bound>: Send + 'bound;
 
-[Severity: Medium]
-Can a driver store &'bound Interface<device::Bound> in Driver::Data<'bound>
-when Interface<device::Bound> does not implement Sync?
-
-Interface<Ctx> wraps Opaque<bindings::usb_interface> and only implements
-Sync for the default Interface<device::Normal> parameter (whereas Sync for
-device::Bound was implemented on the private usb::Device type instead).
-Because Interface<device::Bound> is !Sync, &'bound Interface<device::Bound>
-is !Send and fails to satisfy the Data<'bound>: Send bound at compile time.
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261112005455.1224=
-352-1-dakr@kernel.org?part=3D6
