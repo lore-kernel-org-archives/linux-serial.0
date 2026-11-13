@@ -1,55 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.151
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794565085;
-	b=Va3o9/KtQ8Zr93CMhjBWOQzKpqQv45tzLO4VDxc6SIptCvvpOB5kIRLOt8jHSUCXWqec
-	 6j5F4+G7No9CT3YuSimlgcI7ITXEOvE2oKR4f6HQ/6CEy9NWiTaoNXtN+HQ79fT1B8QfQ
-	 W8GZFPlD7DbDQ2NFB4upq4TE3GpaO6wZhwYBFfII4LXoeGCF/Wfic1UW4+Y5hJ/7ds+R4
-	 70mfWWj1U8azGTU9tfjpEtXqulATKDfOI4lTi8Ov8Jpgfmv/f3acuMSwzTy431/OJwmG1
-	 51QP19fX7jCDO1aeX8CVgiey5Op52eXMA+5NMs+KtFzjHt+PsJSGHg3YUBSb2M3J+eA==
+	t=1794566281;
+	b=rHAMEbVQwk5k+38OcEG9McBK9pqhL1d8qZlRxOiJKddbvEsPLnzEyco50y8AilHASMsC
+	 EZUYMSP3XmoI47AfUIpVId4SfNkFl9c62B/r09W5POLyDt2cfnUABB3hItAuaPoto2SyL
+	 ylj4YSF7uYc2SHDQXywC/2kjawHhlcOS0TXXvEiyiOPfEMJRWAc5LQ/iTeL/0legUe+FV
+	 S90MI0LtAQWSJvAFqOtg8pCKDoYzTkIVsi1i1/G6PU/yNUxklBoGt+BWhNoWUVIEWSRL7
+	 4JA8HnN37utC4doICu7wmtUKNvhEJtwFoFqBeVRE6VZlHZL8QspbjDqUbT742xHjNkA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794565085;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=oWpj+fMcU0ldZMemXXF2GwJUPPqvOroaTzblSr6zsuI=;
-	b=MPETBX0qjPn2z7u+3j/QgjrmrqbVF7pzuSUJDoYGzBVyyfdtjIoknby7r8DehEaewlCU
-	 9YAa3SOV9R6s0CUs0BI+ViO0SDI/fDuUNNzBEYwkcImI2LAv3ir62G0tv8UNXzLuK40TT
-	 DbmkHS5viOFh4a0jmcktYIUiI3Wcf1RyKsWBEfCqE9vXTpxRboTeDC+U+OKTuakJcQm6l
-	 B3Rb+RRcDYUdowZTmTOrHRhSQofPGFA6jqH+/J6jVtuzX3n7cmo4tV72YsUTVWedgor+1
-	 V97My+XJDgSM3FoLVCR0GH+PFrlTT2wLOrFeiU799cUG4+VHDY2r1mFxmt0CK59IF+g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794566281;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=fhZ0AjN4LLnxjR2ysNPhKH+snOYNUTJM4w/Im8m81Pg=;
+	b=QvlB4IO3ke5ID6BHmXH3ITkzJV3rWjnnQaCMQK2g/dKxuKyI7kvc2vJMh6t2qGANqWag
+	 zU+Qdi9FzxMiNWMJTZwEI0v27ma0WuYMydQJNQcfdF0NkFkgmDrDDqi/Q6ind+P9a04bL
+	 dae16uIaL7+1iPtcM4qIsThAX1ucutDvy1s8eOBv4P5Y66jDtJ2T1+C20XvgBesYNF7c4
+	 e5Siavrr4Nx/cxGHSYGzKdaCFumC44BywZ1az4d+GRC1llqP9Y9BtU44a/xD1eMrFzT5E
+	 3M4lvhSiX48eaRFRlj9fxmuuLxi7bLfqIAfyLAW0gs8aSLGPql+IsstoHuTbDX1Ih1w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEGnZ9s7;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD44360A260C
-	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 10:18:05 +0000 (UTC)
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=aIfW2oKm;
+	arc=none smtp.remote-ip=111.22.67.151
+Received: from cmccmta8.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 71A2B606A882;
+	Fri, 13 Nov 2026 10:37:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 71A2B606A882
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEGnZ9s7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A49F91F000C9
-	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 10:18:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794565085;
-	bh=oWpj+fMcU0ldZMemXXF2GwJUPPqvOroaTzblSr6zsuI=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=IEGnZ9s71CxuM1FatGWVZ7MjS/Ksms7wsHnU0cCjvI8yD6ri1brzQWsOTKwvf9scE
-	 1x6Ik/hWXwA68bNMOJ2qk0IELCj40VL2vurKZg2CBldMMMeZzCnayO4J2Gnj0Az3+8
-	 sLcpEApwpShOgzgYGnsC5zQ/BTQA1pPyK8jNvC4x12yPuP5UtkKRgIIy+9jLBgNocB
-	 L9MMZWBtHuoQNREggu7MnqN8y/aUPyWkH6bNpbqXdfg0nDqFJKcg78yywZyRRLPCde
-	 WmTYkuNtdC17dgd1l0oq+eyfgjAcECX5WMpRB1C91OhxyakR/QzDsp75gUIpaHPi3l
-	 K27CaA5AGXzPw==
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-705cb6ceebaso1222166eaf.3
-        for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 02:18:05 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErEsYC8VlK4dHYIPSAD7Te2pMDztFZV6l5x6fhdJricUaHp1tyslgTz1hd/nJWD0LW8JSKsTCCdNNgagKuQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9xH4XH6rftncnBtWEqCc+e/+ekIAJ3GKoOqQeEUY+L7M6Zqikz
-	q0YQpCySXNCdkOUgZNB3sukQsXV4GGNptvFaxs9BF9Q5a/kKLMYcPztmZ5HIS6J5SfsDIcmvX2Y
-	qP/T3LcSfVftB/ofCbXp/0KF1TAslNSE=
-X-Received: by 2002:a05:6820:2228:b0:70a:1787:2696 with SMTP id
- 006d021491bc7-71ab50522aamr1246436eaf.61.1794565084106; Fri, 13 Nov 2026
- 02:18:04 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=aIfW2oKm
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=aIfW2oKm7KSso4an/zDgwxk3sz50y8JadrlG4QrySFAvp1wkpzZp8++jVtoKX7Ga+R73m0uaIuPY/
+	 KC0ko5L4+IW2xaFe13S/tKafGdHuQ51N1CcuVeWxlobbGvKbmRH3rqVg1LgBzWOV5iy0J/i/VFzPl6
+	 73pY999FJVGaR8CI=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app02-12002 (RichMail) with SMTP id 2ee26af6e884e15-27def;
+	Fri, 13 Nov 2026 18:37:57 +0800 (CST)
+X-RM-TRANSID:2ee26af6e884e15-27def
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.98])
+	by rmsmtp-syy-appsvr02-12002 (RichMail) with SMTP id 2ee26af6e8830b2-22ad4;
+	Fri, 13 Nov 2026 18:37:57 +0800 (CST)
+X-RM-TRANSID:2ee26af6e8830b2-22ad4
+From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: sc16is7xx: Fix clock leak on invalid clock frequency
+Date: Fri, 13 Nov 2026 18:37:54 +0800
+Message-ID: <20261113103755.2126-1-laixiangwu@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.50.1.windows.1
+In-Reply-To: <20261112163916.00d07adafb3caad1d83a2d1c@hugovil.com>
+References: <20261112163916.00d07adafb3caad1d83a2d1c@hugovil.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,54 +72,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261022-add-board-ok3572-c-v1-0-0b0fd85a31ee@qq.com> <20261022-add-board-ok3572-c-v1-8-0b0fd85a31ee@qq.com>
-In-Reply-To: <20261022-add-board-ok3572-c-v1-8-0b0fd85a31ee@qq.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Fri, 13 Nov 2026 11:17:47 +0100
-X-Gmail-Original-Message-ID: <CAD++jLkJsYtjKOF7wpiUqSLoBuiOe+C5sMEQo7XZ1dW773+pJQ@mail.gmail.com>
-X-Gm-Features: AclHuK9FczXasoO8qxg9IxepytTJahNxlbbuShGYzvO1iLyvCzMkO5H7q2dWjZE
-Message-ID: <CAD++jLkJsYtjKOF7wpiUqSLoBuiOe+C5sMEQo7XZ1dW773+pJQ@mail.gmail.com>
-Subject: Re: [PATCH 08/27] pinctrl: rockchip: Add RK3572 support
-To: 1579567540@qq.com
-Cc: Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
-	Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Elaine Zhang <zhangqing@rock-chips.com>, Lee Jones <lee@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Richard Cochran <richardcochran@gmail.com>, 
-	Ulf Hansson <ulfh@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Jisheng Zhang <jszhang@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, David Wu <david.wu@rock-chips.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
-	Maxime Chevallier <maxime.chevallier@bootlin.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Vinod Koul <vkoul@kernel.org>, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, 
-	Thinh Nguyen <Thinh.Nguyen@synopsys.com>, Jaehoon Chung <jh80.chung@samsung.com>, 
-	Shawn Lin <shawn.lin@rock-chips.com>, linux-clk@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	mfd@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-phy@lists.infradead.org, 
-	linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 21, 2026 at 6:12=E2=80=AFPM Cunhao Lu via B4 Relay
-<devnull+1579567540.qq.com@kernel.org> wrote:
+Hi Hugo,
 
-> From: Cunhao Lu <1579567540@qq.com>
->
-> Support RK3572 pinmux, bias, drive-strength, and Schmitt controls.
-> Enable input buffers during mux changes for the RGMII receive clocks.
->
-> Signed-off-by: Cunhao Lu <1579567540@qq.com>
+thanks for the review!
 
-This patch 8/27 applied to the pinctrl tree.
+Agreed, devm_clk_get_optional_enabled() is the cleaner way: the clock
+reference is dropped and the clock disabled automatically on probe
+failure and on remove, so the manual management, the out_clk label
+and the clk_disable_unprepare() in sc16is7xx_remove() all go away,
+and the -EINVAL path keeps its original plain return.
 
-Yours,
-Linus Walleij
+I've reworked the patch accordingly; v2 follows shortly.
+
+Best regards,
+Xiangwu Lai
+
+
