@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794564381;
-	b=zbV3CTPS0hf7uceu5p7Xl1Qggu5s/5ADzGyldxMWGd6oa9JCI6oG9XbTRyd/5BL5rXFn
-	 Cm7CnpetE+xWBNEennGx5rn3NAjYvniT+he5x/aJC5YDjdEA3+jdHrbTQQiRyt/3rsS8T
-	 d1ZOnvO8OUbQg7FiM+rHMtF8dCdMiT7kqHDRMlg4Z4Hoc/Ezz6ghG1ChrK3sJjVohnd92
-	 sqJgZlMVgdsPrwHJ9wKL7z7PZgfJUv7GXUTP9n3NMCg4CfPr7K65sMNqA44uMBFCRHJED
-	 8DRHw+S9buxh9+CfgpnLiAqe8c8qpNxYztZeUg+MMRFh9w1I2aWZ0ed18hUOllPgWbg==
+	t=1794564417;
+	b=ge3MjjwLt+OSjzrJhcGYkNnDB4egeE7Wg50UH9oUVJlturGlBg4NSZftrVZ4JzZH3cwU
+	 U0bmh63H2IzMsHqxVrNMfRQ+C9DL9n7yg0iaOcBWcYHyrNsjH0WfBn3fU2QPDZDAezBAH
+	 A70+v61NSyUhP+Y4TBA1blTq1FW+zcapd8rrunjpfYwlBcrqrFsgtnvRiiEm7wh35VID9
+	 YaIu/VIfwQGPIFGESCR5iNL0MxKKot/NYFxa9D+JXVXZiFOY31ZzLSuKcVoB4txqqYO14
+	 rkOTqKCh1N4NaUEugLbTOMdfxj8mzP+3rKske3/zr3NxicRXRwd9NvcfeRhy2OMt9YQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794564381;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794564417;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=NX/Q0VH+in4fVqP2vK5rEAoyRyhTKavFUhbbcPNQSb8=;
-	b=N3Y3A2P5gKUx/rEuu255VhsBQ9UTOc1ouFJk1ySEqg3z0tRdbQDO1hQrNw1nXwaHVVBg
-	 uPkiYtTE9p2mAUfr3/Twnce3yE04H2xqn3MjTIpLjWEg/qMn41voHJB2ARgWCWuCY+1iY
-	 URvipxhSgeX0c6opZ63H0A7hJ+gDAEXLunesr34jf8//TQdJPAel1zJUKdgM0Ye+/bFbg
-	 rJoxBO6RL9ePWg9/FwKF4EDWZb6cisMkH9d6qvKFO5321bb7IiATGPNISDVurbhlQ3Pxq
-	 N0ZkbQes/Z3LA4/pNKDcmLCIuE8oBTG74Hc7tsyCBP1hXcjo0OR4H23bboYttVQtSaQ==
+	bh=ZZYAVpuIw5c+qt9QjOAPTimvKBrijfTGemPeZXm9mzQ=;
+	b=GAWfRBLodIqH3jjrGyy6LUXKRER13JxhJsHeOa4HZzRzDAp+QocbXbSMNckhKrI6mi4y
+	 L2qnA+fdI4mF/MRRAysNbNe/ts2VUACORYSo0UWJL7Ly2tPZo0mXgrzOSFofFHbgeT0E9
+	 l7KMZk9BHj+xt/KZgy2gkh58LuywRkPTsvxLqkw1lzOuu3CA6xA+bPiU8kp5jj0B+mkvM
+	 AERMZj2cB2OLp+u7R/4QyzVTerXCdNhMu9zEdmQmjwrYPtQ+al77zEVb58GzIow12gI6H
+	 0yZnEQ6GUeh6/falNTN07gzf0zWryGwEQaTIpQIPotxtGK+CYPO0xJkkq8Z+jx+pc9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SogpGqtK;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XWcQlySY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75D54606A88B
-	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 10:06:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBA4C606A893
+	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 10:06:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SogpGqtK
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E21CF1F000C8;
-	Fri, 13 Nov 2026 10:06:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XWcQlySY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A90B1F000C4;
+	Fri, 13 Nov 2026 10:06:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794564381;
-	bh=NX/Q0VH+in4fVqP2vK5rEAoyRyhTKavFUhbbcPNQSb8=;
+	s=k20260515; t=1794564417;
+	bh=ZZYAVpuIw5c+qt9QjOAPTimvKBrijfTGemPeZXm9mzQ=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=SogpGqtKo8Fxaz5V/hfWwv8n/A4/hxzBfg1wrx+zW2W0VDUyt11vpHaSB3Oar0E0b
-	 oTajuxlcOADvZkBu0lRZui98h4OTrKvNTSwurxbGJwFyRMdb1ExmRZMg3XsYNtU82s
-	 4zbyh618nIlfH3sOws/VUrcETRcncfVFvXIOdCuV1yvsdbV8+haD7lrDYEByNStWHZ
-	 iJr/w/EeXLo8vlIf3tATT8NxHqcWoXPNTzSNBs9y3D9ZpAoPcXoWkr36lcpQfYyDPQ
-	 E/WmNHsD3lsG3siWI0xqdTJY9hGxGeLYwF2hCsSGdUY00yZyaUQKK0xTkz33qs5t/Q
-	 u+6eac/bGeZUQ==
-Message-ID: <sashiko-outbox-212602@kernel.org>
+	b=XWcQlySYlxB8uhVSQsvzNIYhBxBpyXAFncQKweBtrIClEQ1wgl2qVYq5vG9s6Ba08
+	 EbkhXw/5XYCM4U3q2HFRnBxAUG94uAGSW8vk7+J23cf/6ulAWzWVWx8xB3MOFORy/O
+	 ZC5t7eDbFyy02tgJGWnfINWvdFoZ1abBopMamFd/nNWPjhxfjUzIpLWAlM1Rn931Hp
+	 TXuSQBukI+dPROUlAA4K1zj1noNoOT9PjuDzDQK1qefPXY0oicnwa86TQUZ45MPI2p
+	 SvzSpiMZ6PJNyMxtOv+ruDDiWAY+nzT1i0VVdlNpay/3aJElfRcZKdi6tE5kpMueCN
+	 BAURiwVE5CFxw==
+Message-ID: <sashiko-outbox-212604@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v13 8/8] serial: 8250: retain DMA resources when
- termination fails
+Subject: Re: [PATCH v13 2/8] serial: serialize asynchronous write wakeups
+ with the port lock
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261113-submit-serial-8250-dma-cancel-v1-v13-8-b857f2617ece@gmail.com>
+In-Reply-To: <20261113-submit-serial-8250-dma-cancel-v1-v13-2-b857f2617ece@gmail.com>
 References: <20261113-submit-serial-8250-dma-cancel-v1-v13-0-b857f2617ece@gmail.com>
- <20261113-submit-serial-8250-dma-cancel-v1-v13-8-b857f2617ece@gmail.com>
+ <20261113-submit-serial-8250-dma-cancel-v1-v13-2-b857f2617ece@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 13 Nov 2026 10:06:20 +0000
+Date: Fri, 13 Nov 2026 10:06:56 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,42 +61,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> serial8250_release_dma() ignores the return from dmaengine_terminate_sync=
-()
-> before freeing the coherent RX buffer, unmapping the TX FIFO and releasing
-> the channels. If the provider fails to stop a channel, the DMAengine
-> wrapper returns the error without synchronizing its callbacks. Hardware
-> or a detached callback can then access the released storage and state.
+> uart_write_wakeup() expects the UART port lock to be held. Several worker,
+> DMA completion and interrupt paths call it without that lock, including
+> indirect calls from uart_handle_cts_change() and the transmit helpers.
 >=20
-> Checking the error and returning early would not preserve their lifetime:
-> serial core frees the TX FIFO after the driver's shutdown callback return=
-s,
-> and port removal can then release the callback context as well.
+> Take the port lock around these notifications or their transmit helper.
+> Keep sleeping SPI and regmap accesses outside the locked region, and keep
+> the FSL LPUART completion lock held through its wakeup. Acquire the port
+> lock after releasing private channel locks to preserve the ordering used
+> by UART callbacks. In the MUX timer, publish available FIFO space under
+> the port lock and keep the hardware FIFO-drain wait outside it.
 >=20
-> Require successful synchronous termination of both channels before
-> releasing any DMA resources. Retry failed channels after a sleep outside
-> the port lock, leaving channels that have already stopped and drained
-> alone. Keep the shutdown gate and storage reservation in place throughout
-> the retries.
+> Use plain port locking in hard-IRQ handlers and in helpers whose callers
+> already mask interrupts. Atmel status handling is also called during
+> resume, where lock_suspended is acquired with interrupts disabled; JSM
+> interrupt processing holds its IRQ-saving board lock. Keep IRQ-saving
+> [ ... ]
+> the restart worker during shutdown and removal. Release Lantiq's hardware
+> lock through the transmit helper's completion hook before notifying the
+> line discipline.
 >=20
-> Start retries with a 1 ms sleep and double it up to one second. This
-> makes short-lived failures responsive while bounding sustained retry
-> activity; neither delay is a hardware timeout. Report the initial failure
-> and ongoing failures with the elapsed time and current RX/TX error codes.
-> Track the five-second progress-report interval separately for each
-> teardown, so failures on different ports are reported independently.
-> Report recovery once both channels have stopped and drained.
->=20
-> A permanently failed DMA engine blocks close or removal. This deliberately
-> retains the buffers, mappings, channels and callback context until the
-> provider can establish that they are no longer in use.
->=20
-> Fixes: 9ee4b83e51f7 ("serial: 8250: Add support for dmaengine")
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261113-submit-ser=
-ial-8250-dma-cancel-v1-v13-0-b857f2617ece@gmail.com?part=3D8
+ial-8250-dma-cancel-v1-v13-0-b857f2617ece@gmail.com?part=3D2
 
