@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794564417;
-	b=ge3MjjwLt+OSjzrJhcGYkNnDB4egeE7Wg50UH9oUVJlturGlBg4NSZftrVZ4JzZH3cwU
-	 U0bmh63H2IzMsHqxVrNMfRQ+C9DL9n7yg0iaOcBWcYHyrNsjH0WfBn3fU2QPDZDAezBAH
-	 A70+v61NSyUhP+Y4TBA1blTq1FW+zcapd8rrunjpfYwlBcrqrFsgtnvRiiEm7wh35VID9
-	 YaIu/VIfwQGPIFGESCR5iNL0MxKKot/NYFxa9D+JXVXZiFOY31ZzLSuKcVoB4txqqYO14
-	 rkOTqKCh1N4NaUEugLbTOMdfxj8mzP+3rKske3/zr3NxicRXRwd9NvcfeRhy2OMt9YQ==
+	t=1794565035;
+	b=peYntvE85gyOETyOyWybgKW+SrhaeTaR+1tWGw4yYKJXHt5M56e+rrKZ7iktDA7YTDCl
+	 fq/SphzRYKiJMDwnJ5XNZ1fH/O0DcZFj6wI7QsnWlD7cmbUwLZhanzakH8L35jUm9Ank0
+	 yfnAy0U9JuMj/4wGOLrij9ibX4DsuQvd0HYh8ld9hbEJstiq0nr+wH5USG072mImi5ZAV
+	 l8xTemuVAOIGDJGCWleY34CNifys+1eAg0IH0qEucnIUEdMNU50w8eaQz04ztCIquRJZu
+	 EOu152Y7evxN3bDIjsDsW/NZ2u/36NTeMKkc3DnFw6Tab3vX+dE2x1H40xDiNu8Samw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794564417;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794565035;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=ZZYAVpuIw5c+qt9QjOAPTimvKBrijfTGemPeZXm9mzQ=;
-	b=GAWfRBLodIqH3jjrGyy6LUXKRER13JxhJsHeOa4HZzRzDAp+QocbXbSMNckhKrI6mi4y
-	 L2qnA+fdI4mF/MRRAysNbNe/ts2VUACORYSo0UWJL7Ly2tPZo0mXgrzOSFofFHbgeT0E9
-	 l7KMZk9BHj+xt/KZgy2gkh58LuywRkPTsvxLqkw1lzOuu3CA6xA+bPiU8kp5jj0B+mkvM
-	 AERMZj2cB2OLp+u7R/4QyzVTerXCdNhMu9zEdmQmjwrYPtQ+al77zEVb58GzIow12gI6H
-	 0yZnEQ6GUeh6/falNTN07gzf0zWryGwEQaTIpQIPotxtGK+CYPO0xJkkq8Z+jx+pc9Q==
+	bh=sMzQnGpiMfTW2RIxNPSr49InCJuU3AzMZRTXpLCeCrY=;
+	b=u5ij/KceFRPrsNKTVcMLyMgxdxhnu8eQn3/wFaZZ/1Ya8J0OSy6yeg91a89lKI+6t/J+
+	 UjhKv6sDjLjGVG8NsbaEsxpewkBkOQqX7QYq2Bl22o+bILfOQvTEqX7MblCxsyN/MRW7X
+	 osQNdblVZloxfqszZH4LHgJ5qhJfZ0Q0Ft+7aZRBHwA88eUrNqhTXU6Rx32yI1skKpCaO
+	 Jp1pczAXcq2mwn9c5tm8vlRHUBW4paN4OEkKRt1Zmep1z62lNGlVgh3DHynKBx7G8InuY
+	 pwpoIi5QBNmkST4P8OhZ4tPqMQ1rRoGps7dzc6cD0OKqyiy77lSJuVz2zcgugQCA8Ag==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XWcQlySY;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dZBFWLwV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBA4C606A893
-	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 10:06:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672FE606A32E
+	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 10:17:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XWcQlySY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A90B1F000C4;
-	Fri, 13 Nov 2026 10:06:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dZBFWLwV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29431F000C4;
+	Fri, 13 Nov 2026 10:17:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794564417;
-	bh=ZZYAVpuIw5c+qt9QjOAPTimvKBrijfTGemPeZXm9mzQ=;
+	s=k20260515; t=1794565035;
+	bh=sMzQnGpiMfTW2RIxNPSr49InCJuU3AzMZRTXpLCeCrY=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=XWcQlySYlxB8uhVSQsvzNIYhBxBpyXAFncQKweBtrIClEQ1wgl2qVYq5vG9s6Ba08
-	 EbkhXw/5XYCM4U3q2HFRnBxAUG94uAGSW8vk7+J23cf/6ulAWzWVWx8xB3MOFORy/O
-	 ZC5t7eDbFyy02tgJGWnfINWvdFoZ1abBopMamFd/nNWPjhxfjUzIpLWAlM1Rn931Hp
-	 TXuSQBukI+dPROUlAA4K1zj1noNoOT9PjuDzDQK1qefPXY0oicnwa86TQUZ45MPI2p
-	 SvzSpiMZ6PJNyMxtOv+ruDDiWAY+nzT1i0VVdlNpay/3aJElfRcZKdi6tE5kpMueCN
-	 BAURiwVE5CFxw==
-Message-ID: <sashiko-outbox-212604@kernel.org>
+	b=dZBFWLwV7B4zN8VDP+g13iKbfelH3qRYWukqu1srpV4L2hPrJoFbhVPJRTfa3LgWf
+	 h4ResBnccJtxeZx8oqjux/DhGQjeSh6WGCw3ZohyQczwnwEwk+zl9gCpFA+xrE5I6t
+	 4Yo4xI1kvfiXBWnmCI5LBvxcclGHFn6ZFl6VUnx8nERCN7CiHwECU94pInRKRTfYQJ
+	 xCZA/55ph/eUZACXjqE16J9s+aShhzlvbtPPunElgoiU+XqzagaNYitZizjoDMEwPm
+	 iSbx1IW9U2oZgUfvWDCN/zmt1TWuKPSHTe6e4kYFoFeaFCuH+KA9tsjCxXV6h6l9z6
+	 g5mN+q+B7l1KA==
+Message-ID: <sashiko-outbox-212613@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v13 2/8] serial: serialize asynchronous write wakeups
- with the port lock
+Subject: Re: [PATCH v13 6/8] serial: 8250: drain canceled TX DMA before
+ reusing its buffer
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261113-submit-serial-8250-dma-cancel-v1-v13-2-b857f2617ece@gmail.com>
+In-Reply-To: <20261113-submit-serial-8250-dma-cancel-v1-v13-6-b857f2617ece@gmail.com>
 References: <20261113-submit-serial-8250-dma-cancel-v1-v13-0-b857f2617ece@gmail.com>
- <20261113-submit-serial-8250-dma-cancel-v1-v13-2-b857f2617ece@gmail.com>
+ <20261113-submit-serial-8250-dma-cancel-v1-v13-6-b857f2617ece@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 13 Nov 2026 10:06:56 +0000
+Date: Fri, 13 Nov 2026 10:17:14 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,31 +61,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> uart_write_wakeup() expects the UART port lock to be held. Several worker,
-> DMA completion and interrupt paths call it without that lock, including
-> indirect calls from uart_handle_cts_change() and the transmit helpers.
+> uart_flush_buffer() resets the transmit kfifo before calling the driver.
+> serial8250_tx_dma_flush() terminates DMA asynchronously and clears
+> tx_running, allowing a new write to replace tx_size while a detached
+> callback has not yet run. That callback can then consume bytes
+> from the new transmission. Reusing the reset kfifo can also overwrite the
+> source of a transfer that has not stopped yet.
 >=20
-> Take the port lock around these notifications or their transmit helper.
-> Keep sleeping SPI and regmap accesses outside the locked region, and keep
-> the FSL LPUART completion lock held through its wakeup. Acquire the port
-> lock after releasing private channel locks to preserve the ordering used
-> by UART callbacks. In the MUX timer, publish available FIFO space under
-> the port lock and keep the hardware FIFO-drain wait outside it.
+> Reserve the flushed FIFO storage through serial core before returning
+> from the flush callback. Keep tx_running set until a worker synchronizes
+> the terminated channel, suppressing old callbacks and new submissions
+> during that interval. Return the mapping to CPU ownership before releasing
+> the reservation and waking writers. Normal transfers continue to use the
+> FIFO directly.
 >=20
-> Use plain port locking in hard-IRQ handlers and in helpers whose callers
-> already mask interrupts. Atmel status handling is also called during
-> resume, where lock_suspended is acquired with interrupts disabled; JSM
-> interrupt processing holds its IRQ-saving board lock. Keep IRQ-saving
+> Reuse the locked completion processing after retirement, including OMAP
 > [ ... ]
-> the restart worker during shutdown and removal. Release Lantiq's hardware
-> lock through the transmit helper's completion hook before notifying the
-> line discipline.
+> that guarantee for controllers which previously lacked it.
 >=20
+> Fixes: a424a34b8fad ("serial: 8250: Fix TX deadlock when using DMA")
+> Reviewed-by: Raul E Rangel <rrangel@chromium.org>
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261113-submit-ser=
-ial-8250-dma-cancel-v1-v13-0-b857f2617ece@gmail.com?part=3D2
+ial-8250-dma-cancel-v1-v13-0-b857f2617ece@gmail.com?part=3D6
 
