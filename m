@@ -1,80 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794609150;
-	b=B/8g9XlDDxbDWV24AixB+MrjEZrHTggJ2IJUpt6xfpKLcAdLT+KeCokW9WYr7o8JrjRw
-	 H1BvxBWfP36jASDmgsEkfg8o+hQRzdYYhGSR8uAkWty/dR0wCoghEieG1YrvInjaXgEcL
-	 FGRoF1u402ERD1nqFuz1X+7PQ5NomtR9eFAYKgziqyDn/506VOyIWrSVs/4PqXD8krk3+
-	 jTyiPmHxIKZ9T8upC8D/CZFHS+mTHsLxnYp90hj7otYujV64AZZuOrOX5Pl1P3yKf49xL
-	 OWy1kSRUDCFD/YWw4Iim71Ygpr6jpAeRRBdZcs+VdqR60jmUos23LLhPnn4iSwyLprw==
+	t=1794612890;
+	b=q4RNSBi5Xy8Bgf3YJeAmFdsrkCcONQeFfWRrg/Bh6qSf46aicF5TPdQla7M6RdCWZIh9
+	 U4VcguXz84tScqCO4tHHfYGHl/S9KXMSa0CzKSj/UTK9fgHpKfTOMNHb5MBIW5ahlm7Y5
+	 AQz8o5eP4sZuePeGRNvSPpnvMrhMIQGTwbUlS1O0XdeMcNjluzntlT1ZzymYgntcL/tBF
+	 IweCWeKmnM91b9Eo8A12ctEixFFRR2VrFBoyr2ajFEBYO1rjKChmvkRJ67uMY66jzn3s2
+	 jFWaTOQcPkxR0hExvnpY8z4ltADCXcs0fg0Hmd3xmR3lRS37vJdW768iPL5lpbHLotw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794609150;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794612890;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
 	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To;
-	bh=Dt6IluudlqKqBAuqjRgns7HN5p7KH03wW2/s28IH9nY=;
-	b=pzqQak7oK5LOkIvA2iq+dCebFvSzzruY0J4R8l1m0/+4Koi9z6ovh5YpBmfjzQGGa8VU
-	 wEeYtbQjWBVBiO04witlwCHf1uZ9Aw01V+RKX2whxIGQl34SJfaCl/MeZBZh/+lJn2Vyu
-	 mscP9NdwuC5IBxNL/ROUOe/iNMt/aiwQd0biElYtHv52A71pKr1bNel0nSdkmCFrqd54n
-	 eYyECengS8Ip4CwkOD0yvp0PMLwmTAtYAujkCyQ4PJ7yXJNcmZQh01BxXdjXkUfR6ezNE
-	 0mmiujN0mIZkvLCyNJSb3g3T/aM0eCJnLqjp9cQBSAEvwuMTO8J0LgdgJ5Rjknth1dA==
+	bh=iKPyD0fcQHjU+nZY9PhDSccu4A7Tiq9IV5sts7cPeIc=;
+	b=olQ3xLDQ5fb4YYs/WevuahAVEAq3V+b/gZoZXy/S+lHjCbj+0ohC4nC6BJ+qofXZZTP2
+	 2aBhAEWqHV+J3kHJL2xfNpJwzhw6fIKeIEwAJBnmnHF3IXU1Xaj3HrPXDTa3EKVcsqnV2
+	 muoXkMZornv01v3aVh8XNHtVz4aQyNO/jUkDIrwxsa5ftqrilDWmHVwjYjPV8luQYNZze
+	 wrEawgVDFUG7E7HXNG3H78vvBpDG4HR5OopvYJvpteP2Z3XoTtm1Td5Krh/+2kVpCj5KO
+	 lbUejQ4QS9/IH24auudMGLYM/mmPcRsPZ13ZBp+c0GzXwdHU0t+yxTRV/V/qlxuqyIA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JphA+3S9;
-	arc=none smtp.remote-ip=192.198.163.7
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=I2ZgzY3t;
+	arc=none smtp.remote-ip=192.198.163.10
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1204606A89F;
-	Fri, 13 Nov 2026 22:32:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F1204606A89F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37BDF606A89B;
+	Fri, 13 Nov 2026 23:34:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 37BDF606A89B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JphA+3S9
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=I2ZgzY3t
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794609149; x=1826145149;
+  t=1794612889; x=1826148889;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=bQUy94zhvayAXEwrPY5g4435/3CAAeKUdx9UbpF/HFw=;
-  b=JphA+3S9K+yneUTdroCNv5V1Ioix8Eexj7sGIzDZdW/7JwieFnqeSiKN
-   cbugOXVBgA65NepfZrHFvkR052QJY6VERoDbqIq6zBPxPYpgu1pU0ZBHU
-   XJQ/NLriNcdlwUEaTBrnvkUlwq/xdGOuD6EpZhCoU610TnslgTpECLxDH
-   Nr/yr1MeQxJEmVWLpk6YZ7d/CRjvlcPHgc+VP6ZNKUUVVvv6h0C6g+UXr
-   xadU+Va2sQbh8z40DnJAhExg3TD+DoI8+XzIIahCfMIipow9gPq37IVU6
-   +DHUNkpZg9IFXSjBw5HpP6rQv5SmOymwqHqaHgtjQkJSaYi4ZhL5s0/4s
+  bh=oARI0lz8E8wlq5FlviYP9LbHzAMB8U71otiLJAe+IpQ=;
+  b=I2ZgzY3tFPhah1zvR6mWKt3nQMPowwdzDV3q9BSGzfTADVGs9foAWuHo
+   QobUBYCf3fs6gWGveWItOlHZ/eJkhm0Kfg9+NOxfaV9ynBzxaHwuubpxK
+   xXYHw06mnhrgqarpBN4JI4CljxJr4P43rWslc9zQr3OiA/E4kahbh7DY8
+   vApEUBq3ILzzSGRsq5iQaF4CJoShkqIZSuTHcRjjcxcVRua+6AFb8xcIR
+   Ch6ZHhzh7c8/Fajlh31O/HjvEnKguHNhU4SlxUp1qdrzqhHciheab29IE
+   eXkBrpWLFBbUfhjk4a15mrKzXQZWv8zwt21qX/S95oH4beeQE8srnxH5G
    g==;
-X-CSE-ConnectionGUID: 6KlQObuAQUCJ3WEMS6kasQ==
-X-CSE-MsgGUID: xy+RdkRvSPSUsK9MFTUwbQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3290097"
+X-CSE-ConnectionGUID: lrdV4SNuQVCs23MiTEWbSA==
+X-CSE-MsgGUID: FuwMKJUpQAqx6J/rmZINpw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3323684"
 X-IronPort-AV: E=Sophos;i="6.27,212,1787036400"; 
-   d="scan'208";a="3290097"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 14:32:28 -0800
-X-CSE-ConnectionGUID: B8cwilBeSiSeFBhKOop3IA==
-X-CSE-MsgGUID: HiipO5A9RYGO4jA595Nv0Q==
+   d="scan'208";a="3323684"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 15:34:48 -0800
+X-CSE-ConnectionGUID: inmdYYaIS2mHAFqRoc1IIQ==
+X-CSE-MsgGUID: mrkHf29aQmGNu8K7Q9mq4A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,212,1787036400"; 
-   d="scan'208";a="9046931"
+   d="scan'208";a="8925562"
 Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by orviesa002.jf.intel.com with ESMTP; 13 Nov 2026 14:32:26 -0800
+  by orviesa004.jf.intel.com with ESMTP; 13 Nov 2026 15:34:47 -0800
 Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1xRzol-000000014F7-3shs;
-	Fri, 13 Nov 2026 22:32:23 +0000
-Date: Sat, 14 Nov 2026 06:31:48 +0800
+	id 1xS0n5-000000014Qh-2ylI;
+	Fri, 13 Nov 2026 23:34:43 +0000
+Date: Sat, 14 Nov 2026 07:34:40 +0800
 From: kernel test robot <lkp@intel.com>
 To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>,
 	gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, hugo@hugovil.com,
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, hugo@hugovil.com,
 	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
 Subject: Re: [PATCH v2] serial: sc16is7xx: Fix clock leak on invalid clock
  frequency
-Message-ID: <202611140631.LIs6CWKM-lkp@intel.com>
+Message-ID: <202611140752.jrPC8oJ4-lkp@intel.com>
 References: <20261113103855.2144-1-laixiangwu@cmss.chinamobile.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -100,21 +100,21 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Xiangwu-Lai/serial-sc16is
 base:   https://github.com/intel-lab-lkp/linux laixiangwu/serial-sc16is7xx-Fix-clock-leak-on-invalid-clock-frequency/20261030-165507
 patch link:    https://lore.kernel.org/r/20261113103855.2144-1-laixiangwu%40cmss.chinamobile.com
 patch subject: [PATCH v2] serial: sc16is7xx: Fix clock leak on invalid clock frequency
-config: nios2-randconfig-1000-20261114 (https://download.01.org/0day-ci/archive/20261114/202611140631.LIs6CWKM-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261114/202611140631.LIs6CWKM-lkp@intel.com/reproduce)
+config: powerpc-randconfig-1000-20261114 (https://download.01.org/0day-ci/archive/20261114/202611140752.jrPC8oJ4-lkp@intel.com/config)
+compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261114/202611140752.jrPC8oJ4-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611140631.LIs6CWKM-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202611140752.jrPC8oJ4-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_probe':
->> drivers/tty/serial/sc16is7xx.c:1622:25: error: label 'out_clk' used but not defined
+>> drivers/tty/serial/sc16is7xx.c:1622:9: error: use of undeclared label 'out_clk'
     1622 |                         goto out_clk;
-         |                         ^~~~
+         |                              ^
+   1 error generated.
 
 
 vim +/out_clk +1622 drivers/tty/serial/sc16is7xx.c
