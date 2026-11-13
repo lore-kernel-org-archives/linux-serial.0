@@ -1,60 +1,119 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.67.36.66
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794600215;
-	b=CUhK4InLO5cBxIwiToS2zlwds/n+uUtMKigBD9MHCWc1KQtXD3t9Ecev7ubV8fcoeeog
-	 Pdiwy+UnBszTpE6QukMuU5FkhDKhQY8sg8fpYyc80k80f9azt87mLpYInoevzWhBjWTa+
-	 n7eBusRQdMLz3OvPuzFTFpfhAh0v8tw2PKRN9WK4pb/U/WuaM1B4SE51Uop3/ghQqx2GD
-	 CJgS/EKX5+E512c3eSsiVzqXZlqBXC5bcseH7uf2Ajd67LFrO68F5DBwlAGNEwYCYZAnj
-	 BtyNViSrI+2nuD0NboHwuE+nGvFT2BeorH1hcew2EZa5afqW5PeP/x/bK6vha0O4iGA==
+	t=1794604476;
+	b=zLJLDd/z2F369jGvn1ZKXpW3D/k7npIqO9V5e/f5+cpAvTV8QlUb+Jp+dmepF9ITZTnt
+	 fn4YYYdCb9nai5VtdJQ7gOYRfcibGai1jY+GNtlyuDM4RaRt6FXulM2GusR4nx3Ii6jmZ
+	 BjL87wWNujWZKVTN46jfXNdDMaiAAKkn/OTnTCeGfVEVKUyqlSwtRhvlIdZ7XbGJhrYkd
+	 CR7DbLtVC9xKQwdcRku9HASlJPZH69JsWsnUvWaaGldpSq+AN9zcL6vT03vs+gAV6vcIi
+	 IfGqgWKv4G3Ce21DD5VLZJmzba3yCUZaVHUhovRLeaJOtaDoOgPYQ8BJYyeQgXQlP/Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794600215;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-Id:In-Reply-To:References:X-Mailer:Mime-Version:Content-Type:
-	 Content-Transfer-Encoding:X-Spam_score:X-Spam_bar;
-	bh=G2Z4BXXxGmGeisBjYmhaiDRUECEdjrVKtWcBVKsZ7eM=;
-	b=T0Wqw2aK7xst0o1nzhXRGQL1ZZD9/Bvj19Zd8wxqyVUKt8hz9KIDVhyrIg37q/bWPIFL
-	 ljBm2juOt6fsIA/HUr24X8e8dYiijzoJO1PTrBObuiWQdjcSZpq/KHj7EIqFmW1wShJK8
-	 JS7RwNhNGbNXOf+nIXugigXEV73qQMcJKlBlXkozeVNSzqfO7hrkNAAVEZHOTLPoZil/Y
-	 Q3q768uiAo1E7SrYOPZ9Gh9zKkXwt79hqddPBCyhc95kf3KE2Ldhjhop5I+/vHYk5hsP8
-	 ASWvCzY8+ZZP57xC6twotkY5cw6hAWLRmV2mcCH6C1p1pyJPI9/anNt5EsE1RiKLj0A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794604476;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Message-ID:Subject:
+	 From:To:Cc:Date:In-Reply-To:References:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP;
+	bh=bi+qbuXC7Kr0qdcc2OWqT62yrf9jqwzAVB3DjteEz/8=;
+	b=AVt1C8oBLG+hmrMABeM42HIoS0r+J0WQ4oIJp/jBlQNU/hQjhvyo8tid/LsxOMCg+KV2
+	 J7Ep9dKd5WD/jzRcms1RmPMm8VydMool3xBCj1vbSMbj0/A7pmmGhA9Ic/tZ0xniYqZ9Q
+	 /LCUXTF3+u3ZFOWjl/JVweqHZdHBC4oOM5NMelUhx8Mmw45QVXvaRKq9ahrk5VAUrZ6tW
+	 rfuiitpQiHkGJV9ut+1H0o8Yg6IRto3WvzQQIBeLEjjm7HkzEU8HBtbjQPvRbGvyOrXvm
+	 PlNI/E96sovCdN6cSa36k6u9FAScKxmakmXU2jvsolP6sJg1geTxcOCot5J/o39k9Qw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=hugovil.com;
-	spf=pass smtp.mailfrom=hugovil.com;
-	dkim=pass header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=DshtSLZq;
-	arc=none smtp.remote-ip=162.243.120.170
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	dmarc=pass header.from=posteo.de;
+	spf=pass smtp.mailfrom=posteo.de;
+	dkim=pass header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b="V9uk/ydU";
+	arc=none smtp.remote-ip=185.67.36.66
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EE59606A333;
-	Fri, 13 Nov 2026 20:03:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8EE59606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F342D606A336
+	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 21:14:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F342D606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=DshtSLZq
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=G2Z4BXXxGmGeisBjYmhaiDRUECEdjrVKtWcBVKsZ7eM=; b=DshtSLZqeDsgD8rAvcDqn3SMDt
-	bSLeGYqi/x2sc0BKozFbASSrYtWQN38w1gKvQTQHK8ZqNbTPdDXTFP5DXV7wQL8NOa5BIgfq0UjS0
-	+5tvHUT15o/aDtSN5IqNOuz9hHjvdS10ctqvcGHBJ07J+1+w4iYbRWkkvb0SUsVs3OLs=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1xRxUi-000000002aq-1ZAC;
-	Fri, 13 Nov 2026 15:03:32 -0500
-Date: Fri, 13 Nov 2026 15:03:31 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] serial: sc16is7xx: Fix clock leak on invalid clock
- frequency
-Message-Id: <20261113150331.0133a3b8601bcb64b6536ef8@hugovil.com>
-In-Reply-To: <20261113103855.2144-1-laixiangwu@cmss.chinamobile.com>
-References: <20261113103855.2144-1-laixiangwu@cmss.chinamobile.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=V9uk/ydU
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout02.posteo.de (Postfix) with ESMTPS id 01FAF240108
+	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 22:14:27 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1794604467;
+	bh=bi+qbuXC7Kr0qdcc2OWqT62yrf9jqwzAVB3DjteEz/8=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=V9uk/ydUGiRpCAmNs9UBqXwaoPGGUPZCYdDLs5zjvX+t2vAuT7Tt1gjbtPZaIcyeP
+	 pBgqkhq2iG05NsEgEeMKQOmkRzKY+baSwBRIdVxaJqmSXdB5R75zGSsIY9MvAwbzm6
+	 xtJrDjx83GXP2/yfwHabVZ1zRWa31VYRk2c5DSMG13s4l9nSeIS9X97qQp/KFMdYRc
+	 DL1I4cqY9ZQbEZWwf5A8zYIXaAYZUHhb+BCLW27uVXz/hqtM2rv6/OofsSqiLgy8zF
+	 qYHU0ygro2O8GED7Xfzf4evF/YLdGeR12tDRw3MGabSJTk1DLWZUwr2W0FGJK3b2EB
+	 903mN7tKldShQ==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4jR94H1xfCz9rxD;
+	Fri, 13 Nov 2026 22:14:23 +0100 (CET)
+Message-ID: <3e4aafb4c2dab636e9f113199d4cb95e0af9c6bb.camel@posteo.de>
+Subject: Re: [PATCH 4/7] rust: serdev: remove the unbind() callback
+From: Markus Probst <markus.probst@posteo.de>
+To: Danilo Krummrich <dakr@kernel.org>, gregkh@linuxfoundation.org, 
+	rafael@kernel.org, johan@kernel.org, david.m.ertman@intel.com,
+ iweiny@kernel.org, 	leon@kernel.org, ojeda@kernel.org, boqun@kernel.org,
+ gary@garyguo.net, 	bjorn3_gh@protonmail.com, lossin@kernel.org,
+ a.hindborg@kernel.org, 	aliceryhl@google.com, tmgross@umich.edu,
+ daniel.almeida@collabora.com, 	tamird@kernel.org, acourbot@nvidia.com,
+ work@onurozkan.dev, igor.korotin@linux.dev, 	bhelgaas@google.com,
+ kwilczynski@kernel.org
+Cc: driver-core@lists.linux.dev, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+Date: Fri, 13 Nov 2026 21:14:25 +0000
+In-Reply-To: <20261112005455.1224352-5-dakr@kernel.org>
+References: <20261112005455.1224352-1-dakr@kernel.org>
+	 <20261112005455.1224352-5-dakr@kernel.org>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=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
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-EDAa2rzL4vfrR9iRkevA"
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,112 +122,144 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
-
-Hi,
-
-On Fri, 13 Nov 2026 18:38:54 +0800
-Xiangwu Lai <laixiangwu@cmss.chinamobile.com> wrote:
-
-> sc16is7xx_probe() enables the clock with clk_prepare_enable() early
-> in the probe path.  If the resulting clock frequency cannot be
-> determined (neither from the clock itself, nor from the
-> "clock-frequency" property or platform data), the driver bails out
-> with -EINVAL, but it does so with a plain return, leaving the clock
-> prepared and enabled.
-> 
-> Switch to devm_clk_get_optional_enabled(), which drops the clock
-> reference and disables the clock automatically when the probe fails
-> and when the device is removed.  The manual clock management is no
-> longer needed: drop clk_prepare_enable(), the out_clk label and the
-> clk_disable_unprepare() call in sc16is7xx_remove().
-> 
-> Fixes: cb1b206cff46 ("serial: sc16is7xx: Use devm_clk_get_optional()")
-> Suggested-by: Hugo Villeneuve <hugo@hugovil.com>
-> Signed-off-by: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
-
-Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+MIME-Version: 1.0
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
 
+--=-EDAa2rzL4vfrR9iRkevA
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, 2026-11-12 at 01:52 +0100, Danilo Krummrich wrote:
+> The driver model uses native Rust lifetimes to let driver data retain
+> device resources and a Device<Bound> reference for the duration of the
+> binding. Both remain accessible from the destructor, so a separate
+> unbind() callback is no longer needed.
+>=20
+> Remove serdev::Driver::unbind() and the adapter's remove callback and
+> document that device teardown belongs in Drop or PinnedDrop.
+>=20
+> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
 > ---
-> Changes in v2:
-> 
-> - Rework the patch following Hugo Villeneuve's suggestion: switch to
->   devm_clk_get_optional_enabled() so the clock is disabled
->   automatically on probe failure and on remove, and remove the now
->   unneeded manual clock management (clk_prepare_enable(), the
->   out_clk label and the clk_disable_unprepare() call in
->   sc16is7xx_remove()).  The -EINVAL path keeps its original plain
->   return since devm handles the cleanup.
-> 
-> Link: https://lore.kernel.org/all/20261030085508.1882-1-laixiangwu@cmss.chinamobile.com
->  drivers/tty/serial/sc16is7xx.c | 18 ++++--------------
->  1 file changed, 4 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index fba588559..a69b71fb8 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1605,14 +1605,10 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  		dev_dbg(dev,
->  			"No interrupt pin definition, falling back to polling mode\n");
->  
-> -	s->clk = devm_clk_get_optional(dev, NULL);
-> +	s->clk = devm_clk_get_optional_enabled(dev, NULL);
->  	if (IS_ERR(s->clk))
->  		return PTR_ERR(s->clk);
->  
-> -	ret = clk_prepare_enable(s->clk);
-> -	if (ret)
-> -		return ret;
+>  rust/kernel/serdev.rs | 41 ++++-------------------------------------
+>  1 file changed, 4 insertions(+), 37 deletions(-)
+>=20
+> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
+> index 17ca504b7f8d..fd998b68b74f 100644
+> --- a/rust/kernel/serdev.rs
+> +++ b/rust/kernel/serdev.rs
+> @@ -81,7 +81,6 @@ unsafe fn register(
+>          unsafe {
+>              (*sdrv.get()).driver.name =3D name.as_char_ptr();
+>              (*sdrv.get()).probe =3D Some(Self::probe_callback);
+> -            (*sdrv.get()).remove =3D Some(Self::remove_callback);
+>              (*sdrv.get()).driver.of_match_table =3D of_table;
+>              (*sdrv.get()).driver.acpi_match_table =3D acpi_table;
+>          }
+> @@ -210,29 +209,6 @@ extern "C" fn probe_callback(sdev: *mut bindings::se=
+rdev_device) -> kernel::ffi:
+>          })
+>      }
+> =20
+> -    extern "C" fn remove_callback(sdev: *mut bindings::serdev_device) {
+> -        // SAFETY: The serial device bus only ever calls the remove call=
+back with a valid pointer
+> -        // to a `struct serdev_device`.
+> -        //
+> -        // INVARIANT: `sdev` is valid for the duration of `remove_callba=
+ck()`.
+> -        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreInternal<=
+'_>>>() };
 > -
->  	freq = clk_get_rate(s->clk);
->  	if (freq == 0) {
->  		if (uartclk)
-> @@ -1631,10 +1627,9 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  	kthread_init_worker(&s->kworker);
->  	s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
->  				      "sc16is7xx");
-> -	if (IS_ERR(s->kworker_task)) {
-> -		ret = PTR_ERR(s->kworker_task);
-> -		goto out_clk;
-> -	}
-> +	if (IS_ERR(s->kworker_task))
-> +		return PTR_ERR(s->kworker_task);
-> +
->  	sched_set_fifo(s->kworker_task);
->  
->  	ret = sc16is7xx_reset(dev, regmaps[0]);
-> @@ -1711,9 +1706,6 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  out_kthread:
->  	kthread_stop(s->kworker_task);
->  
-> -out_clk:
-> -	clk_disable_unprepare(s->clk);
+> -        // SAFETY: `remove_callback` is only ever called after a success=
+ful call to
+> -        // `probe_callback`, hence it's guaranteed that `Device::set_drv=
+data()` has been called
+> -        // and stored a `Pin<KBox<PrivateData<'_, T>>>`.
+> -        let private_data =3D unsafe { sdev.as_ref().drvdata_borrow::<Pri=
+vateData<'_, T>>() };
 > -
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(sc16is7xx_probe);
-> @@ -1740,8 +1732,6 @@ void sc16is7xx_remove(struct device *dev)
->  
->  	kthread_flush_worker(&s->kworker);
->  	kthread_stop(s->kworker_task);
+> -        // SAFETY: No one has exclusive access to `private_data.driver`.
+> -        let data =3D unsafe { &*private_data.driver.get() };
+> -        // SAFETY:
+> -        // - `private_data.driver` is pinned.
+> -        // - `remove_callback` is only ever called after a successful ca=
+ll to `probe_callback`,
+> -        //   hence it's guaranteed that `private_data.driver` was initia=
+lized.
+> -        let data_pinned =3D unsafe { Pin::new_unchecked(data.assume_init=
+_ref()) };
 > -
-> -	clk_disable_unprepare(s->clk);
->  }
->  EXPORT_SYMBOL_GPL(sc16is7xx_remove);
->  
-> -- 
-> 2.50.1.windows.1
-> 
-> 
-> 
-> 
+> -        T::unbind(sdev, data_pinned);
+> -    }
+> -
+>      extern "C" fn receive_buf_callback(
+>          sdev: *mut bindings::serdev_device,
+>          buf: *const u8,
+> @@ -365,6 +341,10 @@ pub trait Driver {
+>      type IdInfo: 'static;
+> =20
+>      /// The type of the driver's bus device private data.
+> +    ///
+> +    /// Device teardown should be performed in [`Drop`] or [`PinnedDrop`=
+](pin_init::PinnedDrop)
+> +    /// for this type. The `'bound` lifetime allows the data to retain d=
+evice resources and a
+> +    /// [`Device<device::Bound>`] reference for use during teardown.
+>      type Data<'bound>: Send + Sync + 'bound;
+> =20
+>      /// The table of OF device ids supported by the driver.
+> @@ -382,19 +362,6 @@ fn probe<'bound>(
+>          id_info: Option<&'bound Self::IdInfo>,
+>      ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound;
+> =20
+> -    /// Serial device bus device driver unbind.
+> -    ///
+> -    /// Called when a [`Device`] is unbound from its bound [`Driver`]. I=
+mplementing this callback
+> -    /// is optional.
+> -    ///
+> -    /// This callback serves as a place for drivers to perform teardown =
+operations that require a
+> -    /// `&Device<Core>` or `&Device<Bound>` reference. For instance.
+> -    ///
+> -    /// Otherwise, release operations for driver resources should be per=
+formed in `Drop`.
+> -    fn unbind<'bound>(sdev: &'bound Device<device::Core<'_>>, this: Pin<=
+&Self::Data<'bound>>) {
+> -        let _ =3D (sdev, this);
+> -    }
+> -
+>      /// Serial device bus device data receive callback.
+>      ///
+>      /// Called when data got received from device.
+
+Reviewed-by: Markus Probst <markus.probst@posteo.de>
+
+Thanks
+- Markus Probst
 
 
--- 
-Hugo Villeneuve
+--=-EDAa2rzL4vfrR9iRkevA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmr3fakbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPS9NAQAJz35dn34vwO1cHY+moo
+kIjIgv5XKwFm73AdFdW7aqUO9XCW9TQqd4JCG8Sg8++Jq6vkXd+GnrO4jHcuhoAU
+n6+/uv0aG5iH2FF2UbfA7BA0VY5ZTL1wI5WFrpXpsJGPoe2E4NCeNvhkF3PvkDqy
+CSKx5R3xkGoA2v/HB1nEcmkh1s9/qa3gTS6f+vaE/M5XXogmYcX424ktnA42jUdR
+joohrncC/wHKQhShQWNjOhYJh8oPHPZLKJhXq3rtiT1GNNmiijrnK/RhJZbCWwBT
+tVTIkVfmaZxdQ8weTr0FB8OhOyao0NMmrNZvAhv4xuTGx1KHCb267y/35iR7Mg6i
+Fjy9YWiOEboK+fBTIAOtGuAm2XrLtT54KV1u+0R8CoMwsUgcBjZ7F+1hPBiEpkME
+PJhRPSXwYA913kusT3+m8HWlbuObBNyD8kOTyVD44bxYB3C5y6yOxfp+P+J/Ax5x
+qWLXbLRuOGOTzgj6cyluHPbjcsoDewsAFUkvBbk5huHHTGom8LjhAEiHqnajmm4k
+m7ItRvbrxPl+sy6/JTXu/45vZh2xblT7AC8rGvRNZHoErdeY56KVEEio9td08FJE
+qPlLHfuuo/Jy52qpiIlM7ue5VkA/tkGZri/I0krHiTkvRMfTgIoP8ZMt8JOkPqdE
+Zxou2D0rXcA8KBONQi+Nwbxv
+=mwoh
+-----END PGP SIGNATURE-----
+
+--=-EDAa2rzL4vfrR9iRkevA--
