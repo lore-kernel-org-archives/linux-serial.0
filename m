@@ -1,56 +1,62 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.120.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794585721;
-	b=m0nqAh+SzMLdKugR36nA3hy818T70imZtJS6D3iE+1Ki/uJ9Mxem8tUlZF0+hig3uz3c
-	 q6lHq+UPdkeQQVSWun8Plpqng/Rtb8Oih/B2V+eyXjpI46tbox+iOZiErRXwCVZVzlyqO
-	 tHSwJV7Yuv1dmsZAk6mzK3v79haBOhcxB83TQFqaCjnDTanSm7l7n9OcMUNgqfB+Uni8X
-	 +Uvldust60TrqYKz5bCTQ8q/pmdr7BDMcTN8FaalztbouleIgxnPlOQxEndsnu+4jjaBV
-	 B6gZZo6JK9jiXGQN59EvSG6E6c4BpIymok2LHsVUF6ySZQrJeemhIislLeosibZ2R6w==
+	t=1794589107;
+	b=mm5V9ygGxjk/qu67JenNoPTlt79wzSTPicknqCNgEkXokdzMfKAnkvPRcOFC1+UNV0I0
+	 jIY1mkGPaB/s/UzBZcTsL/zyAPIGquhC/W4iTa1z/sfRlBrfyzviPrx40vMz04Fa2v6wA
+	 aTSuCIigb4yrU4jq8j7UmMKNH2jhQBHCM/NdbeZBU+/I7vLYcOKJ20Kj4gqJJ1i5gw/qB
+	 /MPCsjvKiqY7MRPbTYy35erQMuu3k/hoG3wFNA5EuzzjWDy5uwSNWTVywDju6zEwzQsiH
+	 sYGpw9R6kYy3uecIHl/Dab3rumPPsNluRXGjiqrZKm5u/L89wwoS3K6iRjfC1o/igmg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794585721;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Egw9JjCK+DUmz8g6ZcDlqjh7BkFWqzrS4U0GifCOv6s=;
-	b=SXJ9fteM41sTzLKCur24BSu9/D1unOaQ170+MbaEb9i5AlZ5FmL4Nhzl5l9Kl6U7aADH
-	 DKZ7klukplFC4rQlRxzmvapc6S1peyltQ2r7uu4j7lWB+W+gykuWuBXomDR5dBR4Ek0PN
-	 1K5YHMd76x/IiF3rU6HFzyCX0msoL3X6cVLR6NKS9MElKJ3ZiMtOj3LvaXciyE3v/A725
-	 MK/wpQmNrosKyV4mGI/hxejnMgfBFYjsU/XB+f8Ixza68jTfRrdezSe2tUzQ+2FjS2r25
-	 J6HSMb/klEE1MdneM/48tNcGEVhqg+aIjyu27xbVeNFgImuF4tX0xpcCS2kZqhHJf+g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794589107;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-Id:In-Reply-To:References:X-Mailer:Mime-Version:Content-Type:
+	 Content-Transfer-Encoding:X-Spam_score:X-Spam_bar;
+	bh=673kMR1s22yHaTq4PExkzsyhSKIG/6M6+SYEFKzCo4Q=;
+	b=mfXQkPLKdeXm5XRR2U7DD2tUw49akerRMPW6Cgdr8klxv3LrN5gT9o8AGgckvHAiZE1F
+	 zdu41t8BaDkM5Kmiv+p+Zih52H11YSH6q5N3qxbHZ2PN9aPSszIbomHer93/GUHnCmq3P
+	 Mznm5+w/tTR8WfFPZJ3z6W2loMnsYIGTaGAi+0ybxwCUZ/mQ6EH2HkztGysEFjUuQCcTU
+	 nKRILVs13mZzRsR+uWPDVnC1zLNl7WBZcbWh9iBYqujijklRHpMXSWDzR0zMPmh/QLEHI
+	 KY6iEWKc7Pt1vG1k7usO37jPec/2Kul97kKVhpUFoIQ9jm7W13mDSrhbEgkEMIX5PMw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="l8GsoVO/";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=hugovil.com;
+	spf=pass smtp.mailfrom=hugovil.com;
+	dkim=pass header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=yBgxpE1a;
+	arc=none smtp.remote-ip=162.243.120.170
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F15606A8A9
-	for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 16:02:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8B35606A327;
+	Fri, 13 Nov 2026 16:58:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8B35606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l8GsoVO/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F0E1F000C6;
-	Fri, 13 Nov 2026 16:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794585721;
-	bh=Egw9JjCK+DUmz8g6ZcDlqjh7BkFWqzrS4U0GifCOv6s=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=l8GsoVO/I24b7tvwkYz41N0M+8SbkFDbt4LKay1DN6YeVI/2FWxoUmxex8jZ5hxHm
-	 p/RuHmcN7vYGOGZltQo06O6AErxbkqs1CzlF/pPUOV9E4VDaa9UcI/oxm7CeTmxfoG
-	 7DSYVslCz+xUCjSz8GAXc0jRGiT1c+TXcTWVulCUkLSFK1a1ipuBsXQE+6Gk0+pRr0
-	 7LmOQWWrMytkVqI0VKmVX1rUtcPJnvioJkauM305ELr0M0T9sStNsfPJKpqhYdKdQq
-	 Bfn9Bf0PeqDkR3YNuJvQJHTXFWrDXgyFD3ZJcuseawP8IYSDeaK8TgY3gYYGdX5LTd
-	 hIZ5tfNiCY2Hw==
-Message-ID: <sashiko-outbox-213142@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3] tty: serial: lpuart: Add port lock for registers
- read in lpuart32_set_termios()
-Reply-To: sashiko-reviews@lists.linux.dev
-To: =?utf-8?b?U2hlcnJ5IFN1biAoT1NTKQ==?= <sherry.sun@oss.nxp.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261113-lpuart_port_lock-v3-1-895c8758a9db@nxp.com>
-References: <20261113-lpuart_port_lock-v3-1-895c8758a9db@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 13 Nov 2026 16:02:00 +0000
+	dkim=pass (1024-bit key, unprotected) header.d=hugovil.com header.i=@hugovil.com header.a=rsa-sha256 header.s=default header.b=yBgxpE1a
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=673kMR1s22yHaTq4PExkzsyhSKIG/6M6+SYEFKzCo4Q=; b=yBgxpE1apmvdsLZ0wXDmUwfPwy
+	3vvFFPPkiwORSIPoIvyjEqhlau6390+La+1ty0mW875Hr7REkrpearB+H56Qmj1S23h5kmH2FyEtg
+	agLTGr4A1FQyKn0glyKVBZIo3nXdVPcazMuZAUhzgl98V+I/y34oKifZN+ylvwObxyh0=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1xRubY-000000001Fz-1rTY;
+	Fri, 13 Nov 2026 11:58:24 -0500
+Date: Fri, 13 Nov 2026 11:58:23 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: sc16is7xx: Fix clock leak on invalid clock
+ frequency
+Message-Id: <20261113115823.68e12fc677c8e0f5f166e593@hugovil.com>
+In-Reply-To: <20261113103755.2126-1-laixiangwu@cmss.chinamobile.com>
+References: <20261112163916.00d07adafb3caad1d83a2d1c@hugovil.com>
+	<20261113103755.2126-1-laixiangwu@cmss.chinamobile.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,36 +65,38 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-> From: Sherry Sun <sherry.sun@nxp.com>
->=20
-> lpuart32_set_termios() reads UARTCTRL at function entry without holding
-> the port lock. lpuart32_console_write() can run concurrently on another
-> CPU and temporarily clears the RIE (Receiver Interrupt Enable) bit while
-> it polls characters out. If the unlocked read in set_termios lands inside
-> that window, the stale snapshot is written back, permanently clearing
-> RIE. Once lost, no normal code path re-enables them, so the UART stops
-> receiving characters and becomes unresponsive.
->=20
-> Need to add port lock for the registers read in lpuart32_set_termios() to
-> avoid the unlocked snapshot captured. Since neither uart_get_baud_rate()
-> nor lpuart_dma_rx_free() uses ctrl, old_ctrl, bd, or modem, the register
-> reads and bit manipulations could be moved into the existing
-> uart_port_lock_irqsave() critical section after lpuart_dma_rx_free().
->=20
-> Please note that this only fix the normal printk path, in the
-> oops_in_progress path of lpuart32_console_write(), when trylock fails,
-> RIE is cleared and old_cr restored without the port lock held, there is
-> still a risk of stale snapshot, but it's acceptable for the post-oops
-> state and the trylock-fail window.
->=20
-> Fixes: 380c966c093e ("tty: serial: fsl_lpuart: add 32-bit register interf=
-ace support")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Hi Xiangwu,
 
-Sashiko has reviewed this patch and found no issues.
+On Fri, 13 Nov 2026 18:37:54 +0800
+Xiangwu Lai <laixiangwu@cmss.chinamobile.com> wrote:
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261113-lpuart_por=
-t_lock-v3-1-895c8758a9db@nxp.com?part=3D1
+> Hi Hugo,
+> 
+> thanks for the review!
+> 
+> Agreed, devm_clk_get_optional_enabled() is the cleaner way: the clock
+> reference is dropped and the clock disabled automatically on probe
+> failure and on remove, so the manual management, the out_clk label
+> and the clk_disable_unprepare() in sc16is7xx_remove() all go away,
+> and the -EINVAL path keeps its original plain return.
+> 
+> I've reworked the patch accordingly; v2 follows shortly.
+> 
+> Best regards,
+> Xiangwu Lai
 
+Great.
+
+But once again, there is no context as you didn't reply to the original
+email.
+
+Please always reply to the original email.
+
+-- 
+Hugo Villeneuve
