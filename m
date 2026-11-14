@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794697928;
-	b=o4DxUFzLB5NFw96T53D7At10iHsl3r1fBfKcKJvyzWgtHuJPOqQKtlKNdv5GL9ZW8zHa
-	 AxauFZlMYDQLGT6CHgBsF/YOBOFllknAgF+EHg8UvQoXTIPVwSU4nmUWV2Y49fNAk9Coi
-	 N2vLiqLw8FW35JCXpL7UAcyBgZCRJTcQLoMLHMv81cddYYkh8XY7/Kacl3BCbv/wLlQJ1
-	 dl2HmC3Agrx6smW9ogi+vMtF26GXITIVuoCbiNbdFlcWMcy7gDdCpm7N/z+AarFlu/1kr
-	 F+mk//4H9b4A3ffQatg6qwk/CNnqzv1HLiBhj953pmBsVipEUAX30dN+YOHVx+3OLyw==
+	t=1794697949;
+	b=RU+EsmEi3Lz8hu53QlJCIqTvmGFV6u+oFJTW/tBJlr8Y1vWYhr6SI1Kj2cdB1ppMRTQ5
+	 ZTodTQyneKIrw4zQPywINjT7uIqfkAqLESas96vxWSZ/jrmc6cJAT5jUi9eELkURktg1G
+	 yaug4T3jupgPEgfqRLcVSLKp0hWIdbXG4EEoEDs2sewTp0i9ITIwzgRSffSUtTAB03hDe
+	 eFSjrpgv3Vlo2/JVFLHPaYCt3LlQ4faaUhdagwyQWwoKeVVr6lx9PKzgjD7eacZ9jK8w0
+	 H486uPiCrg8qySErEBy/qPidoQNTbNe6IvpIeIbsRXJ1UFAAF6Erk1Ws/R8uI8NOpgw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794697928;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794697949;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=DD033I5fbQfRZBPD9FGzthu3rTJYibUy3kHJHCySvpI=;
-	b=ULVI91DVl0veMvbuY5Xu+0/VuzP2FELYGWrqbi7wLOIOlxvg8cACwAsYWozuUa6h5Y3X
-	 bL2LpMjav/gqCXQjihfKigDYuZzGwZroxMpCj4U/8bnzvyrbbACkgOQqefcLM0QuBHCc9
-	 ZfuWZTayqWEQcZEwSw3sOyM3UCrj72yxgHRmJNrDtUuedGuvoeERq+d19dbIr8u+12D+n
-	 /1iCYcLoZdrVAz+eE6XwMCqixUHvlo4hnzRWFl3T83/r4cyxrdzB6nBT7sTs1i9fxBIpu
-	 R1g/DRqE6wJKN+TDXVa5vK+lL8rC5oej9S3Bluz95xO9vQMgRrYvWELl/qN9ZK9rsnw==
+	bh=09DPNXwO+IPPhbix6Jmq1fgyfDTlFSS+27cB1opFFqI=;
+	b=qKeZ8AbQs4gLjki48aB4pq8wXOysCHIg5vRZu2Dee6kN9LTR6TewfLqtiAjgWPHkV/NM
+	 wVp+CYMwBPOOP+hmOiXme8YMMknxJBKfmkqRaLISe7hHIFVQFjyfdv4QuIR9nyf0cwSOF
+	 eCwAnHGn9bN7gWhOnxkZ7+iFXSBqPQ4DZ+7TcJad+3ZxwjTaX+A/fWwmEP1fCfMg8YEW/
+	 vv8ris8+Upw82/97JvRz2H6zQZqvrQRvQ/TyPVFaS/qX4rGMOOq3wNpnrf8NOE89EnbQc
+	 8Byj+In9ku+NhlS44wJp0ya1SjINcI9PRIjM+nXVkCOibBFeb7nHmOWx7g1tIoYTwnQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZoBKBU53;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hmy+BMJo;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5A59606A330
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:12:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E482606A32D
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:12:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZoBKBU53
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E12F1F000C4;
-	Sat, 14 Nov 2026 23:12:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hmy+BMJo
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5FE11F000C4;
+	Sat, 14 Nov 2026 23:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794697928;
-	bh=DD033I5fbQfRZBPD9FGzthu3rTJYibUy3kHJHCySvpI=;
+	s=k20260515; t=1794697948;
+	bh=09DPNXwO+IPPhbix6Jmq1fgyfDTlFSS+27cB1opFFqI=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=ZoBKBU53JYY4lCv3bk6gELpqtC/H3H6eHtFGY2GF2Rre6rjNaFFDTCeBBdiW8OeC9
-	 vYpUiVdSnO5lFOQtmeW7HusDl+QAtdECiZbCfvqvgBrgJFV1VJ1JkJzwjCIe0k9M/e
-	 FhnvcWD7ePUOyM9y4n0U0h9Ica1RmrLFDCjpE2VHCneLGRy+UGNxPDe4iALhmYccXz
-	 zZWS7K1QbjmaQ4Xobh0l9zzPZ3CydKoDp76F1juDgwhGfmH/Er/N8XB7L8WUeTnwGb
-	 2sIp6Qt37MEGon07tU7/Dkky7fZIyakNgO2jaEvavzCb/SknB5AWlOvyVuAPnIKR3k
-	 l4k1F1YBYt0Bw==
-Message-ID: <sashiko-outbox-215082@kernel.org>
+	b=Hmy+BMJoGpPse3kOg4csI1ylj/PPfjcB0RGkwu22U2XOxbVMhy+2oQdR3NxhMfUsY
+	 ALJ+rtVnAWs3qHmem54LpFBt96AToIRzeSCpBouQtCI4zWj55qIi0nWdn3xN0wsBqX
+	 jS9DFLp2D7ps0r+/22nDYB5kF/+vEuzf+ptuxSwu2PkuqEHQvObvcLdKylHB15/9QR
+	 b3vqQ7kYTM7R8NSbxOEBKNl3N40dw1DbaoTF4W82PCRCs1F8kPc7ceHkstl7wrkgMa
+	 FYn9LSzVE9cehTdJynEu8iBl17yh/LSsFzDu7JMiuOXPYP51WZ4SdjOPJrhXaW325G
+	 d2sQYaYUepzgQ==
+Message-ID: <sashiko-outbox-215083@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 06/16] HID: ft260: i2c: reduce bus-error message
- severity
+Subject: Re: [PATCH v3 10/16] HID: ft260: i2c: fix large write transaction
+ failure
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Michael Zaidman" <michael.zaidman@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261114230800.1344401-7-michael.zaidman@gmail.com>
+In-Reply-To: <20261114230800.1344401-11-michael.zaidman@gmail.com>
 References: <20261114230800.1344401-1-michael.zaidman@gmail.com>
- <20261114230800.1344401-7-michael.zaidman@gmail.com>
+ <20261114230800.1344401-11-michael.zaidman@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 Nov 2026 23:12:07 +0000
+Date: Sat, 14 Nov 2026 23:12:28 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,26 +61,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The driver logged errors when the FT260 reported an I2C bus error or
-> when ft260_i2c_write / ft260_smbus_write failed after such a status.
-> That was meant to flag unexpected failures, but bus scans (i2cdetect,
-> HWMON discovery, transceiver monitoring, and similar) hit missing
-> devices routinely and should not fill dmesg with lines such as:
+> Fixes a regression from commit 5afac727defa ("HID: ft260: missed NACK
+> from busy device"), which waited for bus-idle after every HID write
+> report except when the report flag was exactly FT260_FLAG_START.
 >=20
->   ft260 0003:0403:6030.0001: ft260_i2c_write: failed with -5
+> Multi-report I2C writes keep the bus busy between chunks for atomicity.
+> Treating those middle reports like a final STOP caused ft260_xfer_status()
+> to spin on -EAGAIN after the second HID report and fail large writes.
+> Write-then-read combined transfers still worked.
 >=20
-> Keep returning -EIO, but print those via ft260_dbg. Still use hid_err in
-> ft260_hid_output_report_check_status for actual HID/USB transport
-> failures, which are genuine errors.
+> Pass the bus-busy check policy from the caller: ft260_i2c_write() and
+> ft260_smbus_write() wait for idle only when the report they send carries
+> STOP; intermediate chunks and the command phase of a combined transfer
+> do not.
 >=20
-> Drop the extra __func__ from the write-path ft260_dbg calls; the helper
-> already prints the function name.
->=20
+> The SMBus side matters for register reads. The command phase is written
+> [ ... ]
+> Closes: https://github.com/MichaelZaidman/hid-ft260/issues/35
+> Tested-by: Chris Keeser <chriskeeser@meta.com>
+> Reported-by: Bruno Giacomazzi <brunoceg1@gmail.com>
+> Closes: https://github.com/MichaelZaidman/hid-ft260/issues/42
 > Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261114230800.1344=
-401-1-michael.zaidman@gmail.com?part=3D6
+401-1-michael.zaidman@gmail.com?part=3D10
 
