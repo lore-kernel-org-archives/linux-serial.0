@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794697966;
-	b=bcZqT/XZce6jaRH+ql6hItxJgquCvnAdvAB8VZGBjveBD7xYSdxvIWcp4l481YJ9ikfh
-	 VfjQT46mLEqiWxTst2KIYIVUh1qS8D3icQeZBa8Kr/Ueu5bD9Bg5MKdSR49sF9/iNRhxz
-	 O1pRmFNHdZ0gGiy4474626VYQkE3S3K7LVoqgCd8OAM8O/vy2LUxsQMn+RURwjO5fiiS0
-	 eOawmSz3PEDkXKt4TVk7F9kuScov+NRCDl9Jh+puRnwdY3HCSth1CcPX/1H5witqkDb9i
-	 3aRC9xsFTFFOs6idvB9Dk9nxd4Ry2eV6b2RcSsRFFgT0p2Un+uQwO/BJ4xjsLq+8Ejg==
+	t=1794698070;
+	b=KOI3LlVbMIrBIKHx6Wc9nreumWcoyer4iXUeiPeusU+pHuK3LT732U7HPRXYS5QiUpIs
+	 7a1qsLqlX7eA5yS6zYO1/x3EKqgiMq+9ROVzMN7vz+Rx5NIMsFSM/VJ4dt9mdS1qgPUXQ
+	 EqzGsdUkaR+lIfUa7kAJHxrattmLOmOZyyZCh4uaz96E3zUPhQjxikF5GVhG2lY+2Pp5D
+	 u+o269Gw5nshy4HZDn/efuYc88jZtIV8VHAaNEuc3JlZYjZlBARU6KgkZZMtJ27jYBxsd
+	 hotUHh51JTq4OH5MigoqXVDPCXUMPITy+wz3R7qDndPpEhQo9TaM4SM5e//yqy5KouA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794697966;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794698070;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=i+DHAunV0YlPhP6zeF3kKuUL8FM4Yh4BVpukvANMQgA=;
-	b=Bkg85iHDGk81csK+21+8s1qq7Abxga7FtcrmHo6VIGCL7iyZ3uNDT22QDtdWBX4EiQU9
-	 SxLhEwLh1W/mt/oFZTy7pz/fv+O+09mzLH8M4ziKKvkkMAwazr1G/llfZbOyuTvQNUp6p
-	 w4Q1NU25tGUwtiH7JGAumEAYb2vZqTdBYFTwuznfI7nxvGJ0TO305+rvGbRn2itzSVFa6
-	 Vv8vtcMpjughdhQss7S9NSWx0FMkw+8+PQvajdN1MtF6q38cWVkzggBQuJxMoB59Vf9aa
-	 Co4KXjK+0nvu35Jgb5/5OTZ6EAIPlBUZuGXjIWOjtxgSoINtewRiOqI1JCJ8/vxSRBg==
+	bh=8glBSsy6jmIU4FeDZwaF88o9ipVCv5hrc1j+VV2GRog=;
+	b=vuXN8AN309OU+HKBRMGr+MgFf6jbv6JYcY0BZh2ZzuqA2GiJPnQfZe82Ht5yAYQwIrsd
+	 3zsS2h34gV5ilacDlV3dZA/QrZhBKD15TtbHIW5uL+8vy8v/LlV6FtXBTphpRDsIWmIN7
+	 59WOwem1AkUB92aEvKZ3+gMqO3mBUY8407Wc8XJdvPUrOCPA8616nsJhFiT6wEuWg+dqp
+	 tOR3D2WUoAjW1XXJzfRE9VAxf/vu6cLBsKYs5HTv4q7ojDkWebJBZIopnzthfKx3fy8Ea
+	 /tGhF4krpCLUTNNFtq+16708DyczswByk4iOtrvMgQASFsFajLDGDZhl8xHI/ncnRaA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=At78uJpQ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onNqSjLI;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07514606A323
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:12:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67327606A323
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:14:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=At78uJpQ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F861F000C4;
-	Sat, 14 Nov 2026 23:12:45 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onNqSjLI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6E41F000C4;
+	Sat, 14 Nov 2026 23:14:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794697965;
-	bh=i+DHAunV0YlPhP6zeF3kKuUL8FM4Yh4BVpukvANMQgA=;
+	s=k20260515; t=1794698069;
+	bh=8glBSsy6jmIU4FeDZwaF88o9ipVCv5hrc1j+VV2GRog=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=At78uJpQxfPw+B7AJt4qlBYoHIhi9kOcJTn99lhu3vqnQk3uqZF2WZ1gra5dg9ZA4
-	 QE4CCxdWP7r/tzE7PXKcXPo8w6U+QHsffaPGSRf9UfchrWu3Tuc240gyHCPU3YBR2q
-	 IYYUaGWRXLFh5sowp9B2JX2rE7bCioHh2hP4nQLFt7YTFS4hjG8W5UUzf2M2T5obkL
-	 vc5LXlDQ1eUC047/f9yc9MHKH6FFCuSBmi1dbMlJv4Al3x/gF6WXIj5DOSLkxS+RZl
-	 AyOE438SDQ7mzCVnzqYwoy+ltt1WrHArgeV3BCB1HyaDhoKMMzcVHqu1CLOkH639cq
-	 vXK3a2AwMwXUA==
-Message-ID: <sashiko-outbox-215090@kernel.org>
+	b=onNqSjLIA97+FwEjy+L6SJgrdyCaJ+0t0fYhi/TLASxIiyJzLJhNWPAZxoOjuVggG
+	 3JRmW++9Jk5ZE5+dqO5XwI7mKc5s8q4/c6OMKg5FvBSUSa2BdpngM8zaYJ/f2t/8a9
+	 Obv7uPLnbBxHrLYfi5uSMIh5KylTlGhDc9VSrkNgX/hFyem9QtK//UVFMMdwYjCPLU
+	 MvyenhgNihf1IySTEZmSxEmcR/VRjw3s7I6mqQxOrzHzLuCrfIKhn5QOES+2+KGIBo
+	 4g2HHVizMrSdl61ymTvOGtFpibrqvZA7RhTOkiezNze/HUznDwrGw1NCoFfjLk+58F
+	 C8LGh2k6qB92g==
+Message-ID: <sashiko-outbox-215092@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 04/16] HID: ft260: i2c: reduce driver module loading
- time
+Subject: Re: [PATCH v3 09/16] HID: ft260: group sysfs attrs per HID
+ interface
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Michael Zaidman" <michael.zaidman@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261114230800.1344401-5-michael.zaidman@gmail.com>
+In-Reply-To: <20261114230800.1344401-10-michael.zaidman@gmail.com>
 References: <20261114230800.1344401-1-michael.zaidman@gmail.com>
- <20261114230800.1344401-5-michael.zaidman@gmail.com>
+ <20261114230800.1344401-10-michael.zaidman@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 Nov 2026 23:12:45 +0000
+Date: Sat, 14 Nov 2026 23:14:29 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,26 +61,20 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The HWMON class I2C client drivers register the address range to scan
-> during the I2C master module probing. For example, the lm75 module
-> registers eight bus addresses scanned during the ft260 module loading.
+> Split the single sysfs attribute group into per-interface groups based
+> on chip mode (DCNF0/DCNF1):
 >=20
-> In the case of ft260, the bus is scanned by ft260_i2c_read, but due to
-> an excessive read completion timeout, it took about 40 seconds for the
-> ft260 driver to scan the lm75 address range before exiting the probe
-> function.
+> - I2C-only (mode 1): I2C and GPIO attributes on the I2C HID interface
+> - Dual mode (0/3): hid_over_i2c_en, i2c_reset and clock on the I2C
+>   interface; GPIO and UART attrs on the UART interface
+> - UART-only (mode 2): GPIO and UART attrs on the UART interface
 >=20
-> Adjust the i2c_read timeout so it depends on the amount of data to
-> read, reducing the lm75 address range scan time to about 200ms.
+> i2c_enable is GPIO-related too: it switches GPIO0 and GPIO1 between I2C
+> and GPIO, and its store updates gpio_en of its own interface. So it is
+> on the interface with the gpiochip, the UART interface in modes 0 and 3.
 >=20
-> The 25 ms per-report budget was checked on a UMFT260EV1A with a 24LC512
-> EEPROM by shrinking the timeout until reads began to fail: a 60-byte
-> read still completes at 9 ms and times out at 7 ms, against 5.4 ms of
-> wire time at 100 kHz, so the fixed USB, HID and scheduling overhead
-> costs a few milliseconds. At the chip's slowest 60 kHz clock that chunk
-> needs about 9 ms on the wire and a 180-byte chunk about 27 ms. Scale
-> the wait by 25 ms per 60-byte HID payload so a last chunk of 61..180
-> bytes gets 50..75 ms, not the single-report 25 ms budget.
+> i2c_reset is an I2C attribute, so it is only on the I2C interface and
+> not in the UART group, which holds the GPIO and UART attributes.
 >=20
 > Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
 
@@ -88,5 +82,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261114230800.1344=
-401-1-michael.zaidman@gmail.com?part=3D4
+401-1-michael.zaidman@gmail.com?part=3D9
 
