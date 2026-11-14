@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794663670;
-	b=AcxOH2QyTxZNTdcpevIikOBuA+AUO0e+HJx9+II4BBuYRmld8OP/+HGUbcOpXqOOt7Kw
-	 kw/qcktXPxUF/ZXbkQ9uE/kBM63gNhvHJNHG4ny0+vSBmJZi0/bysPlyoA4uoobnxTszg
-	 fm3uEagbbnxCZgRcE/zSCzl8Bf3ARRvb4/t6Yr6spRAugo1hn18p4bgEjLWgM+CcP/Yye
-	 bRFBrrSg+jNm5CGmsTL922clN2itBah0zqtKEYS3Lfqk1KTQ9/J1ypr5k7yRbp6gMbQ7L
-	 R0mcvAzY1kxmF8SShJx8W/4wV4H6SlB73zIDkm3xBJOdJjd3m9/Dneiye0KLehanYCg==
+	t=1794663671;
+	b=akBu/0EySzVntuuk0U9NrRJ3qHUNxukRMfYL/PC3VOZN/zS+WesXzwBHTz9iKUQUJrsf
+	 u6GM38x5ROpNKF+NAsl1rRCmSxrBy5Lmo6lIZVH7+Sxx9ALUcB2uMcZLUAu53hEK2/kZy
+	 djg6aWpI8Uj/68R5U4OyjsdMiPE+sOWDf6Dq5WL0bbnMzr7zLbeF32ou2IDpt8RHFfv2S
+	 qY6/hUpCGHzztw/cIiCDWnPMecceWWdKN4bVsF9oikgcJkXQx/DdHrApOCasIcT1TBWMh
+	 cJE9mlTBhoKp1wO+o3E190S6bIHry7NJjJ7NTU5tVHEq7d74iCwA9FPiENL+m5vOC0w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794663670;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794663671;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=vxTe7UYstr5zmWrUwGezYJ045qR2VI9dQROuNPPuSTw=;
-	b=mddyN2PloPct8ejkfsyOzY3zOe6jfyFYc4vDKlxHZVYypAnXK8U2HGTZjuoVVtxFfxkA
-	 wL8rpFxZV1DCPjDlO2GtaEBXr63uX16Az0kaTPZy14jIoLDMxuKBD1q9RDoD2CzTq4iUy
-	 4RcgzGrcdhw98hdc6+E+g9iviSto6zE00xHXzSbeq/ljHp2J5heMVhH3Rn6zuL9cksU4g
-	 Gp+fbwVw6q89WR7GdR8tqkRiMsztQnalQi9ZcMXH+L1fmhFXPxdgMqLcf6kE953hsdIlf
-	 Sg1k4g3ao3gKxonSl6w+X2f/y0XDLqG9wfwyieHDlUNkeEGkhD+HJnZkb+hG5hsrZmg==
+	bh=5mOhZSEvfSMRtf0UHX6LP+8VlSq50fxhb66uYLfcrLU=;
+	b=SroDNkqDETFDZg1ipzXWMS7NjnjKRQdEULG4RWmeGYJ8cYqS6wws5MifQIuJbL8D0Dxe
+	 2JgakovR0Z5V2Y49XDh/tWF5zU64Ec2w+VOs31EH9EzWRiE3xe42DccpoonO6Q7Kr85da
+	 qikWXmS99UNl/UatsGkaBUdiP89avp+Keombpc1C9SkFtX6V1l/HglJ7FE21Q6OCbj/bo
+	 00T7Rqo14SORoWGb/Ge0GLlu27ReJUtGACo9D467bNjapXB5gPg3+uduZ352mahEt3nMw
+	 SA4Gqrgw/X5IhuiSEdkIZRyHzkC6k6TaMq/DvedmjDxIlq1M8qBzLxOT0ZV3pmbY0Kg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oqkMqVnj;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GZuycdAd;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6BC606A32E;
-	Sat, 14 Nov 2026 13:41:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD239606A88E;
+	Sat, 14 Nov 2026 13:41:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oqkMqVnj
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GZuycdAd
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794663670;
-	b=mMBaleVtJTcTOomBUm80y0FKHTwEBSxqtSHgL8bLuoPeipm4PWKFx/ov6ImbKGMgfgcj
-	 Y+sfhre1GYep5P6iErSXLVIm4xY6E4/6CreW/vU3U2bj7rM+QFwOFJNm57nK4fPs552N/
-	 nig7zK33vrMbFiWy3FBAnB1q1zysgAM4MtzBGVdczcX7ErVNFLmWsGs6jU6cElB1LA1Pi
-	 XfT3O+5JYB+q8y/FVxFjI/ymFxx/AMlqd/Cu++sM4m8RjIkuBSf2cOGkhFsqDZYHGveB2
-	 +JQ0teEi6sVw7SiZnYYRRCEQ/40mYDge3jpTuLj33jc1aAJZgh+plVyerCUqBgoHzSA==
+	t=1794663671;
+	b=gsS0b5Cy6Eq/O9Dj8gKWDZ+PsnJFhg6jxQSZeLzJcszaJYfUT43wDsGyp+Ks35ZEqLGf
+	 C/e/tPFn9jizyPV5+O5tQRASq44F5ndsEy9oGMjw3Y/P80IJjLGkMMUqxT9t4fYkRmDJQ
+	 C/LVUS8NXoEDqBszdychQGvwNreMtYxMtq42TweRf+mnukqTb9kDC2nLZ29B6sYTji7yh
+	 X0uQd8HAzZOuDGURk22u+BnwnRhz44QxWOMnMSfIFYhFGinhfVAUZ+61NLsaTK3zgmEZN
+	 sLcwEc07dFjkuITzoe3XH2tm/ObL4MtqhhxCTeQLLyKQ+eGrGqLMbHiEBFDQp0wWX4w==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794663670;
+	c=relaxed/relaxed; t=1794663671;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=vxTe7UYstr5zmWrUwGezYJ045qR2VI9dQROuNPPuSTw=;
-	b=Gvo4awAMpFd3s49/XGvhS2eY1wh1EMshBmP0tbhOiJ97Qwh5JPZJu9e0hv6fjHKyBwsY
-	 urWmcJj5DrL8GDAMeAZHRUo+wHoBJRF/YbIw0S2atOFqwhO+o4E1lvViipTLd7rNp2TNe
-	 BScRU05fpqESFOrF4+QzSN9hx5X5kozVvoowOl9Dsb+NBuUVQUKmnCMkXc/8Cq8/24Mon
-	 xovN3X0ivB5U5wMe731p4Mx+p8CEcQ7qA0bqqQoutHPoatWJIe2e2VEoeXi2DfXzRgUCr
-	 DMgCVw3omPLq1KeHHGQEjhSZJ3pm/Mxbzmkkm509XweE3eSGt7FLB7I2/NQ6dflDxtg==
+	bh=5mOhZSEvfSMRtf0UHX6LP+8VlSq50fxhb66uYLfcrLU=;
+	b=t+beG/WoMkoJ9sCFnGC8/6SxCn+oE93jBr4D/ZFzF3UI3py1Kdi5Sb7CFQP+/dGltbim
+	 sYXGXogH5D8OwXwUY9hrHKMdORAgCmxMHdIAI0zTvdmKfgUkapvUH7f65pzY4/M3gfy6O
+	 wRokJ+IQdtU7lAD1PtuwsKbJdbclYE0HfJw7VCrT4RAIBWR7SbzmFoIMbhoQN5VTEAbjZ
+	 np0qQ8GS4lJvC2oJgY9N/4r7qvArYAQIbLMI1+vtQo77kSSXOjbrEt4eLFyMCeE0iiR28
+	 EOGQBtgnTmvh6EUgWDgoAXb/3ikiwTJVRs2jGlKxOm9D3bJsqkU7ttsrxI9Yn4OqoAw==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id A6F0A1F000C5;
+	by smtp.kernel.org (Postfix) with ESMTPS id D30281F000CB;
 	Sat, 14 Nov 2026 13:41:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794663670;
-	bh=vxTe7UYstr5zmWrUwGezYJ045qR2VI9dQROuNPPuSTw=;
+	s=k20260515; t=1794663671;
+	bh=5mOhZSEvfSMRtf0UHX6LP+8VlSq50fxhb66uYLfcrLU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=oqkMqVnj6H0oyQLn4Z0XZmf2UYI7j8/P3d1vU+GPksC0k665LvlcBWUe4dyyzcDk7
-	 M/BFRSp66O7XCd5kn11sELfzKDQeunk2blZW3R2cQiCROxZaSeVYPu+eLxvLoHzIke
-	 9/f2ey6XAgb5nMNwdmWJ7m9Dr0AeGSM5/CCQI0pWSParseCnxOKpyYea8tPxZ0nFs+
-	 jgq+K6MPkbudPLTPQRJku8vD5ETkBUTdZe0Zp9Cxyjf4aNPPX9oVv1fGVDFeCmY0li
-	 3IjeAmMPiAw4Rp4LdCA4bIaM+aAfarA4SGo9qigIHghxMy6MA+6zLTvPWkKTm7UpD9
-	 tt8ld9phze5FQ==
+	b=GZuycdAdNksVhVkNm5dH7yJeAGQCstuaj9qfPxX05VB1RIdztSNcmTdNZhE0Ax3IF
+	 f9l2omLHJ83m4IUqCIhfHEVq1DnQpXaeqOjAe7K3EFf5bRq9aEZAymm44neyBsZgIx
+	 BSM1EyLP3ra/7eacdge/FQl5AZhVkdvdAQgFzV5JjSj5GdMgR+tJK+kMIuUJfHMUPw
+	 xnfVYK2EFNA/JVY1nDJeDTMCoYIJlP5FG8m3D4ZK7MMu83HzTBMVd8QUxQBZy16l3A
+	 zCCZ9lWfKc0N08DaEK7nJkfuONXRmCCQpYbksI/e/43cHpJsTCJJy5pCe19Ot6cgSz
+	 9ltaX8PNOqlQw==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 1F9BF49DB1;
+	by lkml.kernel.org (Postfix) with ESMTP id 5E56749DCA;
 	Sat, 14 Nov 2026 13:41:09 +0000 (UTC)
 From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Date: Sat, 14 Nov 2026 16:41:06 +0300
-Subject: [PATCH v7 01/10] dt-bindings: vendor-prefixes: Add Securifi
+Date: Sat, 14 Nov 2026 16:41:09 +0300
+Subject: [PATCH v7 04/10] ARM: goldengate: Add support for the CS75xx SoC
+ family
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,7 +84,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261114-b4-cs75xx-v7-1-8f17f38821b4@gmail.com>
+Message-Id: <20261114-b4-cs75xx-v7-4-8f17f38821b4@gmail.com>
 References: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
 In-Reply-To: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
 To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
@@ -98,14 +99,13 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  Jason Li <jason.li@cortina-access.com>, 
- Conor Dooley <conor.dooley@microchip.com>, 
  Fil Dunsky <filipp.dunsky@gmail.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794663665; l=944;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794663665; l=6100;
  i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=573roVKzdDYFuCfGNESYptLR9xpcGKVT07rDsXKZwOU=;
- b=osQRAw34EIeIqPaHCxOrvakpZLcesACv9TQr7r9bbOjSkVc9wpbxHd6F6OijkPShGTRUkpP1+
- 35H+hXXg+TaD21ZSUkQL0Gll6BH6uxheQc0gtP7pucqDaXGDwJKtedg
+ bh=rWpdHlk3LciKT/N7XptR2+H0C4Am+e/uwLuWsLiX5+M=;
+ b=3tuQG1F6cfsadWuV1Fku6kPlcyjgzeB/DAi55h9GJ3Cq3ROIYmJsns5BUZ9m5KCU1pgSMcKm9
+ OpbO+UDVUicAo+vWNFYvEqB8Y93bifcJE9T3J0+YWjOihBEXHd86Bk3
 X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
  pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
 X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
@@ -116,29 +116,179 @@ Content-Transfer-Encoding: 7bit
 
 From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Securifi Ltd. makes the Almond series of touchscreen Wi-Fi routers.
-Add a vendor prefix for it.
+The Cortina Systems CS75xx ("Goldengate G2") are network processors
+with two Cortex-A9 cores, an SCU, GIC, the Cortex-A9 global and private
+timers and a PL310 L2 cache controller. The family includes at least
+the CS7522 and the CS7542; the CS7542 is used, among others, in the
+Securifi Almond+ router.
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Apart from the vendor this has little in common with the Cortina
+Systems Gemini (SL3516/CS3516) supported by mach-gemini: Gemini is a
+single ARMv4 FA526 with Faraday peripherals (FTINTC010, FTTMR010,
+FTGPIO010, a 16550 UART) built for ARCH_MULTI_V4, while the CS75xx is
+an ARMv7 MPCore whose UART, GPIO, interrupt controller and NAND
+controller are different blocks. It therefore gets its own directory,
+named after the Goldengate codename like in the vendor kernel. The
+Kconfig symbol, ARCH_CORTINA_ACCESS, covers the whole family and is
+named after Cortina Access, which last sold these chips and also makes
+the newer 64-bit parts.
+
+The generic DT machine is sufficient for the platform, so only the SMP
+bring-up needs code: the bootloader parks the secondary core in a WFI
+loop that polls a global software register, so boot it by writing the
+physical address of secondary_startup to the register named by the
+cpu-release-addr property and sending it a wakeup IPI.
+
+The CPU is a Cortex-A9 r2p1, so select the errata workarounds that apply
+to that revision and can be enabled on a multiplatform kernel. The PL310
+is r3p1-50rel0 (CACHE_ID 0x410000c7), select the workaround for its
+erratum 769419 as well.
+
 Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/Kconfig                   |  2 ++
+ arch/arm/Makefile                  |  1 +
+ arch/arm/mach-goldengate/Kconfig   | 19 ++++++++++
+ arch/arm/mach-goldengate/Makefile  |  2 ++
+ arch/arm/mach-goldengate/platsmp.c | 72 ++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 96 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 5471a06f9..f1f764ddb 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1499,6 +1499,8 @@ patternProperties:
-     description: SDMC Technology Co., Ltd
-   "^seagate,.*":
-     description: Seagate Technology PLC
-+  "^securifi,.*":
-+    description: Securifi Ltd.
-   "^seeed,.*":
-     description: Seeed Technology Co., Ltd
-   "^seirobotics,.*":
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 0cc289a71..87ff65256 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -391,6 +391,8 @@ source "arch/arm/mach-footbridge/Kconfig"
+ 
+ source "arch/arm/mach-gemini/Kconfig"
+ 
++source "arch/arm/mach-goldengate/Kconfig"
++
+ source "arch/arm/mach-highbank/Kconfig"
+ 
+ source "arch/arm/mach-hisi/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 573813ef5..21d7a443c 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -187,6 +187,7 @@ machine-$(CONFIG_ARCH_DOVE)		+= dove
+ machine-$(CONFIG_ARCH_EXYNOS)		+= exynos
+ machine-$(CONFIG_ARCH_FOOTBRIDGE)	+= footbridge
+ machine-$(CONFIG_ARCH_GEMINI)		+= gemini
++machine-$(CONFIG_ARCH_CORTINA_ACCESS)	+= goldengate
+ machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
+ machine-$(CONFIG_ARCH_HISI)		+= hisi
+ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+diff --git a/arch/arm/mach-goldengate/Kconfig b/arch/arm/mach-goldengate/Kconfig
+new file mode 100644
+index 000000000..302e24841
+--- /dev/null
++++ b/arch/arm/mach-goldengate/Kconfig
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config ARCH_CORTINA_ACCESS
++	bool "Cortina Systems CS75xx (Goldengate G2)"
++	depends on ARCH_MULTI_V7
++	select ARM_ERRATA_754322
++	select ARM_ERRATA_764369 if SMP
++	select ARM_GIC
++	select ARM_GLOBAL_TIMER
++	select CACHE_L2X0
++	select CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
++	select HAVE_ARM_SCU if SMP
++	select HAVE_ARM_TWD if SMP
++	select PL310_ERRATA_769419
++	help
++	  Support for the Cortina Systems CS75xx (Goldengate G2) family of
++	  network processors, such as the CS7542 used in the Securifi
++	  Almond+ router. These SoCs have two Cortex-A9 cores with a PL310
++	  L2 cache controller, a packet processing engine, PCIe, NAND and
++	  the usual low speed peripherals.
+diff --git a/arch/arm/mach-goldengate/Makefile b/arch/arm/mach-goldengate/Makefile
+new file mode 100644
+index 000000000..b839201c9
+--- /dev/null
++++ b/arch/arm/mach-goldengate/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++obj-$(CONFIG_SMP)	+= platsmp.o
+diff --git a/arch/arm/mach-goldengate/platsmp.c b/arch/arm/mach-goldengate/platsmp.c
+new file mode 100644
+index 000000000..d9285297b
+--- /dev/null
++++ b/arch/arm/mach-goldengate/platsmp.c
+@@ -0,0 +1,72 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * SMP support for the Cortina Systems CS75xx SoCs
++ *
++ * The bootloader parks the secondary core in a WFI loop that polls a
++ * global software register and jumps to the address found there once it
++ * becomes non-zero. The register is described by the cpu-release-addr
++ * property of the secondary CPU node.
++ */
++
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/of_address.h>
++#include <linux/smp.h>
++#include <asm/smp_plat.h>
++#include <asm/smp_scu.h>
++
++static int cs75xx_boot_secondary(unsigned int cpu, struct task_struct *idle)
++{
++	struct device_node *np;
++	void __iomem *release;
++	u64 addr;
++	int ret;
++
++	np = of_get_cpu_node(cpu, NULL);
++	if (!np)
++		return -ENODEV;
++
++	ret = of_property_read_u64(np, "cpu-release-addr", &addr);
++	of_node_put(np);
++	if (ret) {
++		pr_err("CPU%u: missing cpu-release-addr\n", cpu);
++		return ret;
++	}
++
++	release = ioremap(addr, sizeof(u32));
++	if (!release)
++		return -ENOMEM;
++
++	writel(__pa_symbol(secondary_startup), release);
++	iounmap(release);
++
++	/* The secondary core waits in WFI, wake it up */
++	dsb_sev();
++	arch_send_wakeup_ipi_mask(cpumask_of(cpu));
++
++	return 0;
++}
++
++static void __init cs75xx_smp_prepare_cpus(unsigned int max_cpus)
++{
++	struct device_node *np;
++	void __iomem *scu_base;
++
++	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-scu");
++	scu_base = of_iomap(np, 0);
++	of_node_put(np);
++	if (!scu_base) {
++		pr_err("failed to map SCU\n");
++		return;
++	}
++
++	scu_enable(scu_base);
++	iounmap(scu_base);
++}
++
++static const struct smp_operations cs75xx_smp_ops __initconst = {
++	.smp_prepare_cpus	= cs75xx_smp_prepare_cpus,
++	.smp_boot_secondary	= cs75xx_boot_secondary,
++};
++
++CPU_METHOD_OF_DECLARE(cs7542_smp, "cortina,cs7542-smp", &cs75xx_smp_ops);
 
 -- 
 2.53.0
