@@ -1,84 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794640208;
-	b=d0TiiCdegU2yQRMlq2BUMkFJOsCYKXdcAvrBFB+7EOafv5nGnt4WdQj7PRULKo7iwOd9
-	 qnULNRIKV8ARevFXjVfeoY94fEC87MG590Ih7uHc8UHJ4DJcVXeLAM1XshDIGlsgkQ5DD
-	 3JGSlZd7buEjTj1nRtsyXN6cw0QRcmECJRozsZnOKug3xsaJVaFsj6TU+3XLnA3yDRTln
-	 qO8NqlX8t5rjpQo1xpH5Xt7E/cSGaNgEhNRW1ag1MiUTKlIHJORgAGZbwl7f+MkNeYg3Y
-	 HK65kmwJLRMf+klAvmBNQheRjnGiDOcSfgfJLeqmMBIEqWsCtp0GhDU1CBTAvDAOPLQ==
+	t=1794640211;
+	b=ui4A4w1XmVb4bWsZT7+EdX7QxRoAFyOKBRXidBmEyYNONG99bBAowpyknSREVMs68Wy7
+	 fD/TSlBYpXvifcocOcLxZldfx1J4ikFgNs7DUe7AcCdu0LQvpIinngySR+5lRiRdk7LZd
+	 j5dg+PnH33xjfp+Fuap1eoX+IVqD8ZJUuo01/UQeM7gxPNl9k9LfLmYrDHg00pBsLT18F
+	 brVtP6u0jDWeJdO5hha4912AWlkDo5X8J+7Vy+wJzrKIKptccsUlEjnjCTiR/7z85luF4
+	 WBOAuTrhrki+pvgFXQ8cdGDAAjAuuI80dSqhX7NVETvbjES98sEQg5dui2Nhn9tzNxg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794640208;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794640211;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=8m1rh8YCtMa/eK/x1h9nBhdh93CAkPykNk2YYLlQM4w=;
-	b=cekYp+uP6U9Wu1JbXynN5Ou6Pu6Zqn37R4jzseEX8Nge6OY5GRymYNacUI3GHmFZL4Gt
-	 LyJs6SglySxz+ECQfnzLbK78fgQGD0XkwKhUf3j2f1vilrcs1knpXpvE1UEUXUU+phR1W
-	 h+QrUL7CSoPesxUhVZywxA2MQjiFlIzzTMmXQUc8VOfb4mSr1/sK101r5MJCly4ywXJxd
-	 euHj5VoPvUpeLSrDSwXhrwQywaGreoOurSYV24Cw6/7ET2Xp2+QFjEsLeVj7k6JcTSyBC
-	 Kqg3Qt+GzP8rBHxACKgwke90r8fYwtvcKDC/ooRMYgnZco5yAdu2tzN/Jtzw+jMSo+w==
+	bh=Ra1qoxU4QdTYWMO3cOdicsi3ZqR2JP+4Yyk7L1wLDNk=;
+	b=sCU3QB5T5trNPeF2OZuIMueZBnLAq+/8wovSU82oe7d/x+bV+SuCWSVgqHRf4pD8YXhr
+	 knlO/E9wpgR7rnfdBgGdQqEmuwAQnclrVY6NU7d+VYJYcsmp6C4a/YJnV+ArQ9kNmas/B
+	 jTes3sOwJvpGPENdP8B1oIi6sUzhCzFarzcIgwqFz6azjbuqQBOrCaSQUTsgFVpbxAqA6
+	 aoSo5VsXU8gTSlHlKxRkQHM3w7YD0DcMgqEBLVVPs/LYapl7Et5Q9ZcbA72Q8MPjQTM/u
+	 sNY5XUrxQjNuxUeKqJytrvtDPB3m4HI4dSUfBIMvY5MoZ+kg6AH+aLgTC7/0j57fC0g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=gourry.net;
 	spf=pass smtp.mailfrom=gourry.net;
-	dkim=pass header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=hoob40N4;
-	arc=none smtp.remote-ip=209.85.222.173
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	dkim=pass header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=aVufzMF1;
+	arc=none smtp.remote-ip=209.85.219.53
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09C9B606A884
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 07:10:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09C9B606A884
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD004606A338
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 07:10:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD004606A338
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=hoob40N4
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-9495d543c42so136146485a.3
-        for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 23:10:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=aVufzMF1
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-91ea5600c9cso37046696d6.1
+        for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 23:10:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gourry.net; s=google; t=1794640207; x=1795245007; darn=vger.kernel.org;
+        d=gourry.net; s=google; t=1794640209; x=1795245009; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=8m1rh8YCtMa/eK/x1h9nBhdh93CAkPykNk2YYLlQM4w=;
-        b=hoob40N4CCfTxfMdgC6CFysWnaULLntOcf9b2zCWEP5AR7y1f+WYOGFQXrxSjlDRs9
-         0O09WPsD+TZAe73gRgp4+nuCoy0PbKNfeUT8XBA9E9E1//bFKkOCGLZhW/eUZqlkldgY
-         7h1QJvXNbbWn49jHkYVK+4J5BGlhPBOe3wbPpRu8/Smskm8AI7Cx7iHZRAizXaPe7Jpr
-         YqjyeIeN2YPCaR0ZM6LQFlUPvXj/ekdyJtG7ifkqZ+qqhwHzcjRNVxKF47izKtWdDiTe
-         DxeRBtRv1MhPuSC18fnedwpg1XVkUMVgladnz5HAiA0MSdz92SK/WdDOVEfMderwFx3X
-         d4Ag==
+        bh=Ra1qoxU4QdTYWMO3cOdicsi3ZqR2JP+4Yyk7L1wLDNk=;
+        b=aVufzMF1ziuixYF2LwjyH7kreUYrlXQnpmHijWkoeW/lvqdaKolzkN+GuWEZ9Elxku
+         RmQM/Qd0JknXCOcyFCsoSHle6c93jvb8DGPwDV82hDd+ity5CVzxo6dZ0JwnEVxsoijw
+         l73/guNH+o32V7hOir1Y3NVrZQ9xH7aaOudDuml/feYSeQtX1VB/TBSXbWwRm1zVJ4eC
+         4SRSkSm9RnIZsT0C3vyFyDFMvaxtRaYsG/xYd/+qSUNiNbPqs9XXNoyYeqSgIdZ/Bx/E
+         u2s5+Pw6kq0V8ZrSXVzNReSYfzUzMeJUxU5+RedW1C1ra4crn5FfH525mKnVav04kDdc
+         OjqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794640207; x=1795245007;
+        d=1e100.net; s=20260707; t=1794640209; x=1795245009;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8m1rh8YCtMa/eK/x1h9nBhdh93CAkPykNk2YYLlQM4w=;
-        b=uTUsIz6MH0kBi5+bw0jXjpioG2Fi1x8V4M3YSEoCCaJCfDN/b2iL5yhFkA/zUT/DB3
-         Xj1gngBDHccxp7RqQXEdP1E5y9H4qOI5biXOJNcF4BWTevJFIH3KrCZ574VmUlAsu76Y
-         9h3DBhr9TT/G07Vl7wPqH1boSF8NY3Mu/U1lWjFqUFc3+S8EV047xBKuCHeYr9/NUXE7
-         Wr04usp5ebTQi0ZLXV9IF0PmkRrB/sCpzNy6MwBcAqmrYFgzFE3vcccvS5ApW709v+fS
-         /L1XwQXqiCMxTEwRXuhFK0pw7wddFcdUFU4NiT37yKOHmcSvmFql5E5KnuA3POlpZp6w
-         dMMg==
-X-Forwarded-Encrypted: i=1; AL+hErGYbiAKeZ72JwINP6lX8Q7ygKyUgTXNrSX/g/PgHlQi8kzSjyTmbrHXWTXD1pXjHYS9VNvgKPSeUejB0/8=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9SZdnf8EZ8JxT1F/Mw9rYq+sUvuiibpbjIYQ8PhDCpwUET80Mz
-	UAjujavRXUuTkjGtYEvBWZMQwIq6UEebxpBer4qZkqKqDN+B54jTKzPvbld2kYR8VNM=
-X-Gm-Gg: AYBFou0D2G7JzBWIrDJOXwMP1APlxzoYCvbQ3Xd/FfiOe/6eALJHM5E0ePHFj9eG4yn
-	kDY7mIANpy3VQbTQB+5T5A6wvtXr0b4ZyJVOP5MfXhbcp83oEPbmIwPMo2VsE+9vLd8nSVsFi00
-	Q20/3Z8oK1N/3I3wgKTkfNdmM1DIEHqFgUk+kV64FLkUqBuD2h/rlPh+2KlNTZYCPHFL5ZUYHB9
-	qA5WBYmDdilKhMtrJEh+JbX+F0fv7uHxKkAJrT0yqWR3R2A785AEywpfM832+hUN2u4bQDhYq5R
-	jUi8/GDrptBErY5HM11IfGIB3GUv1I36SzFJJYYbLenYGkG2LX9T6NcdtS6EVFS5pT1WXp/JRDu
-	F2KO69xDCSGbANx7SvMAHTLwIM2fUs/5qSEX8YAtK/Ka3kNG+XSSQSD/hGSwytFL15i8vyq73gE
-	+1oxak2TT+DZGhpm0nMC6qIxDOd+g93G7Cet/Erp1tHM1uLMfdGRimbZznUtK9dD5K38pHmyctC
-	QZDvC8r9CaHDc3FISnFb2aPtbwzAsLsJ+gBW5KlVUcU2oXT9TU1eM973/c2FcDogbGD8xpaWrug
-	GVl4z0b9u3YIBrBccM6elAH3Xg9wnJa5pw2gur7p/JXnTgTpprVWproV8haaDscsCiCVZi0aaUL
-	9qKqI/mrPDjFCU2I=
-X-Received: by 2002:a05:620a:6606:b0:93a:2d07:142f with SMTP id af79cd13be357-9494b9aec7amr802433485a.7.1794640206954;
-        Fri, 13 Nov 2026 23:10:06 -0800 (PST)
+        bh=Ra1qoxU4QdTYWMO3cOdicsi3ZqR2JP+4Yyk7L1wLDNk=;
+        b=qqJj9M35oAgi/e5bL5cenkzw3ciWIJ+boi7PkssQaa1wMZ2aAWmWKWZp6REKi6tWBu
+         1/fyD+PWxwRDxofkYrIJYMhyaWjfzcT4/CUYXM/Nft6cZO4FEcON4sBXFkgSFm0IYEab
+         7oIlMgNXeV6fV4EzhMK6EF5aKr5ZNQGsSmQMkBpzXVPUvqaCFOJKgO08BDGdVuVEzsQ0
+         0MKSijkqIb2dtZjEWLsAKFA8jw6hC/FghgDRzemSukZexVxxenGSR+9+pybpx46xySkM
+         esy5bgl0aSqL6d5soN4CmogYnfYqW1Pf/mICD7ywFTTErciqbSaejrc4Bsl12eANJNY1
+         Uabw==
+X-Forwarded-Encrypted: i=1; AL+hErHDAPtuhWhAwmxn7zfDYg67FooRSuIjqPSydoa2lNpfo+6lInmCoMXK48D3pIkl9Sip5wOa4MkohH6PVQI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9i3wE3WrkwoJh4AnXbAEb8jT1y/AaWAyR8iZkWZD5loFkRlUVH
+	h90f/ILd9gTqxu8xY5qb/UE4qc+9z+Ht3pExYm6u31XL1VYYXCvwJq2dFw5da66FdrQ=
+X-Gm-Gg: AYBFou0Q/v+On/YC4hXCTAkfDkPOJxHsfEAz4myHRLf3Nv2pj0GFTa0W9lvj/NaE1XG
+	w+H68HqRzNZniIUNuh3lFhBG3T+ubAz9mCyBR2bJXJIeTIHUdNZIfVsFJu6jiFJJe+WcACVnX0m
+	bcQWmEWVuXmz1G1bxEWpz9fj0iftIzBNY93FK71JCaeUNmRwxDoHXCTdcizoHfxWKmYC/NoyVfH
+	COO5dAkLxltXFONBnuYFhT6ZVVqwUx7t8eHwbEV8sNHMnYsOXjW1FlAwlUhekTY4jBhL6YO4HY8
+	jGooeuDsER2Imw/SZZCixWliaipVIUfmI/UmnXxEA41ZY9Ac3ptLSt9H07aC39AjFgAi3l4UOrk
+	S1Z98mhV8hjSiqNDNtT+qbsE1kW8FL4Rr16eEtV1xtuJrr2mOjJrQUND8Zq6l0msoo2kUsCaNWl
+	29aVXEp6V7l4VoSQSnjzW3g+oTtleElVYgF80GVrYk8ndX9SGtMimEwis8k3uJm2dDXUBtzJwHI
+	ukjucO0np5Z1fzxw1yVv4CmNoAnMsej1t3CKPCgbwo37qsNmrpd4BjBc00Czl9cdRdVqJC8X9Gz
+	ZaznKYaL3pV0XzZX+fbixIhfkkrdULEwET5tC8Hq/57ZgAkYCbtKAh/33elx1s6PwOjcBtDdg2S
+	nMg3IYZ89vawF9VPkhDOqKSTNzFoyXWS+L3BS
+X-Received: by 2002:a05:6214:18f1:b0:91f:1a70:4b0c with SMTP id 6a1803df08f44-91f1a70a6famr79219716d6.4.1794640209017;
+        Fri, 13 Nov 2026 23:10:09 -0800 (PST)
 Received: from gourry-fedora-PF4VCD3F (pool-71-191-145-202.washdc.fios.verizon.net. [71.191.145.202])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91f23db3a99sm37730986d6.40.2026.11.13.23.10.05
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91f23db3a99sm37730986d6.40.2026.11.13.23.10.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2026 23:10:06 -0800 (PST)
+        Fri, 13 Nov 2026 23:10:08 -0800 (PST)
 From: "Gregory Price (Meta)" <gourry@gourry.net>
 To: linux-mm@kvack.org
 Cc: linux-kernel@vger.kernel.org,
@@ -139,9 +139,9 @@ Cc: linux-kernel@vger.kernel.org,
 	byungchul@sk.com,
 	apopple@nvidia.com,
 	rientjes@google.com
-Subject: [PATCH 01/22] mm: add node-state-filtered zone and node iterators
-Date: Sat, 14 Nov 2026 02:09:38 -0500
-Message-ID: <20261114070959.3490008-2-gourry@gourry.net>
+Subject: [PATCH 02/22] mm: publish and clear node memory states via helpers
+Date: Sat, 14 Nov 2026 02:09:39 -0500
+Message-ID: <20261114070959.3490008-3-gourry@gourry.net>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261114070959.3490008-1-gourry@gourry.net>
 References: <20261114070959.3490008-1-gourry@gourry.net>
@@ -156,147 +156,136 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add node-state-filter helper functions/macros so MM walkers can select
-their node eligibility explicitly.
+N_MEMORY, N_NORMAL_MEMORY and N_HIGH_MEMORY are set separately in
+free_area_init(), check_for_memory() and online_pages(), and cleared
+in offline_pages().
 
-Add nodemask intersection and nodemask/state iterators using the bitmap
-intersection helpers, without allocating a temporary nodemask.
+Centralize those updates in node_set/clear_memory_state().
+
+Behavior is unchanged.
 
 Signed-off-by: Gregory Price (Meta) <gourry@gourry.net>
 ---
- include/linux/mmzone.h   | 46 ++++++++++++++++++++++++++++++++++++++++
- include/linux/nodemask.h | 28 ++++++++++++++++++++----
- 2 files changed, 70 insertions(+), 4 deletions(-)
+ mm/internal.h       |  3 +++
+ mm/memory_hotplug.c | 11 ++++-------
+ mm/mm_init.c        | 14 ++++++--------
+ mm/page_alloc.c     | 15 +++++++++++++++
+ 4 files changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index c161d563ce8fd..5ff190d870830 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1845,6 +1845,13 @@ extern struct zone *next_zone(struct zone *zone);
- 			; /* do nothing */		\
- 		else
+diff --git a/mm/internal.h b/mm/internal.h
+index cd3675c044e0a..608a83c34c224 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -62,6 +62,9 @@ void lru_add_drain_cpu_zone(struct zone *zone);
+ void folio_deactivate(struct folio *folio);
+ void folio_mark_lazyfree(struct folio *folio);
  
-+/* Populated zones on nodes in @state. */
-+#define for_each_populated_zone_state(zone, state)	\
-+	for_each_populated_zone(zone)			\
-+		if (!node_state(zone_to_nid(zone), state))	\
-+			; /* do nothing */		\
-+		else
++void node_set_memory_state(int nid, bool high, bool normal);
++void node_clear_memory_state(int nid);
 +
- static inline struct zone *zonelist_zone(struct zoneref *zoneref)
+ /* mm/vmscan.c */
+ unsigned long zone_reclaimable_pages(struct zone *zone);
+ unsigned long try_to_free_pages(struct zonelist *zonelist, int order,
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index f04a248d8adaf..490f400498f14 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -1184,14 +1184,11 @@ int online_pages(unsigned long pfn, unsigned long nr_pages,
+ 	online_pages_range(pfn, nr_pages);
+ 	adjust_present_page_count(pfn_to_page(pfn), group, nr_pages);
+ 
+-	if (node_arg.nid >= 0)
+-		node_set_state(nid, N_MEMORY);
+ 	/*
+-	 * Check whether we are adding normal memory to the node for the first
+-	 * time.
++	 * Publish this node's memory states, including any newly-normal zone.
++	 * Hotplug never adds highmem.
+ 	 */
+-	if (!node_state(nid, N_NORMAL_MEMORY) && zone_idx(zone) <= ZONE_NORMAL)
+-		node_set_state(nid, N_NORMAL_MEMORY);
++	node_set_memory_state(nid, false, zone_idx(zone) <= ZONE_NORMAL);
+ 
+ 	if (need_zonelists_rebuild)
+ 		build_all_zonelists(NULL);
+@@ -2146,7 +2143,7 @@ int offline_pages(unsigned long start_pfn, unsigned long nr_pages,
+ 	 * list. Otherwise this node would still appear in the fallback lists.
+ 	 */
+ 	if (node_arg.nid >= 0)
+-		node_clear_state(node, N_MEMORY);
++		node_clear_memory_state(node);
+ 	if (!populated_zone(zone)) {
+ 		zone_pcp_reset(zone);
+ 		build_all_zonelists(NULL);
+diff --git a/mm/mm_init.c b/mm/mm_init.c
+index a9d848c92678b..b4c4dba93652d 100644
+--- a/mm/mm_init.c
++++ b/mm/mm_init.c
+@@ -1763,21 +1763,21 @@ static void __init free_area_init_node(int nid)
+ 	lru_gen_init_pgdat(pgdat);
+ }
+ 
+-/* Any regular or high memory on that node? */
++/* Publish the memory states of a node that has present pages. */
+ static void __init check_for_memory(pg_data_t *pgdat)
  {
- 	return zoneref->zone;
-@@ -1937,6 +1944,45 @@ static inline struct zoneref *first_zones_zonelist(struct zonelist *zonelist,
- 			zone = zonelist_zone(z))
+ 	enum zone_type zone_type;
++	bool high = false, normal = false;
  
+ 	for (zone_type = 0; zone_type <= ZONE_MOVABLE - 1; zone_type++) {
+ 		struct zone *zone = &pgdat->node_zones[zone_type];
+ 		if (populated_zone(zone)) {
+-			if (IS_ENABLED(CONFIG_HIGHMEM))
+-				node_set_state(pgdat->node_id, N_HIGH_MEMORY);
+-			if (zone_type <= ZONE_NORMAL)
+-				node_set_state(pgdat->node_id, N_NORMAL_MEMORY);
++			high = IS_ENABLED(CONFIG_HIGHMEM);
++			normal = zone_type <= ZONE_NORMAL;
+ 			break;
+ 		}
+ 	}
++	node_set_memory_state(pgdat->node_id, high, normal);
+ }
  
-+static inline struct zoneref *
-+next_zones_zonelist_state(struct zoneref *z, enum zone_type highest_zoneidx,
-+			  const nodemask_t *nodes, enum node_states state)
-+{
-+	z = next_zones_zonelist(z, highest_zoneidx, nodes);
-+	while (zonelist_zone(z) && !node_state(zonelist_node_idx(z), state))
-+		z = next_zones_zonelist(++z, highest_zoneidx, nodes);
-+	return z;
-+}
-+
-+static inline struct zoneref *
-+first_zones_zonelist_state(struct zonelist *zonelist,
-+			   enum zone_type highest_zoneidx,
-+			   const nodemask_t *nodes, enum node_states state)
-+{
-+	return next_zones_zonelist_state(zonelist->_zonerefs, highest_zoneidx,
-+					 nodes, state);
-+}
-+
-+/**
-+ * for_each_zone_node_state - iterate zones in intersect(nodemask, node_state(state))
-+ * @zone: The current zone in the iterator
-+ * @z: The current pointer within zonelist->_zonerefs being iterated
-+ * @zlist: The zonelist being iterated
-+ * @highidx: The zone index of the highest zone to return
-+ * @nodemask: Nodemask allowed by the allocator
-+ * @state: The node state the zone's node must be in
-+ *
-+ * The state filter is part of the iteration rather than a trailing if, so that
-+ * this expands to a single for statement: a macro ending in an unbraced if
-+ * silently steals a following else from the caller.
-+ */
-+#define for_each_zone_node_state(zone, z, zlist, highidx, nodemask, state)	\
-+	for (z = first_zones_zonelist_state(zlist, highidx, nodemask, state),	\
-+		zone = zonelist_zone(z);					\
-+		zone;								\
-+		z = next_zones_zonelist_state(++z, highidx, nodemask, state),	\
-+		zone = zonelist_zone(z))
-+
- /**
-  * for_each_zone_zonelist - helper macro to iterate over valid zones in a zonelist at or below a given zone index
-  * @zone: The current zone in the iterator
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index 607373bd83ee6..28a456c3f5964 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -386,6 +386,10 @@ static __always_inline void __nodes_fold(nodemask_t *dstp, const nodemask_t *ori
- 	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
- #endif /* MAX_NUMNODES */
- 
-+/* Iterate the nodes present in both masks without a temporary nodemask. */
-+#define for_each_node_mask_and(node, mask1, mask2) \
-+	for_each_and_bit(node, nodes_addr(mask1), nodes_addr(mask2), MAX_NUMNODES)
-+
- /*
-  * Bitmasks that are kept for all the nodes.
-  */
-@@ -411,6 +415,10 @@ enum node_states {
- 
- extern nodemask_t node_states[NR_NODE_STATES];
- 
-+/* Iterate the nodes in a mask that also belong to the specified state. */
-+#define for_each_node_mask_state(node, mask, state) \
-+	for_each_node_mask_and(node, mask, node_states[state])
-+
  #if MAX_NUMNODES > 1
- static __always_inline int node_state(int node, enum node_states state)
- {
-@@ -435,15 +443,21 @@ static __always_inline int num_node_state(enum node_states state)
- #define for_each_node_state(__node, __state) \
- 	for_each_node_mask((__node), node_states[__state])
+@@ -1924,10 +1924,8 @@ static void __init free_area_init(void)
+ 		 *memory-less node. The pgdat will get fully initialized by
+ 		 *hotadd_init_pgdat() when memory is hotplugged into this node.
+ 		 */
+-		if (pgdat->node_present_pages) {
+-			node_set_state(nid, N_MEMORY);
++		if (pgdat->node_present_pages)
+ 			check_for_memory(pgdat);
+-		}
+ 	}
  
--#define first_online_node	first_node(node_states[N_ONLINE])
--#define first_memory_node	first_node(node_states[N_MEMORY])
-+#define first_node_state(state)	first_node(node_states[state])
-+static __always_inline unsigned int next_node_state(int nid, enum node_states state)
+ 	calc_nr_kernel_pages();
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 8532af052d74b..834d199ff8429 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -208,6 +208,21 @@ nodemask_t node_states[NR_NODE_STATES] __read_mostly = {
+ };
+ EXPORT_SYMBOL(node_states);
+ 
++void __meminit node_set_memory_state(int nid, bool high, bool normal)
 +{
-+	return next_node(nid, node_states[state]);
++	node_set_state(nid, N_MEMORY);
++	if (high)
++		node_set_state(nid, N_HIGH_MEMORY);
++	if (normal)
++		node_set_state(nid, N_NORMAL_MEMORY);
 +}
 +
-+#define first_online_node	first_node_state(N_ONLINE)
-+#define first_memory_node	first_node_state(N_MEMORY)
- static __always_inline unsigned int next_online_node(int nid)
- {
--	return next_node(nid, node_states[N_ONLINE]);
-+	return next_node_state(nid, N_ONLINE);
- }
- static __always_inline unsigned int next_memory_node(int nid)
- {
--	return next_node(nid, node_states[N_MEMORY]);
-+	return next_node_state(nid, N_MEMORY);
- }
- 
- static __always_inline void node_set_online(int nid)
-@@ -481,6 +495,12 @@ static __always_inline int num_node_state(enum node_states state)
- #define for_each_node_state(node, __state) \
- 	for ( (node) = 0; (node) == 0; (node) = 1)
- 
-+#define first_node_state(state)	0
-+static __always_inline unsigned int next_node_state(int nid, enum node_states state)
++void __meminit node_clear_memory_state(int nid)
 +{
-+	return MAX_NUMNODES;
++	node_clear_state(nid, N_NORMAL_MEMORY);
++	node_clear_state(nid, N_MEMORY);
 +}
 +
- #define first_online_node	0
- #define first_memory_node	0
- #define next_online_node(nid)	(MAX_NUMNODES)
+ gfp_t gfp_allowed_mask __read_mostly = GFP_BOOT_MASK;
+ 
+ #ifdef CONFIG_HUGETLB_PAGE_SIZE_VARIABLE
 -- 
 2.53.1-Meta
 
