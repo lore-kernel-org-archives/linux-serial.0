@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794663845;
-	b=U8NsMWzegIv8iFZOfJvB6Spk5M1AAGq2WPQ364e+7SXwg/Ad9lPfKJmVyGYOaozyAW1X
-	 3qjNpFCZKL7A/e+Awu4Rpz5wnv4ri4aIt5AsWCQd0Xec4pXfKCQG0xHZ6QcNAjpMEcYwg
-	 YMsXgHUCKWhSkRaw/bop3qb7nTbmY6aY2aiXbPcH9HHSs3+5//aTXLmmgY2l4YeuSRHT0
-	 r0g8XMzKkyYBZhwht2nT5kQnSaUrQfs/jxRaY9/wEqI1dnnBN7f7d0tKnHxNEk+xRGok7
-	 /8pzlZLW26XvfGwjvBeaGncyVZZK+87hYJ+QofcBWVCXVSSyWu+VeBDbPZp5LanwhIQ==
+	t=1794663936;
+	b=Lpnj9VV8Y9zre9sCZvcyXAH4jaUBXb6S2xIHgqHoaZAE2hAgkiolKC5KIY72kdiGWYJj
+	 xYYBrZ2j+gazu77VsZM9LqJ777kt0wy0jEilVE8+GlboHgvRnaIIqbFnpOBh3RHy6CwF2
+	 T2JeQ7MOAfEmMF6lQ+DwTuJq/P9QGJDOIAFGvj7MM/QQNerBF6hRyYshKL/20qAEwWvsl
+	 XuRmwUxWUoftNNwtrKTKoqR0/Z05Zb5bB/Nn8oykBwI0/E5aCJwbuvPX/M7Zq1GwtSYme
+	 be0Hp2MoQ2JyiJEdlnX0GoxebN2A+/eE6fxeE6p8nQ7/oMGli0khpcesYvXPVbCcxuA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794663845;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794663936;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=HWu0KslN2JnC5WOx5b4gJPlo/nxhj1EC7x6emNObcI8=;
-	b=vXhz0G4XYGwMwnKvK68HWzw+WFH6YiqqKgiAJJwt5RYD7MbQYKqjf+hd3v4PeYI6HfvY
-	 MTkeYaLJxD4kcmA8y6vbDKM2+AFxk3ILi/0Bnsxx9XhtHEdI3sln8cyQcCnqI5Kas5aQ/
-	 qoOIY9osVmiKJdXZugPSoOjwka2PrWLIW4pvVe5cSfk/rDgbvgaWIDNckag4C0j7uLEae
-	 DUXXQZdHH7EXU5dybQhsbMkts+wi33ni7uwn69Q+K7iN/0UsjNRO0YBkvvFebOhSuQI6L
-	 FxcFjhZ1xsz2Y+mEOazS+3/gtCaw0cDaWKZF2uSwwTQu4DSydh54bIewp+Hplktx95w==
+	bh=Is+l0UgBxpOgEx0aoM8Q4OIlrtV8UvAtfLCIfv4GEB8=;
+	b=bfwr0XB7MnHem7kqp6My26H4JsvUn6EJzU8mVrDVkF7ruxX1okTQfhwaI/bJ/4eSD7uO
+	 s4ZR+PnG+38rZLe2+MSZW1/b9ajNuU/+xUGhVCwJJ5kfAx2N36ViASbEjuyo/SeDLi7ej
+	 BJdob73Eux9+XZGFYGZOTgI9R8ZVc9/bBRqHjfCj7ib2G52Mym3lRbM+VsIEikfhPgt6R
+	 SZ1Ig0g4hsgruwb76h/K9YbnhX/1bjAu2X7HtefatxwJOOswMynXsCfo9CdLlf0mWwLmv
+	 wFjLu9bamBYRmjbBrpNv221eGUToxPA6Ycq5b62VyKqOTa3iRfo+NXcwILNqL2kaTMA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=np7qQHA9;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eAch8z07;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07D8606A32D
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 13:44:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D73606A330
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 13:45:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=np7qQHA9
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3BA21F000C4;
-	Sat, 14 Nov 2026 13:44:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eAch8z07
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415EB1F000C4;
+	Sat, 14 Nov 2026 13:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794663844;
-	bh=HWu0KslN2JnC5WOx5b4gJPlo/nxhj1EC7x6emNObcI8=;
+	s=k20260515; t=1794663936;
+	bh=Is+l0UgBxpOgEx0aoM8Q4OIlrtV8UvAtfLCIfv4GEB8=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=np7qQHA90BsjvVj0ualVi1UOtkZ3HBFSfzV+ypWlE72QeRKj9cTd15zHr9HyHUVAE
-	 rTAOEhINbNlfbkoaKJ4qZpv0BBAm6yHO3LMI5pLfKipV7mTszBe8zYSN4mwrI89mVj
-	 GBv/dd6a8Ke2gqIiORXrnEw0DYeD20GRts2X0iQ+vyHtWUBYpYehouilstJoy/3cqT
-	 zGKCSKjXTJDhOmfGrn+d3GfGdSvXPHMKOp8WQ6bzw0Ouo3e5rZixw4gCY6dLAkiKJp
-	 5jVTXm5KVQQ5q3r8JR1uoeyVOypIbsH6qMcLgEuuFIT7CygcmSHneV3567dTJocU2t
-	 ASvW2rEKsBUjg==
-Message-ID: <sashiko-outbox-214586@kernel.org>
+	b=eAch8z075Kav18+mCGpbDYL+WT8L5SMH4jLgeGwFHX1LmMGb5YKhSHoAwNntZwXFl
+	 3iOu8uexk/rc3gfebp437O0TW/2y7KnfwGG3GFrS03zezpaCr431Kkvja5DdZ2JzjA
+	 TMaRCXDmoyuHgWwiogxWyjIPd+30lwXiyxz7efFMxxRdFAuQsGBb68SVINxcxsp6B6
+	 BeGc/DhKIpRehNWOjWQTVNC9WUTCpZyuUtS8pgWMFOpZ2Yylvn3DeCM7nzgYuLgiP4
+	 4yKeVCYf1u0ChFXbPB+5XSczEx8Z5V+WWVNq4HcRqDab0ca6uKMLsyUuY6ioKEktZK
+	 3+5oOStpm+ECg==
+Message-ID: <sashiko-outbox-214587@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v7 03/10] dt-bindings: arm: cpus: Add Cortina Systems
- CS7542 enable method
+Subject: Re: [PATCH v7 09/10] ARM: multi_v7_defconfig: Enable Cortina
+ Systems CS75xx support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Fil Dunsky" <filipp.dunsky@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261114-b4-cs75xx-v7-3-8f17f38821b4@gmail.com>
+In-Reply-To: <20261114-b4-cs75xx-v7-9-8f17f38821b4@gmail.com>
 References: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
- <20261114-b4-cs75xx-v7-3-8f17f38821b4@gmail.com>
+ <20261114-b4-cs75xx-v7-9-8f17f38821b4@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 Nov 2026 13:44:04 +0000
+Date: Sat, 14 Nov 2026 13:45:35 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,19 +63,15 @@ Precedence: list
 
 > From: Fil Dunsky <filipp.dunsky@gmail.com>
 >=20
-> On the CS7542 the bootloader parks the secondary Cortex-A9 core in a WFI
-> loop that polls a global software register and jumps to the address
-> found there. Add the "cortina,cs7542-smp" enable method for it and,
-> as with the other release-address based methods, require cpu-release-addr
-> to point at that register.
+> Enable the Cortina Systems CS75xx platform and its UART driver with
+> console support, as used on the Securifi Almond+ router.
 >=20
 > Reviewed-by: Linus Walleij <linusw@kernel.org>
-> Acked-by: Rob Herring (Arm) <robh@kernel.org>
 > Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261114-b4-cs75xx-=
-v7-0-8f17f38821b4@gmail.com?part=3D3
+v7-0-8f17f38821b4@gmail.com?part=3D9
 
