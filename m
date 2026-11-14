@@ -1,85 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.175
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794642613;
-	b=tJsW0eDXSEvqsB6mxtyPg54ZP59h7VPEK8rT59wxx7nYv6RbSEwm6OwZz0nN4oV/zdUF
-	 PjAZdUMTT4SWNSPCqUFvvHwbMmYmU7+R30hwovcUegvQCVpmNDas+ArzWL/mUMuFI85J7
-	 iSVAM8yP00ZJFV3Jm100QNJuHKvLUcv1CGTV8kmdXZy1wJzGLTvy3fuJnu/1s2ugKR6/i
-	 I3/TClbh894anIjFJrPMsshQFsY/rM8qwcSk+Mi8RFPzG1rbKUEeNC3YS55bIG1Fmr7M1
-	 kjmW8pkYg2FUtMwlShQFgiB/YNHWaoCoHOx7WZ/xrKolUa7HgKwqwg+HszjIt1iWmNw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794642613;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:Subject:From:To:
-	 Cc:In-Reply-To:References:Date:Message-Id:X-Mailer;
-	bh=cGbHDC4e4qa3gSIc5H3tZOXqH9VLSX3BMg1aP/6Q428=;
-	b=pECaXoo4vd6kGCIfa/cqXy9jHf+k2R4cy6JwcuqS+NVpgGitp5HwLr4GKbn1EDXikKRr
-	 SSL3MnpOVylSIJ6D1OFaMqxZQn9lygKqaTbEoShMJQ16xQB966PiK5fV9r13/CzapZ8sY
-	 zuqMhUdRBpeLM39YoKVZ9iE9iXoFiYX8Ttl4+oBsxCWg1eB+UXhzpCLCYOersS0yBvo/Q
-	 4j0cRiQrRTs1119eiy/kyC7V9Sr5Pu5uMfIcmM6WCtAvc36az60EG/XGxK29hb9/eJLAZ
-	 YFumTbkI90CRL2qQ4hbfoy+Rt0snZrt6oAOAFLcySYn8USXLv51wLoacd4NSXbBJAow==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=gourry.net;
-	spf=pass smtp.mailfrom=gourry.net;
-	dkim=pass header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=SF6em5du;
-	arc=none smtp.remote-ip=209.85.160.175
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794663670;
+	b=AcxOH2QyTxZNTdcpevIikOBuA+AUO0e+HJx9+II4BBuYRmld8OP/+HGUbcOpXqOOt7Kw
+	 kw/qcktXPxUF/ZXbkQ9uE/kBM63gNhvHJNHG4ny0+vSBmJZi0/bysPlyoA4uoobnxTszg
+	 fm3uEagbbnxCZgRcE/zSCzl8Bf3ARRvb4/t6Yr6spRAugo1hn18p4bgEjLWgM+CcP/Yye
+	 bRFBrrSg+jNm5CGmsTL922clN2itBah0zqtKEYS3Lfqk1KTQ9/J1ypr5k7yRbp6gMbQ7L
+	 R0mcvAzY1kxmF8SShJx8W/4wV4H6SlB73zIDkm3xBJOdJjd3m9/Dneiye0KLehanYCg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794663670;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=vxTe7UYstr5zmWrUwGezYJ045qR2VI9dQROuNPPuSTw=;
+	b=mddyN2PloPct8ejkfsyOzY3zOe6jfyFYc4vDKlxHZVYypAnXK8U2HGTZjuoVVtxFfxkA
+	 wL8rpFxZV1DCPjDlO2GtaEBXr63uX16Az0kaTPZy14jIoLDMxuKBD1q9RDoD2CzTq4iUy
+	 4RcgzGrcdhw98hdc6+E+g9iviSto6zE00xHXzSbeq/ljHp2J5heMVhH3Rn6zuL9cksU4g
+	 Gp+fbwVw6q89WR7GdR8tqkRiMsztQnalQi9ZcMXH+L1fmhFXPxdgMqLcf6kE953hsdIlf
+	 Sg1k4g3ao3gKxonSl6w+X2f/y0XDLqG9wfwyieHDlUNkeEGkhD+HJnZkb+hG5hsrZmg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oqkMqVnj;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6BC606A32E;
+	Sat, 14 Nov 2026 13:41:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oqkMqVnj
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794663670;
+	b=mMBaleVtJTcTOomBUm80y0FKHTwEBSxqtSHgL8bLuoPeipm4PWKFx/ov6ImbKGMgfgcj
+	 Y+sfhre1GYep5P6iErSXLVIm4xY6E4/6CreW/vU3U2bj7rM+QFwOFJNm57nK4fPs552N/
+	 nig7zK33vrMbFiWy3FBAnB1q1zysgAM4MtzBGVdczcX7ErVNFLmWsGs6jU6cElB1LA1Pi
+	 XfT3O+5JYB+q8y/FVxFjI/ymFxx/AMlqd/Cu++sM4m8RjIkuBSf2cOGkhFsqDZYHGveB2
+	 +JQ0teEi6sVw7SiZnYYRRCEQ/40mYDge3jpTuLj33jc1aAJZgh+plVyerCUqBgoHzSA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794663670;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=vxTe7UYstr5zmWrUwGezYJ045qR2VI9dQROuNPPuSTw=;
+	b=Gvo4awAMpFd3s49/XGvhS2eY1wh1EMshBmP0tbhOiJ97Qwh5JPZJu9e0hv6fjHKyBwsY
+	 urWmcJj5DrL8GDAMeAZHRUo+wHoBJRF/YbIw0S2atOFqwhO+o4E1lvViipTLd7rNp2TNe
+	 BScRU05fpqESFOrF4+QzSN9hx5X5kozVvoowOl9Dsb+NBuUVQUKmnCMkXc/8Cq8/24Mon
+	 xovN3X0ivB5U5wMe731p4Mx+p8CEcQ7qA0bqqQoutHPoatWJIe2e2VEoeXi2DfXzRgUCr
+	 DMgCVw3omPLq1KeHHGQEjhSZJ3pm/Mxbzmkkm509XweE3eSGt7FLB7I2/NQ6dflDxtg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D25A6606A329
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 07:50:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D25A6606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=SF6em5du
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-54f873cbe2aso27671721cf.0
-        for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 23:50:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gourry.net; s=google; t=1794642612; x=1795247412; darn=vger.kernel.org;
-        h=message-id:date:references:in-reply-to:cc:to:from:subject
-         :content-transfer-encoding:content-type:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=cGbHDC4e4qa3gSIc5H3tZOXqH9VLSX3BMg1aP/6Q428=;
-        b=SF6em5duzVjUCkIvgA+5+oFXUOsWIns/6/N7iMwfWnVzbC1tBgVSGZ0POCCGPJGAph
-         lZzuvdfVtGLtNvnnMk4Q6fmeQeI1Zf4z1y1Np+gv3FVtwN/PdMlHceEufLPJUXVWuW3R
-         yT8zxaqtXQ0KIt/xqddZ5oSC2mDPTlWBYMdjFbhLdc3MenvnJvjogSPz7V1igH0WKT5G
-         YLOqL7cBD3Ed3rSLgTLWmXdhYqfhKZJrAesyFiW/4xR+1Li3Obfdw3cVrzn0wC3ppXcZ
-         CvQxB8JFCIeWSx7dJwgOT9LlaMqQglsw+XA8pRJcYp/5jbGZ2FKUHHmKR+G/C5zqp2Lx
-         YQIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794642612; x=1795247412;
-        h=message-id:date:references:in-reply-to:cc:to:from:subject
-         :content-transfer-encoding:content-type:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=cGbHDC4e4qa3gSIc5H3tZOXqH9VLSX3BMg1aP/6Q428=;
-        b=vwBgFENiNkHUGMXHxwnHvUB+xy46JTdAOuJu27e/kWvdVwS/GB4OLs8Q9G9UP1zxjG
-         T48FsR+3mGogFaQo5JqPHBDqj3esaDZfFn1QaALMI29eiuUvCvtfhpkUc/jl93qGTUaK
-         jAHeNS/r5KQUHK2A5zWcuHhHGtR1XHpxhrHirmCRE4wuqyQsinDVb3nSAu6q9SXZBRK2
-         UCtUVy5l9PK/ECkIulpfc9ccx9UaUZqRFwSgZd12zL6RgxE9dgkRnJSgMBAlcCyUeKE8
-         7DI82+8zvrAredxoxC0Vaaojh/V1EW+ELZKE/sOHG2XyVjRTSdPvqKqENliicyAOYOA0
-         slvw==
-X-Forwarded-Encrypted: i=1; AL+hErFJKS/W1I7FNK5+94BlXnzuHXenUH9TOJ+6y8RhYAa8AC2YKQ5f8XosmFnNCkKUVK1E90pv5JHinIRL7Sk=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9tJIqn8vllRIALivG3scihLS6wBJJ51CzrOOcvz2kj6gSdZDmG
-	oq48jojGWBXgbftfFRTqgPspoFuyZr33qkXON2H8PiCJnFVa7ZN4GeouP8Lv9i8PWJ8=
-X-Gm-Gg: AYBFou0KVDNo2zTihdA2LmCC7O1/V+opl/rBe9N0iwxLR6vlXoS6NxZIJCsz1FMIthE
-	ofpHNuqmhGnSPIzTyrC+4I8kjz1XVWljeD+JbP9VyY8N4VjZuJ6KXx3v2my2Cbm/uxr+bMVnjXD
-	hKlJ5jvZTMkGYQitIrkEvtl0qFVTpMGUGNefehH+ka+pZRKr+ElkJ9UW8G6tutPTfHB9Za3YUxR
-	vzaQPvqHplv2dZ/NBt1ELj9T7JPbBSBBsIV2/5k8Y+CBkmKdF/iotLQv1bFnaUXDiHk6ShyNhpr
-	gP17AKkVBpxVxokcV8/Z0o9HvUkhOfp9VrVGo7MQ70KTI4l1ta6UOotGMLKbyyQECVY6yDSaVUL
-	Wj8Cxc/TIV/8jWABCjbDuN2MFpmQUMBEmtPsuIrD/oz/U0nIySDvtVBJMxXshrIHieGUjmDYKY/
-	IHaRUCBKmBKyXRSKX40cwage/kOShqGwcevs3d/HyDSu8f4+ViqzQZPOej7hSftblGGAO8lB6jU
-	dvogMdjzQEtppuhOMpiainOXWZ/7yQsGuVq4kZDkli9qEQcCMWJSohXeez1MAbfTM9qX62VXdTK
-	4IhJ7TbdrtG4ehqPKpRFfGB6T62gxtV7IfhU2AlWnOuv8FQibeO+QwT42EJgDiZEZg9zJzoLeIh
-	nf3OrtiA=
-X-Received: by 2002:a05:622a:4890:b0:536:6378:c80d with SMTP id d75a77b69052e-55ac7d4f0e5mr76447071cf.32.1794642611571;
-        Fri, 13 Nov 2026 23:50:11 -0800 (PST)
-Received: from [192.168.50.231] (pool-71-191-145-202.washdc.fios.verizon.net. [71.191.145.202])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91f23d445d1sm38109806d6.8.2026.11.13.23.50.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2026 23:50:11 -0800 (PST)
+	by smtp.kernel.org (Postfix) with ESMTPS id A6F0A1F000C5;
+	Sat, 14 Nov 2026 13:41:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794663670;
+	bh=vxTe7UYstr5zmWrUwGezYJ045qR2VI9dQROuNPPuSTw=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=oqkMqVnj6H0oyQLn4Z0XZmf2UYI7j8/P3d1vU+GPksC0k665LvlcBWUe4dyyzcDk7
+	 M/BFRSp66O7XCd5kn11sELfzKDQeunk2blZW3R2cQiCROxZaSeVYPu+eLxvLoHzIke
+	 9/f2ey6XAgb5nMNwdmWJ7m9Dr0AeGSM5/CCQI0pWSParseCnxOKpyYea8tPxZ0nFs+
+	 jgq+K6MPkbudPLTPQRJku8vD5ETkBUTdZe0Zp9Cxyjf4aNPPX9oVv1fGVDFeCmY0li
+	 3IjeAmMPiAw4Rp4LdCA4bIaM+aAfarA4SGo9qigIHghxMy6MA+6zLTvPWkKTm7UpD9
+	 tt8ld9phze5FQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 1F9BF49DB1;
+	Sat, 14 Nov 2026 13:41:09 +0000 (UTC)
+From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
+Date: Sat, 14 Nov 2026 16:41:06 +0300
+Subject: [PATCH v7 01/10] dt-bindings: vendor-prefixes: Add Securifi
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -90,106 +83,64 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261114-b4-cs75xx-v7-1-8f17f38821b4@gmail.com>
+References: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
+In-Reply-To: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Drew Fustini <fustini@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Jason Li <jason.li@cortina-access.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
+ Fil Dunsky <filipp.dunsky@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794663665; l=944;
+ i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
+ bh=573roVKzdDYFuCfGNESYptLR9xpcGKVT07rDsXKZwOU=;
+ b=osQRAw34EIeIqPaHCxOrvakpZLcesACv9TQr7r9bbOjSkVc9wpbxHd6F6OijkPShGTRUkpP1+
+ 35H+hXXg+TaD21ZSUkQL0Gll6BH6uxheQc0gtP7pucqDaXGDwJKtedg
+X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
+ pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
+X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
+ auth_id=1085
+X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
+Reply-To: filipp.dunsky@gmail.com
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 20/22] PM: hibernate: size the image from common memory
-From: "Gregory Price (Meta)" <gourry@gourry.net>
-To: sashiko-reviews@lists.linux.dev
-Cc: "Gregory Price (Meta)" <gourry@gourry.net>, linux-mm@kvack.org, 
- kernel-team@meta.com, linux-serial@vger.kernel.org, damon@lists.linux.dev, 
- linux-cxl@vger.kernel.org, akpm@linux-foundation.org, david@kernel.org, 
- liam@infradead.org, vbabka@kernel.org, rppt@kernel.org, surenb@google.com, 
- mhocko@suse.com, corbet@lwn.net, skhan@linuxfoundation.org, 
- rdunlap@infradead.org, gregkh@linuxfoundation.org, rafael@kernel.org, 
- dakr@kernel.org, johan@kernel.org, jirislaby@kernel.org, kasong@tencent.com, 
- qi.zheng@linux.dev, shakeel.butt@linux.dev, baohua@kernel.org, 
- axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com, 
- baoquan.he@linux.dev, baolin.wang@linux.alibaba.com, yury.norov@gmail.com, 
- linux@rasmusvillemoes.dk, pavel@kernel.org, lenb@kernel.org, 
- hannes@cmpxchg.org, brendan.jackman@linux.dev, ziy@nvidia.com, 
- sj@kernel.org, muchun.song@linux.dev, osalvador@suse.de, 
- nico.pache@linux.dev, ryan.roberts@arm.com, dev.jain@arm.com, 
- lance.yang@linux.dev, usama.arif@linux.dev, kas@kernel.org, 
- xu.xin@linux.dev, chengming.zhou@linux.dev, joshua.hahnjy@gmail.com, 
- rakie.kim@sk.com, ying.huang@linux.alibaba.com, matthew.brost@intel.com, 
- byungchul@sk.com, apopple@nvidia.com, rientjes@google.com
-In-Reply-To: <sashiko-outbox-214264@kernel.org>
-References: <20261114070959.3490008-1-gourry@gourry.net>
- <20261114070959.3490008-21-gourry@gourry.net>
- <sashiko-outbox-214264@kernel.org>
-Date: Sat, 14 Nov 2026 02:50:09 -0500
-Message-Id: <179464260972.482102.15351839494267219366.b4-reply@b4>
-X-Mailer: b4 0.17-dev
 
-On 2026-11-14 07:34 +0000, sashiko-bot@kernel.org wrote:
-> > @@ -2011,9 +2013,10 @@ static int enough_free_mem(unsigned int nr_pages, unsigned int nr_highmem)
-> >  	struct zone *zone;
-> >  	unsigned int free = alloc_normal;
-> >  
-> > -	for_each_populated_zone(zone)
-> > +	for_each_populated_zone_state(zone, N_MEMORY_COMMON) {
-> >  		if (!is_highmem(zone))
-> >  			free += zone_page_state(zone, NR_FREE_PAGES);
-> > +	}
-> >  
-> >  	nr_pages += count_pages_for_highmem(nr_highmem);
-> >  	pr_debug("Normal pages needed: %u + %u, available pages: %u\n",
-> 
-> [Severity: Medium]
-> Should count_free_highmem_pages() also iterate over N_MEMORY_COMMON zones?
-> 
-> On CONFIG_HIGHMEM systems, enough_free_mem() calls count_pages_for_highmem(),
-> which calls count_free_highmem_pages():
-> 
-> kernel/power/snapshot.c:count_free_highmem_pages() {
-> 	struct zone *zone;
-> 	unsigned int cnt = 0;
-> 
-> 	for_each_populated_zone(zone)
-> 		if (is_highmem(zone))
-> 			cnt += zone_page_state(zone, NR_FREE_PAGES);
-> 
-> 	return cnt;
-> }
-> 
-> Because count_free_highmem_pages() still sums all populated zones,
-> enough_free_mem() continues to count free highmem pages on non-common nodes as
-> available room for the image, undercounting the normal pages needed to back
-> highmem copies.
-> 
-> In addition, alloc_highmem_pages() and prepare_highmem_image() use
-> count_free_highmem_pages() to bound loops that call alloc_image_page() or
-> alloc_page() with __GFP_HIGHMEM and pass the returned page directly to
-> page_to_pfn() or swsusp_page_is_free() without a NULL check, which can
-> dereference NULL when highmem on N_MEMORY_COMMON nodes is exhausted while
-> non-common nodes still have free highmem pages.
-> 
+From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-HIGHMEM can't exist on a private node.  Private nodes require NUMA which
-require 64-bit.  As far as I know HIGHMEM is 32-bit only.
+Securifi Ltd. makes the Almond series of touchscreen Wi-Fi routers.
+Add a vendor prefix for it.
 
-Trivial to update though, so for consistency i can add it. 
+Reviewed-by: Linus Walleij <linusw@kernel.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 5471a06f9..f1f764ddb 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1499,6 +1499,8 @@ patternProperties:
+     description: SDMC Technology Co., Ltd
+   "^seagate,.*":
+     description: Seagate Technology PLC
++  "^securifi,.*":
++    description: Securifi Ltd.
+   "^seeed,.*":
+     description: Seeed Technology Co., Ltd
+   "^seirobotics,.*":
 
 -- 
+2.53.0
 
---- a/kernel/power/snapshot.c
-+++ b/kernel/power/snapshot.c
-@@ -1291,16 +1291,17 @@ static void mark_free_pages(struct zone *zone)
- /**
-  * count_free_highmem_pages - Compute the total number of free highmem pages.
-  *
-- * The returned number is system-wide.
-+ * Only common memory counts, since image pages come from common memory.
-  */
- static unsigned int count_free_highmem_pages(void)
- {
-        struct zone *zone;
-        unsigned int cnt = 0;
 
--       for_each_populated_zone(zone)
-+       for_each_populated_zone_state(zone, N_MEMORY_COMMON) {
-                if (is_highmem(zone))
-                        cnt += zone_page_state(zone, NR_FREE_PAGES);
-+       }
-
-        return cnt;
- }
