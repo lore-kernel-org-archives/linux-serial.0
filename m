@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794663674;
-	b=epHnEWa1YUgEpZVz5ctyTqDKrCKy9fiwMGpKgslbRnQ/99XyK/WeY5wRAIcoahetel4p
-	 z/F1Mpw8bBwAXgAV/8gw7fI/SH+UkHHckoPbr3iHxnnvoXOaDI638eBEaOAY/jLFgsDc5
-	 Xw055gfhZ0+4jZvtnoceskbI4YdGnepRlbG/etGnZG7b2voalj5OU6FUyvI4Ne9nMWUjY
-	 zEiMdX0fC4zElHftmpo79xgZO6VKpe2EU76o+3SzAnPeHeR8caFnzDtS2aT2sqk/hRDOy
-	 Bbxpwldqb47wEYr+p/gKoTPIOUGmMryREn5GS5orreNMa33bhMIVZq6+fbypjDoAUAA==
+	t=1794663670;
+	b=l8jOy9qFc/0hHlM7Bv/bIsVIi5wVNSsnppupXwWyjpiiCSmuHEQRWtpxTW8nt8WGoYMV
+	 GDLJvrh3J42t5yAu9GtXQQ2UQ091hvG6jJNF0bhfAU5frJIid1AKdGhpQvlZXz3gDxnjz
+	 4eOi9ciMgPjl68HaXsM/8Sy9AqbvsUclZrCzlyYi7Pvn9WvPbeSBVAvE/x/B7Rb/Umvx+
+	 32PQTGYIyhf9JyevPdxA8JYU2schoEP5d9ZKDfWcfFtW0r+uRHi/QO4xe+9vguAxXtGzx
+	 N0/g1myfu9PKHCZ0/DjS5ANypuERGYZbDPJ/P1UOeQmMODz+EFwUgk7tDFafhiOoUYw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794663674;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794663670;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=3HxGS7rMCYBlz0UowdO05vlYxIZwIdtN1FLB9tjva1M=;
-	b=jVs0ZkJsilbT82QSMGf5EHRkE++VBCQ/EDWyUGI/1inRgXvUqexdNvUI/tY6aYO2O49n
-	 3ildio3OV+o7OcCfA6Jq9F88AAngZGZcVcecLxX2cBSMZ1jtoYfKSKVpqPF7F3otuHBL3
-	 GqCkPfcisVdGC9yXuw3M5FFTwHon2TjdKMp5PSkdvTq1qRfbHS5DII+JDHhKg7NxLkjD4
-	 YCAXZ4nOg+04tU8AWHNdypN3ayQZlskhVR7mvT6BGNv7TzMbTwnygtTZPm7NrMPrR6IYB
-	 6YticJXy+asAx3H2eVpANBHQH8ldFo5GswWkSjVrNKhlsvgqcTGGSm8/S7QfdYeh+DA==
+	bh=Gvf3IdDLDeRNj9nlhALrJ/CcwWCiWPj0Ri5V51Dn7x8=;
+	b=FPpzICsJGF+owznHnoMyWwMMXK1zBPrRjHaF3aZt1a11hcpzMrhYyJ9LtrcF212NawgN
+	 MWVjITrEpAH+T5UGhoQLvVTw1xui30kaCNdcdycuY+HUB4te/IprQcL8JPBwcuSmS334r
+	 GK2YcIgKA2IYCe84Zo3fUrCbYujml3F3I0jUOHjVOguPES/+aptnSgWJ33oZufsMbTp+E
+	 agekwXf2bUf9rSbsCOlVe1a8ShTdiSabS3xvIjnuT/gxPRn0jYTM1x+BzYFyxGRVnG58i
+	 VeofYaTqgX4qWYbj7IhjjrnDMMcrc2TKLnixD91bln3CcnF8NuXNimug/p6byWmj4Xg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="OgtMk+/6";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Bj+FwcR8;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BEA460A260E;
-	Sat, 14 Nov 2026 13:41:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57AE606A33B;
+	Sat, 14 Nov 2026 13:41:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OgtMk+/6
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Bj+FwcR8
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794663674;
-	b=3BC7Cp+U6AUHxM1+v5nzypsBaLRWCjiUJTsKwdc6dKUr1efrPPzTgNa+e48G+BI7V43Z
-	 ZA/2JGBlFfLZySrvd8svXaFrcw6Amic8RAfQJOgXOs+NO/oPSLm0MDkjAONcccODZb2tj
-	 40b0yjX7OSTj/bxqyjQsNBRMq0S//4BB1X7GwNmbaN0dbeg7/s8T39TtaJnVetdA+LqkB
-	 HEPXj/YFb48MgBffmzwPCJUT8tmgS8FBURAibPICijV02qrfUSlfJNL8aGxyYu1uh3X8f
-	 03QHs6MW/7HDyMltmEf7lMwc8XIh774FL3dQl1qNRtC8o3gJXaEsxdteyf6nQV1KETw==
+	t=1794663670;
+	b=IPNJrC8KApvSd2/E2/U/GmDEfObB4IFAKPoPxupsRG681mFyBAxyf6Ax7reIvdOgyYNx
+	 mqJg+x1r8eK8aQjjZ+2/eLrKdj0RXE3NBnFKtZXIz92mHZ7IZN+89gobLWeAdAd7wBdwM
+	 M4I0Qr6kBTAshEiJAMmQrfk6S/3orkhFEhq1Edq7/sgKZbJ4ux6V05GgeQRwU8Wtjg6Lw
+	 drPkJuPUOFB7WHP88sBeYrB2H7YiAjIYYp9AZ+NftNUavuLNk8qYuk3K2CN87LItqUgWW
+	 I30cp0X8wV6AVO2GazX49shgw8Jc26XWfDc53UGTKdvJQ63VhfpYfU8DWEVymjiCSwQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794663674;
+	c=relaxed/relaxed; t=1794663670;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=3HxGS7rMCYBlz0UowdO05vlYxIZwIdtN1FLB9tjva1M=;
-	b=WNSjOuwf7GHMoFL90L8bjfCoQGJRR9l1rdSBrYpwPT+sq5BcRPYa2KbaBGpC49MOKFvg
-	 a7xgA0J2jQwsMXnKuT8XrW9sWqx0sQVJcY1uy6UD8RN/DRbO7B/tpu6UDQ9ha0Ws0d3SM
-	 rl8sgvnutIv/qE6yvOglmE813sXDNQ5c8IGEkpgc7muVpkmlhi+DRb9GKo8WFDodl2Q7U
-	 fMiFeN+0CfwPv0fQLgBY145zm1t2+I5hoLCSh9AR6G9wzUe+NlOh2FQs3iLhvSPgoZ62W
-	 EJoyF65LzCcfZJxaNXKhk2Yv3hBDDk6HnKt811iJN60JAXA6hbEpNGGTFooqihgnXEQ==
+	bh=Gvf3IdDLDeRNj9nlhALrJ/CcwWCiWPj0Ri5V51Dn7x8=;
+	b=zD0AyG+U5821+7WklTZukqL0nKVOf0bQeGg/DtjUZx3LBgCr+N6zNBgYhC+TIJ3q0O3X
+	 shr6P6ZcXtF9zD/Kfq0CsO4pRTvUvS5KLKm3+71znio2nZVM4FUhk9hCNYhGBn7oiXZMc
+	 68QYYHM+VD8a5A6JBdXj5/hVKAEsKfOvAS15ueujVmGUydGziWgq6xVEr365kphxeGVL+
+	 1L5Q9OLqw6rLOHqx58Z5N04LoyiG3ybXJLNfFehbC1mrPr3a2uWQt4hHUG3nbpTyVg+tQ
+	 FBmBG/1QORb6F+abeslcVpSAAspHpcjWLWzkVRCWKqyVTIqgw/4Vrw3g0ixL7N8qlrA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4B5921F000D0;
-	Sat, 14 Nov 2026 13:41:11 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id A83DC1F000C9;
+	Sat, 14 Nov 2026 13:41:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794663674;
-	bh=3HxGS7rMCYBlz0UowdO05vlYxIZwIdtN1FLB9tjva1M=;
+	s=k20260515; t=1794663670;
+	bh=Gvf3IdDLDeRNj9nlhALrJ/CcwWCiWPj0Ri5V51Dn7x8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=OgtMk+/6Ou4qB1kHS+E9xh+f9We/DY/ncdr1i5+pUSOLxvIR53dfINOUK/uWK2jcL
-	 r+OLZE2xcRI66q1tgZey8gGLyr38YNtagEsQEKIi9aWr/x8bjTpKYkCDnToBTIafSC
-	 R+i+KbPGxKUMQIL6TnthfCVvmY3rqgqJy8jfh5qPYPkGDcBG2eC0NQ8lcpcQjlRvwn
-	 zCJtJb5KDxEpGIl9h2NZWRYM5yzG5CjziZKqD7XqkDaIMouOOJl4s12/RLVrg+Ok8j
-	 k8n8LpdrMmuO1HGS/DTkC6YTkup1ts8AP/sKCHJD/hOgh5uR/f+JoiFIUb+NMRqsWe
-	 rQmKFThHKs5Xw==
+	b=Bj+FwcR8o1xmxZdTU0junoaTXJAycT6PbhyS2fEIKM3dNOuFy11Aqi0XbXqMsEsll
+	 qr9GPuKAA+LFvYnjNuJTilmTNSOnL05kRDg1vrSXs8vDtNX6INMdFvdDHc5XbTFpTe
+	 Glnrt4R0O9OibzDYxXjpqYq/GmSK7qiiUekcB8o4Y1Q8IZLCRQuihLdxmB8TMkrd03
+	 2M2lZd0pJYlYJkjP0GLdPUJarZLshBPBZCGJq5Pei7yzwyHK1vf86RvPnGJaFOG+vB
+	 /Wf2J1Lugn4fhGQyAQcDpj0r84RYwiCWaMwo57R7E04yPTZw/ddCu6FGinToBYBRsO
+	 1vQ+kCGBIGzgQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 9DFCB49DD6;
+	by lkml.kernel.org (Postfix) with ESMTP id 3490F49DC2;
 	Sat, 14 Nov 2026 13:41:09 +0000 (UTC)
 From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Date: Sat, 14 Nov 2026 16:41:12 +0300
-Subject: [PATCH v7 07/10] tty: serial: Add Cortina UART driver
+Date: Sat, 14 Nov 2026 16:41:07 +0300
+Subject: [PATCH v7 02/10] dt-bindings: arm: Add Cortina Systems CS7542 and
+ Securifi Almond+
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,7 +84,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261114-b4-cs75xx-v7-7-8f17f38821b4@gmail.com>
+Message-Id: <20261114-b4-cs75xx-v7-2-8f17f38821b4@gmail.com>
 References: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
 In-Reply-To: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com>
 To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
@@ -98,13 +99,14 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  Jason Li <jason.li@cortina-access.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
  Fil Dunsky <filipp.dunsky@gmail.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794663665; l=21491;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794663665; l=1646;
  i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=I7GFttDZsc7NX6M9l1vgBBl9sCiJCcleRwzy6yAUUP4=;
- b=SbP5BSZxZ8lpcgBK4isTAd9JsqcaBNOK27jFM9qFBTkce5ZfZcjFcQPKXJw3DinyImAuX2Y1w
- LEG4nO1e3IsDzFhUtIcMff1Nm+a60FNzt5NU2lDkj92PWGOCBd43wvv
+ bh=ur5Y90DJUCyqB+ubnyEmmsptLVPvVwYRa4Bevb+7QSg=;
+ b=U44ImN/w2QemyTtzTHNDHUp4VJhfXoXKy0TDTMjblJAkp5zeWE5YZFQkFyski+x+z3YL6/prj
+ AJlEO7zOko9CIzrBvcTyqkJO9LhDYwU5w0EltC1ri55PjI2jxLYPrU8
 X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
  pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
 X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
@@ -115,692 +117,54 @@ Content-Transfer-Encoding: 7bit
 
 From: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Add a driver for the UART found in Cortina SoCs, starting with the
-Cortina Systems CS75xx (Goldengate G2) family such as the CS7542. The
-block has transmit and receive FIFOs with full/empty status, a 24-bit
-baud rate divider clocked from the peripheral (APB) clock, a receive
-sampling point register and one interrupt line per port with per-cause
-enable and write-one-to-clear status registers.
+Add the top-level binding for boards built around the Cortina Systems
+CS7542 ("Goldengate G2") network processor, a dual Cortex-A9 SoC, and
+the first such board, the Securifi Almond+ touchscreen router.
 
-The same block, with an additional flow control register and a few more
-interrupt causes, is used in the Cortina Access CAxxxx SoCs, which were
-briefly supported by commit b61c8bf4694b ("tty: serial: Add UART driver
-for Cortina-Access platform") before it was removed again. The driver
-is therefore named after the vendor rather than one SoC, so that those
-parts can be added with their own compatible strings.
-
-The driver is a rewrite of the vendor driver shipped with the Linux
-2.6.36 and 4.9 based vendor kernels, using the current serial core API
-(uart_port_tx(), port lock helpers, deferred sysrq handling) and devm
-resource management. It supports the system console and earlycon.
-Hardware flow control is not supported.
-
-The ports are named ttyCS so that the driver can coexist with the 8250
-driver in multiplatform kernels, where the 8250 core registers ttyS0
-and up even without any 8250 hardware, and PORT_GENERIC is used rather
-than allocating a new port type.
-
+Reviewed-by: Linus Walleij <linusw@kernel.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 ---
- drivers/tty/serial/Kconfig        |  24 ++
- drivers/tty/serial/Makefile       |   1 +
- drivers/tty/serial/cortina-uart.c | 601 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 626 insertions(+)
+ Documentation/devicetree/bindings/arm/cortina.yaml | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 3864cef71..4ad28ce07 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1359,6 +1359,30 @@ config SERIAL_CONEXANT_DIGICOLOR_CONSOLE
- 	  If you have enabled the USART serial port on Conexant Digicolor
- 	  SoCs, you can make it the console by answering Y to this option.
- 
-+config SERIAL_CORTINA
-+	tristate "Cortina UART support"
-+	depends on ARCH_CORTINA_ACCESS || COMPILE_TEST
-+	depends on OF
-+	select SERIAL_CORE
-+	help
-+	  Support for the on-chip UART of Cortina Systems CS75xx
-+	  (Goldengate G2) SoCs such as the CS7542. Cortina Access SoCs use
-+	  the same UART. The ports are named ttyCS0 to ttyCS3.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called cortina-uart.
-+
-+config SERIAL_CORTINA_CONSOLE
-+	bool "Console on Cortina UART"
-+	depends on SERIAL_CORTINA=y
-+	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
-+	help
-+	  Say Y here to use a Cortina UART as the system
-+	  console. This also enables the early console, which can be
-+	  selected with "earlycon" on the kernel command line when the
-+	  device tree chosen node has a stdout-path pointing at the UART.
-+
- config SERIAL_ST_ASC
- 	tristate "ST ASC serial port support"
- 	select SERIAL_CORE
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index d63b126f4..9a354ad8f 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -36,6 +36,7 @@ obj-$(CONFIG_SERIAL_BCM63XX)		+= bcm63xx_uart.o
- obj-$(CONFIG_SERIAL_CLPS711X)		+= clps711x.o
- obj-$(CONFIG_SERIAL_CPM)		+= cpm_uart.o
- obj-$(CONFIG_SERIAL_CONEXANT_DIGICOLOR)	+= digicolor-usart.o
-+obj-$(CONFIG_SERIAL_CORTINA)		+= cortina-uart.o
- obj-$(CONFIG_SERIAL_DZ)			+= dz.o
- obj-$(CONFIG_SERIAL_FSL_LINFLEXUART)	+= fsl_linflexuart.o
- obj-$(CONFIG_SERIAL_FSL_LPUART)		+= fsl_lpuart.o
-diff --git a/drivers/tty/serial/cortina-uart.c b/drivers/tty/serial/cortina-uart.c
+diff --git a/Documentation/devicetree/bindings/arm/cortina.yaml b/Documentation/devicetree/bindings/arm/cortina.yaml
 new file mode 100644
-index 000000000..72ac035eb
+index 000000000..1c04b1781
 --- /dev/null
-+++ b/drivers/tty/serial/cortina-uart.c
-@@ -0,0 +1,601 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * UART driver for Cortina SoCs (Cortina Systems CS75xx "Goldengate G2")
-+ *
-+ * Copyright (C) 2026 Fil Dunsky <filipp.dunsky@gmail.com>
-+ *
-+ * Based on serial_cortina.c from the Cortina Systems vendor kernel.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/cleanup.h>
-+#include <linux/clk.h>
-+#include <linux/console.h>
-+#include <linux/io.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/serial.h>
-+#include <linux/serial_core.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+
-+#define CORTINA_UART_CFG			0x00
-+#define   CORTINA_UART_CFG_BAUD		GENMASK(31, 8)
-+#define   CORTINA_UART_CFG_EN		BIT(7)
-+#define   CORTINA_UART_CFG_RX_EN		BIT(6)
-+#define   CORTINA_UART_CFG_TX_EN		BIT(5)
-+#define   CORTINA_UART_CFG_PARITY_EN	BIT(4)
-+#define   CORTINA_UART_CFG_PARITY_EVEN	BIT(3)
-+#define   CORTINA_UART_CFG_STOP_2BIT	BIT(2)
-+#define   CORTINA_UART_CFG_CHAR		GENMASK(1, 0)
-+#define CORTINA_UART_RX_SAMPLE		0x08
-+#define CORTINA_UART_TXDAT		0x10
-+#define CORTINA_UART_RXDAT		0x14
-+#define   CORTINA_UART_RXDAT_VALID	BIT(8)
-+#define   CORTINA_UART_RXDAT_DATA	GENMASK(7, 0)
-+#define CORTINA_UART_INFO		0x18
-+#define   CORTINA_UART_INFO_TX_EMPTY	BIT(3)
-+#define   CORTINA_UART_INFO_TX_FULL	BIT(2)
-+#define   CORTINA_UART_INFO_RX_EMPTY	BIT(1)
-+#define CORTINA_UART_IE			0x1c
-+#define CORTINA_UART_INT			0x24
-+
-+/* Interrupt bits, shared by the IE and INT registers */
-+#define CORTINA_UART_IRQ_RX_NONEMPTY	BIT(6)
-+#define CORTINA_UART_IRQ_TX_EMPTY	BIT(5)
-+#define CORTINA_UART_IRQ_RX_OVERRUN	BIT(3)
-+#define CORTINA_UART_IRQ_RX_PARITY	BIT(2)
-+#define CORTINA_UART_IRQ_RX_STOP		BIT(1)
-+#define CORTINA_UART_IRQ_ALL		GENMASK(6, 0)
-+#define CORTINA_UART_IRQ_RX_ERR		(CORTINA_UART_IRQ_RX_PARITY | \
-+					 CORTINA_UART_IRQ_RX_STOP)
-+
-+#define CORTINA_UART_DIV_MIN		16
-+#define CORTINA_UART_DIV_MAX		FIELD_MAX(CORTINA_UART_CFG_BAUD)
-+
-+#define CORTINA_UART_NR_PORTS		4
-+#define CORTINA_UART_FIFO_SIZE		16
-+#define CORTINA_UART_POLL_TIMEOUT_US	10000
-+#define CORTINA_UART_RX_BUDGET		256
-+
-+struct cortina_uart_port {
-+	struct uart_port port;
-+	struct clk *clk;
-+};
-+
-+static struct cortina_uart_port *cortina_uart_ports[CORTINA_UART_NR_PORTS];
-+static DEFINE_MUTEX(cortina_uart_ports_lock);
-+
-+static void cortina_uart_ie_update(struct uart_port *port, u32 clear, u32 set)
-+{
-+	u32 ie = readl(port->membase + CORTINA_UART_IE);
-+
-+	writel((ie & ~clear) | set, port->membase + CORTINA_UART_IE);
-+}
-+
-+static void __maybe_unused cortina_uart_putchar(struct uart_port *port,
-+						unsigned char ch)
-+{
-+	u64 timeout_us;
-+	u32 info;
-+
-+	/* Wait for one character to leave the FIFO, which is slow at low rates */
-+	timeout_us = max_t(u64, CORTINA_UART_POLL_TIMEOUT_US,
-+			   div_u64((u64)port->frame_time * 2, NSEC_PER_USEC));
-+	readl_poll_timeout_atomic(port->membase + CORTINA_UART_INFO, info,
-+				  !(info & CORTINA_UART_INFO_TX_FULL), 1,
-+				  timeout_us);
-+	writel(ch, port->membase + CORTINA_UART_TXDAT);
-+}
-+
-+static unsigned int cortina_uart_tx_empty(struct uart_port *port)
-+{
-+	u32 info = readl(port->membase + CORTINA_UART_INFO);
-+
-+	return (info & CORTINA_UART_INFO_TX_EMPTY) ? TIOCSER_TEMT : 0;
-+}
-+
-+/*
-+ * There are no modem control lines, but serial_core calls ->set_mctrl()
-+ * unconditionally.
-+ */
-+static void cortina_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+}
-+
-+static unsigned int cortina_uart_get_mctrl(struct uart_port *port)
-+{
-+	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-+}
-+
-+static void cortina_uart_stop_tx(struct uart_port *port)
-+{
-+	cortina_uart_ie_update(port, CORTINA_UART_IRQ_TX_EMPTY, 0);
-+}
-+
-+static void cortina_uart_tx_chars(struct uart_port *port)
-+{
-+	u8 ch;
-+
-+	uart_port_tx(port, ch,
-+		     !(readl(port->membase + CORTINA_UART_INFO) &
-+		       CORTINA_UART_INFO_TX_FULL),
-+		     writel(ch, port->membase + CORTINA_UART_TXDAT));
-+}
-+
-+static void cortina_uart_start_tx(struct uart_port *port)
-+{
-+	cortina_uart_ie_update(port, 0, CORTINA_UART_IRQ_TX_EMPTY);
-+
-+	/*
-+	 * The TX empty interrupt only fires when the FIFO drains, so prime
-+	 * the FIFO here.
-+	 */
-+	cortina_uart_tx_chars(port);
-+}
-+
-+static void cortina_uart_stop_rx(struct uart_port *port)
-+{
-+	cortina_uart_ie_update(port, CORTINA_UART_IRQ_RX_NONEMPTY, 0);
-+}
-+
-+static void cortina_uart_rx_chars(struct uart_port *port, u32 status)
-+{
-+	struct tty_port *tport = &port->state->port;
-+	unsigned int budget = CORTINA_UART_RX_BUDGET;
-+	u32 data, err;
-+
-+	if (status & CORTINA_UART_IRQ_RX_OVERRUN)
-+		port->icount.overrun++;
-+	if (status & CORTINA_UART_IRQ_RX_PARITY)
-+		port->icount.parity++;
-+	if (status & CORTINA_UART_IRQ_RX_STOP)
-+		port->icount.frame++;
-+
-+	/*
-+	 * The parity and framing error status is only latched in the interrupt
-+	 * register, not per character, so charge it to the first character
-+	 * read in this pass.
-+	 */
-+	err = status & port->read_status_mask & CORTINA_UART_IRQ_RX_ERR;
-+
-+	while (budget-- && !(readl(port->membase + CORTINA_UART_INFO) &
-+			     CORTINA_UART_INFO_RX_EMPTY)) {
-+		u8 ch, flag = TTY_NORMAL;
-+		u32 ch_err = err;
-+
-+		data = readl(port->membase + CORTINA_UART_RXDAT);
-+		if (!(data & CORTINA_UART_RXDAT_VALID))
-+			continue;
-+
-+		port->icount.rx++;
-+		ch = FIELD_GET(CORTINA_UART_RXDAT_DATA, data);
-+		err = 0;
-+
-+		if (port->ignore_status_mask & CORTINA_UART_RXDAT_VALID)
-+			continue;
-+		if (ch_err & port->ignore_status_mask)
-+			continue;
-+
-+		if (ch_err & CORTINA_UART_IRQ_RX_PARITY)
-+			flag = TTY_PARITY;
-+		else if (ch_err & CORTINA_UART_IRQ_RX_STOP)
-+			flag = TTY_FRAME;
-+		else if (uart_prepare_sysrq_char(port, ch))
-+			continue;
-+
-+		tty_insert_flip_char(tport, ch, flag);
-+	}
-+
-+	/* The characters left in the FIFO were received before the lost ones */
-+	if (status & CORTINA_UART_IRQ_RX_OVERRUN &
-+	    ~port->ignore_status_mask)
-+		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
-+
-+	tty_flip_buffer_push(tport);
-+}
-+
-+static irqreturn_t cortina_uart_isr(int irq, void *dev_id)
-+{
-+	struct uart_port *port = dev_id;
-+	u32 status;
-+
-+	guard(uart_port_lock_check_sysrq_irqsave)(port);
-+
-+	status = readl(port->membase + CORTINA_UART_INT);
-+	writel(status, port->membase + CORTINA_UART_INT);
-+
-+	cortina_uart_rx_chars(port, status);
-+	cortina_uart_tx_chars(port);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void cortina_uart_rx_flush(struct uart_port *port)
-+{
-+	unsigned int n = CORTINA_UART_RX_BUDGET;
-+
-+	while (n-- && !(readl(port->membase + CORTINA_UART_INFO) &
-+			CORTINA_UART_INFO_RX_EMPTY))
-+		readl(port->membase + CORTINA_UART_RXDAT);
-+}
-+
-+static int cortina_uart_startup(struct uart_port *port)
-+{
-+	u32 cfg;
-+	int ret;
-+
-+	scoped_guard(uart_port_lock_irqsave, port) {
-+		writel(0, port->membase + CORTINA_UART_IE);
-+		writel(CORTINA_UART_IRQ_ALL, port->membase + CORTINA_UART_INT);
-+	}
-+
-+	ret = request_irq(port->irq, cortina_uart_isr, 0, dev_name(port->dev),
-+			  port);
-+	if (ret)
-+		return ret;
-+
-+	guard(uart_port_lock_irqsave)(port);
-+
-+	cfg = readl(port->membase + CORTINA_UART_CFG);
-+	cfg |= CORTINA_UART_CFG_EN | CORTINA_UART_CFG_RX_EN | CORTINA_UART_CFG_TX_EN;
-+	writel(cfg, port->membase + CORTINA_UART_CFG);
-+
-+	/* Drop whatever was received while the port was closed */
-+	cortina_uart_rx_flush(port);
-+	writel(CORTINA_UART_IRQ_ALL, port->membase + CORTINA_UART_INT);
-+
-+	writel(CORTINA_UART_IRQ_RX_NONEMPTY, port->membase + CORTINA_UART_IE);
-+
-+	return 0;
-+}
-+
-+static void cortina_uart_shutdown(struct uart_port *port)
-+{
-+	scoped_guard(uart_port_lock_irqsave, port) {
-+		writel(0, port->membase + CORTINA_UART_IE);
-+		/* The console only needs the transmitter */
-+		writel(readl(port->membase + CORTINA_UART_CFG) &
-+		       ~CORTINA_UART_CFG_RX_EN,
-+		       port->membase + CORTINA_UART_CFG);
-+	}
-+
-+	free_irq(port->irq, port);
-+}
-+
-+static void cortina_uart_set_termios(struct uart_port *port,
-+				     struct ktermios *termios,
-+				     const struct ktermios *old)
-+{
-+	unsigned int baud, div;
-+	u32 cfg;
-+
-+	/* No hardware flow control or mark/space parity support */
-+	termios->c_cflag &= ~(CRTSCTS | CMSPAR);
-+
-+	baud = uart_get_baud_rate(port, termios, old,
-+				  DIV_ROUND_UP(port->uartclk, CORTINA_UART_DIV_MAX),
-+				  port->uartclk / CORTINA_UART_DIV_MIN);
-+	div = DIV_ROUND_CLOSEST(port->uartclk, baud);
-+
-+	cfg = FIELD_PREP(CORTINA_UART_CFG_BAUD, div) | CORTINA_UART_CFG_EN |
-+	      CORTINA_UART_CFG_RX_EN | CORTINA_UART_CFG_TX_EN;
-+	cfg |= FIELD_PREP(CORTINA_UART_CFG_CHAR,
-+			  tty_get_char_size(termios->c_cflag) - 5);
-+	if (termios->c_cflag & CSTOPB)
-+		cfg |= CORTINA_UART_CFG_STOP_2BIT;
-+	if (termios->c_cflag & PARENB) {
-+		cfg |= CORTINA_UART_CFG_PARITY_EN;
-+		if (!(termios->c_cflag & PARODD))
-+			cfg |= CORTINA_UART_CFG_PARITY_EVEN;
-+	}
-+
-+	guard(uart_port_lock_irqsave)(port);
-+
-+	port->read_status_mask = CORTINA_UART_IRQ_RX_OVERRUN;
-+	if (termios->c_iflag & INPCK)
-+		port->read_status_mask |= CORTINA_UART_IRQ_RX_ERR;
-+
-+	port->ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		port->ignore_status_mask |= CORTINA_UART_IRQ_RX_ERR;
-+	/* Without CREAD everything received is dropped, overruns included */
-+	if (!(termios->c_cflag & CREAD))
-+		port->ignore_status_mask |= CORTINA_UART_RXDAT_VALID |
-+					    CORTINA_UART_IRQ_RX_OVERRUN;
-+
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
-+	writel(cfg, port->membase + CORTINA_UART_CFG);
-+	/* Sample the received bits in the middle of the bit time */
-+	writel(div / 2, port->membase + CORTINA_UART_RX_SAMPLE);
-+
-+	if (tty_termios_baud_rate(termios))
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+}
-+
-+static const char *cortina_uart_type(struct uart_port *port)
-+{
-+	return port->type == PORT_GENERIC ? "CORTINA" : NULL;
-+}
-+
-+static void cortina_uart_config_port(struct uart_port *port, int flags)
-+{
-+	if (flags & UART_CONFIG_TYPE)
-+		port->type = PORT_GENERIC;
-+}
-+
-+static int cortina_uart_verify_port(struct uart_port *port,
-+				    struct serial_struct *serinfo)
-+{
-+	if (serinfo->type != PORT_UNKNOWN && serinfo->type != PORT_GENERIC)
-+		return -EINVAL;
-+	if (serinfo->irq != port->irq)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_CONSOLE_POLL
-+static int cortina_uart_poll_get_char(struct uart_port *port)
-+{
-+	u32 data;
-+
-+	if (readl(port->membase + CORTINA_UART_INFO) & CORTINA_UART_INFO_RX_EMPTY)
-+		return NO_POLL_CHAR;
-+
-+	data = readl(port->membase + CORTINA_UART_RXDAT);
-+	if (!(data & CORTINA_UART_RXDAT_VALID))
-+		return NO_POLL_CHAR;
-+
-+	return FIELD_GET(CORTINA_UART_RXDAT_DATA, data);
-+}
-+
-+static void cortina_uart_poll_put_char(struct uart_port *port, unsigned char c)
-+{
-+	cortina_uart_putchar(port, c);
-+}
-+#endif
-+
-+static const struct uart_ops cortina_uart_ops = {
-+	.tx_empty	= cortina_uart_tx_empty,
-+	.set_mctrl	= cortina_uart_set_mctrl,
-+	.get_mctrl	= cortina_uart_get_mctrl,
-+	.stop_tx	= cortina_uart_stop_tx,
-+	.start_tx	= cortina_uart_start_tx,
-+	.stop_rx	= cortina_uart_stop_rx,
-+	.startup	= cortina_uart_startup,
-+	.shutdown	= cortina_uart_shutdown,
-+	.set_termios	= cortina_uart_set_termios,
-+	.type		= cortina_uart_type,
-+	.config_port	= cortina_uart_config_port,
-+	.verify_port	= cortina_uart_verify_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char	= cortina_uart_poll_get_char,
-+	.poll_put_char	= cortina_uart_poll_put_char,
-+#endif
-+};
-+
-+#ifdef CONFIG_SERIAL_CORTINA_CONSOLE
-+static void cortina_uart_console_write(struct console *co, const char *s,
-+				       unsigned int count)
-+{
-+	struct cortina_uart_port *up = cortina_uart_ports[co->index];
-+	struct uart_port *port;
-+	unsigned long flags;
-+	bool locked = true;
-+	u64 timeout_us;
-+	u32 ie, info;
-+
-+	if (!up)
-+		return;
-+	port = &up->port;
-+
-+	if (oops_in_progress)
-+		locked = uart_port_trylock_irqsave(port, &flags);
-+	else
-+		uart_port_lock_irqsave(port, &flags);
-+
-+	ie = readl(port->membase + CORTINA_UART_IE);
-+	writel(ie & ~CORTINA_UART_IRQ_TX_EMPTY, port->membase + CORTINA_UART_IE);
-+
-+	uart_console_write(port, s, count, cortina_uart_putchar);
-+
-+	/* Wait for the whole FIFO to drain, which is slow at low rates */
-+	timeout_us = max_t(u64, CORTINA_UART_POLL_TIMEOUT_US,
-+			   div_u64((u64)port->frame_time * (port->fifosize + 1),
-+				   NSEC_PER_USEC));
-+	readl_poll_timeout_atomic(port->membase + CORTINA_UART_INFO, info,
-+				  info & CORTINA_UART_INFO_TX_EMPTY, 1, timeout_us);
-+	writel(ie, port->membase + CORTINA_UART_IE);
-+
-+	if (locked)
-+		uart_port_unlock_irqrestore(port, flags);
-+}
-+
-+static int cortina_uart_console_setup(struct console *co, char *options)
-+{
-+	struct cortina_uart_port *up;
-+	int baud = 115200;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	if (co->index < 0 || co->index >= CORTINA_UART_NR_PORTS)
-+		return -ENODEV;
-+
-+	up = cortina_uart_ports[co->index];
-+	if (!up)
-+		return -ENODEV;
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+	return uart_set_options(&up->port, co, baud, parity, bits, flow);
-+}
-+
-+static struct uart_driver cortina_uart_driver;
-+
-+static struct console cortina_uart_console = {
-+	.name	= "ttyCS",
-+	.write	= cortina_uart_console_write,
-+	.device	= uart_console_device,
-+	.setup	= cortina_uart_console_setup,
-+	.flags	= CON_PRINTBUFFER,
-+	.index	= -1,
-+	.data	= &cortina_uart_driver,
-+};
-+
-+static void cortina_uart_earlycon_write(struct console *co, const char *s,
-+					unsigned int count)
-+{
-+	struct earlycon_device *dev = co->data;
-+
-+	uart_console_write(&dev->port, s, count, cortina_uart_putchar);
-+}
-+
-+static int __init cortina_uart_earlycon_setup(struct earlycon_device *dev,
-+					      const char *options)
-+{
-+	if (!dev->port.membase)
-+		return -ENODEV;
-+
-+	dev->con->write = cortina_uart_earlycon_write;
-+
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(cortina, "cortina,cs7542-uart", cortina_uart_earlycon_setup);
-+
-+#define CORTINA_UART_CONSOLE	(&cortina_uart_console)
-+#else
-+#define CORTINA_UART_CONSOLE	NULL
-+#endif
-+
-+static struct uart_driver cortina_uart_driver = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= "cortina-uart",
-+	.dev_name	= "ttyCS",
-+	.nr		= CORTINA_UART_NR_PORTS,
-+	.cons		= CORTINA_UART_CONSOLE,
-+};
-+
-+static int cortina_uart_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct cortina_uart_port *up;
-+	struct uart_port *port;
-+	struct resource *res;
-+	int id, ret;
-+
-+	up = devm_kzalloc(dev, sizeof(*up), GFP_KERNEL);
-+	if (!up)
-+		return -ENOMEM;
-+
-+	port = &up->port;
-+
-+	port->membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(port->membase))
-+		return PTR_ERR(port->membase);
-+
-+	port->irq = platform_get_irq(pdev, 0);
-+	if (port->irq < 0)
-+		return port->irq;
-+
-+	up->clk = devm_clk_get_enabled(dev, NULL);
-+	if (IS_ERR(up->clk))
-+		return dev_err_probe(dev, PTR_ERR(up->clk), "failed to get clock\n");
-+
-+	port->uartclk = clk_get_rate(up->clk);
-+	if (port->uartclk < CORTINA_UART_DIV_MIN * 9600)
-+		return dev_err_probe(dev, -EINVAL, "clock rate %u Hz is too low\n",
-+				     port->uartclk);
-+
-+	port->dev = dev;
-+	port->mapbase = res->start;
-+	port->mapsize = resource_size(res);
-+	port->iotype = UPIO_MEM32;
-+	port->ops = &cortina_uart_ops;
-+	port->fifosize = CORTINA_UART_FIFO_SIZE;
-+	port->flags = UPF_BOOT_AUTOCONF;
-+	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_CORTINA_CONSOLE);
-+
-+	platform_set_drvdata(pdev, up);
-+
-+	guard(mutex)(&cortina_uart_ports_lock);
-+
-+	id = of_alias_get_id(dev->of_node, "serial");
-+	if (id < 0) {
-+		for (id = 0; id < CORTINA_UART_NR_PORTS; id++)
-+			if (!cortina_uart_ports[id])
-+				break;
-+	}
-+	if (id >= CORTINA_UART_NR_PORTS)
-+		return dev_err_probe(dev, -EINVAL, "invalid port index %d\n", id);
-+	if (cortina_uart_ports[id])
-+		return dev_err_probe(dev, -EBUSY, "port %d already in use\n", id);
-+
-+	port->line = id;
-+	cortina_uart_ports[id] = up;
-+
-+	ret = uart_add_one_port(&cortina_uart_driver, port);
-+	if (ret)
-+		cortina_uart_ports[id] = NULL;
-+
-+	return ret;
-+}
-+
-+static void cortina_uart_remove(struct platform_device *pdev)
-+{
-+	struct cortina_uart_port *up = platform_get_drvdata(pdev);
-+
-+	uart_remove_one_port(&cortina_uart_driver, &up->port);
-+
-+	guard(mutex)(&cortina_uart_ports_lock);
-+	cortina_uart_ports[up->port.line] = NULL;
-+}
-+
-+static const struct of_device_id cortina_uart_of_match[] = {
-+	{ .compatible = "cortina,cs7542-uart" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, cortina_uart_of_match);
-+
-+static struct platform_driver cortina_uart_platform_driver = {
-+	.probe	= cortina_uart_probe,
-+	.remove	= cortina_uart_remove,
-+	.driver	= {
-+		.name		= "cortina-uart",
-+		.of_match_table	= cortina_uart_of_match,
-+	},
-+};
-+
-+static int __init cortina_uart_init(void)
-+{
-+	int ret;
-+
-+	ret = uart_register_driver(&cortina_uart_driver);
-+	if (ret)
-+		return ret;
-+
-+	ret = platform_driver_register(&cortina_uart_platform_driver);
-+	if (ret)
-+		uart_unregister_driver(&cortina_uart_driver);
-+
-+	return ret;
-+}
-+module_init(cortina_uart_init);
-+
-+static void __exit cortina_uart_exit(void)
-+{
-+	platform_driver_unregister(&cortina_uart_platform_driver);
-+	uart_unregister_driver(&cortina_uart_driver);
-+}
-+module_exit(cortina_uart_exit);
-+
-+MODULE_DESCRIPTION("Cortina UART driver");
-+MODULE_LICENSE("GPL");
++++ b/Documentation/devicetree/bindings/arm/cortina.yaml
+@@ -0,0 +1,31 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/cortina.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Cortina Systems CS75xx platforms
++
++maintainers:
++  - Fil Dunsky <filipp.dunsky@gmail.com>
++
++description:
++  The CS75xx ("Goldengate G2") family are network processors from Cortina
++  Systems. The CS7542 has two Cortex-A9 cores with an SCU, GIC, private
++  timers and a PL310 L2 cache controller, a packet processing engine, three
++  PCIe root ports, a NAND flash controller and low speed peripherals.
++
++properties:
++  $nodename:
++    const: '/'
++  compatible:
++    oneOf:
++      - description: CS7542 based boards
++        items:
++          - enum:
++              - securifi,almondplus
++          - const: cortina,cs7542
++
++additionalProperties: true
++
++...
 
 -- 
 2.53.0
