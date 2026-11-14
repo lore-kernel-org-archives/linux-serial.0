@@ -1,81 +1,148 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.176
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794612890;
-	b=q4RNSBi5Xy8Bgf3YJeAmFdsrkCcONQeFfWRrg/Bh6qSf46aicF5TPdQla7M6RdCWZIh9
-	 U4VcguXz84tScqCO4tHHfYGHl/S9KXMSa0CzKSj/UTK9fgHpKfTOMNHb5MBIW5ahlm7Y5
-	 AQz8o5eP4sZuePeGRNvSPpnvMrhMIQGTwbUlS1O0XdeMcNjluzntlT1ZzymYgntcL/tBF
-	 IweCWeKmnM91b9Eo8A12ctEixFFRR2VrFBoyr2ajFEBYO1rjKChmvkRJ67uMY66jzn3s2
-	 jFWaTOQcPkxR0hExvnpY8z4ltADCXcs0fg0Hmd3xmR3lRS37vJdW768iPL5lpbHLotw==
+	t=1794640206;
+	b=JCY900WO1CclyKmcmGSN36tjkC74J/RHqdlJA9Cxp9b8IAh19jkLAYkjy7GJJDKogHGT
+	 E2ZlauJw7oAvwQQVqYHDhVMH1tXYV5WoSfpR1BcaNmfdJatlvSxTBuQt35NVg1M1ivWAD
+	 SAsqDx7Tn988krdy9sjjAfMUriWdsR5H4M/D3cuDAUb5Yis0TdgcDrznwNd0vxiP87nPo
+	 rlybtCzxo8yYEX3WnEKb14dGuPLNnxtGnjhCj2t45uhexewfhqQt+2TyhED/8D9flKwxF
+	 /s5SVIsMdaB82CQc24hEzJFAVGstiKniWZ47XKgsqTco/lZ1GNqhDZWMaKjaDA9WQEg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794612890;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To;
-	bh=iKPyD0fcQHjU+nZY9PhDSccu4A7Tiq9IV5sts7cPeIc=;
-	b=olQ3xLDQ5fb4YYs/WevuahAVEAq3V+b/gZoZXy/S+lHjCbj+0ohC4nC6BJ+qofXZZTP2
-	 2aBhAEWqHV+J3kHJL2xfNpJwzhw6fIKeIEwAJBnmnHF3IXU1Xaj3HrPXDTa3EKVcsqnV2
-	 muoXkMZornv01v3aVh8XNHtVz4aQyNO/jUkDIrwxsa5ftqrilDWmHVwjYjPV8luQYNZze
-	 wrEawgVDFUG7E7HXNG3H78vvBpDG4HR5OopvYJvpteP2Z3XoTtm1Td5Krh/+2kVpCj5KO
-	 lbUejQ4QS9/IH24auudMGLYM/mmPcRsPZ13ZBp+c0GzXwdHU0t+yxTRV/V/qlxuqyIA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794640206;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=oRfBKleHhU3BUp7ltu8uNKVynP2g/0Xp3jgnuf+J/Eo=;
+	b=sqy60oZiYCJtmNhZbkbt8JeslrI88dlLlHyX4NFLzfiX1A7j4FZt+PPOCSsOKTiPKsug
+	 Tb9MIK3LqbJBZN8dX7anSDRpCMgnkxsI/MOMYAfNBTp8FzoSHjcKkEg7qKPFyRVNE4uXG
+	 j2K0GpaYlbHYNO8iW6ffTVrtrw/OrCqcUOkjbETQORTzWdUMgBHnKhmPHIHBFPPXr32Jt
+	 +SSlu0MHmZhC8XgHu+2UvvenghAgw7owLZ4Zt0K0g3CdFbp6plJicjvyQbzJvQZzsUdta
+	 pDpvZHx0UWPxfGvArGIrwedEMx6TJ86HwIuVdR2J+OJ+xtJBxWEeZovRJp/ZBzLrcGA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=I2ZgzY3t;
-	arc=none smtp.remote-ip=192.198.163.10
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=gourry.net;
+	spf=pass smtp.mailfrom=gourry.net;
+	dkim=pass header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=a14J+ivW;
+	arc=none smtp.remote-ip=209.85.222.176
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37BDF606A89B;
-	Fri, 13 Nov 2026 23:34:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 37BDF606A89B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59DE2606A331
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 07:10:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59DE2606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gourry.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gourry.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=I2ZgzY3t
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794612889; x=1826148889;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=oARI0lz8E8wlq5FlviYP9LbHzAMB8U71otiLJAe+IpQ=;
-  b=I2ZgzY3tFPhah1zvR6mWKt3nQMPowwdzDV3q9BSGzfTADVGs9foAWuHo
-   QobUBYCf3fs6gWGveWItOlHZ/eJkhm0Kfg9+NOxfaV9ynBzxaHwuubpxK
-   xXYHw06mnhrgqarpBN4JI4CljxJr4P43rWslc9zQr3OiA/E4kahbh7DY8
-   vApEUBq3ILzzSGRsq5iQaF4CJoShkqIZSuTHcRjjcxcVRua+6AFb8xcIR
-   Ch6ZHhzh7c8/Fajlh31O/HjvEnKguHNhU4SlxUp1qdrzqhHciheab29IE
-   eXkBrpWLFBbUfhjk4a15mrKzXQZWv8zwt21qX/S95oH4beeQE8srnxH5G
-   g==;
-X-CSE-ConnectionGUID: lrdV4SNuQVCs23MiTEWbSA==
-X-CSE-MsgGUID: FuwMKJUpQAqx6J/rmZINpw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3323684"
-X-IronPort-AV: E=Sophos;i="6.27,212,1787036400"; 
-   d="scan'208";a="3323684"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 15:34:48 -0800
-X-CSE-ConnectionGUID: inmdYYaIS2mHAFqRoc1IIQ==
-X-CSE-MsgGUID: mrkHf29aQmGNu8K7Q9mq4A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,212,1787036400"; 
-   d="scan'208";a="8925562"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by orviesa004.jf.intel.com with ESMTP; 13 Nov 2026 15:34:47 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xS0n5-000000014Qh-2ylI;
-	Fri, 13 Nov 2026 23:34:43 +0000
-Date: Sat, 14 Nov 2026 07:34:40 +0800
-From: kernel test robot <lkp@intel.com>
-To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, hugo@hugovil.com,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
-Subject: Re: [PATCH v2] serial: sc16is7xx: Fix clock leak on invalid clock
- frequency
-Message-ID: <202611140752.jrPC8oJ4-lkp@intel.com>
-References: <20261113103855.2144-1-laixiangwu@cmss.chinamobile.com>
+	dkim=pass (2048-bit key) header.d=gourry.net header.i=@gourry.net header.a=rsa-sha256 header.s=google header.b=a14J+ivW
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-94961bfe1a0so38519685a.3
+        for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2026 23:10:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gourry.net; s=google; t=1794640204; x=1795245004; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=oRfBKleHhU3BUp7ltu8uNKVynP2g/0Xp3jgnuf+J/Eo=;
+        b=a14J+ivWzJ/poYORcK4nNkkQRbfvwDjPC+e6K1Ne6hUI5q5zkfi2YJp38SflEWnqEp
+         XFZVhHKO/Qe4IhOAtPdb+5xWEBDEf+CRvZFv/Xmb9JJ0i82uZjhBpiUGQztIMksos6gg
+         xGxFElFmKZ2suNnoBeSLuTQBsMs5Nf7OrYOFYJvYQISHbw4+R+RO8si0+OvQHKqhkbjY
+         KvHL4cxvfPXZ96A4VSjq+VnxjO1TGDXLVYg9VsVWtLyw/p2B3+9BUPO/onXKp3RxqVR1
+         qrOcQEof96hwqfQFb6IQQIBoMEN2I3TrYTw361/F+VmC6r7ByoRMkxiD8WOkiQSjh60S
+         xLvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794640204; x=1795245004;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=oRfBKleHhU3BUp7ltu8uNKVynP2g/0Xp3jgnuf+J/Eo=;
+        b=Uo+fRyKTzOw5Ixb3xOsGEXYBvc1Cgf2eGbgMV68PeE2awff+4bi5I+XgS2FUopwYVQ
+         tm8uuuXO7VWaYW41zgoyi9KM7/MU+wyDAGAn2LwHFt2c6Ti+jQf0PWvh3D0+0h7c0nhl
+         u71mkesn0mA2Li90iEX/rhpPIJl6WD/CEO9OiEUzzntRD/6jaylxpmBbOpT47KW05XZ9
+         VvBp2g/10LqC9RldSSKDOljdwE4HKBDx9XRgl2hMdRJEDuVsoJPi39AoPKwDbcRrRcYz
+         cAVpgSbro4YB8rxb+WiMDZeZ2BgPSnhMbWedZH87lBIK4kEf9xrr4PTSBEA+ilDwEP0E
+         7T1g==
+X-Forwarded-Encrypted: i=1; AL+hErE9YWX032hMt+S7W68QGN574mvarYduADsGY1ZWaOhYc1+PMH8IDW6mfK335pLSyvsb9IAZz7n+HDWb730=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8NXhhm0sYdD1OKCZOQCRGc2zCCpbM+4gyQHkCJnsPUD1jkxunt
+	/Z/OIUFm82SkP6+C1Yx4+bt2DUhflOt3fWJEig8N8RrhjkVvhvU7ppHqrGQlxT2vb6w5i5E0VZ/
+	fOFPi
+X-Gm-Gg: AYBFou2aLVpByNgUFHc5vWvwb1k1XYHxsh5P3Nb7yZnx7xIs/7DY0wvlHFk67waoevj
+	KPpPTyElDkIk2/cTq/s2Xfi7RNL2OtoATtKwK66SbWANZi2+jfbhVRyWtJ4LtdBX6krfN/8VtKH
+	kJZePvofCeQ7DzsP4K81h/9JB3JFASRNx4rG7AtKicFsRW06XT58nAOoYvg0z5uh5uh5AXgoE53
+	dSS3axmISeyowCpBCkqXVOldoAIFh2dXKxE4q6QHaVoBS/M1z7mw52bnf9R4lZIyHwcuG6THXUl
+	dZLMnAanP0tc24YveI5qwr/VogMnGOnpmLXe8kE+Ue+usobrury/UWffdlCexH7Zaciackw60nn
+	XnjmtCxLRF+QkVggvUfNiHMKjQc9MkgK1laeGWbwQYD0mYFQbrAaQvO6cN0PNpPzllluEEoKlj3
+	lQJ/52RE79ZLUy7wpmH6iAHeZ50Tha8cI/ujYp+sXaH2aN70PAxOLKHZmbAoSQWE1Lc8hNp/y59
+	4ev4I/Vtu+yWMLEW1oEbQ8UY+GIs48omeJIcZ2tM7ryj22d4GRdU+dk/OcL7I0puPM0CH+pk1Fa
+	rW3ccuEKrq2nzLnQXRhKctz1YIkHenOiZNXd0e8baG8e6h8BUhwR9cYncjv7JNR2j2/oXJn0QP8
+	kPp5he5z3Oo9Jev/W
+X-Received: by 2002:a05:620a:8398:b0:93c:ba88:cd65 with SMTP id af79cd13be357-9494b9e13damr803141185a.7.1794640204107;
+        Fri, 13 Nov 2026 23:10:04 -0800 (PST)
+Received: from gourry-fedora-PF4VCD3F (pool-71-191-145-202.washdc.fios.verizon.net. [71.191.145.202])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91f23db3a99sm37730986d6.40.2026.11.13.23.10.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2026 23:10:03 -0800 (PST)
+From: "Gregory Price (Meta)" <gourry@gourry.net>
+To: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org,
+	kernel-team@meta.com,
+	linux-doc@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	damon@lists.linux.dev,
+	linux-cxl@vger.kernel.org,
+	akpm@linux-foundation.org,
+	david@kernel.org,
+	liam@infradead.org,
+	vbabka@kernel.org,
+	rppt@kernel.org,
+	surenb@google.com,
+	mhocko@suse.com,
+	corbet@lwn.net,
+	skhan@linuxfoundation.org,
+	rdunlap@infradead.org,
+	gregkh@linuxfoundation.org,
+	rafael@kernel.org,
+	dakr@kernel.org,
+	johan@kernel.org,
+	jirislaby@kernel.org,
+	kasong@tencent.com,
+	qi.zheng@linux.dev,
+	shakeel.butt@linux.dev,
+	baohua@kernel.org,
+	axelrasmussen@google.com,
+	yuanchu@google.com,
+	weixugc@google.com,
+	baoquan.he@linux.dev,
+	baolin.wang@linux.alibaba.com,
+	yury.norov@gmail.com,
+	linux@rasmusvillemoes.dk,
+	pavel@kernel.org,
+	lenb@kernel.org,
+	hannes@cmpxchg.org,
+	brendan.jackman@linux.dev,
+	ziy@nvidia.com,
+	sj@kernel.org,
+	muchun.song@linux.dev,
+	osalvador@suse.de,
+	nico.pache@linux.dev,
+	ryan.roberts@arm.com,
+	dev.jain@arm.com,
+	lance.yang@linux.dev,
+	usama.arif@linux.dev,
+	kas@kernel.org,
+	xu.xin@linux.dev,
+	chengming.zhou@linux.dev,
+	gourry@gourry.net,
+	joshua.hahnjy@gmail.com,
+	rakie.kim@sk.com,
+	ying.huang@linux.alibaba.com,
+	matthew.brost@intel.com,
+	byungchul@sk.com,
+	apopple@nvidia.com,
+	rientjes@google.com
+Subject: [PATCH 00/22] mm: introduce N_MEMORY_COMMON
+Date: Sat, 14 Nov 2026 02:09:37 -0500
+Message-ID: <20261114070959.3490008-1-gourry@gourry.net>
+X-Mailer: git-send-email 2.56.1
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -85,138 +152,138 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261113103855.2144-1-laixiangwu@cmss.chinamobile.com>
 
-Hi Xiangwu,
+This is phase 1 of the Private NUMA node series.
 
-kernel test robot noticed the following build errors:
+I will send v6 "Private Memory NUMA nodes" (phases 2 and 3) separately
+next week for further discussion - but I pulled this out ahead to make
+the core filtering mechanism easier to review.
 
-[auto build test ERROR on linux-review/laixiangwu/serial-sc16is7xx-Fix-clock-leak-on-invalid-clock-frequency/20261030-165507]
+The series is now broken up like so:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Xiangwu-Lai/serial-sc16is7xx-Fix-clock-leak-on-invalid-clock-frequency/20261113-183854
-base:   https://github.com/intel-lab-lkp/linux laixiangwu/serial-sc16is7xx-Fix-clock-leak-on-invalid-clock-frequency/20261030-165507
-patch link:    https://lore.kernel.org/r/20261113103855.2144-1-laixiangwu%40cmss.chinamobile.com
-patch subject: [PATCH v2] serial: sc16is7xx: Fix clock leak on invalid clock frequency
-config: powerpc-randconfig-1000-20261114 (https://download.01.org/0day-ci/archive/20261114/202611140752.jrPC8oJ4-lkp@intel.com/config)
-compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261114/202611140752.jrPC8oJ4-lkp@intel.com/reproduce)
+Phase 1: Introduce N_MEMORY_COMMON to define "general purpose" (common)
+         memory as a concept separate from a node having memory as a
+         topological feature (N_MEMORY).
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611140752.jrPC8oJ4-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/sc16is7xx.c:1622:9: error: use of undeclared label 'out_clk'
-    1622 |                         goto out_clk;
-         |                              ^
-   1 error generated.
+         This phase is a no-op for existing systems, but creates the
+         baseline for ensuring private node memory is default opted-out
+         of being touched by MM (much like ZONE_DEVICE).
 
 
-vim +/out_clk +1622 drivers/tty/serial/sc16is7xx.c
+Phase 2: Introduce N_MEMORY_PRIVATE to define memory not part of the
+         general purpose pool. With this we can introduce a minimum set
+         of KUnit tests for the page allocator to demonstrate the
+         isolation mechanism.
 
-a5bb146502b22f Hugo Villeneuve     2025-10-27  1567  
-d49216438139bc Hugo Villeneuve     2024-04-09  1568  int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
-3837a0379533aa Hugo Villeneuve     2023-10-30  1569  		    struct regmap *regmaps[], int irq)
-dfeae619d781de Jon Ringle          2014-04-24  1570  {
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1571  	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
-2aa916e67db3e6 Daniel Mack         2020-05-21  1572  	unsigned int val;
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1573  	u32 uartclk = 0;
-dfeae619d781de Jon Ringle          2014-04-24  1574  	int i, ret;
-dfeae619d781de Jon Ringle          2014-04-24  1575  	struct sc16is7xx_port *s;
-cf9c37530fdabc Hugo Villeneuve     2024-04-09  1576  	bool port_registered[SC16IS7XX_MAX_PORTS];
-dfeae619d781de Jon Ringle          2014-04-24  1577  
-3837a0379533aa Hugo Villeneuve     2023-10-30  1578  	for (i = 0; i < devtype->nr_uart; i++)
-3837a0379533aa Hugo Villeneuve     2023-10-30  1579  		if (IS_ERR(regmaps[i]))
-3837a0379533aa Hugo Villeneuve     2023-10-30  1580  			return PTR_ERR(regmaps[i]);
-dfeae619d781de Jon Ringle          2014-04-24  1581  
-2aa916e67db3e6 Daniel Mack         2020-05-21  1582  	/*
-2aa916e67db3e6 Daniel Mack         2020-05-21  1583  	 * This device does not have an identification register that would
-2aa916e67db3e6 Daniel Mack         2020-05-21  1584  	 * tell us if we are really connected to the correct device.
-2aa916e67db3e6 Daniel Mack         2020-05-21  1585  	 * The best we can do is to check if communication is at all possible.
-f6959c5217bd79 Hugo Villeneuve     2023-12-11  1586  	 *
-f6959c5217bd79 Hugo Villeneuve     2023-12-11  1587  	 * Note: regmap[0] is used in the probe function to access registers
-f6959c5217bd79 Hugo Villeneuve     2023-12-11  1588  	 * common to all channels/ports, as it is guaranteed to be present on
-f6959c5217bd79 Hugo Villeneuve     2023-12-11  1589  	 * all variants.
-2aa916e67db3e6 Daniel Mack         2020-05-21  1590  	 */
-3837a0379533aa Hugo Villeneuve     2023-10-30  1591  	ret = regmap_read(regmaps[0], SC16IS7XX_LSR_REG, &val);
-2aa916e67db3e6 Daniel Mack         2020-05-21  1592  	if (ret < 0)
-158e800e0fde91 Annaliese McDermond 2021-03-29  1593  		return -EPROBE_DEFER;
-2aa916e67db3e6 Daniel Mack         2020-05-21  1594  
-dfeae619d781de Jon Ringle          2014-04-24  1595  	/* Alloc port structure */
-84f1c5c0174ace Gustavo A. R. Silva 2019-01-04  1596  	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);
-e0925b4a0417d3 Hugo Villeneuve     2025-10-27  1597  	if (!s)
-dfeae619d781de Jon Ringle          2014-04-24  1598  		return -ENOMEM;
-dfeae619d781de Jon Ringle          2014-04-24  1599  
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1600  	/* Always ask for fixed clock rate from a property. */
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1601  	device_property_read_u32(dev, "clock-frequency", &uartclk);
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1602  
-e8ed246ded863e Andre Werner        2025-01-21  1603  	s->polling = (irq <= 0);
-104c1b9dde9d85 Andre Werner        2025-01-10  1604  	if (s->polling)
-104c1b9dde9d85 Andre Werner        2025-01-10  1605  		dev_dbg(dev,
-104c1b9dde9d85 Andre Werner        2025-01-10  1606  			"No interrupt pin definition, falling back to polling mode\n");
-104c1b9dde9d85 Andre Werner        2025-01-10  1607  
-dd515504148c43 Xiangwu Lai         2026-11-13  1608  	s->clk = devm_clk_get_optional_enabled(dev, NULL);
-cb1b206cff461d Andy Shevchenko     2021-05-17  1609  	if (IS_ERR(s->clk))
-cb1b206cff461d Andy Shevchenko     2021-05-17  1610  		return PTR_ERR(s->clk);
-cb1b206cff461d Andy Shevchenko     2021-05-17  1611  
-cb1b206cff461d Andy Shevchenko     2021-05-17  1612  	freq = clk_get_rate(s->clk);
-cb1b206cff461d Andy Shevchenko     2021-05-17  1613  	if (freq == 0) {
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1614  		if (uartclk)
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1615  			freq = uartclk;
-dfeae619d781de Jon Ringle          2014-04-24  1616  		if (pfreq)
-dfeae619d781de Jon Ringle          2014-04-24  1617  			freq = *pfreq;
-a9226b472bbffe laixiangwu          2026-10-30  1618  		if (freq) {
-24bc6e68efa00f Andy Shevchenko     2019-03-18  1619  			dev_dbg(dev, "Clock frequency: %luHz\n", freq);
-a9226b472bbffe laixiangwu          2026-10-30  1620  		} else {
-a9226b472bbffe laixiangwu          2026-10-30  1621  			ret = -EINVAL;
-a9226b472bbffe laixiangwu          2026-10-30 @1622  			goto out_clk;
-a9226b472bbffe laixiangwu          2026-10-30  1623  		}
-dfeae619d781de Jon Ringle          2014-04-24  1624  	}
-dfeae619d781de Jon Ringle          2014-04-24  1625  
-dfeae619d781de Jon Ringle          2014-04-24  1626  	s->devtype = devtype;
-dfeae619d781de Jon Ringle          2014-04-24  1627  	dev_set_drvdata(dev, s);
-dfeae619d781de Jon Ringle          2014-04-24  1628  
-3989144f863ac5 Petr Mladek         2016-10-11  1629  	kthread_init_worker(&s->kworker);
-9e6f4ca3e567d5 Jakub Kicinski      2015-05-29  1630  	s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
-9e6f4ca3e567d5 Jakub Kicinski      2015-05-29  1631  				      "sc16is7xx");
-dd515504148c43 Xiangwu Lai         2026-11-13  1632  	if (IS_ERR(s->kworker_task))
-dd515504148c43 Xiangwu Lai         2026-11-13  1633  		return PTR_ERR(s->kworker_task);
-dd515504148c43 Xiangwu Lai         2026-11-13  1634  
-28d2f209cd1620 Peter Zijlstra      2020-04-21  1635  	sched_set_fifo(s->kworker_task);
-9e6f4ca3e567d5 Jakub Kicinski      2015-05-29  1636  
-4fb92bdb8e84e6 Hui Wang            2024-06-18  1637  	ret = sc16is7xx_reset(dev, regmaps[0]);
-4fb92bdb8e84e6 Hui Wang            2024-06-18  1638  	if (ret)
-4fb92bdb8e84e6 Hui Wang            2024-06-18  1639  		goto out_kthread;
-43c51bb573aab6 Florian Vallee      2016-07-19  1640  
-cf9c37530fdabc Hugo Villeneuve     2024-04-09  1641  	/* Mark each port line and status as uninitialised. */
-dfeae619d781de Jon Ringle          2014-04-24  1642  	for (i = 0; i < devtype->nr_uart; ++i) {
-cf9c37530fdabc Hugo Villeneuve     2024-04-09  1643  		s->p[i].port.line = SC16IS7XX_MAX_DEVS;
-cf9c37530fdabc Hugo Villeneuve     2024-04-09  1644  		port_registered[i] = false;
-8a1060ce974919 Hugo Villeneuve     2023-12-21  1645  	}
-8a1060ce974919 Hugo Villeneuve     2023-12-21  1646  
-cf9c37530fdabc Hugo Villeneuve     2024-04-09  1647  	for (i = 0; i < devtype->nr_uart; ++i) {
-dfeae619d781de Jon Ringle          2014-04-24  1648  		s->p[i].port.dev	= dev;
-dfeae619d781de Jon Ringle          2014-04-24  1649  		s->p[i].port.irq	= irq;
-dfeae619d781de Jon Ringle          2014-04-24  1650  		s->p[i].port.uartclk	= freq;
-3837a0379533aa Hugo Villeneuve     2023-10-30  1651  		s->p[i].regmap		= regmaps[i];
-21144bab4f1191 Tomasz Moń          2022-03-01  1652  
-a5bb146502b22f Hugo Villeneuve     2025-10-27  1653  		ret = sc16is7xx_setup_channel(&s->p[i], i, &port_registered[i]);
-b4a778303ea0fc Hugo Villeneuve     2023-08-07  1654  		if (ret)
-b4a778303ea0fc Hugo Villeneuve     2023-08-07  1655  			goto out_ports;
-dfeae619d781de Jon Ringle          2014-04-24  1656  	}
-dfeae619d781de Jon Ringle          2014-04-24  1657  
-1a0a2a1e57aa8d Hugo Villeneuve     2023-09-27  1658  	sc16is7xx_setup_irda_ports(s);
-9eb90d57b55a0a Pascal Huerst       2020-05-29  1659  
-f6959c5217bd79 Hugo Villeneuve     2023-12-11  1660  	ret = sc16is7xx_setup_mctrl_ports(s, regmaps[0]);
-0499942928341d Hugo Villeneuve     2023-08-07  1661  	if (ret)
-0499942928341d Hugo Villeneuve     2023-08-07  1662  		goto out_ports;
-0499942928341d Hugo Villeneuve     2023-08-07  1663  
+         At this point it will be possible for a driver to re-use the
+         buddy allocator to make uniform order-N allocations.
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+
+Phase 3: Introduce feature bits (COMPACTION, RECLAIM, MEMPOLICY) which
+         is the minimum viable set to allow userland to manage a private
+         memory node via mbind() and migrate_pages().  
+
+         This enables management of HBM and Coherent GPU memory via
+         userland tools (numactl, cpuset) while protecting them from
+         incidental allocation (no fallbacks, only explicit placement).
+
+         The memory could even be hotplugged in ZONE_NORMAL and pinned.
+
+Actual cover letter for this portion
+====================================
+
+N_MEMORY has two meanings today:
+  1) this node has memory
+  2) ordinary allocations and MM services can use this node's memory
+
+The two are the same today. They stop being the same once a NUMA node
+with memory isn't part of the general allocation pool.
+
+This series adds N_MEMORY_COMMON for the second meaning and converts
+the relevant N_MEMORY users accordingly. N_MEMORY continues reporting
+memory topology - and some users (cpusets) still utilize it.
+
+At the end of this series, N_MEMORY == N_MEMORY_COMMON, so the series
+changes no behavior for existing systems. A later series will add memory
+outside N_MEMORY_COMMON without having to audit every N_MEMORY user again.
+
+Rather than add new hooks for page-table and pfn walkers, we consolidate
+existing ZONE_DEVICE checks (page/folio_is_zone_device()) into a general
+`page/folio_is_common_memory()` check.
+
+The series is laid out as:
+
+  1-3   helper functions to check node states and a folio's
+        membership to a common memory node.  N_MEMORY_COMMON itself, and
+        the `has_common_memory` sysfs ABI.
+  4     zonelists: the fallback lists hold common nodes, and a node's
+        __GFP_THISNODE list is built only for a common node
+  5-21  N_MEMORY->N_MEMORY_COMMON and zone_device -> common_memory
+        conversions. One component per patch.
+  22    removal of first_memory_node/next_memory_node, which no longer
+        have users after this series.
+
+Each conversion restricts or adjusts:
+  - an MM service (reclaim, compaction, KSM, collapse, etc)
+  - an allocation target to common memory
+  - accounting meant for ordinary allocations from common memory only
+
+has_common_memory lists the same nodes as has_memory until memory
+outside N_MEMORY_COMMON exists. It is added now so that userspace, such
+as libnuma, can start choosing allocation targets from it, and so that
+the meaning is fixed before anything makes the two lists differ.
+
+first/next_memory_node() is replaced by first/next_node_state().
+
+Gregory Price (Meta) (22):
+  mm: add node-state-filtered zone and node iterators
+  mm: publish and clear node memory states via helpers
+  mm: introduce the common-memory node state
+  mm/page_alloc: build zonelists from common memory
+  mm/mempolicy: keep interleave and tmpfs mount policies on common memory
+  mm: base hash distribution on common memory nodes
+  mm/memory_hotplug: migrate offlined pages to common memory
+  mm/memory-tiers: restrict demotion topology to common memory
+  mm/ksm: restrict merging to common memory
+  mm/khugepaged: restrict collapse to common memory
+  mm/mempolicy: don't NUMA-hint folios outside common memory
+  mm/damon: restrict DAMON-native folio operations to common memory
+  mm/hugetlb: restrict pool growth to common memory
+  mm/page_alloc: count common memory nodes for kswapd recovery
+  mm/oom_kill: compare OOM constraints against common memory
+  tty/sysrq: use common memory for the manual OOM zonelist
+  mm/vmscan: restrict reclaim to common memory
+  mm/compaction: restrict compaction to common memory
+  mm/migrate: restrict move_pages() destinations to common memory
+  PM: hibernate: size the image from common memory
+  mm/khugepaged: base the recommended min_free_kbytes on common memory
+  nodemask: remove the now-unused first_memory_node/next_memory_node
+
+ Documentation/ABI/stable/sysfs-devices-node | 16 +++++++
+ Documentation/mm/physical_memory.rst        |  8 +++-
+ drivers/base/node.c                         |  2 +
+ drivers/tty/sysrq.c                         |  3 +-
+ include/linux/mmzone.h                      | 46 +++++++++++++++++++++
+ include/linux/nodemask.h                    | 38 +++++++++++++----
+ kernel/power/snapshot.c                     |  7 +++-
+ mm/compaction.c                             | 14 +++----
+ mm/damon/ops-common.c                       |  7 ++--
+ mm/damon/vaddr.c                            |  2 +-
+ mm/hugetlb.c                                | 44 +++++++++-----------
+ mm/internal.h                               | 18 ++++++++
+ mm/khugepaged.c                             | 12 ++++--
+ mm/ksm.c                                    |  8 ++--
+ mm/memory-tiers.c                           | 23 ++++++-----
+ mm/memory_hotplug.c                         | 25 ++++++-----
+ mm/mempolicy.c                              | 30 +++++++-------
+ mm/migrate.c                                |  2 +-
+ mm/mm_init.c                                | 16 ++++---
+ mm/oom_kill.c                               |  7 ++--
+ mm/page_alloc.c                             | 43 +++++++++++++------
+ mm/vmscan.c                                 | 26 ++++++------
+ 22 files changed, 266 insertions(+), 131 deletions(-)
+
+-- 
+2.53.1-Meta
+
