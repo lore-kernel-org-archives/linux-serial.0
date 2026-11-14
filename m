@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794698140;
-	b=Jwk30HZZkPSXQE99bRSfDEuewfDYmVOfV1QpwMV8+Vpx3QLBqwHpNZb0dd8wVNk2cmQB
-	 EQrlYrQMw1ZZ9kDvWV2t/ErVQhJ8GfJ/WqTEluiijQYDK4rrx9N+0O3BJtuiZZt/6x9vh
-	 klrrY6XYGkwoSpUtwHm7DB9FE1Gjj+pCOZVK2EtwLHxz7tJxG82l1yDJhkMPMK2VbDo02
-	 STSrEFqz25/q92r1r67YANGQ6fhgxFJLLh5mZFiDdrtDesDfPu0a6gjqVh4zJuRyHePS+
-	 sg0n/mrod+clJw9on/4caTyPsfoxlErLFw1J0BMPm1SzBK8FC233AqC3jIC5/p13VHw==
+	t=1794698151;
+	b=by4JNCDAani6M6FZUpASpskYSv3PJ0bkX5g/sexqkHmFVOZ3UTeBlbydBwHEJg4l8zTO
+	 jUzIS2OgaWp1Scc+btaVMreO8RfpWl5mbEwKo9O0DoZ7pXTvyYmwHDC4r9arffSiky5Ck
+	 4JihMXf9JNb6GQiL66s3Tn3TSzJaDwzwKGRqyzmgN3rMXPPDh6644Z0BLFql47hnKQGoK
+	 S7x/+2QMATUYhYzF/D43D4kl8SXnfwGYLvAMVS5QQ/4KplytYViSiz/Eg/NdGSz3w+WIx
+	 NMjb0xAPCHQkKJXYzFPTtBt6HM12pLOgapKQvzly8dZawbt6EfltVvc+3nSxXyoiiOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794698140;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794698151;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=BoQ9Ek93WF5YC+zcuLj66LEiAW/4pHelm49BKCAg3Vo=;
-	b=MgwZzU17NPstW9q5DBcfv6JF+Uef72igqbfnia5YCO4an52x8JSkZpznIjERAjdLmbqV
-	 dZ8kaMWKdzj1pmg4ovFFU2nVj0rSDqObqKTOBCD7Dznep+yCEWivHJ5nHcEnndE2RPV1n
-	 15zkreUSNJylI4wixhgRw6bifQRO6eg0SW2f/xh0VPLILKCw3+OzkyznIvbWbBkQJe1Fz
-	 tY/PK4NjWl8gjXg5U7bN9q62shzXfghX9qFBKldt8Vav5CNxMa31cKs4a0XuRsaN/f2TF
-	 EWx6WjzqgD1LNfCmfpC1mvYBJqof+qvwpULBDBjWLUPABfnKwyMLaliE+S+g1M05XNg==
+	bh=kZ6OuBFjQkEIkcQjFOkRNn5ABiDPk3wWWlfiTaMdlMM=;
+	b=AGeVbVKmvpMU79Uye5Wlvx3S8e+dmhZM/n0oE+mMgIDrfoHbyJQQoK+61/8EzqisquVg
+	 2yF2L9FCm7vd5N5TykI2mEr9l9cfIYC/kYzTR1CCa5fn/qTRnjP9dPpXFFmXFYpk81/GK
+	 oGG8JZv/gWyvue9jNRzZixLPFOS8kI3Ydflz5tcyt21mAYWzLIxOs+/KPlT14QZQjJsoh
+	 X5aWbR89tvxU4jtm4BgEDdTZmmKxC9xAAGEjdekL5sEKkCV0ki+mXl7VO+7biety9xaWy
+	 OXUv2KLpVOOW53yKIksko4/3nLCEIqacsWkUOTYzCyIm/H8tkZtHMRicZD4V+YVZRWQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WNKmobyI;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gc5Sgda0;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6B0B606A32D
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:15:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD60A606A327
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:15:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WNKmobyI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC531F000C4;
-	Sat, 14 Nov 2026 23:15:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gc5Sgda0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C331F000C4;
+	Sat, 14 Nov 2026 23:15:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794698140;
-	bh=BoQ9Ek93WF5YC+zcuLj66LEiAW/4pHelm49BKCAg3Vo=;
+	s=k20260515; t=1794698151;
+	bh=kZ6OuBFjQkEIkcQjFOkRNn5ABiDPk3wWWlfiTaMdlMM=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=WNKmobyIJC0/kQBipVxEcZI5q5hffcAJDcg4Q4/eS2h9tmxT+Ml9ueiYQZPQvxbu6
-	 pz0tbvUX4XMYYK+M70l67N+L04gvEF8VkXTlvUsqawb0TUDiUU0uKUztbyelrvGumM
-	 V69I7BK980cnK0XD73JnX2Cy9N3jgwyopY2LQQL28prl6gNFmL8QfjIcjjnajRC1KH
-	 IYmO2yiuFz5SWf1MxQnMcgNWGuXWyCImNk4NBZZmJm40uAGVRLKXghtfeCXn8hq+ou
-	 0To2fw2UTaaRp5iEzLq7u2lW8ogsElvlpETOM7Fm073y3wrga2P4xJL8mYgbF4BIls
-	 9TLVI88P8lF4A==
-Message-ID: <sashiko-outbox-215093@kernel.org>
+	b=gc5Sgda0H/9gtYhr+q3GYTbLzD+M5dliiVD3hnY10r6F7CdBp+a7IV23+Ox/JTIdM
+	 x/eRAs+s+9yWNBfZ/jSwGzdjTlQHY92XVh8A8U12T5XTq80uxTr5AHjIvXVjmXx9Dl
+	 jqy5bpvzJU3d+jheMi/yonPHzGcyDG8HxkY0ETOji2Do0Ood6BjJSAEBB7U+gCEev4
+	 9RrNg8Vktyt8x1Mzfltp4oUsWNmzPAqkSv9oCO1MAc0hWnucL+KyHm0AOFzbNiXO9b
+	 TZwaWtwFBTrquzSMQb4n9J6ZkIHo06vp2LPCCxhPT+LauQ/Qf9zOURyMQPMjuHp5D2
+	 sHEdFW9Px13WA==
+Message-ID: <sashiko-outbox-215094@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 13/16] HID: ft260: i2c: reject an I2C clock outside
- the supported range
+Subject: Re: [PATCH v3 14/16] HID: ft260: i2c: fix i2c_reset sysfs store
+ return value
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Michael Zaidman" <michael.zaidman@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261114230800.1344401-14-michael.zaidman@gmail.com>
+In-Reply-To: <20261114230800.1344401-15-michael.zaidman@gmail.com>
 References: <20261114230800.1344401-1-michael.zaidman@gmail.com>
- <20261114230800.1344401-14-michael.zaidman@gmail.com>
+ <20261114230800.1344401-15-michael.zaidman@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 Nov 2026 23:15:40 +0000
+Date: Sat, 14 Nov 2026 23:15:50 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,27 +61,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> The clock sysfs attribute passes any 16-bit value to the chip. The chip
-> accepts it, reports it back in the I2C status report that clock_show
-> reads, and runs the bus at the 100 kHz default. A read of 2048 bytes
-> takes the same 0.298 s after writing 50, 3500 or 65535 as it does after
-> writing 100, while 60 and 3400 give 0.387 s and 0.058 s. Userspace has
-> no way to see that the value was not applied.
+> A sysfs store must return the number of bytes it consumed. kernfs
+> hands that value straight to write(2). i2c_reset_store() returns
+> whatever ft260_i2c_reset() returns, which is the length of the
+> feature report it sent, 2, not 0. The "return count" below it never
+> runs, so every write to i2c_reset returns 2 whatever its size.
 >=20
-> Refuse a value outside the 60-3400 kHz range named in the datasheet
-> section 4.4.16. ft260_uart_change_speed() checks the baud rate against
-> FT260_UART_CFG_BAUD_MIN and FT260_UART_CFG_BAUD_MAX, but termios has no
-> error return, so it falls back to 9600. A sysfs store can return an
-> error, so the clock store refuses the value.
+> A write of two bytes is right by coincidence, because the report is
+> two bytes long. A caller that leaves out the newline, as C and Python
+> code usually does, writes one byte and gets 2 back, which is more
+> than it asked for:
 >=20
-> FT260_WORD_ATTR_STORE() takes the parse function as a parameter now, so
-> a word attribute with no range of its own keeps passing kstrtou16.
+>   echo -n 1 > i2c_reset   1 byte, write() returns 2, bash ignores it
+>   printf 1  > i2c_reset   1 byte, dash reports an I/O error
+>   echo 1    > i2c_reset   2 bytes, correct by coincidence
 >=20
+> Return 0 from ft260_i2c_reset() on success. The value is discarded by
+> its other callers, ft260_hid_output_report_check_status(),
+> ft260_i2c_probe() and ft260_i2c_abort(), whose own four callers
+> discard it as well.
+>=20
+> Fixes: 6a82582d9fa4 ("HID: ft260: add usb hid to i2c host bridge driver")
 > Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261114230800.1344=
-401-1-michael.zaidman@gmail.com?part=3D13
+401-1-michael.zaidman@gmail.com?part=3D14
 
