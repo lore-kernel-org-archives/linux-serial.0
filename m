@@ -1,56 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794698705;
-	b=NpNAQ6/rpVz5UpvYYBy10nLKR5fdClZbTN27ve859D8cbtaa0XjjnnUzKeJJelC8jIaN
-	 30CIA45qiPPH25OcVnbkX8UYyFN5ZrHNJbZ0H+Fb7rOD4hPiTazBYn4b7J6OJ8aRmU1wv
-	 r3QULc0JF3lFACBhB//NNzHQenlki/ytqVMGxMUBPIJtzvjm0mQ6IKZPgC0peLBP45AIO
-	 q/dtmwLTh1k1qJv3JYeM92okYo3KwKPbhLCvA+zA6cocpNNhOV8OFIOHUUIc1HjCOGDgC
-	 +I4iZJKEfq96nGYF/kbEiQT6U6zeAXNYAm1jAEqr0ei0e1gNMR80G71esmb/5lwDz+Q==
+	t=1794698861;
+	b=gu8GmIxuYPYBdyjxIQ0aNwLn6014xQnhtrqe5aD3VqosUf932/wofUbpSx1ihvTo8LYX
+	 edGIoS73ukHo5I+rwUp5EAwN7OV5Lol8Sg/FO5KrgjZjoBm61Id9N/F0gsK8J3qciDkTf
+	 jZ2Ca7dQF7Z0u8HGOOCSz+6LF0l+hZEF/4L+GCry9Qd4nV9O96oZRTXhPPqLIYFC10Mri
+	 m+bYeESlD6FK8oi5m9ejKrbgLSZuifetM/FJVqttbhcnJGaP1pObgLnakzeegKIvqKDiL
+	 TGBtJYx85w0c57z8HCyCh2eiG7SZ+ghaVZBkRipP5xDbNTfQtkBWgD3EQDTg55e0Q5w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794698705;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794698861;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=T13Nx8LcVpu50QlHzffixkBIfpgho0fI96sGkhnOdIs=;
-	b=Sw2SmR9rUzcCLiCLzeLYA2QqjIH4fBhYM5FeHXPdFQz7eat308L7f28SqYzPZXR0cFDX
-	 nqeyoFExYcadXx7BaU3Z8i9W+n0HM67XMWkwyiw7UFiIppQCqKgEG2mRp3+U7wOMQ9/Y0
-	 01KYl4tddsVsXFymuZOajq4Wedi4rA3kS1gHhvUFdvR/IhB8ASe0zlBA2DyiPj6mdfcv8
-	 qHbBc4a2oS+JRMRi8ATkZgFECmGM93oizTwiDtMK0U5s7dE4H51AD5sefvdsJkt1M7P4T
-	 ceXiI4tntu+dHqq5v3NI+hy9pCJKDt+63y4BGhg3kRsHRkmVoHcqd0DIzoWzfajHT3w==
+	bh=f0CCnxWIOusi0hK8KTQlmItCqtzYpeq6Z+p5ovZps98=;
+	b=DkoCzRFO8JnGvjnf3427jYqTOwjdok0DyNq8YJBJdNYJDMl7q3LvABKUn3kqnALBnKQr
+	 H5/P3y9SxUj1eRwpbzZz7Wd0mHolbkrRtgeZhpq7ykN5Ns230HXi4jyCkFHlDMhkEBdOy
+	 0CRfJAj+7w8rGRPfJoGRtYshs7Wb1dzz16NBTxSJjqWUT/zJEro1yGwqQc9YK+Y5auLaC
+	 elwvYHEe1/poLFMhaQPrAq2pZoFB/wkT7mvh2pgqb+k/Pg3gghmMgqMrLzv80jwgRBEt4
+	 VenoL2R/F6b5kJUhp1obF2vg0AZlh7n5BwuOm84WCPr+qh67esNvTG7yBhN7OPkZfxA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="CMoq3m+/";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LmD9JCtG;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13097606A32E
-	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:25:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D4C4606A323
+	for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:27:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CMoq3m+/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C53271F000C5;
-	Sat, 14 Nov 2026 23:25:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LmD9JCtG
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93D721F000C4;
+	Sat, 14 Nov 2026 23:27:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794698704;
-	bh=T13Nx8LcVpu50QlHzffixkBIfpgho0fI96sGkhnOdIs=;
+	s=k20260515; t=1794698860;
+	bh=f0CCnxWIOusi0hK8KTQlmItCqtzYpeq6Z+p5ovZps98=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=CMoq3m+/uQbIarrwSskWyzZu220tP2Yf0X3FOGUVPkL1Meoyfq4IEKVNfyY8I3uwm
-	 ITlzWx8JSzWRdOkXgsGlMy1CGU9EC/H4RK8cZvz0K5Lh46PoqsraabA5geQzaaMcGk
-	 VXGGmKTRNRDKMwlF26DoplKyS2dlQfeL4UneRzUol4IXazT1boTPJ1Ams+OLs8Ok1H
-	 ru/45mRRVbiD1pT2pI7AG0XqVO80D9MEZMUwO3bb0VKMLCs+KVhi4zabSL8lz0Y2Uo
-	 lFG9aI9WQFLyqL2g6yZ2AGBOsb+JfzwdeW2Gw/YXzG93zztbn/9n7v1Mk/cVvVB9dY
-	 DDbqCkcNutaYg==
-Message-ID: <sashiko-outbox-215108@kernel.org>
+	b=LmD9JCtGunWyfVTy0cn6kM9HdQfVbqYVlr4Aj892AKIeu7mt8c+C4SCWex9pe6crZ
+	 jCbxX6GaS3KbaTOa5hg4egYmeIOLqk0ISRUuQaFbUN+dPuLO9tHEQ5+ujMYotFcVDb
+	 gP3voE6D1Vycws52+iczYq+isYJyyOGt3IPwDxT1RP4PqRQp6/SqLuS+wM3HCxonTD
+	 sEXIHKfsceZOn+/EscE21JnymxAnccKCos28H1H4PNSMO0u6+xJKEJbYfKXvc+jmYO
+	 6uQhRKndcelHkivrxd903dYuq3OqMZWs14ddtmCYWanBwDBhXUkOShEMiPB830jHEf
+	 j4wk5t4yTtbgQ==
+Message-ID: <sashiko-outbox-215110@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 03/16] HID: ft260: add GPIO support
+Subject: Re: [PATCH v3 11/16] HID: ft260: workaround for TN_189 errata
+ endpoint STALL after enumeration
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Michael Zaidman" <michael.zaidman@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261114230800.1344401-4-michael.zaidman@gmail.com>
+In-Reply-To: <20261114230800.1344401-12-michael.zaidman@gmail.com>
 References: <20261114230800.1344401-1-michael.zaidman@gmail.com>
- <20261114230800.1344401-4-michael.zaidman@gmail.com>
+ <20261114230800.1344401-12-michael.zaidman@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 Nov 2026 23:25:04 +0000
+Date: Sat, 14 Nov 2026 23:27:40 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,32 +61,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Add gpiochip support for the FT260 multifunctional pins, including
-> GPIO2/GPIOA/GPIOG function selection via sysfs, and enable the
-> available GPIOs according to the active UART mode.
+> FTDI errata TN_189 (Section 2.1) documents a silicon bug where the
+> FT260's USB interrupt endpoints are occasionally halted right after
+> enumeration. When this happens, Clear-Feature ENDPOINT_HALT does not
+> recover the endpoint and the only known recovery is a USB device reset.
 >=20
-> This supersedes the earlier pre-UART GPIO series:
-> https://lore.kernel.org/lkml/20230211115752.26276-2-michael.zaidman@gmail=
-.com/
+> Implement a workaround:
 >=20
-> The change of the gpio_chip.set callback to return int, as the current
-> gpiolib API requires, is based on a patch by Rio Liu <rio@r26.me>.
+>   1. ft260_check_intr_ep_health() observes the STALL by attempting an
+>      actual interrupt IN transfer. The FT260 does not honestly report
+>      its halt state via USB_REQ_GET_STATUS (returns 0 even when
+>      STALLed; confirmed separately by FTDI engineering [1] with a
+>      USB analyzer trace), so we cannot rely on it; instead we let the
+>      host controller return -EPIPE when it sees the STALL handshake.
 >=20
-> A pin set or direction change reads the FT260_GPIO report from the
-> chip, changes the bits of that one pin and writes the report back. The
-> other pins keep the state that the chip has, not a cached copy that
-> can be zero. A change to output writes the direction and the value in
-> the same report, and the error of a failed write goes back to gpiolib.
+>   2. ft260_check_dev_responsive() catches the broader broken state
 > [ ... ]
-> The gpiochip is not devm: ft260_remove() frees dev before the devm
-> actions run, so it removes the chip itself before it stops the HID
-> device.
 >=20
+> Reported-by: Andreas Boose <Andreas.Boose@almex.de>
+> Closes: https://github.com/MichaelZaidman/hid-ft260/issues/40 [1]
+> Link: https://ftdichip.com/wp-content/uploads/2026/05/TN_189-FT260-Errata=
+-Technical-Note.pdf
 > Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261114230800.1344=
-401-1-michael.zaidman@gmail.com?part=3D3
+401-1-michael.zaidman@gmail.com?part=3D11
 
