@@ -1,56 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.161.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794699580;
-	b=i61NWFBzy2Sgt6Y/9ow1lkMDi3tL5tHoyxJscr1Zid0Jt4FOl8lC4de10jN5SGbYfv4J
-	 FPFycNz04MbDXUMF73ydXKu7B9Vy607Sns44j6myrAIQJz3OZr+ZFGCEZtZ3XsMP6cYF2
-	 yzpkOqUrFHdVZOIa+wmWCfKTrtXsUb1pRK8QMI7EXu5mFgzFM1zg6ynBiymYAJk8zqEcb
-	 9y+fi+vN0nFWN49nN7M6sASumkhx2PkwcmoLaTc6zNCjAYlXgqReKzfM7sRiLFNkizunJ
-	 ocldxb5LgrcBFfyQoWAst9du7YdW4nicHRfmt9e7HVDoSHrseDQuCDwNqM3tRifgVOg==
+	t=1794727181;
+	b=WpqLGiUVTpIdFsMyRXBBMCau3d0uSNdJZ8APYmM6y1w/df13lUQqXnQzq7JWD7yduoMH
+	 3xaKtjjMFwbx9/T30SvtiztP/adirBE8oK+Bi0gaxPwMtv/exeX/VWTRUoQdyJfwVKvT6
+	 Af50Rfe6WiCrpjyBvWR266AowEIqKFtgjVpcGJEfb+LP7ona4pPtkx2/nXSaJ2z/OpHFP
+	 zU4UDJsK/54miRSztLvzDrxEUvlHQnPiqYtb7JVTKcW+BWb9r7wR427KLoxbMnJk1k4Qn
+	 4+hwYLRluNTchedIkzWN+XkhP59r0nlRT8tRtXQHl8puto2A2OLA2AM31knE4hYT+KA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794699580;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=LI9G/qfltJYghc/lTWkjbrtBN0ameZAHpKSn9LBhWmI=;
-	b=vYg/ILDGcL3GN1p6PdyGwZSbaYCbSWTiMfdPTthqNfpDNLkSw426Uz/pGG0hyPyUNKCz
-	 3+spTT8Ljt9rSJW5vC+Mtdyf1nPG0e+2tjpujbPi93pOF/KDyXl3ILyMk3bc8ce1YUWv8
-	 7OkZxUZHFk0i7gR+7lA1IU0spu9BQLZxDQNADUd0p0S1RRMhLYH2DCQCT+mvAN++Ys//E
-	 zWAkcRrgmzkEOvo+PdcgDH/53ifwpvUd1YMekdF5SHw0jXMqZ2I1h61pbCvHdMteL2yMp
-	 MZkdM0tKQ3dTP9AyRVnZjmz5DrFRadNtO3E+c5cn6SVgkFfFhY/114e9Xke/yynbLMQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794727181;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=nXyMrT3sYdOxeSk47EaCAAbBwQAWb4yc1AvLRKcz5XE=;
+	b=1imsarEIZVPJudq/9J5098xjNHyV8HcAFM1k89hLpy98y6yo24iXgpTNFk50JAm8KK2L
+	 Db+Xr7u9FS0uKhjT2q/atZwPxRb9jjkY6f0wMFgQSFwHPKE+EGpukR/2eWvdfzavn8DZ4
+	 1T5tu5iAsb6q6cXw8623uitgj1/Ns8AkpkfOJZZCgx4ZM4jUA84FZJnktRjXhFgYNWlIQ
+	 Twh0aKUP11M5nNI5OTTrpR2vxrMYrv4w1p8CqGEtwmJG0POOOMskfV+7CHwobsznWdRlU
+	 WT1DIXF0fBlP8ekkTehe9y4RTnQgR4wcvImwr61QEMrw/6qY4GXcSzdsob2fGj021bg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OvSKHxNE;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="u9ZOqO/W";
+	arc=none smtp.remote-ip=209.85.161.43
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149CD606A323;
-	Sat, 14 Nov 2026 23:39:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5328606A31D
+	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 07:19:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D5328606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OvSKHxNE
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E2E91F000C4;
-	Sat, 14 Nov 2026 23:39:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794699579;
-	bh=LI9G/qfltJYghc/lTWkjbrtBN0ameZAHpKSn9LBhWmI=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=OvSKHxNEYUs6wOseHxoUF0b7ndnjFuxeKHBj6IcFac6XMDcu5koAIO4u0YgTaX3nQ
-	 mk/ssu4TMqYuGkMZq6VoP8/lWP/tCJ6MPea3+cGrEVcYTpr0VUzM3sRIUBjLgYSbUc
-	 8HFsYZkC6dsHcg5bsPEltvB08QChNXjpHe64Q0l0PuDqvxd8R5CsGXOeTCFq5VSCuL
-	 MFvhpvfsdTnKheKNdaSOW+aFIeyYvpkHJkcTsnrmAFA1+NVl6AffMKCaVsQwfXMa9y
-	 D6yra8C70EEnGBL+ng3rz0o6eQZXo+nCSuynwyfNefGyDqWHxxker9iMDBTAc74WQi
-	 AaJN17vkM806A==
-Message-ID: <sashiko-outbox-215117@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 01/16] HID: ft260: add serial driver
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Michael Zaidman" <michael.zaidman@gmail.com>
-Cc: linux-input@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, dmitry.torokhov@gmail.com
-In-Reply-To: <20261114230800.1344401-2-michael.zaidman@gmail.com>
-References: <20261114230800.1344401-1-michael.zaidman@gmail.com>
- <20261114230800.1344401-2-michael.zaidman@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 14 Nov 2026 23:39:38 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=u9ZOqO/W
+Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-6b8e2d8df4fso2316561eaf.1
+        for <linux-serial@vger.kernel.org>; Sat, 14 Nov 2026 23:19:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794727180; x=1795331980; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=nXyMrT3sYdOxeSk47EaCAAbBwQAWb4yc1AvLRKcz5XE=;
+        b=u9ZOqO/WGuvUTfJeon5puJvmrGkdOEessM2TfATgkPUOU5Yah8sDNvOdqlPF2/E/yo
+         2EeEfz/1DwIT3iJju4rPOa5hqOgcVV4bw8lop9yrYRrp3Wt/IxhIR1sAono8AodUrCxm
+         LVGp/9e9MnrgOGfpY2rNh70xVEg0on/zcz4vTERwnCPWbCmvmg76UrfVxGo5umutFLUk
+         CSW1Kl8FA3LWPGLty1PdRGb9mewc8cvq6S1+amKciSzC3kOjHkMb2z03cjzEu/crjB8H
+         +bw28/C7xaupuhrtaWa6x8c0CpbxMv839gaIJX10vg1aZi2+1djXDHeKQtP4Tc+iypG8
+         7A6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794727180; x=1795331980;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=nXyMrT3sYdOxeSk47EaCAAbBwQAWb4yc1AvLRKcz5XE=;
+        b=k/hPJl6pJZn865vry7S8euoh/BB+sB4AGB1HDH76SzZtU0kW3wyENNvgcc+flyyU8x
+         rxBU//c6Z3Fl2mp8BdDzr5y2gWX1VWqwp029J4LHzzr/No9AQUZdBvqI20qisoqEgHQn
+         hxQ5+lcVwsch4YjJcOooCMEHKaG3pFDCJ0XAjyJWTb9p+z399uVsCZsXT9Sfcdf3/qQN
+         KHDmF7ithY5sR5ymlx/ny8oLelu4ymrVstI7PjcV7kBuoZLQWh3qzTGXINngyivWEnG0
+         0CTH+TuqWUYP5TInY+GvkOTEQzC1RID0xO/FRVqo8TZuGl6l6EwXiZX3yVvJuFyPrMzT
+         lxlA==
+X-Forwarded-Encrypted: i=1; AL+hErGzqbFxmIFSX1QMau3j7cj6vHEf/UsSWwy5wTMRGU5nIi7xWW0Bl7QG5SrH597QFvgcXCOOh6aW60XPM3M=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/+mxTkZ0m9lq7FrEUjb4u/iRbE6ekn+3+/QC3CU53myf27Iwl6
+	X2lo1DwxLThlz4jLl7C+q2nQR19LSscLK75A4ZSLqnihzfl5/4g99iFP
+X-Gm-Gg: AYBFou2Rqx6CEjRlp6izsR6BhLLo/bL59bXOIVCNLNzOLQl4cUMfboDfPKvYDB/0XSv
+	CDbRGK+UOZ9T9JCxk7IIbFmD+dNZ2f8ZB3DRSJ9Jh6+1a3MZan4/34OqfhwaAQ8YnipyU83c9ri
+	pikzAkw1WA5m0v8lTztDgk22EpAjmC/kwzLifnWQ8touy4G0f89NNhowoJrDBuPu+Kw/6k10HHx
+	LEszqNTOfQ0oAnz1ewUIrhUdWjUW1LcDcei+Ec8EzJMfIPJQGnZisCh1M49lI3xWNGFEB2i/ayP
+	MTdk26qB0kdo2+fRutueZuUwLootE8pAJzDWujGw91xT6eI2kAK3J/a48m1JZE7M7PAu6exQ15m
+	Ug5D3G3e7u95TfZEX4MB9jLl9YtWqfAXUA9xkEcvMshsmOPqneHMR3VQ/ZQXgr8SRSyIPKFesCz
+	1DnauQI6dx7faImxzOR4aGegHTlZ3zmnEIg2H/mOV3PYhDcn52sfzVKFELyPK5/+S1yKsTL+qRi
+	zCT9DIx4tbyLEexF0j3SLwXrvZZbF0Zz9XQ4WrCgVnjMKBaVTCmAHV/L+TXxgMPVCLcupnE488J
+	pk+u/irj9Tz7mJS6FMlLetdzqiZgNPGyNfDVFlTvZJHVc4qm8CLVgga5n6YbbKDdKtYJ/Tauyiq
+	4iEcM57RfvPntqz24CYMzGpAbomZRZ5iJsKWgOICAtqJ032h8wmn/CdCEENcdeYIsZ9P2h4mcNj
+	kGr0hO62SatRby0HNY85I9aqgcCXdbM4FeV4wDKs+Ih8He7CGSD4o=
+X-Received: by 2002:a05:6820:a29a:10b0:714:e19b:c3c7 with SMTP id 006d021491bc7-71ab509996cmr3191034eaf.39.1794727179658;
+        Sat, 14 Nov 2026 23:19:39 -0800 (PST)
+Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-71ae860ebd7sm1145321eaf.8.2026.11.14.23.19.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Nov 2026 23:19:39 -0800 (PST)
+From: James Hilliard <james.hilliard1@gmail.com>
+Subject: [PATCH v7 00/10] dmaengine: dw: serialize completion and
+ termination
+Date: Sun, 15 Nov 2026 00:19:33 -0700
+Message-Id: <20261115-submit-dw-dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,209 +93,156 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43QwU7EIBAG4FfZcBalU6DUk+9hPFAYWoxtDdTqu
+ um7O9092NRDTbj8ZObLDxeWMUXM7PF0YQnnmOM4UKjuTsx1dmiRR0+ZgQBdCCh4/mj6OHH/yX1
+ veT4PrkvjEL+RzwVHpUSQVfCFt4yI94Qhfl3555dbpv1XdNNqrhONzcibZIlZr8jEoY0DPtz2a
+ KKLeRrT+dpwLlbpn2XoFFzbYJQDr4Oun9rexrd7N/ZsLTPDFoMDDLjgCqTEWnpnjdtj5RYrD7C
+ SMKehCUKaoBzuMbnF6gNMEhbQSln5OoBRe0z9YqQdYIowX4KoKmVCE/78md5iR8/UhAGicKU0A
+ NJvsWVZfgBy9Q6ffQIAAA==
+X-Change-ID: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
+To: Viresh Kumar <vireshk@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
+ Dan Williams <djbw@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org, 
+ Frank Li <Frank.Li@nxp.com>
+X-Mailer: b4 0.15.2
 
-Thank you for your contribution! Sashiko AI review found 3 potential
-issues to consider:
-- [High] HID: ft260: UAF on port->hdev and premature xmit_fifo free on
-  disconnect
-- [High] HID: ft260: use-after-free in ft260_uart_activate() on remove
-  race
-- [Medium] HID: ft260: missing UART_COUNT_MAX check in
-  ft260_uart_add_port()
---
+Keep client callbacks in the controller tasklet while preserving polled
+completion. Serialize descriptor ownership across completion, error
+recovery and termination, and wait for callbacks before a client reuses
+its resources.
 
-commit 0485244a5cc12377d97264627f49ff95e6a060c7
-Author: Christina Quast <contact@christina-quast.de>
+The series first serializes completion, error recovery and cookie
+accounting with termination. Separate patches extract hardware-LLP
+residue calculation, calculate it in the status getter, simplify completion
+handling and report queued residue. Channel release and
+device_synchronize then gain tasklet draining before the final patch
+adds deferred notifications and shared completed-descriptor cleanup.
 
-HID: ft260: add serial driver
+The series adapts Serge Semin's channel-restart and callback fixes [0-2].
+Polling continues to advance cookies and software-LLP blocks, while client
+notifications run from the controller tasklet. Synchronization preserves
+pending tasklet runs from other channels.
 
-This commit adds a TTY serial driver (/dev/ttyFTx) for the UART interface
-of FT260 USB HID devices.
+Based on dmaengine/fixes at 6628e7d4c6b2.
 
-> diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
-> index 64c9c940db46e..982e2ca7a2de6 100644
-> --- a/drivers/hid/hid-ft260.c
-> +++ b/drivers/hid/hid-ft260.c
+[0] https://lore.kernel.org/r/20240911184710.4207-1-fancer.lancer@gmail.com
+[1] https://lore.kernel.org/r/20240911184710.4207-2-fancer.lancer@gmail.com
+[2] https://lore.kernel.org/r/20240911184710.4207-3-fancer.lancer@gmail.com
 
-[ ... ]
+Assisted-by: Codex:gpt-6-astra
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-> @@ -1001,51 +1101,478 @@ static const struct attribute_group ft260_attr_g=
-roup =3D {
->  	}
->  };
-> =20
-> +static int ft260_uart_add_port(struct ft260_device *port)
->  {
-> +	int index =3D 0, ret =3D 0;
->  	struct ft260_device *dev;
-> +
-> +	spin_lock_init(&port->write_lock);
-> +	if (kfifo_alloc(&port->xmit_fifo, FIFO_SIZE, GFP_KERNEL))
-> +		return -ENOMEM;
-> +
-> +	mutex_lock(&ft260_uart_list_lock);
-> +	list_for_each_entry(dev, &ft260_uart_device_list, device_list) {
-> +		if (dev->index !=3D index)
-> +			break;
-> +		index++;
-> +	}
-> +
-> +	port->index =3D index;
-> +	list_add_tail(&port->device_list, &ft260_uart_device_list);
-> +	mutex_unlock(&ft260_uart_list_lock);
-> +
-> +	return ret;
-> +}
+---
+Changes in v7:
+- Use a scoped channel-lock guard in dwc_tx_status(), following Frank's
+  review, keeping polled completion and residue lookup in the same scope.
+- Collect Frank's Reviewed-by tags for the residue and completion patches.
+- Link to v6: https://patch.msgid.link/20261103-submit-dw-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com
 
-[Severity: Medium]
-Does ft260_uart_add_port() need to check if index >=3D UART_COUNT_MAX before
-adding the port?  When a fifth FT260 UART interface is probed,
-ft260_uart_probe() passes dev->index =3D=3D 4 to
-tty_port_register_device_attr(), which triggers a WARN_ON(index >=3D
-driver->num) in tty_port_link_device() because ft260_tty_driver was
-allocated with UART_COUNT_MAX (4) lines.
+Changes in v6:
+- Keep dwc_get_hard_llp_desc_residue() next to dwc_get_sent() when
+  converting it to return residue, following Frank's review.
+- Remove inherited RFC notes from the individual patches, retaining
+  the revision history in this cover letter.
+- Link to v5: https://patch.msgid.link/20261102-submit-dw-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com
 
-While commit "HID: ft260: uart: fix the serial driver" fixes the unsorted
-list insertion here, the missing UART_COUNT_MAX bounds check remains at
-the end of the series.
+Changes in v5:
+- Rebase onto dmaengine/fixes at 6628e7d4c6b2, using the shared
+  dmaengine_chan_dev() helper for channel logging.
+- Split residue handling into a behavior-preserving extraction, status
+  calculation, scanner simplification and queued-residue reporting,
+  following Frank's review.
+- Share completed-descriptor freeing between the tasklet and channel
+  release, retaining callbacks for normal completion and suppressing
+  them during teardown. Name the helper dwc_free_completed().
+- Carry Frank's additional review tags and put the submitter sign-off
+  after the review tags.
+- Link to v4: https://patch.msgid.link/20261029-submit-dw-dma-synchronize-v1-v4-0-fea447d9f285@gmail.com
 
-> +
-> +static void ft260_uart_port_put(struct ft260_device *port)
-> +{
-> +	tty_port_put(&port->port);
-> +}
-> +
-> +static void ft260_uart_port_remove(struct ft260_device *port)
-> +{
-> +	timer_delete_sync(&port->wakeup_timer);
-> +
-> +	mutex_lock(&ft260_uart_list_lock);
-> +	list_del(&port->device_list);
-> +	mutex_unlock(&ft260_uart_list_lock);
-> +
-> +	tty_port_tty_vhangup(&port->port);
-> +
-> +	spin_lock(&port->write_lock);
-> +	kfifo_free(&port->xmit_fifo);
-> +	spin_unlock(&port->write_lock);
-> +}
+Changes in v4:
+- Split v3's callback-deferral patch into cookie accounting, residue
+  calculation, channel-release draining and callback-deferral patches,
+  following Frank's review. The resulting seven-patch series preserves
+  v3's final implementation.
+- Place device_synchronize before callback deferral so clients can drain
+  deferred notifications when the completion list is introduced.
+- Carry Frank's Reviewed-by tags on the unchanged channel-completion,
+  error-recovery and device_synchronize patches.
+- Link to v3: https://patch.msgid.link/20261023-submit-dw-dma-synchronize-v1-v3-0-c62bf048f5ce@gmail.com
 
-[Severity: High]
-Can freeing port->xmit_fifo in ft260_uart_port_remove() and leaving
-port->hdev accessible after ft260_remove() cause a use-after-free?
+Changes in v3:
+- Order channel-completion and error-recovery locking before callback
+  deferral, retaining four patches.
+- Require a locked RAW.XFER event before retiring a transfer; zero source
+  residue alone cannot establish destination completion.
+- Preserve polled completion and software-LLP progress in tx_status(),
+  queuing client notifications for the controller tasklet.
+- Serialize cookie updates with termination and report queued residue.
+- Drain deferred notifications on channel release and let a pending
+  tasklet return without MMIO after the last channel is released.
+- Adapt Serge's two patches and retain his authorship and revision notes.
+  Drop the Tested-by tags that covered their earlier implementations.
+- Identify the introduction of the synchronization API in the final
+  patch's Fixes tag.
+- Link to v2: https://patch.msgid.link/20261022-submit-dw-dma-synchronize-v1-v2-0-5244e94dca8c@gmail.com
 
-struct ft260_device stays alive until the final tty_port reference is
-dropped in ft260_uart_cleanup() -> ft260_uart_port_destroy(), whereas
-ft260_remove() calls ft260_uart_port_remove(), hid_hw_close(hdev), and
-hid_hw_stop(hdev), after which usbhid_disconnect() -> hid_destroy_device()
-frees hdev.  If a process keeps an open file descriptor across
-ft260_remove() and reopens it (for example via /proc/self/fd/<fd>),
-tty_open_by_driver() takes the tty_reopen() path into tty_port_open() ->
-ft260_uart_activate(), which resets the already freed port->xmit_fifo and
-calls ft260_uart_change_speed() -> ft260_hid_feature_report_set() on the
-freed port->hdev.  Because ft260_uart_activate() also ignores the return
-value of ft260_uart_change_speed() and clears TTY_IO_ERROR, the reopen
-succeeds and subsequent ft260_uart_write() and ft260_uart_set_termios()
-calls operate on the freed FIFO and freed hdev as well.
+Changes in v2:
+- Carry Serge Semin's two posted fixes before the synchronization change,
+  preserving his authorship and revision notes. Add the requested stable
+  Cc trailers and Andy Shevchenko's Tested-by tags to those unchanged fixes.
+- Add a separate error-recovery fix for stale error status, empty channel
+  lists and software-LLP state when terminating or restarting a channel.
+- Use tasklet_disable()/tasklet_enable() instead of tasklet_kill() so
+  synchronization preserves scheduling requests from other channels.
+- Explain descriptor ownership during termination and acknowledge the
+  shared-tasklet scheduling race reported by Sashiko.
+- Link to v1: https://patch.msgid.link/20261021-submit-dw-dma-synchronize-v1-v1-1-6af85c2d6f69@gmail.com
 
-Commit "HID: ft260: uart: fix the serial driver" and commit "HID: ft260:
-uart: add modem pins control via ioctl" add a port->removed flag for the
-modem control ioctls, but ft260_uart_port_activate() and
-ft260_uart_change_speed() still do not check port->removed and
-port->xmit_fifo is still freed in ft260_uart_port_remove() rather than
-ft260_uart_port_destroy().
+Revision history from Serge's series:
 
-[ ... ]
+Link: https://lore.kernel.org/dmaengine/20240802080756.7415-1-fancer.lancer@gmail.com/
+Changelog RFC:
+- Add a new patch:
+  [PATCH 2/2] dmaengine: dw: Fix XFER bit set, but channel not idle error
+  fixing the "XFER bit set, but channel not idle" error.
+- Instead of just dropping the dwc_scan_descriptors() method invocation
+  calculate the residue in the Tx-status getter.
 
-> +static int ft260_uart_install(struct tty_driver *driver, struct tty_stru=
-ct *tty)
-> +{
-> +	int idx =3D tty->index;
-> +	struct ft260_device *port =3D ft260_uart_port_get(idx);
-> +	int ret;
-> +
-> +	if (!port)
-> +		return -ENODEV;
-> +
-> +	ret =3D tty_standard_install(driver, tty);
->  	if (ret) {
-> +		ft260_uart_port_put(port);
->  		return ret;
->  	}
-> =20
-> +	tty->driver_data =3D port;
-> +	return 0;
-> +}
+---
+James Hilliard (6):
+      dmaengine: dw: serialize error recovery with channel termination
+      dmaengine: dw: complete cookies before releasing the channel lock
+      dmaengine: dw: simplify transfer-complete handling
+      dmaengine: dw: report residue for queued transfers
+      dmaengine: dw: drain the tasklet before releasing channel resources
+      dmaengine: dw: synchronize completion callbacks
 
-[ ... ]
+Serge Semin (4):
+      dmaengine: dw: Fix XFER bit set, but channel not idle error
+      dmaengine: dw: extract hardware-LLP residue calculation
+      dmaengine: dw: calculate residue in the status getter
+      dmaengine: dw: Prevent tx-status calling DMA-desc callback
 
-> +static int ft260_uart_activate(struct tty_port *tport, struct tty_struct=
- *tty)
-> +{
-> +	struct ft260_device *port =3D
-> +		container_of(tport, struct ft260_device, port);
-> +
-> +	/*
-> +	 * Set the TTY IO error marker - we will only clear this
-> +	 * once we have successfully opened the port.
-> +	 */
-> +	set_bit(TTY_IO_ERROR, &tty->flags);
-> +
-> +	spin_lock(&port->write_lock);
-> +	kfifo_reset(&port->xmit_fifo);
-> +	spin_unlock(&port->write_lock);
-> +
-> +	ft260_uart_change_speed(port, &tty->termios, NULL);
-> +	clear_bit(TTY_IO_ERROR, &tty->flags);
-> +
-> +	if (port->reschedule_work) {
-> +		mod_timer(&port->wakeup_timer, jiffies +
-> +			  msecs_to_jiffies(FT260_WAKEUP_NEEDED_AFTER_MS));
-> +	}
-> +
-> +	return 0;
-> +}
+ drivers/dma/dw/core.c | 284 +++++++++++++++++++++++++-------------------------
+ drivers/dma/dw/regs.h |   1 +
+ 2 files changed, 145 insertions(+), 140 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
 
-[Severity: High]
-What prevents ft260_uart_activate() from running after ft260_remove() when
-tty_open() races with disconnect?
+Best regards,
+--  
+James Hilliard <james.hilliard1@gmail.com>
 
-CPU0                                  CPU1
-tty_open()
-  tty_init_dev()
-    ft260_uart_install()
-      ft260_uart_port_get()
-      tty->driver_data =3D port
-                                      usbhid_disconnect()
-                                        hid_destroy_device()
-                                          ft260_remove()
-                                            ft260_uart_port_remove()
-                                              list_del(&port->device_list)
-                                              tty_port_tty_vhangup(&port->p=
-ort)
-                                              kfifo_free(&port->xmit_fifo)
-                                            hid_hw_close(hdev)
-                                            hid_hw_stop(hdev)
-                                          kfree(hdev)
-  ft260_uart_open()
-    tty_port_open()
-      tty_port_tty_set()
-      ft260_uart_activate()
-        kfifo_reset(&port->xmit_fifo)
-        ft260_uart_change_speed()
-          ft260_hid_feature_report_set(port->hdev, ...)
-                                      <-- use-after-free on port->hdev
-
-Between ft260_uart_install() and tty_port_open(), port->port.tty is still
-NULL, so tty_port_tty_vhangup() in ft260_uart_port_remove() sees no tty to
-hang up.  tty_open() then enters ft260_uart_activate(), resets the freed
-port->xmit_fifo, dereferences the freed port->hdev, and clears
-TTY_IO_ERROR so the open succeeds on the removed device.  Even after commit
-"HID: ft260: uart: fix the serial driver" and commit "HID: ft260: uart:
-add modem pins control via ioctl", ft260_uart_port_activate() still does
-not check whether the device was removed under a lock synchronized with
-disconnect.
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261114230800.1344=
-401-1-michael.zaidman@gmail.com?part=3D1
