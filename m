@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794727767;
-	b=s0kR4+aFclEpSVxTiwrTlNqZw22AYT+Xw0/FKl5DhZ+t8U7F2y9JY3gUc4NWbStyVebN
-	 kZERFXeHTFsApNRTMOlVFbyaWd0XREgIxPfQ7MNx6Esfq4NS6TtAKi+PWF+POiKTKVlWz
-	 YUllQQ0wfbQXDDbFrTybhqRk3v5ncb4Tp5dTtYmV0Uzk4rGHKwYHNIYVlbxSLl9tbbgc7
-	 jjdM7Ei6FwTn2JnK3IXWWCnchcNrvP38BwXL/KAVzj9K2+2JQKSi7s+cCH9wXssPgKYBQ
-	 QOh684cct4WL54Z1BU+ungGeATSBw2n0WKy0qti8A3bxkMUSqoOFqBZcadWQyrmv4ZA==
+	t=1794727884;
+	b=Ee6Y/pnxf0OPqKIJE0pj61po17iJWJHpk6BB3n1m5CUFh6KQDHAjW32Xw67rmMywAV18
+	 tRXSg2qzrZE7C766N/9iEKyuDnP8jIx++Jz4UCDfutZk/WeOZpupoN+fDtdjvN2cPaA8i
+	 NMykBT8oazJmQhEg+p/YLMxPfPMEOdNgCoflnHAL7famM/o+GHwRKJvIGiiUlLcgPYpB/
+	 o6Ux5DO/oX0xE2vuSPNQz/1rwgVsPTnr0Zz5Qw3xTyeMHYIW58IPiYOasxr7xFlexrG0b
+	 84Nw7nCtDnmzY211HZGjQBnRmdYCwxo/S6AbJYw5K1HSlguM9RgHhw4HCl0wpzEGkDg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794727767;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794727884;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=BiVoGrT5t95YJ6IqXKyWpEji0TbnWl7XGvEx0qZAUHE=;
-	b=kpDl2cBBWFTXZEW4sHNd2WShscmSln/26ekI0gkflgO4jMtZc+2jqN1ABKV9af0ZjS08
-	 A8wyZojPc1/yl4igaBWSZon+0Bcejf4HwNXMDcxTeZzJ8Ob0OV75wsgeusMYqZKJSobxM
-	 SXiwUsm1n5knFFWBTU4LH9/2C+616L6IgAQh2tAdtY4N19OHSI/c5ePDXJOebnsfeXI9I
-	 04r45Ax4Eefac5XHySNLfFvAoDIqdy4BFxuJtyKFe7DuJZZK/xC4GSG0JTx6RfpX+kn7l
-	 hdMrpHyu6+PJNGUPQWUCiPg7iQaMoR21y9NMnloTLNy4XE7gpomdZbGdrVLrIeHmGTA==
+	bh=WynRRL9Uml/XNQgncsB8n2P5xLLnt/C194hS1QRY5A8=;
+	b=x5jE0HYL0FKjyxr2JAWZ99XUTaUQcc/7B+MGHRFMduHhelR4hC1vP3qPZuNBItctwuco
+	 lyXxNXQd1ao10V4SBWtWvV+nPHEtDCvdov+9XjHeu4nJl013fxKWUSHFvavdZJyccjnIp
+	 ueHJkqYXN4IXUS+LKxFpXheTCibFIt2iwiBHz1opLX93GQawkknnEgLylz9i/gWmfzQkx
+	 tXHd0TujoWdYbTLzBi0d0Ulnvs7mBXo6B743VLtjs8v1kOb3lgVLf9vrd+c6vawWL3boa
+	 lVBBxIW1KFTuuTwbZY5xuFXZit8sCQwY2B39rnhg6J+kPiJ35wS1LQBcURvxXueyJdA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iJmtNOO4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=U4H304uw;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1679F606A31A;
-	Sun, 15 Nov 2026 07:29:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3B64606A31A
+	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 07:31:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iJmtNOO4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C111F000C4;
-	Sun, 15 Nov 2026 07:29:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=U4H304uw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 593F51F000C4;
+	Sun, 15 Nov 2026 07:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794727766;
-	bh=BiVoGrT5t95YJ6IqXKyWpEji0TbnWl7XGvEx0qZAUHE=;
+	s=k20260515; t=1794727883;
+	bh=WynRRL9Uml/XNQgncsB8n2P5xLLnt/C194hS1QRY5A8=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=iJmtNOO41mvjyXfq6yUFrgGmMW1hwoo1e/jsd4QTjjVFgQW8EarH1zN5m1R8HVSSp
-	 pU7fxpJqd4CapGBb2quocNxBytnnXUXeWVizhxIiypW0zUjmeeBasYZwp1p2twQA7j
-	 f/SXnUb7WtIVAP9dfWXbiKIO7uhvE7coO4K1UyxCHclNaUzHlwEUPuduEgspPlxFe3
-	 MTNpfiAwvQVz39gy2BDAquaYLVfCapDS9hSSpNY1/fMqS+YhL424OVPovaHeOhtvuu
-	 9QJtnUbUqLcFfjFJNCG4nlA2AO7wan925+WXR+yYkA/BMovdW1nyZoX08GIhROh09F
-	 NyWd5hRz9ILnQ==
-Message-ID: <sashiko-outbox-215259@kernel.org>
+	b=U4H304uwf4cNFBxF91chr6admTicJkpCheiU0iOniYUNsQORmZ8r/TK+aMny2+Jzn
+	 6H/01gwPdX1Nl3BzSUalKOgcV8joUAjXaHIDr2a1M4a3WQOgEZY9bkR/VECWzj3rfP
+	 7vPNfNALUqcsTQNFz7vXatBUJgglU7AsaH+xaNVLRXl4bdsCBIovDjhOB0BTE3SQ6W
+	 c0AUB+1F8ySRwL/HvyEjw3kcOsPcIWlhdjbXVOB8cGjGSYBznys2XNqTd2iGqX3LHZ
+	 Hdq+ipZYBT3QgtTreSVVoP3q3I1e3N77e5lnID+9xI8iH8ncV/XrFL4jxdIGmzu+Ye
+	 OheVQxXUmrQ5g==
+Message-ID: <sashiko-outbox-215261@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v7 07/10] dmaengine: dw: report residue for queued
- transfers
+Subject: Re: [PATCH v7 09/10] dmaengine: dw: synchronize completion
+ callbacks
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
-Cc: dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, vkoul@kernel.org, Frank.Li@kernel.org
-In-Reply-To: <20261115-submit-dw-dma-synchronize-v1-v7-7-8d58f3d49e4d@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261115-submit-dw-dma-synchronize-v1-v7-9-8d58f3d49e4d@gmail.com>
 References: <20261115-submit-dw-dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com>
- <20261115-submit-dw-dma-synchronize-v1-v7-7-8d58f3d49e4d@gmail.com>
+ <20261115-submit-dw-dma-synchronize-v1-v7-9-8d58f3d49e4d@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 15 Nov 2026 07:29:26 +0000
+Date: Sun, 15 Nov 2026 07:31:22 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,44 +61,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-Thank you for your contribution! Sashiko AI review found 1 potential
-issue to consider:
-- [Low] dmaengine: dw: Fixes trailer cites 3bfb1d20b547 instead of
-  b68fd0976286
---
-
-commit cea2bb9706ea8fb5c7af2045e48883b9d2da9184
-Author: James Hilliard <james.hilliard1@gmail.com>
-
-> dmaengine: dw: report residue for queued transfers
->
-> A submitted transfer may still be queued behind the active transaction.
-> dwc_find_desc() only searches the active list, so a status query reports
-> zero residue for the queued cookie even though none of its data has been
-> transferred.
->
-> Search the queue as well. The status getter already reports total_len for
-> a descriptor that is not the active transaction, giving queued transfers
-> their full remaining length.
->
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA c=
-ontroller")
+> The controller tasklet can detach completed descriptors and invoke their
+> callbacks outside the channel lock. Terminating the channel does not wait
+> for those callbacks, and there is no device_synchronize hook. A client can
+> therefore reuse callback state or release its buffers after
+> dmaengine_synchronize() while an old callback still uses them.
+>=20
+> Disable and re-enable the controller tasklet from device_synchronize,
+> outside the channel lock. Disabling waits for an executing tasklet,
+> including descriptors it already removed from the channel lists. After
+> termination, a later tasklet run cannot acquire another descriptor from
+> the terminated channel. Clients must continue to exclude new submissions
+> on that channel until synchronization finishes.
+>=20
+> The tasklet is shared, so other channels may schedule it while this wait
+> is in progress. Preserve those pending runs: tasklet_kill() temporarily
+> owns the scheduling bit and can consume a concurrent scheduling request,
+> leaving controller interrupts masked. The disable/enable pair leaves the
+> scheduling bit and pending tasklet queue intact. Other channels' hardware
+> transfers continue, though their callbacks may be briefly deferred.
+>=20
+> Fixes: b36f09c3c441 ("dmaengine: Add transfer termination synchronization=
+ support")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://lore.kernel.org/r/sashiko-outbox-180707@kernel.org
 > Cc: stable@vger.kernel.org
+> Reviewed-by: Frank Li <Frank.Li@nxp.com>
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-[Severity: Low]
-Should the Fixes: tag point to b68fd0976286 ("dmaengine: dw: move residue
-to a descriptor") instead?
-
-Commit 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA
-controller") did not have residue reporting or dwc_find_desc().  Commit
-b68fd0976286 ("dmaengine: dw: move residue to a descriptor") added
-dwc_find_desc() and the per-descriptor residue lookup, searching only
-dwc->active_list after f336e42f73d9 ("dw_dmac: Move single descriptor
-from dwc->queue to dwc->active_list in dwc_complete_all") had already
-kept queued descriptors on dwc->queue.
+Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261115-submit-dw-=
-dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com?part=3D7
+dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com?part=3D9
+
