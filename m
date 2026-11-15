@@ -1,90 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.177
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794760607;
-	b=HdQqzSf7px6y8lYWmDRCKttWvSOP6rBZ8tqr8VjTqPLX84LGUWy7r2zp3H5DK8w+W83g
-	 Z0Y+rbVB0sWbR5Ux3BXhUlVCLh2+P4tNCTqAbay5L5TBC1OzYrmUi5FVaOIJrW7EEs2Gp
-	 XKQ+SObRbEG5O5xu5Ed8ld5pqArEK+uqevFwfaaAzITtpv93gMLn4Nh+5kss5bfhZoJlA
-	 mueSfwHvObt3rGYZOL0g0SmnpOgC3DDHHQPHNtdMf9+XMrmqYz60DEUJFiLyaZBK0EmeQ
-	 YGO1ONnbd3VGLJ627OO28FPFY3ZLmfgiFkelrTvC0hrdxyttOOR+Y8EaMyMvNt3Gk8w==
+	t=1794760615;
+	b=ukzUR9B4r9huOx4P+F0ETYBngqN0BhmiSL486soxNZvFCEofzfold6+kbHfKh9N2Tc1e
+	 IC97JmXLnK1gPxVP+EFKWknCC6zQC9NPxCgYWhMQb1Vjj8m/4vvwGbr/eapCge2HVTEX4
+	 1OefM9pKxyV4Wow1aurb3AfoexW1nPld4nueMzdQZOOb8wwVHDBPbWmdZWq/mhRUq50hr
+	 Z4c/SKLGcPbMmH4ZxfhXo3VbsAhLyp2vq/OACCUGPrZeuJeokUdsPVDH2KyFupRUe5vh/
+	 rRQr47M+zIx/rhADb8ZyRNMflRI/+uhfd5js+qccF80ICFkkBQXC64RCbotzH510UjA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794760607;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794760615;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-Id:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=KKb+d+ZaGGmKBJKMDQFVdGoOMQlb/jSR52em0tpyyQI=;
-	b=EO5P7F4k9IGrBsXrYClUyDTIT2pNcEdJUq4+e4xwcNk6sQAGr0jWZKQQT1/VsKo2Ej4t
-	 8LYIthPP7TzCopjzEVSofXhXcY1AAr3qdPUhHnYLXgcwCb0bQ7hES0WPE+b7LtEtWEPma
-	 KxcCFWpr0k9x6ZJ4UatqB7/wIUn20qJj3sOidVoPD24FP6BAWhDJkhqnyBkbt4kCECRGW
-	 S9UgPtCUE8CKCUiuZOeDVWW1Sx8ekQIQlouH2bthwkTKOe6qMdk+Z/j/Ua+JibDNVsMMG
-	 OUe2zhkHwouBmO526640WqAlYCWBDPRvp2jtFJCxuAeAuF7asDb4tA90TAGi7SsxSqg==
+	bh=jDvIewuHgSWZFSleCln3tAW0HbtV7RMR1BDCjjCoTXM=;
+	b=u6TAC7RZdH6wiFz2VAZiIZEUnVJq902e/WXaGNkrXYf05tmDVB4Pffc9pbVMeX7r/hcA
+	 PeIJpHqeiG7m3raV0SndIH86xqCrJ0YjC0EixmcIoRSNfy7ZJP/vsZY8Atad/4tDFnFI4
+	 tq7PAV5NSkQ6F0Nl92slrNK/L2cf9bC0m/yjIrtJz53pHQf7UAFvXiyxdxI8tSY1AgOxt
+	 pyqVZ/T+nyA5JF9HvWICt0ZH2U12xMIJUDSA0xWivYj1qT8Ox8gnAOwcPdq+ej/J9dgAV
+	 mAEU8tHgvvGprKzDDTzmBqSzN8MZKW4s0oq3/tScdB2ksl89HzXXFpC0GtM936EbY6w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ZtMIdJJy;
-	arc=none smtp.remote-ip=74.125.82.177
-Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nPZpNzcq;
+	arc=none smtp.remote-ip=74.125.82.48
+Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF85606A31D
-	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 16:36:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CAF85606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EACCD606A31D
+	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 16:36:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EACCD606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ZtMIdJJy
-Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-36f8cdd30beso3678392eec.1
-        for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 08:36:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nPZpNzcq
+Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1438d9363fbso1231615c88.0
+        for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 08:36:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794760606; x=1795365406; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794760614; x=1795365414; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:message-id:date
          :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=KKb+d+ZaGGmKBJKMDQFVdGoOMQlb/jSR52em0tpyyQI=;
-        b=ZtMIdJJyVm+mFG2Qv9z6k7f12/DNmDmsO0hrkDl1xmBBO+AfmzBkd5ZSYmcEIkOCS9
-         fFoMEhd5Lt+ReBKdDfshMrAZQH2Vu1R85HZpdyaWA34Q6VuyFVLPiLkPVgY7adFrN53I
-         Aq3RUp96k9/fGYLrPki2HnYNNx7CL9OzSVlNp+pDZMqVnOlbqc8IpiljpLqTf119Km3P
-         Ye3uwvS3cJC2oUx+GVMOp8D566vDFK7qyUCYNQvWwwslOwq830yZmC8l7M+kJa9yEHgw
-         hi3GKiJjoCobPiWvh3wokw36T/++/z+XzA991y22AF9OJoIfuNhzAaygoW084ro9TPkf
-         buNg==
+        bh=jDvIewuHgSWZFSleCln3tAW0HbtV7RMR1BDCjjCoTXM=;
+        b=nPZpNzcqkUlSgCf5mDI8d2gyF5iZq/6dT+exVsluyWfEFNJcPZ/aVwWMopDzHSJX5o
+         iqlizKQCM0ioeGkjmLPVuiSiIUbu0sOqYvACbfznYGXBSAOyGdEetGBEu0MLPpMLiux3
+         fV7x2YsSDtJGyjZfr8Rw2jOw/TkPKTYmO2Hewgiy7DZmDZC3z1Al0nya6Igwh/9pAJc4
+         S+G4Uv9TcvOQ0XvChZ6YoVujAd72bfGoWDUdm/C2Z21sMamT7zZ6EzXmis2ErLjcBi7e
+         LtLtdzly84th+8VU/aDS0H3xykSCaTcKFPyjJA37PC+eaR1gy1IZ12C9RVeQVJIjUOhT
+         sLNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794760606; x=1795365406;
+        d=1e100.net; s=20260707; t=1794760614; x=1795365414;
         h=content-transfer-encoding:content-type:mime-version:message-id:date
          :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=KKb+d+ZaGGmKBJKMDQFVdGoOMQlb/jSR52em0tpyyQI=;
-        b=wwU8GqRdzP/A1+hz2GPJBz5GHCNXImSN/uWbSGtd4u1LyN9TO/O9Y+RnQz/oSVVi0n
-         +mJ1Q6zouE6OMZS/5b6hQ/PqkhFS4BLiOn5OSafEOrHErn4PS0IlGBZ2dISwuvwfuT1X
-         5HSrZZZLQC7SF8bj7CbBMCgUfM7MJ3dkYE/qfZNiCd8LviPQQ9+2ILf+Q2QeBlE/fQj2
-         KSP4pcRvUyGoBQjqi9Q7xi3XD3l/CDgyTunGKg/nhKXqp0gW68bjMatuBrWjcjv82XlP
-         bC/Tbl7niJu4YcF2GrnBlO56gxhsOuOAgkwGWhzuuNck3p2DyPXjysv162VTGBPI2xZD
-         g9nA==
-X-Gm-Message-State: APuU4Z80TqlYdXlVRZGL37o23xDQ7FNrDhjxwph7mV25AfyK88z4NAuf
-	tXMxHpzfCEivyJxMq4wE+mbPaer7E4mEC4ckmx3Lqhf5h7O6kfHHMv9C
-X-Gm-Gg: AYBFou39hwxAUGj711ArLug+bfQubXM69LAnCJnICTsUbPXeZeKPt6bqav/TWKGADhc
-	vITTE2Ftsi3TdNCN0UYFVcT47uRTumEqGx3r4YgqYUY617+zDiQW8J0pBOnGBLuVLoKusECLzxW
-	Dp7h9Jy293k7SRUrw5E/7ETNljbiKKeKpOA+Y8BktvO3cDOn6wapfT6VDBi62oaqGF+aiS0RBVj
-	gJYj46OegBiz3yCTsv6+KNEDkxlr1dAS9wggA5PIpkEDp8+hAq4vz3Br0+OJVLoEW3tJAh/Zt8t
-	6cMm/h8oVA9Y2xhislip4IBm3ds53m5H1yLhOzARgSPtwEuHjJjXXAx14HzJ1vrvjUDQOZ0xSoW
-	iKg67P3WH7Ppg9P/6F0X/knnNFb0gF+iy6WEQYdLbbW1HsRaD/Vb4ObuwxSqoucDMyY6ELW0Lo3
-	PkgBykibEnLO1fsjtGCwrSI+4SdoNAtVuyyccY93erbYSdwM3fPWaSrEhI0gepxsmt4IFnvlJqQ
-	fU1p6Q3wXnJEd+qIHlD72Cwrlqf51f7dEnpvOpXwa0XA4POdyUsoB24DMPeDGP2vVGo6K1eeSCf
-	cf+y/QkcKSMzUrUoVUByS3M0FUO9Win+7bfuvpQrBgM6ZMSC4ZFNaIEa6ANIBJn88fPh
-X-Received: by 2002:a05:7301:1c18:b0:375:b560:a323 with SMTP id 5a478bee46e88-3796365f033mr7898443eec.1.1794760605833;
-        Sun, 15 Nov 2026 08:36:45 -0800 (PST)
+        bh=jDvIewuHgSWZFSleCln3tAW0HbtV7RMR1BDCjjCoTXM=;
+        b=JebI0+Q9bw1V00XI9wEb0+AIzhuSXvcJGWBiM2LWgeHcOWOeav9ActtR76PK9cn+uy
+         pyD0JVwzIzCzNnmw5sJym9Lr71PRfvR89syIx5vdSsKj7+iStBNmnYfOYrY04jp/z7Le
+         B5IVVWOGLbrdv20IMSZhNBijCcqNYrtY4aLOWevyWskEvWLurmtq4bV7342EBi0ac4MP
+         qhRfi17EiCV59ZtvyTUJeKY8RuH7jQmDPzRcYbVOZMmtWKNg7kLaFZfh+9PJmWeWxvU6
+         sOXmxoiJVOts737LFgpWCEkriSdGqG/Rq5xdviTwRziWmzDBxfh4CGCt8AltGScIKBYg
+         gs7Q==
+X-Gm-Message-State: APuU4Z+55mnYukbYU7JZ3XUXIXQ+/ul/OXl0gsh0O/he7ihHLO+GvPy5
+	dyOHdTOPmfBO+eJqBwe13KjZFmV+MlNLFpXLWLogJl5cvTKIK64kJ+OanlnjmESKoqk=
+X-Gm-Gg: AYBFou0Rvb8NkvpCz8ADwigJsHU5P+0O0JfslqpHw3owBw2eTSnU7T7xDEWmpouGtYY
+	9QqLyA0nsf4iUp3e390EFCGivNG9KHoN4jqtKLfTtQUenWYKKjZBKRDFOUjLUQygtQ2L/suuXWz
+	KsaM1X8oaGO+lh4Zsntwzte1UWAxe/oeYJlCa3RsgYjx+XWnUmLL99eOCf2M38MSG3vSUnHqZo7
+	yhqoF0E1gej3ulixJRcovbcwkckmf43BPmIPAan0oGxEHTjcje8+IYfcmfvD6Tnge/GKcMxZB19
+	LnG/NJdfTUhsFJ0Lu/noUQVO6oqlTnyghIuy+dyUGiOlw5//vK9IrCM1P6sy9oj/KXfCtnkQgJ7
+	MGTTyL0Y2qcuhGC20STNfDxLkKucHvkLDCeraI0tP3X64+ahw5Pr5T6Z695yQneD152aTY0VEHy
+	5GWdm/xXZ03eTogVZMo5D9l1qqymIYSrHEHCcRVAn9Gj9c4cACB9yDs3DS7Y9Gse3Eid1QYWbHp
+	mkrxfoogOGxpnPhboTck2sewziT+vUu41Atvi7P+FwYjvpwo9ylJYIIpgTbj8HuJFu3Aq6gbZxY
+	zHzTWDijsnec2Oys6BTfvdeSczWdQEqbto7BM8CClT7ZSpI8WSOdxlZHyHCuPcO0Y0/Q
+X-Received: by 2002:a05:701b:4549:20b0:1b4:facd:5311 with SMTP id a92af1059eb24-1b4facd5aacmr9201605c88.8.1794760613916;
+        Sun, 15 Nov 2026 08:36:53 -0800 (PST)
 Received: from youngkk-vm.localdomain (67.216.200.102.16clouds.com. [67.216.200.102])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-379553316f2sm27292732eec.9.2026.11.15.08.36.43
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50313d8f5sm36028735c88.3.2026.11.15.08.36.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2026 08:36:45 -0800 (PST)
+        Sun, 15 Nov 2026 08:36:53 -0800 (PST)
 From: Cheng Yongkang <teel4res@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [BUG] tty: TCIOFF/TCION under TCOOFF lose the character on pty and vt
-Date: Sun, 15 Nov 2026 08:36:38 -0800
-Message-Id: <20261115163638.226086-1-teel4res@gmail.com>
+Subject: [BUG] tty: n_gsm: tx_work can be queued after gsm_cleanup_mux() flushed it
+Date: Sun, 15 Nov 2026 08:36:46 -0800
+Message-Id: <20261115163646.226207-1-teel4res@gmail.com>
 X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -100,31 +100,64 @@ Content-Transfer-Encoding: 8bit
 
 Hi Greg, Jiri,
 
-I hit a small corner case in tty_send_xchar(). It only happens on a
-pty or the vt console after output was suspended with TCOOFF, so it
-may not be worth fixing.
+Before anything else, a question. In September you said that n_gsm
+should only be touched by people who can test it and have a system
+that uses it. I do not have such hardware; I only tested with a pty.
+Does that still apply to bug reports like this one? If it does, please
+ignore this mail and I will not send more n_gsm reports.
 
-Under TCOOFF, tcflow(TCIOFF) and tcflow(TCION) still send the STOP or
-START character on most ttys. serial_core UARTs do it through
-->send_xchar(). Drivers without ->send_xchar() go through
-->write(): __start_tty() does nothing while tco_stopped is set, but
-usb-serial, cdc-acm and u_serial do not check the stopped state in
-->write(), so the character still goes out.
+The issue needs CAP_NET_ADMIN to attach N_GSM and a gsmtty close
+racing with the ldisc being removed from the base tty. The window is a
+few instructions and I could only hit it after adding delays, so it
+may not matter much in practice.
 
-pty_write() and the vt console's write return 0 while the tty is
-stopped, though. tty_send_xchar() ignores that and returns 0, so on a
-pty or vt the call reports success but the character is never sent,
-not even after TCOON.
+gsm_send() adds the frame to tx_ctrl_list under tx_lock, drops the
+lock, and then calls gsmld_write_trigger(), which checks
+dlci[0]->dead and calls schedule_work(&gsm->tx_work). If
+gsm_cleanup_mux() runs between that check and schedule_work(), it sets
+dlci[0]->dead and calls flush_work(&gsm->tx_work) while nothing is
+queued yet. The work is queued after that, nothing cancels it before
+gsm_free_mux() frees the mux, and gsmld_write_task() then runs on
+freed memory.
 
-On v7.3, with TCOOFF in effect, TCIOFF and TCION returned 0 on all of
-these. 8250, ftdi_sio, cdc-acm and u_serial delivered the character
-before TCOON. pty and vt delivered nothing, before or after TCOON.
-The code is unchanged in next-20261113.
+On v7.3 with KASAN I added a udelay() between the check and
+schedule_work() in gsmld_write_trigger(), and an msleep() at the start
+of gsmld_write_task() so that the worker runs after the free.
+Closing /dev/gsmtty1, which sends DISC through gsm_send(), while
+another thread set the base tty back to N_TTY gave:
 
-tty_send_xchar() could return an error such as -EIO when the write
-took no byte. Since usb-serial and u_serial also return 0 when their
-FIFO is full, that should probably be limited to the case where the
-tty is stopped. I can send a patch if you want one.
+  BUG: KASAN: slab-use-after-free in _raw_spin_lock_irqsave+0x40/0x60
+  Read of size 1 at addr ffff888111b183d8 by task kworker/0:2/791
+  Workqueue: events gsmld_write_task
+   _raw_spin_lock_irqsave
+   gsmld_write_task
+   process_scheduled_works
+   worker_thread
+  Allocated by task 9384:
+   gsmld_open
+   tty_ldisc_open
+   tty_set_ldisc
+  Freed by task 10:
+   kfree
+   mux_put
+   release_one_tty
+  Last potentially related work creation:
+   queue_work_on
+   gsmtty_close
+   tty_release
+
+That was one hit in 85 attempts over 60 seconds. Without the delays I
+did not hit it. n_gsm.c is the same in next-20261113.
+
+cancel_work_sync() cannot go into gsm_free_mux(), because mux_put()
+calls it under gsm_mux_lock with interrupts disabled. One option is to
+set dlci[0]->dead under tx_lock in gsm_cleanup_mux(), and to make the
+dead check and schedule_work() happen under tx_lock too, so that the
+flush_work() after it is the last one. __gsm_data_queue() already
+calls gsmld_write_trigger() with tx_lock held, but gsm_send(), the
+CMD_FCON and XOFF paths and gsmld_write_wakeup() do not, so the lock
+cannot simply be taken inside gsmld_write_trigger(). I have not
+written or tested a fix.
 
 Thanks,
 Cheng Yongkang
