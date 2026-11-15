@@ -1,57 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794766918;
-	b=MTfEU6fBJ1wEhK+nJ0zeSY+jfadngzJ2ZYlekd8waUMQyhSNm0I9dfgUP0bmfT9yqOEV
-	 FhMRXV8BSx3La6hXRyOTASC/iSWy++yOcd3/kC6cq/XC3uFPMepnEQX61pOKhkpvmlLQP
-	 Vp3OEsXRLVDWZUtNb7ybk864grtSS+g3wcDNDrxDeIxMIFqbA8Zjb//pAohSJMyQAWjKG
-	 IJcWcNrxbkMOdCm1AQrYSm2cWdkyytUZBVv3u/gKypx4icn5NcFeF8KHaysIu6luIgckC
-	 rG/L4QuUXIKzqqw7r0TU40cQuJdoujgweIzNwqIvnopZd0Na/NTisUfUtOdI0zl+ZFQ==
+	t=1794781692;
+	b=A2KzSuHYuieHf0tmhipugUZNj3I3XtNteYw44l0mzoUSk66JmHAW+11Xnh5A+oOtZj5D
+	 txpBJK+1ECA9taQ97hOP5yvXfJ0hGAOtE46jXLff6Kd4+JpsPGn/HK0nX5kQcicTT59Yx
+	 Wk2pSfMtKtatWOwld6YjTHvy3P3CCFxJ7Ea0Gfm1vqkpeSUa+l05icI5r7pqT/ZAa/oPB
+	 uKBe3cs+FHbFt+0/levNe/UYb0qYhG8bbarlyh388MVytQjesrUc3/SQtab6ajCbk/9JD
+	 0pgAr+gdjdGXPHxHOHzokOoCEJZV3Xk9t5UOHnJxusmYTV2/SE3MVNZDxSfBUkjuAtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794766918;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=/KtRSnRxcwxjiYk2lhSOwFirttb+T7tQJSggYd1ysJI=;
-	b=pKYwICxBh/KMGwsoChWZVzeTA+fX2JFwxvSyFbH+WaqwtSVlfmQwohIMal0vlRqyFG8U
-	 Stn2jriplYNprIx3IVTFRxVDvBZgCH+z3Ykwb3goghoGTIH+M84yu5pb7qPw4jHrFKlgC
-	 sZvpZUb+eK3WL1lYtuPDnQN+NefB+RAL4nYiS/0gMf+S/YTGuvBAGJGnlDajDN1afFCbw
-	 HeuDVMkhm9Etsx0d86yCrFkjjpzxGRVt2Ex/GG+MbeFkn7i7rJpGOcZxPAfPHi+s3tTiZ
-	 EwE9/MNlb/XRSqqd8TusqLGtFqL+p9wXaqTqeIFkYhClslTHGv4Q40LOMWkLZtv9ILw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794781692;
+	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=TEYwC0yd2Q6rJp4otTipe3rkKTLSLdWxD7WurCB1Zgo=;
+	b=xde6cpuvIBXvXL+FVEY4KsKi1tIeWdcR4Ce2uS6HphEI/dFJAA2yD5v4T7LQL8N+y9R9
+	 rstRJGMM6AosPU1IGJqdRx4ebU+P6OoapSjLVrbAmyd56K4kp9/RH/1KyTERi8OCHlclc
+	 fPw3q5lWJdI/rK5OUgSA2EZ64BkUI1QG7GW2piu2MyodERjDQwg/t5K4zO7Lkgw8P4Avr
+	 KzhxmX+GA2E/9s6fcv005+xwO+fvaRWnbaq1p/mQkUDqVWSGuevSsbsVqM5uIAiTVlrjl
+	 jq0tqj37SZCkEF7EbPMZhCAZsqX3BqhcBkr6aqGE9LyZT3cTMFAPfkhDaAzAlSBfD7Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eSi1B6OX;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NWVzejUX;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F00D606A323
-	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 18:21:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07866606A331
+	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 22:28:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eSi1B6OX
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC2251F000C4;
-	Sun, 15 Nov 2026 18:21:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NWVzejUX
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F031F000C4
+	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 22:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794766917;
-	bh=/KtRSnRxcwxjiYk2lhSOwFirttb+T7tQJSggYd1ysJI=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=eSi1B6OXZfxjD4xsh0WLomZr4OYlm1/VLBbsgWenCKPIrxubzd2TsQExtmmGn+vfn
-	 raASQeE4wvQuAxcT7N52osGAry6VlKXu8RCiWPOt/sp6spxQN6acN9WVQthDj48TIJ
-	 WrhhRGakH4pMIgfokLXASRd8mst28mJJE8z48JwAukaOSvMM/akkyXx9GzE6zrbw3i
-	 ijpNPtp2C1Y8Jo6baRt95nOHUiRUxN2po4UUB0CcpzjDnvUmAPDYdFWicPtZBZ8X3E
-	 sz5hCvgZGj+c1oxuTRUCXgvNL6ITsIUBhdPhuYcTooOxn9QqJS4KfojndKg9wGqU2r
-	 GKV8OX3PMUgcg==
-Message-ID: <sashiko-outbox-215709@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/2] serial: fsl_lpuart: Enable DMA for TX in console
- mode
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Jonas Juffinger" <jonas.juffinger@liebherr.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261115-fsl_lpuart_8_bit_break_detection-v1-2-b7ac2307dd55@liebherr.com>
-References: <20261115-fsl_lpuart_8_bit_break_detection-v1-0-b7ac2307dd55@liebherr.com>
- <20261115-fsl_lpuart_8_bit_break_detection-v1-2-b7ac2307dd55@liebherr.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sun, 15 Nov 2026 18:21:57 +0000
+	s=k20260515; t=1794781691;
+	bh=TEYwC0yd2Q6rJp4otTipe3rkKTLSLdWxD7WurCB1Zgo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=NWVzejUX9qF0XoM4VmEyXPZSxIG5Fs6unNadjPRXKBSH+vjBwWuW9IwsP2UD1Jyxh
+	 N4DWmQdek5RNSEdOLJueNW9tvqDthvnNazJBw0TiF7oKW+Ke/20zMucQiLpYLKA5nO
+	 3jDVSQIj1Uzg7SYszycMfFEzP6fakMh9E/SFLUMyyl3Pw1POrN19p3pgZdlMG1hBfl
+	 uDu2Fs2NFFfeBArnwiJLuecqZC8ijTgMvmd4rCgRDyv0DuRa4QKIeDtU1FGrbDm1fT
+	 9x3ewZn0T3RJPSLbtwwWddaebGc7zSZ3YdLKxYfaWHR5eABuub1dS5nx5aZcMg9Q0s
+	 IUuDfWmSm/WOw==
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5bfa65c8617so1895707e87.0
+        for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 14:28:11 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AL+hErGEvoo9WmVERCihzmbp22tM60Qc2qVc1nQrzUb8zAyuVGYPL/DqwLSDtBrPeGv0PWqX13uA24lDmE3i6PM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9jlsvIPJBuVcneGnic3/Lwot/eZNzamm3+LhQIniyO6DlWFXGK
+	7cGdscTj32m5UntExKFAnXX33+CCvES2OROrXgw19PydsZ4PUugSNe/bQuxRfOtdd6JkHuAG3Tb
+	mHE1fnrfGhoW3JytBcO3vyigCK9OO3TI=
+X-Received: by 2002:a05:6512:3f04:b0:5c1:4cab:2d03 with SMTP id
+ 2adb3069b0e04-5c170b2ecf5mr3075860e87.63.1794781690375; Sun, 15 Nov 2026
+ 14:28:10 -0800 (PST)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,153 +58,64 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+References: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com> <20261114-b4-cs75xx-v7-4-8f17f38821b4@gmail.com>
+In-Reply-To: <20261114-b4-cs75xx-v7-4-8f17f38821b4@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Sun, 15 Nov 2026 23:27:57 +0100
+X-Gmail-Original-Message-ID: <CAD++jLnu=ycR+_ZXW2K54oeDJMCfybdSUDVOTJ5B=rFTiOnjLQ@mail.gmail.com>
+X-Gm-Features: Aa3M54oN7V3Y8V-EQUC0vRGZ-PhoQTaP6aUjOIuJowZCATlHdfiiGxoj1XFGWNs
+Message-ID: <CAD++jLnu=ycR+_ZXW2K54oeDJMCfybdSUDVOTJ5B=rFTiOnjLQ@mail.gmail.com>
+Subject: Re: [PATCH v7 04/10] ARM: goldengate: Add support for the CS75xx SoC family
+To: filipp.dunsky@gmail.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Jason Li <jason.li@cortina-access.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for your contribution! Sashiko AI review found 3 potential
-issues to consider:
-- [High] serial: fsl_lpuart: TX DMA race with lpuart32_console_write()
-  on 32-bit LPUART
-- [High] serial: fsl_lpuart: UAF of dma_tx_chan in
-  lpuart_tx_dma_startup() on resume
-- [Medium] serial: fsl_lpuart: console port.lock deadlock via dev_err()
-  in TX DMA paths
-It also noticed 1 related pre-existing issue this patch does not
-introduce:
-- [Critical] tty: serial: fsl_lpuart: double dma_release_channel() in
-  lpuart_remove() [1]
---
+On Sat, Nov 14, 2026 at 2:41=E2=80=AFPM Fil Dunsky via B4 Relay
+<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
 
-commit bca86d1a502b49317e75f113fc0d208cb42b275f
-Author: Jonas Juffinger <jonas.juffinger@liebherr.com>
+> From: Fil Dunsky <filipp.dunsky@gmail.com>
+>
+> The Cortina Systems CS75xx ("Goldengate G2") are network processors
+> with two Cortex-A9 cores, an SCU, GIC, the Cortex-A9 global and private
+> timers and a PL310 L2 cache controller. The family includes at least
+> the CS7522 and the CS7542; the CS7542 is used, among others, in the
+> Securifi Almond+ router.
+>
+> Apart from the vendor this has little in common with the Cortina
+> Systems Gemini (SL3516/CS3516) supported by mach-gemini: Gemini is a
+> single ARMv4 FA526 with Faraday peripherals (FTINTC010, FTTMR010,
+> FTGPIO010, a 16550 UART) built for ARCH_MULTI_V4, while the CS75xx is
+> an ARMv7 MPCore whose UART, GPIO, interrupt controller and NAND
+> controller are different blocks. It therefore gets its own directory,
+> named after the Goldengate codename like in the vendor kernel. The
+> Kconfig symbol, ARCH_CORTINA_ACCESS, covers the whole family and is
+> named after Cortina Access, which last sold these chips and also makes
+> the newer 64-bit parts.
+>
+> The generic DT machine is sufficient for the platform, so only the SMP
+> bring-up needs code: the bootloader parks the secondary core in a WFI
+> loop that polls a global software register, so boot it by writing the
+> physical address of secondary_startup to the register named by the
+> cpu-release-addr property and sending it a wakeup IPI.
+>
+> The CPU is a Cortex-A9 r2p1, so select the errata workarounds that apply
+> to that revision and can be enabled on a multiplatform kernel. The PL310
+> is r3p1-50rel0 (CACHE_ID 0x410000c7), select the workaround for its
+> erratum 769419 as well.
+>
+> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
 
-serial: fsl_lpuart: Enable DMA for TX in console mode
+Looks good to me.
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-This commit removes the console port check in lpuart_tx_dma_startup() so
-that TX DMA can be used on LPUART ports operating as a serial console.
-
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
-art.c
-> index 5817c47e4db3f..e569e2c6ffe9c 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -1765,9 +1765,6 @@ static void lpuart_tx_dma_startup(struct lpuart_por=
-t *sport)
->  	u32 uartbaud;
->  	int ret;
-> =20
-> -	if (uart_console(&sport->port))
-> -		goto err;
-> -
->  	if (!sport->dma_tx_chan)
->  		goto err;
-> =20
-
-[Severity: High]
-Can enabling TX DMA on a console port cause concurrent DMA and polled CPU
-writes to the TX FIFO during console output?
-
-On 32-bit LPUART, lpuart_tx_dma_startup() enables hardware TX DMA requests
-by setting UARTBAUD_TDMAE in UARTBAUD.  When printk() invokes
-lpuart32_console_write(), it only masks interrupt bits in UARTCTRL and
-never clears UARTBAUD_TDMAE:
-
-drivers/tty/serial/fsl_lpuart.c:lpuart32_console_write() {
-    ...
-	cr =3D old_cr =3D lpuart32_read(&sport->port, UARTCTRL);
-	cr |=3D UARTCTRL_TE | UARTCTRL_RE;
-	cr &=3D ~(UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
-	lpuart32_write(&sport->port, cr, UARTCTRL);
-
-	uart_console_write(&sport->port, s, count, lpuart32_console_putchar);
-    ...
-}
-
-If a TTY TX DMA transfer is in progress when console output runs, both the
-DMA engine and lpuart32_console_putchar() respond to UARTSTAT_TDRE and
-write to UARTDATA concurrently, corrupting serial output and potentially
-overflowing the TX FIFO.  On 8-bit LPUART, lpuart_console_write() clears
-UARTCR2_TIE without waiting for in-flight DMA beats to finish, which
-pauses active multi-byte DMA transfers mid-stream and interleaves console
-characters into the TTY stream.
-
-[Severity: High]
-Does removing this check cause a use-after-free of sport->dma_tx_chan on
-system resume when no_console_suspend is enabled?
-
-When a TTY port is opened and then closed, lpuart_startup() /
-lpuart32_startup() allocates sport->dma_tx_chan via lpuart_request_dma(),
-and lpuart_shutdown() / lpuart32_shutdown() releases it in
-lpuart_dma_shutdown() without clearing the pointer:
-
-drivers/tty/serial/fsl_lpuart.c:lpuart_dma_shutdown() {
-    ...
-	if (sport->dma_tx_chan)
-		dma_release_channel(sport->dma_tx_chan);
-	if (sport->dma_rx_chan)
-		dma_release_channel(sport->dma_rx_chan);
-}
-
-When console_suspend_enabled is false, lpuart_uport_is_active() returns
-true for the console port even while the TTY port is closed.  On resume,
-lpuart_resume() calls lpuart_hw_setup() / lpuart32_hw_setup() ->
-lpuart_tx_dma_startup() without calling lpuart_request_dma().  Without the
-uart_console() guard, lpuart_tx_dma_startup() sees the non-NULL dangling
-sport->dma_tx_chan pointer, passes it to lpuart_dma_tx_request() ->
-dmaengine_slave_config(), and sets sport->lpuart_dma_tx_use =3D true on a
-freed channel.
-
-In addition, if the console port is open with an active TX DMA transfer
-when lpuart_suspend() runs under no_console_suspend, uart_suspend_port()
-returns early without draining TX, and lpuart_suspend() terminates
-sport->dma_tx_chan and clears sport->dma_tx_in_progress without unmapping
-sport->tx_sgl, leaking the DMA mapping.
-
-[Severity: Medium]
-Can calling dev_err() in the TX DMA error paths deadlock on
-sport->port.lock when the port is a console?
-
-lpuart_tx_dma_startup() -> lpuart_dma_tx_request() and lpuart_start_tx() /
-lpuart32_start_tx() -> lpuart_dma_tx() all run under sport->port.lock:
-
-lpuart_start_tx()
-  uart_port_lock_irqsave(&sport->port, &flags)
-  lpuart_dma_tx()
-    dev_err(dev, "DMA mapping error for TX.\n")
-      ...
-        lpuart_console_write()
-          uart_port_lock_irqsave(&sport->port, &flags)  <-- spins forever
-
-If dmaengine_slave_config() fails in lpuart_dma_tx_request(), or if
-dma_map_sg() or dmaengine_prep_slave_sg() fails in lpuart_dma_tx(),
-dev_err() synchronously calls into the console write path and deadlocks on
-sport->port.lock.
-
-[Severity: Critical]
-This problem wasn't introduced by this patch, but can lpuart_remove() call
-dma_release_channel() a second time on sport->dma_tx_chan and
-sport->dma_rx_chan [1]?
-
-As noted above, lpuart_dma_shutdown() releases sport->dma_tx_chan and
-sport->dma_rx_chan on port close without setting either pointer to NULL.
-If the device is later unbound or the driver is unloaded, lpuart_remove()
-checks those still non-NULL pointers and calls dma_release_channel() again
-on the freed channels:
-
-drivers/tty/serial/fsl_lpuart.c:lpuart_remove() {
-    ...
-	if (sport->dma_tx_chan)
-		dma_release_channel(sport->dma_tx_chan);
-
-	if (sport->dma_rx_chan)
-		dma_release_channel(sport->dma_rx_chan);
-    ...
-}
-
-Clearing sport->dma_tx_chan and sport->dma_rx_chan to NULL in
-lpuart_dma_shutdown() would avoid both the double release in
-lpuart_remove() and the dangling channel pointer across port close.
-
-[1] https://sashiko.dev/#/bug/linux-4b237987-ed3a-4504-92ea-6f92bae6e727
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261115-fsl_lpuart=
-_8_bit_break_detection-v1-0-b7ac2307dd55@liebherr.com?part=3D2
+Yours,
+Linus Walleij
