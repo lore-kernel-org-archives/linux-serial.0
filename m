@@ -1,57 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794817795;
-	b=Uj0Mgw1mL9ox2Dzmr1fil8atFdjCzzY1DpDU/ghlD5MQfRLDs5SL8xrprbwOZ/N0z+i/
-	 Mfcr4PRMUaBjPkMEWxleS/qTRZcEz5oC34yDu83I6+6cAqj7UypnRAwqSKUun6fa81ZBp
-	 wIeJ6HzR+/hPs3vfWIhtEuN0GqVvXWyLz5iILKIocSslcxBMnMQaltc1FjwxolaSRSlU8
-	 +35YSvcaAgOmo06mfbfY6F/A+X0lOhNhlc/3nQOIGA1grngxwvbqCddoNeJOeAo75nRvQ
-	 lvk4wdmDuAmCWktqiw7bcvKUUbM3WjZIkJ5x5X8TBof/8QRcrA5aWY3G9foksyQGqFQ==
+	t=1794819906;
+	b=KZZCwuXmHc4d3MOJvLoHO40qIfTppbRFWrwxY4yrN/qP5HVowE+o5l9Hu/S5CalJR96G
+	 N9YSZukVkBpqQxe4PkzVdg2tN7RAILR2RKUbMLm/5Uns/vg3uK5OQSkaBVq1WxtvI5Kje
+	 2XlO3Ityl7DR4SSvdbQLCSYCaXEQ41kf3/knGRFLDvJDcyTP8P+m3kcAcT7a2RxVKUVzl
+	 2nZZ9s02HhBbvZmG4mANYWDWgNlb8/owsQYgwJQygDen/c9romliz9p3SuqEmU3O+1d4K
+	 i/fyk+Nr3q4JfwD+GL2AyDONPjKxIDeDhRW3p1aMPeLxgj2caTrhtAk/ugKF8exCUKg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794817795;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=QkeanQyg45ZyNLmBoydWSV0J6Mj6F+lVtkcxuB94ObI=;
-	b=O/T3f1HdqJbXR3HbgiQVtyaOGsAMDk46/YQeTMchejkUfzL0aZa0KxBNElZN1i+oAB7i
-	 sq+PBFjB9KCBEGcmCzzdNHz4LIQnL0cSFIuL6zzoqfkCU0hAeCxqHWQhfwL8IrZ+5X/Qr
-	 TKBS4pi8EFnHWi3YLv8KJdWcyyPrm4uIZMxotQerzeh1Cci5GRl0WN4bKOi+vn0o1kIQK
-	 0yBYUKgOZhEXd0rkKEfhfhSst8oSVLpGbTH+iL/2FwWvPXqnk3i08K4AIu0jC1yULH/n0
-	 UdEEjwpuqWLqhw2yOEAcfkhBwTohU1NNOeSqOirroiktI3HjUJoDA6xi//THt69+HOw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794819906;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=S/BVf+wCPpxgbONwK8YVViVJ5dU2RaSmQAyYCoDGIfw=;
+	b=U7Q+KHkrVA4CJCUsm2UmaGFAjLpL0GIdCnDA2UkK9TG0WD5nysU3H6ModsnAr+i5gXHj
+	 SGn5h7do9WAnOUEggFXUYSy7EysRhaVhDKdDevdT6deOKVnpDYiTTGIOxi8uTXVWWgbFX
+	 wr3+6IwCXYegCI0fVJTxGgYbVOB7Lbcw0DtIBXRRmrHhT8rhyud8NRG3R1SJaB97GWoTm
+	 PV055EM28vJiZp3VdMRJF5NxB/uvn72HJXJyPC1BiOgG0G6c9uURoS/E8kbJJMzmi+Yv1
+	 9xPVuDCOPqUZZ3Cq4POUPbeuVweDywKittiAE5aqFNxjMfraMZlPeX6wwdAO/RoG+bw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OenX54h6;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Re5a36VI;
+	arc=none smtp.remote-ip=198.175.65.19
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E58F0606A31C
-	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 08:29:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4D99606A323;
+	Mon, 16 Nov 2026 09:05:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C4D99606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OenX54h6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E1001F000C4;
-	Mon, 16 Nov 2026 08:29:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794817794;
-	bh=QkeanQyg45ZyNLmBoydWSV0J6Mj6F+lVtkcxuB94ObI=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=OenX54h618q3uHZwCQwtTfa+HE95JRH2lot72iKzUSXzh5HDU7zBpgP20XKqfPwYj
-	 Be8V6f9CpjMO8Uwi0R+1Phwo5MMuqksqFBvCQkHnZZE2z/gfZo0rooEFX9SiCEWwtl
-	 ec/rFudHqQpa+VcvVubEc65zZ4HmeD+Ia8TguYZNLovEtiWlDhm+W5EW5kLUEN29SU
-	 fAsAv2IUCDYpu7TwCFeqB5z+ZNpSx/cDUT7efMWvjqyDtUMFRu26Yr6gdPVoX6tSyo
-	 u0FXTntMxEC1nBMba9HxCOg8FfZXETywUczPh8FeZDInfoiv/KsDyP2oxLmw4s9Udc
-	 KkXflOzXRWIIQ==
-Message-ID: <sashiko-outbox-216537@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3 1/2] serial: core: do not hold the port mutex while
- waiting for references
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261116-serial-core-remove-deadlock-v3-1-899237225221@vaisala.com>
-References: <20261116-serial-core-remove-deadlock-v3-0-899237225221@vaisala.com>
- <20261116-serial-core-remove-deadlock-v3-1-899237225221@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 16 Nov 2026 08:29:53 +0000
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Re5a36VI
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794819906; x=1826355906;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y/DPPHEqSVMRWKFHVM9/QU1bU+d1l3ZEah+OesLhmls=;
+  b=Re5a36VIpWmPdH5Upho8POT2bTiJqxW0NKznw+Q9v7TorW6JGn0wnhQX
+   tFCLcp1KX+vO5UjX/W2ei3frfWSPaxYdXdo046yTyhikoX7EX8T8jT9GO
+   G447q1JUVKlYU8wmOC489uCJQXt0/5xzJvfMScs1M31dl7+Xvx7zd9qh/
+   o5kWMNEZEfjm2uPtzsJl/1lILHLTXZfvsubAPe5zrP+ZXnBNY0H8g5jEP
+   erDblLxsjrONSO2VEGUiy7WZiGOIXb6OBIUJgLxlew1xreottHknKoCMv
+   u2KgfhIoxALTcd3aKWSZ19hN7eZ3Tqt0Lw371OC0VvhkNC25sspJJ7R1+
+   g==;
+X-CSE-ConnectionGUID: 8X9rc4NwQSG67fQPD4Meqw==
+X-CSE-MsgGUID: DFUW/vNhRmKSAXlzpFhLmw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3590349"
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="3590349"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 01:05:02 -0800
+X-CSE-ConnectionGUID: fjTKKebzQ/2t8qyYxsLWTA==
+X-CSE-MsgGUID: GWux2NoqTu2G/M9FPUMXMg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="9824387"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 01:04:58 -0800
+Date: Mon, 16 Nov 2026 11:04:56 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Frank Li <Frank.Li@kernel.org>, Dan Williams <djbw@kernel.org>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, stable@vger.kernel.org,
+	Frank Li <Frank.Li@nxp.com>
+Subject: Re: [PATCH v7 00/10] dmaengine: dw: serialize completion and
+ termination
+Message-ID: <avrHOJ-fVZOO32bI@ashevche-desk.local>
+References: <20261115-submit-dw-dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,40 +86,42 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261115-submit-dw-dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-> serial_core_remove_one_port() takes the port mutex and then waits for
-> the uart_port_ref() holders to drop their references. Since commit
-> 8ca59f7baee7 ("serial: fix ioctl hangup race") uart_wait_until_sent()
-> takes the port mutex on every poll iteration to check for the hangup
-> before it touches the hardware, while holding its reference for the
-> whole wait. A tcdrain() in flight when the port is removed therefore
-> deadlocks: the removal holds the mutex and waits for the reference,
-> the drain holds the reference and waits for the mutex. Both tasks sit
-> uninterruptible, and the port is unusable until a reboot.
->=20
-> Reproduced by unbinding a UART driver while a process drains a few
-> kilobytes at 300 baud: the unbind blocks in wait_event() under the
-> mutex, the drain in mutex_lock(), and reading the driver's proc file
-> blocks on the same mutex.
->=20
-> Drop the mutex around the decrement and the wait. The decrement is an
-> atomic paired with uart_port_ref() and uart_port_deref(), which never
-> take the mutex; the clearing of the port pointer stays under it, where
-> uart_port_check() readers expect it. Between the hangup and this wait
-> the removal already runs without the mutex, so a mutex holder seeing
-> the released port is not a new state.
-> uart_wait_modem_status() takes a reference and then the mutex in the
-> same way, with a smaller window, and is covered by the same change.
->=20
-> Fixes: 8ca59f7baee7 ("serial: fix ioctl hangup race")
-> Cc: <stable@vger.kernel.org>
-> Reviewed-by: Johan Hovold <johan@kernel.org>
-> Tested-by: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+On Sun, Nov 15, 2026 at 12:19:33AM -0700, James Hilliard wrote:
+> Keep client callbacks in the controller tasklet while preserving polled
+> completion. Serialize descriptor ownership across completion, error
+> recovery and termination, and wait for callbacks before a client reuses
+> its resources.
+> 
+> The series first serializes completion, error recovery and cookie
+> accounting with termination. Separate patches extract hardware-LLP
+> residue calculation, calculate it in the status getter, simplify completion
+> handling and report queued residue. Channel release and
+> device_synchronize then gain tasklet draining before the final patch
+> adds deferred notifications and shared completed-descriptor cleanup.
+> 
+> The series adapts Serge Semin's channel-restart and callback fixes [0-2].
+> Polling continues to advance cookies and software-LLP blocks, while client
+> notifications run from the controller tasklet. Synchronization preserves
+> pending tasklet runs from other channels.
+> 
+> Based on dmaengine/fixes at 6628e7d4c6b2.
 
-Sashiko has reviewed this patch and found no issues.
+Most of the patches refer to Fixes tag as an initial commit 3bfb1d20b547.
+But some are not. I think the Fixes tag(s) in many patches in this series
+is (are) broken and/or incomplete.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261116-serial-cor=
-e-remove-deadlock-v3-0-899237225221@vaisala.com?part=3D1
+Another question, wouldn't move this driver to use virt-dma infra be helpful
+to begin with?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
