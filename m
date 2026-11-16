@@ -1,55 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.139
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794781692;
-	b=A2KzSuHYuieHf0tmhipugUZNj3I3XtNteYw44l0mzoUSk66JmHAW+11Xnh5A+oOtZj5D
-	 txpBJK+1ECA9taQ97hOP5yvXfJ0hGAOtE46jXLff6Kd4+JpsPGn/HK0nX5kQcicTT59Yx
-	 Wk2pSfMtKtatWOwld6YjTHvy3P3CCFxJ7Ea0Gfm1vqkpeSUa+l05icI5r7pqT/ZAa/oPB
-	 uKBe3cs+FHbFt+0/levNe/UYb0qYhG8bbarlyh388MVytQjesrUc3/SQtab6ajCbk/9JD
-	 0pgAr+gdjdGXPHxHOHzokOoCEJZV3Xk9t5UOHnJxusmYTV2/SE3MVNZDxSfBUkjuAtQ==
+	t=1794798648;
+	b=ejZ6Wl21FGau8IMb3a00+q0464PgtrhGWGd01d+E4LAd0OtJ68PqFH9osxizlpacOl0L
+	 ptN/5HBI4HE5KLCveb3auNygnJ7mUk7QoMiGZdEJhnUiKVEZjSKuOBf+V2D83akYnZ8iY
+	 vJnV4PMOes9YYkHoYquC87G3gFoTqy3MaujGjQFn9CjrjXNb0SARKcS5v+ECV4kZrDfej
+	 u8lFsle34//XorDoCWAT20O/IkIwLFWd76fUcF435gGlZBoUBlnrue+em1DTd0H7deoO9
+	 CdxlVlwHfBRr5c0kG+Y5Tmpnz+aWGXkumt9OyvsGv8MisnSeQxIx3mSc/TP0EbT7vzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794781692;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=TEYwC0yd2Q6rJp4otTipe3rkKTLSLdWxD7WurCB1Zgo=;
-	b=xde6cpuvIBXvXL+FVEY4KsKi1tIeWdcR4Ce2uS6HphEI/dFJAA2yD5v4T7LQL8N+y9R9
-	 rstRJGMM6AosPU1IGJqdRx4ebU+P6OoapSjLVrbAmyd56K4kp9/RH/1KyTERi8OCHlclc
-	 fPw3q5lWJdI/rK5OUgSA2EZ64BkUI1QG7GW2piu2MyodERjDQwg/t5K4zO7Lkgw8P4Avr
-	 KzhxmX+GA2E/9s6fcv005+xwO+fvaRWnbaq1p/mQkUDqVWSGuevSsbsVqM5uIAiTVlrjl
-	 jq0tqj37SZCkEF7EbPMZhCAZsqX3BqhcBkr6aqGE9LyZT3cTMFAPfkhDaAzAlSBfD7Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794798648;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=WqPb9CNtYM7Zy6zAHIxxb3xRBsVT79O0vGo8WudTrY0=;
+	b=rct11ILqxscpsk7R2CrFaz3+Jo8GDH5HLGFAglBMnPABh2RwsPBwvWuAZKC3riqx3vUS
+	 15XZUoEdTFxIULeXKXa4hrd6aFcIR4LIn1lGB7Sz/E94tTi+831XwLnRdwxx2YfixwJIW
+	 rz+Z6F9qqxdXSqVbStA2Tqok6sQF1lslLtRDyyNxLZJSZEwWj+u3HjJBuWei1nGk+pCB+
+	 U+0UB3RLm94PGHeXDCiSU5fR2n/D5I1/yF5pPE9MmkjS2H6wCHrcvepovCkdZEQGt4IC0
+	 gj2ZzUG4GNOmLG+FVO+LzAIx/+IaDq3vVRemp9W3sAntQ3mH9vHYuUdMC/zg6HMLDOw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NWVzejUX;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07866606A331
-	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 22:28:12 +0000 (UTC)
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=Rzq1MGQ5;
+	arc=none smtp.remote-ip=111.22.67.139
+Received: from cmccmta6.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2C38606A329;
+	Mon, 16 Nov 2026 03:10:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F2C38606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NWVzejUX
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F031F000C4
-	for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 22:28:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794781691;
-	bh=TEYwC0yd2Q6rJp4otTipe3rkKTLSLdWxD7WurCB1Zgo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=NWVzejUX9qF0XoM4VmEyXPZSxIG5Fs6unNadjPRXKBSH+vjBwWuW9IwsP2UD1Jyxh
-	 N4DWmQdek5RNSEdOLJueNW9tvqDthvnNazJBw0TiF7oKW+Ke/20zMucQiLpYLKA5nO
-	 3jDVSQIj1Uzg7SYszycMfFEzP6fakMh9E/SFLUMyyl3Pw1POrN19p3pgZdlMG1hBfl
-	 uDu2Fs2NFFfeBArnwiJLuecqZC8ijTgMvmd4rCgRDyv0DuRa4QKIeDtU1FGrbDm1fT
-	 9x3ewZn0T3RJPSLbtwwWddaebGc7zSZ3YdLKxYfaWHR5eABuub1dS5nx5aZcMg9Q0s
-	 IUuDfWmSm/WOw==
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5bfa65c8617so1895707e87.0
-        for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2026 14:28:11 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErGEvoo9WmVERCihzmbp22tM60Qc2qVc1nQrzUb8zAyuVGYPL/DqwLSDtBrPeGv0PWqX13uA24lDmE3i6PM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9jlsvIPJBuVcneGnic3/Lwot/eZNzamm3+LhQIniyO6DlWFXGK
-	7cGdscTj32m5UntExKFAnXX33+CCvES2OROrXgw19PydsZ4PUugSNe/bQuxRfOtdd6JkHuAG3Tb
-	mHE1fnrfGhoW3JytBcO3vyigCK9OO3TI=
-X-Received: by 2002:a05:6512:3f04:b0:5c1:4cab:2d03 with SMTP id
- 2adb3069b0e04-5c170b2ecf5mr3075860e87.63.1794781690375; Sun, 15 Nov 2026
- 14:28:10 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=Rzq1MGQ5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=Rzq1MGQ5D9adTYsOnLxe2gkT3IXyC8M/cyzcIA/0qtQTrWCceazcZ+kp0ykvoPlTEeTIqz1HcKKbd
+	 0VMrmUhrsVLEacsUWekmF6BdwDvLqYHK5CCZdj+A4vOpZJTmN2LStj+XacY24Krpf5RmIh9UZsWyj5
+	 /BctiYUoLm57q+vg=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app01-12001 (RichMail) with SMTP id 2ee16afa7435486-d6c92;
+	Mon, 16 Nov 2026 11:10:45 +0800 (CST)
+X-RM-TRANSID:2ee16afa7435486-d6c92
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.97])
+	by rmsmtp-syy-appsvr09-12009 (RichMail) with SMTP id 2ee96afa74331d5-7a4dd;
+	Mon, 16 Nov 2026 11:10:45 +0800 (CST)
+X-RM-TRANSID:2ee96afa74331d5-7a4dd
+From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+To: kernel test robot <lkp@intel.com>
+Cc: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	hugo@hugovil.com,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	oe-kbuild-all@lists.linux.dev,
+	llvm@lists.linux.dev
+Subject: Re: [PATCH v2] serial: sc16is7xx: Fix clock leak on invalid clock frequency
+Date: Mon, 16 Nov 2026 11:10:42 +0800
+Message-ID: <20261116031043.503-1-laixiangwu@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.50.1.windows.1
+In-Reply-To: <202611140631.LIs6CWKM-lkp@intel.com>
+References: <202611140631.LIs6CWKM-lkp@intel.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,63 +75,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com> <20261114-b4-cs75xx-v7-4-8f17f38821b4@gmail.com>
-In-Reply-To: <20261114-b4-cs75xx-v7-4-8f17f38821b4@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Sun, 15 Nov 2026 23:27:57 +0100
-X-Gmail-Original-Message-ID: <CAD++jLnu=ycR+_ZXW2K54oeDJMCfybdSUDVOTJ5B=rFTiOnjLQ@mail.gmail.com>
-X-Gm-Features: Aa3M54oN7V3Y8V-EQUC0vRGZ-PhoQTaP6aUjOIuJowZCATlHdfiiGxoj1XFGWNs
-Message-ID: <CAD++jLnu=ycR+_ZXW2K54oeDJMCfybdSUDVOTJ5B=rFTiOnjLQ@mail.gmail.com>
-Subject: Re: [PATCH v7 04/10] ARM: goldengate: Add support for the CS75xx SoC family
-To: filipp.dunsky@gmail.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Drew Fustini <fustini@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Jason Li <jason.li@cortina-access.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, Nov 14, 2026 at 2:41=E2=80=AFPM Fil Dunsky via B4 Relay
-<devnull+filipp.dunsky.gmail.com@kernel.org> wrote:
+Hi,
 
-> From: Fil Dunsky <filipp.dunsky@gmail.com>
->
-> The Cortina Systems CS75xx ("Goldengate G2") are network processors
-> with two Cortex-A9 cores, an SCU, GIC, the Cortex-A9 global and private
-> timers and a PL310 L2 cache controller. The family includes at least
-> the CS7522 and the CS7542; the CS7542 is used, among others, in the
-> Securifi Almond+ router.
->
-> Apart from the vendor this has little in common with the Cortina
-> Systems Gemini (SL3516/CS3516) supported by mach-gemini: Gemini is a
-> single ARMv4 FA526 with Faraday peripherals (FTINTC010, FTTMR010,
-> FTGPIO010, a 16550 UART) built for ARCH_MULTI_V4, while the CS75xx is
-> an ARMv7 MPCore whose UART, GPIO, interrupt controller and NAND
-> controller are different blocks. It therefore gets its own directory,
-> named after the Goldengate codename like in the vendor kernel. The
-> Kconfig symbol, ARCH_CORTINA_ACCESS, covers the whole family and is
-> named after Cortina Access, which last sold these chips and also makes
-> the newer 64-bit parts.
->
-> The generic DT machine is sufficient for the platform, so only the SMP
-> bring-up needs code: the bootloader parks the secondary core in a WFI
-> loop that polls a global software register, so boot it by writing the
-> physical address of secondary_startup to the register named by the
-> cpu-release-addr property and sending it a wakeup IPI.
->
-> The CPU is a Cortex-A9 r2p1, so select the errata workarounds that apply
-> to that revision and can be enabled on a multiplatform kernel. The PL310
-> is r3p1-50rel0 (CACHE_ID 0x410000c7), select the workaround for its
-> erratum 769419 as well.
->
-> Signed-off-by: Fil Dunsky <filipp.dunsky@gmail.com>
+thanks for the reports.  The build error is an artifact of the test
+setup, not a problem in the patch itself.
 
-Looks good to me.
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+Both reports build v2 on top of the linux-review branch created
+for the original 2026-10-30 posting, i.e. on top of the superseded
+v1.  v1 redirected the invalid-frequency -EINVAL path to a "goto
+out_clk", making use of the error label that exists in mainline.
+v2 is a full rework that replaces v1: it switches to
+devm_clk_get_optional_enabled(), so the -EINVAL path keeps its
+original plain return, exactly like mainline, and the mainline
+out_clk label is removed.  Since the -EINVAL path is identical in
+mainline and in v2, v2's diff does not touch that line at all.
+Stacking v2 on top of the v1 baseline therefore leaves v1's
+"goto out_clk" in the invalid-frequency path while the label is
+removed, which produces exactly the reported "use of undeclared
+label 'out_clk'" at sc16is7xx.c:1622.
 
-Yours,
-Linus Walleij
+I verified this locally: v2 applies cleanly on top of current
+mainline and the result contains no reference to out_clk at all,
+while applying v2 on top of v1 reproduces the dangling goto
+reported here.
+
+So there is nothing to fix in v2.  It was posted as a standalone
+replacement for v1 (as a new top-level thread), and the build
+error only shows up when it is stacked on top of the v1 baseline.
+
+Best regards,
+Xiangwu Lai
+
+
