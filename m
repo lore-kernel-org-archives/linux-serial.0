@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794827269;
-	b=P1uZkk3Rw9YaWw69ZIT7MvsusR2Vj9DiY6zPXH23GMm+hmwj02Milx9xAvv/aPZvD5fY
-	 lkS6hRbUwbeiHoGOVm9oj5cJtBcVtzCQv7Izhj36DRk1bf+AgJhSqcc9XFcBjb9bZK0wL
-	 hw3leU92rUCG0ZIq19jqTf2y6D4Nvzx3godu/nkMm+Gp0glRtXoSDm7UtneTFrT+hL2OM
-	 U8HmlV/yNLIClXVF01EAnXQ6BBFex2wafhrcXJ33XUr0vDR8nhOs7I03lWwBcsz3pbZLx
-	 1xz8aOCnha8ymJ1cG7aUFkSHZLSiLhCHYEgOzPM0NfjHP8+1a7PYIDpTZn3QBZDRJGg==
+	t=1794827425;
+	b=oDqDOq0u5+XIMqr1Iq/VMUT2soDOIajxnHV2QiehXNup01vl3zPig+MjhdbdeVdzK6T0
+	 IPcVLaEtKFbYjQkFgeWEM/asGvsa5wlqEcqHLb6Z8RTCFrd3qF+O3gJ8tW4/2RzNipPkx
+	 t+mxktdY1OKj4uHspR0Ckuo6zZW3c32c2dsl6WcVzKcq/Irafjcw8mTgEiaAbGH0ffnal
+	 PikfJaXyJBL8d4QmNjiMPauPjHzuX/7m5EP7+XTrhwGxq3hoPc7UxKlaNzj+d/1O7N3dC
+	 eIcDqepB/wgxRLvVzl0PYAkmI+oNXdEJQiMOYdEEj/0aDUEoDTjkvCr8sTxmt/4hRCA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794827269;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794827425;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=yMzDy8tPORzWpYzGK5zbIWXni3eI84OVFQNEjmecPuI=;
-	b=5c31cLJ5Ro92tlUpSaLCnq9tubNcY2Q7HAGfkdfUv4MvbzOuFhrmWXXlPrjKCeQZyB2L
-	 gvVJPrfwwjlSdAwWhLGiulHvw6A40AlZdIkGB3NM+oCHuVlcoRDfdUZMivIdS7JmMgJVu
-	 F2TvKQ+0bV5/kKlHQdRMSpFanWvczcQ6HzUXElm84pGmV3ql0oWzjrSjUPXoUOlkzxr6P
-	 kDV8rqZfUyMyu8Nj0HbWSnrPKjsH61ueHG5UHLSTfSscy/4rzR+wuB7nndXpzCD1YPfs4
-	 T4TRRB0SVPbF2UvWE9r+sSj3b61j8wCRZYuvme/u5lyUo1TDbBHzV8gIRVdBccou6ow==
+	bh=eKNAoD2UjnWVHmZOZ+/VflaMR/c8CiX2VZxxw2ZnKVk=;
+	b=dF4ElNLOudXxPyq6Mi30Rm+bigVixlmfs37uJZzlRyT5B3HbYjbcc6awCKmR6qkTWaE3
+	 +cYiN9rt/uLML8UL4yADI0pHJZOSF3dGNTQN4iNIMr8pDNf+7+KxzYVTfm4KNaNEpqiqw
+	 IrMJK5ZCICtyqBWMzK4ZOytmlOZS19JO6POHJcVMumGiOYWqTJmMxbapTCjA41NMsCCRt
+	 9E5Ixd1tLcfWdEttLJprTFEMlnGhLQDnMVOyE+PTv8DiQ2K3BI3TUpSGsizAv1YkDj3iy
+	 9An1m6OjQrM5MROL94zRn/i3OzMig5csNwyPPX2UpqdB2n8ZAVFqpYsXkiwhUUVg5WA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AXT9Hqcl;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YrEr0JCw;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8C0E606B1B1
-	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 11:07:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0117E606A786
+	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 11:10:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AXT9Hqcl
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787781F000C5;
-	Mon, 16 Nov 2026 11:07:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YrEr0JCw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55B911F000CA;
+	Mon, 16 Nov 2026 11:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794827269;
-	bh=yMzDy8tPORzWpYzGK5zbIWXni3eI84OVFQNEjmecPuI=;
+	s=k20260515; t=1794827424;
+	bh=eKNAoD2UjnWVHmZOZ+/VflaMR/c8CiX2VZxxw2ZnKVk=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=AXT9HqclqlDPwIaDgJzX976iSTban0C6BJBDeKsVgkii2/iDbKn0NmIj42Ly4h3bu
-	 /AP8QmwD2pnKVeSIN34YolJQOe3Gvx1ER5c4HfKUY8y+nhfodsrsHFmvZ10LVswn4u
-	 n+gkIue2AGqU2m49hgJn6zXni/9Ri+ZMqzi/OKny863hfZz1EFwgA4DRK5fJlPOW+Q
-	 c03Ye+YZ3hcO2rulV6LMjTmXbd2OffENf2ryrDghieEO/uaR09mBwayhPJN9MTQiRW
-	 OB/lmlfoWPWEWa4kaUeeNnZBgDfqDGYzOVlBZiIYligywc/cAvFXxpvJpaxsNyxAvm
-	 ENbZPVufVfcMA==
-Message-ID: <sashiko-outbox-216843@kernel.org>
+	b=YrEr0JCwIqjizz1z0APhYzJG1TviL06qtrm7gPbJxRi66hCP8LzlYd03RuqGShsmP
+	 tQ83bKeoD8WylyDjM9SmtRw/OhLRSCnfT7Ynb9+sABhmAWxxBrs1nzmlN2atgE8HwH
+	 +sDQ3Y9CjQtZQQav9EmEV5ZQvr9+LMQOKvEyoAMLTR38HZh1qEBDXo5OprTCbczBKF
+	 Y9Smp7SkC6LR1taJD4lz7yKTpxNVJLy8AyZDm+yhQQNpYRg4+iwQmuoROTCxUBxmCh
+	 fFcQx7cDgkBqoyNyBSld8Vs1r4LAJJl7PNvPmr0Dsr/MYX5nMfG6hur3PbMd/yiSgi
+	 5P1ycYG+riaRQ==
+Message-ID: <sashiko-outbox-216851@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v8 1/6] dmaengine: dw: Fix XFER bit set, but channel not
- idle error
+Subject: Re: [PATCH v8 3/6] dmaengine: dw: use virt-dma for descriptor and
+ callback ownership
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "James Hilliard" <james.hilliard1@gmail.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261116-submit-dw-dma-synchronize-v1-v8-1-4a82d64fcd1a@gmail.com>
+In-Reply-To: <20261116-submit-dw-dma-synchronize-v1-v8-3-4a82d64fcd1a@gmail.com>
 References: <20261116-submit-dw-dma-synchronize-v1-v8-0-4a82d64fcd1a@gmail.com>
- <20261116-submit-dw-dma-synchronize-v1-v8-1-4a82d64fcd1a@gmail.com>
+ <20261116-submit-dw-dma-synchronize-v1-v8-3-4a82d64fcd1a@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 16 Nov 2026 11:07:49 +0000
+Date: Mon, 16 Nov 2026 11:10:23 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,31 +61,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Serge Semin <fancer.lancer@gmail.com>
+> The status getter can invoke a client's completion callback while polling
+> the hardware. An 8250 RX timeout calls it with the port lock held, and the
+> callback takes that same lock. Termination also lacks a synchronization
+> hook to wait for callbacks already detached from the channel's queues.
 >=20
-> If a client driver gets to use the DW DMAC engine device tougher
-> than usual, with occasional DMA-transfers termination and restart, then
-> the next error can be randomly spotted in the system log:
+> Use virt-dma for transaction queues, cookie completion and callback
+> delivery. Keep the active transaction and hardware state under vc.lock.
+> Polling still processes RAW.XFER and advances software-LLP blocks, so
+> clients such as catpt can complete transfers with the controller interrupt
+> masked. Client callbacks run only from the per-channel virt-dma tasklet.
 >=20
-> > dma dma0chan0: BUG: XFER bit set, but channel not idle!
->=20
-> For instance that happens in case of the 8250 UART port driver handling
-> the looped back high-speed traffic (in my case > 1.5Mbaud) by means of the
-> DMA-engine interface.
->=20
-> The error happens due to the two-staged nature of the DW DMAC IRQs
-> handling procedure and due to the critical section break in the meantime.
-> In particular in case if the DMA-transfer is terminated and restarted:
+> Submit only the first block of each transaction to virt-dma. Its child
+> LLIs remain on the driver's hardware-chain list and are freed together
+> after the callback returns. Keep the controller tasklet for hardware
+> event processing and error recovery.
 > [ ... ]
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-> [james: require a locked XFER event and handle an empty active list]
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
+> Fixes: b36f09c3c441 ("dmaengine: Add transfer termination synchronization=
+ support")
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Link: https://lore.kernel.org/r/20240911184710.4207-3-fancer.lancer@gmail=
+.com
+> Link: https://lore.kernel.org/r/avrHOJ-fVZOO32bI@ashevche-desk.local
 > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261116-submit-dw-=
-dma-synchronize-v1-v8-0-4a82d64fcd1a@gmail.com?part=3D1
+dma-synchronize-v1-v8-0-4a82d64fcd1a@gmail.com?part=3D3
 
