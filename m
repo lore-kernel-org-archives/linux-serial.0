@@ -1,102 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.44
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794839578;
-	b=lD3D0bWT2XRCw9t5mQLvdkdxUSLnVUQHJ9sHRHbFqR8u6F9u3qruOOpHVaCKizI2IAOZ
-	 yD7c8lEXDZuW4jf40ugjHutfM0UCEqP9IxO87Om+Gb/roE2qa2PC4vBhNmbEyZ4WG/94Y
-	 TMvAXw8jEYlSAfPvZ33TKzVzWWSImH4Iht+c27Nvg6KTjRpv7Lfyr7Q89/9dUtU3xRx0X
-	 aVJqhwenLncwZhUp0TuYlYXyyUWccr/2/Qcrwg9fcvz5oTFvZy/GvqQrGMkuobsqeCD5C
-	 zf/NPQQ+MINyXYgGqxWOR+ouL9GB0y5LjJqpsA0zGufMCp9QE3R3TCHMIs6fHGIkyEg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794839578;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=C9B94QbPDjaKKQtAC6TsJzJpuRtomQi1ExQZgwuOqbU=;
-	b=eFfdqn7d9RzoiHUpG/VT+HMzB72wjMLXEGvjPU6oKONrKX+sN9m4Q5Wvlb1wn1k4vqAm
-	 yHVAPyj6o0dwVndES104dzzPwhDXweMVZ88qtu5qwg3i8cDzoRo2wNFJjCOXu66A9ojFM
-	 nAmaChc5HXTfEt+ues5Fw1R7YoBKfhRYqfgKhIGNRL+xeB8vadM+JUZamhs/je0+Kq2tX
-	 IVY7yrcB8TaXiefVnrjP2P3sEj5lCIO/AzcH2olj0JHA94R1C3Y2FQeo6hOzDlwymYFYL
-	 byGx8KBMTQ+rTiREL3Djo//OKxPNhrreMxxNYhCDMRUG2d94nW0URLNpchGNznuUoFQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=q8Z4CRwH;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.44
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794839955;
+	b=4mcKqMSiDArOtnMonMh/9VEPs2LulWDV0wzbHLAusrZf76SiTobAR8HZU7cT5J/zHKZc
+	 pQM2jxQQK4OZOPJHsniyFZOO+VaV015YoPCQe5q9D0NwgFkP8Ms93Mq9Y/5UWkZlTPp68
+	 wstAGZgbogoCeELf5UJER44+cHYNHJUeIrK6sgCdA3GYKMeCZkjrFGqv/fcId/7YkptJR
+	 +oibTN3qvcKIX2XQEAsr4e064Wam7oOsVsd7+z9IibfEDBIRZNBGYQDGYcgMJ+neWRwGJ
+	 gWiTbpKAII2hBD7rc/2mZKDfsN+Osyf9C9tSR6oYqOaJE3SaofnDvcEYkRRZe6bQA+Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794839955;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=i6ILREIqYcFDP5vxsGtNivMUpqP+s5K/w7Ye/l6YwWc=;
+	b=WVwVIG5igONl1zg+oWImMvhlmE8JGKyJd3WepGRBc6duWY3yXG6gh/Xq6inbxFHsP/pc
+	 VZeiAXV2SO/E9Zke2Yy3ZuRDR3w9sXM+jDU/zWhLPpp/cssb4D2O5o9LvSiWLRDj9//OJ
+	 BMciEQ5vgiBc7aAPZvIMcoXKeemvH6TxvRsKP/7YArivqCntRIDF8H1aOnwXymS1Ymgsl
+	 RBvcHo5tPOYKoNK0pPYKRUBnUCMNM+z5wLiok1nwwxQNL5M5QTRhfAvD6FamaiHRnU0kE
+	 suktIfeTYaqsfM2aFrCsfXEhmJdHaCi01JO+YB+0KiKGx8ebSJ9FDMoC9hALrIcjQ6A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M98brw8P;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28A71606A32A
-	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 14:32:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 28A71606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2762606A31C
+	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 14:39:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=q8Z4CRwH
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5be3ed646a5so4988786e87.1
-        for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 06:32:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794839576; cv=none;
-        d=google.com; s=arc-20260327;
-        b=eDd/6UBVF6N81D8VYKtEOBVD/4Rr0ZL76K9shegVNLH7GcOFAOvT0Mm3UsacdToh6f
-         mf2oGfa+UfYcvpzLq0FmSLDtU+V8lK3iMuzy5tdm3TQvxBuXbtRo9ZgRWGwPAGGuowMZ
-         2d8XcTpYNDVvfO9ezIFDvqtZrMjid0Q/Pq1U+VTOqSGRB9e0DESZNa9YbYQ4WcltspZG
-         eeshTYttIl/2njOvOISrGufRUvWMo/+snRh1Rn+baXemk8ex+HfXStxeajkfnbL0GmaH
-         dGTjBll0hfYXBnDR8pll9mR5Ru43b1VwPT+TTLNSBg4jcfeYZFageagU+EBNmVPxGlrZ
-         Q5EA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=C9B94QbPDjaKKQtAC6TsJzJpuRtomQi1ExQZgwuOqbU=;
-        fh=gWUvC6p+fUcQPWpKfkmagh/4h4fCUP+GxXthBRs6WL0=;
-        b=cLlFbmAs8e2gmNY4OhnRGL1cOE6kd3hnty954puGtyGOqXOzP1G8mY20Se2s+ExZsg
-         G2Bmv7kmOydO/3oGkCcBE91zDiuLfwauu/QMcNqPh3ncVj7zxVGXY1NLSKkVVioyqfSj
-         /X5R2/KA9WT+/OegGIG1aWtQ+W9TRhW+/RRabfIfedVtsE5AaISQZIAq7JUiIciud/KO
-         ueV7u5D/7h38Ya90A6yecDOy2hwqVoV9XgcnlkzLwcAX7J8imTfPYKth0UmFxNPXwJER
-         qxiPw4tOvTx2Ej9BZeelO+HWNzcsNKNFg2Em5/6R7KSTTSy0brrKe+K/pGzmhLYDWE2a
-         6HDQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794839576; x=1795444376; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=C9B94QbPDjaKKQtAC6TsJzJpuRtomQi1ExQZgwuOqbU=;
-        b=q8Z4CRwH0sjPZ2AFdplxBv97CtRNwTaq3BYuIkZ83p5Ma+7EkjEQAsofQcWZZ/ONR0
-         Mzzk1Zdcy3XcKbyWGAiR1EGtmjjSgUifkCzpqIgae92YbtXl7T3GdDzlmuTK2f77Cusl
-         wOkR1szXPoYEDsFY5iwXnhgxf5G38lV0jVXUIfMMFpznFKrTOp5Joy5TObwS1FrXAkRr
-         +w8TBHmMyAoARdljtxljlgw0IQRsHvDk21+iXGBdv6iD6+IfHZP283dJ2PXdmoIw/PVB
-         ivWiAOtIlgJkxlN7xJlMjdKMDLo9u5kfKWBtfKWczRbMeggQ5AFVuGDoASkVYvHYlGH7
-         +iWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794839576; x=1795444376;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=C9B94QbPDjaKKQtAC6TsJzJpuRtomQi1ExQZgwuOqbU=;
-        b=T+g6ncgFB+G3Xy/oICroUEW5RSJMl8tr/dywgvGyx6KLe5HuAFqF9rBr43Tu3ySQEq
-         iiOA6psKo1Dt9cG4zT7r3ATfg24CjXEra83wINtYIZpEjEnLFvOaP/pDn3i7+5GEJf3K
-         OkS1VlURlErUqAXfeCClT240j+Zock1hMIJfHOq7yWWVOgawOtRhrm7meu9PWtJmNzwo
-         /VBSbaLJABplZYSi3T9am34kV9kE8tBPrNJwlQh2SKn63aVrrpNGKMU0V3E+LNa/Wted
-         ytfffSaLOYZv6w//KkB00dq9tl1ZhDO+fl/4zOLKKKhrvJgRRyl1KqxvePp1n9nzTP9d
-         pGeg==
-X-Forwarded-Encrypted: i=1; AL+hErFyFWWlS1sPCXJOe/FUQMgFk4bzbo2jsb8mdYJEgiunKsR2YgulkMMDukRgpgumSExEmtePdOs91lAKmhg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8vvBnhwxWCQ7otESh9vp1hxzL2GwFJAFL61dxk5zvj19f7PNVr
-	xaqk3OJZJAo/uaEQNLCI2fIdKZe1smqtzctXWf5wmJBsBb2JcTe7KDr/YQZGIvzLTe/hdzGnakR
-	nzPu468Xw3UjANFOdAc+r/jGNn9/szdQ=
-X-Gm-Gg: AYBFou3YVb2+cNqjtxmv8WOyZOK0X6+JoT9CxeK1OXTEwRvpzFTem1f+emP1m2Owr7L
-	xvRqmrHmjM9FY209hKo3UkJV44NZ9QwNCH1YjbWYAyl5DJgyczTmmpzUt3bSSeGhIMVazlPVo/q
-	tAYxijJGVRWdxF3uMdsNSReg9f3+GO3ybGTnWr4Ki2JJwXCZotxY37+U6cNHpx99rwo9AtcPWYu
-	VWiRYbp+fNkdUVESagUqb7LX+cottMgcWSqj1UykXsmNn2d19QTOcqsK9Shj2BeHpgSrUOmOots
-	Fqi2VxPZ0F7INElOQwghLGg/EsCwPW+mFoKeR9h6N/on3MeSEH0OHTVMbHAxFYXoOIs0zxx8u2u
-	4kNTik/WDzg2oH2C1kVADjg5APPt497OzZ2giKg+g0dCCKf7YfbkFz8w66uv3UT850HgKGravFF
-	Gn30xDcIis07n/TdnJ1Y7+ldXHPwNGcVa3j1uSU1MqkbACh1Cht/1upHJzinCPgtKT5hj6rJmxW
-	fxpaiA+S/bkXTeDirJVq1wUWC/AxVWKO6eTk5JLJtzNRkYmOfQkayGbUjiXt4zOEyHtg2bQqhca
-	lTauvr+B/sdR7mtvxi6/QahKhLv/NGE=
-X-Received: by 2002:a05:6512:31d2:b0:5c1:4c0a:49d9 with SMTP id
- 2adb3069b0e04-5c1709aed3emr4514975e87.16.1794839576049; Mon, 16 Nov 2026
- 06:32:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M98brw8P
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E281F000C5;
+	Mon, 16 Nov 2026 14:39:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794839955;
+	bh=i6ILREIqYcFDP5vxsGtNivMUpqP+s5K/w7Ye/l6YwWc=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=M98brw8PPYKluSFLW+efTJh9GmItrd4xCG7pQoOsPKavH0+flygdIAd6o0pTbqwlg
+	 JivO+NYVjftHf5vvp7qse2ielFQUV5jRhO9lRB6p3JbA2+aeT4qpWGBmtdpGToxB1q
+	 UtU3RoxTS3fK0GAhz7K8xzJhAaXb6kMDgVvPeO5vShiVDqwwHi4awJubKCxHkNc0Dw
+	 Sw5gFM0GQSEXiaNedpITuB95iLzvbw8sN3KT4K5UtZilu6icdjZIpD3c5nLxky3RFE
+	 l3h5PYjE+jiWeC5VYnEstY2aQbhxjFPQ4qlhJYqSf0lCfq06Da8hQN03WtUX3h77hr
+	 TJO+Y1XPqhSgQ==
+Message-ID: <sashiko-outbox-217183@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] serial: 8250_aspeed_vuart: Fix potential stale port on
+ probe failure
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Guangshuo Li" <liguangshuo@mail.sdu.edu.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261116-c29ba55625-serial-aspeed@mail.sdu.edu.cn>
+References: <20261116-c29ba55625-serial-aspeed@mail.sdu.edu.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 16 Nov 2026 14:39:15 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -105,47 +59,77 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-References: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
-In-Reply-To: <20261031-tty-dont-use-autosuspend-removal-v1-0-7bdadcadc4dd@kernel.org>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 16 Nov 2026 15:32:45 +0100
-X-Gm-Features: AclHuK_LmPF6GdpEB1OKtm5HFOhuVUEo0FmsAXlPZr3XF_GhyxB157Z16Flkh34
-Message-ID: <CALoEA-x+TpMdsE-e7M9+9K0wu0kgbwDdP02QsMZ49nnnahxxnw@mail.gmail.com>
-Subject: Re: [PATCH 0/5] tty: serial: remove redundant pm_runtime_dont_use_autosuspend()
- calls
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Michal Simek <michal.simek@amd.com>, Peter Korsgaard <jacmet@sunsite.dk>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
 
-On Sat, 31 Oct 2026 at 18:10, Joshua Crofts <crofts@kernel.org> wrote:
->
-> Since commit d1706f9da9f4 ("PM: runtime: call pm_runtime_dont_use_autosuspend() on reinit()"),
-> driver core is now responsible for undoing any
-> pm_runtime_use_autosuspend() calls on driver exit.
->
-> Remove the redundant function calls.
->
-> Signed-off-by: Joshua Crofts <crofts@kernel.org>
-> ---
-> Joshua Crofts (5):
->       serial: 8250_omap: remove redunant pm_runtime_dont_use_autosuspend() calls
->       serial: fsl_lpuart: remove redundant pm_runtime_dont_use_autosuspend() calls
->       serial: xilinx_uartps: remove redundant pm_runtime_dont_use_autosuspend() calls
->       serial: port: remove redundant pm_runtime_dont_use_autosuspend() calls
->       serial: uartlite: remove redundant pm_runtime_dont_use_autosuspend() calls
->
->  drivers/tty/serial/8250/8250_omap.c | 2 --
->  drivers/tty/serial/fsl_lpuart.c     | 2 --
->  drivers/tty/serial/serial_port.c    | 1 -
->  drivers/tty/serial/uartlite.c       | 1 -
->  drivers/tty/serial/xilinx_uartps.c  | 2 --
->  5 files changed, 8 deletions(-)
-
-Hi, gentle ping on this series, thanks!
-
+Thank you for your contribution! Sashiko AI review found no new issues
+in this patch, but noticed 1 related pre-existing issue it does not
+introduce:
+- [Critical] serial: 8250_aspeed_vuart: use-after-free in
+  aspeed_vuart_remove() [1]
 --
-Kind regards,
-Joshua Crofts
+
+commit 4eac67f7d5031d7988614ed386938a68b8050e5b
+Author: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
+
+serial: 8250_aspeed_vuart: Fix potential stale port on probe failure
+
+This commit disables the VUART, shuts down its unthrottle timer, and
+unregisters the 8250 port when LPC configuration fails during probe.
+
+> diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/se=
+rial/8250/8250_aspeed_vuart.c
+> index c8dc87f6886c1..2cd1c9146ec89 100644
+> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+
+[ ... ]
+
+> @@ -543,6 +543,10 @@ static int aspeed_vuart_probe(struct platform_device=
+ *pdev)
+> =20
+>  	return 0;
+> =20
+> +err_unregister_port:
+> +	aspeed_vuart_set_enabled(vuart, false);
+> +	timer_shutdown_sync(&vuart->unthrottle_timer);
+> +	serial8250_unregister_port(vuart->port);
+
+[Severity: Critical]
+This problem wasn't introduced by this patch, but can [1]
+aspeed_vuart_remove() cause a use-after-free on vuart when
+unthrottle_timer is re-armed during removal?
+
+drivers/tty/serial/8250/8250_aspeed_vuart.c:aspeed_vuart_remove() {
+	struct aspeed_vuart *vuart =3D platform_get_drvdata(pdev);
+
+	timer_delete_sync(&vuart->unthrottle_timer);
+	aspeed_vuart_set_enabled(vuart, false);
+	serial8250_unregister_port(vuart->port);
+	sysfs_remove_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
+}
+
+Because aspeed_vuart_remove() calls timer_delete_sync() instead of
+timer_shutdown_sync() before serial8250_unregister_port(), a UART
+interrupt arriving while the TTY flip buffers are full can re-arm
+vuart->unthrottle_timer before the port is unregistered:
+
+CPU0                                  CPU1
+aspeed_vuart_remove()
+  timer_delete_sync(&vuart->unthrottle_timer)
+                                      aspeed_vuart_handle_irq()
+                                        if (!space)
+                                          mod_timer(&vuart->unthrottle_time=
+r, ...)
+  serial8250_unregister_port(...)
+  // vuart freed by devres on return
+                                      aspeed_vuart_unthrottle_exp()
+                                        <-- use-after-free
+
+Unregistering the port before stopping the timer, or using
+timer_shutdown_sync() as this patch does on the probe error path, would
+prevent the timer from being re-armed.
+
+[1] https://sashiko.dev/#/bug/linux-2b3eb48a-af6f-4ebd-a642-413d2498b067
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261116-c29ba55625=
+-serial-aspeed@mail.sdu.edu.cn?part=3D1
