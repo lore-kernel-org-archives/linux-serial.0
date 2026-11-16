@@ -1,108 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794862689;
-	b=wSStpBvriEHulQ1S4ZzOg/cOQVbaiC7oyw0LVmLaElLu1Of48+N4gwsNmlmvCSzxn8HL
-	 DpYiVP91PYGwr+/2BxL7tBoZTM6XW+yVLK/4deK236+4LadzU54yLE6aY5NoKasPvK/sH
-	 4qJaQZFnFMx36/0v5VcxNyMlVXIKN8fqCfX14B02AjJm6z1asJxvHla4db4lSaRmbSVy0
-	 80X1PerDi2upiyD4yqu6F7E+hhdpkW01WBs3V0j64VhCnYHu8luSM7iHGqLniDbGVQ/Hu
-	 B7Zzr/GriQpT2TszpEuiLTWezpN8SxzxejU34NNbsQziQyD3q8Vri2oIydoD1LIT61A==
+	t=1794865854;
+	b=hfJOf75OmwcRHInIGHWuwxHLZdXKeq3ZSmFbH0AahW//P00Q0Ix6qWDAEz1U7qfHaIZa
+	 cjFq/taNQsjYVsEOhyy/OoUzCLHrk2vNWgp698zcmFDXekyXya1Q6vieiPDI3ZD5DvI0S
+	 rIM+T4I8gAnSvFDPeiY5OT5pkfvsTcEFFffXocQaqfE/XV4n8b79VD+7dVo9Cuj5w80ln
+	 WXcBcmCZ3a4VE3xsqTZ5+Yv0Ym0kSsz2nEw180/VV+ewoXMZW2dwYIYa7ckm+eCk6EyKw
+	 WOH0vn6i1UQQmy6Qs5dcqUSWncYz7eHtuCaIIJgEv9RsPPoK6/G4E8eCGcycb74zITw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794862689;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794865854;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=Vr8LxlwRGl/SVKMwZ1OihzYbqfOG5qsqLHZawnVcpJg=;
-	b=zjOgpPR5XpRjo2aShfJA+EoI76ZrteaWEK1b1u/PBoSfrE2CdxarlpNS0csS2qq7mBI/
-	 c03Q41F1clTAhmG3IV/jTeH/IU4PiBxGd3pwSHC+SBTXXk/ZvCVWdv0CkieeJKYSdnG96
-	 8mI5qQo/NnqjoOza5DIxG5dnMqtF46nxqCRPo5JersO7+159J1BgEwIgVzZHz7zh+vfWp
-	 cU/i57ux8pbqRdu9sK5s1PrhSEtziw6C2SDi9ESvgQ5NcdzTsK+1ds9mnmU4kV7zYcKeG
-	 OS2BtZv3Dkg3dl5ugzHvL4boNRJSm/XktQue+qLheivUaK6rywfZf8PecRTyLI96dXA==
+	 Date:From:To:Cc:Subject:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Disposition:Message-ID:User-Agent;
+	bh=qwbrzd7fYBYLMbcYStT4Nw+sPoOjHywyjBxJxGcabSk=;
+	b=PZmatCgMTrVzRqQwFh0wEthKLhvh4ntNX5Fj8Gu410V7uE3bT9fOTF28kU/YaWsITpog
+	 dlFD/YDnWM++2F87QpAaGnfk5H4AZVHtBtWba2vaShgvck6mWqZxxsrDX3P+tat6D6SVe
+	 YfkkVEmIppDuZGeC8gCzFcKQrDEH81h8BEMOM5X3pezM3UEevRk4huiBSRI6D5uUtqy5f
+	 ewGH2l0vWm3mi7GfTMj4zs9CJm6ySRdjP9Vkpv+kSYulz37aYhHPM0x31ZYd48EsbbN6Q
+	 ixw4QgDX8AyPQmGOaz8mND3tUDYFzEnTpxXOvKxhN+Zlv958UGxxFhLJlyfUwPjZlRA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="xhfpB4p/";
-	arc=none smtp.remote-ip=209.85.221.45
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	dmarc=pass header.from=chrisdown.name;
+	spf=pass smtp.mailfrom=chrisdown.name;
+	dkim=pass header.d=chrisdown.name header.i=@chrisdown.name header.a=rsa-sha256 header.s=google header.b=tGNwHDCD;
+	arc=none smtp.remote-ip=74.125.82.179
+Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5608A606A329
-	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 20:58:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5608A606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1473C606A333
+	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 21:50:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1473C606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chrisdown.name
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chrisdown.name
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xhfpB4p/
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-4a34ffd3e39so184936f8f.0
-        for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 12:58:09 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chrisdown.name header.i=@chrisdown.name header.a=rsa-sha256 header.s=google header.b=tGNwHDCD
+Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-36a315ed211so290346eec.0
+        for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 13:50:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794862688; x=1795467488; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Vr8LxlwRGl/SVKMwZ1OihzYbqfOG5qsqLHZawnVcpJg=;
-        b=xhfpB4p/FLz4tPvQ4XDyzPJZhYbKdby9eMFjsG4ed6t2AZa3F7CPzOfipZSOTimeWe
-         BcDpq6gokbNTxIQ9l4fnGfjfFt29zj3RD0h6lHh+vJ1bX552MblcNRz+J8927R5ZmjeF
-         iKpG54++B5Tp/HqvgFsBZU/VNWRkvyP+JLjtw/G/z314VyLXrSJcxdPsDrmr/1FXdlvg
-         DIdw/tMELU7KsErDToyfosjf4meSG+J1RxQySHwdKjVeXk503qOmotvoqiMa9MiZS+ON
-         XrDB4pfb8+ohnHUAfF24YjeIm1F8rDtjJQd8EA/+blfE98B4+XJy/aO9+RNJN9y3qjfU
-         QxfA==
+        d=chrisdown.name; s=google; t=1794865853; x=1795470653; darn=vger.kernel.org;
+        h=user-agent:message-id:content-disposition:content-type:mime-version
+         :references:in-reply-to:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=qwbrzd7fYBYLMbcYStT4Nw+sPoOjHywyjBxJxGcabSk=;
+        b=tGNwHDCDLKla2E18ZcotYovPFx9z0XaxN+o43JDW3M7piMhhdeMm8S7/GGjvxD0xzk
+         HlEuUaC0AK147O9pAIrHvwLm93QEKBOtcFxzYAJl4P5eM4fPtcNfEf1V5KoZrCnpOtZT
+         yp8enqxqbZ0HuEFpYT9XixESnW6taSo6n36rA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794862688; x=1795467488;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Vr8LxlwRGl/SVKMwZ1OihzYbqfOG5qsqLHZawnVcpJg=;
-        b=JIwy8j/Jt7pSMwoaJl38OX3ZGbe4Pen2tG6VEtBvu2hlIwtOrfykuSzcD1oL5S2ZBE
-         sffHa+nJU4ysDPqca/cHgeYUpQpI12DK3AIzr9UqE5OHlc/Si4nIwCeJUJqfi8ILpKLt
-         77xXQJDHnxVPcR99KuX7h890nW4mDXs6624MwhAk2Vl8IcOYicrYS62m6Tj0feBwGEmL
-         co9gRsmyjCTKHcqlaBM7UXJHWDgHLt33OH1UrG0IV1frMsvFoMrFsTnZnzC6jXyvK4UY
-         7mhe8uos+9+x+MWSkNpHFojF2DmQx6OhKMVRa3NgKO/myTS1dUzvZ329gDaMvudOaS73
-         g8qw==
-X-Forwarded-Encrypted: i=1; AL+hErEKETJHwiy9cTlI6f+Dc0VS9WqHRdygAU09XzTjTFtGoWms0rMPX8b0msrbmG98VuYov64wr93JgZRvXHY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8vZE2oZ5B9MSbyQnZWejswiHYuAk+gKds85yRU9VrI0A5CdlgM
-	gsjz+q4fneluckSPmzLYuGdUEaiGYOmLs5VOejlzvqglwKr4E4LbbiqT
-X-Gm-Gg: AYBFou0XwXpZaKM0nc+PYogzDnbeDDrdaUN27niBsd/GNPMIoemWjTHt67Wco1vUa6X
-	1okNvC2hHP8Bx1rmFhvLmQc+LOmi7NuyMTgZsrUZRKXUMkjpCTmbqqn3PUYk/iVUDul7sKiYxau
-	UP1PZ2NqMBlYLclWiJczdFVAd7npWQut5cd3q1YwMTYEIy5jnbnJUIA0FLqtBIiSKo8wka44yvo
-	Gs5SCSZm7nvo7eZXbrEZJGtor7lq+o+I9uM4XDG9FD7GjmBbT5tTNGd2MkgackNVCi4XEIx3LK2
-	XYyA/tz1oX7b69yS64UGgGPKW5h0Tw6+mG6CSibPYv2BhPjmnBlHOkCHttC59YGnhiaosP8oQ0T
-	tp/HW6AvdZ4yooVGAGlrAYKI6PXQkiNeGDQsDW1fX1jJlHam7G0MKz7nbIjOngioiqOYxxAYAGL
-	IkXGmKCJKHQsOa/rhGiIO7YlowJkxnaCuDLeMNHlc0HR59OYchjnUDZltX5wLvEmSr3m0WHd7H1
-	DHr0tNxp5cpR6qYPyLB1RVZr9aF09llNK2qDPHuLv1xz0+bnwBGbnLNPlpyh61QwbQoCd+UCbe3
-	1qLgSk7TowMTzowa/4VXE2OlpMo=
-X-Received: by 2002:a05:600c:a00d:b0:4bb:693e:4c8e with SMTP id 5b1f17b1804b1-4bb693e4d5dmr149922355e9.21.1794862687584;
-        Mon, 16 Nov 2026 12:58:07 -0800 (PST)
-Received: from m2.. ([37.142.154.59])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4bb78418853sm20499255e9.8.2026.11.16.12.58.05
+        d=1e100.net; s=20260707; t=1794865853; x=1795470653;
+        h=user-agent:message-id:content-disposition:content-type:mime-version
+         :references:in-reply-to:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=qwbrzd7fYBYLMbcYStT4Nw+sPoOjHywyjBxJxGcabSk=;
+        b=Xuyk/qORRx6UQjxg7r+VxTVfEBmQalX+66d8BL2k3KE7Pz71F3h3UBZFa2Ec7jcdBt
+         TkBHzWtBKHFSjB+5zttX4tsu7CJr/77tlduj0Rmhg104RCcDUvnOtjWdreVdJJDO9MQE
+         rZFMPUTvoxbuSHyI7E+NqzIhsud9VRJG29O8F5i3kR+LYNyadwckEOejSip5FL5+q88e
+         4kNcGyXAjNy/CuoPdBYZXuCG6Bwwku0+7gGdjpfj704zMs8/OUgIsrvt/YcM2nEZcSPd
+         j7aUMddd5urYX+afhqthrwmXmssaBLEBJjQNR0ZgD0ShDu+hA4XGRk4IXPSfv0rLEI5P
+         0YIg==
+X-Forwarded-Encrypted: i=1; AL+hErFl9KLrR9Ir8uTCW1ohqqsOZ/FrPvGg4B7B33wo2XSfvqMA92G1FWMDQ/QKVrEZJNWhsv5a1cjFhqeNk/g=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9GbUbHKDhCIwGGUmz+CZ134E8lxYWYxjaYLW4luB2rJMUSuszW
+	oh2aD5Hz+g3JTq7/JCf+h5P5YRRMgtV1jlybj9PrqWROcKs8ebeAqp6cVaU7Pg1AI2g=
+X-Gm-Gg: AYBFou1foj5ePvpbL458Qsb5OxpS+5scm+xlNLwrrl4qZz2zElQ7GLhgFRay+NU96cd
+	Ljy3uUMto+9JrMP9DMNqFxoqCWcuUFsAoQN79Cfizr4jwb9YyHU4UYa3k1hLAgKBmlRMczxFgsD
+	mBdWi1Aw8jAkMCfWT7gvHC/mMebryJJxHj5oPSVz288baytkbcEdoJGBRSFMvHtcYQy5ge6xa0E
+	CA7ewZTf2tdm1aZq3wwWc7MCAV9wQeSAp/dfVdfyGvnFxFmJQk03ePxjgReDNpGFg4KvuUBsEjS
+	ueovCtp+dfV/Y38oCl6Buf2O5W0qRe9g5esiVXoe+dIbIyrV3RbXlwqbT3+5FXsVCc9qoXvn9hF
+	nHcW4Y5el4s5S6i15aQFeSd7zliAuXPLAZmLmsM2SnbIp5xVBXno5GcgaTECLgFE1Jn8ehaU477
+	bSwOxJQi/ocr2tLrQPS6qvRgoiLIQ7xbWCPrMybclEg8TsLG/cTK8XnzX+8dHIFv/lKsjPr+Ziz
+	8GC/esXRJduVyRrudlxtA5Xwv+0p3A9aCiy+td0STLwIAnxWeaJ6CbqjymV/pDTUsDQyb6M1Dzj
+	q8OTgGaaOTCAhwG69sEWwwS60FZ/Hlmx0Q/Uhxo/0z3qUQzK3uMNvbz3igZepmnpEKItHiFe9BG
+	Bc32ax9L0a/I5HMJEujoF7NoeCAUVcd2bd2c/qCUmFTuTTsV8rLoZmKjn2vA5vQgMn8YEDhcC6G
+	AA6C7inVwY6IGYNvs0Pow0im9Q5tHSVFB0EeOeB49BMbxim0myg0gKbVpXfaqpoeTSLCdWiSfAz
+	oxBWSiezhIzxQ==
+X-Received: by 2002:a05:7300:b0af:b0:381:5665:df21 with SMTP id 5a478bee46e88-3815665e29bmr58724eec.6.1794865853121;
+        Mon, 16 Nov 2026 13:50:53 -0800 (PST)
+Received: from [172.20.0.3] ([172.56.235.113])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-380e0fdcc36sm2436124eec.25.2026.11.16.13.50.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 12:58:06 -0800 (PST)
-From: Michael Zaidman <michael.zaidman@gmail.com>
-To: Maarten Brock <Maarten.Brock@sttls.nl>
-Cc: Michael Zaidman <michael.zaidman@gmail.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
+        Mon, 16 Nov 2026 13:50:52 -0800 (PST)
+Date: Mon, 16 Nov 2026 13:50:49 -0800
+From: Chris Down <chris@chrisdown.name>
+To: Breno Leitao <leitao@debian.org>
+Cc: Russell King <linux@armlinux.org.uk>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Raman Varabets <kernel-linux-20260610-80b7ab08@raman.v1.sg>,
-	Germain Hebert <germain.hebert@ca.abb.com>,
-	Christina Quast <contact@christina-quast.de>,
-	Rio Liu <rio@r26.me>,
-	Bruno Giacomazzi <brunoceg1@gmail.com>,
-	linux-input@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 08/16] HID: ft260: uart: add modem pins control via ioctl
-Date: Mon, 16 Nov 2026 22:57:50 +0200
-Message-ID: <20261116205752.18800-1-michael.zaidman@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <GV2PR05MB119417E6491EEDE07003C52D6837C2@GV2PR05MB11941.eurprd05.prod.outlook.com>
-References: <GV2PR05MB119417E6491EEDE07003C52D6837C2@GV2PR05MB11941.eurprd05.prod.outlook.com>
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, John Ogness <john.ogness@linutronix.de>,
+	Petr Mladek <pmladek@suse.com>, Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>,
+	kernel-team@meta.com
+Subject: Re: [PATCH v2] serial: amba-pl011: touch the watchdogs in
+	write_atomic()
+In-Reply-To: <20261106-pl011_touch-v2-1-8f4996113320@debian.org>
+References: <20261106-pl011_touch-v2-1-8f4996113320@debian.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -112,44 +101,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Message-ID: <avt6uX_CAZmu2ior@chrisdown.name>
+User-Agent: Mutt/2.4.3 (cc9e3943) (2026-10-09)
 
-Hi Maarten,
+Hi Breno,
 
-On Mon, 16 Nov 2026 11:47:46 +0000, Maarten Brock wrote:
-> > TIOCMGET and TIOCMSET work only while the modem pins are GPIOs, and
-> > return -EINVAL otherwise.
->
-> Without checking if it is possible at all, I am wondering why it would be an
-> invalid operation to TIOCMGET the modem pin states when they are not
-> GPIOs.
+This looks good, thanks! I reproduced the issue and have verified that it
+goes away with this patch.
 
-Thanks for catching this. There is no good reason for TIOCMGET to
-fail there. The -EINVAL came from the Sashiko review of v1. In v1
-both ioctls returned 0 when the pins were not GPIOs, so TIOCMGET
-reported every line as inactive. v2 changed that to -EINVAL, which
-fixed the wrong answer but made TIOCMGET fail.
+Feel free to add:
 
-The chip does the RTS/CTS and DTR/DSR flow control in hardware, and
-no HID report gives the level of these pins while they are in UART
-function. Two things I checked on hardware:
-
-- For a pin in UART function, the GPIO report (0xB0) reads 0. With
-  RTS/CTS flow control, the CTS bit stayed 0 while the peer toggled
-  RTS. With DTR/DSR flow control, the DSR bit did the same.
-- With flow control on and no data, the chip drives RTS (or DTR)
-  active. I read this on the peer.
-
-For v4 I am changing TIOCMGET so that it does not fail. Lines whose
-pins are GPIOs are read from the chip, as now. A line in UART
-function is reported as the get_mctrl() comment in serial_core.h
-asks: CTS, DSR and DCD active, RI not active. RTS (or DTR) under
-flow control is reported active, as measured.
-
-TIOCMSET does not return -EINVAL any more either. It ignores RTS
-while RTS/CTS flow control owns the pin, and DTR while DTR/DSR flow
-control owns it, and it sets the other line. So DTR can be used
-together with CRTSCTS.
+Reviewed-by: Chris Down <chris@chrisdown.name>
+Tested-by: Chris Down <chris@chrisdown.name>
 
 Thanks,
-Michael
+
+Chris
