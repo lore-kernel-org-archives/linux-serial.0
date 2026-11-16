@@ -1,56 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794839955;
-	b=4mcKqMSiDArOtnMonMh/9VEPs2LulWDV0wzbHLAusrZf76SiTobAR8HZU7cT5J/zHKZc
-	 pQM2jxQQK4OZOPJHsniyFZOO+VaV015YoPCQe5q9D0NwgFkP8Ms93Mq9Y/5UWkZlTPp68
-	 wstAGZgbogoCeELf5UJER44+cHYNHJUeIrK6sgCdA3GYKMeCZkjrFGqv/fcId/7YkptJR
-	 +oibTN3qvcKIX2XQEAsr4e064Wam7oOsVsd7+z9IibfEDBIRZNBGYQDGYcgMJ+neWRwGJ
-	 gWiTbpKAII2hBD7rc/2mZKDfsN+Osyf9C9tSR6oYqOaJE3SaofnDvcEYkRRZe6bQA+Q==
+	t=1794845691;
+	b=A6V6Daw8avH3ZJ25Oqdbt54hJZlCNDad3v2Jt7ZPSYuyxPEwgSC6/K8k/JojV2NwVEjl
+	 Irp+n+jq/hBY3H2PXuxftGsZkOZ145gmqgSR7UiXrylJlp0Y2+DSotQd6jJ4kjILWx638
+	 cU0nVAsOtEanmTuBR8o+O51GwvgG2IhFZdKYVAyE7f2z67sGQuCkvyAbcrpaUfGke+J9w
+	 JoX72wUirNkrDlh7F7fhyLKU590+bu9vi6SMoEzXuYlNzP0omIqnugxzP3banqh/hmHnW
+	 OPW7H8okMRujxAANXO1kDdXZM+blTjeGVmEpwKVnlNXPAwXO/lUsju7GLR1Mcf+0sCw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794839955;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=i6ILREIqYcFDP5vxsGtNivMUpqP+s5K/w7Ye/l6YwWc=;
-	b=WVwVIG5igONl1zg+oWImMvhlmE8JGKyJd3WepGRBc6duWY3yXG6gh/Xq6inbxFHsP/pc
-	 VZeiAXV2SO/E9Zke2Yy3ZuRDR3w9sXM+jDU/zWhLPpp/cssb4D2O5o9LvSiWLRDj9//OJ
-	 BMciEQ5vgiBc7aAPZvIMcoXKeemvH6TxvRsKP/7YArivqCntRIDF8H1aOnwXymS1Ymgsl
-	 RBvcHo5tPOYKoNK0pPYKRUBnUCMNM+z5wLiok1nwwxQNL5M5QTRhfAvD6FamaiHRnU0kE
-	 suktIfeTYaqsfM2aFrCsfXEhmJdHaCi01JO+YB+0KiKGx8ebSJ9FDMoC9hALrIcjQ6A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794845691;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=N7wQpVQ+bTcbptKNuYSOq1g/ZGresd4OfMg6HHxOoag=;
+	b=RX8QLb9pWMvQm0PAgPUaNZ3HJYdfH89kxUh/hXkLKKo98wOGTcmRmam4NZx5OhkJv7UE
+	 8ZdWE6PJSt8fjnpH07aC8jCBDR6e9rDXnLh5jHokWg9vuNmqrIQt4SXT2lRXaCMuz+8is
+	 RFWQYr9yIj4qcBaNASyhjQSaSa271z3wh4cCYGB2f4NwPqxdlHgSySWDZZhW6DK4pOnW2
+	 NIg7GKng1j7jECQ4gDGD+sxr6PKyujtpShIfmt8sZ/SqKKQjEA1CUWGkFQIlukhgduyWJ
+	 UnUYVDUMgdYiXwTSVuapsylBpCbutK38OXt7ZXNoB9kLqdhTGWHB2KMYDLyvk3jw+Ew==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M98brw8P;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="EW4/4GAX";
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2762606A31C
-	for <linux-serial@vger.kernel.org>; Mon, 16 Nov 2026 14:39:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BD2D606A322;
+	Mon, 16 Nov 2026 16:14:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4BD2D606A322
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M98brw8P
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E281F000C5;
-	Mon, 16 Nov 2026 14:39:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794839955;
-	bh=i6ILREIqYcFDP5vxsGtNivMUpqP+s5K/w7Ye/l6YwWc=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=M98brw8PPYKluSFLW+efTJh9GmItrd4xCG7pQoOsPKavH0+flygdIAd6o0pTbqwlg
-	 JivO+NYVjftHf5vvp7qse2ielFQUV5jRhO9lRB6p3JbA2+aeT4qpWGBmtdpGToxB1q
-	 UtU3RoxTS3fK0GAhz7K8xzJhAaXb6kMDgVvPeO5vShiVDqwwHi4awJubKCxHkNc0Dw
-	 Sw5gFM0GQSEXiaNedpITuB95iLzvbw8sN3KT4K5UtZilu6icdjZIpD3c5nLxky3RFE
-	 l3h5PYjE+jiWeC5VYnEstY2aQbhxjFPQ4qlhJYqSf0lCfq06Da8hQN03WtUX3h77hr
-	 TJO+Y1XPqhSgQ==
-Message-ID: <sashiko-outbox-217183@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: 8250_aspeed_vuart: Fix potential stale port on
- probe failure
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Guangshuo Li" <liguangshuo@mail.sdu.edu.cn>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261116-c29ba55625-serial-aspeed@mail.sdu.edu.cn>
-References: <20261116-c29ba55625-serial-aspeed@mail.sdu.edu.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 16 Nov 2026 14:39:15 +0000
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EW4/4GAX
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794845692; x=1826381692;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2qWksjfKSQubdHdo66uJX986+dh3EH0BJB8sxwmWIKc=;
+  b=EW4/4GAXaSvLd8buqlvrcAdPkO0blXK9jSlG9ZhlMbOv3IgRzoUpmCl3
+   6J0qPwEUCoE4YICX2PI6lYMDgrltkOFV4ZQdfiTRGaMVlUKOa6k7itPLG
+   7dmmZtl3PontzT7DObsjx4EkeMcUXaoC2SeCzao0yW907IV7uduEU2JYu
+   ZXWS05FMPoOxw4ytVDi9TWfUcgg+EicRcw2fugAKuD+GOAwFayLGep/DM
+   Og4hKXCAKW5XTx1AUenFYhY+DsbWmeN2PXBS4Ko2j2U8WEqDgFjPGUknP
+   7RliuWXT0HWlS5uZaEyFwLVqu0+QKEVPIEuTawvtzCFl4zBG1qEEacmzS
+   g==;
+X-CSE-ConnectionGUID: 4eNOjWQLQA6VSJu3JluYww==
+X-CSE-MsgGUID: 0ZAjSXMDST+CsYdJXgtU5Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3479439"
+X-IronPort-AV: E=Sophos;i="6.27,217,1787036400"; 
+   d="scan'208";a="3479439"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 08:14:51 -0800
+X-CSE-ConnectionGUID: 4FKOGO9wT5yTDyoPEq7VnA==
+X-CSE-MsgGUID: 5f7Ksyp+Q8mrRdhLO+8XeQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,217,1787036400"; 
+   d="scan'208";a="9990259"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 08:14:47 -0800
+Date: Mon, 16 Nov 2026 18:14:45 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: James Hilliard <james.hilliard1@gmail.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Frank Li <Frank.Li@kernel.org>, Dan Williams <djbw@kernel.org>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, stable@vger.kernel.org
+Subject: Re: [PATCH v8 5/6] dmaengine: dw: calculate residue in the status
+ getter
+Message-ID: <avsr9Xy9WR-C7VzD@ashevche-desk.local>
+References: <20261116-submit-dw-dma-synchronize-v1-v8-0-4a82d64fcd1a@gmail.com>
+ <20261116-submit-dw-dma-synchronize-v1-v8-5-4a82d64fcd1a@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,77 +86,54 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261116-submit-dw-dma-synchronize-v1-v8-5-4a82d64fcd1a@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Thank you for your contribution! Sashiko AI review found no new issues
-in this patch, but noticed 1 related pre-existing issue it does not
-introduce:
-- [Critical] serial: 8250_aspeed_vuart: use-after-free in
-  aspeed_vuart_remove() [1]
---
+On Mon, Nov 16, 2026 at 03:52:33AM -0700, James Hilliard wrote:
 
-commit 4eac67f7d5031d7988614ed386938a68b8050e5b
-Author: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
+> Calculate hardware-LLP residue while looking up the requested cookie under
+> the channel lock. The descriptor scanner updates cached residue only when
+> no transfer-complete event is pending. If a status query completes the
+> current transaction and starts the next one, that new transaction's cached
+> residue has not been initialized and a query for its cookie reports zero.
+> 
+> Have dwc_get_hard_llp_desc_residue() return a local residue value from a
+> fresh LLP snapshot. Keep the persistent residue field for software-LLP
+> block accounting, subtracting the current block's progress when reporting
+> status. The descriptor scanner continues to advance software-LLP blocks
+> and complete cookies from RAW.XFER, including for polled transfers.
 
-serial: 8250_aspeed_vuart: Fix potential stale port on probe failure
+...
 
-This commit disables the VUART, shuts down its unthrottle timer, and
-unregisters the 8250 port when LPC configuration fails during probe.
+>  	desc = dwc_find_desc(dwc, cookie);
+>  	if (desc) {
+>  		if (desc == dwc->desc) {
+> -			residue = desc->residue;
+> -			if (test_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags) && residue)
+> +			if (test_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags)) {
+> +				residue = desc->residue;
+>  				residue -= dwc_get_sent(dwc);
+> +			} else {
+> +				residue = dwc_get_hard_llp_desc_residue(dwc, desc);
+> +			}
 
-> diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/se=
-rial/8250/8250_aspeed_vuart.c
-> index c8dc87f6886c1..2cd1c9146ec89 100644
-> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+It can be written in a shorter form
 
-[ ... ]
+			if (test_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags))
+				residue = desc->residue - dwc_get_sent(dwc);
+			else
+				residue = dwc_get_hard_llp_desc_residue(dwc, desc);
 
-> @@ -543,6 +543,10 @@ static int aspeed_vuart_probe(struct platform_device=
- *pdev)
-> =20
->  	return 0;
-> =20
-> +err_unregister_port:
-> +	aspeed_vuart_set_enabled(vuart, false);
-> +	timer_shutdown_sync(&vuart->unthrottle_timer);
-> +	serial8250_unregister_port(vuart->port);
+>  			if (test_bit(DW_DMA_IS_PAUSED, &dwc->flags))
+>  				*status = DMA_PAUSED;
+>  		} else {
 
-[Severity: Critical]
-This problem wasn't introduced by this patch, but can [1]
-aspeed_vuart_remove() cause a use-after-free on vuart when
-unthrottle_timer is re-armed during removal?
+-- 
+With Best Regards,
+Andy Shevchenko
 
-drivers/tty/serial/8250/8250_aspeed_vuart.c:aspeed_vuart_remove() {
-	struct aspeed_vuart *vuart =3D platform_get_drvdata(pdev);
 
-	timer_delete_sync(&vuart->unthrottle_timer);
-	aspeed_vuart_set_enabled(vuart, false);
-	serial8250_unregister_port(vuart->port);
-	sysfs_remove_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
-}
-
-Because aspeed_vuart_remove() calls timer_delete_sync() instead of
-timer_shutdown_sync() before serial8250_unregister_port(), a UART
-interrupt arriving while the TTY flip buffers are full can re-arm
-vuart->unthrottle_timer before the port is unregistered:
-
-CPU0                                  CPU1
-aspeed_vuart_remove()
-  timer_delete_sync(&vuart->unthrottle_timer)
-                                      aspeed_vuart_handle_irq()
-                                        if (!space)
-                                          mod_timer(&vuart->unthrottle_time=
-r, ...)
-  serial8250_unregister_port(...)
-  // vuart freed by devres on return
-                                      aspeed_vuart_unthrottle_exp()
-                                        <-- use-after-free
-
-Unregistering the port before stopping the timer, or using
-timer_shutdown_sync() as this patch does on the probe error path, would
-prevent the timer from being re-armed.
-
-[1] https://sashiko.dev/#/bug/linux-2b3eb48a-af6f-4ebd-a642-413d2498b067
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261116-c29ba55625=
--serial-aspeed@mail.sdu.edu.cn?part=3D1
