@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1794906699;
-	b=fi3MPEni9VYDqijkTDiz0egIb/b1j9mOeZSdDTFBMjoyehNi1tJBd01lAS9J1EX5UE28
-	 THB3EFoAisfr4+KbRf7FKGSLBm9su9hEyBg0hBvVvYXnUUjQMfA/qy4Alak4xUZqdTY/d
-	 4b50nYgcPMF+NpzhfeqvpyA7uai3i/NDe7DILGEdjSfiPA/DAnya13HOgM+rrfdbuDxcX
-	 E1woPR1PZtuFfThoOMNcE5eLHYOQJ3DlhgTJhB67U2QXEn7SYkJN/iTKzo8eRFqMRMzC7
-	 pq1Ikt3UY2/1v98SW8OnqvYywnRfuDhtV0KT0FMZPB9o33QCRd20XYTh7sbNFIxin1w==
+	b=n0tLbmpzNOZby8cB/uf6F5dnXuqZc16z9pl2vE4B25Z5IMKELgsOdizT7G6saq3PZRzl
+	 Efs7qe5/lST9uf0CkjlLfxIIuLbm7ANwS40X5Ae2mgZUaZQQvoeGWMVjgIsfeOeXNLrul
+	 Dh5k5JOIumxKCp597/et26pVncEfEZ4kO54qhA5Ld6ylwPjUCMYjKMPVBJzwAt4tt3i28
+	 Y4PHE/KgkRtx1zgV9LhuPGa4oT88TVB4krZz2l8GMasTooZQUpQ8PjjpocDjTgksFFkhS
+	 k63E6beck1i/nW8WzzqXreyvCQKUS855tZcE+WSvjT4UZZ5Jsl7ntfzZqlLM4iyMJPw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794906699;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=pgH79hn0SCK9OIleCkqIqypKD/2WKW5SYdyENUBd9sY=;
-	b=D0QXt0mEMdyF3j39C/S8/ZAGCrg9BsZDXY2sp1W4xWnGZKsllOLdVCWdmEvfUBVYCuo+
-	 Zu5t+cLXDyLhIb+JVShyNUaGerpNnAt3oW23qils5ZIvCeoKZMxzDbDXrAIw7JmGN+ahK
-	 s7GA9ibQo9tfe99jfBOaSOgC7nb15vB9es+YGSNsnbUlQWQBwee2ZFc9igRtOB7KctnvW
-	 5PFhqFOyqwMn71SwbP73f3JGGsVzHaujWOSRkDJVjubSMjIcVvN6FifdXdZTuJO8M3ikQ
-	 YDXYPcuCb/4BZ2BrZ+5JH2/57zAklBoZiG7EvSlXrkVxZunO9Iv+340VRZfnMmr5Heg==
+	bh=sQnkF5f7J5gjzIigPcwvePLDA2RiyWZPn2x/OhMR34g=;
+	b=xriXbDuipSLMAsI68YuDuxH2e8Ua+BA+kFIvCGkJ4eQNTeWqtr02HnEdbAByYdRodsB8
+	 E4sMtBBzT1pCRdM0LGeQUtSBm8wfnRvsxg9FKJvSC2/d/KpvuzP/O6LIeEXUU98Um1bCR
+	 CUoQG+Ag+elyn0QYxKIQS72uQ/h8O1i8vhoAKY9DgB/HFGfbXcx3ER1sQovDQtqd82lac
+	 cRyMSwbrwhqxtjKKpWv+Q/G69hI2RGsUf8YyQcw5NcT4r/fssaD3sAHmKM+8YzpE6ijvK
+	 Ja8f6bnq3Unyu9pKgSKlYxPpIUYbVPbH+GOyAGzDt9acHF/jmMJYZQQv0+mqv4mh1IQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jGi1XVgb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HqBtOb+f;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF52606A332;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C85606A33E;
 	Tue, 17 Nov 2026 09:11:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jGi1XVgb
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HqBtOb+f
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
 	t=1794906699;
-	b=EmD4tqPOhkhuxelT2rIvGqL0r/JWpzxFZYGY/va84A4IBvUl0wdvHItl9pCkJyoWJX3b
-	 gV+DtqDvbV5SKuxpTxji/PbE4rsd881XTcZ+jyQl/8G8KHNxlf3xAZHKL1svI0jm+jnvP
-	 +eoba9jmjLPKoPSldyaJ18wq9HQ+j5b3kiuVc9vcfvCoZKIh7aRaGmEippSrMbcfgOmOY
-	 nQSpkf4FLGRY3yJwP+KgjWgWF2sH7dHOBGZozSiagkMcRA4Fk2F3WHZTpddEQpGbW7uvM
-	 ZquZ6KyTWltOJ88Hi0znikiGKWRDX6HMWgEoyMeGBYgVVVx+cdS1uxcUG+rXMy3DOGA==
+	b=OMh5ilukyezPuxzyok3rCv17xArYJdG4LoFbNwmKOElf6WGkl7gFT86RM4X/5pOEEawo
+	 vnC1l5Q2xOAFv3rApNrUWkWoCm2/HyqI3av3FuwyO4PPkIhpsJ/jDYvW/UxSF07lRDtqt
+	 7sc14wcPCMxuiWnSyZsJJMamELPwTNTouleMhpAN6jSBukk9huWJnFBQfC4ZdWWyM7Li+
+	 Q9iP+GqjKNDczsowSwOZg9zFy7mVpQHJkv/b62Nn0RRryaQ5JyMUSBniSmDrTvLbIRyyI
+	 /8cvUfofgJdulIrfRwZiqtKL0k1eDs0dGFMjBtEF/I/q4AfYSUPDJXnhcwNfgANUF8w==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
 	c=relaxed/relaxed; t=1794906699;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=pgH79hn0SCK9OIleCkqIqypKD/2WKW5SYdyENUBd9sY=;
-	b=Cy6IWZ3vZVbH4wTAxx23mEELlN1oMqHiUdvUqthECphFR6CSlEvoYipEBsa5SeT9hF16
-	 0CDkyoNmjHFdzbbxL5LI2XT0MpRqCwR776SpwX9ODVG024EmqzQFCQ/NTmvg10VCr4KXi
-	 fgrc6jRq4uouyDQBSS1l4e7zHwbPc5oCK5efh3We4MkFfc8PHcksnThrxQ2n4XydzBJ32
-	 l4hLOIvhTExwfpDDD/C7dlTqgK+WWY3Y0yB5EoQiYMsRxbRy6Cc/8AsDTreXz7LDuk6Tc
-	 SvTghNsLR+4tI3WWsbfl368SQpaHRAbHbNtYJ3TgY9WjqQykdEObeP2FM1t//LgkSmA==
+	bh=sQnkF5f7J5gjzIigPcwvePLDA2RiyWZPn2x/OhMR34g=;
+	b=tii5P3rZ2JaCVrUVLWafRMCauI3KJE5F+N6v9ANd60SLP0km7O2n23iJ8EXcltGP2fcR
+	 dIiL9b+KQzRnBg47x2+FhN4X7n6CfQZcJQF7dAq1FRViHhwj9iWAkpWSUa8nWlt+/NwjQ
+	 /DSEPTEiUJAeV9n/dXuvtAaOP19vV9awTwpf7OQN3z3uFYN/HLjIVTYcwMOVqaFTsyyUC
+	 Xl9gtuSy77mszbe2lTNWkXjPGtFolw99teDjkfLZezB8loFWbbgeG5urV53Aj5nqsdpQS
+	 ewgCFxdR7hIHgchWEB6ItWux3Yuf2bamMObanIyV6ZvGNE5JlTjiue/7XaAiDzyAMLg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id BE7571F000C9;
+	by smtp.kernel.org (Postfix) with ESMTPS id C17F31F000CA;
 	Tue, 17 Nov 2026 09:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1794906699;
-	bh=pgH79hn0SCK9OIleCkqIqypKD/2WKW5SYdyENUBd9sY=;
+	bh=sQnkF5f7J5gjzIigPcwvePLDA2RiyWZPn2x/OhMR34g=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=jGi1XVgbSgYjV6isXuCw1zTSInR7yYnhL0YNnG5aYUk8iXklNDBmhEfk7i3RgOZnG
-	 mQGGPnYPjwcGnxJ9xrnYdqEUcnd9br8lOy5pd3tTbrTXTNZhFyl688VdYKAvrNtkWx
-	 EGeJsoKAdoUNtG3Lwf2GJm9ZDRB1LCPkAIG3jDuMoaE8ojZR7P4Z3/d0xiCCFpqmJs
-	 fIKU+QI4arADso6gFEMJ4WWsCy+zibcq68wRM1+pf0Ks/lMfKqBnz7OzlEpv7W+GqD
-	 v4x7e+6z2IC/H9/t7dWZD9XjfDn+87ueuGY+YRyX9rpRrlpJBkSDfOeYNGSvPv9Tt5
-	 6VCrGD3WmX2Xw==
+	b=HqBtOb+f7+zk/sCku6p5lGrGlTJMvWjSILPJYthaRkZCE+kby9CmmVsfbjPLxI89g
+	 Cl5ToKVnRQj75AVPZsUqodNQHzZn4NFU9MOCs+8sUkq6yLekTzP/In/gd0Mpty9iX6
+	 BfaHLbXBTUIiDHSVbMCzTAHpcL41QMVnA3eGz2vk2dB4Gkvo0HO2jjBdNJ4Eib9Ibs
+	 MJjT6LigUIBPlbdh7haWxTvfsuHdaiWnMLaGK9NgKRjCgx4YYe9qtMCnwUNIIgtk1s
+	 8pAPab/uwaG+hmaT1GdDK531YDLnQ+rlU8J3P6TdHN/vfdeuZc0kpAG+DN/o81NXLh
+	 rAOmYNX70VaPA==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 308E24A773;
+	by lkml.kernel.org (Postfix) with ESMTP id 473B54A777;
 	Tue, 17 Nov 2026 09:11:37 +0000 (UTC)
 From: Rui Cao via B4 Relay <devnull+i.udp0.com@kernel.org>
-Date: Tue, 17 Nov 2026 17:11:31 +0800
-Subject: [PATCH v2 1/5] dt-bindings: arm: mediatek: Add MT6833 and the
- Xiaomi Redmi Note 13 5G
+Date: Tue, 17 Nov 2026 17:11:32 +0800
+Subject: [PATCH v2 2/5] dt-bindings: watchdog: mediatek,mtk-wdt: Add MT6833
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261117-mt6833-base-v2-1-058a0685c40c@udp0.com>
+Message-Id: <20261117-mt6833-base-v2-2-058a0685c40c@udp0.com>
 References: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
 In-Reply-To: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -100,14 +99,13 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
  linux-watchdog@vger.kernel.org, linux-serial@vger.kernel.org, 
  phone-devel@vger.kernel.org, Roman Vivchar <rva333@protonmail.com>, 
- Rui Cao <i@udp0.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+ Rui Cao <i@udp0.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794906695; l=997;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794906695; l=1098;
  i=i@udp0.com; s=20261107; h=from:subject:message-id;
- bh=GFyoNWGAxLOiNW5P7U3cZx8tiVYOhuPhOWyXLc+W+0Q=;
- b=+PL/AuT0FA8iW/Q8KV20KLaBcgLP5YqhtlQdcoSCjLAcMb01U+sp2+tjoAQ3PEsrSfVe5OaCi
- XoTUjWGfst1BEC/NiAGORsYr08KDucu8bzQsdhed6EbAQT67EVeqAkt
+ bh=jjCiaVOOht+RI3oDkxUaR1YbdSwCNgqgxnVxINfl9q8=;
+ b=9g9D2itu8LsARvIWD5fHnn7cKiJ5isx3uDconLIYrEz7YNX9M/UaO365a15DHPzjWzin6dTNu
+ DZmZImgXlCpAcN2Vn/scwDnZx8pOnzCjHOIz8kc7gqYD/GgVyArpBpA
 X-Developer-Key: i=i@udp0.com; a=ed25519;
  pk=XZJKcKgnUUjjyw8KuKy7u2QeIX0JLY/L1Fxzwwje41w=
 X-Endpoint-Received: by B4 Relay for i@udp0.com/20261107 with auth_id=1443
@@ -117,31 +115,30 @@ Content-Transfer-Encoding: 7bit
 
 From: Rui Cao <i@udp0.com>
 
-Add MediaTek's MT6833 (Dimensity 700) and the Xiaomi Redmi Note 13 5G,
-codenamed gold, which is built on it.
+Add MediaTek's MT6833 (Dimensity 700) as a compatible of its own.
 
-Reviewed-by: Roman Vivchar <rva333@protonmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+It can't fall back to mediatek,mt6589-wdt, which also describes
+MT6589's twelve TOPRGU reset lines: MediaTek's kernel for MT6833 resets
+the connectivity CPU through bit 12 of WDT_SWSYSRST, past them, and has
+no full reset table for the SoC to take one from.
+
 Signed-off-by: Rui Cao <i@udp0.com>
 ---
- Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
-index 180e6e4948e..900f16b57dc 100644
---- a/Documentation/devicetree/bindings/arm/mediatek.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
-@@ -72,6 +72,10 @@ properties:
-               - archermind,mt6797-x20-dev
-               - mediatek,mt6797-evb
-           - const: mediatek,mt6797
-+      - items:
-+          - enum:
-+              - xiaomi,gold
-+          - const: mediatek,mt6833
-       - items:
-           - enum:
-               - bananapi,bpi-r64
+diff --git a/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml b/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
+index f9b725592c2..5742cc09a74 100644
+--- a/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
++++ b/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
+@@ -24,6 +24,7 @@ properties:
+           - mediatek,mt6589-wdt
+           - mediatek,mt6735-wdt
+           - mediatek,mt6795-wdt
++          - mediatek,mt6833-wdt
+           - mediatek,mt7986-wdt
+           - mediatek,mt7988-wdt
+           - mediatek,mt8167-wdt
 
 -- 
 Git-157)
