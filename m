@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794914138;
-	b=jNudSiR8O/SzrZiSQrNxWjGnEVOaMFsQgI2r7ak2jJJJhTncFJQICqb9P2jOpHJQvP9m
-	 eXK1shaFE/6VEf3050p3krBW705y5uQf+lXMGew5M93IjBX/a04UypJUOK/2465ljfNGn
-	 az7OhYqduuWUSvjAURiwozfEw0TrSNnBWyUlNL4Wt012OMyMcWtSMSN2jP0LRr+uYDoE6
-	 Q3Egjmm0G1jtbgjipxFuuEKcl0Dz9ueTPCXRzKcuZ4oSqoeJIpIVc0Ta7MsE8Kn9Tdtr4
-	 BmXn86oj5Z0a7f/Zc3aN9z0gP4th5YImjHO8Ary3un8NxTBmrcEUgBLifHhcT70OkZA==
+	t=1794914543;
+	b=pjcx7jI7amWyfIob2kBmEOR3pjzuPcn2Uq4Wpf7yYqX2OtCoWEFqcmxFn8OC/XKHFP1T
+	 FEi8OHuNIdr4qfy3N8Ivl8TSNqh4M+g+pLxlOZwjKFgi09fCEJbzaIE1oLDqAdfa5fCTh
+	 L91qa1shl6NFnLTvymLC1ft2x8rjTIQLkncDXYw7qa0ZvDAsojxCpTrQc/8lXRrylPBlv
+	 /Rvbo3oOP76Qf2AFw3OPl57NZkNCNQ+hKarFa9Lgz2dN5rTJ0xRbcGUjMzqxhHmYsSi7V
+	 33kNQRpVRHDWPsIlegyloVWszCLcW+QZTrBjasjBuR6jhwxd6P2XVmF9Es2TOOEP8kw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794914138;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794914543;
 	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
 	 User-Agent:Subject:To:Cc:References:From:Content-Language:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=HuszLLEjXpkORq58yz0GcNo/iqkBHOAIX91Mb3TYLQE=;
-	b=eRkR7BkL/LeqX87gQoD1ajaOZFkqIv8Xw8fI769IZDlfm/ELg4hM2s6thpVZjQ7mexS9
-	 rQ4xKEnFRXD59DN+zpadBI4WjYL8NIW7ZwlwOsU6jQ1F2lOVW190ZQVy98VtJDUPATc5t
-	 /btp259DDNyBT7z+TRP/seFZd5QlFQJLqBq+W51PMN181xIXwbgcUSTlBFyml4yuWjd6A
-	 fvEF3+qjBNDsP9GMV1+LHowkXbS676pTh73c/vqW/TdR5L+BA3zjHH3gKu6gIcpH2Zudz
-	 8lZxOWYDBG8pbNnyTKtJMmxV/pMlgtY8ggLzvhX0Dr7dGLocV4O3Pxh/OfTiIpWC9ug==
+	bh=oIe3p67w4/MbeGv4zncqvt3AjFKp/+ub75gyoZv00yk=;
+	b=jdU1gW1hP17A7FC+k/Cyp9EWLDWbGERSvFThvCYoC7E7nmlWPSxolwNb8KMU5qdEwjj0
+	 T6qKT8gZTgZXfr3hgyGJCOy6LhTv5OgJ7gbTTQKgMgY32LvFgqjuR7FGnlUKa+qiMrSxL
+	 XEjYAD+WGaIxkkREvtTXmMfPK7gcmjUw1YAXQYX9udr71q28Ie80u2PvpqZBaaC+pu63U
+	 BucI1eMIK/iJs5gP03OuH7vWWdXbLNTru2A+Ho0XwO1FMsuk0SWRlODcKU2E6T4S+l2HE
+	 r3Ds5DS6wCb4yxiJLoNaympVxGplzgrMHO66QWnq6Wr8sjbYl2P4fUUxupZmXweytqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=collabora.com;
 	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=GFLdkHCT;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=RCJ4jS0O;
 	arc=none smtp.remote-ip=148.251.105.195
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DBF606A323;
-	Tue, 17 Nov 2026 11:15:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61DBF606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B343606A31C;
+	Tue, 17 Nov 2026 11:22:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B343606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=GFLdkHCT
+	dkim=pass (2048-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=RCJ4jS0O
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1794914136;
-	bh=Yowmv05lbR40wQjKJ7RKOMQYkspttaK5HaDL4dRGMBw=;
+	s=mail; t=1794914541;
+	bh=fA7EhNWJGQMJleB4jeAMNpc2PM2vJfFLxpgDHBdrh/Q=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GFLdkHCTqu2t1UmYxAlJ/UbqwGp0LcB8XoKMVuhFze4BN8fUNBw4bYVnpLaCThZ1P
-	 k8CjQEWp16KmKRxPuYRQIWp0XPuCwIm/AAL40vNZL3TbhkaPixjfq+nIUgEspqfLOR
-	 iRal+NIhfjZDoMANrXVsVzhAz5YBQUNB+AsS7Us5akG8St/Q0Yc9cTPrdud0BYYy7O
-	 v6yBalOCHkfnsW6a1ntehyf6z4Zo8nfvNkWR1501mtTsvqz55USmt9rPUXEYtjKfuw
-	 oQssNpmvbn6L/zpYZemKD0J32XAV1yvimGRj9ZWAr0+jbbdveLiOgjD5M6WxdaoWGd
-	 wHvDFVFjRrz3w==
+	b=RCJ4jS0O1HgXzb6a7gu4e2T24gqN8Sq6ElCpkeEzqhKHDWzHxucj6RSxoY0gKXb6+
+	 kSS1ilPDNoclzdLQzkEts/2EHXVHs3b+WsQm5VJlX4SGvlg0miHdiF+aYr5nqgTa23
+	 90XS0A7GxLhacqR4ITX5hw6Z18fvBHQWJFEDsDHnTJMSToGp0PD8RyKYwVN85X2UjV
+	 T47zlhaPyupNsFckWGP1f/moMioiwRkfcQQk512x+FzuKOZW8uEU+BMhzImMJd7EV1
+	 At0U7fDzKFivcP8mcXX3E9gtTjTosIyz3YBraDkr3UAY+65oqKspx4LaQgLv9xG6f5
+	 8hyclFiQY99kw==
 Received: from [100.64.1.21] (unknown [100.64.1.21])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange x25519)
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id DE2A817E0060;
-	Tue, 17 Nov 2026 12:15:35 +0100 (CET)
-Message-ID: <843a1fba-f74c-41c0-90be-f97b8dbffc09@collabora.com>
-Date: Tue, 17 Nov 2026 12:15:35 +0100
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 7924F17E0A27;
+	Tue, 17 Nov 2026 12:22:20 +0100 (CET)
+Message-ID: <0956ff3c-1bf9-42bd-b498-721696ce2b9e@collabora.com>
+Date: Tue, 17 Nov 2026 12:22:20 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -62,8 +62,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/5] dt-bindings: watchdog: mediatek,mtk-wdt: Add
- MT6833
+Subject: Re: [PATCH v2 3/5] watchdog: mediatek: Add MT6833
 To: i@udp0.com, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
@@ -76,24 +75,27 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-watchdog@vger.kernel.org, linux-serial@vger.kernel.org,
  phone-devel@vger.kernel.org, Roman Vivchar <rva333@protonmail.com>
 References: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
- <20261117-mt6833-base-v2-2-058a0685c40c@udp0.com>
+ <20261117-mt6833-base-v2-3-058a0685c40c@udp0.com>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Content-Language: en-US
-In-Reply-To: <20261117-mt6833-base-v2-2-058a0685c40c@udp0.com>
+In-Reply-To: <20261117-mt6833-base-v2-3-058a0685c40c@udp0.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 11/17/26 10:11, Rui Cao via B4 Relay wrote:
 > From: Rui Cao <i@udp0.com>
 > 
-> Add MediaTek's MT6833 (Dimensity 700) as a compatible of its own.
-> 
-> It can't fall back to mediatek,mt6589-wdt, which also describes
-> MT6589's twelve TOPRGU reset lines: MediaTek's kernel for MT6833 resets
-> the connectivity CPU through bit 12 of WDT_SWSYSRST, past them, and has
-> no full reset table for the SoC to take one from.
+> Match MT6833's watchdog. It works as MT6589's, but its TOPRGU reset
+> layout isn't known well enough to describe, so it gets no match data
+> and the driver registers no reset controller for it.
 > 
 > Signed-off-by: Rui Cao <i@udp0.com>
 
-Reviewed-by: AngeloGioacchino Del Regtno <angelogioacchino.delregno@collabora.com>
+Hopefully we can get the TOPRGU reset controller layout somehow somewhere, because
+it's a pity not to have it... though, I think that the only reset that would be
+actually needed is the CONN one (for the modem) and nothing else.
+
+So
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
