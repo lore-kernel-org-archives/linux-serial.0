@@ -1,89 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794955752;
-	b=nmcV4no431I3ZV2b1h3jNU4tVann+4OSvajv3CSwCcLfU2pDSNawynyNQEag5bIo+9e5
-	 9N8zBDS3ec9k3FgA3/oGh4py2FZUZJvyS7fspzo9kZxH/isQtrRXVl6mL0oz/TcDmdrz0
-	 sxs+lo2AGwAu9XiRIIDVt0FEAzsmVc3ycGGZNgR7eZfAPpyH3JBzPeod20+WgOnPcthLL
-	 5ebWKU1ZN3AnJLrHhH9xJvta0XtRRGNPWB5uwL3t9FPeEzCTbIUFdwNEq28XGpqODxKg0
-	 0+26pz7CBrNhpXp5mN56bttjkzoewcL2f6dUDv+QHnyMcvAVySCMhqtr4ywwlpPrFhw==
+	t=1794956087;
+	b=DGllNeWMjhB+zYRimJ+o8AkODYHAVpU1qMalgvIJ3UuL2uNJbCI3DNiYOAx90uEaYO/M
+	 8448k+yWgLSsw5X8+FWqgngHAGr8cD+C3gZomoeMxwzjtdUJcq1m5n9JUoSSmgB2HC+sF
+	 n27N3S78FZuNWC5jbiZ4X/k2hKSolRISJOhjlYJg8L6x1zRPcKfiXkt7+iRlGW/7Nvb5w
+	 qLvhSUZkMAmJnOPiLs2UHUZLWuT51ZNz4Je8cw3cNU0dE6HtlgsryMSAod65eLVRd1HHU
+	 W9+8x7c5IMc5aE30/E7cJX6Pr0V/2oENPqrrSCisUtGkpxQ2PZpK4Y1sUZcj/mhA9KA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794955752;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=k4Qm7XpfJ4IaAnPaVRdhRvip1Jdg3xw+SpQe4yTzGGQ=;
-	b=PzW70oswhrrFX/GAEN5KtM/uT3wk30XBoMvEre54S3+6q9jFsL8QcFlNwjLtIx1YXhg4
-	 K5wa39TZuonDWtqAJscmri5La4Cyd3Bxml411nHwwj8fCM9cB0Svzn5C0fCK9D/hof47/
-	 v9OuLP6WrKo2+2Zl0GQPovtcIAnOE8d71obdl/5yNwTk1wMf5GvXG9zHVoDPmWhTRloRR
-	 JY1xTmkQpbl69b+sVdIdEG0yoqZKoHiaPqR8qPe/6eoeW8b9GGw91x1xIRqaaE1FfirDZ
-	 NMwIfJjcEY9kNu9jRdUvYcXeWQrwGzVd/wyiB4/2JR+5b5yIYoX++TNlITAcFN5ZIWw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794956087;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=AteIRt+I+puDYWrkqeRrzqlE2U3lEzv18N4TdnYH81Q=;
+	b=jJRmTFy62IgVLd6mRQQOkE2Bd+6/YhCJ7kk5951uA3v3Jn00gItaTHKoN6i3Yz5ypne5
+	 Fp6IXNHdCrUxoiBkN274cmMeABV54V6yDpoI1xbKz06ofC17jecklsC/Z5ulhHu6PkuPb
+	 l+qoU1gWzyM9gZ7emLTaVoEA5stJsgGxfdocbGIQBbsMTyFFLMOlDwyaO3OFECfleaiTj
+	 TXl+xsIm66ql9hT2J8R/I2uuq+Z33aC/BwIk6JYcw6UCJxJOgICfO4UmKSQIG24A3e3+P
+	 vcYi6HxEAFsXyMBfwa7BTsD2Dc5UkpJb6Z+E3nHDPxY/8gtcTEigG0iz1ywGZFI8qvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PcwrOPy3;
-	arc=none smtp.remote-ip=209.85.160.49
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G95E8cUP;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0557606A8AB
-	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 22:49:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E0557606A8AB
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E1E606A31C
+	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 22:54:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PcwrOPy3
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-48eee44b908so223442fac.1
-        for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 14:49:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794955751; x=1795560551; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=k4Qm7XpfJ4IaAnPaVRdhRvip1Jdg3xw+SpQe4yTzGGQ=;
-        b=PcwrOPy3tfi3YBg8v5BHLPacqa4Td08uSUMN6sTMXCUIRMVBFU0iUEooEMj2SWEqLZ
-         zXlwALAmDbfl86YT3JmsMoeUpVm2mCP+trIJhMj8bvOQjrGYGtgP2z+G43mSEWRN9teR
-         JhMPLX+NEdQv4vbBfnEVSh7rUZlShSX/6NR4yFEuWXTL0eX+/+u14h8hHqBL/SlEM28c
-         P9km1wHqaeOSrIpkNIoiX3N3TPYTq99ghrE0V2/OZDo7CA/+S7MwKVMnM3OINxV9XdKX
-         nAD2227a7/DYkwBSGKsGxWZQP79S+NhVi0P7S5Z8G0smZSgYa35O/rJx0/w+yMbJe8lY
-         CYYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794955751; x=1795560551;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=k4Qm7XpfJ4IaAnPaVRdhRvip1Jdg3xw+SpQe4yTzGGQ=;
-        b=HPcqskrMLD8hMJB0mT+pREKENouWzC/fhVFXhGrSgpqRMoK+GmoB2W1IPd7CMUMMCf
-         nP28Ft4G0bhnuK3miR+RsrNtAwihGg2NX2+OYyU+2IWtDRXGJ5pUohvq3YJg3PwE5Myw
-         nsYfbw6aGwYdQuEsnBog2oOlL3m0btg5fvN2/mRvRjAQwSxbP9jd3Qc/WhzVHvVRfqLe
-         B91Yt5C8R9dKZ3q4aiQL+mm4JiyYsrCF19M7YW8cM9sSR3hRCWHZezBWnyU8vbO8ekns
-         2G1QBp0zmU2oXRnmvMifEZSwonAB9bSzMsVjH/AId9Ey9Dg4PMrMUNFu1lcU4nrpptBW
-         BIhw==
-X-Forwarded-Encrypted: i=1; AL+hErElqswTXKmsfTlf05paHfmNZROk/iXc5X8p+j/usqa0a3jNiHwEjQ7MJfP3n/pME1Clzs40BHY+GLGwpx8=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9ash5YHWykZjeVTh49NewHpe6LqvpzrlI6YNj+LU5jMuiM/RXQ
-	zb0TLi5WtM4My5PoAQvtmByyGtrCwNwYelooClaHgcaZbhkJS8HTmXG2
-X-Gm-Gg: AYBFou08YVjeS4sujKiH1cAxV3rSFPZsAl0N1i9+ggaFJvmdIRVJMpKKZE9nlROAwHJ
-	Lo8f12BoEPJROHnwyYhKUs4HO6ekZtzt1KIh0uhBpV/1e3oQpnafWsEGHgKjfB70r2ndOOYHWc9
-	QIgrFLqz/0QwABFYMb7dzg7npr/pKnKiVrEXKYPhXO6ei/2EumJ2P5ISheodVFkZrVxL0CfrQXY
-	rPM/b1uEw4ZDmJgkmj6g8dG2WL0XOHB7uwxl5BwC7Gb0LRubP0u7hoVcnw7wbwN4LNX0rpK/XVs
-	FrJSpOixxKww3KoSuzisQzypPmKSetVIvD5mf/j0PfhYO/t5t7W0ATYQYvBED69xquJAH8KlNaW
-	Tm13HZIx1q2T8JPHJiUEY/706oGisAi7H2Elk58+JCAIxOXEtZLKBK7vNuvFqdYGN+pR1XgxOWl
-	vQRiI77cCBlTDbhXTS/Q8KoO154JXREXbs+n978c0+CIXHhSv9z9drlsSN7rQG+JMP6B0BgUCz6
-	00FKpe2/HoLLtVKJWhWriy1bkHum2r0jJcK5HC2kk9RZJsr31qYMQfoq6qB6Opi9XAUyqFdBsg2
-	/bF9DrKb8tkvaaY9hpV3qfrAvAnN3dK5qx9LI1xNmO0LX78JRhBKHxjrigVHjoa8TSRAwJq4Nbx
-	0snjcb4AKBuI4el09P1JyBM+SUQJCG0+hb1/bA7CRDEAIGrlDhZgukegfD/xgpxLaCPHQutx6w6
-	+KZplnTtXiiI7x1p58QmJEppVmZEup6YhlzXSVdQwSCCbNzmirUyc=
-X-Received: by 2002:a05:6870:17a7:b0:4a8:ffd4:9a6c with SMTP id 586e51a60fabf-4b75d850d84mr521682fac.45.1794955750772;
-        Tue, 17 Nov 2026 14:49:10 -0800 (PST)
-Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4b74560af5fsm583066fac.16.2026.11.17.14.49.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 14:49:09 -0800 (PST)
-From: James Hilliard <james.hilliard1@gmail.com>
-Date: Tue, 17 Nov 2026 15:48:41 -0700
-Subject: [PATCH v9 6/6] dmaengine: dw: report residue for queued transfers
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G95E8cUP
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 983DB1F000C4;
+	Tue, 17 Nov 2026 22:54:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794956086;
+	bh=AteIRt+I+puDYWrkqeRrzqlE2U3lEzv18N4TdnYH81Q=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=G95E8cUPQyUhSDuNEv4M1WZdyXyRmkFtaA2d/zIW5nZKSwsYdFzc3UtPZKr44+kB0
+	 rRoSCTR0afpkZh2mQizgdsnKZKcbHC6xJuzFrm8BmMw3c6+8wHbDXm24S19oehK6Ea
+	 epbwdxZd+v0QwkubCnJWA6YzPQJwRJ+ifNNibvgLQ9+tWv18+ki8Njr1caZeoO68Bo
+	 j1IoU6pf/GCxcmayBb+ybnvqwIML90RobtgxX1Rs1qmwvgJpm9KRlB1qNXca9zyqim
+	 sI3uEGGbUS67NlKbbM6wm+BBIpvdKQjX083flsGQdUlXDLBWQ6wJudUJAhMbaRoYTx
+	 XL7W3+ZsisPBg==
+Message-ID: <sashiko-outbox-219767@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v9 2/6] dmaengine: dw: serialize error recovery with
+ channel termination
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "James Hilliard" <james.hilliard1@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20261117-submit-dw-dma-synchronize-v1-v9-2-7dc066ed0bcf@gmail.com>
+References: <20261117-submit-dw-dma-synchronize-v1-v9-0-7dc066ed0bcf@gmail.com>
+ <20261117-submit-dw-dma-synchronize-v1-v9-2-7dc066ed0bcf@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 17 Nov 2026 22:54:46 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -92,68 +60,37 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261117-submit-dw-dma-synchronize-v1-v9-6-7dc066ed0bcf@gmail.com>
-References: <20261117-submit-dw-dma-synchronize-v1-v9-0-7dc066ed0bcf@gmail.com>
-In-Reply-To: <20261117-submit-dw-dma-synchronize-v1-v9-0-7dc066ed0bcf@gmail.com>
-To: Viresh Kumar <vireshk@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
- Dan Williams <djbw@kernel.org>
-Cc: Serge Semin <fancer.lancer@gmail.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org
-X-Mailer: b4 0.17-dev
 
-A submitted transfer may still be queued behind the active transaction.
-dwc_find_desc() only checks the active descriptor, so a status query
-reports zero residue for a queued cookie even though none of its data has
-been transferred.
+> The tasklet samples RAW.ERROR before taking the channel lock. A
+> concurrent termination can empty the active list before dwc_handle_error()
+> uses that cached error to select a descriptor. The list head is then
+> interpreted as a descriptor. Even with an active descriptor, moving
+> queue.next unconditionally can put an empty queue's head on the active
+> list and pass it to dwc_dostart().
+>=20
+> Recheck the error status under the channel lock and stop the channel
+> before selecting its failed descriptor. Only one transaction is issued
+> at a time, so take that descriptor directly instead of scanning for
+> completions first. The scan can otherwise complete it and start queued
+> work before the error handler has identified the failed transaction.
+>=20
+> Detach the failed descriptor under the same lock and use the queued-start
+> helper, which leaves an empty queue alone. Clear the software-LLP flag
+> before restarting so a failed multiblock transfer does not prevent the
+> next transaction from starting. Keep the completion callback outside the
+> lock, with the detached descriptor owned by the tasklet.
+>=20
+> Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA c=
+ontroller")
+> Fixes: f336e42f73d9 ("dw_dmac: Move single descriptor from dwc->queue to =
+dwc->active_list in dwc_complete_all")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Frank Li <Frank.Li@nxp.com>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-Search the issued and submitted queues as well. vchan_find_desc() covers
-issued descriptors; submitted descriptors need a separate lookup. The
-status getter already reports total_len for a descriptor that is not the
-active transaction, giving queued transfers their full remaining length.
+Sashiko has reviewed this patch and found no issues.
 
-Fixes: b68fd0976286 ("dmaengine: dw: move residue to a descriptor")
-Cc: stable@vger.kernel.org
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
----
- drivers/dma/dw/core.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index c138008d7cb0..1786dbe2e850 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -867,9 +867,19 @@ static void dwc_synchronize(struct dma_chan *chan)
- 
- static struct dw_desc *dwc_find_desc(struct dw_dma_chan *dwc, dma_cookie_t c)
- {
-+	struct virt_dma_desc *vd;
-+
- 	if (dwc->desc && dwc->desc->vd.tx.cookie == c)
- 		return dwc->desc;
- 
-+	vd = vchan_find_desc(&dwc->vc, c);
-+	if (vd)
-+		return vd_to_dw_desc(vd);
-+
-+	list_for_each_entry(vd, &dwc->vc.desc_submitted, node)
-+		if (vd->tx.cookie == c)
-+			return vd_to_dw_desc(vd);
-+
- 	return NULL;
- }
- 
-
--- 
-2.53.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117-submit-dw-=
+dma-synchronize-v1-v9-0-7dc066ed0bcf@gmail.com?part=3D2
 
