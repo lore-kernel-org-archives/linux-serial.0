@@ -1,57 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794948653;
-	b=HQZESIS2FBBODUMAXBHmxO5X++PlS4C5vRRTtIBKEKsp8ebPx84hrnuf64FQoEPbkEua
-	 hNMAtkSs7cfEl2kpenKfvuJocIVuA/nn9oK+6FmTbr/IJ/jjXgqbykQ2267R/BjVE5pi/
-	 +pvvUX1uy98VW8Gzjv32LSKNj6TcnUILO0BlWiQDnE6lmRpXjCYArfRgqrkgA6QH6eNqd
-	 dx4mRhzWEFHAviIJRXef40laVacK/PGUE6aD3wvYdl3vYPuigawqAy/awnRAcEyVAWhtW
-	 wx3hm0wdNS9nyLC8CNJ5Ol/cKohGghuI0cGs4kI7AwCdKYDyhAA/Wrzf8/2LZpCBMTQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794948653;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=xkRnAzVjOgqw74PzyZVpExogHJ4eA0Zxv+ymfrWlxTE=;
-	b=y481PBl8Gdb3M5fdGkGMVKc9WUzWWh7zOGeCtF+OMY00h6dRfyIGk12vdfb2gJJ1AsID
-	 Dzbs3V+SWeOGeuZKn4Fzkg3xYenlA9xNnUKmtsF2ZLVeUg3pKfKGAG6F/YoAlvU7Hp4ns
-	 xLQ1U94KiMMVOYuF6qKB7Hz1r25LofXcJ5SDd0sv5ZuEnh1ZAGCxsEynXFnERlPZKoDd8
-	 +Z5z8HY+EgxJg8LLLhDP3n1yW2Pdv7gFn9VG64f/H4MAqm9HBgEtVhl4+5X4zQcFJmE+f
-	 u2EY1+foOtvqyUN8yEClTtaVQ/h615+qDuKppW0SCCaFa/NcfNy252FCf/OG+KElnoQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kCyS2Y8h;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.74.19
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794955206;
+	b=LuSsVvLjk/ZNmxFsdMSqcWUoz9/7wdTR/bl5udRV8nn5j7v37Cbtw1qMnLCCWKQji5ko
+	 uY3AfYNMDHkCFRyVDLMRUTotjHyWNJs2h3lkx+wKbrXblfKZcvlyRsVH1IuVKnIK34IhZ
+	 XiilnYfKkhZwaWxoKr3Mf5Kdr0hj8jI32ckRv8xRUmWMlWGVlCqAM2tRT6AYTaxDrmcOg
+	 Z60d1x5bjeUkwtuyzIdArs/9Wh4aZ4Cy/il5YFjOKqqa/+CPZhWt8P0LMOn6Jo3uNTfij
+	 HFr5gzEqhaUJRNKiHvhEUkuz/5plVuHVqTUlcq4Oc+STEr7fUCvWTIEnfLYCmNy/nHA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794955206;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-LD-Processed:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=K5vIf11aScj1GgvoegJFN0gETWm0ooFfqlmTHOSWSZw=;
+	b=0iZnneJrGmenvzv2Y+wle3BZFDf1ddyUYXDHvblmkOJIdYzrkPXbSOsE/8KLv87oAphE
+	 CZrdWwNTiQVqzGQnaQMnbLmWnHYrCe8TuDswZvAoosodA1Ay2tshJBNKDsUPswy3kpqne
+	 qvaPUS7I726b6KVYQR8cV7ZUNUkhztJi+Vufhht/s8AM1+yQZMB5VmKifIFkjSSIRlgBK
+	 /+d/CAmNFju2AYFrhzrgYKnamjHFu//exD2+RopTolLwcWNb1bMmabiw8cu4ErTtdvn1H
+	 sntr8Aa5UBj6PzM0SckP0scJIdozp6wgbOgSjW/0zL6uUesyEMDgYX+YT+NXSLhL1sw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=renesas.com;
+	spf=pass smtp.mailfrom=renesas.com;
+	dkim=pass header.d=renesas.com header.i=@renesas.com header.a=rsa-sha256 header.s=selector1 header.b="V/a9ToTd";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.74.19
+Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011019.outbound.protection.outlook.com [40.107.74.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A712606A31C;
-	Tue, 17 Nov 2026 20:50:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4590606A31C
+	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 22:40:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E4590606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kCyS2Y8h
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 634A81F000C4;
-	Tue, 17 Nov 2026 20:50:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794948652;
-	bh=xkRnAzVjOgqw74PzyZVpExogHJ4eA0Zxv+ymfrWlxTE=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=kCyS2Y8hnU0YlRaqpazO+mCdcnJjPT5NrHCDxqqfj6Tzx588Z+41Y3MF+k1rtr0i2
-	 5CIT4YRB2y0DAEsfBqJ5WymGCXG1IP3fgHm4+PE7hwYgIlWflsuGdJDHb7tyIhJ/wj
-	 U0jPY/ihdspEHiMide9tPvy7gkH6GozeD0NrAkppba4b/rOOPd4FvU47ONsapkzFim
-	 InZ4idXhYzrOAIICywegQRJx9dduPE/iZGFcN82aJ8eJRlZoZ0npn/HcXycfmOjV9W
-	 nH4QbjF+olMNEg+TJq0JLBx8jdBaZF/oM9Ftvn//V0Q6p97GvFu9GIgt+LwnxnyChy
-	 wSFWXdPhyot/w==
-Message-ID: <sashiko-outbox-219658@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 11/16] HID: ft260: workaround for TN_189 errata
- endpoint STALL after enumeration
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Michael Zaidman" <michael.zaidman@gmail.com>
-Cc: linux-input@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, dmitry.torokhov@gmail.com
-In-Reply-To: <20261117200423.19561-12-michael.zaidman@gmail.com>
-References: <20261117200423.19561-1-michael.zaidman@gmail.com>
- <20261117200423.19561-12-michael.zaidman@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 17 Nov 2026 20:50:51 +0000
+	dkim=pass (1024-bit key, unprotected) header.d=renesas.com header.i=@renesas.com header.a=rsa-sha256 header.s=selector1 header.b=V/a9ToTd
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NA6aS9yqsdElflc2NTCbPewmCxx4TKK2Q86sK0/1mPxj5Iw+SULGvVOAcwvj725PQ/W2dQ1Q1t9fTK943lDDmUjrH5iECm9BdMcujlkoqSvQN5IVSn71QElQcfKOWXUCnRu6VY2KK4HZBo06pufyp+4/Mxq88LL5Nk4aO1t9GfNR4eU6VUC/euXpznl3ceOCtRgLrN9ZMGqq/OueOFfn3edEyw/rDXxazOr4hQiTtGVkg7SNPebn90s1B3JbC0B+bqqbetP9hsQBE2kYQo6BB2wb1EbczYu9WQ0lIkCfUu0ku1PBBmVgK6Zg0z/1qYAeT56tUR6tkWA1u8HkAHAw0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K5vIf11aScj1GgvoegJFN0gETWm0ooFfqlmTHOSWSZw=;
+ b=KKgmIY1nw7ySUIyIwJGom0KEYB7u3MZ/E1mMmS+MsnAEpCaJGwJ/8gDldWSViHqPfufyYF08cXHV9ghiqX0l0GGrrTCt1O00BMws7OucY6IcAQqIpESc0i3xiPoiK6IJsKncUf7XwK+mCl1DHT5KLpzJLt0onhjZEfdtYCDgQwkAUnMqx3wYBj7f/BTcfcZiZmE9MddrcYeODWzyFvRMoRIWYGJy7DCF5okugQcMHTy0/NjJqbcNcsBhFPBNVX7/6dhMe7vd3bvuLaSzYdBgnxPFNoSbnzuiC/zzNAQ5rx7hbCwAu31oHgNX7ZfUChuHxZkZwX+r1Ze2/4ZwglRuGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K5vIf11aScj1GgvoegJFN0gETWm0ooFfqlmTHOSWSZw=;
+ b=V/a9ToTdDPJipxvZBvooWoe8ITQkNDy0pJgX8Lz/bdT5dkXFWlm7FT+DveXsIoAXrlY0EYeDPo07qVLXpq/ofYoAlFQUGe1Ags1N9GmvbjparbVpbG0WlzTjzAq42BtTZ/EL/4dQGcyD432D4fGa5ywVEvtmEevafhtouXOiU1c=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+Received: from TYYPR01MB15118.jpnprd01.prod.outlook.com
+ (2603:1096:405:1a1::11) by TY4PR01MB13444.jpnprd01.prod.outlook.com
+ (2603:1096:405:1e0::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 17 Nov
+ 2026 22:40:01 +0000
+Received: from TYYPR01MB15118.jpnprd01.prod.outlook.com
+ ([fe80::1116:d56:8164:63b4]) by TYYPR01MB15118.jpnprd01.prod.outlook.com
+ ([fe80::1116:d56:8164:63b4%6]) with mapi id 15.21.0615.013; Tue, 17 Nov 2026
+ 22:40:01 +0000
+Message-ID: <a7ecaa97-b2e3-4f99-adb6-a329df00da84@renesas.com>
+Date: Tue, 17 Nov 2026 22:39:54 +0000
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 3/7] serial: rsci: Enable transmit end interrupt in
+ rsci_stop_tx()
+To: sashiko-reviews@lists.linux.dev
+Cc: linux-serial@vger.kernel.org, wsa+renesas@sang-engineering.com
+References: <20261113-g2ul_sci-v4-0-6815e41d90c5@renesas.com>
+ <20261113-g2ul_sci-v4-3-6815e41d90c5@renesas.com>
+ <sashiko-outbox-213556@kernel.org>
+Content-Language: en-US
+From: Diogo Ivo <diogo.ivo.sx@renesas.com>
+In-Reply-To: <sashiko-outbox-213556@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MR1P264CA0194.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:57::9) To TYYPR01MB15118.jpnprd01.prod.outlook.com
+ (2603:1096:405:1a1::11)
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,154 +99,145 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: TYYPR01MB15118:EE_|TY4PR01MB13444:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1d237616-a29e-4abd-7a21-08df44fbb6e4
+X-LD-Processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|23010399003|366016|18002099003|22082099003|261009223027099003|11063799006|260925021311599003|56012099006|260925022911599003|260925021911599003|4143699003|261028144727099003|10067099003|261026121527099003|261026140227099003|261022075727099003|261022105027099003;
+X-Microsoft-Antispam-Message-Info:
+	d1rw12EdTU+X/Vyhmym8lHBtP2MCDcG3cHe/DdMG9q6i7sXtNBs6Y9257SjeTtHC0uWZ3IfXQRA8PVTn/z8gSgv6yymwTUAAJJrWZ1riGaE9D21laRFKY0vB9uJVkZFL6vxlvnRULnrgOfgMXC+SIpwmUv8bPxqWw8YqxJWAZ/JVS0qVCDOgEQ2z5n9PooolcMUdUVk/T2o9D1Z8+nfYMzo2AbFnR5M/KB2c+4oWfOWSJUzH0YvNMKmNf4FQpnlryizOS2COQ6AYVF44B9SgeMl+Ba3BfN1P25/D5GtWKVmHpT8uAXAiuixnWWh5DDFNP0XYf1aFHYGHDr5WsHvpHYqFv4zA9Dh12nBVSBNFauEeePvHEHP8N5seDHZQ8YN6l3J/A4JKNuzJev2vwptA+SOARAM0tUAaIGLZRK8P3ambwCCq7vTiGH2EuEtOAVEH6axUG9EkOZUHyNsgYls3KnAtMXHkSSe/7cWy7msjRmwhTuooSZtHn9pg67dXpcP+DU0e1NCOmNuPAYPljouLiuFtKvg9J6abUJ4WSDqQm2dU6vjcxsmMoGXYAw6qonJnz7jc1mSf7j3RXCtcbh0vdzCM3aDondC0MkhLHASxa3M=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB15118.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(23010399003)(366016)(18002099003)(22082099003)(261009223027099003)(11063799006)(260925021311599003)(56012099006)(260925022911599003)(260925021911599003)(4143699003)(261028144727099003)(10067099003)(261026121527099003)(261026140227099003)(261022075727099003)(261022105027099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?T1YreU9XQzJlUnlXR2hjWXhQYjNqUk9pN3ppM1BjNWlHKzJTK2RiZmg0QmRm?=
+ =?utf-8?B?aUtzNGxyNHQ5eVNydzJvV0ZDL1Urb3MybWI4b1hmdWVKMTdBaURxRG1qODFX?=
+ =?utf-8?B?ZHlsQk4zS3lwalorZnZOUVFBOW82ZUFJaHVjRmh5OGR1MytXb3pLcm1ab2dN?=
+ =?utf-8?B?RVR1OGYrYTIvR3RBTjBSZ0FUcE5LWnlNSXRzazRrOEV4MlhtY2pPbFh3UThs?=
+ =?utf-8?B?Wjc3TTFWSHZJNFVuSXpBclJQVkdtOWhGUDAvUFZJdlFQSnRJY2xUOVprTjVI?=
+ =?utf-8?B?a0JwczkvY01ZTWUwWDF2cS9ESUtnRWZHY29RSlFrSWdlSEIyNGJQQk1McHk4?=
+ =?utf-8?B?WXFoL2orbWZCUXhZZTRmSnJ4YjJrdzRIUDh6bVRuTWo2SnZRakwyT05yNCtE?=
+ =?utf-8?B?VHVENm1OVGNKaTI5RVJUVGdaV2d6WFBhOGQ2KzdsdmpUT2tsVDY2SXg2TWY3?=
+ =?utf-8?B?bVVjTWJUUnM4OWgxcS8vN2g2YmlmMHJ3YmlQL3RsUGRTTmt2RHFjWER2b2JB?=
+ =?utf-8?B?aXBKMUg5TnNwVURXcnprenMzb3BockZSZmFkQ01CS1hVWmNucHo2U0hmWkt2?=
+ =?utf-8?B?U0RaaUhVd3Fkd1V5V3VCTUQ5d2dueGZ3REh6aEJPSVVwbCtMUm10dHRyOUJH?=
+ =?utf-8?B?WWtHZ3M2TFhXNzV0RnZVYnRjMkQrWVVkd1VrSXEzZkxWZWJXOTZQRWtlN2VF?=
+ =?utf-8?B?TUVuYlVSY3RURjRycXNpeUZwRjZoSFlFMGRkVGY2UnRQRU5QTFkxZkFyOWh2?=
+ =?utf-8?B?SllBTVlscDMwSVI2NXp5aDZCUGwvb0dLSkhCaXczMVozcVdqcEUxWEJlSmtV?=
+ =?utf-8?B?MVFHSzE4VzNaZFcrZzBZa0lka2FvcTNhRGlyQkE2TnRxYS9idW4xSW9qYzdH?=
+ =?utf-8?B?YzVlajBwYm1XOEQyL29lRWZGTzRPYk00blEzdVBxdHFOSjcwRmc1SklFSE9G?=
+ =?utf-8?B?a2NaZis4VTB0dzQxUlZTSDRFMm15Q3p3SEMxaFNhaXduUTF3OUwwRlVvQnhV?=
+ =?utf-8?B?b0w1bkdDa2tYeDdCbUU3Z3NzZXFUb0YyWWFrVlpIMlF4TC9nalBwa1Y0cTFz?=
+ =?utf-8?B?T0Mvb0RZTFBXWTEySmcyaWpVeFhlV1VqdUZsVWhwMDhMaUQ5V3AwRm5XTG1q?=
+ =?utf-8?B?THdzWFBqYkxWdTJkcVlJVFdiNGJLYzdWQnpBVFJnSWJmajdZdk1iMXdsUTdw?=
+ =?utf-8?B?Y0RsVFZIU0F3bXlpWkIyWFZLMlJ5cG44MWQ1azZUNWRsdm9SZTJGOFdFWklo?=
+ =?utf-8?B?djdqT0h6UHV2T0M0L2g5Zm1JdysyUkYvS0hRRENoc2s2V0ZaamVOZG1xYWVC?=
+ =?utf-8?B?MndEVkpnWjJ2cmZxa0dyMTVKL05OT3diS2RoVkJvWVFhWWJiY01kYm1rVWZ2?=
+ =?utf-8?B?KzQ5Z1V3RDRQQ2RYTjRna1ptNCtnZlhhdkk1SGcxeVNNcmdqakxRL1FwSlNy?=
+ =?utf-8?B?LzVlVFdSWmtoaHNyUWVmL01nNUFWbEpCY0tyakFxbktES0llRFFOYVlrYmpV?=
+ =?utf-8?B?cmxXOVZjNzJBWjlDN05LYU0vQ2xMcEJYNzNwRm5lb3F4RTh2dmZJTmpZZjM3?=
+ =?utf-8?B?azFNQXV2dDBGK2xmQjVUaS9FWWNvclh0R2ZSS2RsMFVDRmJ0ZXpTak9HNldh?=
+ =?utf-8?B?Nnl3Mlpjbkd6dGFwUkR4T2sxdWlua25NM3U2aWREcU83V0F2K1RybFR2UlFn?=
+ =?utf-8?B?a1pmZDREdEViMWQxb1k3UjVsTlhTcFc5VlA5WXV3dzVVT2RpY2t0ZWM2TGFr?=
+ =?utf-8?B?c3dFUEswMjJLcUxtQzVvRUJLWllsSk01ekdlaDNqQmhrVFVISHV2MEE3YWsy?=
+ =?utf-8?B?alRqUGp5S0RuTEJUQlVrWEdrc2xTZkpGRW9abjBTa05kcmF5cktrNXZucXp0?=
+ =?utf-8?B?eXYwNDhQSm1SY3E3clFnZkdtKzJFMUR6eWdDd29YSTVTNVNySU4wWmcxMWdO?=
+ =?utf-8?B?Y0psSWtKOFMvVGdSSldvMmhEMHRpVnVNazA3U2xMbi8yaXhqRlFUcTVjM1dp?=
+ =?utf-8?B?R2kyZlhMZGJrTnM1Y2FCbkZybkM4VStBUW9CczZpRlhwYVNRSjlyQ25zeFF4?=
+ =?utf-8?B?ekczMGlqc0ZGZ2RiNnhXaVIyL2hCSDAzM2t4ZEhsd2U4dm1zZ1NtVWlOM3dz?=
+ =?utf-8?B?YkVGUGFaNlZCLzY2UDE4M0JSQ3lwMUtaazRmQXI0M0w4b3MzREViU3JTVkdi?=
+ =?utf-8?B?eDZudnB5Zkhabi82NlVvS0orSGs1ZmU5UTZJMVJsWXcxdU5vaDQ4RUFIOGlz?=
+ =?utf-8?B?N1MyalBoVDdtZ0JoZU9FaVFzS0Y1K3NBd3l1aThGSVgrdmEzcDRLdTAvbVl2?=
+ =?utf-8?B?dnRWZDRZaFpMYXdGdFUzTDY5MWRNSTM4NE5zc1NGb1A4ZXNKTjNIeWhpZjZ3?=
+ =?utf-8?Q?a127HJG/sm0V+jUE=3D?=
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d237616-a29e-4abd-7a21-08df44fbb6e4
+X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB15118.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 22:40:00.9801
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XmtdtrOnEmWpyxlbmL/cL6lh8NpSjlOy/u09iVp3wSSKhtw8/b3Z2vDzRTnaI0httJ9en5P9FLmOufU4Cher+IK7mdaPUGUiVpitJbSrV70=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB13444
 
-Thank you for your contribution! Sashiko AI review found 1 potential
-issue to consider:
-- [Medium] HID: ft260: race between ft260_reset_and_rebind() and
-  ft260_probe()
---
+On 11/13/2026 7:35 PM, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 1 potential
+> issue to consider:
+> - [Medium] serial: rsci: TX restart on suspend in sci_tx_end_interrupt()
+> --
+> 
+> commit 071c63519ac773139fb715b1e8e4f93c225b5ba8
+> Author: Diogo Ivo <diogo.ivo.sx@renesas.com>
+> 
+> serial: rsci: Enable transmit end interrupt in rsci_stop_tx()
+> 
+> This commit enables the transmit end interrupt (CCR0_TEIE) in
+> rsci_stop_tx() when transmission is active (CCR0_TE is set) so that
+> sci_tx_end_interrupt() clears CCR0_TE once in-flight data finishes
+> shifting out.
+> 
+>> diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
+>> index 0391111db8ae8..05703bb31afde 100644
+>> --- a/drivers/tty/serial/rsci.c
+>> +++ b/drivers/tty/serial/rsci.c
+>> @@ -409,6 +409,8 @@ static void rsci_stop_tx(struct uart_port *port)
+>>
+>>        ctrl = rsci_serial_in(port, CCR0);
+>>        ctrl &= ~CCR0_TIE;
+>> +     if (ctrl & CCR0_TE)
+>> +             ctrl |= CCR0_TEIE;
+>>        rsci_serial_out(port, CCR0, ctrl);
+>>   }
+> 
+> [Severity: Medium]
+> Can enabling CCR0_TEIE here cause sci_tx_end_interrupt() to restart
+> transmission during system suspend?
+> 
+> uart_suspend_port() sets uport->suspended = 1 and calls ops->stop_tx()
+> and ops->set_mctrl(uport, 0) without setting tty->flow.stopped or
+> uport->hw_stopped, then drops uport->lock to wait up to 30ms for the
+> hardware transmitter to empty.  When the in-flight bytes finish shifting
+> out, the resulting TEI interrupt sees !uart_tx_stopped(port) as true and
+> resumes transmission if tport->xmit_fifo still has queued data:
+> 
+> drivers/tty/serial/sh-sci.c:sci_tx_end_interrupt() {
+>      ...
+>          if (port->x_char || (!kfifo_is_empty(&tport->xmit_fifo) &&
+>                               !uart_tx_stopped(port))) {
+>                  ctrl &= ~(s->params->param_bits->teie);
+>                  ctrl |= s->params->param_bits->tie;
+>                  s->ops->write_reg(port, regs->control, ctrl);
+>                  s->ops->transmit_chars(port);
+>      ...
+> }
+> 
+> This keeps transmitting after stop_tx() and modem control deassertion,
+> and if xmit_fifo does not empty within 30ms, uart_suspend_port() times
+> out with "Unable to drain transmitter" and calls ops->shutdown()
+> mid-transmission.
 
-commit 4f2501f4550a54da3c0f10a72785d9919d317381
-Author: Michael Zaidman <michael.zaidman@gmail.com>
+Yes, this is a correct finding. I have tested the current form of the 
+patch series with:
 
-HID: ft260: workaround for TN_189 errata endpoint STALL after enumeration
+[root@alarm ~]# stty -F /dev/ttySC0 4800 raw -echo
+[root@alarm ~]# yes "0123456789abcdef" > /dev/ttySC0 &
+[1] 288
+[root@alarm ~]# echo freeze > /sys/power/state
 
-This commit adds a workaround for the FT260 TN_189 silicon errata by
-checking interrupt IN endpoint health and device responsiveness during
-probe, and scheduling a deferred USB device reset and interface rebind
-when either check fails.
+and I get
 
-Link: https://ftdichip.com/wp-content/uploads/2026/05/TN_189-FT260-Errata-T=
-echnical-Note.pdf
+  - [   73.035060] sh-sci 100f2000.serial: ttySC0: Unable to drain
+transmitter
 
-> diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
-> index e708b1be734c7..096e46836d743 100644
-> --- a/drivers/hid/hid-ft260.c
-> +++ b/drivers/hid/hid-ft260.c
+Adding a !port_suspended guard to the conditions in patch 2 to restart 
+TX solves this, so I will add it there for v5 and keep this patch unchanged.
 
-[ ... ]
+> --
+> Sashiko AI review · https://sashiko.dev/#/patchset/20261113-g2ul_sci-v4-0-6815e41d90c5@renesas.com?part=3
 
-> @@ -2504,15 +2566,276 @@ static int ft260_uart_probe(struct ft260_device =
-*dev,
-
-[ ... ]
-
-> +static void ft260_reset_and_rebind(struct work_struct *ws)
-> +{
-
-[ ... ]
-
-> +	/*
-> +	 * usb_reset_device() keeps usbhid bound (its pre_reset/post_reset
-> +	 * both return 0) and does not re-trigger HID-level driver probing.
-> +	 * Unbind all USB interfaces, reset, and bind them again to force
-> +	 * usbhid to destroy stale HID devices and create new ones, which
-> +	 * triggers fresh ft260_probe() calls. Unbind before the reset: it
-> +	 * waits for a probe still running on either interface, so the
-> +	 * reset does not run while that probe stops usbhid.
-> +	 */
-> +	actconfig =3D usbdev->actconfig;
-> +	for (i =3D 0; actconfig && i < actconfig->desc.bNumInterfaces; i++) {
-> +		struct usb_interface *intf =3D actconfig->interface[i];
-> +
-> +		if (intf && intf->dev.driver)
-> +			device_release_driver(&intf->dev);
-> +	}
-
-[ ... ]
-
-> +static int ft260_check_intr_ep_health(struct hid_device *hdev)
-> +{
-
-[ ... ]
-
-> +	pipe =3D usb_rcvintpipe(usbdev, ep->bEndpointAddress);
-> +	ret =3D usb_interrupt_msg(usbdev, pipe, buf, FT260_REPORT_MAX_LEN,
-> +				&actual_length, 100);
-> +	kfree(buf);
-> +
-> +	if (ret =3D=3D -EPIPE) {
-> +		hid_warn(hdev,
-> +			 "interrupt IN ep %#x halted (TN_189 errata), scheduling USB reset an=
-d rebind\n",
-> +			 ep->bEndpointAddress);
-> +		return -ENODEV;
-> +	}
-> +
-> +	return 0;
-> +}
-
-[ ... ]
-
-> @@ -2540,6 +2869,27 @@ static int ft260_probe(struct hid_device *hdev, co=
-nst struct hid_device_id *id)
->  		goto hid_fail;
->  	}
-> =20
-> +	/*
-> +	 * TN_189 errata workaround: bail out fast on a broken device so
-> +	 * that hub_event releases the device lock quickly, allowing the
-> +	 * scheduled reset work to acquire it and recover the device.
-> +	 */
-> +	ret =3D ft260_check_intr_ep_health(hdev);
-> +	if (ret =3D=3D -ENODEV) {
-> +		ft260_schedule_reset(usbif);
-> +		goto err_hid_stop;
-> +	}
-
-[Severity: Medium]
-Can ft260_reset_and_rebind() race with an active ft260_probe() when the
-driver is bound outside USB enumeration?
-
-Unlike usb_bus_type, hid_bus_type does not set need_parent_lock.  When
-hid-ft260 is loaded after hid-generic has already bound during USB
-enumeration (or when reprobed via sysfs), hid_register_driver() probes the
-two HID interfaces holding only device_lock(&hdev->dev), without holding
-usb_lock_device(usbdev) or device_lock(&intf->dev).
-
-When the first interface (hid0) detects a stalled endpoint and schedules
-the reset work, ft260_reset_and_rebind() immediately acquires
-usb_lock_device_for_reset() and calls device_release_driver(&intf->dev).
-That enters usb_unbind_interface() and usbhid_disconnect() before
-device_del(&hdev->dev) waits on device_lock(&hdev->dev):
-
-CPU0 (modprobe hid-ft260)           CPU1 (ft260_reset_wq)
-ft260_probe(hid0)
-  ft260_check_intr_ep_health(hid0)
-  ft260_schedule_reset()
-  hid_hw_stop(hid0)
-ft260_probe(hid1)
-                                    ft260_reset_and_rebind()
-                                      usb_lock_device_for_reset(usbdev)
-                                      device_release_driver(&intf1->dev)
-                                        usb_unbind_interface(intf1)
-                                          usb_disable_interface(intf1)
-                                          usbhid_disconnect(intf1)
-                                            set_bit(HID_DISCONNECTED, ...)
-                                            ...
-                                            device_del(&hid1->dev)
-                                              /* blocks on hid1 lock */
-  hid_hw_start(hid1, 0)
-    usbhid_start(hid1)
-      clear_bit(HID_DISCONNECTED)
-  ft260_check_intr_ep_health(hid1)
-    usb_interrupt_msg() -> -ENOENT
-    returns 0
-  ft260_check_dev_responsive(hid1)
-    usb_control_msg(ep0) -> 0
-  hid_hw_open(hid1)                 <-- arms io_retry on disconnecting hid1
-
-Because usb_disable_interface() has already disabled the interrupt IN
-endpoint on intf1, usb_interrupt_msg() fails with -ENOENT, which
-ft260_check_intr_ep_health() ignores because it only checks for -EPIPE.
-When only the interrupt endpoints are halted under TN_189, ep0 still
-answers USB_REQ_GET_STATUS, so ft260_probe(hid1) continues through
-hid_hw_open() (with HID_DISCONNECTED cleared by usbhid_start()) and
-registers the subdevices on a half-disconnected hid_device.  On hid0,
-usb_disable_interface() and hid_bpf_destroy_device() can also run
-concurrently with hid_hw_stop(hid0) if the work starts before hid0 finishes
-unwinding.
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117200423.1956=
-1-1-michael.zaidman@gmail.com?part=3D11
