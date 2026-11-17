@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794959332;
-	b=DsLbP0KVeEbW+UAoUGLeqcw31iihqFGxvnq3IcECU1DCJLKkk12Te2i2AeVtaPWyy02S
-	 U4BYTS8/ORdXzW0g6A6rIoadRIpHRTkpU7LtB5Zyf8myzFaaIGDDB6t9n4GXlqwq6h+es
-	 TXjUfxgfpj81wXFhjNFNmNxEdKyuwREx81UFh21nEzdFauAg/yNHG12UaychcAmE1m6y7
-	 T+uXKT+H0w79cwmutlNE6mzVmOen1hMb0yUp/sMB3l4dUq68O/7VN7Jh2KVjsESdBDiSO
-	 BsrOfJcHNapmjkmePU4/bbnBLD0ENXfVHicE+oTR2c6Ev69Ck6Yo9+6QYwcEnl3+l0g==
+	t=1794959338;
+	b=JmIukOOpqbvAT9eg9hSSohcBnyujGYIHV6raNzNmMJhOp5OW1GMAZ/+A0YPk/4aTEt8C
+	 BxvfRuZmfYh2IdJ0sy41fOQhATRRXX3xkN+1qKKI0RQtGzgtrWQKYHYuTgRWWoZ0C4zQN
+	 Zn79ugLsoZflYnex15kcp0D6ZpuoqwODX/NW/8vqUvhizSW9lK5t8vPpTEe3CXscqdJrh
+	 QnIIHPvLy7CL+Xu3/+ESkMc8xfXDewwxrNsVJz+awe+Z8vPGyE4zdwvAwmP2ts7npUezJ
+	 z0CywTJIxiQB1FdldxHtyito1eTDS2SfO63b8QjwspUiXF7Y7SedMsi+sV8VED3Onfw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794959332;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794959338;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=oSgU0sEjkq+tigHF1ZpOyvXB1gPqYLS5br4E0JYoSMw=;
-	b=Rbal+pirS/DXnsYSr0pGxqRdkQLEEqA2/+toHabucrtwNQiggoLoB5NGZXUrv52/DY3p
-	 jmJ7JCTt1IUol//ExPo1lhsTYmADp9XBOdbXQVdUlgq6TRqkUVtW8wHA18Oj9DSa4WVlA
-	 HYlJnfaOkRujEtG+ra+JNGE/YdxM1950nW6S+nwUXp+ua51poGLKXiaocJW/a+AHTtbex
-	 tPHf7/01sUi0bofPZK7yp1UxDXSbcQUc/R6ubDx8dQPtlY0A/D8Vd3Xyudihid5xyDYjX
-	 1erGyj4+TVuyPwf+olY9lxX8dRoXwIekVWtCpgstOMoYMbSbe2GfO0S6RQnuvnXWDmw==
+	bh=Mjjnfin8ESoOVivnIaD0reLQ+FOjHbUrfp9chd+m20A=;
+	b=KGDqG+bXnLXrRl2+sLdXYMj6K0tSg7VXDshANYMHwR8u6A5wy1yoQenL26RTlR7jxJN3
+	 I4WtoKtWtqJrY81/HeYH7GNQ77jnLTpSwot15x6R2g2vNhvTiTtzUjrQ41COrHQmHPs//
+	 H2ARINZhEh2PSuPM/mXuf87VSgm7IsmwqDLSTjbzRAb4Ls4pM+/uKwbpnbrXGmp2j0djG
+	 6pKFxwAHy0M1y1PNCr6Cq3D3Teqdt5Xz4EPQFpWDi+FfyFya+KHda4LLHpJiN5lJ0PIGn
+	 85/3dGD4Zna7ko/CO2MlBl6ob+ykGAPs+f8o51M50+sP69YdXiR6rlHJ4MqutlojtzA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bLH+fFc2;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZIhA7BZI;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 616A6606A31C
-	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 23:48:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BA30606A32C
+	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 23:48:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bLH+fFc2
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E7471F000C4;
-	Tue, 17 Nov 2026 23:48:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZIhA7BZI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B63E21F000CA;
+	Tue, 17 Nov 2026 23:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794959332;
-	bh=oSgU0sEjkq+tigHF1ZpOyvXB1gPqYLS5br4E0JYoSMw=;
+	s=k20260515; t=1794959337;
+	bh=Mjjnfin8ESoOVivnIaD0reLQ+FOjHbUrfp9chd+m20A=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=bLH+fFc2Ou3jjKZlaTzRrwFoRNRNcjWO2vIoLDYrO0EORvXjSm+0nX8le1d9zqD/4
-	 TSWiiFzKT4i2y75jvY/G6r8W3d2g1d5rL41hWxrrQHrm78gMnXopolE0WIQ+P/5n6v
-	 ZeJW3C3/9a102UCA6lDquECY2pHLrlzDwqdab3SoCw1j+uuZM5W5F+NLGTE1OHBHvM
-	 vnd0euWGGfLJ3nDoz0Tsfpg3Bv9qDKeGQDrgqW1/kwUmRcoshl/sh1xgThPpF6bHip
-	 nMWl2AVY9CL5KFrzMM8615/11/AFf4oOvVdtBlISIbi2HXp21zTKOzeoMTwXHRHVIA
-	 CtdBP3UTBW44g==
-Message-ID: <sashiko-outbox-219812@kernel.org>
+	b=ZIhA7BZI3yzHHU1h2/Q8Hs+DPSnRyQxe2uROmPSquUh5G48lyFaz7d2JAh+RDRHh3
+	 fPRtJMobI5aPhBsBKYTkTAeh1oAZq3LgUfFVCYQe6BaNhAkaUCvTS3dt/xOTtVVJw4
+	 GMmusFvVoX1k+zG7cuSC01kO9YxdJrEKWPO7CMHelpB6zJKUobPqy/Cb1FMskb8sep
+	 l8837m1nH6OFQI5URSmsWIkN5+a7IvEwMZl1R4Z2giccWOYTZDOlZWPZU9BHduT0UZ
+	 uLiCMaBeFEePoVy6gcnQQw3d+SQCEJoXd0nfS67fDaG3GvuKsaVLPR9dYyDqEh4c1a
+	 fOu3QpRePLNtQ==
+Message-ID: <sashiko-outbox-219813@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 6/7] serial: sh-sci: Toggle TE when restoring SCSCR
- in console write on SCI
+Subject: Re: [PATCH v5 5/7] serial: sh-sci: Skip TDxE clear when hardware
+ clears it automatically
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Diogo Ivo" <diogo.ivo.sx@renesas.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261117-g2ul_sci-v5-6-30b58ea18923@renesas.com>
+In-Reply-To: <20261117-g2ul_sci-v5-5-30b58ea18923@renesas.com>
 References: <20261117-g2ul_sci-v5-0-30b58ea18923@renesas.com>
- <20261117-g2ul_sci-v5-6-30b58ea18923@renesas.com>
+ <20261117-g2ul_sci-v5-5-30b58ea18923@renesas.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 17 Nov 2026 23:48:51 +0000
+Date: Tue, 17 Nov 2026 23:48:57 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,22 +63,15 @@ Precedence: list
 
 > From: Au Dang <au.dang.jx@renesas.com>
 >=20
-> When SCI0 (PORT_SCI) is the system console on RZ/G2UL, the board can
-> hang at the serial console output stage during boot.
+> On some SCI variants, the TDxE (Transmit Data Empty) flag in SCxSR is
+> cleared by hardware when data is written to TDR. Clearing it again from
+> software via clear_SCxSR() generates a spurious TXI interrupt, causing
+> the last character to be transmitted twice.
 >=20
-> ftrace shows the following sequence:
->=20
-> 1. sci_transmit_chars() is draining the TX kfifo through TXI
->    interrupts with SCSCR=3D0xf0 (TE=3D1, TIE=3D1, RE=3D1, RIE=3D1).
->=20
-> 2. serial_console_write() runs in the middle of that drain. It saves
->    SCSCR=3D0xf0, switches to polling by writing SCSCR=3D0x30 (TE=3D1, TIE=
-=3D0)
->    and outputs the characters with sci_poll_put_char().
->=20
-> 3. It then restores SCSCR=3D0xf0 in a single write. TE is 1 both before
-> [ ... ]
-> resumes.
+> Add a tdxe_auto_clear flag to struct sci_of_data, propagate it to struct
+> sci_port as has_tdxe_auto_clear, and skip the clear_SCxSR() call in
+> sci_transmit_chars() and sci_poll_put_char() when it is set. Enable the
+> flag for the PORT_SCI (of_sci_sci) variant.
 >=20
 > Signed-off-by: Au Dang <au.dang.jx@renesas.com>
 > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
@@ -88,5 +81,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117-g2ul_sci-v=
-5-0-30b58ea18923@renesas.com?part=3D6
+5-0-30b58ea18923@renesas.com?part=3D5
 
