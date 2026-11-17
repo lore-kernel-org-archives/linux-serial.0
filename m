@@ -1,57 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794907140;
-	b=v5yBS/xGwR+RHuXZ+KR4knb7cCqnSW5zwWrplp0IasZiXLG6z1pTwAhIs4p8stV3crQt
-	 ybO6psUyW0kKLr1/IpzWySHTcmfNAC5Yc6YEtFO6pv3YWjrxEJVRUx6TU2/VxhWfpeDpT
-	 9KEIwrfT2Q6WetdzaFADKeq5E6jtQyEk4YK0OeW8BvKY3DeoMPvJCWrCeUhG4qgZLMPfL
-	 MTeGHNgGaWj+uFmE0MqpQ+NNPf61ny5AMaP5uJa+FyWDdT0UOVGLULow7f7r67GG2QyPO
-	 d1pgSb9ACbB0BTLXoU13BeeuhkWkurAQI8m7xwtkMA5mqOvz6+4kc4aOa/zzNdm9H2A==
+	t=1794907415;
+	b=aPFEvNtQxWOsdqdYYWTn/zWBRbOSoOuMvAeOK/kK9mOIJfDY+V/o5PeeExic3c0xh3lR
+	 XW/CgXCJXc2IHytSrSMqq6AYnp/2GqET8R+mupPt00I6R0j+kJa9mlK8rn/5x2SY5+kxX
+	 sZ6+PCAJOtrunCe3S7+DDomJYlly7XUngzk7vJ2nbLYXtbHamM+k+3oakuHYf7aLy8f2z
+	 FNakO0aVwI//B2AcefGmz/cRRoR8befIo0OqARV8DLdP1d6sEXxbObO42rIIeLnO3kF2E
+	 kdKi1PzhoE6csrxj/wRRhBTZrfOPHoNNw6vKlI5CRxunj6kE/bdP4XwOFoiR2nicxkg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794907140;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794907415;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=zwBJrxYrGD8J631VhTz/eYLlctz4VP5StsaNyaNeOco=;
-	b=0UyrtkRLqs4B3Sx85KaBoX9Tkz6xy+petbGbjaPBHJYHGgEZ7MI4RL+hWGFGMb5qNEfF
-	 AVzXMwJHdVtZ0+oc2nJZP7Rbb/pt8MQrITdeWSRa56GkJ833sD++O0jsgTqHQyj+faC/w
-	 u6gCjiS0mx64Ys3LE0FhT3He/aptiQLfNyrpTEflorCWnQMYBMsgUwC8CUThY57UM96pT
-	 vOxf096pNPSYf9psPdteVd75cQqv62JD5BGnCAjqRytQX41DRatbNAw9pd//PenbxUG8C
-	 OW/NAGJQlPXYHJZgoj6NeCZGbAQKWQaHxPyzIgcX2dMJwhUMtlvRnhciPkV/rKdZHuA==
+	bh=WQgcQGYYKn8ae6mZdl1JE2+SueL4iYt7A2bpDNB9b18=;
+	b=bdgzTFFCdWRGGSGHtaFLUg1UaxY0NVll7PwM9PKJMK9r7U4yTLn2zEkYhee8LlSoMOWY
+	 DKqwMe0IsGjYfPnJ0S0/gOlZZjc3MZdlYd/oxQaLHQTCkF1CmwjKBjIiMyi1BM/ePx49P
+	 vIPOIHy5cBaPTdMScRsNZx3WD6k4Lh7VFPKcLieED+zJu3s3u6TTm0GD+x7SleZX2MC+C
+	 n6lCLHrpXlo9MjJUT3jzmOld3jOW+WlxHBD9OVM8izP2vkwVssLZnaJX8v+9wXxisCG2Q
+	 WqPxkb7nWq+cn2TyyHBPb6SS7Qq+oAPMkskwkRdDawKmvKgC74JmbrzzR+WrTssD9lg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eST09LxR;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JqmqpIOi;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B920606A32C
-	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 09:19:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D598606A323
+	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 09:23:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eST09LxR
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5666D1F000C4;
-	Tue, 17 Nov 2026 09:19:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JqmqpIOi
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C33EC1F000C6;
+	Tue, 17 Nov 2026 09:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794907140;
-	bh=zwBJrxYrGD8J631VhTz/eYLlctz4VP5StsaNyaNeOco=;
+	s=k20260515; t=1794907414;
+	bh=WQgcQGYYKn8ae6mZdl1JE2+SueL4iYt7A2bpDNB9b18=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=eST09LxRNOfB2gaxXj3nz6THiJDDShIPAovFNyeKBJTIA81tcCm9nUwPVJg/16uDn
-	 y5w02XYtDhhKvHkAG5GegSocG8ctCHxSrmz7RBz+U2t7y9EPNuqB5XDzx6JGIpG+JH
-	 rJ3tYRsWEV5gZUQmHzYS24mEAh8Wi3hsFGugK+1TaBJnNxsSWFL3CsB38pTn48mYMF
-	 BDxmF4uwpumLtzNkSiTA9d9gR2mM78a3ZZAOhCEQVUDNtJOlfm2yuffF8uzHl3G5Pa
-	 vj42DV+mKMChPRym8WWl5jPiaMVz0/L547mJnKa3TbFRYLxX8gywZGs62lR/EvIOXu
-	 hSyzzZCFiiYGQ==
-Message-ID: <sashiko-outbox-218470@kernel.org>
+	b=JqmqpIOiiy/99pbq9Y1ACXixlSCl/Y3xQssEpQwd+tivh8j2WO6JZs36rVwp3tyNF
+	 RGpnKz+RMVPsjlrWyuAv00uAUKLo127gc2WJcmVm1iF9bHJ+JOZXFqu+Izeb1TMFDT
+	 pPSjZ14wok/fo8K08eOuBnC5zCN05zZWO0px5rXjqmiNfTuN59PZqTYIyIxZ4PGsWG
+	 GK5Mo17La17hwf6CxAWI3ocIwAsX75DeUIQcOoxLnReBr8JRm2Krqft6uMRDT4WQIZ
+	 +aTBXmM1sf7mdkvlCYjYrQf4RQ8bMHc6/FvD8YOEf7hIRNptHQQK3kPA62Gj4/Tcxy
+	 8xzot/BpcCFUg==
+Message-ID: <sashiko-outbox-218476@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 5/5] arm64: dts: mediatek: Add MT6833 and the Xiaomi
- Redmi Note 13 5G
+Subject: Re: [PATCH] tty: vt: protect tty lifetime in keyboard path
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Rui Cao" <i@udp0.com>
+To: "Haoli Zhang" <26031212468@stu.xidian.edu.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261117-mt6833-base-v2-5-058a0685c40c@udp0.com>
-References: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
- <20261117-mt6833-base-v2-5-058a0685c40c@udp0.com>
+In-Reply-To: <20261117091207.3950936-1-26031212468@stu.xidian.edu.cn>
+References: <20261117091207.3950936-1-26031212468@stu.xidian.edu.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 17 Nov 2026 09:18:58 +0000
+Date: Tue, 17 Nov 2026 09:23:34 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,29 +59,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Rui Cao <i@udp0.com>
+> The KASAN report reaches stop_tty() through fn_hold(). That handler
+> reads vc->port.tty and uses it without holding a tty reference. It runs
+> under kbd_event_lock, while con_shutdown() clears the port association
+> under console_lock; these locks do not protect the tty lifetime.
 >=20
-> Add a device tree for MediaTek's MT6833 (Dimensity 700): its eight
-> cores, six Cortex-A55 and two Cortex-A76 in one DynamIQ cluster, with
-> their caches and PMUs, PSCI, the architected timer, the GICv3, the
-> watchdog and the first UART.
+> Use the tty_port_tty guard in fn_hold() and keep the reference until
+> start_tty() or stop_tty() returns. Keep kbd_keycode()'s existing tty
+> reference interval unchanged.
 >=20
-> Add the Xiaomi Redmi Note 13 5G (gold) on it, with the framebuffer the
-> bootloader leaves the panel scanning out and a ramoops region. The
-> memory size and the regions reserved for the firmware the bootloader
-> starts depend on the RAM variant, so they are left to the bootloader:
-> the memory node has no size, and reserved-memory holds only the regions
-> the kernel uses itself.
+> Use tty_port_tty_set() when installing and clearing the association so
+> that updates use the same port lock as guarded reads and the port holds a
+> tty reference while the association is active. A keyboard operation
+> that already obtained a reference can then finish safely after shutdown
+> clears the association.
 >=20
-> The cache sizes are the ones the cores report in CCSIDR_EL1. The
-> bootloader programs CNTFRQ_EL0 (13 MHz), so the timer has no
-> clock-frequency.
->=20
-> Signed-off-by: Rui Cao <i@udp0.com>
+> Reported-by: syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com
+> Closes: https://syzbot.org/bug?extid=3D2932e8970a6398db95c3
+> Co-developed-by: Jinning Zhang <25031212117@stu.xidian.edu.cn>
+> Signed-off-by: Jinning Zhang <25031212117@stu.xidian.edu.cn>
+> Co-developed-by: Bin Yu <byu@xidian.edu.cn>
+> Signed-off-by: Bin Yu <byu@xidian.edu.cn>
+> Signed-off-by: Haoli Zhang <26031212468@stu.xidian.edu.cn>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117-mt6833-bas=
-e-v2-0-058a0685c40c@udp0.com?part=3D5
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117091207.3950=
+936-1-26031212468@stu.xidian.edu.cn?part=3D1
 
