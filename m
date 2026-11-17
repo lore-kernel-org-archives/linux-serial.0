@@ -1,55 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794926125;
-	b=pdsr1EItzLBCcx7IkNnyR5B1/gKTyBU4azdZsS2me1Ouzg6z3eyc7VjTh6QaX1IAbBiN
-	 65AxwOsCSRNgHgq7U16+YLFhu5FORVfXcPTbeMXU8GEVAD1YGv/vqXMQHmjcx+mF1O+iL
-	 3p/JC1pklhTpzhtvH37KINaO1kQ2MxWgMjwNF9tgPbfRPv1YriXEUhGEHpuYZIFGDc+eW
-	 PHKmBvVU7hxmTnBknskmgsz4i13J4XrJB7ty7mG4lkMUiChSoAxHkby6rBPcr9tom+s31
-	 0h2V4WwSeokxHHRl8LfGsVcBlg3BZ30eZCMaqGJT1GjoTFO+9qroVJh43h8ucmKrMvw==
+	t=1794926368;
+	b=sficr5Js2ldOzki2r8cZg5oyPUG8grZ/ilNT6/AlmdZB+WVMDQz0vIOv861vEDfzSdE4
+	 8/wvPNTmTv8vYW6BaJrAjE4fK6KzMvtbMP96HN8gUQlRCsM41l4r2Hpr1cho4rWpOTKz6
+	 IjkWSD7FSmayQjWnmosYKeYBU1YBSXtZQRsWXa0nu1BKluZLVJHfgrGEVg1UEjeNesP9O
+	 PrqPhIdBSJdDG4ZplFCAW0/VioJ5u1/GY+w9wM6EDVt+BTtm+aRKHyjlp9oFYaUsWn78p
+	 SbSNW4CwsWJnYr0qQU6I+TAh+I3Gq1gl5/HKZ6rjZXZgMAIyw/6PhLa57EbTonAMwXA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794926125;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=b+fenH5BmPULvLKq7YoyufOI1RWjxWX1rFuVb8Gfnk4=;
-	b=24jS8MssfFAhnNcZC7pTO8+l9AraIkibrEscFA9lgt0jA9qNypqTWAzFap1ikSHgo6dw
-	 lnHeBg+UTI+YrTMefp5ujwgZA+fumGg9jTsmHOLsFY/eeOQcidNWvjmNSz2iW3d53uEsk
-	 nF1k4tdVMIXjhlhIHu4vof5h9l3Kg3uUPjpjHrC6iUz0Nx9eZ9klHDSP1ZnbuXyC6XDpM
-	 dssEctrRz9/sxGywVy6iWEVrkQn1EoAnHrJWcLNjEpeqECBGhIKl+2EWU1TH2MJyEXd5+
-	 AmvPkUNlsiNepm7T4ZJJrkfPI+0Te3cN/anPzxtEFyT1qRZNyeOJ1YyUUn1hd5fj6Xg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794926368;
+	h=Received:DKIM-Signature:Mime-Version:Content-Transfer-Encoding:
+	 Content-Type:Date:Message-Id:Subject:Cc:To:From:References:
+	 In-Reply-To;
+	bh=ZER2/wOCFh6jTs8o5A1q9yBCXNK7aYlQZn8jwh3/i8w=;
+	b=nYAws6T5ckqWCAbK5vy8NttuIud24nEi+/s5D+O4RDnBU9pjA80J2iCpjAC5lWPbzdcW
+	 ZtgzxWwJEDPHUU5FHeBUa3Je4Msb87HNDtKm5QlkE4o+sX7noIs4IZAGnHfKmhmKqQE+k
+	 q58cnZ9rHx28tiFlFWa2BkhD2vuPskTac/9WTflhnfq1I3coHHp1GySRAIwJYpDz4iQ+R
+	 VEg2zaxUnuLkNfSbPE1jpWDEmgeQdHExPmwewr0O4Fu63pfBtddu6BBJruILCMC+w1Xkk
+	 uHvmN7NO0ptyEyxVMCChYPOVCAYrJjOPVCS40rkVQkUP6yTQBA9LPA7dA/38ej+GCAw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jK36v8O8;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nWI2BMWs;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6D91606AF41
-	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 14:35:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39553606A31C;
+	Tue, 17 Nov 2026 14:39:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jK36v8O8
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A08E1F000C6;
-	Tue, 17 Nov 2026 14:35:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nWI2BMWs
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D8FD1F000C4;
+	Tue, 17 Nov 2026 14:39:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794926124;
-	bh=b+fenH5BmPULvLKq7YoyufOI1RWjxWX1rFuVb8Gfnk4=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=jK36v8O8GRkjnn9Pz8SaXVJvGfkN6+0hJezQEz35Iaq0J/piFvrQyzLZe1OGeijws
-	 HUkcbxjC6xZQjPQPMuIOfA/e0Kkp4LNe/A5NtS9D9DaNGasd7FYgfFBjOvoKNnXXte
-	 wQ7zouAN8/p4cq2LljmL5/F0vccY1Wgbn+cEQwxb2P+Q7btDS9JFbwFNzDmDV4Kz/u
-	 hxtfstnVEtc9Z5nQYKkCjdAD/UIYx8P32aDBE9jJKwBGZogCW0CueERMIOXFgaj0NS
-	 pHXEQW3PvnrVYqVLFHxiH4srTCQy3Ts42zFO61+N45dDv9dNjBPtA5urXwvPP0DR/m
-	 fXRdzB2IGDXrw==
-Message-ID: <sashiko-outbox-218970@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] serial: mvebu-uart: drop of_match_ptr for ID table
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Bramuel Barack" <bramwelbarack89@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261117142115.18402-1-bramwelbarack89@gmail.com>
-References: <20261117142115.18402-1-bramwelbarack89@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 17 Nov 2026 14:35:24 +0000
+	s=k20260515; t=1794926367;
+	bh=ZER2/wOCFh6jTs8o5A1q9yBCXNK7aYlQZn8jwh3/i8w=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To;
+	b=nWI2BMWsttlpwtAmt4LaJy96tSaYvlKQ4qI3MRatdNxfTHjis8bUKTuUKieJsLPK7
+	 ub6xwRAoLR+DWjbIqtZz147srqFgqCG52Glx2ANUUOPzeLJo2PwiqaaC/vsNui97+G
+	 pdogDZEBB4F49ZPWS4t+H3zxz2aijkeJt06E7QyftMvYdYMH54gMbMkzLol4eDQyzm
+	 IrgeYXK1vridWcyacxqJ5zWrQ3RfXlgxBVUcNZTGzaTi2c5gM+NXhMabZ0t/1sWpGJ
+	 huJsjia2jT7UIHSITwbrvY0Hht6vMEIt3z9OZS5w+JwYk66RJcF77EZdz2JN1WlGND
+	 X7EXIS+++wGBQ==
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -58,22 +48,56 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 17 Nov 2026 15:39:22 +0100
+Message-Id: <DMXKAJKEIMFA.X1EWOKG0JRWG@kernel.org>
+Subject: Re: [PATCH v3] rust: serdev: use Delta<Jiffy> for timeouts
+Cc: <markus.probst@posteo.de>, <ojeda@kernel.org>, <a.hindborg@kernel.org>,
+ <acourbot@nvidia.com>, <aliceryhl@google.com>, <bjorn3_gh@protonmail.com>,
+ <boqun@kernel.org>, <daniel.almeida@collabora.com>, <gary@garyguo.net>,
+ <lossin@kernel.org>, <tamird@kernel.org>, <tmgross@umich.edu>,
+ <work@onurozkan.dev>, <linux-serial@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, <fujita.tomonori@gmail.com>
+To: "FUJITA Tomonori" <tomo@flapping.org>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Jiri Slaby" <jirislaby@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20261103011143.917147-1-tomo@flapping.org>
+ <20261117.200726.1503876918333666825.tomo@flapping.org>
+In-Reply-To: <20261117.200726.1503876918333666825.tomo@flapping.org>
 
-> mvebu_uart_of_match[] is always compiled in and already referenced
-> directly in mvebu_uart_probe(). Wrapping it in of_match_ptr() in
-> mvebu_uart_platform_driver is redundant and prevents ACPI PRP0001
-> matching when CONFIG_OF is disabled.
->=20
-> Switch mvebu_uart_probe() from of_match_device() to
-> device_get_match_data() and check for NULL so both Device Tree and
-> ACPI PRP0001 bindings resolve match data safely. Also drop the
-> now-unused forward declaration and <linux/of_device.h> include.
->=20
-> Signed-off-by: Bramuel Barack <bramwelbarack89@gmail.com>
+(Cc: Greg, Jiri)
 
-Sashiko has reviewed this patch and found no issues.
+On Tue Nov 17, 2026 at 12:07 PM CET, FUJITA Tomonori wrote:
+> On Tue,  3 Nov 2026 10:11:43 +0900
+> FUJITA Tomonori <tomo@flapping.org> wrote:
+>
+>> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+>>=20
+>> write_all() and wait_until_sent() take the timeout as a raw Jiffies,
+>> which is a c_ulong alias. The type does not show the unit.
+>>=20
+>> Take the timeout as Delta<Jiffy> instead.
+>>=20
+>> The C side treats a timeout of 0 as "wait indefinitely". The Rust API
+>> does not keep that meaning. A timeout of 0 or negative is rounded up
+>> to one jiffy. A caller that wants to wait indefinitely passes
+>> Delta::from_jiffies(isize::MAX). That value is MAX_SCHEDULE_TIMEOUT.
+>> The C side replaces 0 with MAX_SCHEDULE_TIMEOUT before it waits, so
+>> this gives the same wait as a timeout of 0 did before.
+>>=20
+>> Reviewed-by: Markus Probst <markus.probst@posteo.de>
+>> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+>
+> Gentle ping.
+>
+> Danilo, could you take this through driver-core? It applies cleanly to
+> driver-core-next.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117142115.1840=
-2-1-bramwelbarack89@gmail.com?part=3D1
+I think serdev stuff usually goes through TTY.
 
+Greg, can you please pick this up?
+
+Thanks,
+Danilo
