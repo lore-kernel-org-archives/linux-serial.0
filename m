@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794896473;
-	b=0ALtcAyGHQAGvemVPeXtG8wH2gc5eHtyiGctWlt0m5t+N1CXCDT+kp1rT/6ZH5YfSgQw
-	 mVzz3bF79/2q3s0300zMJ1bRWE4T5o/hmrSSP2DLt0KC3HUuInurqcAbeT5p1Th+XxpHo
-	 84s+3+PQv9mSno7B1m4eQ09084Kl3YslS9gTowrKsvoI13VsvGA/RT4rynaQH8rltedUd
-	 Y2fqOWqYzG0OGn/RowcbibmIIuTgUWt5VRHGQ9Dg6y/f1Jcg9Hnf4K48XWzocpKORAtjW
-	 arqooVHxjRZTKAwP8nDgYBa1BWnB78M3fN8a0xVI5KDYJ5f4M3g959Fw7c8FvdjFuXA==
+	t=1794896539;
+	b=KrnUJP8KkUsxxzAY3PllKrF+5bOcUeUU8O+rtRK1o6cym+3CKOzbpkslyOL5oHHdZLtX
+	 UtJFwrq3R8CVQqR1DQ18okm2+qKt7A4NZaSAmX2anBW6Vql4/4uw3474BHBLIOVwW8nVY
+	 ntNyT68izan5pa65WbpI7mxWYACcIAPy3oj2RnuE11tSUbJfRnpiAL8FFORMt1jUTxxLA
+	 oFe4DFlMSaHqFdDjUTldMrgNczJAepbxwpVdmOAJXfZS36V0DF65IuPSwQmAPeDS/xLlV
+	 DHXUdO8qZqJTMSdInWipJ4su6QHMYNpN/Qrc9q8e9+mwgAwfjREcdSq+ySAAUTJfZ5w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794896473;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794896539;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=pRVRA5MLEjQahlUHQpOPl3d4K0lfLaSgi97gqSmV26Q=;
-	b=VCP635bgtge7XCC2frz0BBPR/eljU34eA6lKUtNAS+iClP7zMS63qQl6rBmZHAXWUNnf
-	 KXKBdB++jBhz5JzI7UESu1TiDIpbWXvX+Gaj9l5/N7x7cfEohzMMO2C8ntPPECPiAjl1k
-	 YMZPn8cPxPvZA0yPr/A9dtuFMvUdUoc/g3ZzzEiUy/mWcOkek4v73X9MSaUX3KAeT/qsR
-	 ECbxd2Ry8LMBtz5sEO8MMomqC/hYc7m6jEhISD3QOrpJGRkJPuRqLk9V+pZcmke54e5sL
-	 jzGyqC0DMiIHTYiMdv/3aJpBWW7FjAEvTPDykrPfmZEcKjIjLl8Pc5CT+lZMwNyQnnw==
+	bh=ALbYQ8BHKGYwLP8Of0K8AidEmzgVKPEnyIWvWO0pC5U=;
+	b=aFEzj5n7aAexCHSrrTydkWMSUxDEsFDEQ4bbn7iif6lRDB0Jgu8yAXMvNGglR0V1TVKR
+	 PpShjt+DU1oetZamhc0gT1uDjCPyz87d40SMUzD7lM9hYlchBcuAPjRuWM0cbzTzyRTjC
+	 wUD//l+4iEZeKGm9SBf2qEcAlNxi7rgRodXDsrgeWnKQ9b+8GCkSgCp0BrUuVWUItewVe
+	 taUo6VhFKIoyXOOZFJBJnC5frOenqkOmR2drXx59wNOIZK96LqsCs/BrRSAEGFw/zoMxp
+	 89GspQsslI2/yYDMd9w8tc2q3qoy2vaYdrMzBdPMgDCrmAqkBNgWEyWIKv+Dg5Mpa/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=f6gwAVXa;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bPsATYwE;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1B02606A330
-	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 06:21:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DDEC606A331
+	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 06:22:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=f6gwAVXa
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DEA51F000C4;
-	Tue, 17 Nov 2026 06:21:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bPsATYwE
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD7081F000D1;
+	Tue, 17 Nov 2026 06:22:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794896473;
-	bh=pRVRA5MLEjQahlUHQpOPl3d4K0lfLaSgi97gqSmV26Q=;
+	s=k20260515; t=1794896539;
+	bh=ALbYQ8BHKGYwLP8Of0K8AidEmzgVKPEnyIWvWO0pC5U=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=f6gwAVXatXjZMGbfIzzvtGLgbRxkKLxLxxPl+r9muWyFzYO53Oul4n9mUdpCjMRfd
-	 32ALI6g/aId3pOe+N6egjcdII/rWqT9TznoZMbM8ygXAqfNmVsxePhooKPebJOPEMx
-	 8wZkRtcdyn8Lme72HQFQzQZrFi3OyKKmfRG1DkEg/KVcIBPL+J7sisiv96KO/FxU2b
-	 uCmz8t6lanL7N0iIN9e4YwV9VewKOar6HUC6/0Ak80cMC+8DyoKnCksOATTaFvoXbn
-	 Zs8CJQCP7IBu1q1Mz8MWGFTD1a8DgpagejaZhL4uRVotEf/gfsZxYrRCRGoxfXVDEH
-	 nFf+vk/Q9H6mg==
-Message-ID: <sashiko-outbox-218247@kernel.org>
+	b=bPsATYwEBalm0wg+7ZQKZi+OxooH0FtCpCxz73noEbRruJHV/KvwPktBs7p7knZCY
+	 acG6J5fVTRQDrwQN8Y+n0XZAfaTNAZWyGtqSwRXUsdqlkeJiI+mlgqjoDhe/9+8v+J
+	 hb8nCvUH35UQZ2EmhlkM5d2/diT5sLHaJ3GlKq0SpPeQjwOAbqQfZSrbbl1WbryrDO
+	 oNk53gu6BD0NyL2kmde3aIvvJv7I3Cs+OebphXQRJwDkDHb79pc+ZmjGGUtTJaUryB
+	 OowYOMkuZaRt8kEkCO3WnbbnXeNYnUf6/fWvuC2AMQhBxERBQNvgWKeiAUN+ifq64D
+	 XN3FTho7ggTdw==
+Message-ID: <sashiko-outbox-218248@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/4] serial: max310x: re-check the TX queue before
- the after-send hold
+Subject: Re: [PATCH v2 4/4] serial: max310x: end the RTS envelope when a
+ flush leaves nothing to send
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261117-max310x-tx-fixes-v2-2-b395126fd23d@vaisala.com>
+In-Reply-To: <20261117-max310x-tx-fixes-v2-4-b395126fd23d@vaisala.com>
 References: <20261117-max310x-tx-fixes-v2-0-b395126fd23d@vaisala.com>
- <20261117-max310x-tx-fixes-v2-2-b395126fd23d@vaisala.com>
+ <20261117-max310x-tx-fixes-v2-4-b395126fd23d@vaisala.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 17 Nov 2026 06:21:12 +0000
+Date: Tue, 17 Nov 2026 06:22:18 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,39 +61,34 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> max310x_delayed_stop_tx() decides that a software-timed RS-485 envelope
-> is over when the transmit queue is empty and the chip's TX FIFO is
-> empty. It tests the queue first, then reads TXFIFOLVL over the bus, and
-> only then takes the port lock and arms the after-send hold. The bus read
-> sleeps, under load for tens of milliseconds, and write() queues data
-> under the port lock in that window. start_tx() finds the envelope in
-> MAX310X_TX_SEND and does nothing but reschedule tx_work.
+> With software-timed RTS, max310x_handle_tx() ends the envelope only at
+> its entry check, when it finds the transmit fifo empty. If
+> uart_flush_buffer() empties the fifo after that check, while the
+> function reads TXFIFOLVL, the loop ends without writing to the chip and
+> the function returns. Nothing was written, so no TX-empty interrupt
+> follows. tx_state stays at MAX310X_TX_SEND and RTS stays asserted until
+> the next write or until the port is closed, and an RS-485 transceiver
+> blocks the bus for that time.
 >=20
-> When the stop routine resumes it sees an empty chip FIFO and arms the
-> hold on a queue that was empty before the read. The hold expires, the
-> RTS release is scheduled, the rescheduled tx_work pushes the new data
-> into the chip FIFO, and RTS drops while the chip is still shifting it
-> out. The tail of the write leaves through a disabled transceiver. No
-> FIFO overflows, so no counter moves; the loss is silent.
+> A tcflush(TCOFLUSH) timed to the end of the delay before send
+> reproduces it: 68 of 975 flushes left the port in the send state, seen
+> by a following byte that left without the delay.
 >=20
-> Seen on a MAX14830 behind a slow SPI path with 20 ms of before-send
-> delay: 25-byte writes every 20 ms lost 1600 to 2200 bytes per port in
-> five minutes in RS-485 mode and nothing in RS-232 mode under the same
-> traffic, overrun counters equal; 96-byte writes every 60 ms lost
-> partial chunks of 14 to 75 bytes a few times per run.
->=20
-> Re-check the queue under the port lock before arming the hold. Data
-> queued before the check keeps the envelope open and the pending tx_work
-> ends it once that data has drained; data queued after the hold is
-> armed is already handled by start_tx(), which cancels the hold.
+> Call max310x_delayed_stop_tx() when the loop has pushed nothing. It
+> returns when data is still queued or the chip FIFO still drains, and
+> arms the after-send hold otherwise. With the change, 9509 such flushes
+> left no port in the send state.
 >=20
 > Fixes: 33632215e1bb ("serial: max310x: drive RTS in software when hardwar=
 e delays are too short")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20261116-max310x-tx-fixes-v1-0-61c=
+01f180911%40vaisala.com
 > Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117-max310x-tx=
--fixes-v2-0-b395126fd23d@vaisala.com?part=3D2
+-fixes-v2-0-b395126fd23d@vaisala.com?part=3D4
 
