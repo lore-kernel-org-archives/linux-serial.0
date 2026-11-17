@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794959266;
-	b=qkxkyzNpgE485i2PJy85aDx5w87BA1SsGH8bbZkqGi1x29JxtHXDjOmSZKDIpEHkatHN
-	 jx+8qC2OWsF0T+dWXsdIUscWAmsJ5PEcNGqFxcP8CoolGlgo996MIVBvYgtEvBGpILFE1
-	 edgydvzanHx/JN8NuzmdAcdXy9ePhWdTqBa3+fJHhxZ8/RtXy8l7R8aL7QLT3wN3g4L3i
-	 yo09Tx3xR07+4sUDew9UmblF88aJMtFQPG6CM9cS1WZxaecAC0wNgodJ+RM25of7cR1Ol
-	 dEIJ8L+fY+HHFiDnkSb7eAw/bAX9bxEYaHApWLvjIq+z1UdtP6r36mTpg0XJoWA/Wjg==
+	t=1794959281;
+	b=nh7scyQngqgZKyyFqvYFI5iS9Yng/8DvTMcNMTpjSSh2zFGS33ejMp6lYtmcmEuloG+s
+	 EpnY4TU80raLQy5mGoxPjcUXisC0YGhj9s4PzOmYFDRZdyyQdYuruFUFbdNzex1ie3wWU
+	 Q4XU3FiCnEPNEYrY+BFU4CBRYK5GTEoUI3PXJxyS8QO4tpCblJNygoki1I8Rm1Fur4N5j
+	 ok+gulIFCub9jabtREOwwglZjAbyCxg2m6bd3vHgipFmotl5wZtMcOEStQEN+6fMgxPnq
+	 jKJakA7zVjP7cc9iSkZj3GKneNjBvm9n1xBRUxEsudmf0e1XbkkhI/QvKsCPEH2wVog==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794959266;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794959281;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=kuA4i0hG3XzeI+gFpMUV/vzgD2CZhwVj8iRBxZsj2zY=;
-	b=xPcTsjJj23TmlBywRNOfMmiN3WYVh58D67kui+e1/XyEQTrBd305ey6VdzBUcMc9nxek
-	 Ob/I5cPezIoms4uynKx9S8IutkAaP5YIqke+ZZKKKiFyTce76hjCDxB8qI3IqbScK4tRZ
-	 QK7MK7ycZCsyxqGy5QYFhn3HDvcm5nj50C9w5cjEX/YRTtEwtI55PmDkjKkktPI3i6Hfd
-	 oPzGhva2KePScqtLz4xWZ9h+X+NT8hG/mNgfyX0at6ZiE0mC7LMeF0IkjbNwtUWOaARDz
-	 5v290a6rL4cWYKtK0WN7LSwZq67guqLW8fS3cIIRp2mTQbyzaxrPnYxNHTtDVF0aHww==
+	bh=iCcV29iEgGM3NJgU/XR9XdJljzYUhe2mKN+RX2pX6uk=;
+	b=mSyMVqPvCp6Ny/izztKvSLpGW1r4BcWnVuD8JdCZCqn7xKHfOdgwWsERtoRb5FvhkKrz
+	 RIrNhY6o0BMJSswzvDYDTg1o4HHVhYJdgBsgOBMOsbLFAA/qERRqSe8vTP5UEmOTXfEIn
+	 ax5e++GciaaTnZf2VNjCE6rB9VNpLZ7pzch8CdVQKKD3pUah1KkO2JdvZeKdQocZSl9K1
+	 TL56eGlPTru6RBLjqitthxIFcBxpev49TUuY3Okc+eaTMjs6mC1Kl6IyvyxgI1fPL8j2p
+	 MbE+dcWrFYSDqtKCGXQhYdMNrwyqphhu96BLmnXstISApjmAyfZBw1C0y7Y/ylc6WiA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DLYCIGl3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SqWg1+SY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C4F4606A32A
-	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 23:47:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6ED2606A31C
+	for <linux-serial@vger.kernel.org>; Tue, 17 Nov 2026 23:48:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DLYCIGl3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA31A1F000C4;
-	Tue, 17 Nov 2026 23:47:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SqWg1+SY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619861F000C4;
+	Tue, 17 Nov 2026 23:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794959265;
-	bh=kuA4i0hG3XzeI+gFpMUV/vzgD2CZhwVj8iRBxZsj2zY=;
+	s=k20260515; t=1794959281;
+	bh=iCcV29iEgGM3NJgU/XR9XdJljzYUhe2mKN+RX2pX6uk=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=DLYCIGl3YtrTVjYUWWR2PUHY94Lccufy3dYXE1HN+RzLfhjMFI+2m4dsUdBJapLdp
-	 HVM7QQA0GwMbtDwkhpsziHN3nBBE99u8FVAv6tl3mULU+kUf9kvafJDH4Z4jYjesOx
-	 H1BgqWrnFdtB624gwNln7qvfI/HbH0Ay+ovaa557FWJOeBGg7Bhz/VsBOaiQi17tJU
-	 hImbW0PfQcCnuRsapO4MKetwEATJo849pLS4nupXVGTb1WP3Ss4ntmozbk2wNLZR0W
-	 0HVhw/o4LGgrzMUquz2Bu9VvBCRRAvKckGicloC1quAnrEoNM2vgHgCVWV4eUGRjTh
-	 AELM0CZOuRLlQ==
-Message-ID: <sashiko-outbox-219806@kernel.org>
+	b=SqWg1+SYEtlq0VChUhY0C/Cy24TGLw8O88R2PWeasq3xQfMyvBA4tsYsISFUW8x51
+	 r9hhQvasQm42qQVhDj4GDxFgF6gXoOB0wxMwmsIJwk6Pzg8svUj6+/QdeXR6CFD92+
+	 xTlqSsyixN7NWFo3nAxM3M/DWGSlQCQ9rVDFz+vHnZyFjew8DPMhuRKu1WRW/o/5FB
+	 APWl2hhAt26/m3P6WAv5cTQJWBvGWJeejLbNjSow2RBEz03JaBoOEsLCo4gS+gyGI2
+	 ZKwxBtYZja5AzvfKSRkPlDVO85ioIuwuBE0MkpI9JeVhqJepfyzEv2AcMqTwiqdcuC
+	 6Rtn+wHx3oYcQ==
+Message-ID: <sashiko-outbox-219807@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v5 3/7] serial: rsci: Enable transmit end interrupt in
- rsci_stop_tx()
+Subject: Re: [PATCH v5 4/7] serial: sh-sci: Do not kick TX from
+ sci_er_interrupt() on RSCI
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Diogo Ivo" <diogo.ivo.sx@renesas.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261117-g2ul_sci-v5-3-30b58ea18923@renesas.com>
+In-Reply-To: <20261117-g2ul_sci-v5-4-30b58ea18923@renesas.com>
 References: <20261117-g2ul_sci-v5-0-30b58ea18923@renesas.com>
- <20261117-g2ul_sci-v5-3-30b58ea18923@renesas.com>
+ <20261117-g2ul_sci-v5-4-30b58ea18923@renesas.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 17 Nov 2026 23:47:45 +0000
+Date: Tue, 17 Nov 2026 23:48:01 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -61,19 +61,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> Currently, rsci_stop_tx() clears CCR0.TIE without enabling CCR0.TEIE.
-> If transmission is stopped while CCR0.TE is set (for example, via
-> TCOOFF), the hardware FIFO drains and sets CSR.TDRE while CCR0.TIE is 0,
-> and no TEI (Transmit End) interrupt is generated to clear CCR0.TE.
+> On RSCI, the receive error interrupt (ERI) has its own dedicated
+> interrupt line and status flags cleared via the write-only CFCLR
+> register, with no hardware interaction with transmission.
 >=20
-> However, on RSCI setting TIE while TE is already set does not generate a
-> TXI interrupt. Thus, if transmission is later resumed via rsci_start_tx(),
-> setting CCR0.TIE while CCR0.TE and CSR.TDRE are already 1 fails to call
-> into rsci_transmit_chars(), permanently stalling subsequent transmissions.
+> Calling sci_tx_interrupt() from sci_er_interrupt() on RSCI is
+> unnecessary and causes rsci_transmit_chars() to run in invalid TX
+> states:
+> - If an RX error occurs while TX is idle (CCR0.TE =3D=3D 0 and CSR.TDRE =
+=3D=3D 1)
+>   and xmit_fifo is empty, rsci_transmit_chars() sets CCR0.TEIE while
+>   CSR.TEND is 1, triggering a spurious TEI interrupt.
+> - If an RX error occurs while the hardware TX FIFO is draining
+>   (CSR.TDRE =3D=3D 0) after xmit_fifo was flushed, rsci_transmit_chars()
+>   clears CCR0.TIE without setting CCR0.TEIE, leaving CCR0.TE set after
+>   the hardware FIFO drains and stalling subsequent transmissions.
 >=20
-> Fix this by setting CCR0.TEIE in rsci_stop_tx() whenever CCR0.TE is
-> set, ensuring sci_tx_end_interrupt() fires once the hardware finishes
-> shifting out in-flight data and clears CCR0.TE.
+> Skip calling sci_tx_interrupt() in sci_er_interrupt() for RSCI ports.
 >=20
 > Fixes: 0666e3fe95ab ("serial: sh-sci: Add support for RZ/T2H SCI")
 > Cc: stable@vger.kernel.org
@@ -83,5 +87,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261117-g2ul_sci-v=
-5-0-30b58ea18923@renesas.com?part=3D3
+5-0-30b58ea18923@renesas.com?part=3D4
 
