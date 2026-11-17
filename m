@@ -1,78 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794906699;
-	b=n0tLbmpzNOZby8cB/uf6F5dnXuqZc16z9pl2vE4B25Z5IMKELgsOdizT7G6saq3PZRzl
-	 Efs7qe5/lST9uf0CkjlLfxIIuLbm7ANwS40X5Ae2mgZUaZQQvoeGWMVjgIsfeOeXNLrul
-	 Dh5k5JOIumxKCp597/et26pVncEfEZ4kO54qhA5Ld6ylwPjUCMYjKMPVBJzwAt4tt3i28
-	 Y4PHE/KgkRtx1zgV9LhuPGa4oT88TVB4krZz2l8GMasTooZQUpQ8PjjpocDjTgksFFkhS
-	 k63E6beck1i/nW8WzzqXreyvCQKUS855tZcE+WSvjT4UZZ5Jsl7ntfzZqlLM4iyMJPw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794906699;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=sQnkF5f7J5gjzIigPcwvePLDA2RiyWZPn2x/OhMR34g=;
-	b=xriXbDuipSLMAsI68YuDuxH2e8Ua+BA+kFIvCGkJ4eQNTeWqtr02HnEdbAByYdRodsB8
-	 E4sMtBBzT1pCRdM0LGeQUtSBm8wfnRvsxg9FKJvSC2/d/KpvuzP/O6LIeEXUU98Um1bCR
-	 CUoQG+Ag+elyn0QYxKIQS72uQ/h8O1i8vhoAKY9DgB/HFGfbXcx3ER1sQovDQtqd82lac
-	 cRyMSwbrwhqxtjKKpWv+Q/G69hI2RGsUf8YyQcw5NcT4r/fssaD3sAHmKM+8YzpE6ijvK
-	 Ja8f6bnq3Unyu9pKgSKlYxPpIUYbVPbH+GOyAGzDt9acHF/jmMJYZQQv0+mqv4mh1IQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HqBtOb+f;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C85606A33E;
-	Tue, 17 Nov 2026 09:11:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HqBtOb+f
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794906699;
-	b=OMh5ilukyezPuxzyok3rCv17xArYJdG4LoFbNwmKOElf6WGkl7gFT86RM4X/5pOEEawo
-	 vnC1l5Q2xOAFv3rApNrUWkWoCm2/HyqI3av3FuwyO4PPkIhpsJ/jDYvW/UxSF07lRDtqt
-	 7sc14wcPCMxuiWnSyZsJJMamELPwTNTouleMhpAN6jSBukk9huWJnFBQfC4ZdWWyM7Li+
-	 Q9iP+GqjKNDczsowSwOZg9zFy7mVpQHJkv/b62Nn0RRryaQ5JyMUSBniSmDrTvLbIRyyI
-	 /8cvUfofgJdulIrfRwZiqtKL0k1eDs0dGFMjBtEF/I/q4AfYSUPDJXnhcwNfgANUF8w==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794906699;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=sQnkF5f7J5gjzIigPcwvePLDA2RiyWZPn2x/OhMR34g=;
-	b=tii5P3rZ2JaCVrUVLWafRMCauI3KJE5F+N6v9ANd60SLP0km7O2n23iJ8EXcltGP2fcR
-	 dIiL9b+KQzRnBg47x2+FhN4X7n6CfQZcJQF7dAq1FRViHhwj9iWAkpWSUa8nWlt+/NwjQ
-	 /DSEPTEiUJAeV9n/dXuvtAaOP19vV9awTwpf7OQN3z3uFYN/HLjIVTYcwMOVqaFTsyyUC
-	 Xl9gtuSy77mszbe2lTNWkXjPGtFolw99teDjkfLZezB8loFWbbgeG5urV53Aj5nqsdpQS
-	 ewgCFxdR7hIHgchWEB6ItWux3Yuf2bamMObanIyV6ZvGNE5JlTjiue/7XaAiDzyAMLg==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C17F31F000CA;
-	Tue, 17 Nov 2026 09:11:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794906699;
-	bh=sQnkF5f7J5gjzIigPcwvePLDA2RiyWZPn2x/OhMR34g=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=HqBtOb+f7+zk/sCku6p5lGrGlTJMvWjSILPJYthaRkZCE+kby9CmmVsfbjPLxI89g
-	 Cl5ToKVnRQj75AVPZsUqodNQHzZn4NFU9MOCs+8sUkq6yLekTzP/In/gd0Mpty9iX6
-	 BfaHLbXBTUIiDHSVbMCzTAHpcL41QMVnA3eGz2vk2dB4Gkvo0HO2jjBdNJ4Eib9Ibs
-	 MJjT6LigUIBPlbdh7haWxTvfsuHdaiWnMLaGK9NgKRjCgx4YYe9qtMCnwUNIIgtk1s
-	 8pAPab/uwaG+hmaT1GdDK531YDLnQ+rlU8J3P6TdHN/vfdeuZc0kpAG+DN/o81NXLh
-	 rAOmYNX70VaPA==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 473B54A777;
-	Tue, 17 Nov 2026 09:11:37 +0000 (UTC)
-From: Rui Cao via B4 Relay <devnull+i.udp0.com@kernel.org>
-Date: Tue, 17 Nov 2026 17:11:32 +0800
-Subject: [PATCH v2 2/5] dt-bindings: watchdog: mediatek,mtk-wdt: Add MT6833
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.164.118
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794906758;
+	b=On5/cuIEToOw9Yr8ixu99pb7qyQVgUmwl9A7j2Ar5PSjAFBa1iryYIHV+wWlLjM/PRJ2
+	 WyS38uoB+gxttBVbcSAH2tPsE/F6V7QR3z+4DkVCSOBpPWVTp0m2vg70Dj+LVwVTaxGJc
+	 Oe02VgmZTHNmXFtgfrU8tL03tR7416FWrZ/CRFTyhAtVd3aTHbF8wMlQakHnxRQjUfKwH
+	 Y5ru0U4TCDMVSw7kZ8feO3wy3+lDCQhZQdjEWpuxOV60vllgAtq9fHFfPUIbMVmBwbUEE
+	 1J84Q/ZSsZMENt7BmcehJj9OniDepJBtgey1gUV18+KajjmL18kBLY2tJ24NnNL7rnw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794906758;
+	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
+	 Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 X-CM-TRANSID:X-Coremail-Antispam:X-CM-SenderInfo;
+	bh=z8hDHvdaTIwLdEqLBOLWaztzJQugW8MazJQFSuSlBig=;
+	b=ln7RlMMqIql16xM3BRMyRu8iMDbILPAorGYATzUM8ke1vX/Y4lgiXZooyzQ782gE//HG
+	 4Q8P3x69awHxxqeaN6yvR9/AZ+uimV7WG+b8VqygccMeI+JtYQIKRMPJaMHgiPsJOmfFc
+	 CfN0+uNp2MPMV8/sXqXnDElsnYffjy353wXJeLS9EUtsz3F4NulL5o5/KrgkLKDFOzhls
+	 vse1maReM6qCWql+0uoQ2SrbJCI1qdRwWVnqBUpP8TFlxuDtWlNzd63i+a9tXNlgzmKh2
+	 nCjQffX05W+viGxJhHA3t3JVSIOYPeIhxWPNbx8J4VD+at91E+FZ1bHJnbgz+py308Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=stu.xidian.edu.cn;
+	spf=pass smtp.mailfrom=stu.xidian.edu.cn;
+	arc=none smtp.remote-ip=162.243.164.118
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13D58606A31C;
+	Tue, 17 Nov 2026 09:12:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 13D58606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=stu.xidian.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+	Message-Id:MIME-Version:Content-Transfer-Encoding; bh=z8hDHvdaTI
+	wLdEqLBOLWaztzJQugW8MazJQFSuSlBig=; b=vHbqfclV0bubiCjIZ2FfsLzUHc
+	YcS/9vE0LvAEzvvCC9zq9p36IFDizNdLOtP5bUSbk8PFq8C0GcPX7V2vYJD8jE43
+	BLlkrGDn4SL91kmjO6t6c5HMUGE/k4hSdRa39SyF/eAzKkYlpVhvMenLWluvwWQe
+	on/cliDaZ2yZExay0=
+Received: from LAPTOP-FRMFRHCN.localdomain (unknown [240e:456:1000:aaf5:8952:40b1:8a4c:314f])
+	by hzbj-edu-front-3.icoremail.net (Coremail) with UTF8SMTPA id BbQMCkCGifxqGvxqsGDEAQ--.58980S2;
+	Tue, 17 Nov 2026 17:12:11 +0800 (CST)
+From: Haoli Zhang <26031212468@stu.xidian.edu.cn>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com,
+	25031212117@stu.xidian.edu.cn,
+	byu@xidian.edu.cn,
+	Haoli Zhang <26031212468@stu.xidian.edu.cn>
+Subject: [PATCH] tty: vt: protect tty lifetime in keyboard path
+Date: Tue, 17 Nov 2026 17:12:07 +0800
+Message-Id: <20261117091207.3950936-1-26031212468@stu.xidian.edu.cn>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -82,65 +59,115 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261117-mt6833-base-v2-2-058a0685c40c@udp0.com>
-References: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
-In-Reply-To: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Sean Wang <sean.wang@mediatek.com>, 
- Wim Van Sebroeck <wim@linux-watchdog.org>, 
- Guenter Roeck <linux@roeck-us.net>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
- linux-watchdog@vger.kernel.org, linux-serial@vger.kernel.org, 
- phone-devel@vger.kernel.org, Roman Vivchar <rva333@protonmail.com>, 
- Rui Cao <i@udp0.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794906695; l=1098;
- i=i@udp0.com; s=20261107; h=from:subject:message-id;
- bh=jjCiaVOOht+RI3oDkxUaR1YbdSwCNgqgxnVxINfl9q8=;
- b=9g9D2itu8LsARvIWD5fHnn7cKiJ5isx3uDconLIYrEz7YNX9M/UaO365a15DHPzjWzin6dTNu
- DZmZImgXlCpAcN2Vn/scwDnZx8pOnzCjHOIz8kc7gqYD/GgVyArpBpA
-X-Developer-Key: i=i@udp0.com; a=ed25519;
- pk=XZJKcKgnUUjjyw8KuKy7u2QeIX0JLY/L1Fxzwwje41w=
-X-Endpoint-Received: by B4 Relay for i@udp0.com/20261107 with auth_id=1443
-X-Original-From: Rui Cao <i@udp0.com>
-Reply-To: i@udp0.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:BbQMCkCGifxqGvxqsGDEAQ--.58980S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxAr1fZw15Jw1xArWxCw18AFb_yoW5XF43pF
+	43Gr9ava98tF4DWFs0kr43XFWav3Z3tay7KryYy3s5uFn0vr1rCw43K39Y9Fn8ZrykAry5
+	JF1UKrW5uF47XrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUU9K14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+	1j6F4UJwAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
+	FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr
+	0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8v
+	x2IErcIFxwCY1x0262kKe7AKxVWUAVWUtwCY02Avz4vEIxC_GFWl42xK82IYc2Ij64vIr4
+	1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK
+	67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI
+	8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAv
+	wI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
+	v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU1FApUUUUU
+X-CM-SenderInfo: yswqjiasrskluy6v33wo0lvxldqovvfxof0/1tbiAgUAEWr7HsjakQAAsa
 
-From: Rui Cao <i@udp0.com>
+The KASAN report reaches stop_tty() through fn_hold(). That handler
+reads vc->port.tty and uses it without holding a tty reference. It runs
+under kbd_event_lock, while con_shutdown() clears the port association
+under console_lock; these locks do not protect the tty lifetime.
 
-Add MediaTek's MT6833 (Dimensity 700) as a compatible of its own.
+Use the tty_port_tty guard in fn_hold() and keep the reference until
+start_tty() or stop_tty() returns. Keep kbd_keycode()'s existing tty
+reference interval unchanged.
 
-It can't fall back to mediatek,mt6589-wdt, which also describes
-MT6589's twelve TOPRGU reset lines: MediaTek's kernel for MT6833 resets
-the connectivity CPU through bit 12 of WDT_SWSYSRST, past them, and has
-no full reset table for the SoC to take one from.
+Use tty_port_tty_set() when installing and clearing the association so
+that updates use the same port lock as guarded reads and the port holds a
+tty reference while the association is active. A keyboard operation
+that already obtained a reference can then finish safely after shutdown
+clears the association.
 
-Signed-off-by: Rui Cao <i@udp0.com>
+Reported-by: syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com
+Closes: https://syzbot.org/bug?extid=2932e8970a6398db95c3
+Co-developed-by: Jinning Zhang <25031212117@stu.xidian.edu.cn>
+Signed-off-by: Jinning Zhang <25031212117@stu.xidian.edu.cn>
+Co-developed-by: Bin Yu <byu@xidian.edu.cn>
+Signed-off-by: Bin Yu <byu@xidian.edu.cn>
+Signed-off-by: Haoli Zhang <26031212468@stu.xidian.edu.cn>
+
 ---
- Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/vt/keyboard.c | 34 ++++++++++++++++++++--------------
+ drivers/tty/vt/vt.c       |  4 ++--
+ 2 files changed, 22 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml b/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
-index f9b725592c2..5742cc09a74 100644
---- a/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
-@@ -24,6 +24,7 @@ properties:
-           - mediatek,mt6589-wdt
-           - mediatek,mt6735-wdt
-           - mediatek,mt6795-wdt
-+          - mediatek,mt6833-wdt
-           - mediatek,mt7986-wdt
-           - mediatek,mt7988-wdt
-           - mediatek,mt8167-wdt
-
--- 
-Git-157)
-
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -509,20 +509,26 @@
+ 
+ static void fn_hold(struct vc_data *vc)
+ {
+-	struct tty_struct *tty = vc->port.tty;
+-
+-	if (rep || !tty)
+-		return;
+-
+-	/*
+-	 * Note: SCROLLOCK will be set (cleared) by stop_tty (start_tty);
+-	 * these routines are also activated by ^S/^Q.
+-	 * (And SCROLLOCK can also be set by the ioctl KDSKBLED.)
+-	 */
+-	if (tty->flow.stopped)
+-		start_tty(tty);
+-	else
+-		stop_tty(tty);
++	struct tty_struct *tty;
++
++	if (rep)
++		return;
++
++	scoped_guard(tty_port_tty, &vc->port) {
++		tty = scoped_tty();
++		if (!tty)
++			return;
++
++		/*
++		 * Note: SCROLLOCK will be set (cleared) by stop_tty (start_tty);
++		 * these routines are also activated by ^S/^Q.
++		 * (And SCROLLOCK can also be set by the ioctl KDSKBLED.)
++		 */
++		if (tty->flow.stopped)
++			start_tty(tty);
++		else
++			stop_tty(tty);
++	}
+ }
+ 
+ static void fn_num(struct vc_data *vc)
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -3756,7 +3756,7 @@
+ 		return ret;
+ 
+ 	tty->driver_data = vc;
+-	vc->port.tty = tty;
++	tty_port_tty_set(&vc->port, tty);
+ 	tty_port_get(&vc->port);
+ 
+ 	if (!tty->winsize.ws_row && !tty->winsize.ws_col) {
+@@ -3789,7 +3789,7 @@
+ 	BUG_ON(vc == NULL);
+ 
+ 	guard(console_lock)();
+-	vc->port.tty = NULL;
++	tty_port_tty_set(&vc->port, NULL);
+ }
+ 
+ static void con_cleanup(struct tty_struct *tty)
 
