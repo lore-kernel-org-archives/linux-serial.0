@@ -1,42 +1,42 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795045619;
-	b=30NhLZjo4s1q7StnpBVNHbEPKmzGMgQEpnnDvX7pmM50EjiCoTNY3zL6qtwQgQRnNrOH
-	 EPcT29lbs/tBiFgTuP7wiKxafxxJfF9K7QZnrqpBC3PgBGBbEf8CeFrSgUK+tesYqQvt5
-	 jWqWM0m4Z2pUCVzmILmNiwXi8vYKqQQ7OIUgYw4FKUwr5mJE8ka3spg4fw65fFnaEaeX/
-	 duRU+OWOCtxcjUH3MabngDqAWKjUqaQI4LP7QPSEtD37h8jrObsg6adAjdZej45Oy4WTs
-	 vygxbeHIfRew+0ttFHJ2PmDiPnbAXCuYo54V+b9OeEMk5h0uZsIAbGPgUZgy0XkG6iA==
+	t=1795052641;
+	b=OTQ74VvN5/4crZCTyATXlcyslPJafU+4Us71hkcDpUIFMAGaHT9cic7YhVPMHz6Pp665
+	 ZjJct4yl9S4BWcu+v+YD22/3+xCGBSXP6ziQVKlKrFwsFxpJUWwmSWwxoDti0VhVtdS8O
+	 PigZEMlhA/0bK4DuohqinAAf1NY2Pf3vG16V84JoC/EBVcv6qN5lnyk/8X+A42uOoqoH6
+	 83eMj2V+RPdPs7gAwXKrPqNp3vX59c+TBqILoUXyvG7iI7vtwnPEdhRX+gyiI9+N+4ijh
+	 SFM4uZKfIQ+eSRxnrJKZ2ZDWpSjcslYnPWBfkn9LiBvKa6LErn9sSBrScrAL04qC5NQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795045619;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795052641;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:User-Agent:X-stable:X-Patchwork-Hint:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=Co7zIQAHDXyX8tuCtdbJcXNanflWLMEDymcu6yCV/sM=;
-	b=jYy+bCedMf2UU5EIxtfXTUoI3Vr2q265SnFBmrmqMVWDd75w9recpzeCEj5zSDjxu9aG
-	 TXJIxHkYb0TK8Qj1YRhFCFbLvlugQhug59K6pn34udO0EI+ZLFM+zvnaLxghRpyxtqyKJ
-	 jixZOI5If5gGTpSfttIxKg0zZPEeulmESiGxluPeM54A+JFAchtxcyp9sCAdqoqsf7A5L
-	 ps5ssaCoj1QIHn58na+Cu4GlOORpyy/ZDSriZoEHgFX+xPCsu203Nqcy/o1iILecAY/08
-	 Om0CqFuCu8jXjAf/eQ/rQYTzRT/g+ClHYAjRxA4UroxwLUTDdIHHH2B6U5mc17HXpIQ==
+	bh=n+6dN0D7wB1ZHRE5YWQhC47WCukmxfMIQ3ud28CXMu0=;
+	b=FWxcJfBwmH6fZRDchN1aoaHI5Oy7CgH+ySUjwQ2GL8YiCyxtCfFA0fRyFPkpoK+zYPyr
+	 c/WcYTjbvB9yBXZWtBd85BE7EAU7Na4e7jmsBSJeqF/F6NU+jn/5wiGePaqvMco7R3c9a
+	 dOMYxp5IeuBs8XWQrqNoVlAeL9i1qNyJXy+3OzLOy3azytJLaKtFhIEwDIW1Db6cKj/h7
+	 bghFuUEuVRD+wD+t3d/WDIPX+ThaqDM33ehY75MvEYWzLLPnxAWwqTCjGNOJR3NbDcYgK
+	 ZX7aKuQOtTWvaSN7ou8o1MQEMFujh6wnu5dy0zSn5Yd9Y+DOhZn3ywmnBfLEiq48PaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=NRkLJmTv;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=RQRRJgal;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 818E6606A32A;
-	Wed, 18 Nov 2026 23:46:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45591606A31C;
+	Thu, 19 Nov 2026 01:44:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=NRkLJmTv
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E22621F000C4;
-	Wed, 18 Nov 2026 23:46:58 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=RQRRJgal
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F7BA1F000C4;
+	Thu, 19 Nov 2026 01:44:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1795045619;
-	bh=Co7zIQAHDXyX8tuCtdbJcXNanflWLMEDymcu6yCV/sM=;
+	s=korg; t=1795052641;
+	bh=n+6dN0D7wB1ZHRE5YWQhC47WCukmxfMIQ3ud28CXMu0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=NRkLJmTvza1W2tZGJYN0jzwtSLl4OwH9EtVkr0sbdXF1S5+cqRNoh62KYo75s5fhv
-	 flMnRKKD5G6GWhORVsnkKHlPpEd473uKm44tyWBUN9TbRj3qiSilnc92IgTQFkVKq8
-	 rvZJT336NhZ3euErA2cmlfKTxjozrtnReuCQHc5s=
+	b=RQRRJgalI9f3Qpq5cwL61RDtuTbFb9j88FmIKcv7yn3fVjB2l8nXIRCp4VqBILb++
+	 cL8+rMvqBuavURqbH0YBmoM7d5myA2WUiZezz1oNlw5h9UKLLp9WcyWc+YTHscQQMY
+	 Ms5ap6865jK0KOJ6cpmm26E2coj5hC4Ktc8SsARA=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: stable@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -47,12 +47,12 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-serial@vger.kernel.org,
 	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 6.1 0948/2857] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
-Date: Wed, 18 Nov 2026 15:33:02 +0100
-Message-ID: <20261118150235.740091347@linuxfoundation.org>
+Subject: [PATCH 5.15 0637/2214] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
+Date: Wed, 18 Nov 2026 15:38:33 +0100
+Message-ID: <20261118150036.819182271@linuxfoundation.org>
 X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261118150201.293410965@linuxfoundation.org>
-References: <20261118150201.293410965@linuxfoundation.org>
+In-Reply-To: <20261118150009.797899913@linuxfoundation.org>
+References: <20261118150009.797899913@linuxfoundation.org>
 User-Agent: quilt/0.69
 X-stable: review
 X-Patchwork-Hint: ignore
@@ -68,7 +68,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-6.1-stable review patch.  If anyone has any objections, please let me know.
+5.15-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -103,10 +103,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 0e43bdfb74598..4a46ee9de2a13 100644
+index 87d70e81273c0..39414272a7840 100644
 --- a/drivers/tty/serial/8250/8250_lpss.c
 +++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -183,9 +183,8 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+@@ -185,9 +185,8 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
  
  static void ehl_serial_exit(struct lpss8250 *lpss)
  {
@@ -118,7 +118,7 @@ index 0e43bdfb74598..4a46ee9de2a13 100644
  }
  
  #ifdef CONFIG_SERIAL_8250_DMA
-@@ -332,6 +331,8 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -334,6 +333,8 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  		return ret;
  
  	lpss->board = (struct lpss8250_board *)id->driver_data;
