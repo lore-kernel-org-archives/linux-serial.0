@@ -1,105 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.42
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794985298;
-	b=wkk9ErR7clSjb/VmbzDGDhZ9SJi7m3ao0+tM+pcJ9gfqw9CQunVG0rklj9HKqFjzdcog
-	 lzOhKcF2vPvGQovP83nyNzKd5WN6vwHbx7MfBuyDTSzAElQ97X4sHgxsZVNUjjHXXd7Wr
-	 jEZ7gvP24EgXXNgwiVnj3K0bRbOIvEJkSkTpWoCoaiWccnr/un5X7c/xCoFYF3CMnvMM5
-	 Tb1kG7e2Ig6SMU/0nzNZDfjC7zIyMbK9sJzGzC6Dg7wSbMymOMhTQMNpUA5mJzsGCkBGu
-	 E4yf1y0vkrSnT7N0jcGfNLrsCCmlLxIGquqN43AnnBXSAHyuqiv5tMicCN85Y5BhhZg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794985298;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=XrGJuOLL59oewczUcCDpvxBHZHzjD87L6DxE9Kf6thA=;
-	b=WjfceuOFncS1pLapkkvBMZTCJAGcQRKLXDzUumDqIIQOAVbdMPDmjb//CGQnIkQzxasT
-	 0aCsi+Hgq0l7AKD57cIKvXW8V0HA5G3hRYsGOua/cD3sA0mVQ469y7POkEQk2a/c34jCi
-	 mwUqw24lo8bz24IFLkK6MFM+dbOwFcL9WiJMzO/GxOLALrgmOlI/xIC3d2PWleflzYicJ
-	 WJwsj3V0y6pn7vVdUJeToJ/aaqutxvqrR3EqllM7qhYZRjRmpuBJh137bfRTMS/z0LSAv
-	 xdWs8CCp/n4JksbwEU7f/b2DuqvxL1yNUw/USOxn8WSu/D7HkBL68ZzagVfeOX5tYLg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=pGB+1JK8;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.42
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011042.outbound.protection.outlook.com [52.101.52.42])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794986484;
+	b=b8B0sI/KLHncHSjgAncNqepq0Y3heEyx6uIc0wOE2KDfagxGcWYStcABDLYYX+AKiOad
+	 3/hi8Eru9c6bmePf78QBdYdIE5bm5afCTe8pg3jDXRbpVk4sGSt1EyIMKEwXVVaL2t0f9
+	 O5tRGmulga71IZ/RESeQa66UuBTL0QseXyjn5lQyg4qVvxEG1BkVWTKiE/RHWob8Px9yU
+	 MmBZwPGHZTCXSUyCSqCeKTMDDXH8JMHeug+zcZlH7t0ACTvZQKG+j4mPpALzZaXYKpD1K
+	 5ZbITZDTtn3BNyLWf0FxNv2Kiy9tk7USBCxdGFt8qjbikCiZoc8Qv9WM6wNCbeZPvjw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794986484;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=cn+lshhcY8tFLWoGfyjNIe0PCy8NHIzlSqm5mPo9WBg=;
+	b=NFSr3zKVU8mBp+B287J0MoCiNUWtEblnC4tm24gHEG1pD7B2Jfd5l/jVucsjoIfmZeju
+	 lCHDUaG2LtDxsOwSKlEzSaxL1L+/cLh4vhrzjppkBYc6XOfEYHrLiwC2xFsOhnSayJAgv
+	 gNdXrMIoguZUnfywgRALogiYmm+uuUHi9iZv/mFoRKKSfxjbfKhp9HZ1mCmtaDrK1xrYx
+	 +wSU8xJHaJ6k9fZFjmiHWUDkKU5D+i3NAvvGMAVeUiRojzC4fkB5Ta6twKI4TaM6xuHRt
+	 LCBhDMNjIPuIHpMz7mA07I2oOmtSKkzQ+FssKy5vtN7EIaX+DK+ltLxmgtedMKOO0LA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L9CKdsc5;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E583606A325;
-	Wed, 18 Nov 2026 07:01:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E583606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4E3606A32C;
+	Wed, 18 Nov 2026 07:21:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=pGB+1JK8
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lYwANXddT0sNsKX0CWKO7Ij2VttuEqrF8gmeLKiXoSbM8VM2INcAoDenKT8MIpBeBYY23BCQvl4mv3jtXFA3HNNdOVCiM8Eco8vcdIJEgGBK8VySD0Bu5pP7n77sIXNRQHfNjSG7xITNNDUPclhBBALLGD63gb8g0QAdt6ZajkrRFyxX5U0CByNY/Y7uzTAZSfPS8PdZf0W94sY5uSA+OaKMCVhhhMe1wIL9aGjJ+6ZMKFV/VsWhfV0LQrVAkB06Kk6iUDj0krrFoq6WujYlUYWQ9oHeXWadgiw3l5DNNG99E1v2WgSxzZaU6bZ+20VpcwU3pfnjfneNE5OITcPZGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XrGJuOLL59oewczUcCDpvxBHZHzjD87L6DxE9Kf6thA=;
- b=HqWy+TNqkFdS1LjEbf/mbXEDALIP6R7s50+hEdux5fNCguYtVhOv6hAx3elMaZl0MtZQGtEi/6fkTNSkimjf8RcA8utjL6VrhZMkMbkq7xPiSpvCFFm2LACm5Zp1cQN/d8StQZVXMuhkRjpkHR01A1Ub4dQpBIaK4HeRq4cgLPoRWuTioO1aElQjjlMxfN88XGGGdByrP4UjvIuEFBLZo0j+M4qTxMu4FbmXJLByrx61Za+1JvHPejnZuHJPtyxORrE3H9q50cAU1MrOLr4HMZ9iZqSgEWoHqcRhmq8nJhvueoDUqOYzZFJCMXpw8xBnMQFu2tUyuJ5uTHuKG+pzPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XrGJuOLL59oewczUcCDpvxBHZHzjD87L6DxE9Kf6thA=;
- b=pGB+1JK8+prlN7L/R9OxazA6VI+53aJVNll5JnVJCDpLWIlqpRI48oS1pGEQBXwJxrins3sHUSSJ/x/MSCxEos9BcVkWM6H/aXHPKIsUZYA8lIf578cTu7WC7aFXN7Ug/L1eS9yi+c+eXY9CR+czffPKpJLltohrbkCYODWMreV/J0wGDVThwIr+I7jCelaWMOcY7dmgIhKv9hyBMWukOP4+ykgppGt/3/5ZTmHSJLpOVFVorTRS80nDlAW5kFIrFZfeId0OTAWfj7LEGAKNKhHp3t88raPhFdv1o6BWedwsyNiOky6NB6AdbEpgI/Kj6OAZKBiITR8Wc/1lWWJcPA==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB2370.namprd12.prod.outlook.com (2603:10b6:207:47::27)
- by CH3PR12MB9429.namprd12.prod.outlook.com (2603:10b6:610:1c9::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Wed, 18 Nov
- 2026 07:01:27 +0000
-Received: from BL0PR12MB2370.namprd12.prod.outlook.com
- ([fe80::86cf:c3ec:2cf5:74c8]) by BL0PR12MB2370.namprd12.prod.outlook.com
- ([fe80::86cf:c3ec:2cf5:74c8%5]) with mapi id 15.21.0615.009; Wed, 18 Nov 2026
- 07:01:27 +0000
-Date: Wed, 18 Nov 2026 15:01:19 +0800
-From: Richard Cheng <icheng@nvidia.com>
-To: "Gregory Price (Meta)" <gourry@gourry.net>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, kernel-team@meta.com, 
-	linux-doc@vger.kernel.org, driver-core@lists.linux.dev, linux-serial@vger.kernel.org, 
-	linux-pm@vger.kernel.org, damon@lists.linux.dev, linux-cxl@vger.kernel.org, 
-	akpm@linux-foundation.org, david@kernel.org, liam@infradead.org, vbabka@kernel.org, 
-	rppt@kernel.org, surenb@google.com, mhocko@suse.com, corbet@lwn.net, 
-	skhan@linuxfoundation.org, rdunlap@infradead.org, gregkh@linuxfoundation.org, 
-	rafael@kernel.org, dakr@kernel.org, johan@kernel.org, jirislaby@kernel.org, 
-	kasong@tencent.com, qi.zheng@linux.dev, shakeel.butt@linux.dev, baohua@kernel.org, 
-	axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com, baoquan.he@linux.dev, 
-	baolin.wang@linux.alibaba.com, yury.norov@gmail.com, linux@rasmusvillemoes.dk, pavel@kernel.org, 
-	lenb@kernel.org, hannes@cmpxchg.org, brendan.jackman@linux.dev, ziy@nvidia.com, 
-	sj@kernel.org, muchun.song@linux.dev, osalvador@suse.de, nico.pache@linux.dev, 
-	ryan.roberts@arm.com, dev.jain@arm.com, lance.yang@linux.dev, usama.arif@linux.dev, 
-	kas@kernel.org, xu.xin@linux.dev, chengming.zhou@linux.dev, 
-	joshua.hahnjy@gmail.com, rakie.kim@sk.com, ying.huang@linux.alibaba.com, 
-	matthew.brost@intel.com, byungchul@sk.com, apopple@nvidia.com, rientjes@google.com
-Subject: Re: [PATCH 00/22] mm: introduce N_MEMORY_COMMON
-Message-ID: <av1DvCQd_OvkGgLU@MWDK4CY14F>
-References: <20261114070959.3490008-1-gourry@gourry.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261114070959.3490008-1-gourry@gourry.net>
-X-ClientProxiedBy: SI2PR02CA0029.apcprd02.prod.outlook.com
- (2603:1096:4:195::6) To BL0PR12MB2370.namprd12.prod.outlook.com
- (2603:10b6:207:47::27)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L9CKdsc5
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30801F000C4;
+	Wed, 18 Nov 2026 07:21:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794986484;
+	bh=cn+lshhcY8tFLWoGfyjNIe0PCy8NHIzlSqm5mPo9WBg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=L9CKdsc5moFmrAKxMJsnGTfFAzJVQgQe9FyvDy3KRVNJ1gKdB2yEClDWc/cD0T3zx
+	 Wafih6/9S1EOHkeEpfR8Bo/RkAu5WoZuZPs30UACuf5RTMjO7cEEnDMDTj0jdYygsr
+	 lHtARkMqv0Ealb1Hl/Dfep5PQftDdgX3kcAtn9L1GYvucufnmmyZvAkfDt3Qf1ECee
+	 JI/nUIaj8ZzmC/Ii6PfseKKurjClAt1+BtbNAO55IE9mRKB+KtKrLoLEuWfZoJxvgV
+	 MAnc2kgszQ4lbRWKv4UzQvbEjxVEggNQYwxZxFncLzx9v36ku7uxfNeNRHNxOnl2GK
+	 JJWczGVzSoWFA==
+Message-ID: <0c96e0ee-55e7-4999-922e-bc52aa516d2e@kernel.org>
+Date: Wed, 18 Nov 2026 08:21:18 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -109,234 +51,655 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2370:EE_|CH3PR12MB9429:EE_
-X-MS-Office365-Filtering-Correlation-Id: 514d9fe3-4040-4515-2287-08df4541c348
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|23010399003|10067099003|56012099006|261026140227099003|11063799006|261028144727099003|261021121427099003|261022105027099003|261022115727099003|261022075727099003|261026121527099003|261021123027099003|261102123227099003|261009223027099003|22082099003|18002099003|6133799003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	/waEutd8lFNcOEAot8LrtlotdLQswvCxCLsWZI/acAHmuGfQvttoAlGTBrE5+ED60YlIv4TTyEZRblXELgkpFLE+iniSMO2COx8v3tmRRKwzPQDoTc/+YR20ou8N0+lcyZ+J4Wsn73GkbgVdNuCdZH9vrkOFQgzfKhaejDjthQ9E2Zbk0Jzyg3GLDwaaR7kvyHT1YA5En+Gq/A/CluGCdRsxkz1c1Vq2r3UFP9hU3YNRdtOJxYqOQaIzQUKWedTQyf61hUmz1jTo/KnLnbdNcXTHbMF/M3R6Qo45h9UzqTVwHc3iP3m/8r0Y3eewbRxrxAurbczSBLIQfpXkszHwZCISzkSYH6rxntiJnJzGYN6tFgn8KnIkaJdv9LhQSmPzJAbPvnJ146F0LwDaAt4RU/UZU1GhbJCnJGAN3q4vrvqtAvf8+uApzvRSxpkdlZ0E22VYrCD5xECaZlXNEmVVKZR4WMyZ++uAP7q3PsySibg6kMnwoHLyiCPxTCuWw8b67GgG92gnzgmbwQjEJemriwm0aJ8y7T3Rs5qATHA3wdGReACOfV2Y6AjbTclbGay8ONTtX5AAvh/eikhI8V/0dk9z740/YtcX9pKmKDTeahkgI677qqh8vvtfQDii9D1f5JSOJ/8LFtLoBf2Dsyk2V114L9tdSj1a6/lufXDKINI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB2370.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(23010399003)(10067099003)(56012099006)(261026140227099003)(11063799006)(261028144727099003)(261021121427099003)(261022105027099003)(261022115727099003)(261022075727099003)(261026121527099003)(261021123027099003)(261102123227099003)(261009223027099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?aosA1/g+XuU++UnQ9BM1jBmDf9jIBhN7Qkbl5js2WzBhK2OnSED+L1T9tBfO?=
- =?us-ascii?Q?ux/LjhFJZ+l2QQb1zZ55U1tMGoBiEVnXer5jKoTzDfxQrqx71JMyhVuZaiyc?=
- =?us-ascii?Q?Zb9rVoYcDNepZlvV5JvAc5R8iy0UrG7gF/3QeA9cFph6EzgWZ/vq/C9uiLki?=
- =?us-ascii?Q?ZaToUE3PnQ2qe0MFC97FcvwLWgjxFW+Nb3WOxtaUZcVqRw2VUa9JWlvSGgbX?=
- =?us-ascii?Q?+dGVsIwl6+yrzVPu1PFyS3QVSktUZ85tLFkpwaJAEA3Vgy8cyCgbxkQvoD14?=
- =?us-ascii?Q?H8s2ibDQaSTP+T0ruQ+27Qds4FulISY7e96zgz9JcYc2bsuKVU2OcGHl2IvE?=
- =?us-ascii?Q?PjkJ78TmmVX6zxd0pLiBNsM8bhIfn+uEnql7qG71h+nBrXRUMGUFr/56JzNa?=
- =?us-ascii?Q?+BN+G9QHFr9NTyjqyiYCIASyh9pYOZyjsiG2taV6rC+m9ZrGkM6kGdVQkpQz?=
- =?us-ascii?Q?slX4lc59t+VshG/q7BbY3ioO/LUmH7+r8lsKH1/+hhBG4/4UVqUNx1sIQIdd?=
- =?us-ascii?Q?zpC8ys+BAtueZuY5/NJ4IFEiRTc/mqNcgbp0f+tIzfS3VQrQnr11HonFKdcz?=
- =?us-ascii?Q?T/11uKVFNWmp5EMEH5jS8taDpSXZ+16zsI6E+AIeHGcIuAa3Uwbcmv7cstDo?=
- =?us-ascii?Q?mUL7OO3bASjzjAdnhWb7Q20pMQGGDNSIjXIZa98LT6nLcxstUFEiTAWYZVfs?=
- =?us-ascii?Q?bgDSIkGeqWF4C853kRIXT40l/K8XI5V/o4ObTn53/dR/PZbP3/UBN2IU9YuF?=
- =?us-ascii?Q?IXxCR74GqvN+U7K8nhhijnUKsSvrtBOmLFbM6hV3RnyUKTgycpKVNw+tuU6O?=
- =?us-ascii?Q?KUUe8DewlvelsiBQo5SkFJ5sJyvXwmTwaIl45hKBInTjp4Lj9rZZk16BkLs/?=
- =?us-ascii?Q?tqHRFNH+vyGbPQ+qp0Dm5maDHyPjlAr+N/tFkl85Bb4T9OHo+c4Ux0b8SthH?=
- =?us-ascii?Q?TXCpUaexBKua7DdyejYRmBi+lVJ3PieOu0wchAnGCXReqzejr8P67U86ldR4?=
- =?us-ascii?Q?XNVFSRUbxvCNEZQqP4LcndPdO6Mp1Nq1lYxdzEpOtgCUR1Brn1pRkVAXs1Vy?=
- =?us-ascii?Q?h/d8kAF0vsvr66ytF1s1nJSbkVtGayJ9wW4OMVbSn3X/Uo6xuctOn3T5rSwA?=
- =?us-ascii?Q?VAk8zXnPKKOJAvK4eVmFRMshjfk6mG4p2ou83jFFbYNL9tDsfRtIwuQOc9hg?=
- =?us-ascii?Q?x2swxDEIhKl/2ybfQBQfnMQbcRTa35LipqCQbhf5iwIN9FLwmgWtdrOtfDKI?=
- =?us-ascii?Q?w6mrS0XBTis0jgVjllCD9hoPh4Pka4r2Cla6osLDxNf83GiW3Q6hJfuD4gGK?=
- =?us-ascii?Q?f5s6azE2ZIaqhrlCr2qaNW5qBl3daHFajshsVT02IkcRiBfjURGnozmZg6om?=
- =?us-ascii?Q?p3IAQmMU6nSrQlXQvGLb5mka6T7CD0lOBX9wGMUtob1uDZ2N7xEQyAW0W7vQ?=
- =?us-ascii?Q?WQmx0CBTnS34TohStsypvAWKLYhn6LbtwBP63RDtfDJIXfWbX1NQj3MD+qpX?=
- =?us-ascii?Q?PMbAjmpXBzE7KIAOpOHnM0MHMqrURhFmYH6vON7RPrXP3jZ05zYDNXnly1sj?=
- =?us-ascii?Q?zGwrXfn9zedFx7zyq9Qo0MpxWcZHf78cQcqgBZvCf7bccxXSCxBIhkajhwNg?=
- =?us-ascii?Q?j1my5XRCeDJUJI+JLSSCT4h9lJhCyQtwiRfV1cOQ7jMeJDdd3iYTFyKRY4I0?=
- =?us-ascii?Q?T4sd97NhNGOOsHf0pc6qbHVyqw+8/bwEJb9lWTj0IC4skUDe?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 514d9fe3-4040-4515-2287-08df4541c348
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB2370.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 07:01:27.0715
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1yauRTyZWkkKOev4MHsHqbyZE3mR/9uzzN6wz8NAj5N+VBsczMQwoMmKkxT81fuaGkpvtZ5td1NAfQPwaN53Tg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9429
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 01/16] HID: ft260: add serial driver
+To: Michael Zaidman <michael.zaidman@gmail.com>,
+ Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>
+Cc: Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Raman Varabets <kernel-linux-20260610-80b7ab08@raman.v1.sg>,
+ Germain Hebert <germain.hebert@ca.abb.com>,
+ Christina Quast <contact@christina-quast.de>, Rio Liu <rio@r26.me>,
+ Bruno Giacomazzi <brunoceg1@gmail.com>, linux-input@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Daniel Beer <daniel.beer@igorinstitute.com>
+References: <20261117200423.19561-1-michael.zaidman@gmail.com>
+ <20261117200423.19561-2-michael.zaidman@gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20261117200423.19561-2-michael.zaidman@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sat, Nov 14, 2026 at 02:09:37AM +0800, Gregory Price (Meta) wrote:
-> This is phase 1 of the Private NUMA node series.
-> 
-> I will send v6 "Private Memory NUMA nodes" (phases 2 and 3) separately
-> next week for further discussion - but I pulled this out ahead to make
-> the core filtering mechanism easier to review.
-> 
-> The series is now broken up like so:
-> 
-> Phase 1: Introduce N_MEMORY_COMMON to define "general purpose" (common)
->          memory as a concept separate from a node having memory as a
->          topological feature (N_MEMORY).
-> 
->          This phase is a no-op for existing systems, but creates the
->          baseline for ensuring private node memory is default opted-out
->          of being touched by MM (much like ZONE_DEVICE).
-> 
-> 
-> Phase 2: Introduce N_MEMORY_PRIVATE to define memory not part of the
->          general purpose pool. With this we can introduce a minimum set
->          of KUnit tests for the page allocator to demonstrate the
->          isolation mechanism.
-> 
->          At this point it will be possible for a driver to re-use the
->          buddy allocator to make uniform order-N allocations.
-> 
-> 
-> Phase 3: Introduce feature bits (COMPACTION, RECLAIM, MEMPOLICY) which
->          is the minimum viable set to allow userland to manage a private
->          memory node via mbind() and migrate_pages().  
-> 
->          This enables management of HBM and Coherent GPU memory via
->          userland tools (numactl, cpuset) while protecting them from
->          incidental allocation (no fallbacks, only explicit placement).
-> 
->          The memory could even be hotplugged in ZONE_NORMAL and pinned.
-> 
-> Actual cover letter for this portion
-> ====================================
-> 
-> N_MEMORY has two meanings today:
->   1) this node has memory
->   2) ordinary allocations and MM services can use this node's memory
-> 
-> The two are the same today. They stop being the same once a NUMA node
-> with memory isn't part of the general allocation pool.
-> 
-> This series adds N_MEMORY_COMMON for the second meaning and converts
-> the relevant N_MEMORY users accordingly. N_MEMORY continues reporting
-> memory topology - and some users (cpusets) still utilize it.
-> 
-> At the end of this series, N_MEMORY == N_MEMORY_COMMON, so the series
-> changes no behavior for existing systems. A later series will add memory
-> outside N_MEMORY_COMMON without having to audit every N_MEMORY user again.
-> 
-> Rather than add new hooks for page-table and pfn walkers, we consolidate
-> existing ZONE_DEVICE checks (page/folio_is_zone_device()) into a general
-> `page/folio_is_common_memory()` check.
-> 
-> The series is laid out as:
-> 
->   1-3   helper functions to check node states and a folio's
->         membership to a common memory node.  N_MEMORY_COMMON itself, and
->         the `has_common_memory` sysfs ABI.
->   4     zonelists: the fallback lists hold common nodes, and a node's
->         __GFP_THISNODE list is built only for a common node
->   5-21  N_MEMORY->N_MEMORY_COMMON and zone_device -> common_memory
->         conversions. One component per patch.
->   22    removal of first_memory_node/next_memory_node, which no longer
->         have users after this series.
-> 
-> Each conversion restricts or adjusts:
->   - an MM service (reclaim, compaction, KSM, collapse, etc)
->   - an allocation target to common memory
->   - accounting meant for ordinary allocations from common memory only
-> 
-> has_common_memory lists the same nodes as has_memory until memory
-> outside N_MEMORY_COMMON exists. It is added now so that userspace, such
-> as libnuma, can start choosing allocation targets from it, and so that
-> the meaning is fixed before anything makes the two lists differ.
-> 
-> first/next_memory_node() is replaced by first/next_node_state().
->
+Hi,
 
-Hi Gregory,
+On 17. 11. 26, 21:04, Michael Zaidman wrote:
+> --- a/drivers/hid/hid-ft260.c
+> +++ b/drivers/hid/hid-ft260.c
+> @@ -13,6 +13,16 @@
+>   #include <linux/i2c.h>
+>   #include <linux/module.h>
+>   #include <linux/usb.h>
+> +#include <linux/serial.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/kfifo.h>
+> +#include <linux/tty_flip.h>
+> +#include <linux/minmax.h>
+> +#include <linux/unaligned.h>
 
-I've browsed through the serie, I'll go into detail in each patch
-in the following days, for now I have one general question.
+Sort these.
 
-I wonder how the "common memory only" rule is enforced ?
+> @@ -236,6 +314,22 @@ MODULE_DEVICE_TABLE(hid, ft260_devices);
+>   struct ft260_device {
+>   	struct i2c_adapter adap;
+>   	struct hid_device *hdev;
+> +
+> +	bool ft260_is_serial;
+> +	struct list_head device_list;
+> +
+> +	/* tty_port lifetime is equal to device lifetime */
+> +	struct tty_port port;
+> +	unsigned int index;
+> +	struct kfifo xmit_fifo;
 
-As far as I read it, there're 2 ways:
-1. The zonelist, you build them from N_MEMORY_COMMON, so non-common
-   node isn't in any zonelist.
-2. A check at the call site, e.g. node_state(nid, N_MEMORY_COMMON) or
-   folio_is_common_memory()
+Why not to use port.xmit_fifo?
 
+> +	/* write_lock: lock to serialize access to xmit fifo */
+> +	spinlock_t write_lock;
+> +	struct uart_icount icount;
+> +
+> +	struct timer_list wakeup_timer;
+> +	struct work_struct wakeup_work;
+> +	bool reschedule_work;
+> +
+>   	struct completion wait;
+>   	struct mutex lock;
+>   	u8 write_buf[FT260_REPORT_MAX_LENGTH];
+> @@ -379,7 +473,7 @@ static int ft260_hid_output_report_check_status(struct ft260_device *dev,
+>   
+>   	ret = ft260_hid_output_report(hdev, data, len);
+>   	if (ret < 0) {
+> -		hid_err(hdev, "%s: failed to start transfer, ret %d\n",
+> +		hid_dbg(hdev, "%s: failed to start transfer, ret %d\n",
+>   			__func__, ret);
+>   		ft260_i2c_reset(hdev);
+>   		return ret;
+> @@ -609,7 +703,7 @@ static int ft260_i2c_write_read(struct ft260_device *dev, struct i2c_msg *msgs)
+>   		else
+>   			read_off = *msgs[0].buf;
+>   
+> -		pr_info("%s: off %#x rlen %d wlen %d\n", __func__,
+> +		ft260_dbg("%s: off %#x rlen %d wlen %d\n", __func__,
 
-Code reaches a node's memory in 3 ways: zonelist, node id, or by folio.
-I couldn't find a statement of which mechanism is responsible for which
-kind of path.
+There should be likely a separate patch with the above two hunks.
 
-I see some consistent issues,
-1. zonelist paths are covered by way number 1. Some of them also carry
-   way number 2, some don't
-2. node id and folio paths can only be covered by way number 2. Some entry
-   points have the check, and some do not.
+>   			read_off, rd_len, wr_len);
+>   	}
+>   
+> @@ -826,7 +920,7 @@ static int ft260_get_system_config(struct hid_device *hdev,
+>   	return 0;
+>   }
+>   
+> -static int ft260_is_interface_enabled(struct hid_device *hdev)
+> +static int ft260_get_interface_type(struct hid_device *hdev, struct ft260_device *dev)
 
-I can't tell when a call site has no check is deliberate or missed.
-This matters once non-common node gets its own zonelist, as patch 4 metioned I think?
+Switch int to the enum then?
 
-Could you clarify the rule ? e.g. which zonelist users must filter on N_MEMORY_COMMON
-themselves? and why the zonelist alone is not enough for them ?
-Whether every path that takes a node id or a folio must check N_MEMORY_COMMON, and
-which ones are left for the feature bits in phase 3 ?
+>   {
+>   	struct ft260_get_system_status_report cfg;
+>   	struct usb_interface *usbif = to_usb_interface(hdev->dev.parent);
+> @@ -843,21 +937,27 @@ static int ft260_is_interface_enabled(struct hid_device *hdev)
+>   	ft260_dbg("i2c_enable: 0x%02x\n", cfg.i2c_enable);
+>   	ft260_dbg("uart_mode:  0x%02x\n", cfg.uart_mode);
+>   
+> +	dev->ft260_is_serial = false;
+> +
+>   	switch (cfg.chip_mode) {
+>   	case FT260_MODE_ALL:
+>   	case FT260_MODE_BOTH:
+> -		if (interface == 1)
+> -			hid_info(hdev, "uart interface is not supported\n");
+> -		else
+> -			ret = 1;
+> +		if (interface == 1) {
+> +			ret = FT260_IFACE_UART;
+> +			dev->ft260_is_serial = true;
+> +		} else {
+> +			ret = FT260_IFACE_I2C;
+> +		}
+>   		break;
+>   	case FT260_MODE_UART:
+> -		hid_info(hdev, "uart interface is not supported\n");
+> +		ret = FT260_IFACE_UART;
+> +		dev->ft260_is_serial = true;
+>   		break;
+>   	case FT260_MODE_I2C:
+> -		ret = 1;
+> +		ret = FT260_IFACE_I2C;
+>   		break;
+>   	}
+> +
+>   	return ret;
+>   }
+>   
+> @@ -1001,51 +1101,478 @@ static const struct attribute_group ft260_attr_group = {
+>   	}
+>   };
+>   
+> -static int ft260_probe(struct hid_device *hdev, const struct hid_device_id *id)
+> +/***
+> + * START Serial dev part
+> + */
+> +static DEFINE_MUTEX(ft260_uart_list_lock);
+> +static LIST_HEAD(ft260_uart_device_list);
 
-Let's get the rule settled down and make it as the foundation as well as phase 2 and
-phase 3 ?
+Is IDR or IDA not a better fit?
 
-Best regards,
-Richard Cheng.
+> +
+> +static struct ft260_device *ft260_dev_by_index(int index)
+> +{
+> +	struct ft260_device *port;
+> +
+> +	list_for_each_entry(port, &ft260_uart_device_list, device_list) {
+> +		if (index == port->index)
+> +			return port;
+> +	}
+> +	return NULL;
+> +}
+> +
+> +static int ft260_uart_add_port(struct ft260_device *port)
+>   {
+> +	int index = 0, ret = 0;
+>   	struct ft260_device *dev;
+> -	struct ft260_get_chip_version_report version;
+> +
+> +	spin_lock_init(&port->write_lock);
 
+Should this be initialized when the port is allocated. This is confusing.
 
+> +	if (kfifo_alloc(&port->xmit_fifo, FIFO_SIZE, GFP_KERNEL))
+> +		return -ENOMEM;
 
- 
-> Gregory Price (Meta) (22):
->   mm: add node-state-filtered zone and node iterators
->   mm: publish and clear node memory states via helpers
->   mm: introduce the common-memory node state
->   mm/page_alloc: build zonelists from common memory
->   mm/mempolicy: keep interleave and tmpfs mount policies on common memory
->   mm: base hash distribution on common memory nodes
->   mm/memory_hotplug: migrate offlined pages to common memory
->   mm/memory-tiers: restrict demotion topology to common memory
->   mm/ksm: restrict merging to common memory
->   mm/khugepaged: restrict collapse to common memory
->   mm/mempolicy: don't NUMA-hint folios outside common memory
->   mm/damon: restrict DAMON-native folio operations to common memory
->   mm/hugetlb: restrict pool growth to common memory
->   mm/page_alloc: count common memory nodes for kswapd recovery
->   mm/oom_kill: compare OOM constraints against common memory
->   tty/sysrq: use common memory for the manual OOM zonelist
->   mm/vmscan: restrict reclaim to common memory
->   mm/compaction: restrict compaction to common memory
->   mm/migrate: restrict move_pages() destinations to common memory
->   PM: hibernate: size the image from common memory
->   mm/khugepaged: base the recommended min_free_kbytes on common memory
->   nodemask: remove the now-unused first_memory_node/next_memory_node
-> 
->  Documentation/ABI/stable/sysfs-devices-node | 16 +++++++
->  Documentation/mm/physical_memory.rst        |  8 +++-
->  drivers/base/node.c                         |  2 +
->  drivers/tty/sysrq.c                         |  3 +-
->  include/linux/mmzone.h                      | 46 +++++++++++++++++++++
->  include/linux/nodemask.h                    | 38 +++++++++++++----
->  kernel/power/snapshot.c                     |  7 +++-
->  mm/compaction.c                             | 14 +++----
->  mm/damon/ops-common.c                       |  7 ++--
->  mm/damon/vaddr.c                            |  2 +-
->  mm/hugetlb.c                                | 44 +++++++++-----------
->  mm/internal.h                               | 18 ++++++++
->  mm/khugepaged.c                             | 12 ++++--
->  mm/ksm.c                                    |  8 ++--
->  mm/memory-tiers.c                           | 23 ++++++-----
->  mm/memory_hotplug.c                         | 25 ++++++-----
->  mm/mempolicy.c                              | 30 +++++++-------
->  mm/migrate.c                                |  2 +-
->  mm/mm_init.c                                | 16 ++++---
->  mm/oom_kill.c                               |  7 ++--
->  mm/page_alloc.c                             | 43 +++++++++++++------
->  mm/vmscan.c                                 | 26 ++++++------
->  22 files changed, 266 insertions(+), 131 deletions(-)
-> 
-> -- 
-> 2.53.1-Meta
-> 
-> 
+tty_port_alloc_xmit_buf() then? Is PAGE_SIZE too much? Then refactor 
+tty_port_alloc_xmit_buf() to allow size to be passed ;).
+
+> +
+> +	mutex_lock(&ft260_uart_list_lock);
+
+guard()
+
+> +	list_for_each_entry(dev, &ft260_uart_device_list, device_list) {
+> +		if (dev->index != index)
+> +			break;
+> +		index++;
+> +	}
+> +
+> +	port->index = index;
+> +	list_add_tail(&port->device_list, &ft260_uart_device_list);
+> +	mutex_unlock(&ft260_uart_list_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static void ft260_uart_port_put(struct ft260_device *port)
+> +{
+> +	tty_port_put(&port->port);
+> +}
+> +
+> +static void ft260_uart_port_remove(struct ft260_device *port)
+> +{
+> +	timer_delete_sync(&port->wakeup_timer);
+> +
+> +	mutex_lock(&ft260_uart_list_lock);
+> +	list_del(&port->device_list);
+> +	mutex_unlock(&ft260_uart_list_lock);
+> +
+> +	tty_port_tty_vhangup(&port->port);
+> +
+> +	spin_lock(&port->write_lock);
+> +	kfifo_free(&port->xmit_fifo);
+> +	spin_unlock(&port->write_lock);
+
+scoped_guard() × 2.
+
+> +}
+...
+> +static int ft260_uart_transmit_chars(struct ft260_device *port)
+> +{
+> +	struct hid_device *hdev = port->hdev;
+> +	struct kfifo *xmit = &port->xmit_fifo;
+> +	struct tty_struct *tty;
+> +	struct ft260_uart_write_request_report *rep;
+> +	int len, data_len, ret = 0;
+> +
+> +	tty = tty_port_tty_get(&port->port);
+
+scoped_guard(tty_port_tty)
+
+> +
+> +	data_len = kfifo_len(xmit);
+> +	if (!tty || !data_len) {
+> +		ret = -EINVAL;
+> +		goto tty_out;
+>   	}
+>   
+> -	ret = hid_hw_start(hdev, 0);
+> +	rep = (struct ft260_uart_write_request_report *)port->write_buf;
+> +
+> +	do {
+> +		len = min(data_len, FT260_WR_DATA_MAX);
+> +
+> +		rep->report = FT260_UART_DATA_REPORT_ID(len);
+> +		rep->length = len;
+> +
+> +		len = kfifo_out_locked(xmit, rep->data, len, &port->write_lock);
+> +
+> +		ret = ft260_hid_output_report(hdev, (u8 *)rep, len + sizeof(*rep));
+> +		if (ret < 0) {
+> +			hid_err(hdev, "Failed to start transfer, ret %d\n", ret);
+> +			goto tty_out;
+> +		}
+> +
+> +		data_len -= len;
+> +		port->icount.tx += len;
+> +	} while (data_len > 0);
+> +
+> +	len = kfifo_len(xmit);
+> +	if ((FIFO_SIZE - len) > TTY_WAKEUP_WATERMARK)
+> +		tty_wakeup(tty);
+> +
+> +	ret = 0;
+> +
+> +tty_out:
+> +	tty_kref_put(tty);
+> +	return ret;
+> +}
+
+> +static ssize_t ft260_uart_write(struct tty_struct *tty, const u8 *buf,
+> +				 size_t count)
+> +{
+> +	struct ft260_device *port = tty->driver_data;
+> +	struct hid_device *hdev = port->hdev;
+> +	int len, ret;
+> +
+> +	len = kfifo_in_locked(&port->xmit_fifo, buf, count, &port->write_lock);
+
+So you put it into kfifo, and:
+
+> +	ft260_dbg("count: %zu, len: %d", count, len);
+> +
+> +	ret = ft260_uart_transmit_chars(port);
+
+remove it from the fifo immediately? What's the reason to do this double 
+copy?
+
+Oh, the fifo can have more than fits into the HW fifo? Did I miss where 
+ft260_uart_transmit_chars() is called to send the remaining bits?
+
+> +	if (ret < 0)
+> +		hid_dbg(hdev, "Failed to transmit chars: %d\n", ret);
+> +
+> +	return len;
+> +}
+...
+> +static int ft260_uart_change_speed(struct ft260_device *port,
+> +				   struct ktermios *termios,
+> +				    struct ktermios *old)
+> +{
+> +	struct hid_device *hdev = port->hdev;
+> +	unsigned int baud;
+> +	struct ft260_configure_uart_request req;
+> +	int ret;
+> +
+...
+> +	baud = tty_termios_baud_rate(termios);
+> +	if (baud == 0 || baud < FT260_UART_CFG_BAUD_MIN || baud > FT260_UART_CFG_BAUD_MAX) {
+> +		struct tty_struct *tty = tty_port_tty_get(&port->port);
+
+scoped_guard()
+
+> +
+> +		hid_err(hdev, "Invalid baud rate %d\n", baud);
+> +		baud = 9600;
+> +		if (tty) {
+> +			tty_encode_baud_rate(tty, baud, baud);
+> +			tty_kref_put(tty);
+> +		}
+> +	}
+> +	put_unaligned_le32(baud, &req.baudrate);
+> +
+> +	if (termios->c_cflag & CRTSCTS)
+> +		req.flow_ctrl = FT260_UART_CFG_FLOW_CTRL_RTS_CTS;
+> +	else
+> +		req.flow_ctrl = FT260_UART_CFG_FLOW_CTRL_OFF;
+> +
+> +	ft260_dbg("Configured termios: flow control: %d, baudrate: %d, ",
+> +		  req.flow_ctrl, baud);
+> +	ft260_dbg("data_bit: %d, parity: %d, stop_bit: %d, breaking: %d\n",
+> +		  req.data_bit, req.parity,
+> +		  req.stop_bit, req.breaking);
+> +
+> +	req.flow_ctrl = FT260_UART_CFG_FLOW_CTRL_NONE;
+> +	req.breaking = FT260_UART_CFG_BREAKING_NO;
+> +
+> +	ret = ft260_hid_feature_report_set(hdev, (u8 *)&req, sizeof(req));
+> +	if (ret < 0)
+> +		hid_err(hdev, "ft260_hid_feature_report_set failed: %d\n", ret);
+> +
+> +	return ret;
+> +}
+
+> +static int ft260_uart_proc_show(struct seq_file *m, void *v)
+> +{
+> +	int i;
+> +
+> +	seq_printf(m, "ft260 info:1.0 driver%s%s revision:%s\n",
+> +			"", "", "");
+
+Does HID require wrap at 80 cols? This should be on one line these days.
+
+> +	for (i = 0; i < UART_COUNT_MAX; i++) {
+> +		struct ft260_device *port = ft260_uart_port_get(i);
+> +
+> +		if (port) {
+
+Perhaps invert the condition, add a "continue" and save one indent level?
+
+> +			seq_printf(m, "%d: uart:FT260", i);
+> +			if (capable(CAP_SYS_ADMIN)) {
+> +				seq_printf(m, " tx:%d rx:%d",
+> +						port->icount.tx, port->icount.rx);
+> +				if (port->icount.frame)
+> +					seq_printf(m, " fe:%d",
+> +							port->icount.frame);
+> +				if (port->icount.parity)
+> +					seq_printf(m, " pe:%d",
+> +							port->icount.parity);
+> +				if (port->icount.brk)
+> +					seq_printf(m, " brk:%d",
+> +							port->icount.brk);
+> +				if (port->icount.overrun)
+> +					seq_printf(m, " oe:%d",
+> +							port->icount.overrun);
+> +				if (port->icount.cts)
+> +					seq_printf(m, " cts:%d",
+> +							port->icount.cts);
+> +				if (port->icount.dsr)
+> +					seq_printf(m, " dsr:%d",
+> +							port->icount.dsr);
+> +				if (port->icount.rng)
+> +					seq_printf(m, " rng:%d",
+> +							port->icount.rng);
+> +				if (port->icount.dcd)
+> +					seq_printf(m, " dcd:%d",
+> +							port->icount.dcd);
+> +			}
+> +			ft260_uart_port_put(port);
+> +			seq_putc(m, '\n');
+> +		}
+>   	}
+> +	return 0;
+> +}
+...
+> +static int ft260_uart_probe(struct hid_device *hdev, struct ft260_device *dev)
+> +{
+> +	struct ft260_configure_uart_request req;
+> +	int ret;
+> +	struct device *devt;
+> +
+> +	INIT_WORK(&dev->wakeup_work, ft260_uart_do_wakeup);
+> +	// FIXME: Do I need that if I have cancel_work_sync?
+> +	// FIXME: are all kfifo access secured by lock? with irq or not?
+
+YOU FIX then :).
+
+> +	dev->reschedule_work = false;
+> +	/* Work not started at this point */
+> +	timer_setup(&dev->wakeup_timer, ft260_uart_start_wakeup, 0);
+> +
+> +	tty_port_init(&dev->port);
+> +	dev->port.ops = &ft260_uart_port_ops;
+> +
+> +	ret = ft260_uart_add_port(dev);
+> +	if (ret) {
+> +		hid_err(hdev, "failed to add port\n");
+> +		goto err_port;
+> +	}
+> +	devt = tty_port_register_device_attr(&dev->port,
+> +					     ft260_tty_driver,
+> +					     dev->index, &hdev->dev,
+> +					     dev, NULL);
+> +	if (IS_ERR(devt)) {
+> +		hid_err(hdev, "failed to register tty port\n");
+> +		ret = PTR_ERR(devt);
+> +		goto err_register_tty;
+> +	}
+> +	hid_info(hdev, "Registering device /dev/%s%d\n",
+> +		ft260_tty_driver->name, dev->index);
+> +
+> +	/* Send Feature Report to Configure FT260 as UART 9600-8-N-1 */
+> +	req.report	= FT260_SYSTEM_SETTINGS;
+> +	req.request	= FT260_SET_UART_CONFIG;
+> +	req.flow_ctrl	= FT260_UART_CFG_FLOW_CTRL_NONE;
+> +	put_unaligned_le32(9600, &req.baudrate);
+> +	req.data_bit	= FT260_UART_CFG_DATA_BITS_8;
+> +	req.parity	= FT260_UART_CFG_PAR_NO;
+> +	req.stop_bit	= FT260_UART_CFG_STOP_ONE_BIT;
+> +	req.breaking	= FT260_UART_CFG_BREAKING_NO;
+> +
+> +	ret = ft260_hid_feature_report_set(hdev, (u8 *)&req, sizeof(req));
+> +	if (ret < 0) {
+> +		hid_err(hdev, "ft260_hid_feature_report_set failed: %d\n",
+> +			ret);
+> +		goto err_hid_report;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_hid_report:
+> +	tty_port_unregister_device(&dev->port, ft260_tty_driver, dev->index);
+> +err_register_tty:
+> +	ft260_uart_port_remove(dev);
+> +err_port:
+> +	timer_delete_sync(&dev->wakeup_timer);
+> +	return ret;
+> +}
+> +
+> +static int ft260_probe(struct hid_device *hdev, const struct hid_device_id *id)
+> +{
+> +	struct ft260_device *dev;
+> +	struct ft260_get_chip_version_report version;
+> +	int ret;
+> +
+> +	if (!hid_is_usb(hdev))
+> +		return -EINVAL;
+> +
+> +	/* We cannot used devm_kzalloc here, because port has to survive until
+> +	 * destroy function call
+
+multiline comments are introduced by /* on its own line.
+"used" -> "use".
+
+> +	 */
+> +	dev = kzalloc_obj(*dev, GFP_KERNEL);
+> +	if (!dev) {
+> +		ret = -ENOMEM;
+> +		goto alloc_fail;
+> +	}
+> +	hid_set_drvdata(hdev, dev);
+> +	mutex_init(&dev->lock);
+> +	spin_lock_init(&dev->read_lock);
+> +	init_completion(&dev->wait);
+> +
+> +	ret = hid_parse(hdev);
+> +	if (ret) {
+> +		hid_err(hdev, "failed to parse HID\n");
+> +		goto hid_fail;
+> +	}
+> +
+> +	ret = hid_hw_start(hdev, 0);
+> +	if (ret) {
+> +		hid_err(hdev, "failed to start HID HW\n");
+> +		goto hid_fail;
+> +	}
+> +
+> +	ret = hid_hw_open(hdev);
+> +	if (ret) {
+> +		hid_err(hdev, "failed to open HID HW\n");
+> +		goto err_hid_stop;
+> +	}
+> +
+> +	ret = ft260_hid_feature_report_get(hdev, FT260_CHIP_VERSION,
+> +					   (u8 *)&version, sizeof(version));
+> +	if (ret < 0) {
+> +		hid_err(hdev, "failed to retrieve chip version\n");
+> +		goto err_hid_close;
+> +	}
+> +
+> +	hid_info(hdev, "chip code: %02x%02x %02x%02x\n",
+> +		 version.chip_code[0], version.chip_code[1],
+> +		 version.chip_code[2], version.chip_code[3]);
+
+Is this dump useful?
+
+> +
+> +	ret = ft260_get_interface_type(hdev, dev);
+> +	if (ret <= FT260_IFACE_NONE)
+> +		goto err_hid_close;
+> +
+> +	hid_set_drvdata(hdev, dev);
+> +	dev->hdev = hdev;
+> +
+> +	if (!dev->ft260_is_serial) {
+
+Inverting the condition would make more sense for me.
+
+> +		ret = ft260_i2c_probe(hdev, dev);
+> +		if (ret)
+> +			goto err_hid_close;
+> +	} else {
+> +		ret = ft260_uart_probe(hdev, dev);
+> +		if (ret)
+> +			goto err_uart;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_uart:
+> +	hid_hw_close(hdev);
+> +	hid_hw_stop(hdev);
+> +	tty_port_put(&dev->port);
+> +	return ret;
+> +
+>   err_hid_close:
+>   	hid_hw_close(hdev);
+>   err_hid_stop:
+>   	hid_hw_stop(hdev);
+> +hid_fail:
+> +	kfree(dev);
+> +alloc_fail:
+>   	return ret;
+>   }
+>   
+
+> @@ -1171,7 +1857,62 @@ static struct hid_driver ft260_driver = {
+>   	.raw_event	= ft260_raw_event,
+>   };
+>   
+> -module_hid_driver(ft260_driver);
+> -MODULE_DESCRIPTION("FTDI FT260 USB HID to I2C host bridge");
+> +static int __init ft260_driver_init(void)
+> +{
+> +	int ret;
+> +
+> +	ft260_tty_driver = tty_alloc_driver(UART_COUNT_MAX,
+> +		TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
+> +	if (IS_ERR(ft260_tty_driver)) {
+> +		pr_err("tty_alloc_driver failed: %d\n",
+> +			(int)PTR_ERR(ft260_tty_driver));
+
+Why the cast? Use %ld.
+
+> +		return PTR_ERR(ft260_tty_driver);
+> +	}
+> +
+> +	ft260_tty_driver->driver_name = "ft260_ser";
+> +	ft260_tty_driver->name = "ttyFT";
+> +	ft260_tty_driver->major = 0;
+> +	ft260_tty_driver->minor_start = 0;
+> +	ft260_tty_driver->type = TTY_DRIVER_TYPE_SERIAL;
+> +	ft260_tty_driver->subtype = SERIAL_TYPE_NORMAL;
+> +	ft260_tty_driver->init_termios = tty_std_termios;
+> +	ft260_tty_driver->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL | CLOCAL;
+> +	ft260_tty_driver->init_termios.c_ispeed = 9600;
+> +	ft260_tty_driver->init_termios.c_ospeed = 9600;
+> +	tty_set_operations(ft260_tty_driver, &ft260_uart_ops);
+> +
+> +	ret = tty_register_driver(ft260_tty_driver);
+> +	if (ret) {
+> +		pr_err("tty_register_driver failed: %d\n", ret);
+> +		goto err_reg_driver;
+> +	}
+> +
+> +	ret = hid_register_driver(&(ft260_driver));
+> +	if (ret) {
+> +		pr_err("hid_register_driver failed: %d\n", ret);
+> +		goto err_reg_hid;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_reg_hid:
+> +	tty_unregister_driver(ft260_tty_driver);
+> +err_reg_driver:
+> +	tty_driver_kref_put(ft260_tty_driver);
+> +
+> +	return ret;
+> +}
+thanks,
+-- 
+js
+suse labs
