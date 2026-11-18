@@ -1,96 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795035441;
-	b=x/U4iUOmvourPnu000BSuHFh3s+Npy0U6BcT59xfaQKdR65+L/a1C+EtwgdA479tW94g
-	 zKZxGqehwbe6swT5v0asnAyh7QAcQ6wIOGrZdE9bd+rvY3FsygwUVWDxs1oxpiyoDV3Pl
-	 kVZKt90DvGHuMlZt7qZqFRC26wfrg4lSuNQfqCpOlc7+78esmUTtBMrXfnlqEReFra8Hd
-	 rZL1JDq/eVxhwv7Jwv6UtwtMObt8/viwRGZO90r3k0ZERGavZ8pVi/zHP0hGw8LRU+lYE
-	 0d5+SjfYNOzySVkAqhghYjljnlKbXA6h45Iv5dqnxnso6cPhbCTNZY3La3fnygg+Pqg==
+	t=1795036621;
+	b=k61Y1xMVR1/mAUXKCpqqG/f2ZlKJ4QPTBuVDO9Wp6ku7UzyUf5FqMpeTGbVUVF81BYvU
+	 n/kNjzVBDEPxZrrmDqyqgcsm9Cx352WMfORXyj1l6q2o7nMGnALEbywQCZY+WazB4QXyR
+	 uprSkA9f6iFhqt7SzIsBZl85GX3d+6RHc8JcNnw7KNMgwjtGHaTNuIHZblIK1peqNwYwb
+	 DOMOn0ek5AdyB7HAYgM9RsY7GAHBf59ML6RWkHRk5z/W+GKuQ63mNvUj0IH4F+hcmkY+4
+	 ziFEOJR2SeUXSy1gajvoJLNPOWGuOfak6Vp5kg0hsgImCq6WeDi3BW8uz3DDuISf5Rw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795035441;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=rD0rqzmylq+YWadKYJUM3h2KbEjwE3lCD2TvIMgXYy8=;
-	b=CWdiNA0XGY8vDZ+n26CDP/wJ4bQ9N1/7L7It0qkR+jsN+yEoH9o5AWs4TS6npgY293CF
-	 0YUKvSKU/yvjL8K0qS3ssAh6vMxcGd00NhbEhceU7nwc6RUQs7RusklUuvh11r7B2z1dR
-	 mlp/wsGcpKaCccfUmI56f8E0uBF0cX+2y81bOYFRmBz0w5QqKz9bhfTr9/wsHQIWjerB1
-	 RnEzUsHAZDZaN3uioIVPhy/nlgQ5DrC2Ho1jEgpakXTCUTN+ovod8RVwekDaqk2gdBWe6
-	 a0ZaSfMjeURXWKnv/zqI4QTxkFWCWAPGsbKsBSewfRGYIlC9hFCu0FsIvDei8IqfgRA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795036621;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:User-Agent:X-stable:X-Patchwork-Hint:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=dn5WXYZRU9s2l3dqfd2BhK5xw9BuxsEOj6W6Li28VlE=;
+	b=wA+tog0EFi3rr2XzmV+HTlDN1F9tfhrTwU6Y7oXb+jiG9l3RKqew5DcQIdjw9Oh8TwZF
+	 Azr2BEh9Nq8Xnw/obgYfB0ndK/yYa/AjRH0I+OetmipIWSulFSPcpUxZIMkechaifxjZU
+	 PD0+kkBys8tb/yub2fOSdL03wlw6kPKpCl8vJGYdl61JwO4LaL6Y5HXQuo3uY3J6nihcI
+	 sXIXaYOAA9DkNaLFtZ/glEgKCDHGM3nT+hIDkwaTJqj72ro1Tnxr8YOuykrqJe6M9O7cy
+	 QWnVEn2V3PXY8WckxC11lanrHLZEKmDF8Qw8xqTM6TTGyIsj9QiPq7kgZxlXXMWJxrA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=eZ3U6pM4;
-	arc=none smtp.remote-ip=209.85.221.46
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=YRFya6np;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DC7C606A31C
-	for <linux-serial@vger.kernel.org>; Wed, 18 Nov 2026 20:57:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DC7C606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2BD2606A325;
+	Wed, 18 Nov 2026 21:17:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=eZ3U6pM4
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-4a5506f09f5so969422f8f.0
-        for <linux-serial@vger.kernel.org>; Wed, 18 Nov 2026 12:57:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795035440; x=1795640240; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=rD0rqzmylq+YWadKYJUM3h2KbEjwE3lCD2TvIMgXYy8=;
-        b=eZ3U6pM4uWJAg0soB/+ulwruWIsechmVHctntlrGfFAqhTYhXgCJHlROKnJ6NWnq1M
-         laW+G5ENbDVDab3NiCysSPmTXaeHdNeJFajmjVOasM0gJcbZ+MfTwYBW3zm54ce1kICJ
-         hY+WWaTNVK+KTLU6RflsZwY34xeYZ7hw5ASyRvArs/CPArbC6OKothn8Zv5+huSb5kaE
-         HMEfQgptHblJF8aAtmqIsAFas2RViUEo0KFttKWUHsgsuh00kGjh+0scqN7PPKwt1fUb
-         RXzhJt1sLYeZXh/FkEEwZDNWpqns2B3YzK6/7TazCF08CXfnRCan/NaG/2KidQ1vyWfV
-         rp1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795035440; x=1795640240;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=rD0rqzmylq+YWadKYJUM3h2KbEjwE3lCD2TvIMgXYy8=;
-        b=iqnhGJG1gtxssyTvU/FzTAy5vk0qCwHrdoY0uCnKTsx9CB0wezjgWjf5SSnMrJqjF4
-         7Q2bs6jvmsJPlilVG90Xgo4K5mRNZRFJg/TO7PePT5wxTqIOjfgOJ0TpOZrqFBKB8LA1
-         LKmk93Ndp1gInwEmDtnEYPCtjjce9awLMVbKzIbpgULdjnOsQlXUt2SIYXsuiKgIy6Nm
-         jshBNcRz59PHniUFTGBSDqyOWwzF9zT6YXmA5viWDiKJtqMo9PHPOdc2U+ky/cRxqUJf
-         1lIvYOFy6tJ5AJa0IPLI6oxUcMeb1A9aQLo+bVWpEQjnUNA3Howq7fkrKqvZmEf1bgMX
-         FcYw==
-X-Forwarded-Encrypted: i=1; AL+hErFH5N8pAjStVynRo8LXeDqKC4cWHFpuzlTSyVqkMHvfQYxpH8HBttLsmCkpL7pt8p1cMOdfJznBQOO9ryQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8sg/Rp/3Hnq9a85y2UTkYduWLd+uBtimILRghM0WGj5biozD3V
-	jO066ZBurfmACL13F2bUgT2Zrr0Qqa+HYQj5om35zBGZIsNb3C2OjLbB+tVYoLhy
-X-Gm-Gg: AZFdTZdSiFFqDcxC5F4KRfyxC7Ix05S8gk/8UDoKqsfip6FFd63xTjSBmEGGYvk/YBn
-	nB8rENiPgIqjiM9CFuyuL60QV3ytgdH2P1QbwKRbrdQeW3y4pd/388e8T3/WBWFN8ae0QNYDu6B
-	XxPD2XlFqyiQyOCx6DR4kBvOr8DccHm81/UINevvi4leTTMWM/VTwbyq2WAm33yzEpQKQTsUMWm
-	Hp/Z892Dme/WceQM/ReZkU+d8uhxRDQDeSfggNVFhKQrLzx/UMOOwHghpCVK00joSdU0lLNHvmQ
-	GF0KEr/jmY/5G0x8yqq4VXgVND+bYXFbBprgVG/5kmOWUH9UyrHCdeurWfr6cNMmLsfI+aRSsYz
-	tq42aH1G0dzLAptarzW1fUGeMUTKM/h57rfkoVEmHO1yK/Xr+hnR1hFIqGx5q6JT/za4bGh5GWn
-	ZB+PWXEC7gPvkp5/fMhNoYR0x9U2cgOxieChbDhmzEczJ83U31wsRFpsam6URVRzRGN/6JD+rBM
-	LjUqblh51morNz3AQ4CZDdwWnVoGEyRxuZ0l67uyg97uOXDC6Yu1FLhavZYsT79hIS5+Ik22dcC
-	UdHiHc3KV2LBhmEOcMWjhLA7JYKn
-X-Received: by 2002:a05:6000:2f81:b0:4a9:4dfa:c151 with SMTP id ffacd0b85a97d-4a94dfac238mr347385f8f.26.1795035439821;
-        Wed, 18 Nov 2026 12:57:19 -0800 (PST)
-Received: from m2.. ([37.142.154.208])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-4a65560bd46sm6675311f8f.31.2026.11.18.12.57.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 12:57:18 -0800 (PST)
-From: Michael Zaidman <michael.zaidman@gmail.com>
-To: sashiko-reviews@lists.linux.dev
-Cc: Michael Zaidman <michael.zaidman@gmail.com>,
-	linux-input@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=YRFya6np
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 016301F000C5;
+	Wed, 18 Nov 2026 21:17:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1795036621;
+	bh=dn5WXYZRU9s2l3dqfd2BhK5xw9BuxsEOj6W6Li28VlE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=YRFya6npDpq8wE2kvYPVUbDxswPjtOvAg/2IZuXCtM/eWUoLR2kzzzOqTe2w41zEc
+	 2JInFJ9tS+QPhvI+TZ5E8Z1kvLVJ1GfMgBuksp7TQ6ur2CaeRVHCyzUE5k/Hw+3NCl
+	 vH+p5Kl0932fvxRX/yOw9gL8Jbf1SoUWxa54MPjE=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: stable@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	patches@lists.linux.dev,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	stable@kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-serial@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	dmitry.torokhov@gmail.com
-Subject: Re: [PATCH v4 11/16] HID: ft260: workaround for TN_189 errata endpoint STALL after enumeration
-Date: Wed, 18 Nov 2026 22:57:10 +0200
-Message-ID: <20261118205712.49261-1-michael.zaidman@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <sashiko-outbox-219658@kernel.org>
-References: <sashiko-outbox-219658@kernel.org>
+	Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 6.6 1108/3318] serial: 8250_lpss: do not touch uninitialized line in ehl_serial_exit()
+Date: Wed, 18 Nov 2026 15:28:50 +0100
+Message-ID: <20261118150353.237287182@linuxfoundation.org>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261118150313.527275416@linuxfoundation.org>
+References: <20261118150313.527275416@linuxfoundation.org>
+User-Agent: quilt/0.69
+X-stable: review
+X-Patchwork-Hint: ignore
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -100,15 +65,70 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 17, 2026 at 08:50:51PM +0000, sashiko-bot@kernel.org wrote:
-> Can ft260_reset_and_rebind() race with an active ft260_probe() when the
-> driver is bound outside USB enumeration?
+6.6-stable review patch.  If anyone has any objections, please let me know.
 
-Thanks, this race is real. I reproduced the order on an FT260 board
-with test-only delays in the probe and in the reset work: the probe of
-interface 1 passes both TN_189 checks during the unbind. On this
-kernel it then fails at its first HID raw request with -ENODEV from
-hid-bpf, and no subdevice is registered. Without CONFIG_HID_BPF,
-hid-bpf does not stop the request. v5 fixes the race in the driver.
+------------------
+
+From: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+
+[ Upstream commit 3e3ae95a3d84a6028f37a07ab7ad78bb14689f2e ]
+
+lpss8250_probe() calls lpss->board->exit() on its error path. For the
+EHL board, that is ehl_serial_exit() and it does:
+serial8250_get_port(lpss->data.line)->dma = NULL;
+
+But when lpss8250_dma_setup() or serial8250_register_8250_port() fails,
+lpss->data.line was never assigned. As lpss is kzalloc()ed, line is 0
+and ehl_serial_exit() clears the dma pointer of an unrelated port --
+serial8250_ports[0], i.e. ttyS0, which is often the console.
+
+Initialize lpss->data.line to -1 in probe and skip the clearing in
+ehl_serial_exit() if no port was registered.
+
+Fixes: 5318f70da7e8 ("serial: 8250_lpss: Balance reference count for PCI DMA device")
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Assisted-by: LLM
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: stable@kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
+Link: https://patch.msgid.link/f389df34aaa538270313ebd4cea75c2baaf46b95.1791873876.git.jirislaby@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/8250/8250_lpss.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 0e43bdfb74598..4a46ee9de2a13 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -183,9 +183,8 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 
+ static void ehl_serial_exit(struct lpss8250 *lpss)
+ {
+-	struct uart_8250_port *up = serial8250_get_port(lpss->data.line);
+-
+-	up->dma = NULL;
++	if (lpss->data.line >= 0)
++		serial8250_get_port(lpss->data.line)->dma = NULL;
+ }
+ 
+ #ifdef CONFIG_SERIAL_8250_DMA
+@@ -332,6 +331,8 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return ret;
+ 
+ 	lpss->board = (struct lpss8250_board *)id->driver_data;
++	/* for tests in lpss->board->exit() */
++	lpss->data.line = -1;
+ 
+ 	memset(&uart, 0, sizeof(struct uart_8250_port));
+ 
+-- 
+2.53.0
+
+
+
