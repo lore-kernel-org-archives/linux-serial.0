@@ -1,83 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795084178;
-	b=ygPIQLmYgREJ4anj6t4V+DceJJxHrvzkaCXMMO6pUQ6X9Uc1a44lEIO9vVkOBREE8FSA
-	 nD6L4hunupiW0BdQkr0Y048gHnaRDGcxl88VmDh8ntrBeXLr17lrZBRIU6rBJHfaGMb+U
-	 BHFA6RP0O41ofFWfS2AKtYHOUJveBdPj/Az7Gt68ibnI8qt0PoKyhGC4ambXjgbZLRpxC
-	 XEOsUaS7LMAYm373sNg6dX/I28D2KfY6gXL51AxtfBHrSORqianLw+dz2Y5ZN9ybfCTPG
-	 uEOpgty9ZRpZId0QWgSqsVB/BNFKVEPr48QCZ3sE713fc4VVtG4VbdFMu9dsdjovxdg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795084178;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=dUSNnRZL1irG1RiGj+Z8r6wLhmGb7tyTO4JuEMlYrRU=;
-	b=WUD4W1XaaLi6u7apk55AImUWf7/U1AJ2HJNYjml1s4aC3+n72oMo1PsKuyvIaHqiTTVl
-	 y1mngfIrGfjebwrK3tiqA+XwJi/avC1lwrFBrLIWDazXtfrZ6S3OCOOJUVzQBYjHTZ/vT
-	 y1nTWWvCqClRokjLVMXTga+pHpJRbzQVF09PaT3scssRprmzK5YAEAVnZ5dy8ZeIf0myA
-	 D3b2pULpZ4agxzataMkOybk/2fLLwUjO1hYdE88771XN4B/N2X0ieA69PRnrGRZXOoR7S
-	 FfdOAPDj2A2qkZOSzD7mPIN2WS4f/2B+VI6ooMPD1IM0qkNiUfEQQEzxvYTe0yEjGEA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QeuDAEbS;
-	arc=none smtp.remote-ip=192.198.163.11
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795106351;
+	b=wTvseWM6h8hdAObtKK1JklkGzTLq49nQk7nV+GIMLLuM7HvfYCBL/kSagUeQfiYUnYhz
+	 kAnQph6bTI20G3+R6oXvve4J+PAaQQy2apDLQGc6f5/1PtzeWLhnJVOHS4dFKVEXSGOiJ
+	 1VAR2HA7nSGuqLDGxTpiNUP4GYbTqgIyGxFMEMpGQXQlswZkkQXOFEn5D9wKEboZX9l2u
+	 bjpdODdKB31glo2xUshJ1Bwc9z2u8e/e+00g7MFBOX/EmVyPiTcqM7ount3p9y59U5Vyj
+	 IF7/Wv9FTZWeih9/oFPkZASP2mzjkWIye8xGK7ZIB3qZjDoYimHAlbJpRd4yr+nOyrg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795106351;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=H39hwnwIg+LDXJYCtYYKzp7/dtZLMvDhXTVKfbzdbhw=;
+	b=z8spICf1mOV5A8dnLbjU6HNGZSJ9FclIixBgSlrVPHjyId+9XJpwYMegGzdeY/eKj/2z
+	 3WXcBuIZx7sq6roXNoGLtcO3PgFP+KEJ6ZXre7td68vpTOIe1VaTj3QG2D/vLbaq61Poj
+	 9aq71qRCPAwBcIsbvWR4owgIU8DMRPgWXxxrtzt5Xa03r9iKtZTNkXNmfAI3x4PHPGe+s
+	 NrygxPXur9NLaAgdaRPeHhpAOYgvE2Nm0ppGIhct+G5iBOK5rOLFYZApBbgNOzrlp8gdm
+	 CMPNlkDJbALF/iMmaKH+7C5VWAzSaEMXThHMEE6OnL1zWpNjWPxOYlZnf6mnxWayKPw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WjZuIRDI;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F8F5606A320;
-	Thu, 19 Nov 2026 10:29:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F8F5606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C70606A324;
+	Thu, 19 Nov 2026 16:39:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QeuDAEbS
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795084178; x=1826620178;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xlfDxzEZtd4xvDMcGxhAWOaHGccCW55yOUxKu6tohL8=;
-  b=QeuDAEbSuLO6EWoFuRe2puh6/eY+kmGhp9/yDankziOetgZHgNWqAuZ0
-   i/3jGi3nWhlsL61pMyokZ7mRHxmL0mbfgpW6//zHXnuwxlGjwAAdw51jV
-   Pju/kysFAOB0gEPqT7V4feK9vInXv1HFs5Gsa6nSCMXexQBZazTPZRfAL
-   KgPsW7+sGqzXBR3LvLlMs8ZBm+APwFpOkkWNRvtvV4kmPwiHtS4DcPUen
-   prA2Hg/YS1gSSZSi6fZ4xpdjIblfHxhxPMIFKcgj/YnkyNIQJt5JXXazB
-   QpGB1QjEGrMxxMpx7++HrnfAXdAdpHXu93CI/lnL3AA4UMvbabWteEsEc
-   g==;
-X-CSE-ConnectionGUID: pWRcAB8HSqGznSPW+usWsA==
-X-CSE-MsgGUID: ZUHAY4G7RVG80gWG99Y7hQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11970"; a="3847465"
-X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
-   d="scan'208";a="3847465"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 02:29:38 -0800
-X-CSE-ConnectionGUID: 0nWMvIVPTG64FSxYgTh2vw==
-X-CSE-MsgGUID: hH96snwBTV6ImwKrhzd1ZA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
-   d="scan'208";a="12355092"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.61])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 02:29:35 -0800
-Date: Thu, 19 Nov 2026 12:29:32 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: James Hilliard <james.hilliard1@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Frank Li <Frank.Li@kernel.org>, Dan Williams <djbw@kernel.org>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v10 4/7] dmaengine: dw: use virt-dma for descriptor and
- callback ownership
-Message-ID: <av7PjEXWiWpp1LR6@ashevche-desk.local>
-References: <20261119-submit-dw-dma-synchronize-v1-v10-0-3a737597a0d1@gmail.com>
- <20261119-submit-dw-dma-synchronize-v1-v10-4-3a737597a0d1@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WjZuIRDI
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795106350;
+	b=WcXBbiZhzDOANJHPdFNho2R7ozMFh2hDxMnxxl6ypi0C2pfzEF70c9G4V1ssyR5M5Igv
+	 TWhUH+fQdliwEN9h/uSwLbFqQeGK2VShSaGCqXfZBsYr3XCduivyJTgUSxYCqXLbLm10U
+	 /7kDKqiaFCcB3caJPPJDP58ov3tAPW1Nd81RQb2LzcEPv9jV47sjjx53E9PGgq/haz0a8
+	 UwjkT/30HjESR8RRvfGCa/8uoFyOT5is+cWhSl8fEkmnntD/Cdn2dMSBwQbg0O4M9nMra
+	 DK/O7SSAN/jOMnE/PX9grQX69UMwflV8VGBbkMJEP4+UXaCX4nVk7ktidiE88NovuwQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795106350;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=H39hwnwIg+LDXJYCtYYKzp7/dtZLMvDhXTVKfbzdbhw=;
+	b=ZAizGSKsvr6r9fJiTDsaSs1yCoAMHtbVnSiQc5iaHzUmrTPMNJMQYimnFNVFgknCfST2
+	 p3ySZwiVXIfT/0Ne0dBGtSnbjbsd+i6uHw+04RfNB2qbq6ZuBcJQ2CL3qQqyvp/rcqpzw
+	 w+O1pR0fNYbuuoSe0zefe9//0EZBWRc4TwqSIxRllTKBpHI9uZWkCMZt5Hd5REcFKpcvD
+	 U57fqXmTFzs2y+KncrfMXSczPFFqEyFmHjycnLYNXjMLb7P7XBBm9OIc/aXLusqugp68H
+	 9N9V6OK7YHxLtGTxWmwCvKPfCsFi9l9QjqhaAR89yu+mPI28Ba+eP56R7duuRy1NI9Q==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id D97EF1F000C4;
+	Thu, 19 Nov 2026 16:39:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795106350;
+	bh=H39hwnwIg+LDXJYCtYYKzp7/dtZLMvDhXTVKfbzdbhw=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=WjZuIRDIXsFLcI5gz/taacrkZ67bc7nXOHxigxi8ZxBDtzUQIkbupieLov0hMq4St
+	 8ZMj2g3XGFZTP4jCXlxXSXTTWBkWHRt/nfGh+2i1/mFVBOH8kMS9JMEzzsMJkOOxyn
+	 zuSaQNU1BCXKzTSMQomQTSGKSr4E4VnCW7VmZmePmb2RuBSsEt6gPU3kh1Yiu4mbVD
+	 njYlfUdQiVYybyT/LtZPHjJ9uHIOyncVb6yG58OAhK3k1iOJbDozQKbJK9JgcPisoY
+	 U7q6Lzcwi1ooRx3+LRWq6sHfZIV8qUKQ8YJqA15msZ3n4sOqT3+G0Q0wqi6PhvZBzS
+	 2RwiuzXX0vRrQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 3ACA84B33A;
+	Thu, 19 Nov 2026 16:39:09 +0000 (UTC)
+From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
+Date: Thu, 19 Nov 2026 16:39:09 +0000
+Subject: [PATCH] vt: allocate the screen buffers with kvzalloc()
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -87,67 +82,152 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261119-submit-dw-dma-synchronize-v1-v10-4-3a737597a0d1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261119-vt-kvzalloc-v1-1-5e5f59b37f61@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQ5AMBBA0avIrDXREspVxKJqMAjS0ghxd8XyL
+ f6/wKIhtFAEFxh0ZGmZPXgYgO7V3CGjxhtEJFLOec7cxkZ3qmlaNMNURLKRmUpkDL5YDbZ0fLe
+ y+m33ekC9vQu47wcFkD5UbwAAAA==
+X-Change-ID: 20261119-vt-kvzalloc-e6208d87a483
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Nicolas Pitre <nico@fluxnic.net>, Arun Iyengar <aiyengar1990@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795106349; l=4415;
+ i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
+ bh=83ftxt1Y3R8cULoF8CrapPrLjB8/VCL6Q7syy8fYTqQ=;
+ b=cb/1C90W46uJY1W+sHyRgr96rWWZcFm89KMxF4+WT3nuPzc3Bn/lRrxjcGeme3U9TjrPR2mcf
+ so5JjuVRguhCihuRTgAKezivDTuv0ms44KLgo3WYGGskr49hILlsjeI
+X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
+ pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
+X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
+ auth_id=1480
+X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
+Reply-To: aiyengar1990@gmail.com
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 19, 2026 at 03:01:38AM -0700, James Hilliard wrote:
-> The status getter can invoke a client's completion callback while polling
-> the hardware. An 8250 RX timeout calls it with the port lock held, and the
-> callback takes that same lock. Termination also lacks a synchronization
-> hook to wait for callbacks already detached from the channel's queues.
-> 
-> Use virt-dma for transaction queues, cookie completion and callback
-> delivery. Keep the active transaction and hardware state under vc.lock.
-> Polling still processes RAW.XFER and advances software-LLP blocks, so
-> clients such as catpt can complete transfers with the controller interrupt
-> masked. Client callbacks run only from the per-channel virt-dma tasklet.
-> 
-> An 8250 RX timeout consumes the transfer length minus the reported
-> residue. On a bus error, source reads do not establish how many bytes
-> reached the destination. Credit only whole blocks whose completion the
-> driver observed while advancing a software-linked transfer. For a
-> hardware-linked transfer, treat the whole buffer as unconfirmed.
-> 
-> Report the abort and the same residue to result callbacks and status
-> pollers, even after another transfer completes. Reserve the error record
-> during preparation, when clients can still handle allocation failure.
-> Use the normal virt-dma submission path; neither submission nor fault
-> reporting needs to allocate. Keep only failed cookies after descriptor
-> release, until the cookie is reused or the channel is released.
-> 
-> Submit only the first block of each transaction to virt-dma. Its child
-> LLIs remain on the driver's hardware-chain list and are freed together
-> after the callback returns. Keep the controller tasklet for hardware
-> event processing and error recovery.
-> 
-> Complete cookies under vc.lock before handing descriptors to the callback
-> tasklet. Complete terminated cookies in submission order without invoking
-> their callbacks, so a concurrent termination cannot advance the completed
-> cookie past an older completion that later moves it backwards. Newly
-> submitted transactions become eligible to start when issue_pending()
-> moves them to the issued queue.
-> 
-> Implement device_synchronize with vchan_synchronize(), which drains only
-> the selected channel's callbacks. DMAengine calls it before releasing
-> channel resources. Exclude the controller tasklet while clearing channel
-> configuration and powering down, and let a pending run return without
-> register access after the last channel has been released.
-> 
-> This implements the callback deferral proposed by Serge Semin using the
-> shared infrastructure suggested by Andy Shevchenko.
+From: Arun Iyengar <aiyengar1990@gmail.com>
 
-...
+A console's screen buffer grows with the display: 480x135 (3840x2160
+with the 8x16 font) needs 129600 bytes, an order-5 kzalloc() that can
+fail when memory is fragmented. On an Orange Pi Zero2 (1 GiB) under
+memory load, plugging in an HDMI monitor gave an order:5 page
+allocation failure in vc_do_resize() from fbcon_startup().
 
-> Link: https://lore.kernel.org/r/20240911184710.4207-3-fancer.lancer@gmail.com
-> Link: https://lore.kernel.org/r/avrHOJ-fVZOO32bI@ashevche-desk.local
+Commit 9a98e7a80f95 ("vt: don't use kmalloc() for the unicode screen
+buffer") moved the unicode buffer to vmalloc for this reason; let the
+screen buffer and its alternate screen copy fall back to vmalloc too.
+Nothing needs them physically contiguous. con_init() keeps its
+GFP_NOWAIT kzalloc(), which kvfree() also handles.
 
-Same issue. And I think I have told you about it a few times before.
+Cc: Nicolas Pitre <nico@fluxnic.net>
+Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+---
+Tested on an Orange Pi Zero2 (H616) on 7.3.4 with KASAN and the order-5
+kmalloc failed by fault injection: 20 of 20 fbcon rebinds fell back to
+vmalloc and kept the screen contents (all 20 fail without the patch).
 
--- 
-With Best Regards,
-Andy Shevchenko
+Developed with Claude (Anthropic), which wrote the code and the commit
+message. I reviewed it.
+---
+ drivers/tty/vt/vt.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 7dbc0072a40a..cdc862be4d6f 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1232,7 +1232,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+ 	    vc->vc_screenbuf_size > KMALLOC_MAX_SIZE || !vc->vc_screenbuf_size)
+ 		goto err_free;
+ 	err = -ENOMEM;
+-	vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_KERNEL);
++	vc->vc_screenbuf = kvzalloc(vc->vc_screenbuf_size, GFP_KERNEL);
+ 	if (!vc->vc_screenbuf)
+ 		goto err_free;
+ 
+@@ -1324,14 +1324,14 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
+ 
+ 	if (new_screen_size > KMALLOC_MAX_SIZE || !new_screen_size)
+ 		return -EINVAL;
+-	newscreen = kzalloc(new_screen_size, GFP_USER);
++	newscreen = kvzalloc(new_screen_size, GFP_USER);
+ 	if (!newscreen)
+ 		return -ENOMEM;
+ 
+ 	if (vc->vc_uni_lines) {
+ 		new_uniscr = vc_uniscr_alloc(new_cols, new_rows);
+ 		if (!new_uniscr) {
+-			kfree(newscreen);
++			kvfree(newscreen);
+ 			return -ENOMEM;
+ 		}
+ 	}
+@@ -1344,7 +1344,7 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
+ 
+ 	err = resize_screen(vc, new_cols, new_rows, from_user);
+ 	if (err) {
+-		kfree(newscreen);
++		kvfree(newscreen);
+ 		vc_uniscr_free(new_uniscr);
+ 		return err;
+ 	}
+@@ -1402,7 +1402,7 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
+ 	vc->vc_screenbuf = newscreen;
+ 	vc->vc_screenbuf_size = new_screen_size;
+ 	set_origin(vc);
+-	kfree(oldscreen);
++	kvfree(oldscreen);
+ 
+ 	/* do part of a reset_terminal() */
+ 	vc->vc_top = 0;
+@@ -1483,10 +1483,10 @@ struct vc_data *vc_deallocate(unsigned int currcons)
+ 		con_free_unimap(vc);
+ 		put_pid(vc->vt_pid);
+ 		vc_uniscr_set(vc, NULL);
+-		kfree(vc->vc_screenbuf);
++		kvfree(vc->vc_screenbuf);
+ 		vc_cons[currcons].d = NULL;
+ 		if (vc->vc_saved_screen != NULL) {
+-			kfree(vc->vc_saved_screen);
++			kvfree(vc->vc_saved_screen);
+ 			vc->vc_saved_screen = NULL;
+ 		}
+ 		vc_uniscr_free(vc->vc_saved_uni_lines);
+@@ -2032,7 +2032,7 @@ static void enter_alt_screen(struct vc_data *vc)
+ 
+ 	if (vc->vc_saved_screen != NULL)
+ 		return; /* Already inside an alt-screen */
+-	vc->vc_saved_screen = kmemdup((u16 *)vc->vc_origin, size, GFP_KERNEL);
++	vc->vc_saved_screen = kvmemdup((u16 *)vc->vc_origin, size, GFP_KERNEL);
+ 	if (vc->vc_saved_screen == NULL)
+ 		return;
+ 	vc->vc_saved_uni_lines = vc->vc_uni_lines;
+@@ -2082,7 +2082,7 @@ static void leave_alt_screen(struct vc_data *vc)
+ 	/* Update the entire screen */
+ 	if (con_should_update(vc))
+ 		do_update_region(vc, vc->vc_origin, vc->vc_screenbuf_size / 2);
+-	kfree(vc->vc_saved_screen);
++	kvfree(vc->vc_saved_screen);
+ 	vc->vc_saved_screen = NULL;
+ }
+ 
+@@ -2400,7 +2400,7 @@ static void reset_terminal(struct vc_data *vc, int do_clear)
+ 	vc->vc_decim		= 0;
+ 
+ 	if (vc->vc_saved_screen != NULL) {
+-		kfree(vc->vc_saved_screen);
++		kvfree(vc->vc_saved_screen);
+ 		vc->vc_saved_screen = NULL;
+ 		vc_uniscr_free(vc->vc_saved_uni_lines);
+ 		vc->vc_saved_uni_lines = NULL;
+
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261119-vt-kvzalloc-e6208d87a483
+
+Best regards,
+--  
+Arun Iyengar <aiyengar1990@gmail.com>
 
 
