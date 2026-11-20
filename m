@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795160746;
-	b=reCj5SbJ1T9JSohquvw8+ziWIGEwL+Wjgb6uOGZlW3mim9ebPxGI2lWeOJkZpWSRNXEl
-	 cHgZLh3+x5cxSd2IUsxwvwhNB5oxb9NVuME8ck3XSDZH/ygqKWkKBKByGcIdiqUitwAyc
-	 pW7l/R11E5gKgJ/KZLyx/vp1PTh/6f5fLUxAaAPbcxJ1x0FJjHwwVOlyKUGONHLpHB6Ox
-	 7YIZS4spVy6TlGFMvAh0ELU3tiIXDvA3uUcMonsmc/k8+qo1/zXOZsBqK0VW2T+uYRBHl
-	 d9IKlka4Q3uQrSLbBze7mdk4syfjKbp10n54fkyjPwcQAcOPKQKJ22NK47j8qfsM5sw==
+	t=1795161189;
+	b=uY6wpB/P4JQLkKHjfSUJqtBLDMsuoxgU7xszJ61mOBt1EKVOg82XCbWo5tQl6Y6HY/bp
+	 gfrloqEvyMld9VlK/uFspm5C/NdEjUTIikjd7ZL9d8bVhFw7YEFY+ZhbfR1/xVAZikvgh
+	 elo2reQqttJ0cCqcctmvNddM+Jp8ILtvXZu2l+flJLKGMdLcZMLEMfrhDo+0cI99Fl9N3
+	 xoSEixMQiRb/u7saYb2n1XjOeXooQky6X6DI6134iIy1uLgmB8Bodh/mrwx5ZwkJhovAj
+	 ubQwUJnBqwJ2O0Al8DkiUc78mgFEet+Msf37326cWMSrkD0kCk+WkLvhJeiFBmKTWsw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795160746;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795161189;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=yD9IkIxOOiPicvekkh/EANFXaL12GDMFUphxkFRG0GI=;
-	b=3PhL2eAoQfr3XnOW/W3g6lJ6MdManTkMGcULzzJ8BRZnAh0jpkWf+TQ1ePaEFCmKLO0x
-	 jBQ554mmTUNln46NkUlY4Yn3xUxmEKylGUIs8pBjPo2GGIdgDblTZ1SAOGUc9NBnKjEmQ
-	 srP8Yv6Kx10/eEmvYcjkB0A/KFgJlBaPO+CHh18SgD0dFzgPsJnOqiDauXWWD6itm6lLU
-	 Z80jRoEomEwX8AROL0ZVrUXku053wYBpsnzjlRApFVLIW1asVcRkKPJSXJUpuePgTkRzy
-	 f2y0aQQ3WtUGbqnmMZd85Er6V3WBbmUAN4PdmQOap5oD2rFHE/g/OGQMFjpMnQ4rSJw==
+	bh=0GkJ9RmMdyYoridcBkOqHyYHAtWew66RVmpofJaeUI8=;
+	b=G7iA/6Rztq1SB+N7WSlWbDkM1fhG9247tBoNrhxTwZE7BJk15E7fGY+5H3udwSCSwpqU
+	 dA83hP53nKa1N9JBe33vVoz1CAjOafC5sIrhrM5jC0PwaxUOH/60mmXqoteI6QZM7XbK3
+	 H/DFMaxZZOGVClVNnFkY7khLICxJJrOvgK+q6WQN4+8/KJrqSSW1oS2rn2thRkWXuU4Dp
+	 60qfqq5sIos327m/3sboM/2sB/NMH6pAHQU2mEQMh960r/7345He5hjBY3yJNZydvnZlg
+	 boO7WRYkzEZ0QwOFtHjhJ5E+evjT/FpshEvf6jmuVD6u2plfJYqFZ0q2FBIZBaJZ0dA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HLXOuHe2;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QGkGHmpA;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7CEB606A32A
-	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 07:45:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BD98606A320
+	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 07:53:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HLXOuHe2
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B911F000CA;
-	Fri, 20 Nov 2026 07:45:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QGkGHmpA
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6EF31F000C6;
+	Fri, 20 Nov 2026 07:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795160746;
-	bh=yD9IkIxOOiPicvekkh/EANFXaL12GDMFUphxkFRG0GI=;
+	s=k20260515; t=1795161189;
+	bh=0GkJ9RmMdyYoridcBkOqHyYHAtWew66RVmpofJaeUI8=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=HLXOuHe29m37pPzm2Pwv+zptLtbNtH/g2QeIoYmf/D1pv8pBcEA67yvQcMXwEqkWO
-	 ZNS6HcKEf8Srw1Nsl0zKumhb5Q/cJ/Q3yYycWkhxMLV+QNdgCxnbXMlkrV1yCTiR4v
-	 Z5Z3d0CSwudioNRClLUOuw72Rbe5rIeCa05ZaEXX+HwuFNlGabB9iKlSpIMqnpidbJ
-	 FBITCPnNB+bSU2DDGpOx2ZzPzpiRk6NiNxEkWemY+O7xMdDa5cQSBMtQl+PTcG2DD1
-	 uaCwSP4WZYMSxqOoSSwdMSlo7eovHYWJn0/ScY62SqziM4/vC4mUfHmrLfB+oUGTu3
-	 8qUyqxGAz+slA==
-Message-ID: <sashiko-outbox-224655@kernel.org>
+	b=QGkGHmpATlYi+MJB9JPMwIyYwvsYxgqacpo9f1UE3Wgvh3rrtCSSKNJlitJshHZTT
+	 ZvOFpjuBhkU6rHUy3+gkDkoye0rlg8GtGiGQQO/wDHgOTcC1TtxR1i3n0oqp3v2j6E
+	 GBFoGiDXV/Ic7Gk2rIW+kQLdAIkokB2ZDyQk/yx6a4Tq17Nu+rf5hrC2+Eba/IVFav
+	 vYc1Z4cWX3AjDwW0JehrjhJ713gbjNP27bgrO4ySlPJki01ve/MywXsaoJyHgYr0ak
+	 OULRHe2UF4NoKVcVUWgV43wRQQWt73YNddXo/v/R6lfxaaCWkfMFiOoKRnGqrW9FBJ
+	 TcjSa2EnhEuSw==
+Message-ID: <sashiko-outbox-224662@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/3] serial: max310x: fix use-after-free on remove
+Subject: Re: [PATCH] serial: max310x: look at the port once after enabling
+ its interrupts
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261120-max310x-teardown-fixes-v1-1-eb52c8b612df@vaisala.com>
-References: <20261120-max310x-teardown-fixes-v1-0-eb52c8b612df@vaisala.com>
- <20261120-max310x-teardown-fixes-v1-1-eb52c8b612df@vaisala.com>
+In-Reply-To: <20261120-max310x-startup-irq-status-v1-1-aee4e1416cf6@vaisala.com>
+References: <20261120-max310x-startup-irq-status-v1-1-aee4e1416cf6@vaisala.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 20 Nov 2026 07:45:45 +0000
+Date: Fri, 20 Nov 2026 07:53:08 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,31 +60,113 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> max310x_remove() cancels a port's timer and work items first and
-> unregisters the port afterwards. Until uart_remove_one_port() has shut
-> the port down, an open port keeps queuing its tx_work from the
-> interrupt handler and from start_tx(), and the RS485 code re-arms the
-> delay timer and rts_work from those, so a work item or the timer can
-> still run after the cancels, on a port that is being torn down, and
-> fire after the port memory has been freed.
->=20
-> The unregister itself queues work too: the hangup it triggers clears
-> DTR and RTS through set_mctrl(), which schedules md_work, so a cancel
-> done before uart_remove_one_port() cannot cover it. Tested with the
-> port memory zeroed on free, md_work ran after the unbind on the freed
-> port and oopsed in max310x_md_proc().
->=20
-> The interrupt handler is a source of its own. The IRQ enable bits
-> [ ... ]
-> them too, with no IRQ handling since the request is probe's last step.
->=20
-> Fixes: 10d8b34a4217 ("serial: max310x: Driver rework")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Thank you for your contribution! Sashiko AI review found 1 potential
+issue to consider:
+- [High] serial: max310x: race between woken max310x_ist() and
+  max310x_shutdown()
+--
 
-Sashiko has reviewed this patch and found no issues.
+commit cc3a091769281e06df6acf169978f695b85e9541
+Author: Tapio Reijonen <tapio.reijonen@vaisala.com>
+
+serial: max310x: look at the port once after enabling its interrupts
+
+This commit wakes the IRQ thread once at the end of max310x_startup() and
+tracks ports to poll in s->poll_ports so characters received between FIFO
+reset release and the initial status read are not stranded.
+
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index de8a1f05cf30e..cdd1655c9f35c 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+[ ... ]
+> @@ -1076,7 +1077,7 @@ static irqreturn_t max310x_ist(int irq, void *dev_i=
+d)
+>  			WARN_ON_ONCE(regmap_read(s->regmap,
+>  						 MAX310X_GLOBALIRQ_REG, &val));
+> =20
+> -			irq =3D val;
+> +			irq =3D val & ~xchg(&s->poll_ports, 0);
+> =20
+>  			for_each_clear_bit(port, &irq, s->devtype->nr) {
+>  				done =3D false;
+> @@ -1539,6 +1540,7 @@ static int max310x_rs485_config(struct uart_port *p=
+ort, struct ktermios *termios
+> =20
+>  static int max310x_startup(struct uart_port *port)
+>  {
+> +	struct max310x_port *s =3D dev_get_drvdata(port->dev);
+>  	struct max310x_one *one =3D to_max310x_port(port);
+>  	unsigned int val;
+> =20
+> @@ -1595,11 +1597,19 @@ static int max310x_startup(struct uart_port *port)
+>  	val =3D MAX310X_IRQ_RXEMPTY_BIT | MAX310X_IRQ_TXEMPTY_BIT;
+>  	max310x_port_write(port, MAX310X_IRQEN_REG, val | MAX310X_IRQ_CTS_BIT);
+> =20
+> +	/*
+> +	 * A character received since the FIFO reset has lost its interrupt
+> +	 * to the status read above: have the handler look at this port once.
+> +	 */
+> +	set_bit(one - s->p, &s->poll_ports);
+> +	irq_wake_thread(port->irq, s);
+> +
+>  	return 0;
+>  }
+> =20
+>  static void max310x_shutdown(struct uart_port *port)
+>  {
+> +	struct max310x_port *s =3D dev_get_drvdata(port->dev);
+>  	struct max310x_one *one =3D to_max310x_port(port);
+> =20
+>  	/*
+> @@ -1612,6 +1622,7 @@ static void max310x_shutdown(struct uart_port *port)
+>  	scoped_guard(spinlock_irqsave, &port->lock)
+>  		one->tx_teardown =3D true;
+>  	max310x_port_write(port, MAX310X_IRQEN_REG, 0);
+> +	clear_bit(one - s->p, &s->poll_ports);
+
+[Severity: High]
+Can the IRQ thread woken by max310x_startup() run max310x_port_irq()
+during or after max310x_shutdown(), re-arming one->tx_work after
+cancel_work_sync(&one->tx_work)?
+
+CPU0                                CPU1 (IRQ thread)
+max310x_startup()
+  set_bit(..., &s->poll_ports)
+  irq_wake_thread(port->irq, s)
+                                    max310x_ist()
+                                      xchg(&s->poll_ports, 0)
+max310x_shutdown()
+  one->tx_teardown =3D true
+  max310x_port_write(..., IRQEN, 0)
+  clear_bit(..., &s->poll_ports)
+  ...
+  /* pulses MAX310X_MODE2_FIFORST_BIT,
+     latching TXEMPTY in IRQSTS */
+  cancel_work_sync(&one->tx_work)
+  max310x_power(port, 0)
+                                      max310x_port_irq()
+                                        ists =3D ...IRQSTS_REG
+                                        schedule_work(&one->tx_work)
+uart_shutdown()
+  uart_free_xmit_buf()
+    kfree(port.xmit_fifo)
+                                    max310x_tx_proc()
+                                      max310x_handle_tx()
+                                        <-- use-after-free on xmit_fifo
+
+On multi-port chips, max310x_ist() consumes s->poll_ports with xchg()
+before iterating over the ports, so clear_bit() in max310x_shutdown() does
+not stop an already woken thread from visiting the port.  On single-port
+chips (s->devtype->nr =3D=3D 1), the else branch in max310x_ist() ignores
+s->poll_ports altogether and unconditionally calls max310x_port_irq(s, 0).
+
+Because serial_core only calls synchronize_irq() in uart_port_shutdown()
+after uport->ops->shutdown() returns, max310x_shutdown()'s FIFO reset can
+latch MAX310X_IRQ_TXEMPTY_BIT and MAX310X_IRQ_CTS_BIT in
+MAX310X_IRQSTS_REG, and max310x_port_irq() does not check
+one->tx_teardown before scheduling one->tx_work.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261120-max310x-te=
-ardown-fixes-v1-0-eb52c8b612df@vaisala.com?part=3D1
-
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261120-max310x-st=
+artup-irq-status-v1-1-aee4e1416cf6@vaisala.com?part=3D1
