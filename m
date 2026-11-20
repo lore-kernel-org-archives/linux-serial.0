@@ -1,56 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795202471;
-	b=BPW8244Bsc2j8Pbxja+uU/j55qasV/wOJLofYvtmBbAdJdjGcG0rObLimOTHSVjB4Duv
-	 NS/H2TV/AUqJT1FqbyeCh0dW9TFiXQbgiywJ+VzxatrVY3rWP28oL0TOd3DsyDPxXxwGC
-	 G0gSSBH1REg0WOXPk5tbzEQXK9MmYg15M4G8qlJ4WzV35gcLI+50C8QXsxzRltceCgqel
-	 snu3jnSITuBjzumuNWM3zliVgPDODEpNfc4zc6yTjs4Ml5J2TFWn4MlpnE1yDbf4OMkMd
-	 kw3tI7DrpxmNYZIb4jbHQNv/x/k1Pti8mk3snytlTqJ9G4n1MOyH3gkLGvdpt046/hA==
+	t=1795202502;
+	b=cTJ1MU7kzItN9DT3T7UrOvCji4XrMEkoMoDm4w1DMBDJY2k/TL0qkmwre5B9lJW7Dnrf
+	 0xebIeM1CZlxbe6sN+8xq+xMDbNkwz+RHhduGzAs7j0FMMHOJJS+GvDBqe/UawdihVW+H
+	 8dIqC4nXAruBLFqNWq5BD29FbKKAuMq31pKhAeu0kArSrB78ER1SuB8FKpojEssrGqiBV
+	 F12qay+Ms5ZeMQusnbyqxGtRA2/4R5JSRXqsz16QOv6GzMjcW/lDyETYnzRc08pkrovd0
+	 CuTPIbcQ/RZ9ea6GoBrzKukQAhucXguN9mC/RCt5okBWtd6nxTg6/RMtNzgF/tLj2bg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795202471;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795202502;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=goCMnhDHCCYXHfMg4gjECY6nxsPGv5fQ/JtYJdOLSgE=;
-	b=UNoYQQURrefCRfinX2NWdRQJpIHLfprvuRMCjswq3ZX5mavGo5O7XNHCzJxAAmv21Ft4
-	 d7AJUIdoRVR0ax72GlmVZJ1j/NplHHHkoi0KXevQLhXK69Iy8d0SC5NGDl3/IgFj0e5qB
-	 JB5RNsaCxmQjeOir8HgIT6hAGvBhU+aEzq9sBxFryo0erl7Cg7Eq18ngxQ1bwiPTAyxPY
-	 I8F8ZsZ8uQzckf7Kr1TBI8hSTO8YXraR31jRlsmxqgHAwdFedERmgbPWI7kHauPKQe+ah
-	 Abui8hJEA/h0JSUnwceQwlGLI3Z6WsmILPS3PhWASLB8rm5hr/dN/Ln8ujXKy/rlgSA==
+	bh=jib4yEZOxNTGCrU3sQSJlZtN3PzV8iyYHNYHUPiC998=;
+	b=ep94PKsDAO3o/vNgkPAjqLAHr+U2WSASlmpiLlo+jUVtyqkmvk1fpUUpITPi2RHmqShn
+	 dVz9Bb/A0G1+ODH/udeV5u5Kw2n+AHQN4odMGy1i2AGOG1fSMbTk+OoAV0Sowe/sOpFlQ
+	 IR0CS/s5YZ2mYNyxfFD+Ie2fOOrrYsUP0xB3VPiF8KYU2MbLr1mSvb7MKMpxuOAWKLg0q
+	 +0yMprdCBDQ+v9LuowwCbsCbeFVG7lMG6XT7pLMrNytY2CyGlPq8RHveyVtDfR9UBYE4e
+	 ypb6jYyl4pnAGUR1nveMiW0tBqZKHZ23GUyBAb/kHfVUP4dPsOb2wKlg9I0U0j9fQaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LYiE6+e6;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hWBQy6VG;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 474B0606A32C
-	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 19:21:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ABCF606A6C4
+	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 19:21:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LYiE6+e6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988931F00A00;
-	Fri, 20 Nov 2026 19:21:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hWBQy6VG
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B2C31F000D1;
+	Fri, 20 Nov 2026 19:21:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795202470;
-	bh=goCMnhDHCCYXHfMg4gjECY6nxsPGv5fQ/JtYJdOLSgE=;
+	s=k20260515; t=1795202502;
+	bh=jib4yEZOxNTGCrU3sQSJlZtN3PzV8iyYHNYHUPiC998=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LYiE6+e64l6B8P2ryCnN0/R4BiHMVXlmpy2GeG6jq09IOtQ3/8rbb0VKEdl0CUVdp
-	 hZ+Ypo5tqYdF5Bs8bQYddFmZOGAq9sPBOwAL6VYAD6XX5tURhib0tznmV7fMYm48xl
-	 aRdXK00KDVsDE6YZlEkFDgSweIPdahLrn0EDq+FWCaLvalKn2LvEXqQk/8PFDzGo0M
-	 bZ3Qyb8nzLnIXU8mMxXLzON9HvEPANL9saGkb55GEEtenViDLeLDDGwRScPVM+OETB
-	 gbjQstNugoVlERa7YK3z8mbZ+j+nJSCMtqAnykxzcmX/6G+9sQD6JxsIutPiKJONsn
-	 E6gDdUpv9vUsA==
-Message-ID: <sashiko-outbox-225916@kernel.org>
+	b=hWBQy6VGC2QNWUjWUg71lRBMncHm3GGJWSn317wjI9KeTybSVLZvqi+sImdkBZICV
+	 53Que8R7b25j/llSW7Mdfnxtk9uGO4iS3I2ixYYO6T7vLuyvMfm1fL8F4b12JzAq5I
+	 ITW3UpIfz/9ZXtDjSuxcv3ZvRnMvLOo7b27Qw8jVN4Hf/XlwkO4mYhVjgJDLIzzsFk
+	 tCM2VX/kJVVO5rr98++krhD2IyrYWWzEBPGecJeofZ9Da/+eUaw+woFMtvSFlecACC
+	 5hmQfmR7wuKr08pOvR64pJEPRyERhUm5gSn5mqRvCnC+XWGEuXXWlEcTGLgpQfCqGh
+	 itK+iDPLQjKgA==
+Message-ID: <sashiko-outbox-225917@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 08/13] riscv: dts: zhihe: add A210 core support
+Subject: Re: [PATCH v4 03/13] mailbox: add Zhihe A210 AP to E902 mailbox
+ driver
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Han Gao" <gaohan@iscas.ac.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261121-a210-scmi-v4-8-4a795a0a9fc9@iscas.ac.cn>
+In-Reply-To: <20261121-a210-scmi-v4-3-4a795a0a9fc9@iscas.ac.cn>
 References: <20261121-a210-scmi-v4-0-4a795a0a9fc9@iscas.ac.cn>
- <20261121-a210-scmi-v4-8-4a795a0a9fc9@iscas.ac.cn>
+ <20261121-a210-scmi-v4-3-4a795a0a9fc9@iscas.ac.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 20 Nov 2026 19:21:10 +0000
+Date: Fri, 20 Nov 2026 19:21:41 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,21 +61,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> From: Han Gao <gaohan@iscas.ac.cn>
 >=20
-> Describe the CPU clusters, interrupt controllers and pad controllers.
-> Use SCMI clock and reset services through the E902 mailbox, with a
-> second mailbox channel for firmware notifications.
+> Add a mailbox controller for the doorbells between the A210 application
+> processors and the E902 management core. It serves as the SCMI
+> transport to the E902 firmware.
 >=20
-> The SCMI clock and reset IDs are assigned by the E902 firmware, so they
-> live in headers next to the DTS rather than in dt-bindings.
+> Channel 0 rings E902 and receives its completions. Channel 1 is receive
+> only and carries E902 notifications. Both share one interrupt, and E902
+> writes INFO0 or INFO1 to tell them apart.
 >=20
-> Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> The E902 firmware keeps both mailboxes clocked and out of reset, so the
+> driver does not manage clocks or resets.
+>=20
 > Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261121-a210-scmi-=
-v4-0-4a795a0a9fc9@iscas.ac.cn?part=3D8
+v4-0-4a795a0a9fc9@iscas.ac.cn?part=3D3
 
