@@ -1,57 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795202502;
-	b=cTJ1MU7kzItN9DT3T7UrOvCji4XrMEkoMoDm4w1DMBDJY2k/TL0qkmwre5B9lJW7Dnrf
-	 0xebIeM1CZlxbe6sN+8xq+xMDbNkwz+RHhduGzAs7j0FMMHOJJS+GvDBqe/UawdihVW+H
-	 8dIqC4nXAruBLFqNWq5BD29FbKKAuMq31pKhAeu0kArSrB78ER1SuB8FKpojEssrGqiBV
-	 F12qay+Ms5ZeMQusnbyqxGtRA2/4R5JSRXqsz16QOv6GzMjcW/lDyETYnzRc08pkrovd0
-	 CuTPIbcQ/RZ9ea6GoBrzKukQAhucXguN9mC/RCt5okBWtd6nxTg6/RMtNzgF/tLj2bg==
+	t=1795202508;
+	b=PDfvRoUMVFfU8Fw3ql01bj0oi+hC9XCyQnRKbRr92dyxBY8R2hBpDYj87D0M+LOnYWNG
+	 s+3LSjUCh9/M33Lq349upzIKBfptx/gwoT1DddAgDeZH8HXHqFyjkEc3bBvo9tlhxw/8e
+	 T+D0670c7IQgHLlRu7YyshlWcdZmAaydryGV+afrFmmqM8qMIhQ4PMpWNRBhfcxi0hZV1
+	 fpnjcGdG105mSvahbWZgzbv6WYZhjJzF/GCLxir3MzlIN1E6JW8bdCXAV3e0R0xZwAm8q
+	 RmhQ+q6ac+9TqRJkDbS1bfdKu5qvvhWXosvbYxk4neebL9uuc3DkJRQGBcEn6HS3J2g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795202502;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795202508;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=jib4yEZOxNTGCrU3sQSJlZtN3PzV8iyYHNYHUPiC998=;
-	b=ep94PKsDAO3o/vNgkPAjqLAHr+U2WSASlmpiLlo+jUVtyqkmvk1fpUUpITPi2RHmqShn
-	 dVz9Bb/A0G1+ODH/udeV5u5Kw2n+AHQN4odMGy1i2AGOG1fSMbTk+OoAV0Sowe/sOpFlQ
-	 IR0CS/s5YZ2mYNyxfFD+Ie2fOOrrYsUP0xB3VPiF8KYU2MbLr1mSvb7MKMpxuOAWKLg0q
-	 +0yMprdCBDQ+v9LuowwCbsCbeFVG7lMG6XT7pLMrNytY2CyGlPq8RHveyVtDfR9UBYE4e
-	 ypb6jYyl4pnAGUR1nveMiW0tBqZKHZ23GUyBAb/kHfVUP4dPsOb2wKlg9I0U0j9fQaQ==
+	bh=GByHNmjLYtL+Tcyktco4we7ojhF+/eSdjqo90leRCFs=;
+	b=rr/y43ZsJKjdZEW3BSeJYGYWk7r0idDHhpHJUKsxA6XoRAIacASF0N46cTwAX2SG4Ye9
+	 VcU1ZrkYn9+zb6fcVyVOJCLzn2nSWdSoG5zd/n9fzy4GWNaRfFqwkuyM9LJbSZaf3i+E8
+	 sTIIk5dPeXC2qDAgO76fuR56P/RMg1j5Tfi06fMkgbzAhePECL1Mq8q+IDkfTLUCf0pPe
+	 iMWB5o7GVoPxxGDo0IyAdfz1a/i75oFwTE6uHQTMvqU5orUHX2gavAjmMmpzdPHDIBQ7E
+	 aoJHdewqiNkvDUDnZnOb3PJnaRGtBPKI7UYrZi+A/udpEQYj0Ft4Z0il4zR+nsBylQg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hWBQy6VG;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GaLK9UW+;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ABCF606A6C4
-	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 19:21:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDFC606A6D5
+	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 19:21:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hWBQy6VG
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B2C31F000D1;
-	Fri, 20 Nov 2026 19:21:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GaLK9UW+
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9211F0156F;
+	Fri, 20 Nov 2026 19:21:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795202502;
-	bh=jib4yEZOxNTGCrU3sQSJlZtN3PzV8iyYHNYHUPiC998=;
+	s=k20260515; t=1795202508;
+	bh=GByHNmjLYtL+Tcyktco4we7ojhF+/eSdjqo90leRCFs=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=hWBQy6VGC2QNWUjWUg71lRBMncHm3GGJWSn317wjI9KeTybSVLZvqi+sImdkBZICV
-	 53Que8R7b25j/llSW7Mdfnxtk9uGO4iS3I2ixYYO6T7vLuyvMfm1fL8F4b12JzAq5I
-	 ITW3UpIfz/9ZXtDjSuxcv3ZvRnMvLOo7b27Qw8jVN4Hf/XlwkO4mYhVjgJDLIzzsFk
-	 tCM2VX/kJVVO5rr98++krhD2IyrYWWzEBPGecJeofZ9Da/+eUaw+woFMtvSFlecACC
-	 5hmQfmR7wuKr08pOvR64pJEPRyERhUm5gSn5mqRvCnC+XWGEuXXWlEcTGLgpQfCqGh
-	 itK+iDPLQjKgA==
-Message-ID: <sashiko-outbox-225917@kernel.org>
+	b=GaLK9UW+Wczf5MQVYz6LAlxxKc9q3TS2o73xhqppoBbDnfjPWXo7Nh2oKZfoZhbmL
+	 Jy+4Rbh17pqlEspJt2rzeqJ20l9iccBU/Jym3uh9YokvxmhburiDhktRUidzXI4RnQ
+	 PNfqNuh1MSyZzr6falWQaXPW/wvIu8DdloRlGvEM/v1EDxlQ2h0X2sfNk9mnkLOVR7
+	 cJi2NceeRecOQgSNkfT/NQNxFGB+wbvKrgcLwFpfZWZ/nw6JBUMiGWKclOZTKuXMPv
+	 r2frvDX6u5SZfxBuoph0T+qjTQ9TN+udVMonWRBA5+E9WshTaCB3HiMQHz8DRLfdDE
+	 pnzPZI3rRLMCQ==
+Message-ID: <sashiko-outbox-225918@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 03/13] mailbox: add Zhihe A210 AP to E902 mailbox
- driver
+Subject: Re: [PATCH v4 12/13] riscv: defconfig: enable A210 support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Han Gao" <gaohan@iscas.ac.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261121-a210-scmi-v4-3-4a795a0a9fc9@iscas.ac.cn>
+In-Reply-To: <20261121-a210-scmi-v4-12-4a795a0a9fc9@iscas.ac.cn>
 References: <20261121-a210-scmi-v4-0-4a795a0a9fc9@iscas.ac.cn>
- <20261121-a210-scmi-v4-3-4a795a0a9fc9@iscas.ac.cn>
+ <20261121-a210-scmi-v4-12-4a795a0a9fc9@iscas.ac.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 20 Nov 2026 19:21:41 +0000
+Date: Fri, 20 Nov 2026 19:21:47 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,16 +62,14 @@ Precedence: list
 
 > From: Han Gao <gaohan@iscas.ac.cn>
 >=20
-> Add a mailbox controller for the doorbells between the A210 application
-> processors and the E902 management core. It serves as the SCMI
-> transport to the E902 firmware.
+> Enable the A210 pinctrl and mailbox drivers, SCMI and the SCMI clock
+> driver. The SCMI mailbox transport and reset driver follow SCMI by
+> default.
 >=20
-> Channel 0 rings E902 and receives its completions. Channel 1 is receive
-> only and carries E902 notifications. Both share one interrupt, and E902
-> writes INFO0 or INFO1 to tell them apart.
->=20
-> The E902 firmware keeps both mailboxes clocked and out of reset, so the
-> driver does not manage clocks or resets.
+> The A210 has 10 UARTs. With the default of 4, UARTs beyond the 4th
+> don't get a fixed ttyS index and end up in whatever slot is free. Set
+> SERIAL_8250_NR_UARTS and SERIAL_8250_RUNTIME_UARTS to 10 to keep the
+> index stable.
 >=20
 > Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
@@ -80,5 +77,5 @@ Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261121-a210-scmi-=
-v4-0-4a795a0a9fc9@iscas.ac.cn?part=3D3
+v4-0-4a795a0a9fc9@iscas.ac.cn?part=3D12
 
