@@ -1,55 +1,81 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795174432;
-	b=a22pGI/LbU2VHFLfWUAc7JkH0eNu1AmgeTAJoAHfXWtqxiGCfU+A/+SQpWnqni1YtzaX
-	 QW54RaK35YL1NOpMfK+KhmmEXEomGYRbCU1pJyMUFiUdSuAZQ8FYj2b7eYThJuoXbuBIH
-	 RYHeBmhot94wg0YnUjLW73sNouH295OH3VsB3GNvVpr903Cr9/1I2tAAc1Q8XsB06cYH0
-	 jt1yboS0/f2X2Z8lAN1PDDLtHR3CNO7hKTplSTeZL/u6AdZk3F8z5pdtzAPIasTEa38zc
-	 VzNklAO98N4NJRAT4yDYtUug2ANst0Wi2Kjxlul/bvm4weOO5MH3Ubwc8AGqiLiUspQ==
+	t=1795176047;
+	b=UWSaCGLFWgx10XO1YrEQGwoOute28j22KFwh7s9bFC0dsbkNQSIKyEn1RH8UpuwWjT0w
+	 NJKxW74LjeMWB1ogfYRhE7x5/aFFTwYu9L4P/oJ8OKmcAG2ROOfhO/J9tmKJ/6Xwa1uaX
+	 c9L18UYBYIs3/RvndB1WlvSP+wQGTWTgKJHei0Qbs+TbRclQWx/90Xg0eiXqFxrw3HA5q
+	 hWkc8BWRkJUG1pAcliSJBOHTojs56RkC9fD7cURqjxc6d868N9rosxhq3ucZS6qC2ZE7c
+	 PAjoa/MZxjGf4MWhtn7GqN2WDQ3fEcXBi1ZHLxGFUljolUaAGZVo86R7Ti+wJ2Jhq+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795174432;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=sUk59b+T2K14YuMo3CJoRJci3s8ihXcRp7M6vLN0UUY=;
-	b=vIWYLYIgBwbCoE5NxzCyY3yUVZbtASOw7wDxFuklOXs5jy/7dSQBYFpw4BlRDDLv2fPs
-	 18LbkfroqMbyPj518QoF6gKT/Gndp60mHbDkJ7aNTZ02BtEZj3hqyzxyOfAHFU8Dws2He
-	 7hFT4n0Cj2v9TrEB9zdFiXqs/vVr6bkDypVFK2YAoAAk9panHgn+qUbTC83mY0fiEAgWw
-	 PwCb/1362QtLKAEFWQbPCwlLw7v6yHFovcMMEe4XNpxZ/tXuY32iCrz1lFsBfvREL6Hra
-	 FD1qGyoRQdBqvFfSSzkzyX3b1+b8vZKreEk3u7Tq/8t1+ZoPEhxjez10msdsnosVqlg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795176047;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=beQWb4LoAtDg8Zy+5AKtlfFZLus+EPwyn9DYxNFG6mU=;
+	b=nY8fMPcLeErqjvAYNJVx1B0AWZNWZG+kJcoPPkkvHYEQ/GwVzjcdE2tagt99qhVwy1h4
+	 OwQcRMOGLUlgnp302kgbrnoocubc2eFTgfPQtLSSoe0TgGM57TDboEzxuRLt3giTd/ryU
+	 MHoVlCj6Fj3nlhDmNSW73W7JTndAV+QdX+pB+45C4X3bSO3pn5sNBtC4jUY2loRQEOCYk
+	 i/9pC6Xx5+MMGvemVVLVzDduWLLD0UfE2IyVRpEsGLaJ3cLCYuUKczTeaD8g5clHfEv+5
+	 Ia8rmu42WHnrUME3R2us90PmLhIuLeisFI2Xqw03GaHa3aYfvH7HXpXUdb1xuu2iyvQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Qz7CEkNN;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EIYxJwKV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC39606A320;
-	Fri, 20 Nov 2026 11:33:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 111F3606A338;
+	Fri, 20 Nov 2026 12:00:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Qz7CEkNN
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4814E1F000C0;
-	Fri, 20 Nov 2026 11:33:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EIYxJwKV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5811F000CA;
+	Fri, 20 Nov 2026 12:00:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795174431;
-	bh=sUk59b+T2K14YuMo3CJoRJci3s8ihXcRp7M6vLN0UUY=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Qz7CEkNNS9GFr8NgxhYKdUfytRX3Qhu9kFy9M+07vHDjkt4Avx0n0n4S6/PDbmK0G
-	 hNthdwuh9XKRJN+yQBhP1nrC63jnBTeljPiKIq+oEEN/N78g6VuO/WBLaQRxQIYFcu
-	 fevn2Le9japoDsqYsdUg1IxbYB/1UG/kHQ2OY/GjMyYyCdoO/t2k4Xg0lCBCZPrRtu
-	 SNLbYxlrxxgmWq2uSJ+6bV/PznC/j9/F3/vCTq4kXJC1N2JKnCZ+VWrjxM4tYQoOVW
-	 6sQozZltBUtxUC6t1hoCOcOYG0nlexCfu7ECwKpVGB396q3Rm2VGzxq9iQxB0n663H
-	 a90js91TUVltQ==
-Message-ID: <sashiko-outbox-225055@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: reset ldisc to N_TTY on reopen after hangup
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Johan Hovold" <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
-In-Reply-To: <20261120112455.1353962-1-johan@kernel.org>
-References: <20261120112455.1353962-1-johan@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 20 Nov 2026 11:33:50 +0000
+	s=k20260515; t=1795176046;
+	bh=beQWb4LoAtDg8Zy+5AKtlfFZLus+EPwyn9DYxNFG6mU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=EIYxJwKV6pKOzzIEBuRXOlDo0Y+HodiAO2ZB2R6VQEfoBQ/HvGlDsgCsZZD6G5Czz
+	 6Hw2mEq4W7WWL2M0khcowQ1ijdyhpl4Mf5E6jvjTXU3BGCjU3W7JH3HwTFePuk7BsW
+	 Zf0fcxra0plL9c0eF7Yjpx+CYN7bzoUzk/Q+FqleL9bhb1AcVGEf22bj+ScG5xaNBz
+	 T66Fe3ePBa9AIlYOk+9jLYdZIJzmgdv7gXFnPj3yOg7RrM21kpYHHujoSPlrAH4uP9
+	 arxmZfKtYgbrYZDY/oMy1BhaVWUrcfXk5RMw2HX+ZvgFLWMDcsj5WLUngXGiGzaopt
+	 u7hrJu5tbh8fQ==
+Date: Fri, 20 Nov 2026 13:00:27 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: Andreas Hindborg <a.hindborg@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Uladzislau Rezki <urezki@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
+	Gary Guo <gary@garyguo.net>, =?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
+	Trevor Gross <tmgross@umich.edu>, Daniel Almeida <daniel.almeida@collabora.com>, 
+	Tamir Duberstein <tamird@kernel.org>, Alexandre Courbot <acourbot@nvidia.com>, 
+	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>, Lyude Paul <lyude@redhat.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Dave Ertman <david.m.ertman@intel.com>, Leon Romanovsky <leon@kernel.org>, 
+	Paul Moore <paul@paul-moore.com>, Serge Hallyn <sergeh@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, Igor Korotin <igor.korotin@linux.dev>, 
+	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Michal Wilczynski <m.wilczynski@samsung.com>, 
+	Ira Weiny <iweiny@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Johan Hovold <johan@kernel.org>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Dave Jiang <dave.jiang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Zhi Wang <zhiw@nvidia.com>, Jonathan Cameron <jic23@kernel.org>, 
+	Markus Probst <markus.probst@posteo.de>
+Cc: Philipp Stanner <phasta@kernel.org>, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev, 
+	linux-block@vger.kernel.org, linux-security-module@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-fsdevel@vger.kernel.org, linux-pm@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, linux-serial@vger.kernel.org, 
+	Oliver Mangold <oliver.mangold@pm.me>, Viresh Kumar <viresh.kumar@linaro.org>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Subject: Re: [PATCH v22 4/5] rust: rename `AlwaysRefCounted` to `RefCounted`
+Message-ID: <20261120-belichtet-austoben-januar-9fca976c1371@brauner>
+References: <20261116-unique-ref-v22-0-12029383206d@kernel.org>
+ <20261116-unique-ref-v22-4-12029383206d@kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -58,33 +84,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261116-unique-ref-v22-4-12029383206d@kernel.org>
 
-> Line disciplines should not call into a TTY driver for a device that has
-> been hung up as the underlying hardware may have been powered down or
-> resources may have been freed.
->=20
-> Since commit 638b9648ab51 ("tty: Fix the ldisc hangup race") the line
-> discipline is however reinitialised on hangup which means that ldiscs
-> that register class devices on initialisation (e.g. N_SLIP) can call
-> back into a TTY driver after hangup.
->=20
-> Commit 892d1fa7eaae ("tty: Destroy ldisc instance on hangup") later
-> moved reinitialisation to open() but that still leaves a small window
-> where an ldisc could call into the TTY driver before the device has been
-> opened.
->=20
-> For hotpluggable devices, open() can also race with disconnect,
-> [ ... ]
-> Fixes: 638b9648ab51 ("tty: Fix the ldisc hangup race")
-> Reported-by: William A. Kennington III <william@wkennington.com>
-> Link: https://lore.kernel.org/20261118145636.3534234-1-william@wkenningto=
-n.com
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+On Mon, Nov 16, 2026 at 03:21:01PM +0100, Andreas Hindborg wrote:
 
-Sashiko has reviewed this patch and found no issues.
+For the fs and pid_namespace bits:
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261120112455.1353=
-962-1-johan@kernel.org?part=3D1
-
+Acked-by: Christian Brauner <brauner@kernel.org>
