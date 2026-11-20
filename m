@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795202388;
-	b=YsPAuR+7EzNs8LhOl4kxVl/tlWpNMmNICeEf/0XPzR1jT9STrGcfupEp3uYKdI7jh++8
-	 SG/5mgtRlKa6yIv1eWKXr2EJ9JPVdb3UXW+2XbE3/Q8fQmn7sHkms7XldatBJXGbTPYRp
-	 mRVaIamDU2rtvSi9uFFZSBy+2ezrFQ7CKsRCm0WMxHrjXS9yPkQJi/5+u9ESaiyNH4w0Y
-	 ruKHHcUjUfSEYAPUdgBAD5EJKGqo+9PQGFot7seETj/apy+0IxAkvK2New7sr4DaoVjrx
-	 kZMSRsiG80SYSkdXAl/OBojJnHoyi09wPh1c5HnWVNQ3YMpMg6hf3QsB1iuz9oWmNuw==
+	t=1795202413;
+	b=W5dQhEG01M82ypRrr6Lm1RPC/dcD7DtTwXBnrdJ1zLzPIiB8O+Z6vT3LcqWUGGJW/5nv
+	 hfLpWyXm2k2Ol2oGbU659j8MjcOFMf3wc2st0G7xRtW2sGJ4Udr+A/guHaYzXNzJHT+Ay
+	 lHA0WjiqU3JljGL5yK8JTcN0TaUR8B8pAjEDmGX6/eC7THYRjmz4o+ZXHOoAigmQfX7Ea
+	 KvB9nmMfVc+mcKcymH2vmbchTgYdHynW5ZDm8TsuBSrH1Gnfnek+jhOHRZNtebOjOepz1
+	 SHNXQNOZmhIUpBwYo2ym8RSNM2JURtgA5E1evlP85u3yDkhYildVdeNNm0kH3e7bEwQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795202388;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795202413;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=PjXp2rtozpA3KVe2gk/dqm2bA76QmIGMCE2MX12mOLQ=;
-	b=w1KsC6VCwu1nsxdcv/FuZ5FPZN7vUhnGHAx2DoaKmzxXycgX9bub9+ckLcKsWlZwBMBg
-	 i+RsZrPq0+IbHOZUda63TrV7WT0ROr5UpXW6Ae1IvFKYNWJW1+0R6UNTCv4EfXeEX9Bik
-	 EyTYmTLFq7xvziFQyi/a3r6oC8LmdWLMd706zXwWAFeXAP9oaBm7ytkm8spwCw3JxeD9+
-	 2HqBEj67vNFohY5EMkk2W6TZvgP9v9/5QWCeVhwKZFbGQmkJYEPLXlQaORx58DRDorX4D
-	 N0LUdq8FKJBIJ3hdMGoXGXpVBj9mdQuN9Pqkrg/sd+Cs/OBsP2Wjd4YBuDI8UAmI51Q==
+	bh=sUgsp0OZtXT7GwkUBRxM5lQOIahGLGHJOqDHHUNH0VA=;
+	b=gK5Bmj92TLId1f4mUsk1eOPBb5g+vzK4f0iAagWJOf/RAgcTrH4ndGplGrkILWmGzRro
+	 1S76r/ofWMiJPkdvb3xEGxtA6uORn4B1Omzp2+bbFcW/I9sFpqqogU6atVhw0YBepZ+mI
+	 3OziUdVyTkMjE1M98fPmdwbW2WvGZg3uGk8Rgzazo1kGG3xNxDQD0TscO04aEq0boq714
+	 sC/FfLi6X98jqyGwduXDWzHlKc3G8p8wO4ycb2mvs8o5oDT4GEVtujvzFAuXde5uxmCdy
+	 Nk/oK2tpu8uJOyPV/YVNhi/eEhOk0sSTcnQUbCYUZEHq8f6teoYLy2nVNGeMhGeyb3g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LJ7Md1mn;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Gtyu+/ug";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB708606A6EC
-	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 19:19:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A7E5606A6E2
+	for <linux-serial@vger.kernel.org>; Fri, 20 Nov 2026 19:20:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LJ7Md1mn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51B1B1F000C4;
-	Fri, 20 Nov 2026 19:19:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gtyu+/ug
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F412A1F000D3;
+	Fri, 20 Nov 2026 19:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795202387;
-	bh=PjXp2rtozpA3KVe2gk/dqm2bA76QmIGMCE2MX12mOLQ=;
+	s=k20260515; t=1795202413;
+	bh=sUgsp0OZtXT7GwkUBRxM5lQOIahGLGHJOqDHHUNH0VA=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=LJ7Md1mn7hnTnRZpXny2JqxMz6Il4mwyqRncc/sLDs7rKBnaMr/iM0gVajh88/prr
-	 RXGl8aZ//PdMCQYS0b97SqPeFFqDp+yPcEwnsWi9rIyik0X0e9wwjTJJzcGsghF1Ea
-	 mh0NxFxar71kZATy5yfvOaLPFK8dCi5HBAjFFD3GUz+BVPYSytUsP+XjoIqHPJJjO/
-	 kGdRsiX23qKDErWRNgQpnYqCz1aT6K9UhUsYV/4oXPJ5dxh8f2vGsYtKTzs6HOcZYN
-	 h0BK3A+Uh+u12nQdYO99jk/gfWLeuCb7lMvjUCs/HNBGkMDzxFOUypgW18IPYO+xzP
-	 lht30DBe+zdBg==
-Message-ID: <sashiko-outbox-225910@kernel.org>
+	b=Gtyu+/ugLCxM+ZmDPf//0g9xW+REONXEA3PvzfHym/oWKA7+a0auFOlE4D84/HiRt
+	 hLYapzKAQo83r1yZHYnib3KSUj1gUc0W/vC1wLrXHmZov58nKn7c7gMA50fI1ak+2O
+	 86yfvD+3K24hjc/th9TQn5OVa8NZ3l+E0JutvplJYA5oIQdzS5ZtQfmNmfLBTxcH9J
+	 hYAXV7TzXFTJVduag7Eh5JTEYolEdZmiKUlPJrXMrNqIP0OpNHEl2985QiZvaLtLZI
+	 7ZK62e1XSC0FuE+4RwZVredsRj6PcXuYR77r2cPUCQuO7D5Q9njCafMciRy44xmC8f
+	 sydWN8uMK+LQg==
+Message-ID: <sashiko-outbox-225911@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 10/13] riscv: dts: zhihe: add A210 module memory
+Subject: Re: [PATCH v4 01/13] riscv: add Zhihe A210 support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Han Gao" <gaohan@iscas.ac.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261121-a210-scmi-v4-10-4a795a0a9fc9@iscas.ac.cn>
+In-Reply-To: <20261121-a210-scmi-v4-1-4a795a0a9fc9@iscas.ac.cn>
 References: <20261121-a210-scmi-v4-0-4a795a0a9fc9@iscas.ac.cn>
- <20261121-a210-scmi-v4-10-4a795a0a9fc9@iscas.ac.cn>
+ <20261121-a210-scmi-v4-1-4a795a0a9fc9@iscas.ac.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 20 Nov 2026 19:19:46 +0000
+Date: Fri, 20 Nov 2026 19:20:12 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -60,16 +60,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 
-> From: Han Gao <gaohan@iscas.ac.cn>
+> From: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
 >=20
-> Add the A210 module memory node with a default 4 GiB range for boot
-> firmware to update with the detected capacity.
+> Add the ARCH_ZHIHE option for the Zhihe A210 SoC.
 >=20
+> Signed-off-by: Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+> Co-developed-by: Han Gao <gaohan@iscas.ac.cn>
 > Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 
 Sashiko has reviewed this patch and found no issues.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261121-a210-scmi-=
-v4-0-4a795a0a9fc9@iscas.ac.cn?part=3D10
+v4-0-4a795a0a9fc9@iscas.ac.cn?part=3D1
 
