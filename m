@@ -1,78 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795202208;
-	b=m+FZh6/qftZ373d75WmOfWNUoCWo3X+kWltSgpy4VVRCjl1XFOzvwcjlFAgG473duKg3
-	 fF4XHsZSgUlsfkl3clLVUikt+WMq0drczZ1WRqK2BhqkGg2xrHVCpNbX7vN9KaNiPotSH
-	 1Ojl2judmqQm1eOGT9Re7q7yrY3Us5vBOC2TCdr1HeEb7/UeisrM3ZKv795agYmMjMNqK
-	 WTNMVFWRbooHV+b9tf2HrC6Jya2PkUYIJrb55ThkaHWNbCv/DVuyM+RC8r32PkiFV+NF8
-	 Kvq2GtL+wB6f8gFIwjc6hkGGHKpAixf123FyG5UHxiPNk1biMCLcIAIJbTrf7KtW3dw==
+	t=1795202212;
+	b=zRsQv509AGHQUCkjVfBpdGtdLab8v0tOEVFPgoMhE2ePmNcFll0nIen2eJItx6cLSt73
+	 YvR+xrC3FPUuWndXBHp3w5HklN7Z7I53N8lWpKg+YFohlgpJa69naUwRFHXN9ltszu3L2
+	 j2RZgqIap6e/NU9GUd3QctC7BdO7Ps9FwAHU9C9//R3HfG7YUoykPPv2smXoklmJKYf8c
+	 nMpArcRFFkTVndCkkpGH5QYwupGApdj9wf6aEjd9TShjubtTgY36tOhvi8vh+AdhV103U
+	 wJgpmUlmn/kwq3PwouTkxZ7u0DD5BXdNr+cHLlA7ugzRiSf1ZK4xZ9XCt0AUiKVSvPA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795202208;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795202212;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=aCo6XwDUGKHrJrZqVvT8fOWO5dQALu2JDMEOxosLhT4=;
-	b=glUllhsCnow68ait+JrAK8BhE/rC1Ti9TogPwvAhL2iKhhzs8q4cDTWF2pxzuhJWpIrU
-	 XQ6rUKIXMS8t/sUYsa3CE22yLlK96KnRI90FYQRfetjHo2wQTn7bQl7k07GOmXpBuUsrB
-	 6OTFlzKdKHUD8tEF/4t1V03g3R8ujYg6tIXdgm63LtynFZ08sEnQf78SJLjpsFSLu4Loq
-	 /CkIs9QiqlgUQBRmsa3tx4LlPVOQB9HsB6vmp16lznJ0OewqQAfH//89qTBiCHDIGgKhu
-	 zAr4b/iq8X6qCfiYWEphsrOEeBN56nGszjJDxUMB2Z5kDL8fKZMgnTN7pjBpDTtwx1A==
+	bh=E+Sl1Gk0Izp8iNjXVvH7BXDYK1wVBrrJEHxdo0B8yl4=;
+	b=WJ7Huu9zY0HAnvU62CbLBR5neJryIR7hGGytAcGaYlyyqgBNet1ix1mbOLP6MEaSG7rP
+	 rY4nwDJSMVs0dspXvj3jIw9DQvx10N9xi0jL1PqJiT/JTb1sNihytfZYUSoz6+uthrxsu
+	 kdxWb0xWuIm+B82pDcRzFhAJPt1l6mAgsVNnHIKsPbgvWArHdJctGEuqgRbXuLNJuxp1s
+	 0yxZQ0m6ItPkcuiX6yPqrGg8XK8MIxWztgrXbbetpcBTojyzooQkprlrYMdTVJwn7Q6w9
+	 qGIPgCbltokQivz2YNlCbtf5/DbuMg+lYfayxWKJzlKQlncszrQn6u/o4BrHGzvxBgA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TFA6fJlM;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="n0uumM/2";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD0A1606C9AA;
-	Fri, 20 Nov 2026 19:16:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAEE0606A33A;
+	Fri, 20 Nov 2026 19:16:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TFA6fJlM
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n0uumM/2
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795202208;
-	b=MqVWBHyHz4ms4L5SFV6mtWg9qH6iAW5Jf8Pj1wRaqe/hDv/uBca2te/LdUhSh3SeBJaR
-	 nAW0ESeAevW1TIySDr9pMupi59LM6WXa513cSTJGeRLFU0fQMK9Lt9usXbQAVsXlWPwrq
-	 N/cSrb3J3ARKcJTLjjNqlMRKTE212hDr4NIhVQ8PL4N7datt5JpIQxbfZk83HQn94ucOj
-	 ZKROWiaj3o92nMpm1ZLyeZtz98J6FN9MO3lILWXR21gFXKOraIr4n/oI6xbebumtnbC+Z
-	 dwIw4CrXc7myq14A415cxc023cCZGs4XUSOn1iFGa6h7X6/dk4n/cdktO22C6whHw9g==
+	t=1795202212;
+	b=AgRYJMmErCe6+Ok1nc5BNJp+x4FQ9GHPTTIX8koQDH78gjk8ZQLZFiKdVprzN6fS+FZa
+	 BrAlcdatF6Q7Ee7y5Ww+uaDVUbLsdgMz9hc0skispk8gyMF/lye1jfLF31GSioqSv+LUO
+	 qqz0U2JUELR6QLUtDuGzwVT2kEwQ6PISW2tVrQsdByNdCMbtbzKl3dyXJYFjM7lF4yKhU
+	 xJbq2/8VaUlwIvPAiKRDcnDPEuISw3uQWHwMWIbLFnE/q0wXZl8WklwQcEhAGTD/D3saP
+	 Hy4nRhxRa+T8KE1AjdWY0eceg++T4ahfANUAYeWl/3qMLkDTFMKPUMnKdwNLhVgoY5w==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795202208;
+	c=relaxed/relaxed; t=1795202212;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=aCo6XwDUGKHrJrZqVvT8fOWO5dQALu2JDMEOxosLhT4=;
-	b=J4XtsRvpt89YDUUWHnG/WGhOE/Qv3ej6CimV/nKT1orukEJL81xVC2u0v82JRHjrDv++
-	 xI7FG+FNoyfaiTqv+njXH66Jq0Oib3BV4nJ0UaUSYSPWJUlVnc7th26AtWHioycOIy++y
-	 mp/TNH3RMaFwRMWxBh5sESMFhp92ztkE8Cpz9bSf5+GITeKA5TLxLSQslYiJ5nqdK4V1H
-	 Jx6EOQ2Ohkhu/RCAlXc32lAzWn/hoa5mPLDoF2lwkrU9HGy57Sirr6nQ5KxW3XxrnIKRU
-	 XbhgGElH+zpA8oOzm0E1FfHnZp/tGSLC4G3UQcTQqcv3V2YcVN5nhhEbdq+YrXB2Utw==
+	bh=E+Sl1Gk0Izp8iNjXVvH7BXDYK1wVBrrJEHxdo0B8yl4=;
+	b=l4q/EoQRxKqsSb6q2PgUqjITNfImUPaX/FvI7iqhDoMTGjLV2pi7RJC8/yzHyY4uz34a
+	 NuPeuEP66ehkhUGmZiGAgOrlMk4bqvwTgquSv0/YBphZV4jsi86mfy6EcnU+SZltlxpXr
+	 sxxq/eEccTxe/Z+lxYsKVgnEzOp00UUt/iz0sP96W+KpATyVnIo8rSE/QG9a8gqv3w10b
+	 Zu7lJ/wRNwfCuLRpCD9SpcuvJyHmMz1+5DRIHb4jDUdRHP4WlSM4/qa2TONT+omslbXT3
+	 VWHaCb9T9sFD+ki2oSlCyGGkM8R0ePFg5nQjPAJPPSzJ2RdB2pqcT0fr+yCTVp1RijA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 401B41F000EF;
+	by smtp.kernel.org (Postfix) with ESMTPS id 051871F000CF;
 	Fri, 20 Nov 2026 19:16:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795202208;
-	bh=aCo6XwDUGKHrJrZqVvT8fOWO5dQALu2JDMEOxosLhT4=;
+	s=k20260515; t=1795202212;
+	bh=E+Sl1Gk0Izp8iNjXVvH7BXDYK1wVBrrJEHxdo0B8yl4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=TFA6fJlMFAAfF9TA/dOebPzqcynjxyWEg6hYUZzP3E8miRzlhr8cY+ig5ZrptzS4N
-	 dVReXSuF5BTU3b66lS2BuQnqrLLRQ97cl6PMRFu497ZKVx6BABfap74u861iCVl9Jw
-	 8lyfKth0+n5VJsItJASfbpqDqDjSyFlpB6NHsMVXCYb4tQuh9AAu6TjoOXkmmYBPyP
-	 zeL09BwDdggfGxbk35FZvlZX9ddYDq9DGceGJmh9+AUeVXKc6kVsdoWr+jLclRKiGz
-	 XyrQnhlQmefM/q2YfLEGIFwnX0EfAe3mySQdCzxYM5tb8bRBoC+yIfDxFtOhxNPPC3
-	 0JFrcBIV2MEGg==
+	b=n0uumM/2f4e4WX1djaV+kb2DrCvFpm+emAAWizF8ndmVmuoWb/9pCKG8n/IZQMrlK
+	 VdLMAsADCCKWNH6QVr6RQrGVvhNCuujeMW6JCdgNmZ/8tB9nI4QAh7kbQds50hSfLu
+	 kyCrwh6ZUbK78P6stMznbax8v8TwYBpY5c2oTxG0H2vDfvBJH0u9ATk550xAsJmjUP
+	 uZDdJ4VtDgBIxKcBAnHbl646V53TQ4O76ZQYbiRSRneLQgI+htYdH/NnbPPk1QnXB4
+	 rV4M5HAN9ek1sXSPU8Ip0Nbn1eb7qI2q46vNaAP/4ZKRjej2RLLOFuGDJ4FmeRsM8M
+	 +Z1C9FKMqQ29g==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 558414B9E6;
+	by lkml.kernel.org (Postfix) with ESMTP id 189954B9DE;
 	Fri, 20 Nov 2026 19:16:25 +0000 (UTC)
 From: Han Gao via B4 Relay <devnull+gaohan.iscas.ac.cn@kernel.org>
-Date: Sat, 21 Nov 2026 03:15:58 +0800
-Subject: [PATCH v4 12/13] riscv: defconfig: enable A210 support
+Date: Sat, 21 Nov 2026 03:15:56 +0800
+Subject: [PATCH v4 10/13] riscv: dts: zhihe: add A210 module memory
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -83,7 +83,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261121-a210-scmi-v4-12-4a795a0a9fc9@iscas.ac.cn>
+Message-Id: <20261121-a210-scmi-v4-10-4a795a0a9fc9@iscas.ac.cn>
 References: <20261121-a210-scmi-v4-0-4a795a0a9fc9@iscas.ac.cn>
 In-Reply-To: <20261121-a210-scmi-v4-0-4a795a0a9fc9@iscas.ac.cn>
 To: Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
@@ -105,11 +105,11 @@ Cc: linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, Han Gao <rabenda.cn@gmail.com>, 
  Han Gao <gaohan@iscas.ac.cn>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795202181; l=2125;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795202181; l=777;
  i=gaohan@iscas.ac.cn; s=20261021; h=from:subject:message-id;
- bh=gbFp8UQIqmjgXxLfsth1MuBUL/I680UNXyToqmM6t9o=;
- b=mztsFAtYNvn27nSpR5w/p1fX6NaXvdoK5Y3VgHR13kbszgNHYcjKTv8C2HL+5NAwjHxDZ33Sm
- fpkr+FzExhvBl/3Ge5dgxmvFibTRDBpk/WilSpKD/X/YeF5fwn+3qFH
+ bh=YcgMhPuDLQowVTt+MvNEeWTBEwtrbKzVnPLSZwTdXCU=;
+ b=UCyyELTjinwGxSiobkxFax1VS8/WmZZD+1yWwZXAf4WG0exoNvFai7aW2vn3dGB7NugVpqKtB
+ VP/INK+1K3wBjMg+f42Z0GgT06wejuMZZI4nPHk+b1FCe6Zckc1FVnH
 X-Developer-Key: i=gaohan@iscas.ac.cn; a=ed25519;
  pk=J8WHEK3filS86QaCaIHDGafqhxKyQ4K7+vFgRirTIiY=
 X-Endpoint-Received: by B4 Relay for gaohan@iscas.ac.cn/20261021 with
@@ -120,73 +120,31 @@ Content-Transfer-Encoding: 7bit
 
 From: Han Gao <gaohan@iscas.ac.cn>
 
-Enable the A210 pinctrl and mailbox drivers, SCMI and the SCMI clock
-driver. The SCMI mailbox transport and reset driver follow SCMI by
-default.
-
-The A210 has 10 UARTs. With the default of 4, UARTs beyond the 4th
-don't get a fixed ttyS index and end up in whatever slot is free. Set
-SERIAL_8250_NR_UARTS and SERIAL_8250_RUNTIME_UARTS to 10 to keep the
-index stable.
+Add the A210 module memory node with a default 4 GiB range for boot
+firmware to update with the detected capacity.
 
 Signed-off-by: Han Gao <gaohan@iscas.ac.cn>
 ---
- arch/riscv/configs/defconfig | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/riscv/boot/dts/zhihe/a210-som.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 04ae305d5511..e9275be22e8c 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -34,6 +34,7 @@ CONFIG_ARCH_SUNXI=y
- CONFIG_ARCH_TENSTORRENT=y
- CONFIG_ARCH_THEAD=y
- CONFIG_ARCH_ULTRARISC=y
-+CONFIG_ARCH_ZHIHE=y
- CONFIG_ARCH_VIRT=y
- CONFIG_ARCH_CANAAN=y
- CONFIG_SMP=y
-@@ -111,6 +112,7 @@ CONFIG_PCIE_STARFIVE_HOST=m
- CONFIG_DEVTMPFS=y
- CONFIG_DEVTMPFS_MOUNT=y
- CONFIG_SIFIVE_CCACHE=y
-+CONFIG_ARM_SCMI_PROTOCOL=y
- CONFIG_MTD=y
- CONFIG_MTD_BLOCK=y
- CONFIG_MTD_CFI=y
-@@ -149,6 +151,8 @@ CONFIG_KEYBOARD_GPIO=y
- CONFIG_KEYBOARD_SUN4I_LRADC=m
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_SERIAL_8250_NR_UARTS=10
-+CONFIG_SERIAL_8250_RUNTIME_UARTS=10
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_OF_PLATFORM=y
- CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
-@@ -168,6 +172,7 @@ CONFIG_SPI_SIFIVE=y
- CONFIG_SPI_SUN6I=y
- # CONFIG_PTP_1588_CLOCK is not set
- CONFIG_PINCTRL_TH1520=y
-+CONFIG_PINCTRL_ZHIHE_A210=y
- CONFIG_PINCTRL_SOPHGO_CV1800B=y
- CONFIG_PINCTRL_SOPHGO_CV1812H=y
- CONFIG_PINCTRL_SOPHGO_SG2000=y
-@@ -255,6 +260,7 @@ CONFIG_VIRTIO_PCI=y
- CONFIG_VIRTIO_BALLOON=y
- CONFIG_VIRTIO_INPUT=y
- CONFIG_VIRTIO_MMIO=y
-+CONFIG_COMMON_CLK_SCMI=y
- CONFIG_CLK_SOPHGO_CV1800=y
- CONFIG_CLK_SOPHGO_SG2042_PLL=y
- CONFIG_CLK_SOPHGO_SG2042_CLKGEN=y
-@@ -262,6 +268,7 @@ CONFIG_CLK_SOPHGO_SG2042_RPGATE=y
- CONFIG_SPACEMIT_K1_CCU=y
- CONFIG_SPACEMIT_K3_CCU=y
- CONFIG_SUN8I_DE2_CCU=m
-+CONFIG_ZHIHE_A210_MBOX=y
- CONFIG_SUN50I_IOMMU=y
- CONFIG_RPMSG_CHAR=y
- CONFIG_RPMSG_CTRL=y
+diff --git a/arch/riscv/boot/dts/zhihe/a210-som.dtsi b/arch/riscv/boot/dts/zhihe/a210-som.dtsi
+new file mode 100644
+index 000000000000..a77447e402d7
+--- /dev/null
++++ b/arch/riscv/boot/dts/zhihe/a210-som.dtsi
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++#include "a210.dtsi"
++
++/ {
++	/* The loader replaces this reference capacity after DDR training. */
++	memory@80000000 {
++		device_type = "memory";
++		reg = <0x0 0x80000000 0x1 0x0>;
++	};
++};
 
 -- 
 2.55.0
