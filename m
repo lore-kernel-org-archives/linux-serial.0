@@ -1,89 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.161.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795295114;
-	b=ygOaaeUUKYNt84Z0gx+NAocUhLCSt7/6FSa4cmWOwbtiqJ8cOWfnCf8HqS7/q0+0Kou7
-	 bbJwtER+FHXsiGralGtfTMO57/7qaLVw61c2dQqy86MilZE16ZyASJFfwe4OMPebJfin8
-	 u+y2m0EGVzNtAq0PmPpoZI7d92GExzHke79PVvZa4c7bGEUD9g2nyVUnhvIaLGeDIc1wH
-	 Pw0hyspmys/haCLTUGSUHY0d5ft6v84JZAS80YQpdG3nPR8EHuHhWyvtSwDmryN1IyDbQ
-	 Dc4IPNIGQPVKZYmBuBgyeWK+AsiOR7s34liamAdwYGcKEZqxPhfUPeFehudlDM1IZmw==
+	t=1795295165;
+	b=qKhUosApffTiRgKXlNI1tkNMB23VzEFQJ3v9nL1ACI9EnY2twNp0L07puqFCTKp/j31S
+	 6E38BU2xNzQgqYzba+/H3RMqhrMOfnQQ0Up3aba9ZZxIp3B92KfvDG1/nyh0VdoAGTnyv
+	 U2BGOJzFw5Ckr/7GItcxMnXzhRtJLkhwoIl8WJSHDhWAJp5O0gKBku5Nm/N/7gr6T+7wt
+	 L+n5T7HZbtASqU+QQuIv10SoRxiNNUDLonW9x8aFHHyenJ7db+au7CtVs11nqgxK60F/5
+	 2BHooRHnGqF6WkFM/r5pmMX2RySThTxF8LDPc6fkiips8k7PtQQOJrDk5rObNWi/zIQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795295114;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=NQnbPfOzKZsGZYbWuagccx5bm/OCUTvNG/34f4erQB8=;
-	b=R+v7D2+pmYvZhX9rMWjUnsCROHb2irya+AgngKzHYjfadNYQjC21MnqiCr5oT7Fsoexk
-	 Jkct7Z1GRSpkqTEQUWT4VbCYywq2MSZo5nQHYFx9RbO+KkEZwVmzDclf7RRtAqiRzLp75
-	 t+pCpw461wCi7vGSjjfkGvt1p6AsGUJGaUDOwrPQSNbahZ4n8Ch2pSix/FcUtxalefZl5
-	 x4COkeeLfxWhlceYzGES0FEHf6Fy4rN9JbgqoMharTcc+4cFHk64YJYj0smm9UkVsoFrd
-	 4AygULjESU4Nu473/UxqEtE7l/zzWvk+K8ZIxBR8UAavwvdrNd8RYnVBZKnpy8i8vzw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795295165;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=AQOuc6P4A7e7laZ5onDFzK/I38BHgS/Q4vVy1qpK7xE=;
+	b=JB625cO+i+pHogJjybUCXT4ll5/KKmT/QCn8FdAHawR8hqdR+o4542TMBlXnsy311REK
+	 fqGURKlcerV2MJV4YXfuQopxbZBw2Jtj0AupmQPczM9gqlM0J1d3bIuZlZiux3R2K9V6F
+	 bI6jTLBOQ03Nd5R4+dFVg4QZKCk3TlZWDHYjXPycpmSiSCopUTnDyxPU5WhRxo7E4S55c
+	 inxzaFOF/UT1851wJUSd3rdQCePmkFXpl9lXvH+5/wse4XPOvVzylDCJEHxV4WanfUcEI
+	 PzTs+lvGo+5rIG3oBiIJPo1+P37kHwzaWNLYaNCdyQpvG1OnQDGg+bTJ7wHNG2IosRg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IX7vznIL;
-	arc=none smtp.remote-ip=209.85.161.44
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WUTQh97k;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920BD606A336
-	for <linux-serial@vger.kernel.org>; Sat, 21 Nov 2026 21:05:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 920BD606A336
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67521606A320;
+	Sat, 21 Nov 2026 21:06:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IX7vznIL
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-6df7f544919so1269818eaf.1
-        for <linux-serial@vger.kernel.org>; Sat, 21 Nov 2026 13:05:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795295113; x=1795899913; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=NQnbPfOzKZsGZYbWuagccx5bm/OCUTvNG/34f4erQB8=;
-        b=IX7vznILkd/CCVxwf4ciGJ2ED21G+VQpoY0/+tApV8+6vFo9BV1d6XlU9m2qYT9GZB
-         jQ/J/iUxKWfpcq/LOwOJM+Id5MOyF0c+1zH0hgYpgnOkLPgwQ82Ky6YrCPcU89Rb6z6E
-         LmX99YzDz1KCdkIIjjqBK+nq82jrRsCaxvlqKWILWmssSEElKScn6+/5xNRM7BEX4YNi
-         wT/hZ7TAEqYIyprnRFra37qMWRfHx90t94makB9jOvKD/0E7tTbZcjcURQJ4hStg5E6q
-         mbQqgqY32MST/9pW3kKW4FZHXllcQDZB/ztUBNSsC1vcbrBMkvfvXy12J6Y6GlHYl0c0
-         K00Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795295113; x=1795899913;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=NQnbPfOzKZsGZYbWuagccx5bm/OCUTvNG/34f4erQB8=;
-        b=dLL/xy0RJ5Ge8nsz+9xhnr0m5QGRpAAjLEm3aX68qmWm7SUYElQFi6CnweZsvp6zKs
-         cAEYABuftogUm4YyDvGrGHMDugdsjzowI9bVuGW+2p46jphPKlfQzYWasHdoUTFFqzAs
-         GqBuneU01YkJlmWttg5mffpIaYOojJvXyUG0QyohIlZo+OBMc+9agVGyd1F35o1gBwt5
-         WiA8IZ40wmuNrnw2ls5M1iiG5CH1FiLMMUz96g2tJWHj4EuL/VNAZTqZtQG5iLRk0/eW
-         T8+vcswcy7HoGqeVF6X+Hc3mhhkIPlGXPLmgMwa/E+xsc78xkQAchHRixECjkmUrNg9h
-         FDXg==
-X-Forwarded-Encrypted: i=1; AL+hErHW1CsyHz1rk879ZxUmvbvN8yHfbZA5lCHu69hI5o67sLwmF3WAM0pxujU1fNjr8E+0h5YWyXPsD2Bp/3s=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/3VXZrQnppWfFNqxCZCvSGi067N7sfbtZibo5msh6UzHjcMvdR
-	Nr0grrZ0cDLZHu6LRNvt/9+9HhtEbMKMhlK6rkgX2uGD+1NOqhjfyqg9
-X-Gm-Gg: AZFdTZefD91NlRkiqoK42IF86UoFiNwxRoy141Dav80RStY1EY13D4XRFy4uli61+j/
-	NH9FWmxMx90+YsA76SXpQHa6NfJCWwpaL5BtatpXDJIMn1QlVAt9Ljcbd2uAbsd52v8DhudUnFt
-	uLQ1P/PvrHD1o3pEGeQEmo/J173blB0ZRqXQp9MrG/0X3rxQ2Z/W4obkcY41THLkYo0f6CqwG1D
-	55WF38qUmMGWljCuZUZKH/x7jaRCLhwaSbMg6R4P6zwaZ8KC5txBu3GpA8WdNi8GkPoLK3hEVHq
-	7v3EvXIEiajohvCtU3I5ZVIqQ0Av7AlNIJMx5eFZOmLFQLUC/aaTzxrxbeowZk26YTxepj4PZNq
-	YqTLJuTTMHqhccz1ubTo02l7LIee9Bm5/FDouKl0GMhJGsOzgRE1M0vIdYQcsg+bptaV9UvEA2q
-	GsQLat2zjrTkpgvbgHUIxaZMAqY9Ca1XwJfXP84hGeVmOPjLey19x4gVwcU6kz7/dM9EcEoyEG4
-	v+qhin6tsuk5X389FmGH1L8H5PYSWbpCdqDxzY6xaDhfQWd4Uuw+82GakS80O7ANQL7rnu59dNt
-	jzK8aqamA/wK3ilu3cFgdHXfp3UWwnOG8xsCOX/uWFjkDs05snQ0zPqBPOWj6OLXpEAE0mVfWj0
-	LmOYUROCVHOaPWcduq3VyiXzZRWEyfghM87Rv3S3XEj4eZBc0yZRgnWgo8pPYrQ7AmJCKeyEWRb
-	s9d62/qjBhLNjhjemWBSRqdELEO4bzqBt28y/RF3V/7S29T7RkXwa3
-X-Received: by 2002:a05:6820:570b:20b0:71a:d8a5:4d1b with SMTP id 006d021491bc7-71b3947aef8mr4275597eaf.36.1795295113480;
-        Sat, 21 Nov 2026 13:05:13 -0800 (PST)
-Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-71b380e4a6dsm4635728eaf.13.2026.11.21.13.05.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Nov 2026 13:05:12 -0800 (PST)
-From: James Hilliard <james.hilliard1@gmail.com>
-Date: Sat, 21 Nov 2026 14:03:22 -0700
-Subject: [PATCH v12 7/7] dmaengine: dw: report residue for queued transfers
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WUTQh97k
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC3E1F000C6;
+	Sat, 21 Nov 2026 21:06:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795295165;
+	bh=AQOuc6P4A7e7laZ5onDFzK/I38BHgS/Q4vVy1qpK7xE=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=WUTQh97ku3zVPvi5VUesmp6Lv1yCNCDc7kxHibtVdIn6FTD+R5nfpvL7i+TvfzbDO
+	 wf2PhOzHj+ttjbc8s1WtKtbYOvPBy67KEAdSJYuxlkfVxPJfO0c9J0mu6258i5E8LT
+	 FaEx8a0kwlUbx6DIS1RMR51Mnzlrnki2HGW4ZcGSrGoOYZRitEpfbJV4AJhU3hBFmi
+	 6+VspxxMAj3E69UGcsOtE7Zki5nIDVW+5FW9sJG/eB01CWwja75mJPMAKNLZRcSfjz
+	 fXu2Q9v/9S1Etv+NFRkir6lXAxnuVKJxjcnk/mYTA7raWVI+aSPlcOrzrSw0701aJE
+	 d6X4XOXy6SKLg==
+Message-ID: <sashiko-outbox-227370@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v8 06/10] dt-bindings: serial: Add Cortina Systems
+ CS7542 UART
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Fil Dunsky" <filipp.dunsky@gmail.com>
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
+In-Reply-To: <20261122-b4-cs75xx-v8-6-5f971b0dc69c@gmail.com>
+References: <20261122-b4-cs75xx-v8-0-5f971b0dc69c@gmail.com>
+ <20261122-b4-cs75xx-v8-6-5f971b0dc69c@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 21 Nov 2026 21:06:04 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -92,68 +60,68 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261121-submit-dw-dma-synchronize-v1-v12-7-f51eb635209d@gmail.com>
-References: <20261121-submit-dw-dma-synchronize-v1-v12-0-f51eb635209d@gmail.com>
-In-Reply-To: <20261121-submit-dw-dma-synchronize-v1-v12-0-f51eb635209d@gmail.com>
-To: Viresh Kumar <vireshk@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
- Dan Williams <djbw@kernel.org>
-Cc: Serge Semin <fancer.lancer@gmail.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org
-X-Mailer: b4 0.17-dev
 
-A submitted transfer may still be queued behind the active transaction.
-dwc_find_desc() only checks the active descriptor, so a status query
-reports zero residue for a queued cookie even though none of its data has
-been transferred.
+Thank you for your contribution! Sashiko AI review found 1 potential
+issue to consider:
+- [Low] dt-bindings: serial: cortina,cs7542-uart: interrupts listed
+  before clocks
+--
 
-Search the issued and submitted queues as well. vchan_find_desc() covers
-issued descriptors; submitted descriptors need a separate lookup. The
-status getter already reports total_len for a descriptor that is not the
-active transaction, giving queued transfers their full remaining length.
+commit 9cf5cd80f03458b63f383ce2437badbe51f15cfd
+Author: Fil Dunsky <filipp.dunsky@gmail.com>
 
-Fixes: b68fd0976286 ("dmaengine: dw: move residue to a descriptor")
-Cc: stable@vger.kernel.org
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
----
- drivers/dma/dw/core.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+dt-bindings: serial: Add Cortina Systems CS7542 UART
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index 302ff591cde0..88c14575a604 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -944,9 +944,19 @@ static void dwc_synchronize(struct dma_chan *chan)
- 
- static struct dw_desc *dwc_find_desc(struct dw_dma_chan *dwc, dma_cookie_t c)
- {
-+	struct virt_dma_desc *vd;
-+
- 	if (dwc->desc && dwc->desc->vd.tx.cookie == c)
- 		return dwc->desc;
- 
-+	vd = vchan_find_desc(&dwc->vc, c);
-+	if (vd)
-+		return vd_to_dw_desc(vd);
-+
-+	list_for_each_entry(vd, &dwc->vc.desc_submitted, node)
-+		if (vd->tx.cookie == c)
-+			return vd_to_dw_desc(vd);
-+
- 	return NULL;
- }
- 
+This commit adds the Device Tree binding schema for the UART found in the
+Cortina Systems CS75xx (Goldengate G2) SoCs.
 
--- 
-2.53.0
+> diff --git a/Documentation/devicetree/bindings/serial/cortina,cs7542-uart=
+.yaml b/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
+> new file mode 100644
+> index 0000000000000..2879a71880239
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
+> @@ -0,0 +1,52 @@
 
+[ ... ]
+
+> +properties:
+> +  compatible:
+> +    const: cortina,cs7542-uart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    serial@f0070110 {
+> +        compatible =3D "cortina,cs7542-uart";
+> +        reg =3D <0xf0070110 0x30>;
+> +        interrupts =3D <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks =3D <&apb_clk>;
+> +    };
+
+[Severity: Low]
+This isn't a bug, but clocks is normally listed before interrupts in
+properties, required, and example nodes (compatible, reg, clocks,
+interrupts).
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261122-b4-cs75xx-=
+v8-0-5f971b0dc69c@gmail.com?part=3D6
