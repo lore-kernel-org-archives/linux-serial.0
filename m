@@ -1,80 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795294934;
-	b=WhADjBdcr8yDzKNSDqKddyuxvgdxzGmG2y2icQYpGYmwUEhU2HRPML5+IPP3IZq0a4Jq
-	 JGhDyQXwBvrfGSbDY2z3Jhm9+Opgqfsi1lkHdE+7Ba0y+7RM9aP7QWjsZbkbkf2g6j4YO
-	 8+8dR2clfue0nBTtQd8NrOQFoqQc13ZgueH//qWsLKuJiB4InuL8EaSYXAvr+A9Stx/WY
-	 bZJF2ihcoi5Op+3aMWRuYQE7AGVsaHCadSt6P2yq2+N+d5wqoswwa9JW8RbxcoWpGbDSN
-	 TYgS6kTe+ogj76IrS6t6VTpc/45P+VbjK1JL8h2UbdMJ3uSbH0kn0SJ5LA/tF3EhXyg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795294934;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=rgTYsSmP/5dGsFS1FwJdxsbe1ODaCGfnc9qY3cxFf7Q=;
-	b=FRvKLgcc8Nu+sz+7ifPmkOnrypCI+4XNbvZmfy3dwN3dSTl8xSsv1G6gf51xaKNY5lm8
-	 ZWJRP91+g8HEzVL2jVV7fB/Sgqi1du08ulySAi6FeVTKsI0ElGbVJIypFe4HG00Md4aOp
-	 pz7nN5Oyj+2Ye1eA2yyg/GI+eH77nZqoIEkX8juaahXIhrkll5XD18/CFCn9s/zaNtc8S
-	 mxmb5bFo2Wx5NcwLTLA+J1hUJ0TsBWYBhNKvicTfwTjSjqzT/kaJ1OJS8rCc2n7jNDfTc
-	 hbelIM9bd6+syEjszffhnMghaCoUhZHIAONIZZl/evQkBEfE4Ttf9SBDpP22odpq3bg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="LVUMh3/C";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68DC7606A690;
-	Sat, 21 Nov 2026 21:02:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LVUMh3/C
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795294934;
-	b=JgK7P2sgEOUywDQdhiSVmvAlsz/KEk69/BY8Szq0Ll2shKnLxOFyJshrpPRgVnZz4plx
-	 QVZnoJc5TX954+jrMqFtAa0gCkPT6/V6PbyguuDIS2JpAfsEG0naper5NqhPJrxNFD0nc
-	 YEn8Jr5iwYNGcrQ7SGLW25lAFcuwZEiZbTZ+LqOjkR4H7jdSQTQdR4DYzUxO3okiU6el3
-	 16UMAST/Hyr1S6Ak6p7YCQAnBMhyzcs7lWiMiEmC7qqyvUM2bXd2ftAG06Qrh038vgRMO
-	 c9z/WD9J0Q2E8PrTmr+UDLhxiWOZ6XjU68fOmHbmUhZCWVj56LQmb1ZXinR9CxK1A6g==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795294934;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=rgTYsSmP/5dGsFS1FwJdxsbe1ODaCGfnc9qY3cxFf7Q=;
-	b=WzH8R/UUk2VutUiQ5Jv+YdE797TxNLy5EsZYE17DICnHkQS1Wy07/O68ovmA0x0VoLmP
-	 CiimPUZPLu68BD/3913Da/qRM8+LsbqYjHUSv1TYcfGIxbvXVZ/FmhIdfOK4PtsLotM6z
-	 zcl8bJQKJwWJPB5+8kCaWkF56h1zTTyDmuh2H5KC4R3JpqJCMq4FNgTAEBUXidn3QDDFP
-	 OFLti9c2B2XpyqcFsozKNxiwbYVgr+xlLhCLiqVV/7PMgXu+k3AfFdeRZSbORm4VYI5RN
-	 NMc5u2hDFhmk3VJR/oCO/zWl4D+bBF1koWibBrNfGIKNNKlF83bxgoooBexlWX0f+kQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.161.54
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795295106;
+	b=Qmq9nR51fvIuJcA9biLAb6NekwJrTRoipYsItWmBe3hFwJRF2ummxVf5nApioTJfuO75
+	 n3+OqarSCQhFb/695eUg8SluXkZFY84SNjz09c+upkOSRyeBjVG96d6EnrKb14kLt16FV
+	 telGJnnzNDb0WNpHwAxdv4kd95zsDIk4P50ztWOUbQnlFYYKUIjvHkz5Zv1Ynf5lTYaQ2
+	 lGpUFAmUBfg9VtLJX67L7GvQn7BuAg8mGsk2/KJH3A/O18jbp51aD+QJGGUdKQECWj9DG
+	 1bigN9BjQtQVCYd0dXpALD5vrvKnZrsudT9h9CL4ovhSxfHM3A6/iDn8bIDu7Bo3B+Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795295106;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=9R80EkEnaVnqpqhb4C1kcXOdf2oKspDwr3oTDl/Nwbs=;
+	b=dRN/BWD3jAu8q0FK+U8QT8pB6VN+RBh8eU2iPWjzTJqO74muRrM27cepcg1PNlBn5Ye0
+	 V9YX+ySjejmDxt+RnF2WWiKQwhWe5Xtc34C74lCWUBUMj5FJlDQUyr5FEw3sf1d0FG23J
+	 nFx+EK3FfIiQIjN6fadQW2/54r2ZZVq5YzAtqRbglbriOjKqXvoCam1mypl+Sfhm/Q1yD
+	 axCsU5lFt9ktAVnORotS5VKsYZ90E/huRQAEd7ERQTy8KtX1MqJVffxT5DEb3uII5O5/F
+	 MPBsQUxGJf2hyCgMy8vNrDnA4VcnPQ9S9ywPGgoCQ06D57X5q5OxmSnLN6gFTJo14ng==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MyiKM8aI;
+	arc=none smtp.remote-ip=209.85.161.54
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id B8CC71F000C4;
-	Sat, 21 Nov 2026 21:02:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795294934;
-	bh=rgTYsSmP/5dGsFS1FwJdxsbe1ODaCGfnc9qY3cxFf7Q=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=LVUMh3/CN06lLmo5jL6C4vjaavnwxcCz5YzewG+w2VOkHZeerKZZE+GtH7G/SL5xF
-	 Gf8Rb+4pJnDFr6iQ8+g2hOK9/yjg8sEFq4Eo1cDkPWZxOqfJ52hZqrRSI94VjHnuM/
-	 krrXvlFrpP5vmnU/oIs+Jm3JnOcQ74V7K7pk/lsaMCPAY3vPI/ideIXvU8cLq8mxKL
-	 z6+f2nypZpzoFkSqxorTDLeTXr+lSGMvavHl3TLVKgyplnegatgZ8NAM9sVL5EQnWt
-	 9HBfZVDGHucO/+oJGiNwzq08Od6H55blqpeizkwLJdmuLRhgPZCOPrMISZ/Q12bKCc
-	 HzsKFb2Lkm9vQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 1847C4BDA6;
-	Sat, 21 Nov 2026 21:02:11 +0000 (UTC)
-From: Fil Dunsky via B4 Relay <devnull+filipp.dunsky.gmail.com@kernel.org>
-Subject: [PATCH v8 00/10] ARM: Add support for Cortina Systems CS75xx and
- Securifi Almond+
-Date: Sun, 22 Nov 2026 00:01:45 +0300
-Message-Id: <20261122-b4-cs75xx-v8-0-5f971b0dc69c@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 454D0606A32A
+	for <linux-serial@vger.kernel.org>; Sat, 21 Nov 2026 21:05:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 454D0606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MyiKM8aI
+Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-6d290b10a35so817305eaf.2
+        for <linux-serial@vger.kernel.org>; Sat, 21 Nov 2026 13:05:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795295104; x=1795899904; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=9R80EkEnaVnqpqhb4C1kcXOdf2oKspDwr3oTDl/Nwbs=;
+        b=MyiKM8aICjcRwpmXUnz1+2FA/Vheq1fuXJWsb+NqMjcT87STxTXq6mN0wCNNhRm/pB
+         3hBQqKzXLJgi82/OVJZP2/2ww4Nr9CUVrKIESlWA/hiA/z9LGr+innGcjtzxPQHykkfk
+         TimzsrqTkM/cKQ5H9NCYKsECT3Y80emcfJyE9zktqmTSbzM5bO+Xva4ZYJvKnkLb3lfC
+         lTUXGTtCnMn3bjaSmd6mPFxl75aGvMT5inCPF2mPCukhXnWsSrWliWtrl/mVh5I56Gi5
+         d8U0yQ1NRwtHc/jPn2zyG3PookCWLdmV1edZQ0Owqzw2X9PWCGImlgjk/mnX2Lwfsvtv
+         7IIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795295104; x=1795899904;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=9R80EkEnaVnqpqhb4C1kcXOdf2oKspDwr3oTDl/Nwbs=;
+        b=kvZhogV4Qqo4TjLOF9rz3hIYw/rayfXnUOYwNN/g1VmwNMrhhvnJufrIYM1i69Bukr
+         7e2PagTzg2ThKFfX3Wy6W7Pzhjeu7nj5cnhABwZFhmlf38VOIcNlcguXXJ7nPQGRtEE1
+         uoQCZeF8+ynPNTLBW3aH8Jekb1k+9Mp8su53dEc6mreK1aCdrqYZmxmyM14Kcr3wXWWT
+         fGPHf0/ble4hv/hlgrMg/gZ4IpshJag/EYRRWl7NZiawyRq7v67eOYfch4jjfsqF4T4s
+         Nmpc9ADSAdGqBQyLIZQmu8IvtnSAofG1IvcmZ9rt/Vbdustbrw4ZhxHktl5KzW8FOds7
+         PPIA==
+X-Forwarded-Encrypted: i=1; AL+hErHSw8pZMGvs2ZwH0aDVp4Y3eEDZfHB2cOoz7VGV7+91zzRjEfenOEowmYSLk0DAfCmifNd8jjA3PgusZ7M=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+dfj4jv6OySuBYBmeZhu5xsKeSpU9xuR2qI1i9lAkawahpXeIy
+	Lfb3S+n7BrdLzyu5JZCMEKC3RuQUvQsLzLKiXSNycdpVPJiV6i0TW6ll
+X-Gm-Gg: AZFdTZdH17Y0JWXOATRewCPFu8zLKQ/D+5mDkKZPc2JY6Rz5x6TTdTHvrcsmheFoubm
+	iSiKaqMfS8+J1VLudgRNLExdSNWpmynIjIVtZG2K/2lVZlcPWK+mkhZ5NBAtv+s48o96Rng+cce
+	UXVj08qy8AtvhS/nqk/X4igTJcVZ2uBheEf7hagZ2wio3g8/ppkJboP0qSpuRsjJ2be378cQFrl
+	ZTeDNcBzDfPrBSOeF1Qos4NNGyQX+lW+k9q9ackISQvbpNF5376Ri27Gi/sJ17lkUv5pIkQMplQ
+	fWoaTpRXy0+ulB0jXPQhYAXSns054FOCDE73G0YpVhzJTgkaG5y21TQK56xDdSFdNWPNriPOtuq
+	jBRY2KTbCsBQb03o9Vpjkiyuw2wGXcxtzuGkXEbJtgrkZaTCWin2Fvekj0QRJhmKVT+dnYy/NEm
+	9XCQW7mVem+f3uxXBv/ejXLmBxm0MtktyVkkGM/R53WrlSnGIUv15pS3GMDPmxyKtaZGCR3hc9V
+	eTNzXmW560Yv5fDUmy2g81Qt/ZtO7QfLOfewPBIHGGCmUdNa8IL53ZBgmqJ5YBiVMCQXXAuw59w
+	7SASb2bJ7DNfxIil3PWlQYXN+Y3kg3YOMg+Vjx5xnxiUuVmwtBrRWP2lBSV+uV2mp5l1Qq+O5yR
+	mWEl/IStwfI6QrHuusVfa0GHmH/wqDvPEiKmpsw2M4v3eeYuYV5nCqy/pa1yk+5lH5iJJzgWXZ9
+	YJ0x8xTgQJadj+vS0VrOxhkp3L6iV6zytjbfaOOYODeZkOEM0uCVNS
+X-Received: by 2002:a05:6820:1387:b0:71b:1d8c:af83 with SMTP id 006d021491bc7-71b39038c51mr5618931eaf.0.1795295104007;
+        Sat, 21 Nov 2026 13:05:04 -0800 (PST)
+Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-71b380e4a6dsm4635728eaf.13.2026.11.21.13.05.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Nov 2026 13:05:03 -0800 (PST)
+From: James Hilliard <james.hilliard1@gmail.com>
+Subject: [PATCH v12 0/7] dmaengine: dw: serialize completion and
+ termination
+Date: Sat, 21 Nov 2026 14:03:15 -0700
+Message-Id: <20261121-submit-dw-dma-synchronize-v1-v12-0-f51eb635209d@gmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -86,266 +96,211 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3XOy07DMBAF0F+pvMZo7PGzK/4DsXD8aI1og+ISB
- VX5d+wigRXo8kr33JkrKXHKsZD97kqmOOeSx3MN5mFH/NGdD5HmUDPhwBVYBDoI6ouWy0IB0XE
- PQkswpPbfp5jyctt6fvnO5WN4jf7SBlrjmMtlnD5vx2bWev/tzowCFYppL4RCye3T4eTy26MfT
- 6TtzvgjGTDeS6wSIgSmHVjj01aKu1JUGRKXECygMnwrZS+xl7J9GzV3Dg0G/POtuitVlaijSWi
- VHbTfSv0rGRO91FWaxHRCYzgbRC/Xdf0CWx6BHdYBAAA=
-X-Change-ID: 20260930-b4-cs75xx-033a2c047508
-To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linusw@kernel.org>, 
- Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43TzU7DMAwA4FdBPRNI3Pxy4j0QhzRxtiDaonYUx
+ rR3x90ORN0hSLnYsj85f6dmxinj3DzdnZoJlzzncaBAwP1dE/Z+2CHLkRINcNCCg2DzZ9fnA4t
+ fLPaezcch7KdxyD/IFsFQKZ6kSVFE3xDxMWHK3xf/5fUaU/8bhsNqrhWdn5F1kydmTZGJwy4P+
+ Hjto4p9ng/jdLyMuIhV+ucwtATTPlkVIOqk3fOu9/n9IYx9sw6zQIlBBQPGmQIp0ckYvA1brC2
+ xtoK1hAUNXeLSJhVwi8kScxVMEpbQS2miS2DVFlN/GGkVTBEWW+DGKJu6dHNmusRq29SEASIPr
+ bQAMm4xU2BCVTBDmI00VRulw1vMlpiuYJYw6S29C5lCFH6LuRIzFcwRZmLgWmPkXUhbTPBSq12
+ n4MS13rRGOeN5FDdc8QkE8BoniHOdE1p3AUIwJXc+n38BRE2EmwMEAAA=
+X-Change-ID: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
+To: Viresh Kumar <vireshk@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
+ Dan Williams <djbw@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Russell King <linux@armlinux.org.uk>, 
- Alexandre Belloni <alexandre.belloni@bootlin.com>, 
- Drew Fustini <fustini@kernel.org>, 
- Lorenzo Pieralisi <lpieralisi@kernel.org>, 
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Jason Li <jason.li@cortina-access.com>, 
- Conor Dooley <conor.dooley@microchip.com>, 
- Fil Dunsky <filipp.dunsky@gmail.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795294929; l=12313;
- i=filipp.dunsky@gmail.com; s=20260930; h=from:subject:message-id;
- bh=UQolVs5Jl9Dj9kFNkX/UHGRM1wFUQtT86ZVuboVuQmE=;
- b=pJrFU+Jmw8TqaVFFmZivuJlbISxNXaaPpc5qpAaB4qx218gEThgb8z1LYfz/jHJf7LoDYaxCl
- AGRj9iOyJ2LCtbIALguzGPcYZPnn1G6Ka+I4LLidQTiboS1lIKnrxzs
-X-Developer-Key: i=filipp.dunsky@gmail.com; a=ed25519;
- pk=JAYP8e2rJ54DHOmhNtXud8rl1igAaAXoOHxtJmVXI1g=
-X-Endpoint-Received: by B4 Relay for filipp.dunsky@gmail.com/20260930 with
- auth_id=1085
-X-Original-From: Fil Dunsky <filipp.dunsky@gmail.com>
-Reply-To: filipp.dunsky@gmail.com
+ Jiri Slaby <jirislaby@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ James Hilliard <james.hilliard1@gmail.com>, stable@vger.kernel.org, 
+ Frank Li <Frank.Li@nxp.com>
+X-Mailer: b4 0.17-dev
 
-This series adds initial support for the Cortina Systems CS75xx
-("Goldengate G2") network processors and the first board using one, the
-Securifi Almond+ touchscreen Wi-Fi router (CS7542, 2x Cortex-A9 r2p1,
-PL310 r3p1, 512 MiB DDR3, 512 MiB NAND).
+Use virt-dma for transaction ownership, deferred client callbacks and
+per-channel synchronization. Keep DW hardware event processing under the
+same channel lock, including polled completion and software-LLP progress.
 
-There is no public documentation for the SoC. The register information
-comes from the GPL vendor kernels (Linux 2.6.36 for the Almond+, Linux
-4.9 for the Verizon FiOS G1100 which uses the same SoC) and from
-disassembly of the stock U-Boot 2009.11. A full out-of-tree port
-(clock, irqchip, GPIO, I2C, RTC, NAND, PCIe, MDIO and the packet engine)
-runs on Linux 6.18 in OpenWrt; this series is the first, minimal step to
-get the platform into mainline:
+The first two patches serialize completion and error recovery with
+termination. Patch 3 moves the DMAengine channel and its lock into an
+embedded virt_dma_chan. Patch 4 switches the descriptor queues, cookie
+accounting and callback delivery to virt-dma. The last three patches
+extract hardware-LLP residue calculation, move it into the status getter
+and report residue for queued transfers.
 
-  - bindings: vendor prefix, SoC/board compatibles, an SMP enable method
-    and the UART,
-  - the platform Kconfig and SMP bring-up (the generic DT machine is
-    used, there is no DT_MACHINE_START),
-  - DEBUG_LL for UART0,
-  - a UART driver with console and earlycon support,
-  - SoC dtsi and board dts describing the CPUs, GIC, SCU, timers, L2,
-    UARTs and memory,
-  - multi_v7_defconfig and MAINTAINERS updates.
+Status polling can complete transfers without invoking client callbacks in
+the polling context, while synchronization waits for callbacks already
+running on the selected channel. Both status polling and result callbacks
+report a bus error with the number of bytes not confirmed at the
+destination.
 
-The serial binding and driver (patches 6-7) are meant to go through the
-soc tree together with the rest of the series rather than through the
-tty tree, with an Ack from the tty maintainers.
+Each whole transaction has one virt-dma descriptor. Its child hardware LLIs
+remain owned by the driver and are freed together after the callback.
+The controller tasklet continues to process hardware events; virt-dma
+handles client notifications. Submitted transactions become eligible to
+start at issue_pending(), and residue lookup covers both submitted and
+issued queues.
 
-Testing: component builds from multi_v7_defconfig with GCC 14 and
-Clang 21, W=1 (UART built-in and module, SMP code, plus DEBUG_LL and the
-board DTB with GCC), and dt_binding_check/dtbs_check. On a Securifi
-Almond+ this series boots v7.4-rc1 to an initramfs shell with
-both CPUs online ("smp: Brought up 1 node, 2 CPUs"; IPIs and the TWD
-timer tick on both cores); the L2C-310, the global and TWD timers and
-the UART driver (ttyCS0) come up. The kernel was started from a
-running OpenWrt system with a small kexec-style loader rather than
-from the stock U-Boot, because U-Boot enters the kernel with the MMU
-on (see 1 below). The same patches on Linux 6.18 in OpenWrt, with the
-head.S workaround from 1, also boot from NAND through the stock U-Boot;
-that is how the secondary CPU wake-up fix in v4 was found.
+The series builds on Serge Semin's channel-restart and callback work
+[0-2], using virt-dma following Andy's review [3].
 
-The boot watchdog and restart support are handled by the separate ARM
-TWD watchdog driver, using CPU0 as the system watchdog. Guenter Roeck
-has applied v9 to his watchdog-next branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git/commit/?id=52d91ea73e05c349669fe5c87a09df9476bbbf55
-That driver is not included here and has not yet reached the current linux-next or mainline snapshot. The stock
-bootloader leaves the watchdog armed, so without that driver enabled
-this minimal platform series still resets after roughly five minutes
-and has no restart handler. For normal operation it should be integrated with that driver and
-CONFIG_ARM_TWD_WATCHDOG enabled.
+Based on dmaengine/fixes at d460a02aa0ac.
 
-The UART source in this version is identical to the one used in the
-latest RAM tests on 21 November, in a combined platform/peripheral test
-tree on v7.4-rc1. Those tests brought up two CPUs and ttyCS0 with
-PROVE_LOCKING and returned to OpenWrt after watchdog expiry and restart.
-They are additional evidence for the platform and UART path, not tests
-of direct stock U-Boot entry or of system suspend.
+[0] https://lore.kernel.org/r/20240911184710.4207-1-fancer.lancer@gmail.com
+[1] https://lore.kernel.org/r/20240911184710.4207-2-fancer.lancer@gmail.com
+[2] https://lore.kernel.org/r/20240911184710.4207-3-fancer.lancer@gmail.com
+[3] https://lore.kernel.org/r/avrHOJ-fVZOO32bI@ashevche-desk.local
 
-AI assistance: coding assistants were used to develop and revise this
-series. Codex performed the current preflight checks and cover update.
-
-Open questions:
-
-1. The same U-Boot enters the kernel with the MMU and data cache
-   enabled (identity map with XN set, dirty lines left in the D-cache),
-   which breaks the decompressor. The OpenWrt port carries a small
-   workaround at the start of arch/arm/boot/compressed/head.S that
-   cleans the cache and turns the MMU off. It is not part of this series.
-   Replacing the bootloader is possible but risky for users of this
-   (discontinued) device. Would a quirk of that kind be acceptable in
-   head.S at all, or should this be solved outside the kernel (e.g. a
-   chain-loaded bootloader)? For the tests below the kernel was started
-   from a running Linux with the MMU off, so this was not an issue.
-
-2. The APB clock is 100, 150 or 170 MHz depending on the boot strap pins.
-   It is modelled as a fixed-clock with the rate set in the board dts.
-   A clock driver for the global control block, which also contains the
-   strap, pinmux and reset registers, will follow and replace it.
-
-3. The Cortex-A9 r2p1 is also affected by errata 742230, 742231, 743622
-   and 751472, whose workarounds are not available on multiplatform
-   kernels because they are expected to be applied by the bootloader.
-   The stock U-Boot does not apply them. Is there a preferred way to
-   deal with this?
-
-4. The UART ports are named ttyCS to avoid clashing with the 8250 driver
-   in multi_v7_defconfig, and PORT_GENERIC is used instead of a new port
-   type. The FIFO depth is not documented; the driver assumes 16.
-
-5. The top 64 MiB of RAM are reserved: the vendor firmware gives them to
-   the packet engine queue manager and the stock kernel is booted with
-   mem=448M. The reservation will be referenced by the network driver
-   later; I kept it now so that the memory is not handed out and later
-   claimed.
-
-Planned follow-ups, as separate series: the peripheral interrupt
-controller, GPIO and I2C drivers (posted separately, one series per
-subsystem, with their device tree nodes to follow once this series is
-merged), the global control block/clock, RTC, NAND,
-PCIe (DesignWare glue), MDIO, the Ethernet/packet engine and a fix for
-the SX8650 touchscreen.
+Assisted-by: Codex:gpt-6-astra
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
 ---
+Changes in v12:
+- Skip channels without pending transfer or error status before taking
+  their lock in the controller tasklet, following Sashiko's review.
+- Link to v11: https://patch.msgid.link/20261120-submit-dw-dma-synchronize-v1-v11-0-9b9166bc2cc7@gmail.com
+
+Changes in v11:
+- Credit Frank Li for suggesting the preparatory channel and lock split.
+- Cite Serge Semin's callback fix and explain why status polling still
+  processes completions, following Andy Shevchenko's review.
+- Rebase onto dmaengine/fixes at d460a02aa0ac. No code changes.
+- Link to v10: https://patch.msgid.link/20261119-submit-dw-dma-synchronize-v1-v10-0-3a737597a0d1@gmail.com
+
+Changes in v10:
+- Split the channel and lock member changes from the virt-dma descriptor
+  and callback conversion, following Frank Li's review.
+- Preserve the bus error and unconfirmed byte count for both the status
+  getter and the result callback. Reserve error storage during preparation
+  so submitting a prepared transfer cannot fail.
+- Use the DMA core's existing callback drain on channel release.
+- Link to v9: https://patch.msgid.link/20261117-submit-dw-dma-synchronize-v1-v9-0-7dc066ed0bcf@gmail.com
+
+Changes in v9:
+- Simplify the software-LLP residue calculation and remove unnecessary
+  braces, following Andy's review.
+- Link to v8: https://patch.msgid.link/20261116-submit-dw-dma-synchronize-v1-v8-0-4a82d64fcd1a@gmail.com
+
 Changes in v8:
-- collect Linus Walleij's Reviewed-by for the platform/SMP patch
-- update watchdog status: v9 is applied in Guenter's watchdog-next;
-  the driver uses CPU0 and remains a separate runtime prerequisite
-- serial: drop SysRq, which needs uart_handle_break() while the UART
-  does not report a break; only run the RX and TX paths for the
-  enabled causes that are pending and return IRQ_NONE otherwise; drop a
-  stale TX empty event before enabling it (sashiko-bot)
-- Link to v7: https://patch.msgid.link/20261114-b4-cs75xx-v7-0-8f17f38821b4@gmail.com
+- Replace the private callback-deferral and synchronization patches with
+  a virt-dma conversion, following Andy's review.
+- Place the conversion after the completion and error-recovery fixes,
+  incorporating cookie ordering, completion-list cleanup and channel-release
+  draining in the same patch.
+- Keep residue extraction, status calculation and queued-residue reporting
+  separate, adapting them to virt-dma's active, issued and submitted state.
+- Use per-channel virt-dma callback draining while preserving polled
+  completion, software-LLP advancement and controller-tasklet exclusion
+  during resource release.
+- Keep child hardware LLIs under a single transaction descriptor and
+  distinguish submitted transactions from issued work.
+- Correct the residue-calculation and queued-residue Fixes tags to identify
+  the commits that introduced the affected paths, following Sashiko's review.
+- Attribute the cookie-completion and channel-release fixes included in the
+  conversion to the lock-splitting change, following Andy's tag review.
+- Link to v7: https://patch.msgid.link/20261115-submit-dw-dma-synchronize-v1-v7-0-8d58f3d49e4d@gmail.com
 
 Changes in v7:
-- rebase on v7.4-rc1
-- cpus binding: the boot loader parks the secondary core in a WFI loop
-  that polls the release register, not in a WFE loop
-- goldengate: drop Linus' Reviewed-by, the patch changed in v4 and v5
-  (wakeup IPI for the secondary core, PL310 erratum 769419); Linus,
-  could you have another look?
-- board dts: drop the ramoops region, it is only useful for development
-- cover: the serial patches go with the rest of the series, not through
-  the tty tree on their own (Krzysztof)
-- move Signed-off-by after the other trailers
-- collect Reviewed-by tags
-- Link to v6: https://patch.msgid.link/20261013-b4-cs75xx-v6-0-37e8f3969b7c@gmail.com
+- Use a scoped channel-lock guard in dwc_tx_status(), following Frank's
+  review, keeping polled completion and residue lookup in the same scope.
+- Collect Frank's Reviewed-by tags for the residue and completion patches.
+- Link to v6: https://patch.msgid.link/20261103-submit-dw-dma-synchronize-v1-v6-0-2ee0c348224d@gmail.com
 
 Changes in v6:
-- serial: also ignore overruns when CREAD is cleared, everything received
-  is dropped then (sashiko-bot)
-- Link to v5: https://patch.msgid.link/20261013-b4-cs75xx-v5-0-4e72aa383d39@gmail.com
+- Keep dwc_get_hard_llp_desc_residue() next to dwc_get_sent() when
+  converting it to return residue, following Frank's review.
+- Remove inherited RFC notes from the individual patches, retaining
+  the revision history in this cover letter.
+- Link to v5: https://patch.msgid.link/20261102-submit-dw-dma-synchronize-v1-v5-0-d3207758fbf9@gmail.com
 
 Changes in v5:
-- goldengate: select PL310_ERRATA_769419, the PL310 is r3p1-50rel0
-  (CACHE_ID 0x410000c7), not r3p2 as v4 said; fix the revision in the
-  commit message and here
-- serial: scale the TX FIFO wait in putchar with the frame time, 10 ms is
-  shorter than one character below 1200 baud (sashiko-bot)
-- serial: no change for the other two sashiko-bot points on v4:
-  uart_port_tx() checks tx_ready before it sends x_char, and SysRq is
-  reachable through MAGIC_SYSRQ_SERIAL_SEQUENCE; the UART has no break
-  indication that the driver could use
-- Link to v4: https://patch.msgid.link/20261012-b4-cs75xx-v4-0-df250d903682@gmail.com
+- Rebase onto dmaengine/fixes at 6628e7d4c6b2, using the shared
+  dmaengine_chan_dev() helper for channel logging.
+- Split residue handling into a behavior-preserving extraction, status
+  calculation, scanner simplification and queued-residue reporting,
+  following Frank's review.
+- Share completed-descriptor freeing between the tasklet and channel
+  release, retaining callbacks for normal completion and suppressing
+  them during teardown. Name the helper dwc_free_completed().
+- Carry Frank's additional review tags and put the submitter sign-off
+  after the review tags.
+- Link to v4: https://patch.msgid.link/20261029-submit-dw-dma-synchronize-v1-v4-0-fea447d9f285@gmail.com
 
 Changes in v4:
-- serial: use guard()/scoped_guard() for the port lock and the port
-  table mutex (Jiri Slaby)
-- serial: honour INPCK/IGNPAR: report parity and framing errors with
-  TTY_PARITY/TTY_FRAME and insert the overrun marker after the characters
-  still in the FIFO (sashiko-bot)
-- goldengate: also send a wakeup IPI to the secondary core: the stock
-  U-Boot parks it in WFI, SEV alone only worked when it was parked by
-  another kernel (found booting from NAND instead of from RAM); the
-  change is small, I kept Linus' Reviewed-by
-- drop the RFC prefix
-- Link to v3: https://patch.msgid.link/20261012-b4-cs75xx-v3-0-0e0d17a098cf@gmail.com
+- Split v3's callback-deferral patch into cookie accounting, residue
+  calculation, channel-release draining and callback-deferral patches,
+  following Frank's review. The resulting seven-patch series preserves
+  v3's final implementation.
+- Place device_synchronize before callback deferral so clients can drain
+  deferred notifications when the completion list is introduced.
+- Carry Frank's Reviewed-by tags on the unchanged channel-completion,
+  error-recovery and device_synchronize patches.
+- Link to v3: https://patch.msgid.link/20261023-submit-dw-dma-synchronize-v1-v3-0-c62bf048f5ce@gmail.com
 
 Changes in v3:
-- serial: do not put the console setup callback in .init.text, it is
-  called from a probe that may be deferred past boot (sashiko-bot)
-- collect Reviewed-by tags
-- Link to v2: https://patch.msgid.link/20261006-b4-cs75xx-v2-0-b7d6e1e24d44@gmail.com
+- Order channel-completion and error-recovery locking before callback
+  deferral, retaining four patches.
+- Require a locked RAW.XFER event before retiring a transfer; zero source
+  residue alone cannot establish destination completion.
+- Preserve polled completion and software-LLP progress in tx_status(),
+  queuing client notifications for the controller tasklet.
+- Serialize cookie updates with termination and report queued residue.
+- Drain deferred notifications on channel release and let a pending
+  tasklet return without MMIO after the last channel is released.
+- Adapt Serge's two patches and retain his authorship and revision notes.
+  Drop the Tested-by tags that covered their earlier implementations.
+- Identify the introduction of the synchronization API in the final
+  patch's Fixes tag.
+- Link to v2: https://patch.msgid.link/20261022-submit-dw-dma-synchronize-v1-v2-0-5244e94dca8c@gmail.com
 
 Changes in v2:
-- serial: drop the empty break_ctl, request_port and release_port
-  callbacks, comment why set_mctrl stays, add a copyright line (Greg)
-- serial: take the port lock around all IE accesses in startup, flush
-  stale RX data on startup and disable the receiver on shutdown
-- serial: bound the RX loop per interrupt, check RXDAT_VALID in
-  poll_get_char, scale the console TX drain timeout with the frame time
-- serial: serialise port index allocation, reject too low clock rates
-- serial: name the driver after the vendor (cortina-uart.c,
-  SERIAL_CORTINA), as the same block is used in the Cortina Access SoCs
-  (Linus Walleij, Arnd Bergmann); the binding and the help text name
-  the Cortina Systems CS75xx and Cortina Access parts (Jason Li)
-- serial binding: describe the CS7542 only; other SoCs get their own
-  compatible with "cortina,cs7542-uart" as fallback (Conor Dooley)
-- debug: keep the character register intact on BE8 in senduart
-- platform: move arch/arm/mach-cortina to arch/arm/mach-goldengate, as
-  mach-gemini is a Cortina SoC too, and use one ARCH_CORTINA_ACCESS
-  symbol for the whole family, as for the 64-bit Cortina Access parts,
-  with the rationale in the commit message (Linus Walleij, Krzysztof
-  Kozlowski, Arnd Bergmann); mach-goldengate vs. mach-cortina is still
-  open, I am happy to rename the directory if mach-cortina is preferred
-- collect Reviewed-by and Acked-by tags
-- Link to v1: https://patch.msgid.link/20260930-b4-cs75xx-v1-0-4617c4463529@gmail.com
+- Carry Serge Semin's two posted fixes before the synchronization change,
+  preserving his authorship and revision notes. Add the requested stable
+  Cc trailers and Andy Shevchenko's Tested-by tags to those unchanged fixes.
+- Add a separate error-recovery fix for stale error status, empty channel
+  lists and software-LLP state when terminating or restarting a channel.
+- Use tasklet_disable()/tasklet_enable() instead of tasklet_kill() so
+  synchronization preserves scheduling requests from other channels.
+- Explain descriptor ownership during termination and acknowledge the
+  shared-tasklet scheduling race reported by Sashiko.
+- Link to v1: https://patch.msgid.link/20261021-submit-dw-dma-synchronize-v1-v1-1-6af85c2d6f69@gmail.com
+
+Revision history from Serge's series:
+
+Link: https://lore.kernel.org/dmaengine/20240802080756.7415-1-fancer.lancer@gmail.com/
+Changelog RFC:
+- Add a new patch:
+  [PATCH 2/2] dmaengine: dw: Fix XFER bit set, but channel not idle error
+  fixing the "XFER bit set, but channel not idle" error.
+- Instead of just dropping the dwc_scan_descriptors() method invocation
+  calculate the residue in the Tx-status getter.
 
 ---
-Fil Dunsky (10):
-      dt-bindings: vendor-prefixes: Add Securifi
-      dt-bindings: arm: Add Cortina Systems CS7542 and Securifi Almond+
-      dt-bindings: arm: cpus: Add Cortina Systems CS7542 enable method
-      ARM: goldengate: Add support for the CS75xx SoC family
-      ARM: debug: Add Cortina Systems CS75xx UART0 support
-      dt-bindings: serial: Add Cortina Systems CS7542 UART
-      tty: serial: Add Cortina UART driver
-      ARM: dts: cortina: Add CS7542 SoC and Securifi Almond+ board
-      ARM: multi_v7_defconfig: Enable Cortina Systems CS75xx support
-      MAINTAINERS: Add entry for Cortina Systems CS75xx
+James Hilliard (4):
+      dmaengine: dw: serialize error recovery with channel termination
+      dmaengine: dw: embed a virt-dma channel
+      dmaengine: dw: use virt-dma for descriptor and callback ownership
+      dmaengine: dw: report residue for queued transfers
 
- Documentation/devicetree/bindings/arm/cortina.yaml |  31 ++
- Documentation/devicetree/bindings/arm/cpus.yaml    |   2 +
- .../bindings/serial/cortina,cs7542-uart.yaml       |  52 ++
- .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
- MAINTAINERS                                        |  11 +
- arch/arm/Kconfig                                   |   2 +
- arch/arm/Kconfig.debug                             |  16 +-
- arch/arm/Makefile                                  |   1 +
- arch/arm/boot/dts/Makefile                         |   1 +
- arch/arm/boot/dts/cortina/Makefile                 |   3 +
- .../dts/cortina/cs7542-securifi-almondplus.dts     |  46 ++
- arch/arm/boot/dts/cortina/cs7542.dtsi              | 127 +++++
- arch/arm/configs/multi_v7_defconfig                |   3 +
- arch/arm/include/debug/cs75xx.S                    |  37 ++
- arch/arm/mach-goldengate/Kconfig                   |  19 +
- arch/arm/mach-goldengate/Makefile                  |   2 +
- arch/arm/mach-goldengate/platsmp.c                 |  72 +++
- drivers/tty/serial/Kconfig                         |  24 +
- drivers/tty/serial/Makefile                        |   1 +
- drivers/tty/serial/cortina-uart.c                  | 612 +++++++++++++++++++++
- 20 files changed, 1062 insertions(+), 2 deletions(-)
+Serge Semin (3):
+      dmaengine: dw: Fix XFER bit set, but channel not idle error
+      dmaengine: dw: extract hardware-LLP residue calculation
+      dmaengine: dw: calculate residue in the status getter
+
+ drivers/dma/dw/Kconfig  |   1 +
+ drivers/dma/dw/core.c   | 597 ++++++++++++++++++++++++------------------------
+ drivers/dma/dw/dw.c     |   2 +-
+ drivers/dma/dw/idma32.c |  18 +-
+ drivers/dma/dw/regs.h   |  35 +--
+ 5 files changed, 335 insertions(+), 318 deletions(-)
 ---
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-change-id: 20260930-b4-cs75xx-033a2c047508
+base-commit: d460a02aa0ac6ba9e5d87f8462f75d78be83146e
+base-tree: git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git fixes
+change-id: 20261021-submit-dw-dma-synchronize-v1-e550f47fd1da
 
 Best regards,
 --  
-Fil Dunsky <filipp.dunsky@gmail.com>
-
+James Hilliard <james.hilliard1@gmail.com>
 
