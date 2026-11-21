@@ -1,57 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795295165;
-	b=qKhUosApffTiRgKXlNI1tkNMB23VzEFQJ3v9nL1ACI9EnY2twNp0L07puqFCTKp/j31S
-	 6E38BU2xNzQgqYzba+/H3RMqhrMOfnQQ0Up3aba9ZZxIp3B92KfvDG1/nyh0VdoAGTnyv
-	 U2BGOJzFw5Ckr/7GItcxMnXzhRtJLkhwoIl8WJSHDhWAJp5O0gKBku5Nm/N/7gr6T+7wt
-	 L+n5T7HZbtASqU+QQuIv10SoRxiNNUDLonW9x8aFHHyenJ7db+au7CtVs11nqgxK60F/5
-	 2BHooRHnGqF6WkFM/r5pmMX2RySThTxF8LDPc6fkiips8k7PtQQOJrDk5rObNWi/zIQ==
+	t=1795295450;
+	b=JCi87Q4EkvMwfYZWKdTs4ExK/C57l4o3dnk8A8GdnwC+dTpjJSVHKLfhjHcuTc1o3lgp
+	 ETgLGR9RWLyRV8uRweN3wdzCehAW0M7bTPv6MwY1lNqUfoD20ZHUYrJ4KcYlEF+jRpPZg
+	 E5dbXY5MIOpJLmoWthVRubOCfrso1lKLDon9DnFKvuLOONG0285vmzEwkIVC76pQVTOM+
+	 XI0/Z68/LJ9iyzxM51oBU2YIPizhRSMGZpcGoGvZVYDP6NoEQFRmKC8x28a+reu1EhVKr
+	 UGngSuZoMeofW9Rma+6dS/Nvb+UM5peWG0hREbR5+tS9/twr8CcUXPxk9vpB7z32/TA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795295165;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795295450;
 	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
 	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=AQOuc6P4A7e7laZ5onDFzK/I38BHgS/Q4vVy1qpK7xE=;
-	b=JB625cO+i+pHogJjybUCXT4ll5/KKmT/QCn8FdAHawR8hqdR+o4542TMBlXnsy311REK
-	 fqGURKlcerV2MJV4YXfuQopxbZBw2Jtj0AupmQPczM9gqlM0J1d3bIuZlZiux3R2K9V6F
-	 bI6jTLBOQ03Nd5R4+dFVg4QZKCk3TlZWDHYjXPycpmSiSCopUTnDyxPU5WhRxo7E4S55c
-	 inxzaFOF/UT1851wJUSd3rdQCePmkFXpl9lXvH+5/wse4XPOvVzylDCJEHxV4WanfUcEI
-	 PzTs+lvGo+5rIG3oBiIJPo1+P37kHwzaWNLYaNCdyQpvG1OnQDGg+bTJ7wHNG2IosRg==
+	bh=mX91vnJBAj51b8TrYzcl2pOoknrSWxJKSn+DxSW1xkI=;
+	b=Ql5eLsy7Oqnq22ya38yzmINufG0uziuZ2kxJEFcgFGJe+bnGQs+uJtBqCO0sjRJjfkkI
+	 MUxXiJD6kZEC+EJg0ssXl6X8ykaEtaEKWSguqzqeM3k7WXkZJt9S4+YNMXrTqd+WXawmq
+	 chgk4ZD1MApf3GQoy3xUH/PXYxY04/38vHANLxuQDFfuYvTqvgiaT4hqJVmvCY8fDzyjh
+	 varqhxsdVf0WOYJJy8fuFpqG9RjYSwNmM+KKI4KX/HKDSuXjLu72CRbDVrnHNU/M5HFRJ
+	 A5GNQgb/G5l0bA6pPzUtRPrjgHWj6eB8L5ungZCd+XdgoW76PfyLC9ROwUoLwfMf05g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WUTQh97k;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eyktJPKm;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67521606A320;
-	Sat, 21 Nov 2026 21:06:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E92606A33A;
+	Sat, 21 Nov 2026 21:10:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WUTQh97k
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC3E1F000C6;
-	Sat, 21 Nov 2026 21:06:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eyktJPKm
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3531F000CA;
+	Sat, 21 Nov 2026 21:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795295165;
-	bh=AQOuc6P4A7e7laZ5onDFzK/I38BHgS/Q4vVy1qpK7xE=;
+	s=k20260515; t=1795295450;
+	bh=mX91vnJBAj51b8TrYzcl2pOoknrSWxJKSn+DxSW1xkI=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=WUTQh97ku3zVPvi5VUesmp6Lv1yCNCDc7kxHibtVdIn6FTD+R5nfpvL7i+TvfzbDO
-	 wf2PhOzHj+ttjbc8s1WtKtbYOvPBy67KEAdSJYuxlkfVxPJfO0c9J0mu6258i5E8LT
-	 FaEx8a0kwlUbx6DIS1RMR51Mnzlrnki2HGW4ZcGSrGoOYZRitEpfbJV4AJhU3hBFmi
-	 6+VspxxMAj3E69UGcsOtE7Zki5nIDVW+5FW9sJG/eB01CWwja75mJPMAKNLZRcSfjz
-	 fXu2Q9v/9S1Etv+NFRkir6lXAxnuVKJxjcnk/mYTA7raWVI+aSPlcOrzrSw0701aJE
-	 d6X4XOXy6SKLg==
-Message-ID: <sashiko-outbox-227370@kernel.org>
+	b=eyktJPKmNFRJXlrpXNeeOvn8njhL/XCasAwhPYCIK4QAN9pdUly4g2TX8xDgb+g84
+	 jliOP+t7klkok27CFYwyuXJrJjpc15dZ0JkitJXk0wR6rzVgxPir+MMhgdn5dDIfrC
+	 jsFN4VBillMaN5b3zPfTFqQHOu5sh98j37UNewUuwXGgIwssS1pBvLJVKLNsx4bMD1
+	 nFW/t/E5qZFzPjCoEIG2bEtCmRfB+lEf+3rPni2PexirKKgtmh8bKdWbmqq5b7XBO7
+	 TBs6cGcwkC4SGEOjGefoMbuxVFiVIXEZNc0G+Vuze76nMW9O9TPb8trpp41SpKBO2I
+	 IIDRHtdTxdHvw==
+Message-ID: <sashiko-outbox-227384@kernel.org>
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v8 06/10] dt-bindings: serial: Add Cortina Systems
- CS7542 UART
+Subject: Re: [PATCH v8 07/10] tty: serial: Add Cortina UART driver
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Fil Dunsky" <filipp.dunsky@gmail.com>
 Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20261122-b4-cs75xx-v8-6-5f971b0dc69c@gmail.com>
+In-Reply-To: <20261122-b4-cs75xx-v8-7-5f971b0dc69c@gmail.com>
 References: <20261122-b4-cs75xx-v8-0-5f971b0dc69c@gmail.com>
- <20261122-b4-cs75xx-v8-6-5f971b0dc69c@gmail.com>
+ <20261122-b4-cs75xx-v8-7-5f971b0dc69c@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 21 Nov 2026 21:06:04 +0000
+Date: Sat, 21 Nov 2026 21:10:49 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -63,65 +62,57 @@ Precedence: list
 
 Thank you for your contribution! Sashiko AI review found 1 potential
 issue to consider:
-- [Low] dt-bindings: serial: cortina,cs7542-uart: interrupts listed
-  before clocks
+- [Medium] tty: serial: cortina-uart: unsigned port->irq check in
+  cortina_uart_probe()
 --
 
-commit 9cf5cd80f03458b63f383ce2437badbe51f15cfd
+commit a305c8b2604a8b9812e1e52e3a3c6ade80f87136
 Author: Fil Dunsky <filipp.dunsky@gmail.com>
 
-dt-bindings: serial: Add Cortina Systems CS7542 UART
+tty: serial: Add Cortina UART driver
 
-This commit adds the Device Tree binding schema for the UART found in the
-Cortina Systems CS75xx (Goldengate G2) SoCs.
+This commit adds a serial driver for the UART found in Cortina Systems
+CS75xx (Goldengate G2) SoCs, including system console and earlycon
+support.
 
-> diff --git a/Documentation/devicetree/bindings/serial/cortina,cs7542-uart=
-.yaml b/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
+> diff --git a/drivers/tty/serial/cortina-uart.c b/drivers/tty/serial/corti=
+na-uart.c
 > new file mode 100644
-> index 0000000000000..2879a71880239
+> index 0000000000000..eb63848f09257
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/cortina,cs7542-uart.yaml
-> @@ -0,0 +1,52 @@
+> +++ b/drivers/tty/serial/cortina-uart.c
+> @@ -0,0 +1,612 @@
 
 [ ... ]
 
-> +properties:
-> +  compatible:
-> +    const: cortina,cs7542-uart
+> +static int cortina_uart_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev =3D &pdev->dev;
+> +	struct cortina_uart_port *up;
+> +	struct uart_port *port;
+> +	struct resource *res;
+> +	int id, ret;
 > +
-> +  reg:
-> +    maxItems: 1
+> +	up =3D devm_kzalloc(dev, sizeof(*up), GFP_KERNEL);
+> +	if (!up)
+> +		return -ENOMEM;
 > +
-> +  interrupts:
-> +    maxItems: 1
+> +	port =3D &up->port;
 > +
-> +  clocks:
-> +    maxItems: 1
+> +	port->membase =3D devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+> +	if (IS_ERR(port->membase))
+> +		return PTR_ERR(port->membase);
 > +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    serial@f0070110 {
-> +        compatible =3D "cortina,cs7542-uart";
-> +        reg =3D <0xf0070110 0x30>;
-> +        interrupts =3D <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks =3D <&apb_clk>;
-> +    };
+> +	port->irq =3D platform_get_irq(pdev, 0);
+> +	if (port->irq < 0)
+> +		return port->irq;
 
-[Severity: Low]
-This isn't a bug, but clocks is normally listed before interrupts in
-properties, required, and example nodes (compatible, reg, clocks,
-interrupts).
+[Severity: Medium]
+Does assigning the return value of platform_get_irq() directly to
+port->irq prevent error detection here?  struct uart_port defines irq as
+unsigned int, so port->irq < 0 is always false and negative error codes
+such as -EPROBE_DEFER allow probe to succeed with a bogus IRQ number.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261122-b4-cs75xx-=
-v8-0-5f971b0dc69c@gmail.com?part=3D6
+v8-0-5f971b0dc69c@gmail.com?part=3D7
