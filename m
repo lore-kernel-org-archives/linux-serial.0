@@ -1,69 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795428724;
-	b=e7ZylcIJ9/3aa1kHG8QyDct0EXwbk8EMcp08k02tPsQrKl2diCPngIDM/1AEMHFJz2Vy
-	 mKZOvY3Km6uHCqxLwOP03BpRZhx7IOrLpEHYKA/vHAPrQsfqxfashM3tpPhlt3wfDK4Y/
-	 VlL1XJQwEwoebTflcnnQrH4auuBJETAnVqIH2ItUxI2tAkkAQzpOMQ9Caz/MeCg9syAGN
-	 rp0TMOwjxgNgp2e2+fnFmkvcRJMUydoDgi7u9gP8HIeiXhro5qEZqXbbD3dbNQqEOjO05
-	 +dEK1B5cZ/v1ThybqApVucFmiDTvCN0Ppi3yeshhH7j1VxtBybFZikEtOQKYNDTwsjA==
+	t=1795429839;
+	b=ISlMyrKUizRRH0NpqTCQJ3pKggPCgPYkQtAkwg4J/WXCR8oPdE965gNBhKK+SyONJ1HS
+	 TU3mG+ekl79aKMIDxsisN3x/GMqIS3Q4V6hJh4mdqzfYkth/gn8PSg5JcI5iA2bhrXNrR
+	 wg+L4H5BWEVMpjvtq4kGY1JrVv9d1TZUtwKIqxFp5ZTR3bjbfk0qWGF4CZtHZ58kyH+SQ
+	 9nJ6C3ThSmgIvJEFY3RsO1HpS8frfgf2JJZ8KCz6HWCAivOUXbb2lm4Qb+nSvdzbgx0hc
+	 ndYvE3+Q/34ENStNgN3jOEjDquxToQh3KizdC1ijUtNSpCeMT5N3maC6RYDXeig0kRQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795428724;
-	h=DMARC-Filter:X-UUID:X-CID-P-RULE:X-CID-O-INFO:X-CID-META:X-CID-BVR:
-	 X-CID-BAS:X-CID-FACTOR:X-CID-RHF:X-UUID:Received:From:To:Cc:Subject:
-	 Date:Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=NO0x74vFEbFRFk1Ud+R7tW+jyS24/LF/j/409ZNv2N8=;
-	b=Ch0YB7zUZEJGAlaGLNBcAZFYy+CMhmPLQvVyYrbYGaMsTxW1Vq4CJg4G/tnIQn2/fnzk
-	 HMVyfHYf0/nuPyy7ExPBaQBMnhcWxNOAKgla+DLDMwJPB+lvbWso8YTtuOwSiWMAMI9eJ
-	 VEJJBW3tpScc2yDmq0OJzjGfFJP9AEw86wuAdltEGvPLKLn72rIltJDowhGAYkw1JFZ9B
-	 YwappWRQ9zceDFVXNFf8do7b8idbmmjej9GtqGCLQ8458HaWavq5LU3KhRtdnCu4io/7j
-	 e0Cmi84Ck6F8uc/3cfuucRRTVuzFnUIoSdDo+L9b5rc+poNDOyv1/2AnpOQ4pY3I/gg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795429839;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=csJ8UiN05u+HBHlaQbfO4lV0aFQ3+RlzZYD6cCBi5s0=;
+	b=znG34CrjscmBrGNjJ3iECVWluoVylLkP8GqWm9ORO7VEEbxRgRTS20+78id16huvKaqG
+	 P7n6GwKAIF9C7sLd0J4Rdrv6eOgjhyMqBs5lffNwQ7reGBv7st1Fc8aOZJuCTkTZ2JrWD
+	 qe3OKQznlw6O8rm2DJ7xXonXygsn8B1kK2gbvs5ONZwMgMBCOuJybAdUmt3N0+gUu7+pV
+	 JdJUjZgvzyvaHVK+IStCuNyMaGjRUUDfclGwotXn7zpmG88pkTQV5e9TpqhKYy1WeEZ4Q
+	 /Oq9XSIPpjPOkNSDrDi0IRE0EEToOkDXnUi+LVxuhWXI9KZfMUZWGOiXZWC+oCddhrQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=kylinos.cn;
-	spf=pass smtp.mailfrom=kylinos.cn;
-	arc=none smtp.remote-ip=124.126.103.232
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wis7Wk0p;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70ACA606A33E;
-	Mon, 23 Nov 2026 10:12:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70ACA606A33E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 4ed9c192e72611f19a56ed5b684f684d-20261123
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:9026a8a2-b792-4f5a-9c6b-aa1809da5366,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:7db8b62,CLOUDID:08f9c6b08b8bae52e26abe2fa9450a67,BulkI
-	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50|99,EDM:-3,I
-	P:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
-	,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 4ed9c192e72611f19a56ed5b684f684d-20261123
-Received: from localhost [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <pengyu@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 682078225; Mon, 23 Nov 2026 18:11:54 +0800
-From: Yu Peng <pengyu@kylinos.cn>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Helge Deller <deller@gmx.de>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>,
-	Nicolas Pitre <nico@fluxnic.net>,
-	Ronan Pigott <ronan@rjp.ie>,
-	linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linux-kernel@vger.kernel.org,
-	Yu Peng <pengyu@kylinos.cn>
-Subject: [PATCH] vt: Skip hardware scrolling while blanked and fix VESA blanking
-Date: Mon, 23 Nov 2026 18:11:51 +0800
-Message-Id: <20261123101151.414436-1-pengyu@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75CC8606A31E
+	for <linux-serial@vger.kernel.org>; Mon, 23 Nov 2026 10:30:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wis7Wk0p
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1FD21F000E0;
+	Mon, 23 Nov 2026 10:30:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795429839;
+	bh=csJ8UiN05u+HBHlaQbfO4lV0aFQ3+RlzZYD6cCBi5s0=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=Wis7Wk0p68ORnvNa8QqjCrd6ivro3xkPg3VfxYeBulGniwdO4UrLIjJEEmmDVoEdj
+	 SETZT7tgD+iN6mv5lH8L1LeDTrvZ1aeftdkw+oRME0gSnKYHvKyHU0Kl0Ri3JbdCgP
+	 i0ZJruIgLXQhGmzafCh9siIRb/57D3TpF57TcvZsltOLT9SCQS97fZdeQLJy7KnzvA
+	 yLLczHP/3P8ATihvZTlyMARyqhlANjR3/Afj/pyI00mATpAl5QlHi0+hG2OkJDFSiA
+	 Oa8R1b3LWmpDIPUO486MhT3DpS9pZkGSg4smjtJINSX2rwfL8pVyfRBPeE5m8kDJif
+	 hIG6QM5xza16A==
+Message-ID: <sashiko-outbox-229040@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] vt: Skip hardware scrolling while blanked and fix VESA
+ blanking
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Yu Peng" <pengyu@kylinos.cn>
+Cc: linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org
+In-Reply-To: <20261123101151.414436-1-pengyu@kylinos.cn>
+References: <20261123101151.414436-1-pengyu@kylinos.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 23 Nov 2026 10:30:38 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -72,65 +59,65 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-When vgacon is blanked without palette blanking (!vga_palette_blanked),
-vgacon_set_origin() rejects VRAM so vc->vc_origin points to the heap
-buffer vc->vc_screenbuf. Calling hardware scroll callbacks while blanked
-then treats vc->vc_screenbuf as VRAM and causes out-of-bounds accesses.
+Thank you for your contribution! Sashiko AI review found 1 potential
+issue to consider:
+- [Medium] vt: con_scroll() skips vgacon_scroll() while palette-blanked
+  in VRAM
+--
 
-Use con_should_update() to skip hardware scrolling and scrollback while
-blanked, allowing con_scroll() to fall back to software scrolling.
-In vgacon_blank(), return !vga_palette_blanked for VESA blanking so
-direct VESA blanking switches vc->vc_origin to vc->vc_screenbuf
-immediately instead of losing output on unblank.
+commit fd87e862e45bd2b98326c37c1251a1bf748045f6
+Author: Yu Peng <pengyu@kylinos.cn>
 
-Assisted-by: LLM
-Signed-off-by: Yu Peng <pengyu@kylinos.cn>
----
- drivers/tty/vt/vt.c            | 7 ++++---
- drivers/video/console/vgacon.c | 2 +-
- 2 files changed, 5 insertions(+), 4 deletions(-)
+vt: Skip hardware scrolling while blanked and fix VESA blanking
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 6a6eb8b2a6dec..39be682645097 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -726,8 +726,8 @@ static void con_scroll(struct vc_data *vc, unsigned int top,
- 		return;
- 
- 	vc_uniscr_scroll(vc, top, bottom, dir, nr);
--	if (con_is_visible(vc) &&
--			vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
-+	if (con_should_update(vc) &&
-+	    vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
- 		return;
- 
- 	src = clear = (u16 *)(vc->vc_origin + vc->vc_size_row * top);
-@@ -3488,7 +3488,8 @@ static void console_callback(struct work_struct *ignored)
- 	if (scrollback_delta) {
- 		struct vc_data *vc = vc_cons[fg_console].d;
- 		clear_selection();
--		if (vc->vc_mode == KD_TEXT && vc->vc_sw->con_scrolldelta)
-+		if (con_should_update(vc) && vc->vc_mode == KD_TEXT &&
-+		    vc->vc_sw->con_scrolldelta)
- 			vc->vc_sw->con_scrolldelta(vc, scrollback_delta);
- 		scrollback_delta = 0;
- 	}
-diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index 09f7c376b4689..3a706c1f1cb28 100644
---- a/drivers/video/console/vgacon.c
-+++ b/drivers/video/console/vgacon.c
-@@ -796,7 +796,7 @@ static bool vgacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
- 			vga_vesa_blank(&vgastate, blank);
- 			vga_vesa_blanked = blank;
- 		}
--		return false;
-+		return !vga_palette_blanked;
- 	}
- }
- 
--- 
-2.43.0
+This commit uses con_should_update() in con_scroll() and
+console_callback() to skip hardware scrolling and scrollback while the
+console is blanked, and returns !vga_palette_blanked from vgacon_blank()
+for VESA blanking.
 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 7dbc0072a40a9..0e24e4ea99bf1 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -726,8 +726,8 @@ static void con_scroll(struct vc_data *vc, unsigned i=
+nt top,
+>  		return;
+> =20
+>  	vc_uniscr_scroll(vc, top, bottom, dir, nr);
+> -	if (con_is_visible(vc) &&
+> -			vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
+> +	if (con_should_update(vc) &&
+> +	    vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
+>  		return;
+> =20
+>  	src =3D clear =3D (u16 *)(vc->vc_origin + vc->vc_size_row * top);
+
+[Severity: Medium]
+Does checking con_should_update(vc) here break vgacon_scroll() while
+vgacon is palette-blanked?
+
+On color VGA text consoles (vga_video_type =3D=3D VIDEO_TYPE_VGAC), normal
+blanking in vgacon_blank() sets vga_palette_blanked =3D true and returns
+false, leaving vc->vc_origin pointing to uncached VGA MMIO VRAM rather
+than vc->vc_screenbuf.
+
+Because con_should_update(vc) is false whenever console_blanked is
+non-zero, con_scroll() skips vgacon_scroll() even when
+vga_palette_blanked is true.  Every scroll while palette-blanked then
+falls back to software scr_memmovew() directly over uncached VGA MMIO
+VRAM and overwrites vc->vc_origin in place instead of advancing through
+the 32KB VRAM scrollback buffer.
+
+In addition, if the console was scrolled back when do_blank_screen() ran,
+hide_cursor() -> vgacon_cursor() -> vgacon_restore_screen() ->
+vgacon_scrolldelta(c, 0) resets c->vc_visible_origin =3D c->vc_origin and
+returns early without calling vga_set_mem_top(c).  Skipping
+vgacon_scroll() (which calls vga_set_mem_top(c)) and then unblanking via
+vgacon_unblank() (which only restores the palette when
+vga_palette_blanked is true) leaves the VGA CRTC start address register
+stuck at the old scrolled-back VRAM offset.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261123101151.4144=
+36-1-pengyu@kylinos.cn?part=3D1
