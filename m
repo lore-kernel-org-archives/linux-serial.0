@@ -1,51 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=159.226.251.25
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795427358;
-	b=bSnwgp8/RpTE+LDjtgxOqDKjr/AvzNyitOizo/zaYEXld8wq8nfBwp8n3jxA9aIy0EGK
-	 C1zb73kcP+1jv/rn1osK/NW2p3qmtGvc54sXfZc2nWhI5d1hY+ShRLBL66y7TG2PRMfJR
-	 9MBpkkmbNq0PaymeyN2ClCUZB/3jrfZtwlgj+RQBxJ3iLqPYzSQQvXPniW+S7MMe47/u7
-	 bg1Ry41ZdrD8hLT+XoxW7gP/Lq9ChWl3WbrrQybnrZNJQ2xQlr/waeTtXDy1RNH2aK5jS
-	 3BIorVG11HhUfFRhZvOSdBf55y2IdBI3RdTmbO7rdmHeD7vUT2qKDzzs067Z1+i1bdQ==
+	t=1795427394;
+	b=5rCe9s6DGRa2phro5dsjg2G8p8siyfiEy0QxHm7b4lL4QWFTEfiCdz1uu892ykqI71zK
+	 HnQCJR7hdsGZ3Vn8MBoHUJVBGtyR4SGb8ctBJw1cZX3NBXnKqZ8Ie8O5uMjEQj6HJ5dFv
+	 KiT8WiCbpGCuDagPgarKJPhX0cP9dZKe9x3Z5pyfAe1K7Q+P6K8QLjzoeXH1ey4cE2NdK
+	 y+S8BaTt4c7Rloq2Rx0hgQ26t4lfFGWmkZrPVhxHwBTMWV9I2fhShpUwAzrkR7F+VTYTu
+	 MYXdBnBl9RndQ3Rn4WSgy+PVPG0FZe03MtO7tthgUE9w4Vj+v88WhxxFC8I5UMCh3UQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795427358;
-	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding:X-CM-TRANSID:
-	 X-Coremail-Antispam:X-Originating-IP:X-CM-SenderInfo;
-	bh=5PlAEmszs4I4I295Pe06hQbjyqPhFRRqJ+vKSzs0Ya8=;
-	b=BXrM5RHjWYaVDTRD1TJYdlEal2yd5U+dKyaVA0RxDbEZtAZiOhg58pgUMKFFDssREd8a
-	 mf+M0AC0t957T3ec19kYKaJnC6c/oO9TgYfJkuJdsaxdIVIqqQEL8v5vy4x5pdgy6L+oZ
-	 JiYsMm7JfB5DE86EBp08y6crj59yel7ofamDySoYpeyG+awlElmaF684ucSJtkQ+ktfmS
-	 hhRDNO8PuB/aNvjGc9oQ8R+2BjwnCpbp1+UBG8QztkRhtMzplVo7tcd/ubXE7E6tp2AMS
-	 WtiyUBcxC0ztdATuT70tbBe5li6Sqy0tnoFMtnPaeNo0d0VGZRiL7Zu4AjmRibcjFRg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795427394;
+	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=P2zIkU1n+ita+RQHERTvlRIt6fwGcjgFl4MCMyC3UWg=;
+	b=2F3+2y0enTiVUR80o/S2Y1yWUNGep3lA1K5HQ6YLFCmh5XmMBhNlfoS/sBwMrH5Ecy5W
+	 BFHZWnFD6Crb8AK1/AlDIYRxsIA1tgFJ/VLYqwcpAaeBe862V9XttKnpNq3al+SKqWGHJ
+	 iVX3e+WJS2le6iIg81oiBMgVsanTXjb5knYCxjfOAipF31ovMoM/tZp9ZO7xQZuVceW/9
+	 ZYH7XZ8Pqi0DqBZTEDx+XJVWIw8sCM6Hk7LXPB8QANbaBh+nsisNmsw+t77KvyRStLSp5
+	 7KABpcQuRAn6l4txhUK6HiOmG+K6tw/79uYcTjwshe94G9ZMAqrpVnTAVZngc+mWr8A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=iscas.ac.cn;
-	spf=pass smtp.mailfrom=iscas.ac.cn;
-	arc=none smtp.remote-ip=159.226.251.25
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=g5N90EsV;
+	arc=none smtp.remote-ip=148.251.105.195
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EFBD606A321;
-	Mon, 23 Nov 2026 09:49:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3EFBD606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from f3f1baf57000.home.arpa (unknown [36.110.52.2])
-	by APP-05 (Coremail) with SMTP id zQCowAAXr7QLDARryhPDAQ--.35445S2;
-	Mon, 23 Nov 2026 17:48:59 +0800 (CST)
-From: liutong <liutong@iscas.ac.cn>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	linux-serial@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH] serial: earlycon: bail out on zero progress in SBI DBCN write
-Date: Mon, 23 Nov 2026 09:48:43 +0000
-Message-Id: <20261123094843.540808-1-liutong@iscas.ac.cn>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C6B6606A321;
+	Mon, 23 Nov 2026 09:49:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3C6B6606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=g5N90EsV
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1795427392;
+	bh=WXScrJpd1VjqcBYjrIdUvV1HdNJY+7in8XAjuH3YRSw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=g5N90EsVCPTZzWR0NPIPT7fBHsvfVDWyhuTrZMo7RhSyElWQMOmtjdzhgd8lPn5rl
+	 FeP1BcC1QSVA/V8VNaxwyRZCEenCYOFzcgHDckyyoyK0welKFuEOr/2Ik+ppy4DDYH
+	 MGtc6kEjCIPbcy7igwxPTSFgj/io9GbElUS6Ok+shiKK6Qn/8dPUaxgIQaQcIYeuWg
+	 zR5QpgBcfkTFcEdfWuA8mV0hEIpiRGMPtBzcFGRlgCdze/mqxCZRqCRY7y85NzLQh7
+	 4oL+k4wYnkDjF1eCxV2SbUs6B0hZLxEYK6lW6AbQQCNVUdy3BZkmBMoZ/GjgV2kir+
+	 QgIGDES/Sw7GQ==
+Received: from [100.64.1.21] (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 4226B17E031C;
+	Mon, 23 Nov 2026 10:49:51 +0100 (CET)
+Message-ID: <32462cca-ea45-4af2-8c59-4e8a6d8ea0a5@collabora.com>
+Date: Mon, 23 Nov 2026 10:49:50 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -55,59 +61,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowAAXr7QLDARryhPDAQ--.35445S2
-X-Coremail-Antispam: 1UD129KBjvJXoWruryUXFy5Aw48ZFyfury7trb_yoW8Jr4fpw
-	129FyqyFW5tF1fZ3ZF9F15uFyrZa9rAry7KFyUCwnYv3sYqF4SkFW3ta4YgFyrJr97JF12
-	kF4YyFWrA3Wjk3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkab7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-	jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4
-	A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
-	w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jw0_WrylYx0Ex4A2jsIE14v26F4UJVW0ow
-	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAaw2AFwI0_JF0_Jw1l
-	42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-	WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
-	I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-	4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-	6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07b818PUUUUU=
-X-CM-SenderInfo: xolx301qj6x2xfdvhtffof0/
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 6/9] dt-bindings: input: mediatek,mt6779-keypad: Add
+ compatible for MT6895
+To: Alexander Letuchiy <asalde.le1@gmail.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Sean Wang <sean.wang@mediatek.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Wim Van Sebroeck
+ <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Thomas Gleixner
+ <tglx@kernel.org>, Mattijs Korpershoek <mkorpershoek@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Kees Cook <kees@kernel.org>,
+ Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ linux-input@vger.kernel.org, phone-devel@vger.kernel.org
+References: <20261113-initial-mt6895-v2-0-4ab0aa9fa391@gmail.com>
+ <20261113-initial-mt6895-v2-6-4ab0aa9fa391@gmail.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <20261113-initial-mt6895-v2-6-4ab0aa9fa391@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-sbi_dbcn_console_write() loops until all bytes are written and exits
-early only on an error. When sbi_debug_console_write() returns 0 it
-stays in the loop forever.
+On 11/13/26 20:05, Alexander Letuchiy wrote:
+> Add a compatible string for the keypad of the MediaTek MT6895 (Dimensity
+> 8000/8100) SoC. Its registers are the same as on MT6779, so it works
+> with the existing driver through the mediatek,mt6779-keypad fallback.
+> 
+> Signed-off-by: Alexander Letuchiy <asalde.le1@gmail.com>
 
-A zero return is not an error. Per the SBI specification, the call "may
-do partial/no writes if the debug console is not able to accept more
-bytes".
-
-OpenSBI can return 0 here. Its semihosting console reports 0 when a host
-write fails, and SBI passes that number back unchanged.
-
-Fix the check to use <= instead of <, so that a zero return also ends
-the loop.
-
-Fixes: c77bf3607a0f ("tty/serial: Add RISC-V SBI debug console based earlycon")
-Cc: stable@vger.kernel.org
-Signed-off-by: liutong <liutong@iscas.ac.cn>
----
- drivers/tty/serial/earlycon-riscv-sbi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
-index 0162155f0c83..a8ffee389e15 100644
---- a/drivers/tty/serial/earlycon-riscv-sbi.c
-+++ b/drivers/tty/serial/earlycon-riscv-sbi.c
-@@ -29,7 +29,7 @@ static void sbi_dbcn_console_write(struct console *con,
- 
- 	while (n) {
- 		ret = sbi_debug_console_write(s, n);
--		if (ret < 0)
-+		if (ret <= 0)
- 			break;
- 
- 		s += ret;
--- 
-2.34.1
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
