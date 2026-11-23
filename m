@@ -1,61 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795436742;
-	b=cEEqtTTAmajlVjp0YC0oz2zN6pFuScGGMYJoyzkJbYV+H7trfxTSVH/xrBVqBjjoQknM
-	 Io/uOJPEtCZJMl0nM71fn3xn99hgkKRUIz0SO3Pxa6Q3CTl3xuGDy4ZNDvm232HlPPGoM
-	 O6lbCU+5RpmQE1AREAicpKUm1toi8mLeh46B4GblrTFcKwlC3bvDkAWviroLgcfxNIjnj
-	 Dz8xePXJ+J0/3sQL9NW32hAZ6L1DbdhJZLgET48Pozs82kDhxDdFlEe8/sFnacJADgdSR
-	 YW02qGxrqJKFeiXzETCqZobg0sISm1/p00ywb7X6UxEIxlkioPtDR3oG6FVTQZZFJ0A==
+	t=1795447957;
+	b=umDnOlTF1yGQMNBYX52e/DhdYRsvZmSjh5DdnfSe/uxgXq3DhuQZjNFX5BrIiIoZal4y
+	 wgfSghQm3zLcfE40z4FLO5+zteGZmpuQX9AZBC9OArvOMi3RK+D4B3Q3MyHS8ynFEEvRm
+	 RMlZt2f86iCnP2lDHdZSNUT4JsTFLtGffxaXME0UosOwM8hs9w6sjcD7LO9o6aKOdyhS6
+	 Guy4aLiE8mdtBrk7h7UsJuz0IgK0hNIuNy+R1FIdV9FVDCzigL8JqMs2l5dKn7wYtYof0
+	 ktQI3CincvmzciFF689F/Ooi8DU2vaMPgd/UxVXDgVlCz+hgDOLtizeVKUIcqPnunHQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795436742;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=bqbUZFybYwrKL6TCArPSsR3vEqPnEk4U4p4dC8FCLAE=;
-	b=YRsbGhQb8u/2FJLZvC9z55yAaFUIRmNEPIJZoJfQYJ8jdWtQr6ynkCYCyflFSgbU7po2
-	 /tXsUSFS6ZlMxwRSj6kAut1hQxReQI4gJcZ8JjVAwtuDlpeoYXyDi/Kc5ArMzhiGTPyTO
-	 HlQZs9VqqDsKAgellj3vzmzzQpRUN7s8tcgpibr3OP6jGzuS7jjOZjOqsKBX2MA5KxV7c
-	 XmiZ8X/uCBMlEro9AMak77qWTr6yC+eKMHwG9H7XUJBiSzlkQNlBsvHoxCOWe57TCYVLY
-	 6kq+Wx8r1bykmOr8bgwYsA2qqIG18YdEfDE2bwIxgIzJWlE1yrSZ+MmYDM8qproVIwg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795447957;
+	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=TUoXyOddWAz9fDDOvSA9MQNAlA1i/4mOf8DBtcxzgh8=;
+	b=aiPA9x0Zk1468KqpoT65yuUjVXe8ABZRVBXofYXzt7q0RdPqm8HpmzVVLRQA1ojttzcm
+	 roEJkjg1TPE+AwE4T9j+vKOMfZp/QDSqbO87rwbaeleEogr6XJ9H/XNSDWtQdDmW3jswR
+	 uhdQPOUqXNGy/AppFr3xH9PAAy11mcXjF2P39OSY8ZjRMQEF7i7ZrGEoC6evA4gVt+FwD
+	 uFIXaXn5Mmpidr+cNhuPAWL9lJ1werwpO97+PY1Etp3pWxdjFFLINvCNpb3/TNoaCO2yH
+	 LpYpVfNgEE/ym5VNNTwgHSZOWXdEnWDbVFeH6eTdi9JxVm5AqJ4DQHFAgHOOpeFl3mA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OyV2PCBJ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=oxpUA6gT;
+	arc=none smtp.remote-ip=148.251.105.195
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2425D606A31A;
-	Mon, 23 Nov 2026 12:25:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89810606A31A;
+	Mon, 23 Nov 2026 15:32:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89810606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OyV2PCBJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DABDE1F000CA;
-	Mon, 23 Nov 2026 12:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795436741;
-	bh=bqbUZFybYwrKL6TCArPSsR3vEqPnEk4U4p4dC8FCLAE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=OyV2PCBJJ+im5vPd3xyuANOjncvF8C1bCv0h2kafDuHWsWqdc/RrtvsCYCVBNf2sZ
-	 hE8C8j9By19o58nXKo0bTBiZ0GAz2TZNmv4aqVbpHjweT2AK85Zg+d16vRzfO7CZ+C
-	 AFvtpIPT225W1kPUPuknuXCiO7sFli/BTDxuca7TfKmKf4j1uu/jfFxKI9ZqMuaiHJ
-	 B3o+6+rPu/2M3n7j88L69i0B6a4B1eI9A4yY0smhPoAWmze7f8VgV6psvWfExo31w3
-	 Qd3CKUTnqX52ta8UzCFXREkp+AvTCMznaLYdScQ7nhxgDQX6UDLZax39fa9ZdfkO5t
-	 4on4/LFaOVg5g==
-Date: Mon, 23 Nov 2026 13:25:37 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Rui Cao <i@udp0.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@mediatek.com>, 
-	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org, linux-serial@vger.kernel.org, 
-	phone-devel@vger.kernel.org, Roman Vivchar <rva333@protonmail.com>
-Subject: Re: [PATCH v2 2/5] dt-bindings: watchdog: mediatek,mtk-wdt: Add
- MT6833
-Message-ID: <20261123-puffin-of-splendid-fertility-fb7ba0@quoll>
-References: <20261117-mt6833-base-v2-0-058a0685c40c@udp0.com>
- <20261117-mt6833-base-v2-2-058a0685c40c@udp0.com>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=oxpUA6gT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1795447955;
+	bh=Xnfpy4WZddREfPMFIPPX8OEnArv8MmFD/FqHyNhM8A4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=oxpUA6gTTlQ1KCGpEDK20y7rEzaVPpHuOF9j38OC1nadLKfNvr6/E0GsI+E4D9XWa
+	 pWpbQl77q8I2HMLzwpeyX1gN4yJVZrBTy1pImc0YfrRIE+ftdOplZBCCjmSNbBCyio
+	 YjrkTPxcrab8wN2YD68HFmOZsNw5881nZAlKZvJAqzeEiWHmd0GK2wN3TUsKZ58EUb
+	 c5/YGgpB6ClcDmH2zfNBRRcJM8zCBOjcTcxGwkSR8DzpfyUwEscAZXyDCZXJwMPZRb
+	 JGYF5QkiRbUK2b5CZVa53+1LnzNlhqZJIt5l5mOl5KtxxaopvCowxOdaqWW4XI7Vcu
+	 WS4z6Fg5M/4ug==
+Received: from [100.64.1.21] (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 3640F17E031C;
+	Mon, 23 Nov 2026 16:32:34 +0100 (CET)
+Message-ID: <cc4675f9-0923-4918-9867-05db05b5ceb2@collabora.com>
+Date: Mon, 23 Nov 2026 16:32:33 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -65,25 +61,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261117-mt6833-base-v2-2-058a0685c40c@udp0.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/7] dt-bindings: serial: mediatek,uart: Add compatible
+ for MT6895
+To: Alexander Letuchiy <asalde.le1@gmail.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Sean Wang <sean.wang@mediatek.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Daniel Lezcano
+ <daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
+ Mattijs Korpershoek <mkorpershoek@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Kees Cook <kees@kernel.org>,
+ Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
+ phone-devel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
+References: <20261123-initial-mt6895-v3-0-95c46597e63d@gmail.com>
+ <20261123-initial-mt6895-v3-2-95c46597e63d@gmail.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <20261123-initial-mt6895-v3-2-95c46597e63d@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 17, 2026 at 05:11:32PM +0800, Rui Cao wrote:
-> Add MediaTek's MT6833 (Dimensity 700) as a compatible of its own.
+On 11/23/26 12:18, Alexander Letuchiy wrote:
+> Add a compatible string for the UART of the MediaTek MT6895 (Dimensity
+> 8000/8100) SoC. It works with the existing driver through the
+> mediatek,mt6577-uart fallback.
 > 
-> It can't fall back to mediatek,mt6589-wdt, which also describes
-> MT6589's twelve TOPRGU reset lines: MediaTek's kernel for MT6833 resets
-> the connectivity CPU through bit 12 of WDT_SWSYSRST, past them, and has
-> no full reset table for the SoC to take one from.
-> 
-> Signed-off-by: Rui Cao <i@udp0.com>
-> ---
->  Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Alexander Letuchiy <asalde.le1@gmail.com>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-
-Best regards,
-Krzysztof
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
