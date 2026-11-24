@@ -1,56 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795518374;
-	b=KXlqPPD720/o4fwzgo31ibSLn/YKZneQByJA3zlOSrGQwLMdUfi3j5BmS4EPdc5JsgWn
-	 Ph8or3CBnUG2P3cMyVlOO/XhtUddEEcRXtxjM7b6d6VtPXl05m7+oeej0uHE8zKRD8PzU
-	 +0vlhT15ZIxk7vaEnuLephAEyDsMph4ZhtkcGTRQ5wrYckpKEJ5cCWGJpTGSuWWhnWKtD
-	 7IsgbtgdHsDEAByJbxF8CYo4Jj/s9ZG6VxLT3lOi9NXIDh0h3HG9X9OFMjFK4pgWQhFlq
-	 FKaMhyoKjcbqW+eRUDlwXWWbIDCTW6F08+pWlbFV28y2iYxhWb4LpUVpT5p7WllBbpw==
+	t=1795527850;
+	b=bLZf6c5Nmg2lQtfWRJC6K9QzQu7CQxukLZLIY5pu38+sKj8nsf4du5hLKYyCmdmyKqIr
+	 EWxR29DUO/V9oXL2mrmsCjAihMLWWd54yENaFw08E5xzv9XBojQmaHCeM9fKNJX0mL9pr
+	 Ox6VR7zSl4IubgsS5496xiliG19SZ8+jMprmttP99Lves4HQPfQ7rAWioQLqvYMCznL41
+	 YsdiQUJNIeALRU41skVR/4WT/dIvx/I19c9sav2keRXDFJERz/U+uZ0vqbuYyUapnA5+A
+	 KuKvJngnKWn7yBc/Q9q+1kfvaa0TSmtA9NuLqh1/Jvrf8d/c2Af9XXE8PoyUw6EC+FQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795518374;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=fZ9ioQa+cKW4maWs1mswM/usvCMhiiutfYcOtGCCGwA=;
-	b=xLkGSAoH21ngT4zcnMWlwf/8hJgYhWWnwNC7VHJKOncgbaE0fYPWFb8FdGkU5bXKvg7z
-	 HBOR99buy/4JbmP8ufnARLrNBipgCVAmY6veamx4nnIKnsnagv5SZHPK5fAbWhRngjp1D
-	 Y3AYW/FLAVaSJVKwdZUSjYEKPUZnlhsGdhIBNBJiaf6QhiafMg5YsEDbNsX19g2cKKeRN
-	 2eiFGJfE1FjO0OPmD+IGYRaoEcrm6DYkorPJXkbc8qpjEel+kAxC54KHWEqyCvhzJ0ivH
-	 U5b+/sEuwmRQxSPXSFrGdJKoOXIcKbeYGbEHkAZTLiXBqaZwhmPy7+p2HPedc0xj3dQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795527850;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=VCAQg3UxYZNeau7J2CKEJUMFRL+RaFjODA4ITuoDI0E=;
+	b=nBGxm59EXjlByT8l1RZD0V/DyQDbZpb9vp7LRAmLdVgWEDxk3bVtp67SB0VH+Zt+L5TH
+	 Nltg4iFirWaEbG/XaRH4Rs1aeZ718dYjfWKXMVivh/m9k3Rmh/EwnwBHFTKPsnw8d3PJg
+	 lyiiCEYVZ6Z+Wl1Bk/6P1gdVr0X1VBfqBYaYYrg1gVM2uHPWEY9CN5LEWEIu+6V9JDQ3h
+	 Ve8FGTnvzlZHH7MZ15jddjJ0Vb5ZO1GFpRp4HE518lpVI0exOllmC07UrpLLjd0cRNVWA
+	 1gLojqkj23BpKn3eKd6bVW0ooo6fq3OGh179v6CeAoP9FNqeMQAOdYYHfdQh5qB65KA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VJdcpK2+;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kD08IbV4;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34FA7606A31E;
-	Tue, 24 Nov 2026 11:06:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0C7606A321;
+	Tue, 24 Nov 2026 13:44:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VJdcpK2+
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915901F000C6;
-	Tue, 24 Nov 2026 11:06:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kD08IbV4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA2E1F000D0;
+	Tue, 24 Nov 2026 13:44:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795518373;
-	bh=fZ9ioQa+cKW4maWs1mswM/usvCMhiiutfYcOtGCCGwA=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=VJdcpK2+cDV4sSuRw5wwoBaKzfVEpnw/H5oYFOIfRxjA4plE4ywG7emV3OEQWfKaM
-	 daUC+C6iEVkaqxwkVEccDlUwDEhejLSG38EFuyEn1t01iTh65arQggIpyReiMoxU5G
-	 dV+3Wufrml4MahJRReIGOxBoMgKXWebgKNG7dCpNcyPXQGODT4ZWCN0vikQVjqJQOH
-	 fk6OKDEKNGSCmPwOEo1S0f1ScsnIGwzW7BfJASsAILN5Zikz1GfrmRJQcHMhfiK4sQ
-	 q01HeYXI7EvOxUsJDdDXdjZZFW1wL204tzbJg21SornbZs460ZfyjnZmtbZPXxILaP
-	 gEVOSIE0lq6IQ==
-Message-ID: <sashiko-outbox-231019@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: Add compatible for Qualcomm Seca
- SoC
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Yadu M G" <yadu.mg@oss.qualcomm.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
-In-Reply-To: <9ec98ffd6cec85ad77738128329ec77777a1f69d.1795517676.git.yadu.mg@oss.qualcomm.com>
-References: <9ec98ffd6cec85ad77738128329ec77777a1f69d.1795517676.git.yadu.mg@oss.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 24 Nov 2026 11:06:13 +0000
+	s=k20260515; t=1795527849;
+	bh=VCAQg3UxYZNeau7J2CKEJUMFRL+RaFjODA4ITuoDI0E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kD08IbV4sPP6wimci9DX0lIlUPXWYZKoNRo87fPcvWuRRQVESpbutF1+imZyrsBb1
+	 HbIRCzo1Fyhfuc2/95jfJIhxpkQibRsB0C/7dyFJSv9cMXrC3NOvb5XVz36NSH4Z6T
+	 enogkVgJbQfmP1oj9TmjDyS3hraXXlULEINIOVZZePtgp/SbcUY0dDAizRyIayCcJ5
+	 gCLq8AP+cZrq5ieQtheqW8g/Zh89BTZYYJrfFBuW2y/HRrkQDncDQqk5+B7x9Tz41d
+	 7eaWFlp8/GFo6uQGLzXaZ+++/aY04vzcU4b/LtC7OFoDQkUOYJS76Ys07SL6PZhgRd
+	 4EGeZJuQLNYEg==
+Date: Tue, 24 Nov 2026 07:44:07 -0600
+From: Rob Herring <robh@kernel.org>
+To: Binbin Zhou <zhoubinbin@loongson.cn>
+Cc: sashiko-reviews@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org, conor+dt@kernel.org,
+	Binbin Zhou <zhoubb.aaron@gmail.com>
+Subject: Re: [PATCH 2/3] dt-bindings: serial: 8250: Add dedicated
+ Loongson-2K3000 UART compatible
+Message-ID: <20261124134407.GC3404231-robh@kernel.org>
+References: <cover.1793776192.git.zhoubinbin@loongson.cn>
+ <c194b5248184779da500476281fd411fc80a98d6.1793776192.git.zhoubinbin@loongson.cn>
+ <sashiko-outbox-196836@kernel.org>
+ <20261119214532.GA757146-robh@kernel.org>
+ <0009e3c5-dfff-4254-a06f-13c8664a1543@loongson.cn>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,56 +61,99 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0009e3c5-dfff-4254-a06f-13c8664a1543@loongson.cn>
 
-Thank you for your contribution! Sashiko AI review found 2 potential
-issues to consider:
-- [Low] dt-bindings: serial: qcom,sa8255p-geni-uart: duplicate fallback
-  items blocks
-- [Low] dt-bindings: serial: qcom,sa8255p-geni-uart: Seca vs secaau
-  compatible mismatch
---
+On Tue, Nov 24, 2026 at 02:58:40PM +0800, Binbin Zhou wrote:
+> Hi Rob:
+> 
+> Sorry for the late reply.
+> 
+> On 2026/11/20 05:45, Rob Herring wrote:
+> > On Wed, Nov 04, 2026 at 07:52:04AM +0000, sashiko-bot@kernel.org wrote:
+> > > Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+> > > - [Low] dt-bindings: serial: 8250: duplicate ns16550a fallback block for ls2k3000
+> > > --
+> > > 
+> > > commit 71974153fe22bc00d365059be9198364c9cfaa86
+> > > Author: Binbin Zhou <zhoubinbin@loongson.cn>
+> > > 
+> > > dt-bindings: serial: 8250: Add dedicated Loongson-2K3000 UART compatible
+> > > 
+> > > This commit documents the loongson,ls2k3000-uart compatible string with
+> > > ns16550a as a fallback so the driver can distinguish the Loongson-2K3000 UART
+> > > from earlier Loongson UARTs that require MCR/MSR signal inversion.
+> > > 
+> > > > diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+> > > > index 01abd39509a7a..33c13c48ed56e 100644
+> > > > --- a/Documentation/devicetree/bindings/serial/8250.yaml
+> > > > +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+> > > > @@ -196,6 +196,9 @@ properties:
+> > > >                 - loongson,ls2k2000-uart
+> > > >             - const: loongson,ls2k1500-uart
+> > > >             - const: ns16550a
+> > > > +      - items:
+> > > > +          - const: loongson,ls2k3000-uart
+> > > > +          - const: ns16550a
+> > > 
+> > > [Severity: Low]
+> > > This isn't a bug, but properties:compatible in
+> > > Documentation/devicetree/bindings/serial/8250.yaml already has a two-item
+> > > block with const: ns16550a as the fallback that includes the other base
+> > > Loongson UART compatibles:
+> > > 
+> > >        - items:
+> > >            - enum:
+> > >                ...
+> > >                - loongson,ls2k0500-uart
+> > >                - loongson,ls2k1500-uart
+> > >            - const: ns16550a
+> > > 
+> > > Could loongson,ls2k3000-uart be added to that existing enum instead of adding
+> > > a separate two-item block?
+> 
+> Let me briefly explain why Loongson UART `compatible` is necessary at this
+> time.
+> First, as described in the driver, each `compatible` type defines different
+> driver data:
+> struct loongson_uart_ddata {
+>         bool has_frac;
+>         u8 mcr_invert;
+>         u8 msr_invert;
+> };
+> Since the Loongson-2k3000 has already fixed the hardware issues with
+> mcr/msr, we need a new `compatible` to correspond to the updated
+> `driver_data`.
+> 
+> static const struct loongson_uart_ddata ls2k3000_uart_data = {
+>         .has_frac = true,
+>         .mcr_invert = 0,
+>         .msr_invert = 0,
+> };
+> 
+> As for why a fallback to `ns16550a` is required in all cases, the DTS files
+> for the Loongson-2K1000 and similar devices were merged into the repository
+> before `8250_loongson.c`, and this approach was used at the time to maintain
+> compatibility[1].
 
-commit 2d2cf33141fe90fb33e2e810ca0831e391c86266
-Author: Yadu M G <yadu.mg@oss.qualcomm.com>
+No one is questioning what the compatibles are, just where you add the 
+new schema entry. Use the existing one with the ns16550a fallback 
+instead of a new oneOf entry:
 
-dt-bindings: serial: Add compatible for Qualcomm Seca SoC
+      - items:
+          - enum:
+              - altr,16550-FIFO32
+              - altr,16550-FIFO64
+              - altr,16550-FIFO128
+              - fsl,16550-FIFO64
+              - andestech,uart16550
+              - nxp,lpc1850-uart
+              - opencores,uart16550-rtlsvn105
+              - ti,da830-uart
+              - loongson,ls2k0500-uart
+              - loongson,ls2k1500-uart
+          - const: ns16550a
 
-This commit adds compatible entries for the QUP GENI UART and debug UART
-controllers on the Qualcomm Seca SoC with a fallback to the SA8255P
-compatibles.
-
-> diff --git a/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-u=
-art.yaml b/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.=
-yaml
-> index 8496f822dfa5c..8415764222ac4 100644
-> --- a/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
-> @@ -24,6 +24,12 @@ properties:
->        - items:
->            - const: qcom,sa8797p-geni-debug-uart
->            - const: qcom,sa8255p-geni-debug-uart
-> +      - items:
-> +          - const: qcom,secaau-geni-uart
-> +          - const: qcom,sa8255p-geni-uart
-> +      - items:
-> +          - const: qcom,secaau-geni-debug-uart
-> +          - const: qcom,sa8255p-geni-debug-uart
-
-[Severity: Low]
-Why do these compatibles use the "qcom,secaau-" prefix when the commit
-subject and description refer to the "Seca" SoC?  Codename-based Qualcomm
-SoC component compatibles documented in
-Documentation/devicetree/bindings/arm/qcom-soc.yaml follow the qcom,SoC-IP
-pattern, so these should either be qcom,seca-geni-uart and
-qcom,seca-geni-debug-uart or the commit message should explain the "secaau"
-identifier.
-
-[Severity: Low]
-Can the new SoC-specific compatibles be folded into an enum in the first
-entry of the existing qcom,sa8255p-geni-uart and
-qcom,sa8255p-geni-debug-uart fallback items blocks instead of duplicating
-both fallback blocks?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/9ec98ffd6cec85ad777=
-38128329ec77777a1f69d.1795517676.git.yadu.mg@oss.qualcomm.com?part=3D1
+Rob
