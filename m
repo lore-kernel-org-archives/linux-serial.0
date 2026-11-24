@@ -1,56 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=124.126.103.232
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795474704;
-	b=wopKXkTjfCXP3uhDGW5eXZ2QFfj8JU6aHvLK01EVBa3rh4PNMO16ROkvcqRtbPsIodc3
-	 JLMExA/7vt0kJQdFYmsZ6E/8JPBYvqTig7RoOS+PPUKKu4gW39pa5VWjXATlpAAzXicNt
-	 DXWtudNJD9Y8qOQAqH7p2ARnkL1sdn4zafvDZl0TLN0dPRtaJwxStw0eglPR8NxZbI5Kh
-	 MiHdkdpeh+45PZSE6Vm0lrDFzj7YVsacmdhPw03UXGQYRww515oIDDKZb9Vi6UAl2FZcM
-	 1Fu6F2kJEmsi4fBobEioWYn2jY4vaTpSLMMy13UMzD80yS/aYhBZGhZx0uhhfxylC4g==
+	t=1795488504;
+	b=t7q76ypvvnr/LlUXsNYj2doAZgRX815OdCEyEYnUJ1ZL+FV1dA0u6BqreNb3CvUMIpR2
+	 euup5y032cKqvqWkVyrLtdxMHU3x5fqNZd3JFxd7HgqMmwvFC4rXZex08/KPmb0KK3ce/
+	 BzQbIwe/VoQ8w2gNZ4zejAY0SBrqrF4wl3v5uI0K2vH5Tqpq5WVzZEt2g5yopPZ2J3Ffm
+	 9T1CnyGoKmSnZZBTf4zF+/v2U+W0LpeaBoIwEzKpN/AleEQNGytt5miMsYopEmQb3fwmj
+	 W98GLyvX3YAXLBlffXN3rRHpmfTeod/WUBHt4z6Nc333wkBDns4XgOHn+es55OsuUZw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795474704;
-	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
-	bh=Qw8R7JhjihMIBumBOrhkO66WpI2i97BZSVRfHkZ+98A=;
-	b=uSnc4pN5RGMd+Tnj7fm/ll0WEJh2RV45SphQUdMRKTb7c8UvkPnLvYTCDMbuItdo5L9S
-	 lb91DNVyCLA0OmGyJchvypKW3DUBLCIlVwTRJKz07bdaP80+FLFuQ9+PTNWhKOM8zsI8M
-	 qyV4Hb25TTS6MEoI+YCDOEOkMTU3NnCuWP8NKJFxQI3GzniE5fIg8QrDTVYl7MM+yVb5k
-	 WdzbnWGGIynV3Lzn/micn8pzIdAttdQsE2xhzYJu5MwOnqWkeQseuilkKAZxn4vrcNMmB
-	 LnngYWcc7ceINv60ledIFhuIMaPvfSaHIwUbz49kgegvIpFcvzhknBTAsLQxRWxCOxg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795488504;
+	h=DMARC-Filter:X-UUID:X-CID-P-RULE:X-CID-O-INFO:X-CID-META:X-CID-BVR:
+	 X-CID-BAS:X-CID-FACTOR:X-CID-RHF:X-UUID:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=E2v9oQr6lwkOpCVn/ZsN9UIs/FlGaqaL4U6BYClUqA0=;
+	b=mERCZmfNgMSaVEIGft4dVpp/j1lQygGYfyy2zgchWFdakZxqB18/WgyN1J82pxJ20aLZ
+	 adml++4yleDLLSlPW1i4fmGpqeDDvMhrSr8ppfcSub64ScVjNA6yksJvhl/Sr5KSB3aGC
+	 MaauOllZeYDruaiM/y3Y3rpPqmfr7G8HgMAienTmsxgtqLVpr4fRm3LeJ8Qf7uBgIRCuT
+	 8lOo0Py5lFWbe7QH1TlbYc+RYwoknPKCYqx4ki3ddPjWI0Wxq24LaF/JbUDW3WAZ5xjAP
+	 AUlZCtg3gCkjjTHuf0LatnO59vanX7uEtRGTlYRsI1VwiHNZobEinrUKETiN2BVbX5A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nnluorfb;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=none header.from=kylinos.cn;
+	spf=pass smtp.mailfrom=kylinos.cn;
+	arc=none smtp.remote-ip=124.126.103.232
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D873606A31E
-	for <linux-serial@vger.kernel.org>; Mon, 23 Nov 2026 22:58:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nnluorfb
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D551F000C6;
-	Mon, 23 Nov 2026 22:58:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795474703;
-	bh=Qw8R7JhjihMIBumBOrhkO66WpI2i97BZSVRfHkZ+98A=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=nnluorfb13MomtA+zX2/Kj1Y5/Cj8vUXE+CzHuTi8a4yOkymycp0aQqYafYrFZT+z
-	 awQhb4o+SSgPwN9ll60mZhJgdd3X2LQpOiAqVraUqd23z6Sr2uQrJeJ2v82iFoypQF
-	 6WPprWLFFBI5vhwTtWmzs26MmYWNf9ohI7Pzl+HNF5GOgPygxiusBv7/uHEgCmC98x
-	 gZYRrrzBgOHrzaZW3XyOwAqmP56f1BUN3XxOGwi9mOCvro6NfUH6VMcphGM84tqWVw
-	 wlfHL7Xd4gGgRyyRny/z/rii8CR35WQtwqDuGSgmwLcnk/CCo2OJFqhthTVwXONGLT
-	 GE2TRYt8YNggA==
-Message-ID: <sashiko-outbox-230176@kernel.org>
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: core: take the port lock when setting DTR in
- uart_set_options()
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Zhenwen Liang" <zhenwenliang@google.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20261123225239.1653134-1-zhenwenliang@google.com>
-References: <20261123225239.1653134-1-zhenwenliang@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 23 Nov 2026 22:58:23 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63195606A327;
+	Tue, 24 Nov 2026 02:48:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63195606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 814610dce7b111f19a56ed5b684f684d-20261124
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:93c7292a-37a1-4c29-9fa7-ac819d28cdea,IP:0,U
+	RL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:25
+X-CID-META: VersionHash:7db8b62,CLOUDID:be7f58164b27982f055aebe1b3167887,BulkI
+	D:nil,BulkQuantity:0,SF:81|82|102|850|865|898,TC:nil,Content:0|15|50|99,ED
+	M:5,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
+	,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 814610dce7b111f19a56ed5b684f684d-20261124
+Received: from localhost [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <pengyu@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 122866240; Tue, 24 Nov 2026 10:48:18 +0800
+From: Yu Peng <pengyu@kylinos.cn>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Helge Deller <deller@gmx.de>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>,
+	Nicolas Pitre <nico@fluxnic.net>,
+	Ronan Pigott <ronan@rjp.ie>,
+	linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	Yu Peng <pengyu@kylinos.cn>
+Subject: [PATCH v2 1/2] vt: Skip hardware scrolling while blanked
+Date: Tue, 24 Nov 2026 10:48:10 +0800
+Message-ID: <20261124024811.305592-2-pengyu@kylinos.cn>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261124024811.305592-1-pengyu@kylinos.cn>
+References: <20261124024811.305592-1-pengyu@kylinos.cn>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -59,31 +75,48 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-> uart_set_options() sets DTR with a plain read-modify-write of
-> port->mctrl:
->=20
-> 	port->mctrl |=3D TIOCM_DTR;
->=20
-> uart_update_mctrl(), which uart_throttle() and the other modem control
-> updates on an open port use, holds the port lock. kgdboc calls
-> uart_set_options() through uart_poll_init() for a port that can be open
-> and in use as a tty, so this update can race with them. If
-> uart_throttle() clears RTS between the load and the store, the store
-> puts the old RTS bit back, and the following set_termios() call writes
-> it to the hardware (8250 does so in serial8250_do_set_termios()). RTS
-> then stays asserted while the tty is throttled, and hardware flow
-> control no longer stops the other side.
->=20
-> [ ... ]
-> AI-assisted analysis. The patch and this description were written with
-> AI assistance; a human checked them against the source.
->=20
-> Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
-> Signed-off-by: Zhenwen Liang <zhenwenliang@google.com>
+When vgacon is blanked without palette blanking (!vga_palette_blanked),
+vgacon_set_origin() rejects VRAM so vc->vc_origin points to the heap
+buffer vc->vc_screenbuf. Calling hardware scroll callbacks while blanked
+then treats vc->vc_screenbuf as VRAM and causes out-of-bounds accesses.
 
-Sashiko has reviewed this patch and found no issues.
+Use con_should_update() to skip hardware scrolling and scrollback while
+blanked, allowing con_scroll() to fall back to software scrolling.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261123225239.1653=
-134-1-zhenwenliang@google.com?part=3D1
+Assisted-by: LLM
+Signed-off-by: Yu Peng <pengyu@kylinos.cn>
+---
+ drivers/tty/vt/vt.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 6a6eb8b2a6dec..39be682645097 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -726,8 +726,8 @@ static void con_scroll(struct vc_data *vc, unsigned int top,
+ 		return;
+ 
+ 	vc_uniscr_scroll(vc, top, bottom, dir, nr);
+-	if (con_is_visible(vc) &&
+-			vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
++	if (con_should_update(vc) &&
++	    vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
+ 		return;
+ 
+ 	src = clear = (u16 *)(vc->vc_origin + vc->vc_size_row * top);
+@@ -3488,7 +3488,8 @@ static void console_callback(struct work_struct *ignored)
+ 	if (scrollback_delta) {
+ 		struct vc_data *vc = vc_cons[fg_console].d;
+ 		clear_selection();
+-		if (vc->vc_mode == KD_TEXT && vc->vc_sw->con_scrolldelta)
++		if (con_should_update(vc) && vc->vc_mode == KD_TEXT &&
++		    vc->vc_sw->con_scrolldelta)
+ 			vc->vc_sw->con_scrolldelta(vc, scrollback_delta);
+ 		scrollback_delta = 0;
+ 	}
+-- 
+2.43.0
+
