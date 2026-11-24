@@ -1,104 +1,41 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.83.114
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795503399;
-	b=Tw42W51dn5R97rK8M3xoyEvdBHKpkorsi4cZ9dZfHrMQ2DHoklPSCNr7lOh+ZYLdZJjv
-	 00ePF7xibS5jQoect+pPqi0MD4MQA9MX+vvRqCH4/adEQ/A6ipEptUzJ2chdnApwEHnx5
-	 5H5NRIps+nzBL5HFLxgzjcd2gyXg5WJFyFKL37YplgS7rnxpiRgC3z0PTUH49Bgel2AKX
-	 Ikz24lbhGoRHpuCN6ocOKv82r3GXqwT4UAdA/tAntUCo5xzfOMUKJS62pflOlRUQLb9mx
-	 15tOCCzajfjXDx0VXACELgBAmTAafb5RGnpZnF9H/1t2O+twmYu5y1nWNVsvcWSn/tA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795503399;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=iHDheXX2YMXwiKW8fCxjVml5NwQseru++87KH/0ZxFM=;
-	b=1K1RzZq6M0mUuATY8dI8Jy7PZOt+fPNSc5hNDTxv003jGS9bQLtXW4Fsd008Hu/SNxay
-	 QrraKw8490jHaRsAlw7GOZaMvsFowJZ+ITSucPWRdO+5mBc5Fp2ZtBdVmLbtQUEZeCt3c
-	 f9QBb8gRGSQ7a1fxA+fFiO3+XsKD+TkQYiMaOfVaJZ3BAoN2er6R6psTj4qXuOl5LMFbb
-	 htEkJpOxKsxpVUxI0V6KTUPzCdm45n/+fpzxDYVAjI6yjWaSI6EA/7kXTDDwVJHUkEnDP
-	 Z9A5avHhIQRX5Pfs7mehOXf5N+RUQa/RL3+TQkhviITQqzcTKpcp2AB+D6SFWhVXU/A==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=vaisala.com;
-	spf=pass smtp.mailfrom=vaisala.com;
-	dkim=pass header.d=vaisala.com header.i=@vaisala.com header.a=rsa-sha256 header.s=selector1 header.b=twtAQq52;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.83.114
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11023114.outbound.protection.outlook.com [52.101.83.114])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F24A4606A31E;
-	Tue, 24 Nov 2026 06:56:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F24A4606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vaisala.com header.i=@vaisala.com header.a=rsa-sha256 header.s=selector1 header.b=twtAQq52
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cdDZ0gDPlZctLsALVztJQM1UMDsO6AOwH1VD5jmVlMpDab9int20kIqs/AYc6VlK5CFdZxpwuoIlc6d0uzAhhGQTe14kkpssX83xu6Vqc1n8Cs3WvwzfiK9h9Qq/gKqBj5ClxEtu3rEq2kEAjoQ3nchvo2bBbDMU+r36BMFBk1McmNautcfcydfP9I6TEoFbwuQ8Lc2pxYH9yqxB8zbBttUaknuz5yI4zJ4m3LWyGZDfCay78rIZgyA4FLN1XWF2mL3VR5yhCj4N6/DG29kKwh/pC+NkVS6AcTZN7IMkq3+lgEvuEQlU3fG59hadXxVxyo+Vy+7Xb382d1bfRqGHJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iHDheXX2YMXwiKW8fCxjVml5NwQseru++87KH/0ZxFM=;
- b=SRjttrvhgV3pXlq+z24ndwF0/ZIEoPzVp/YAltfecss3SRs1yq0tDk7iEAk2/IN1+1r29q9Nsok6MrqoORKSUsigNM9GaFLbSFDOnouvRV6/Amu3v/Lk1T4ZwA3fQzRE7Oeg79wUNK8/TueyIxXau4ByeASgq1WmloGWuh+5vMwJuJwhBhev+XJbd1xM46u8NSQv8uj0QnG0lv0lc9ppRqPNrwLaNrinSlF/AiG7avdZBhheQa1gN6/Xy557mPbZ3EEPHI0ejK+8kSqPn7+kX8dcKIc5Yo3ewHGF43DT6RPuCw6I9/fDH7H4p7GvsTlBEMPGOM9dcq4kAhSNQA6wGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iHDheXX2YMXwiKW8fCxjVml5NwQseru++87KH/0ZxFM=;
- b=twtAQq52GAWLNxjATcKvhfwGQkcG2SPwcZmKfTm8+DjXe1GJ3qA6FUDvHkszSBly6QzYaD3rnpZC0+Ou+VT3hvdEVPJ20kYGQGCAFChjciDw00Qui8ttSxcRk90kGp6300hVet43sp+M+rLYg2gyXTPRsqrvsDL4qbNGJN8ZwmNdSrri+EpBYxm2G0oPZX0VNkoOTq+Og3hEzeNa4SgeewUu5HXGvLGNjmiS7FmV9EsDlCMp4SUIJOdFgWeh/hP2XFPw/pMBFn5iitga8BBOXG4jnJe3fNM5BpwaXX7miCivdju0awt98VDCoczPfq3E30XmG+LGbUceUme8drd4rg==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-Received: from PA2PR06MB9176.eurprd06.prod.outlook.com (2603:10a6:102:407::17)
- by AS8PR06MB8085.eurprd06.prod.outlook.com (2603:10a6:20b:3cd::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.13; Tue, 24 Nov
- 2026 06:56:32 +0000
-Received: from PA2PR06MB9176.eurprd06.prod.outlook.com
- ([fe80::b6d:8160:d324:3bfc]) by PA2PR06MB9176.eurprd06.prod.outlook.com
- ([fe80::b6d:8160:d324:3bfc%7]) with mapi id 15.21.0639.012; Tue, 24 Nov 2026
- 06:56:32 +0000
-Message-ID: <c7bf36b9-494b-477e-9def-0a36c803b891@vaisala.com>
-Date: Tue, 24 Nov 2026 08:56:30 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/7] dt-bindings: serial: sc16is7xx: Disallow transceiver
- GPIO on dual parts
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Markus Probst <markus.probst@posteo.de>,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
- Christoph Niedermaier <cniedermaier@dh-electronics.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Lino Sanfilippo <l.sanfilippo@kunbus.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
-References: <20261111-serial-transceiver-supply-v1-0-40bad0f912f2@vaisala.com>
- <20261111-serial-transceiver-supply-v1-3-40bad0f912f2@vaisala.com>
- <20261123-outrageous-narwhal-of-refinement-b1bf8d@quoll>
-Content-Language: en-US
-From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-In-Reply-To: <20261123-outrageous-narwhal-of-refinement-b1bf8d@quoll>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: GV2PEPF0004679F.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:158:400::20d) To PA2PR06MB9176.eurprd06.prod.outlook.com
- (2603:10a6:102:407::17)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=114.242.206.163
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795503539;
+	b=scTAq6IghQF3bigw4igEksFED8hbqO5AuFVtIcjIxTpuihg2jzviw+DNbhLsoVerc84I
+	 D0Y5d8UM2kTb3BTmBKawmaaOyYEW9HbEVotwKVTMsi17btRlPu0L6/43uq9z2zcZkPa8J
+	 Hh6TlO8nUP4N2UMAvAYP6f3pRJ6ozUV53SibDG3eRKIO+xZnciLa9o5HOzehH96KyoiKp
+	 au+yqNeqVF1LU1ipT/6n7wDGXA46LgKFkYjDKBnz5UTL4bkYkCzvFewLtmM3tNi/jeJv3
+	 FyJN5bJIUrBJ+/f7LC/Oa5GZs1LiiucEeIudYMC6AXB53XLu9l1Hl4Ixy7k4lPDlANg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795503539;
+	h=DMARC-Filter:Received:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-CM-TRANSID:X-CM-SenderInfo:
+	 X-Coremail-Antispam;
+	bh=0c/o13VUmTtvta2hEpnHq2PWiO16Lv/Z0jbNybTWp4M=;
+	b=pvnN7Ko+a6iJpOEbqYEbtpd5TCfwIymYp/kaNunQOAqNdp2T2YgJDgo6HLa0khteU9bl
+	 558BHyQAQGbfeiOlcTgxR5/jS03k2YM2h4sVt+Ul4KWKWOQljWAU1bdB/JmqfEcSlzar/
+	 32fz09AXYlaNVuzJG3L5QAfbITctdbhvrigfG0ayfk8TqNXyQEo/KAaJGFCvtreQwj55o
+	 x5mQykKj+gP/wqtjaZhOF6MoHw1nxYvCuUaLFK+M0HuIeks80ATZsvuwHV9B73iMuYrxc
+	 GS7iZGqxQMaSrcfglpYxjAY/m96bHbC62q7dB5J/1PRGSMx2GBFGfSQtyrHEyC7TXzA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=loongson.cn;
+	spf=pass smtp.mailfrom=loongson.cn;
+	arc=none smtp.remote-ip=114.242.206.163
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7C48606A31E;
+	Tue, 24 Nov 2026 06:58:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7C48606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
+Received: from loongson.cn (unknown [223.64.69.66])
+	by gateway (Coremail) with SMTP id _____8AxZ7WpNQVry3oiAA--.4715S3;
+	Tue, 24 Nov 2026 14:58:50 +0800 (CST)
+Received: from [127.0.0.1] (unknown [223.64.69.66])
+	by front1 (Coremail) with SMTP id qMiowJDxRs2gNQVrtgI3AA--.31052S2;
+	Tue, 24 Nov 2026 14:58:41 +0800 (CST)
+Message-ID: <0009e3c5-dfff-4254-a06f-13c8664a1543@loongson.cn>
+Date: Tue, 24 Nov 2026 14:58:40 +0800
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -108,90 +45,122 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PA2PR06MB9176:EE_|AS8PR06MB8085:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5438481c-20c4-42ab-8b54-08df49f812dd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|23010399003|18002099003|22082099003|261009223027099003|3023799007|261026140227099003|261022105027099003|261022075727099003|261028144727099003|56012099006|4143699003|10067099003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	b4iy4JVLhuLwGM5qLQ6p/+Y6ZvIvSq1J3T8hjdVKAa2r63oXqroRtH5ovOxLyzTtgM74INRZ3Bn4sm7y1lt5oaAb5wSPXTw0m/AANIC0wYmBLMAwh4TcfOspuQ7ytQE69yv1HRlG/EOoTjQt3ULSEU5Yo6AVlFDAsUFGRIyfFJAgyo/XKb7ZERA2cYJUime3X0B2lG2lG+jHN8eP36ywT6WD/TIsczg8XsH6aBzRJdeN8excylMv+//uHpHBJihyJIOseBiBAZATws79oqvFrx1knxkg94ggQUl/v0WmgxlviNiJ9oAv5c6QZl/9LYNbdsLaz+IDKfEn7W5iUyqdcTwOUWyHRYZU/+TxH7eNFKcfyHlRorT5NnGLkEYIFJ1fjpUW5oSnXz7E0/JA2WU4w7DuMc2kROk9jQpOi+rd36sdkFIqzgLw9xOEeEY1vRO7C1H025Hpb6dDkcb1/8AfMlomTFv1pirnG67zSYLEcqUrp1Mvw5UbGrYZzuuAzyXYtMFHQcIxOm8N8tj0/q+uy5ndTXrxURKbzD3em9xeCcWYSMt3mpfOhujKtQYk53s7Ux1WrKCRLoRwGuiHYIDA0SsjGEFBTipDcsz4+5AfMJxuJxhjEfCaNtsXqgJeIOqCoXKaRmFBQ2A4lqTvY54W5AjCwi5bSwfNRLOYpRXUQ4Y=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA2PR06MB9176.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(23010399003)(18002099003)(22082099003)(261009223027099003)(3023799007)(261026140227099003)(261022105027099003)(261022075727099003)(261028144727099003)(56012099006)(4143699003)(10067099003)(11063799006);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WFZpUzBWMVhLZkl0RHBNSEh1bG4rem9xMTlITndLV1BKcldMT29Qdm92SU1o?=
- =?utf-8?B?VkxLejBoRy8vV2dUNm1pNkFyNEZkaWwwV21JMlBZeGc5amhNd3c0c0MrUWRk?=
- =?utf-8?B?aGt0dUJwNC9JZGUyeEpZeU01STBrcURWZXZZUmFRWmdyeHpvbGpVVXRueW11?=
- =?utf-8?B?d3d2UDBEWUVyQ0svNEVRYUNiNUFOUFBRSUhwYWVKeTFXSHpqTEVsTWxZMGJ0?=
- =?utf-8?B?MDNYN2dtSDBXZU84WDV4SEpzQXhFTzRWVWtuK0FHUEZqL05tdW9VNzh0SDBM?=
- =?utf-8?B?S3RqTlVOZVNRRXJ0L1U5SGdDTm40OTZJZ3RhMWo3MGU5TThLRjVmS1J5bnpI?=
- =?utf-8?B?d0Nuc2pwZFEwaHRNdExSaXRSQ0Y2ZTRqcFlwbkxIcXhGN0Y0eXV6RENnTXJp?=
- =?utf-8?B?ZUJhS2FpSytKV05BWkU1YjgyaW50L1ZEUjFKSmxwd0RRTll5VHU5SEhDMDJ4?=
- =?utf-8?B?WVAwcUU2ajRjby9Fb3JpZzJBMlpTV2hreldibG1UNzdCbzMrNUF6Vy9FSkJP?=
- =?utf-8?B?QXNDWC83YW5JMlkyNHFLbHJ5aGlka28xS1dOQWl1RHk5U1dLWWxtMWRVaTNa?=
- =?utf-8?B?OSs2ckp5THliK0ZyNDNkTnIrSitXRC9PdGdCS09HcGtrY3BCTVlLSnRsOTZ1?=
- =?utf-8?B?dmhOaFliR0NDN3UxeHZJN1huaGUveEkvdE5KRkNPOEk0VWNOQ2VNWTkyYXdh?=
- =?utf-8?B?OHk3Nm1abml0MEJrSGxMdzA1RUpDT0R0QjVURG91NTJyTkJhVlNCSXZOeVBp?=
- =?utf-8?B?VVFlZHdPSXM5Z2RKL1JKbzhnMDlwc3JXNVZYcmV1U2svNWhHMUd1QjV1bXpS?=
- =?utf-8?B?S2lNMU1YMnpzTnNkbnZkbXpWUVlKQkRYVXhsQ1RLTlduWFFDWEhWSWFyYVdI?=
- =?utf-8?B?VHdzU1Y0WFFsZ05ZbFpndWFIN3k3V0NGbVd0eFdyL2d2QXBORmRLZVptY0gr?=
- =?utf-8?B?RzlVTXg0emxDWm1SdXhjTHRDNzBkbHNmYm4xZi8xRkRSbGNQc1hEcFhSanhP?=
- =?utf-8?B?bzFKNjFlU3FObGQ4TTlsdGxvSVVaL3NqbmsxQ0s3WXl3TnhuT2pTRUpDNEFM?=
- =?utf-8?B?VnAwWUZFREpJODZhVE1KSVpjT3RMaWJkdVd6cWlSTjFiZW5vK1FFSDFOeUdq?=
- =?utf-8?B?Q1BtM3g3bnhaNzZQTytsQ1hyZ3NPZGwrcHQ5dXJVLzBGeUlub1lYOUpDUFRN?=
- =?utf-8?B?VzhBLy8rRm1aYXM3ckpienZuUFcwaCtyUzVOWk5HdmxqQW85RDNiS0Z4dkF0?=
- =?utf-8?B?M0gxYXZWZEs4YmFLTTFTbEthWno1cnZHTWdYbnlsY0J6OFZoV0dyZkFmdVNF?=
- =?utf-8?B?MGJtd3paYm56SExHbW5jelZ4cmVMZHNSdzR3dXNFRnFFdXdHbXlMK1BTb2pk?=
- =?utf-8?B?aXpWOXlXKzNLRVEwcS9TeWdoTjdQS3ZTMG9KNkxmVVlZT3hxZ3ZmZ0tjNTNv?=
- =?utf-8?B?YU1CT1lBd2grRmdoVWR5c3F3bnVHTFhWbUdLWE1CMUN0ZGpXK0M5STVrS00z?=
- =?utf-8?B?MndRN0tab0NxUSs0RnFIekZiZUpTUGFkQzViTWQ3V1lGTkJock53Qjhac2M1?=
- =?utf-8?B?bGNaV2Z4WmhsdHFCUXhON2x2YVAxWnJJRVZtSWQyUzZhVUJtOFRKeVg1dFI3?=
- =?utf-8?B?TjNibitIbE9IMHMyUjhVSy9GWDRhTlpIQllCQ3VLdng4QTdoajBxLzhlcm5U?=
- =?utf-8?B?S25hdGxuZjRuYVdBa0NNUDdkN0E0TUg4NVNmYktUb3VrRlNKMEw4YytUampH?=
- =?utf-8?B?UC9kWE9Fb29ONGF5YVdwSkpmNUJic3FoT2hTVWFwU3FqeE1nY1hwY2JlMjRo?=
- =?utf-8?B?SFo3aEN5TlExK3QzazFZWGgzb2dJQlB2OFdxVDJ6KzIxbnZiczNjSlQzZ1Jz?=
- =?utf-8?B?NEJiZExsMVJaZkIwc25PVm80ZmwzUTBwejlYR0xzRys5WjA5VWxXVDBobFVx?=
- =?utf-8?B?M3FhbXdiSk1nK2MvMnRLWDIza1U5Nk9VdE5jWkJjWXRVMXpwQ2tHeGFOV2NO?=
- =?utf-8?B?U2VsMjg1U0dIczNWKzNkamlOMk9qT0pWZTZwVkgxUHROd0JaRk9lekNTbGFl?=
- =?utf-8?B?NHpnUHpDSmNvZFFSVFY4dVRVWjkrNHpmS01YeE5HYUJmMkhlb2hpMUZERUU2?=
- =?utf-8?B?ekJLUTNYaXA5UjdublBidit4ZUxWdUdMVG9LbFZkajBQNjJkVU5tMFd6WURu?=
- =?utf-8?B?czJmVnduMUhRSHZvWWROemZpMTNjTGZ5ekNLbWZLOXN4bjJWc1Q1Nk91TDM1?=
- =?utf-8?B?WXB2MmQyai9LeG9vLzZFSHlvOTFHaXE0elNuL00rVmJ3c2tNcEwwais4dW1T?=
- =?utf-8?B?Z3BLNGE1cm9oVm04YW9lcFV0RSthNllPcnlTVFphcDcyRDhhNzhDNWYwZlVN?=
- =?utf-8?Q?me9MDq/CfmMbVvUc=3D?=
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5438481c-20c4-42ab-8b54-08df49f812dd
-X-MS-Exchange-CrossTenant-AuthSource: PA2PR06MB9176.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 06:56:32.8012
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Mh7EcB5VBKqdDCYe021K02J7+4f/K5P9VZGmXqMEu0jGBj724d4RMYS7UIomQHSjaAr4By8V0LTe5lOa3NTqvTrwg34b0FZ84L3WXyvaVxQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR06MB8085
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] dt-bindings: serial: 8250: Add dedicated
+ Loongson-2K3000 UART compatible
+To: Rob Herring <robh@kernel.org>, sashiko-reviews@lists.linux.dev
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+ conor+dt@kernel.org, Binbin Zhou <zhoubb.aaron@gmail.com>
+References: <cover.1793776192.git.zhoubinbin@loongson.cn>
+ <c194b5248184779da500476281fd411fc80a98d6.1793776192.git.zhoubinbin@loongson.cn>
+ <sashiko-outbox-196836@kernel.org> <20261119214532.GA757146-robh@kernel.org>
+From: Binbin Zhou <zhoubinbin@loongson.cn>
+In-Reply-To: <20261119214532.GA757146-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:qMiowJDxRs2gNQVrtgI3AA--.31052S2
+X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/1tbiAgEBCGsFAH8DMQAAsp
+X-Coremail-Antispam: 1Uk129KBj93XoWxZry5uw15CF1DtFW8Zw18JFc_yoW5Ary5pF
+	ZxCa97KF1jqFnrW34vv3W8Aa18XrWDAF12kr4UGr12yF95J3yftrW3Ka1YqF4xAFy8JFW8
+	XFy0gFW8GasruwcCm3ZEXasCq-sJn29KB7ZKAUJUUUU5529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+	6r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0cIa020Ex4CE44I27w
+	Aqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE
+	14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCF04k20xvY0x0EwI
+	xGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480
+	Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7
+	IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k2
+	6cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxV
+	AFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU1QVy3UUUUU==
 
-On 11/23/26 10:00, Krzysztof Kozlowski wrote:
-> On Wed, Nov 11, 2026 at 12:28:02PM +0000, Tapio Reijonen wrote:
->> The SC16IS752 and SC16IS762 describe both of their channels in the one
->> node that references serial.yaml, so transceiver-enable-gpios validates
->> on it, while the GPIO belongs to one port: the driver gives both ports
->> the same device, serial core requests the line once per port, and the
->> second request fails with -EBUSY, which fails the probe of the whole
+Hi Rob:
+
+Sorry for the late reply.
+
+On 2026/11/20 05:45, Rob Herring wrote:
+> On Wed, Nov 04, 2026 at 07:52:04AM +0000, sashiko-bot@kernel.org wrote:
+>> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+>> - [Low] dt-bindings: serial: 8250: duplicate ns16550a fallback block for ls2k3000
+>> --
+>>
+>> commit 71974153fe22bc00d365059be9198364c9cfaa86
+>> Author: Binbin Zhou <zhoubinbin@loongson.cn>
+>>
+>> dt-bindings: serial: 8250: Add dedicated Loongson-2K3000 UART compatible
+>>
+>> This commit documents the loongson,ls2k3000-uart compatible string with
+>> ns16550a as a fallback so the driver can distinguish the Loongson-2K3000 UART
+>> from earlier Loongson UARTs that require MCR/MSR signal inversion.
+>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+>>> index 01abd39509a7a..33c13c48ed56e 100644
+>>> --- a/Documentation/devicetree/bindings/serial/8250.yaml
+>>> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+>>> @@ -196,6 +196,9 @@ properties:
+>>>                 - loongson,ls2k2000-uart
+>>>             - const: loongson,ls2k1500-uart
+>>>             - const: ns16550a
+>>> +      - items:
+>>> +          - const: loongson,ls2k3000-uart
+>>> +          - const: ns16550a
+>>
+>> [Severity: Low]
+>> This isn't a bug, but properties:compatible in
+>> Documentation/devicetree/bindings/serial/8250.yaml already has a two-item
+>> block with const: ns16550a as the fallback that includes the other base
+>> Loongson UART compatibles:
+>>
+>>        - items:
+>>            - enum:
+>>                ...
+>>                - loongson,ls2k0500-uart
+>>                - loongson,ls2k1500-uart
+>>            - const: ns16550a
+>>
+>> Could loongson,ls2k3000-uart be added to that existing enum instead of adding
+>> a separate two-item block?
+
+Let me briefly explain why Loongson UART `compatible` is necessary at 
+this time.
+First, as described in the driver, each `compatible` type defines 
+different driver data:
+struct loongson_uart_ddata {
+         bool has_frac;
+         u8 mcr_invert;
+         u8 msr_invert;
+};
+Since the Loongson-2k3000 has already fixed the hardware issues with 
+mcr/msr, we need a new `compatible` to correspond to the updated 
+`driver_data`.
+
+static const struct loongson_uart_ddata ls2k3000_uart_data = {
+         .has_frac = true,
+         .mcr_invert = 0,
+         .msr_invert = 0,
+};
+
+As for why a fallback to `ns16550a` is required in all cases, the DTS 
+files for the Loongson-2K1000 and similar devices were merged into the 
+repository before `8250_loongson.c`, and this approach was used at the 
+time to maintain compatibility[1].
+
+
+[1]: 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=13532b5186a7aa4dfd9885355c6af7562b75dd7f
 > 
-> Which line? If you mean GPIO, then use consistent naming to make it easy
-> to understand and then that's Linux GPIO limitation which is being
-> fixed, thus no need for bindings change.
+> Sashiko is correct. Please address this comment.
+> 
+> And please answer sashiko comments before the maintainers have to.
 
-Yes, the GPIO; "line" was a poor choice of word next to a serial line.
+Okay, I'll keep that in mind next time.
+> 
+> Rob
 
-The second request is one reason. The other is in the binding itself:
-the dual parts describe both channels in one node, so a single
-transceiver-enable-gpios there cannot say which channel's transceiver
-it switches. If that is not a reason for a schema restriction either,
-I drop this patch in v2.
+-- 
+Thanks.
+Binbin
 
-Best regards,
-Tapio
