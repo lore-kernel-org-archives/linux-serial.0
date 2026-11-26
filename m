@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795696887;
-	b=ZeX2XkaAxm+9y6KMLOgq4ObhhcI4mhtLlzca3dVF8+CK+MnsCAEJMpGJeh0m8HfhTDO1
-	 cd8vM6tyO8dmr0iDRTYx804J6nXNxc13xDNWh9sKS/lavPv4MzgFETGRsxMirjJmnOu+M
-	 rbfSZLzGVYNpZJqkOj214SeEacn7JAVZVBuTdukUv2Ax7quZ36uY4AXi+Xo0dmqLPADtK
-	 oRhBq9zcgCGGLIlDmjSRZkoS1eS1/XTxR3dJBfjpsRJMTdEq0/hp3Dfk9ioAwzBQFCypL
-	 qecDtwbMnOCokqYbAG2IJENDHV7KPmpCGfWIkhQiASQTu/yhD34aPhcqmJcxliCXFnQ==
+	t=1795696889;
+	b=Jb343QUwgdcnP/H/4nk90M1wTPZqozodQz1F7MwASRHpNJ0eKq/c65++tlvYsE7J1zdl
+	 cWx7WPCX0t78ppeguCHUkyurDODYBhDrtKNovk9PLTF3gKY2mL8yNHT5/V4LmW/ifNnHD
+	 uvSpTk84EBZHHA2hdkMHHu53H0FkymF9qoKH2/m3PULyjCxJFmr1GMfbyFPSkYZ3Ho5R+
+	 lWN+g58LW098xuNyE/5fhxDn6SbiyW0YJJozqyixGBVT9tXv1XhaGuxldLJGhksvF8ft4
+	 K1qA+7nJErXtAeZ//LiLt953WEVeqfShrZ+PexFL4m8nujynoFuqslY4pNFBoz6Czwg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795696887;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795696889;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=iCKfKqfEcSgcKqOdAiaJYu3UhCcBhL0bTGR7BdPsa/Q=;
-	b=HsiHsoHf9kL6qPYCppNuWKjaLsEnBZsGOR2CZQoLRRzxeW1vl7d33KsLaThlzb5ISbBK
-	 ZPtX5qJ2zGWVDd/KqgZM9bqWxy6j2tK/JZUu/fqfULQWN9jgEXgaMpJuQs1rBbUhDb7dL
-	 W2O/Wl4E71x9RLSMWuYb4i+PPLe2lh58OKsG+ZaEk0pr2UpUASU1dLnjIvHD7dpUN4wSI
-	 0bYbO9/qKMUEVYGd//s8M55TDncVXeRceiy8UdXjc8ETO8VkRgordVUveic/ty9xtji67
-	 mVZVgUxIpMKmOSiAKBsPe8YSzqG86uiEau0jhYmKUpaUrqCpbHQNFEXuLxqkkg7NDAw==
+	bh=SjpbVUORvM/BvTGUVTvdLM0c2sbh4H3tlWX7jQXZfu8=;
+	b=0nIgkJeRFSCSxyQgmcKVpo6b0sLPj9v/30G9ZbWjgT06TDILexjbBA4gZjSSjmyyZ0vo
+	 KGbIR+APEJ3ZclwKGfVrc7pvqPt5c0vUU8CFkY04XnhPPab1GcUfyTBnyEQs3KMIcOlZY
+	 TX/96sjkesUO9T7DOJkKRo6WsMwQK39e4ajt0oSUAIgHT6wdLXQpKcyQ+YvSr3bUI9mvZ
+	 XGrhujeFZe0f0jC1kyxwq+E1tyjuNSUiJmqBdSYpX4PBrkxVVqoJnk/u9YPfEWkRv9E1V
+	 8Uu41cKU87vGR4hDt4c7r6utxIT+rugjkXCVB3uVbcdyTYmIWs5cV2Th0w4plDwuvOQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fTVIs8S1;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CjWcARKN;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430EA606A332;
-	Thu, 26 Nov 2026 12:41:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B64A606A327;
+	Thu, 26 Nov 2026 12:41:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fTVIs8S1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CjWcARKN
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795696886;
-	b=It66clokLg0lnuOvNWunUOV7ew393fHEjirhVY3IQLJaBDDl9XiQQ/aQaIAy6SeOpR9I
-	 Zqv4ysL6okrEucLgBkkuoSLZkIXRW5ZytZ09/a58k6Lbynhg0Jx0qc19mSdqG9Ut9XMtt
-	 8wUnj/GK1W5p02Mz1ubkUeQ+5oO0P3C4r06sNPD7ZZXekvDdHVMWOeqavgYyhGiVYY58K
-	 rXCwtLzpgH7VdGWnukJoLykcHk/CuNSck9bnNPI9BHh+PY22/juBdfqfz1lLFj1A5/ddH
-	 SibF4Xh7iit5WjI2fCrrTw0dHWloETyu+OVE7f4m97VQK7pmWY54i3rG2su4DEky99Q==
+	t=1795696888;
+	b=B/YGZW6qt/dse5Qm44wHNb5Zy4+ayAg4ULVZC0DfEFK36Hyvoe7dnFHi+ieP4IG3dltH
+	 rFCzssk/duBCbfDpvV77BSGDS8WEOLwVplkTpz0gTu8FAhOgVZ3AP94HH/3KajnKy02M7
+	 v1gmeeM2w4xACwWR36ToOS07h/0hL2CS6qdrypPbexEcQzPkgawtrLn5cSTlpFukRMKQd
+	 wzou6XnNKnO2PuBZiH7yK5PIRtOkdWvpNuH4bVMQ1wyxtExFK0TdmZoh9/i/+041lZoK8
+	 DRXUyjwiHgS7b+p2iwjS/sSEeCLRRt2gNECPV8QwJsjh2tNpO1Af/9fzHvEdmnMWfIA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795696886;
+	c=relaxed/relaxed; t=1795696888;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=iCKfKqfEcSgcKqOdAiaJYu3UhCcBhL0bTGR7BdPsa/Q=;
-	b=f0lOyYWA/A/U1yBxc9CY4mAsG8YwEgZcK7eCwGIygIGHefliU0WGdhjg5WDHxwUK3BdN
-	 nn7l2FuxfJihTpuRN8RrdaaTpaD7YGFIj53xSFF2+H8Ea6lPrUu34H7xXJJn8BeZTJJkI
-	 zXhAlQAfpCjocMBHtOB9B8/rlkqlkl/bf/JneCr1lLQwfiZQBKgnq2kQ6n+LZ+TAoRbGs
-	 0AyyUR+mPr+W5cvaOi8Yk93ZwOOUU9pYPMyoeRT4nYPjm26tb00gsNO63BVLZKRd4BuEO
-	 7/HxDiZGC6UIw9nuLhBreBh15GpLvacibaf0iscPm7nQEkwmB7JyAdxL2Q+s/Ur1Z2Q==
+	bh=SjpbVUORvM/BvTGUVTvdLM0c2sbh4H3tlWX7jQXZfu8=;
+	b=e1pFeP/xJjiKiMOgJHojJsYuJ01dfz+VEYJVoB/DsFoH/Ip9OnJQGmLPfnn6tAl+GMhC
+	 JZFOpncx47PX/4TYmB7uityhszqr632B4N5gqNLP7JQG0d0kBfFXYjUVIPoq3m2EoJwRg
+	 W7JCdnsDIXyS3ZoRtXT8HV1cEaoka+mnrIi2hJKijAmwPmthMej8dgVou8zA7nl9suFws
+	 NJHRMdNMkwzj2WtRdxEbwSHChyJUIONckOnhljDiyxetJQL9qryMMdwh5LMpon30eh20W
+	 QK5ATOP1hfeyTt6JA8+iWVQ67+NFomUutWkpvOXD7XvOVFutxsSH6w8Oi/G+GzL8j9g==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4896E1F000C0;
-	Thu, 26 Nov 2026 12:41:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795696886;
-	bh=iCKfKqfEcSgcKqOdAiaJYu3UhCcBhL0bTGR7BdPsa/Q=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=fTVIs8S10kpW6+bkIj8kdGU+/wF2eEqImqy4uzAn3LXma4v9aRZMMYscYkDHqaR2r
-	 uztXMP6ojHmiwoiuDNyCnIdG3ENWgLxhbzsKP69Bs1pB++jdmz/GI3Jrtx6dyKtWdO
-	 eg1t8bBGrGQwE/x7EoI6zXL/TkEBhW3GFGPTLWJQZWhGAz+2XVHed9K9pWAlj6uU4y
-	 PYiH+v8dq5EK5Qc9S8HhO+8M1fpsr4vMd+aJt8FHd9JQFB8Z019nPt91Eb0uj9P0W1
-	 65FjgXPQdb14FAxIGpqxVhVtd34Ltalra27hFQRZrIfqSRPs62YXg/U3NlQY5zB9qL
-	 yrxtK//1H8ktw==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 097B54D4D8;
+	by smtp.kernel.org (Postfix) with ESMTPS id 59A8B1F000D1;
 	Thu, 26 Nov 2026 12:41:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795696888;
+	bh=SjpbVUORvM/BvTGUVTvdLM0c2sbh4H3tlWX7jQXZfu8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=CjWcARKNeEVD9vkxQCIrtJkKAAf0qNiZSUJjhIlUNJbCST+3OxmrKTuvNKOzpOgBt
+	 enp6zj+cTw0EUpXqLpJlSUSEM4E87rxwauIJxUGoBrGQ2zsOGJ6npPr/9QFvSel/j5
+	 dNXUJh/BEET0zZ7qU3f6SA4y4iDeiB//ZuK5jvC7SW1mDqjghbfzHYIYi2pO+EtNEV
+	 CXs2mvqzG55FIdCHUuLRI9hUZadYYprXKOHQYMZeFCE5+sh52HBoPKNUdGwF4DPgy+
+	 0QgQ3QeU2l09xpHBdEeTn5O/AYCuKFkOTI40SoQqoCJK9dT5Pi4aFN4vs0i0FGUJ9r
+	 ygraw5M2Ehu0Q==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id DCF3E4D4D4;
+	Thu, 26 Nov 2026 12:41:16 +0000 (UTC)
 From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Date: Thu, 26 Nov 2026 14:39:58 +0200
-Subject: [PATCH 5/8] dt-bindings: interrupt-controller:
- mediatek,mt6577-sysirq: add mt6768
+Date: Thu, 26 Nov 2026 14:39:57 +0200
+Subject: [PATCH 4/8] dt-bindings: timer: mediatek,timer: add mt6768
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261126-6768-init-v1-5-abc364a2447e@protonmail.com>
+Message-Id: <20261126-6768-init-v1-4-abc364a2447e@protonmail.com>
 References: <20261126-6768-init-v1-0-abc364a2447e@protonmail.com>
 In-Reply-To: <20261126-6768-init-v1-0-abc364a2447e@protonmail.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -103,11 +102,11 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, 
  Roman Vivchar <rva333@protonmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795696875; l=997;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795696875; l=826;
  i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
- bh=NEjlEwvpCFUThdt21n0P3H2O89Kx0qNg2KYVUhgnmd0=;
- b=wAXN7GgagyLD1XSHPpdPRJU8FYQLAWztuV/kO7bznioOC2Z69AnGUKf63JAAq8DjNoBhYpml1
- lgC+UFklrlPB/aNT+NKrmFLnFOvnWp1RoVRngVhAW37Q+02Wf1lWssh
+ bh=NGd4Hn7heos5qVJtPfP2QH/SqVPqRmKe6GXcwrzmpug=;
+ b=oPyw04jky2NZuEhsSdV3OT8f3GZczlDvO+TDel/JKhmlkL8yyK3t5Q5w3hhtkmmc0JkNgmcJp
+ O90A7Zt7EkyCWHzlDnB0+GfxqsFeuQoi23yUuZYtF1sdV0MFBGQbSbG
 X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
  pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
 X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
@@ -118,26 +117,26 @@ Content-Transfer-Encoding: 7bit
 
 From: Roman Vivchar <rva333@protonmail.com>
 
-Add a compatible string for the mt6768 sysirq that is compatible with
-the mt6577.
+Add a compatible string for the mt6768 systimer that is compatible with
+the mt6765.
 
 Signed-off-by: Roman Vivchar <rva333@protonmail.com>
 ---
- .../devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml | 1 +
+ Documentation/devicetree/bindings/timer/mediatek,timer.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml b/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml
-index b94fc3cec175..2c59a07b15de 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml
-@@ -28,6 +28,7 @@ properties:
-               - mediatek,mt6592-sysirq
-               - mediatek,mt6755-sysirq
-               - mediatek,mt6765-sysirq
-+              - mediatek,mt6768-sysirq
-               - mediatek,mt6779-sysirq
-               - mediatek,mt6795-sysirq
-               - mediatek,mt6797-sysirq
+diff --git a/Documentation/devicetree/bindings/timer/mediatek,timer.yaml b/Documentation/devicetree/bindings/timer/mediatek,timer.yaml
+index 337580dc77d8..6abb62145621 100644
+--- a/Documentation/devicetree/bindings/timer/mediatek,timer.yaml
++++ b/Documentation/devicetree/bindings/timer/mediatek,timer.yaml
+@@ -40,6 +40,7 @@ properties:
+       # SYST Timers
+       - items:
+           - enum:
++              - mediatek,mt6768-timer
+               - mediatek,mt7629-timer
+               - mediatek,mt8183-timer
+               - mediatek,mt8186-timer
 
 -- 
 2.56.1
