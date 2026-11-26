@@ -1,101 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795649505;
-	b=ViawVqhCTUplVyW64n2bynce8debQbOA6g4ZFK8JL3l404F4+kC3dzfcId1n/yn2VGSW
-	 l2H4zHLRZLAzjFoO2ElYlYTgfk/WsASP4DiAEj5JhRYrzli2vJ+gsCRxaUB4/xQZmSKrI
-	 aYwVUsWLAiHE32yM7ENZbW85NJbTyurLrnqRneTKXHj5x64zD3nMzkGHrN3RwrdZICLMQ
-	 MzgnEw9X2lrU784JyaaHIgDfj+DbZjBu5Rde/n2SLSWCmrC9fJtDCfbcf4AoI64cJhb7W
-	 TmLNFxHiyeLSRJQZ2YOoAMu61XxkvxiDAOaKn8QXrtJy2j+zzy6olpUgGtMq5WDibFg==
+	t=1795676253;
+	b=vPUeEhOMMzcpqfk3g6ATzbv/iVIPoBNeX6+by9gERcR6tStWeV+Ks5dvdImgXF3CqdWx
+	 4FzNdYQQcn+eNctyzTS6MI4MWQAhLMWwHUEBcnawW5bpvnZZPlIngZz9gPdjQr6+aCDeW
+	 Qk8cefoFHlLx1ay24QpuDmcLIc33GflGUCQRLCqSDb1Pu+zc/wPjr9BBeBvhS/ECHRYJH
+	 Ds/l0Jb1DNAzopbRZGX5RUSdNrux6y5og4tpkSbigxgkPSJ0GSy2WXnuV2HrrDwv9TVXe
+	 5LukWuWuEEb/bYp+K0ZzmQsrIkW1PxKBmAS610IqCezhOoDyuEzNsFKcopSIxZrxlZA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795649505;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=LYw5GBAdPj90q6NncpK72EIMG1Zgi7jH/SYXlLevmww=;
-	b=4jv2LhEAP2gSa2n96cGgYoPZxtm0alMcKjUhLKYPUt1v+2SWV3VBMEPNLzt9JMXYik2k
-	 TwCeEv4Kj/dYUiaAdUJ+57hrpMif+KKdoYBVX1bApofCoX2rUNk0FegIT03F0LrU43ijs
-	 kgNsQ3jIKR55cCI8ypDF/wMS4QapQzVqfnMQnq3YCdb1lMv/9rc0mR5KQxqHYSMRwho4a
-	 cclGGyK/Nt7fi4ZNE23i/TvzZXPpBWfNZHiZi2xTZPSFarWBnpEEjm+xpDRxh0ro7lJU9
-	 mlO2wJZc8kIgRGv1KGYhmeT0El7CyI0IGLEmpCY0ZE6kXtrSiV7Ot0lTnwuDbPzJ0WQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795676253;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=DCIU9e+MkuOEc5CGS01ldGfbplHOk3sa5t8VNxiqpLA=;
+	b=2vvk0My9dqLxvTvBuaEaI9cCjZaPnUmtDou2Ix3tAnbJpdYWl7Smr4QVp+U9Ay3+HfQX
+	 qcMmUTe/ozoDb2kOds9hbBSdrkK7tjWt4W+hoUKSPHAalpYW0MQMq2G2ydeZJijaW3/Gb
+	 8R9sM5GzESDleFL3pGHrEwG6u0SfBMnHSAt/TOmnAzruOy5YB23iO6RKo+gWe9Cziqfon
+	 IzCYzYyon1ggQ14dMBFASq/yBymWkPKPIPnCvpoL8OoIHqTbiH0X94/8dEy1RlEMZWDpQ
+	 ttrBgQHqeNwZTM4okUEW71B/Yq1n6AMh3hqLQdHtvwMoJkKw0L6Zmu4i93Of+icmRcw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IspnHSro;
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hezw6UTj;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65EBF606A331
-	for <linux-serial@vger.kernel.org>; Wed, 25 Nov 2026 23:31:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 65EBF606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3645606A31C;
+	Thu, 26 Nov 2026 06:57:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IspnHSro
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a2153c8525so51444005e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 25 Nov 2026 15:31:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795649504; x=1796254304; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=LYw5GBAdPj90q6NncpK72EIMG1Zgi7jH/SYXlLevmww=;
-        b=IspnHSroOfZdrf8oMXJQi+UqbqhITZQIa4296wB5r+k/WGVn0u9xhHA7z5rkSosbac
-         NpluHrJuqpmEM8xUeJUfYzQwC2UBULp8VKywufzKF1WEAkbDHZP7lWoqlPOkPt/YcCT5
-         lqxLiqVgazKrFtPiJnejlGLPtm1iJRjdPyUBne6+AjpsV/AkJvhcMveZL4gLsqea2qKN
-         PM55Md3oPkS4+Xc8eNENqdZhQjlFkckr9qWKDP6aC4PeosDOyPQ8X+b18i9FpPlfRPNW
-         mMNjN6tc0RLnUmcdyYjITz5nq4erDqcAbODtvjKf3ZlwTihgIi6LRVhbQeos5XUtuhw8
-         qkpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795649504; x=1796254304;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LYw5GBAdPj90q6NncpK72EIMG1Zgi7jH/SYXlLevmww=;
-        b=EWwyeRMj3ewFr5HlJIX3+AFb25k4aHm+EVt4H0QCfRrVcq0EBry8YW6QQZmwDuL31P
-         0Los4wLqjcwO1NX4G79OxINSel0KAABTFqPjP128XGVpRtLyn6vx3ayEdAR7kGAiWoei
-         appvquXMZ8mLnLI/FS7JThNewF2ata0DQYeLXY8GjMSzxAnMXqNmHEcaJt1/C0OfTz6d
-         ktVl2x3EWGZig6nsVANQjAbCQ8PiNZweiIvQhvrxO+iuiWSbfRfzszQhwKfOh81Vv4sl
-         uHSNzELSBRszvXrUd/flQRQ1ZkZp4G44OKHqGZFOjzB/Osnxe0ox8CgQn+QF2nxuDZEp
-         TO8A==
-X-Forwarded-Encrypted: i=1; AL+hErEINzn8rvpAaO9P0nT5h4xpIAnLXpbnW9nhAFy1eGAnrIBvx0scQH4fwXlxtzUBpkxfKKnuzTjZ6L3AM8o=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8RuLUr6MwZLP/KAIjUlVRfHI5Yg9hQoUYPTx7sOxEMnF9i7gxb
-	BDBmJBxPc9e3kPG8JqB8Qm6j382OpdxuVQXRkL1d8yQtTR5/Yk5fFg71
-X-Gm-Gg: AZFdTZd6dkv+9arK6fb01T7JvDkBobPsQZ6BvBIpalcgygzrEQ+Py8OIABZ5IwarY52
-	lyiEzhZIaH3uML88dcr5K+jvDyY4DGCovAmKrcY97FLg8XExyIezb0X652wN42iwiJcww+LJ1fJ
-	Ml8QyXybAYvcCGhD4qv3ZLn0jt0CrYIJ2IKQ+R6NrBTF8UC6njoFqR0SR+NsG5hGFfwg8RrMiTe
-	n51v7adaBFdJs+AIT71/GW5yV7DrMHl/8zAAaKuyNbFlz+VbESd1hFil310WXCnZKbd5HXF6eMM
-	aYFqDkhDJF+aqpsbzzcO6Y1HyfRhJYIALSUtjOYpLFgi2sqYNnVmIVYCvOYUbHN6JGUbgsZvKlu
-	hXpyQp4kQhh1p01fITuJrgj5dW8Xqouoe/lRRoZPDRuTS3SNwXMikbNJgW2zjOJDrkca7D6vLrV
-	lPXwjK18+I9o4iMh6tI/LLeVa8yrfHrfLQH9/4soVZnyfIN3bl0T3YcnB0hzmn4WGGqXKXfrdDj
-	AeB54nGHSyq592jSf9k8gvpaU/2fP/WQYvMY9PjyoOXueJtdPlitAbHO7xuPg1ppkQFnsv4pKqe
-	GmlOcNW4h0FH83dpKHdGM6nAgmPMlEb+RDrCkO5J3tyhLdxipw6JIsR/UFmmjyTw5Y4yYpuWhBY
-	47HfWFpEDng==
-X-Received: by 2002:a05:600c:6749:b0:4bb:71c1:3ca6 with SMTP id 5b1f17b1804b1-4bb88819d15mr373167565e9.21.1795649503790;
-        Wed, 25 Nov 2026 15:31:43 -0800 (PST)
-Received: from localhost (bl20-90-91.dsl.telepac.pt. [2.81.90.91])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb853b216esm611586845e9.12.2026.11.25.15.31.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 15:31:43 -0800 (PST)
-From: =?UTF-8?q?V=C3=ADtor=20Hugo=20Silva?= <vitorhg20080@gmail.com>
-To: linux-riscv@lists.infradead.org
-Cc: devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH RFC 13/19] serial: esp32: Add early console support for ESP32-P4
-Date: Wed, 25 Nov 2026 23:30:14 +0000
-Message-ID: <20261125233020.1380594-14-vitorhg20080@gmail.com>
-X-Mailer: git-send-email 2.56.1
-In-Reply-To: <20261125233020.1380594-1-vitorhg20080@gmail.com>
-References: <20261125233020.1380594-1-vitorhg20080@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hezw6UTj
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 021B81F000C0;
+	Thu, 26 Nov 2026 06:57:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795676253;
+	bh=DCIU9e+MkuOEc5CGS01ldGfbplHOk3sa5t8VNxiqpLA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=hezw6UTj2COl02vqc+jI4BM7dqpzM6w5EtT4WUokQYzYcIk5SHnKgM2z0hUpoDAyZ
+	 k0QQUnlGgpybaRZBcAIggvZ8Gc2f4Hm4Zt3KnucyJ5AcLo353P772lnJr6IzUe2UMI
+	 45Yhv5xhHmbvl11llAXg+V1/oriIL0K2J3TuvhHP/Sjtl2Sday3KhnbQaM5OGGMehV
+	 Tx9aE3spkKflkt65OyzciYhdI1/S4S+UQKtLa3RKa5Fw8Ubp2J/sTmuW4JGK7d/cRv
+	 ndyHXXdff18mReX46s4KV8QQsD3mzyCT3VDXvog7bVSM0IVFgcGvjvrhHDMNvyU+5b
+	 Gh7Gxb2xq/N4A==
+Message-ID: <32321472-2593-4a5c-a347-952188c05333@kernel.org>
+Date: Thu, 26 Nov 2026 07:57:30 +0100
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -105,143 +51,87 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] vt: Escape the CUR_ prefix in the cursor kernel-doc
+To: TAKANO Mitsuhiro <takano32@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Randy Dunlap <rdunlap@infradead.org>
+References: <20261125182903.2396749-1-takano32@gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20261125182903.2396749-1-takano32@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Register an early console for the ESP32-P4 UART using the UART
-configuration left by firmware.
+On 25. 11. 26, 19:29, TAKANO Mitsuhiro wrote:
+> A trailing underscore is how reST writes a link to a target, so `CUR_`
+> in the prose is read as a reference to a target named "cur" and the
+> build fails for the three cursor helpers:
+> 
+>    drivers/tty/vt/vt.c:276: ERROR: Unknown target name: "cur"
 
-Early console writes can run before timer initialization, and
-normal console writes can run with local interrupts disabled. Use
-a shared polling routine that bounds the wait for TX FIFO space by
-a fixed number of reads.
+I believe fixed by Randy at:
+https://lore.kernel.org/all/20261104182258.3226665-1-rdunlap@infradead.org/
 
-Allow 10,000 reads per character for the ESP32-P4 early console and
-1,000,000 for the other callers. Drop the character if the FIFO
-remains full for the entire polling budget.
+Not applied yet, though.
 
-Verified early boot output and a working UART shell on the Waveshare
-ESP32-P4-Module-DEV-KIT with the driver built into an RV32 NOMMU kernel.
-With a simulated FIFO, both limits dropped the character when the
-FIFO stayed full and wrote it when space became available on the
-last read.
-
-AI assisted with integrating the early console and checking
-its registration in the linked kernel.
-
-Signed-off-by: Vítor Hugo Silva <vitorhg20080@gmail.com>
----
- drivers/tty/serial/esp32_uart.c | 50 ++++++++++++++++++++++++++-------
- 1 file changed, 40 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_uart.c
-index 002d6fdbd875..451caeb406fe 100644
---- a/drivers/tty/serial/esp32_uart.c
-+++ b/drivers/tty/serial/esp32_uart.c
-@@ -25,6 +25,7 @@
- 
- #define ESP32_UART_TX_FIFO_SIZE	127
- #define ESP32_UART_RX_FIFO_SIZE	127
-+#define ESP32_UART_TX_POLLS		1000000
- 
- #define UART_FIFO_REG			0x00
- #define UART_INT_RAW_REG		0x04
-@@ -107,6 +108,7 @@
- #define ESP32P4_UART_SW_DTR			BIT(20)
- #define ESP32P4_UART_RTS_INV			BIT(18)
- #define ESP32P4_UART_DTR_INV			BIT(19)
-+#define ESP32P4_EARLYCON_TX_POLLS	10000
- 
- struct esp32_port {
- 	struct uart_port port;
-@@ -334,18 +336,18 @@ static void esp32_uart_put_char(struct uart_port *port, u8 c)
- 	esp32_uart_write(port, UART_FIFO_REG, c);
- }
- 
--static void esp32_uart_put_char_sync(struct uart_port *port, u8 c)
-+static void esp32_uart_put_char_sync(struct uart_port *port, u8 c,
-+				     unsigned int polls)
- {
--	unsigned long timeout = jiffies + HZ;
--
--	while (esp32_uart_tx_fifo_cnt(port) >= ESP32_UART_TX_FIFO_SIZE) {
--		if (time_after(jiffies, timeout)) {
--			dev_warn(port->dev, "timeout waiting for TX FIFO\n");
-+	/* Console writes can run before timer init or with interrupts disabled. */
-+	while (polls--) {
-+		if (esp32_uart_tx_fifo_cnt(port) < ESP32_UART_TX_FIFO_SIZE) {
-+			esp32_uart_put_char(port, c);
- 			return;
- 		}
-+
- 		cpu_relax();
- 	}
--	esp32_uart_put_char(port, c);
- }
- 
- static void esp32_uart_transmit_buffer(struct uart_port *port)
-@@ -601,7 +603,7 @@ static int esp32_uart_poll_init(struct uart_port *port)
- 
- static void esp32_uart_poll_put_char(struct uart_port *port, unsigned char c)
- {
--	esp32_uart_put_char_sync(port, c);
-+	esp32_uart_put_char_sync(port, c, ESP32_UART_TX_POLLS);
- }
- 
- static int esp32_uart_poll_get_char(struct uart_port *port)
-@@ -635,7 +637,7 @@ static const struct uart_ops esp32_uart_pops = {
- 
- static void esp32_uart_console_putchar(struct uart_port *port, u8 c)
- {
--	esp32_uart_put_char_sync(port, c);
-+	esp32_uart_put_char_sync(port, c, ESP32_UART_TX_POLLS);
- }
- 
- static void esp32_uart_string_write(struct uart_port *port, const char *s,
-@@ -718,7 +720,7 @@ static struct console esp32_uart_console = {
- 
- static void esp32_uart_earlycon_putchar(struct uart_port *port, u8 c)
- {
--	esp32_uart_put_char_sync(port, c);
-+	esp32_uart_put_char_sync(port, c, ESP32_UART_TX_POLLS);
- }
- 
- static void esp32_uart_earlycon_write(struct console *con, const char *s,
-@@ -784,6 +786,34 @@ static int __init esp32s3_uart_early_console_setup(struct earlycon_device *devic
- OF_EARLYCON_DECLARE(esp32s3uart, "esp,esp32s3-uart",
- 		    esp32s3_uart_early_console_setup);
- 
-+static void esp32p4_uart_earlycon_putchar(struct uart_port *port, u8 c)
-+{
-+	esp32_uart_put_char_sync(port, c, ESP32P4_EARLYCON_TX_POLLS);
-+}
-+
-+static void esp32p4_uart_earlycon_write(struct console *con, const char *s,
-+					unsigned int n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, esp32p4_uart_earlycon_putchar);
-+}
-+
-+static int __init esp32p4_uart_early_console_setup(struct earlycon_device *device,
-+						   const char *options)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	/* Use the UART configuration left by firmware. */
-+	device->port.private_data = (void *)&esp32p4_variant;
-+	device->con->write = esp32p4_uart_earlycon_write;
-+
-+	return 0;
-+}
-+OF_EARLYCON_DECLARE(esp32p4, "esp,esp32p4-uart",
-+		    esp32p4_uart_early_console_setup);
-+
- static struct uart_driver esp32_uart_reg = {
- 	.owner		= THIS_MODULE,
- 	.driver_name	= DRIVER_NAME,
+> The same line appears in vc_cursor_start() and vc_cursor_end().  Wrap
+> the prefix in double backticks, which is how the rest of the kernel
+> marks a literal, and all three render without an error.
+> 
+> Verification: before the change, each of
+> 
+>    $ ./scripts/kernel-doc -rst -function vc_cursor_valid_size \
+>          drivers/tty/vt/vt.c > x.rst
+>    $ rst2pseudoxml x.rst
+> 
+> reports "Unknown target name: \"cur\"" once, and vc_cursor_start and
+> vc_cursor_end do the same; after it, none of the three reports anything.
+> kernel-doc -none on the file is silent both ways.
+thanks,
 -- 
-2.56.1
-
+js
+suse labs
