@@ -1,89 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795710403;
-	b=sGdCq09q67N4X5H9DYMD1BjV5qbeIzJSBADFRtqLWiZVCWnkjmCtNgEbT5Z6HDDGYfR5
-	 MSEBdoKcoP968ocsvvhFs69L+rkVIF6XzdELtVpQsWapzjdAutcvPFe4huiZcotBCddAb
-	 mgJF5ox73+VrfDmsPAjPKYu3+YwCiK0Crx4HcFB7mxUdLaVhVG9MO+6thLfEsFSd+CabZ
-	 9rzey1qxi50ziLQKCWdqlJ3v4Zt4K2UqNACZgQAwDoB38uoIfutTFHEgQm+9y6m7029WT
-	 uIRrTTcpVvz/DQ6bUTnkc9YAm49Kz6Sd7VqTCdqxUW3Uk3EbIExsu+Q38aSBe4QE2sg==
+	t=1795735937;
+	b=SBKqUf2Xbs0GKQkMFBTSTK5yoIG3DVRBeS2LEofnL49UzNeccUp1ZO9pD1Vi61NfmtP3
+	 Z3Txg1WZ945ki1LZfY/rbFjwvtJo5KVrYkY7cNcXlz6QGavecwjFGZhTrUWeMHltRI3l+
+	 TFRFxIbk5Mt0dNJCI9JfHnHY+H26Qf1gBQDY6WZBdQrwuwxNtL/+44uOqyFpbmzsyc3dY
+	 olCYaxINbqVaIlRfdwg+guL5ld3NeKzKagg00SUOYMbzUXu8aLyGfAfJlw2ETkd7MLPG1
+	 eu6otYxiFLvaVbuKRVKb4KRfORClTwDGgBQJlUDv4sp14wSnT6mPguttCU10zwSGupA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795710403;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=b5z0ThmhKJxf+xijCxTwHDNcpYA1yXMLZrxPppTehao=;
-	b=5Vz+Xqf++Gs61KZYSeUb04kdayXuUbnxfYJSpiE6cXKtTRvMdUnfKsz+/7ylcyYXaTSR
-	 XQRL7anvgT8IeZtyvceQbB9ZpGrXcBVJDsIZB30s67b1YOqefY0ZWf/gnWZVy1RhPKe8F
-	 zElJUDG9uCMemJrLDe2ZQiz4ZaWNAtVLCflNlZ0lMUebV/Edh6qN/8gL2HGqO5BwHa7og
-	 biNdGQIhTpazhEkTEd2BdGiqrX2HCOfXk5+sBkwyQeNqYpSotgzT9E3OR3K3oswwNXoGp
-	 onoKx6VIoT89XD1DTWwwYbDcVlMT8hDIR3MYV/Qp8PVwkgGssBvZWuIAkg8W3Is1r1A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795735937;
+	h=Received:DKIM-Signature:Message-ID:From:Subject:Reply-To:To:Cc:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:Date;
+	bh=HJj6Zhv1yFBA1Dcn8bwRSN4l02pFFOxVv7oYkWGUIGU=;
+	b=jjlf0RMl8NW+NJuZBoJM4rhwF9YK0KzMEmDTzdiZAHm7HvRiVE/yrl+dO5FXpAVZ1j3H
+	 CSMi3xzuYJ1Wo9bMqQ5CW4LFRT0rltUsY3QLLy6sl2z/i2jokRZtkkLTZv/aLOI66aKqr
+	 OwVTt527W+vNnVIbVlenSOpAqnm8RxWV7z3dbSWhTatqlTJTr7/z3mdVG1ghvdp02YsHS
+	 e5yEIn/3wmJo6wA7+QgeCOflVITKwz1kAK5UpdtNwuSkHOw/KF6zqAsCHdEbAGinnqaIS
+	 +muwyCpnd40bKTfpUPjapw5CtkdXHl3lEksIboC7AurSll5ZEpOm3CI9Q9+eMP39aVw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OWqOYqNw;
-	arc=none smtp.remote-ip=209.85.128.45
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AAYJ44Jw;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19143606A31E
-	for <linux-serial@vger.kernel.org>; Thu, 26 Nov 2026 16:26:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 19143606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA27B606A31C;
+	Thu, 26 Nov 2026 23:32:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OWqOYqNw
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4bb702a7548so65468975e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 26 Nov 2026 08:26:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795710401; x=1796315201; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=b5z0ThmhKJxf+xijCxTwHDNcpYA1yXMLZrxPppTehao=;
-        b=OWqOYqNwfRknSLG3Ui2p0CUMzmdffJ+xpc+fI/s2lv1UICyhWkc3eLDOBEJSzgZMed
-         nKtBmDRBiVQC9MZJO84AP2i3xMlqHNlE3gbIFsr8q1yHaPFP7NaJfe0rn9Dev5F69Yj6
-         p8T8x7I/4eD7VYDem3U1pZNyknc0W/H0VT3whFayHTw5d49Z0E1sx0l0D91/VC++UfiT
-         EwNG3NVm6B7w4t4QzEMklUQ+1SfKrm39ZguERfr9VStotI47k60AnOsLpuMtfG36fRla
-         mkyFIqiFYyRKFnicRBSrmEO7hAmYVsPtvVwOyuD4XQC+cWT6022skyvMewx2xRmdeh1O
-         Z/nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795710401; x=1796315201;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=b5z0ThmhKJxf+xijCxTwHDNcpYA1yXMLZrxPppTehao=;
-        b=dR/JC3HVbjfuNQvKAaGTu7Fp5rzcDpcFdiCZPULpJHaEBlKraLFXx0//yAbdN0hZVX
-         Zu9ZeJ8h7Cxx1M8SKvgNj7QWp70jQLxgG7vU3U2mayPWm+/9N81fKLPfzDR9Ei4qpUUN
-         kcTmfBz/manW3MSPNQC63XvdlenLmZwcMitYHC4m+ec3UpHbDD8uLTE27iV7AOaM7xP3
-         sBWYFnmaUK/2v69Apsr+Qw/M0dtVlK1jr4TKd6zl1vDEwqxYmbyOECJAotPYz2Tdfiri
-         lZ2v7p7BOCim3wZkqKnmk4ylp0M2esuJqm+1bHrb3jyjMPrkKTTpTtXuoxhweJUkttQ7
-         XDzQ==
-X-Forwarded-Encrypted: i=1; AL+hErE6g1dHw7/R98goF2JnnishpCilpUglFelCAv1rNvotmNTapilAW7RPgmtlRjJin5Vm0JZ15iQvQb5dptI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8SL4R980XztNI7siHJU/kBIRnsz3c2/BhUj2uICNllLoQYTC8l
-	Yw6SxopLZP4j8nPwfldmTtIqSMc0fa2UMHWPLnLWOK38ow+rnFGGIGw9
-X-Gm-Gg: AZFdTZf3rygegBKfYSq1vb8eot2CFOcAaPaWPFQ7Y/Ed8slr1+CABMIFHn27JTLZie4
-	jGVVO5OfxPPaonmSaURKQ8S3uMGlpbIJKvoScWdIsYFPm4AdY7GsBKEAv1fM9vOJ7nWHeVKRM6Z
-	vGu1vcXUif7HBGVjl5JNjMHTbF8p0RIooskaaEs2W+2qD3iPKBbVFOv+SEpnnjN1N5CUNXKo1dh
-	mJyHkvlD9/biPTRHIEXO2yBvH6SBfDUHzq35/Tze8EQP0HQo0+s1hIJsgRo2geaTFklDs3lmRho
-	bSQqz3b6gFw9xhmRltH1RAK0kMLQ2FdOIdJeqZa7TC3sWX6UzhZLHm5AApZQElmtYdAsQw5DD4Z
-	+1L9sS0uJEZiUMVR1TidMSP/iUTaYW4+TII72ARewiVXslYgI7DrdRL51NgOYIpCe0nUwrqLvAc
-	wkPWVYO2/8e8jykdxFG70k2FIlXoUbkDwy+tOn+V8MfVpiY3ZvHyXWytrobCPg+0txlinKOC8sL
-	wTKFwawrQ7fgazaSGVS7I/9U91vtLSuJD7R4T/h7uHW0FUrdCnDcZIsOzO606UIax9JoDdpbh03
-	jW7sRb0RG7ptf3w1TfN27gfRc1eJjtxpiQ6lAJquAix2i1eEhZxsQVz/06dRt7dl325BlHTjU/E
-	5iHd6Pw==
-X-Received: by 2002:a05:600c:3b8a:b0:4ba:761:c0c5 with SMTP id 5b1f17b1804b1-4bb8880f0e0mr442079825e9.5.1795710401231;
-        Thu, 26 Nov 2026 08:26:41 -0800 (PST)
-Received: from ?IPV6:2a02:e98:40:8091:3818:6731:d35e:a255? ([2a02:e98:40:8091:3818:6731:d35e:a255])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb90660cb4sm574510785e9.2.2026.11.26.08.26.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Nov 2026 08:26:40 -0800 (PST)
-Message-ID: <ef3ccabd-5093-4ee6-ac21-20e08b97b510@gmail.com>
-Date: Thu, 26 Nov 2026 17:26:40 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AAYJ44Jw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A3B81F00896;
+	Thu, 26 Nov 2026 23:32:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795735937;
+	bh=HJj6Zhv1yFBA1Dcn8bwRSN4l02pFFOxVv7oYkWGUIGU=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=AAYJ44JwTJDH4qH8M1mowwcs3+j3JL+I82pfvwuTP6KN099MAGiu3/BoVVL8rOhwc
+	 wGCBcMa+cxNd4u4Dnanq9XzJV/Bqw8i1jzE11dby35GozB58eNPVzBJlKW3gRHXXPv
+	 Zr0JUsIg6QAHVxuKAN/5UGxs1ABLwb3JIphXkDlsNRjMW0kxrmj4Fvr/US2/hYtGLf
+	 FMzzsY1gHXoCjbVupsDqtDFjRoLl9CTvIkClil4pwKvxX+WddZ6A74wAwUJy+bpMWq
+	 eQV7eLFOwTILsC01ljKF8Y6pjM3XQ8h/xWWOxB6HNZisGE5alL1YSN/m/9DB0O46yH
+	 TPMTN44qVerXQ==
+Message-ID: <sashiko-outbox-236332@kernel.org>
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH RFC 10/19] serial: esp32: Restore the ESP32 UART driver
+Reply-To: sashiko-reviews@lists.linux.dev
+To: =?utf-8?b?VsOtdG9yIEh1Z28gU2lsdmE=?= <vitorhg20080@gmail.com>
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org
+In-Reply-To: <20261125233020.1380594-11-vitorhg20080@gmail.com>
+References: <20261125233020.1380594-1-vitorhg20080@gmail.com>
+ <20261125233020.1380594-11-vitorhg20080@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 26 Nov 2026 23:32:16 +0000
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -92,57 +59,240 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: pl011: Reference rs485.yaml
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Lino Sanfilippo <LinoSanfilippo@gmx.de>,
- Matous Hybl <hyblmatous@gmail.com>, Miroslav Ondra <ondra@faster.cz>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20261121-pl011-rs485-v1-1-0d18008f4a12@gmail.com>
- <20261124195705.GA3075022-robh@kernel.org>
-Content-Language: cs, en-US
-From: =?UTF-8?B?S3J5xaF0b2YgxIxlcm7DvQ==?= <cleverline1mc@gmail.com>
-In-Reply-To: <20261124195705.GA3075022-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-Hello Rob,
-thank you for the answer.
-> On Sat, Nov 21, 2026 at 04:10:33PM +0100, Kryštof Černý wrote:
->> The amba-pl011 driver supports RS-485 and parses the generic RS-485
->> properties with uart_get_rs485_mode(), but the binding does not allow
->> them. Reference rs485.yaml.
-> 
-> Is supporting RS-485 really specific to the UART? Can't pretty much any
-> UART support it? Whether a driver does or doesn't doesn't matter. If so,
-> then serial.yaml should probably just reference rs485.yaml.
+Thank you for your contribution! Sashiko AI review found 6 potential
+issues to consider:
+- [Medium] serial: esp32: divide-by-zero in esp32_uart_set_baud() during
+  earlycon setup
+- [Medium] serial: esp32: SCLK prescaler miscalculation in
+  esp32_uart_set_baud()
+- [Medium] serial: esp32: unclocked MMIO access in
+  esp32_uart_set_mctrl() during probe
+- [Medium] serial: esp32: missing TTY_BREAK insertion in
+  esp32_uart_rxint()
+- [Medium] serial: esp32: UART_BRK_DET_INT left enabled in
+  esp32_uart_stop_rx()
+- [Low] serial: esp32: incomplete CRTSCTS flow control in
+  esp32_uart_set_termios()
+--
 
-You are right. Some hardware might not be able to support it properly, 
-as it could lack essential registers (you need to know when the 
-transmission is done to switch the direction pin), but I do not know of 
-any. As I understand it, these properties describe the attached 
-transceiver and its wiring rather than the UART itself, so they belong 
-in serial.yaml.
+commit 12c65ed88656e1a1416d2544ca647a643b9237af
+Author: V=C3=ADtor Hugo Silva <vitorhg20080@gmail.com>
 
-In the next version, should I then reference rs485.yaml in serial.yaml 
-and remove it from all of the other bindings?
+serial: esp32: Restore the ESP32 UART driver
 
-> 
->>
->> Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
->>
-> 
-> Drop blank line.
+This commit restores the Espressif ESP32 UART driver under COMPILE_TEST
+with esp32_uart_console_setup() moved to regular text.
 
-Since the change would then move to serial.yaml, there is no single 
-commit it fixes, so I would drop the Fixes tag as well. Is that OK?
+> diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_u=
+art.c
+> new file mode 100644
+> index 0000000000000..8f257cf0d2909
+> --- /dev/null
+> +++ b/drivers/tty/serial/esp32_uart.c
 
-> 
->> Signed-off-by: Kryštof Černý <cleverline1mc@gmail.com>
+[ ... ]
 
-Best regards,
-Kryštof
+> +static void esp32_uart_rxint(struct uart_port *port)
+> +{
+> +	struct tty_port *tty_port =3D &port->state->port;
+> +	u32 rx_fifo_cnt =3D esp32_uart_rx_fifo_cnt(port);
+> +	unsigned long flags;
+> +	u32 i;
+> +
+> +	if (!rx_fifo_cnt)
+> +		return;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +
+> +	for (i =3D 0; i < rx_fifo_cnt; ++i) {
+> +		u32 rx =3D esp32_uart_read(port, UART_FIFO_REG);
+> +
+> +		if (!rx &&
+> +		    (esp32_uart_read(port, UART_INT_ST_REG) & UART_BRK_DET_INT)) {
+> +			esp32_uart_write(port, UART_INT_CLR_REG, UART_BRK_DET_INT);
+> +			++port->icount.brk;
+> +			uart_handle_break(port);
+> +		} else {
+
+[Severity: Medium]
+Should esp32_uart_rxint() insert a TTY_BREAK character into tty_port when
+uart_handle_break() returns 0?  Without tty_insert_flip_char(tty_port, rx,
+TTY_BREAK), breaks not consumed by SysRq are silently dropped and never
+reach the TTY line discipline.
+
+[ ... ]
+
+> +static void esp32_uart_stop_rx(struct uart_port *port)
+> +{
+> +	u32 int_ena;
+> +
+> +	int_ena =3D esp32_uart_read(port, UART_INT_ENA_REG);
+> +	int_ena &=3D ~UART_RXFIFO_FULL_INT;
+> +	esp32_uart_write(port, UART_INT_ENA_REG, int_ena);
+> +}
+
+[Severity: Medium]
+Should esp32_uart_stop_rx() also clear UART_BRK_DET_INT?
+
+esp32_uart_startup() enables both UART_RXFIFO_FULL_INT and
+UART_BRK_DET_INT, and esp32_uart_int() calls esp32_uart_rxint() when
+either bit is set.  If a break arrives after stop_rx(), esp32_uart_rxint()
+will still run and push received bytes to the flip buffer.
+
+[ ... ]
+
+> +static bool esp32_uart_set_baud(struct uart_port *port, u32 baud)
+> +{
+> +	u32 sclk =3D port->uartclk;
+> +	u32 div =3D sclk / baud;
+> +
+> +	if (port_variant(port)->has_clkconf) {
+> +		u32 sclk_div =3D div / port_variant(port)->clkdiv_mask;
+> +
+> +		if (div > port_variant(port)->clkdiv_mask) {
+> +			sclk /=3D (sclk_div + 1);
+> +			div =3D sclk / baud;
+> +		}
+> +		esp32_uart_write(port, ESP32S3_UART_CLK_CONF_REG,
+> +				 FIELD_PREP(ESP32S3_UART_SCLK_DIV_NUM, sclk_div) |
+> +				 ESP32S3_UART_CLK_CONF_DEFAULT);
+> +	}
+> +
+> +	if (div <=3D port_variant(port)->clkdiv_mask) {
+> +		u32 frag =3D (sclk * 16) / baud - div * 16;
+> +
+> +		esp32_uart_write(port, UART_CLKDIV_REG,
+> +				 div | FIELD_PREP(UART_CLKDIV_FRAG, frag));
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void esp32_uart_set_termios(struct uart_port *port,
+> +				   struct ktermios *termios,
+> +				   const struct ktermios *old)
+> +{
+> +	unsigned long flags;
+> +	u32 conf0, conf1;
+> +	u32 baud;
+> +	const u32 rx_flow_en =3D port_variant(port)->rx_flow_en;
+> +	u32 max_div =3D port_variant(port)->clkdiv_mask;
+> +
+> +	termios->c_cflag &=3D ~CMSPAR;
+> +
+> +	if (port_variant(port)->has_clkconf)
+> +		max_div *=3D FIELD_MAX(ESP32S3_UART_SCLK_DIV_NUM);
+> +
+> +	baud =3D uart_get_baud_rate(port, termios, old,
+> +				  port->uartclk / max_div,
+> +				  port->uartclk / 16);
+
+[Severity: Medium]
+Can esp32_uart_set_baud() miscalculate the SCLK prescaler on variants with
+has_clkconf?
+
+When div equals clkdiv_mask (4095 on ESP32-S3, e.g. 9768 baud at 40 MHz),
+sclk_div is 1, but the div > clkdiv_mask branch is skipped.  That writes
+sclk_div =3D 1 into ESP32S3_UART_CLK_CONF_REG (dividing the source clock by
+2) while leaving div =3D 4095 unscaled in UART_CLKDIV_REG, halving the baud
+rate.
+
+In addition, port->uartclk / max_div in esp32_uart_set_termios() truncates
+downward (38 baud at 40 MHz with max_div =3D 4095 * 255), which yields div =
+=3D
+1052631 and sclk_div =3D 257 in esp32_uart_set_baud(), overflowing the 8-bit
+ESP32S3_UART_SCLK_DIV_NUM field in FIELD_PREP().
+
+[ ... ]
+
+> +	if (termios->c_cflag & CRTSCTS)
+> +		conf1 |=3D rx_flow_en;
+> +
+> +	esp32_uart_write(port, UART_CONF0_REG, conf0);
+> +	esp32_uart_write(port, UART_CONF1_REG, conf1);
+
+[Severity: Low]
+Does CRTSCTS handling in esp32_uart_set_termios() leave hardware flow
+control incomplete?
+
+It toggles rx_flow_en in UART_CONF1_REG, but UART_TX_FLOW_EN in
+UART_CONF0_REG is never set or cleared for CTS transmit flow control, and
+esp32_uart_startup() overwrites UART_CONF1_REG without programming an RX
+flow control threshold.
+
+[ ... ]
+
+> +static int __init esp32xx_uart_early_console_setup(struct earlycon_devic=
+e *device,
+> +						   const char *options)
+> +{
+> +	if (!device->port.membase)
+> +		return -ENODEV;
+> +
+> +	device->con->write =3D esp32_uart_earlycon_write;
+> +#ifdef CONFIG_CONSOLE_POLL
+> +	device->con->read =3D esp32_uart_earlycon_read;
+> +#endif
+> +	if (device->port.uartclk !=3D BASE_BAUD * 16)
+> +		esp32_uart_set_baud(&device->port, device->baud);
+> +
+> +	return 0;
+> +}
+
+[Severity: Medium]
+Can esp32xx_uart_early_console_setup() divide by zero or zero out
+UART_CLKDIV_REG in esp32_uart_set_baud()?
+
+When earlycon is set up via OF_EARLYCON_DECLARE, of_setup_earlycon() leaves
+port.uartclk at 0 if clock-frequency is absent in Devicetree (as required
+by esp,esp32-uart.yaml), which is not equal to BASE_BAUD * 16 on
+architectures with a non-zero BASE_BAUD.  If device->baud is also 0 (or a
+command-line earlycon specifies a clock rate without a baud rate),
+sclk / baud in esp32_uart_set_baud() divides by zero; if device->baud is
+set while port.uartclk is 0, esp32_uart_set_baud() writes a zero divisor to
+UART_CLKDIV_REG.  Checking device->port.uartclk && device->baud before
+calling esp32_uart_set_baud() would avoid both.
+
+[ ... ]
+
+> +static int esp32_uart_probe(struct platform_device *pdev)
+> +{
+
+[ ... ]
+
+> +	sport->clk =3D devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(sport->clk))
+> +		return PTR_ERR(sport->clk);
+> +
+> +	port->uartclk =3D clk_get_rate(sport->clk);
+> +	port->dev =3D &pdev->dev;
+> +	port->type =3D PORT_GENERIC;
+> +	port->iotype =3D UPIO_MEM;
+> +	port->irq =3D platform_get_irq(pdev, 0);
+> +	port->ops =3D &esp32_uart_pops;
+> +	port->flags =3D UPF_BOOT_AUTOCONF;
+> +	port->has_sysrq =3D 1;
+> +	port->fifosize =3D ESP32_UART_TX_FIFO_SIZE;
+> +	port->private_data =3D (void *)device_get_match_data(&pdev->dev);
+> +
+> +	esp32_uart_ports[port->line] =3D sport;
+> +
+> +	platform_set_drvdata(pdev, port);
+> +
+> +	return uart_add_one_port(&esp32_uart_reg, port);
+> +}
+
+[Severity: Medium]
+Does uart_add_one_port() access UART_CONF0_REG before sport->clk is
+enabled?
+
+During uart_add_one_port(), uart_configure_port() calls
+esp32_uart_set_mctrl(), which reads and writes UART_CONF0_REG before
+esp32_uart_console_setup() or esp32_uart_startup() enables sport->clk
+(and esp32_uart_pops has no .pm callback).
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20261125233020.1380=
+594-1-vitorhg20080@gmail.com?part=3D10
