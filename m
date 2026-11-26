@@ -1,92 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.52
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795682769;
-	b=GFFqbJyXt1IaZm9NFLviwlRPMfzgnmw4NBc4palfFYVSoPuMxgZHjAiithMTavXFMpcY
-	 IvzoXUfSPNANTFeR9rwztVhVrUm479d4y+v0Tmz9+NOAneE3kxf0A3BiUV+2tK08UscLI
-	 iJqtHkyc+frjg2bjSc6nU6TQaI4VNn2FQr9Vbg04lZ30t4Evmo4ahqfP4qHCswy7Kd65O
-	 3WH/ehO7YBgT+HTHU8ZUHVGzcAf+aRipiyjpP+pJQ7BvlxOT6DUTd/RTtAZIS6ePb9qxD
-	 vgUZ/dR1yAomCwyy7c/Vt9c3ZGNYRJ6BTHLrLE/fTprFFShd50f5G3TjgPzHM6xJpsg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795682769;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-Mailer;
-	bh=jIjy7oXjqNe/7gm7TLs3AKZq0G6ZEoHOSp4CNqXrGfs=;
-	b=xwaFrpLcYlEfI3X22BZrHqbAoNXyEEryX9W/HtL8H4/2CSX/Nl8N6AL0bblCKDJqGRxp
-	 ASdxk+7v0GD5+8+o3KmUNwWVATCMH0MusFNErc1YDr0b/bPXYSQITcozsCjxg3Na7XgZr
-	 U/GhHtPW4qjeX0xY/dqhOn3xLL6FOJFSVKUkP0hBri2MV4jrjPXo16Oy1k25tcBQ3abXO
-	 eTM4ZTxQVYru/xXh1r288BWPKfJG7KxwnYFS+FZPDnj1AtsmkmT++RznLqJe83/WXtFT5
-	 9JWHEEdXL9ZCDAncJ8NjvcE58euwgrHTTjzptbuckiFyzlGbXPDbQn82eduIwUaLylA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EfLDrA5O;
-	arc=none smtp.remote-ip=74.125.82.52
-Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795696885;
+	b=HkNneB4NMehqzhSONdtGPMtxDkdg7+n8gRMJSyM1cuCUCSt+4Hx8hWy8blVCIt8qpcWd
+	 KRJEh5W3Taasnzo150iKBaMjE92AwRdmo3e+Zxq84Cl88f9a/Z/B1aNaYXdFGMoV8L8Lk
+	 pEMNcdzGyVOpdmUbtHvz67iFHwomTPEKm6Vvc/ql0D4GZNbdey1B8TN4HxQoKTYREDmvy
+	 YToBeIROl/AlFWdt44SZiEipQ2doToUvHel1APmGImtG4TEwy9uJfXfBJGzm+3D6SYOLP
+	 ImlWgE+b680XlcvbMGX5okLhwIDkTzZIKTfCZpzUuVUfPWwT9/WskQDpxTDe6KT3kRg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795696885;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=vQq2/q5vUElXwPSdG7ABYlW0YvIeOi1yQ+hYmdgmbOI=;
+	b=UW0WexnZb4hb/zZizsjHQo66SvXkz1qvEVsGY6d+1ZgFTk3gSKJb90uFc5mRS0Pg5l0y
+	 dthtpRhK7J3gJ8/jl1ZEnlCJifBbqmrZN9+ps4t8BkDIptIaqqz++04vb1mc423AhHPWX
+	 Oik2J1ztLn1YipucTEF9xJRb14veM9/KiR5QxggqxgIpDMYF8NK0u2xszyexgyuEEjWzr
+	 SRWjgbPNPbnUvkPTpbJZ7Xr0opbKWjd+QDa1naQWe9OIzyi/jbAQzCDfvrpLk43V9aGf4
+	 YZx4wGUR78YDKwQ24J7OrgBZM/FtZf2kZNR2luH8jnEnuDYqoCAivhmMAwSmjznVipQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QldK1S2+;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0F04606A32D;
+	Thu, 26 Nov 2026 12:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QldK1S2+
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795696884;
+	b=uGxDBoYcpWg/c9W7P9BvRSTtuwB26JS0BYmeWoyNrclFuB/2LSHbq9fmGy5qquRMZeUA
+	 fXah24I/zrgL13QfoXy4bYMxpAjLBpCalCV8v1Ps7t+f8PTarF7BVosZHu9HjwoEc8CSe
+	 QP/RTnG3SqI8sxs9SB3/Woheh0EStieD2Dquskz6Ng67Xifx5342ZvBiz7GgriiU8wh3A
+	 TRKkh+LZ1r6qt0iRsLH915ehki08Q04+jRHlhxqA6HCIQNqd2pJhxc1/a3KcwISkZAWBf
+	 rjz7R8Cw2/9a5TVF5Fw0+lZ3eTqclDVMrl04GtzF+SZ8C9E8iVyddhcTpaotkY19uUQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795696884;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=vQq2/q5vUElXwPSdG7ABYlW0YvIeOi1yQ+hYmdgmbOI=;
+	b=qbOHkWivi5u8oye1yAgobxOuhLaZmwxlO9lvS5bgo0qHSKdTuIXHxOGli12IXOPFt2Ib
+	 MZI4zpmuPZuYzIXSLdx54ehMqAfauOn4JW+XzYekSLAqYVgKRGDqWAAJSHGnllSK0l6TI
+	 STTroOykjuaii5xxzohsWQt1WbfaaJTbsw2eRTW1vc2syvejVT3XY8xQcMduYq3h1PLV0
+	 azV/bwB5CPiT1/bqWdHc3g9C9u/IHZFlkDwCXM9X5pTSf6Pz4QxYkReIOgYYlM0TnHOTg
+	 yK/oFjPw0vGeEUfdY/CncdNqZYq1guQkp0RmGzc7/sX1Ux7jX6uQtdaSwDpGRkO4emw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70037606A323
-	for <linux-serial@vger.kernel.org>; Thu, 26 Nov 2026 08:46:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70037606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EfLDrA5O
-Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-14394530ec6so218472c88.1
-        for <linux-serial@vger.kernel.org>; Thu, 26 Nov 2026 00:46:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795682768; x=1796287568; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jIjy7oXjqNe/7gm7TLs3AKZq0G6ZEoHOSp4CNqXrGfs=;
-        b=EfLDrA5OwNXIvq6n6kx2yPR6+jKl4+ne2z6pNVr8F9YcgTVn8JeclvRCEu1sWR3oX1
-         VwHbStjZj6niPnXHuJL8iXvCwmysm4Vqi8QjBhzK6cPHRux/RUzXYFqzKsbyzqOjotV6
-         Gg4InTBiflxoC56JIYXH7wxw+eXaOaure0yiPo+J7obe4QDNn/ZwcofibZidOXYe3LeX
-         sL5tFJ8IqDIrFGlG4oWkWiQAutQpIwpPZUOL3pFF/cSL5us8zQZyj0et1Xx6gCiVIJdK
-         y4/iOL6MhS2ktD/b2wf6Xojdql1tDRFSb+Q6HGdqXBHJV6827QAHigUEx5OY///k4yOr
-         YD/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795682768; x=1796287568;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jIjy7oXjqNe/7gm7TLs3AKZq0G6ZEoHOSp4CNqXrGfs=;
-        b=vTzh3lC0SCSiMgFoLhyGX4ISSbN6KoNQKKrmgakALNvqiq2VqRrLXt/nVJS3vrtrcm
-         UA30ze7MEQWarwfK97zP8x5vjMtlRCYvVYYxZDWPTbMaX/tOUlfO27mWdW34HRTHE/eq
-         1mytAVb7qSwfIuHFLjUYAMizL6Dt2q1I6Y5R9AI0F6ec0Se+RLvr5+89eQkjiNSU7db3
-         BZZnb9jGnTCvduED/5DHHFbzo+qp+kqww0JrU4fvElNgtKgk+q8MqsQ6wb/apRfZoP1R
-         JAZHyxDfyFTtfsnHWVQQO7uQLvQRbGU738i3PxKzuji9PEemk8Q8GRbk9MbLA6vv8Wfs
-         usIw==
-X-Forwarded-Encrypted: i=1; AL+hErHzxCuSxRul2L8ZAab3BZRWvhtotrVCQsuWd7AcwYZ20VCNLwwNO7+mVQ6FGsm/Nsmca5DttgyK7oOeB+M=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8zcUsBlMRL2RkFjkBIK2I2bB4PG3EL3eqRFts6UjaDF5QZdle6
-	fEBrrxT/KmfER2s8WTS3F0n3HYQ/58Jup0uE05mwBQpr+qX0NeCsxzrD
-X-Gm-Gg: AZFdTZdIqaDYLbvjPvTEwjMjHUZO/dspXFw5Y2DVFEk2251CHt/TZ0RLv5LJcbxePXm
-	iP6A+j4KhiHxWmKtJjOFUBUaN/2Si5I2w89nxLHxFwhDz4Jyo+YjaDWvDURpNrqyURixfbIMfHK
-	yDgZU0Yj+xTP0wBBhlrA449cjLj/LjLtOJ6aT/YxnGseT2eZUdu3T63qVxL33AToIKQxUSp6NgX
-	TiC3ZTzyW2+VhhmcTiQKFX5ZSgynYDnwwg49fn5hY8uhAkvlBVByc8Vz0TXQeoWZBd8E7PN7L4L
-	ORJkSK1I/H+++lHe7xr3GPHH/Yx6KPFNVXBiusQocNQhgbUSkIeSpLF1Ga8mBoi70ifFKOAZG0Y
-	uQggVgcJGeP1cDDed0Qva3doVR6mpznLJyddbRQR4yRb4STs7A2FbM/dK71feg4fflMYpHT4AUh
-	yux7b8TxTLDvYq2feo/FLuCG2wkRRUcuKFyC5gv0gTN2Nd3HzKGyaoMzDPkFzAgsI2mBtECvYGR
-	nX85d13u5ZraYUgtQuebarkr1CwR0zIWMEDrBeIDskjWPoZn1AK8GUy8hUSFL9xX+/m+tmJTsP8
-	du+79VQKrY0TMIL2XeZo7OctoP4=
-X-Received: by 2002:a05:7022:3f01:b0:160:90a3:ca8c with SMTP id a92af1059eb24-1b55689f73amr22735281c88.7.1795682768396;
-        Thu, 26 Nov 2026 00:46:08 -0800 (PST)
-Received: from [127.0.1.1] ([2603:c021:8021:f000:0:1865:8c38:18fc])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b55684c85fsm71200574c88.14.2026.11.26.00.46.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2026 00:46:08 -0800 (PST)
-From: TAKANO Mitsuhiro <takano32@gmail.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, TAKANO Mitsuhiro <takano32@gmail.com>
-Subject: Re: [PATCH] vt: Escape the CUR_ prefix in the cursor kernel-doc
-Date: Thu, 26 Nov 2026 08:46:06 +0000
-Message-ID: <179568276623.2784380.14004398028038099132@gmail.com>
-In-Reply-To: <32321472-2593-4a5c-a347-952188c05333@kernel.org>
-References: <20261125182903.2396749-1-takano32@gmail.com> <32321472-2593-4a5c-a347-952188c05333@kernel.org>
+	by smtp.kernel.org (Postfix) with ESMTPS id 51C371F000CA;
+	Thu, 26 Nov 2026 12:41:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795696884;
+	bh=vQq2/q5vUElXwPSdG7ABYlW0YvIeOi1yQ+hYmdgmbOI=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=QldK1S2+cm6Y5eKkNektDUpAw0U3ggdTUBsT4KM8W61fa0p5/FGChBTMGgPiohZhm
+	 EGRRDt/l9jt9lvaKu5xTBGPYB5J0KeXhtSMCqr2qqi0efsDfD7/kD+5J8RFM/S1teL
+	 C3wXTdTcy4l1dPqGe6WAEL6wb6unwnyujrnlskl+RdD5KiDoIe4l2z/yiAW1TjFe7O
+	 O8ih/eI1Eq1RlvNeoHQ8nmfIJyLX7knhI/Wz29SZjzo04mEeYHKjYjmOLNVLapY64g
+	 5YeQySZT1tA/EVzGRjfWqFKc5PYe33Bzbxjh0WD6d+26oRqCeW/49beM0Bewm2i2SU
+	 /ggvus5K8Xyow==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 5185D4D4C8;
+	Thu, 26 Nov 2026 12:41:16 +0000 (UTC)
+From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Subject: [PATCH 0/8] arm64: mediatek: initial support for mt6768
+Date: Thu, 26 Nov 2026 14:39:53 +0200
+Message-Id: <20261126-6768-init-v1-0-abc364a2447e@protonmail.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -97,19 +84,80 @@ List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: kpatch-send.py
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQ5AMBBA0avIrDXRUSWuIhZag7EoaRGJuLti+
+ ZKff0EgzxSgTi7wdHDgxUXINAE7dW4kwX00YIZaStRCl7oS7HgTqkCjeoN5meUQ+9XTwOf3atr
+ fYTcz2e0dwH0/cHtiXm0AAAA=
+X-Change-ID: 20261126-6768-init-452b4db23703
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Sean Wang <sean.wang@mediatek.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Wim Van Sebroeck <wim@linux-watchdog.org>, 
+ Guenter Roeck <linux@roeck-us.net>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, 
+ Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+ linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+ Roman Vivchar <rva333@protonmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795696875; l=1911;
+ i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
+ bh=OuksRoDHKFpT/R8LxjmQb4PYxWFGU2toCTWUqRQ83nI=;
+ b=M8pLRwIso+8rS6ShJtdTTZ8LXr45utWV3TwSmwDKcanvlFd8lSNaDtyAwkSlI9x8SUU2U0dwx
+ or4OP3XkIa0Ahz+lp+/izRarO7wnUi18pqJzDcMEGt5RNvk2QYQ1y0h
+X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
+ pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
+X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
+ auth_id=777
+X-Original-From: Roman Vivchar <rva333@protonmail.com>
+Reply-To: rva333@protonmail.com
 
-Hi Jiri,
+This series adds basic support for the MediaTek mt6768 SoC and Xiaomi
+Redmi Note 9 smartphone (codenamed "merlin").
 
-thanks, and sorry for the noise.  My duplicate check searched for the
-lines I change and for my own subject, and Randy's v2 rewrites the same
-three lines in a different shape (%CUR_* rather than double backticks),
-so the phrase did not match anything.  Searching by the file path would
-have found it at once; I have added that to the check.
+The mt6768 is a 64-bit SoC featuring six Cortex-A55 and two Cortex-A75
+cores, typically paired with LPDDR4X memory and found in low to mid range
+phones.
 
-His version says the same thing in the way the rest of the file is
-written, so please drop mine and take his.
+This series requires custom TF-A and U-Boot forks, because the device
+shipped with broken PSCI implementation and bootloader that pollutes dtb.
+TF-A: https://github.com/mt6768-mainline/arm-trusted-firmware
+U-Boot: https://github.com/mt6768-mainline/u-boot
 
-TAKANO
+Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+---
+Roman Vivchar (8):
+      dt-bindings: arm: mediatek: add mt6768
+      dt-bindings: serial: mediatek,uart: add mt6768
+      dt-bindings: watchdog: mediatek,mtk-wdt: add mt6768
+      dt-bindings: timer: mediatek,timer: add mt6768
+      dt-bindings: interrupt-controller: mediatek,mt6577-sysirq: add mt6768
+      watchdog: mediatek: add mt6768
+      arm64: dts: mediatek: add initial mt6768 support
+      arm64: dts: mediatek: mt6768: add Xiaomi Redmi Note 9 support
+
+ .../devicetree/bindings/arm/mediatek.yaml          |   4 +
+ .../mediatek,mt6577-sysirq.yaml                    |   1 +
+ .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
+ .../devicetree/bindings/timer/mediatek,timer.yaml  |   1 +
+ .../bindings/watchdog/mediatek,mtk-wdt.yaml        |   1 +
+ arch/arm64/boot/dts/mediatek/Makefile              |   1 +
+ .../boot/dts/mediatek/mt6768-xiaomi-merlin.dts     |  42 +++
+ arch/arm64/boot/dts/mediatek/mt6768.dtsi           | 418 +++++++++++++++++++++
+ drivers/watchdog/mtk_wdt.c                         |  22 ++
+ include/dt-bindings/reset/mediatek,mt6768-wdt.h    |  19 +
+ 10 files changed, 510 insertions(+)
+---
+base-commit: 9437046953b2fb3bf55b36582450ea0267df82a7
+change-id: 20261126-6768-init-452b4db23703
+
+Best regards,
+--  
+Roman Vivchar <rva333@protonmail.com>
+
 
