@@ -1,84 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795798570;
-	b=PKtxyvHhF168E06fDUSdYIhipl02Nf2NVqKvHF7INznj0ggreHAwreLJF1wjS5CQBsYS
-	 fgs5GlAIdq7sPWxTMgINBWgvEnTnwA3gQNLPWgrK01fW7Yln1z7D1kXc2bkhGQIBt/RAe
-	 g+0QQ5XdOms3KEx6jcBA78sXRtMZ0PkDWbArzw9isV0/s0uc2IbQ7prWj2nVKTi3hjnzv
-	 fi2dGgATYuZfY99VkJV+aKVcfTHHmUF7RIsOIJWO07AZEk6RZgOzL++bHMQB3NzzmNDhx
-	 GUlvAPhLb/Vit0YmXY78qrvy42oGb3DLsSEd/dSLmCLu0YABr73aWtzyOkUDLvKgFyg==
+	t=1795798572;
+	b=ljJCgZhks0R4vtH64uvU1LiEFsjvKtr/TNnnYTziwQ6/YpWpjpVzgRuPPAgzbOUl9bNB
+	 0gaQzPAhSCM1FVXOKauJou9E30J+acHK40Ors9x84umAi40mx8gcriQIekuentfMy6ogg
+	 cYCdljZEuGs7no7VWOpZHJgVVebJSxlaEg8reoCgvI2AVgYMi1IUt8gJVFptXZbmbDngf
+	 HCaitzN64wY/mGAcKv/80GTCpl1SqT9kKzgGiLbgXLwR9q8tm1sQRDbi+jsqOYd4ikmoi
+	 1pTcOnR29tg31tPZxMCP8Kww820TKXS58BhJI4aQnvfWIDtcluyvjfdfuB2Ru0n56Vg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795798570;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795798572;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=tBQuv6Lhdi7fEtiV2oM4BKslPIEAViTQUedU+aiaIxU=;
-	b=cNLWi/fWrnr+rnhcAZhmKpKucK2RuS0cxAiJXrWmUerRij4PJOmmB6BCPt6REHV101H6
-	 xBHTqLd4qDMVoQ1LEaH2ufJ+REHfaLP7cWtcmBcGcUyUdqKpDZhaSfXlwwdyGPzpn3NHj
-	 tGGp4xilv4CjuB97Nnysn5cb1ZyfeETDOMwlim9IQ2HVBpGRYoQ1lDlhn7YUhKC8/QPUR
-	 PRHiAZuRhBj5Pq7NqZagPONmjntglTrrTBw+Bj6D/SC3am93fSB2rUfNlZmYJ48BTDLxN
-	 WpUe4EYpeVrD4YhaN3ntpB1Fyh06erfN9VbJe72JU5mJZ0h1pM96K8P/ohK8eANbdDA==
+	bh=ipkmKJKWGNB6mDs2u9bY6uizcIe+dVA2X22JdmXX2qw=;
+	b=4fTNQEyVPm6BMQ1owAKL5JgAa3kAQ2NadONexgF9IQ1ClwADPQLpltTU+T7ktjRar6Jw
+	 IvL8kFC+UAbb7/baJ3geafAt3Mmj1ZziE/oJMKYFqChhIHIPJp7T1UsobAhSZJ5Frc2Ci
+	 JBp5kHBbqKkZXfgPAW+Nvth5sOvzXdf05y3dKKZD77W2slUTYXnizsVZY8/GNS20633C2
+	 h9fL2vRj3uHTc6WIa1zWUcy6dNEf1P0uT5mlin8/E5ieem4gIelCmeOezfZ1rzOHJeLCv
+	 8g50WpIAZLEIg7C18pKKZag/PnyJ6r/rPvApWE4mL7tnJLrRH702MCx1err3c0WxU2w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=z2OMStry;
-	arc=none smtp.remote-ip=209.85.128.51
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HpR+eVAr;
+	arc=none smtp.remote-ip=209.85.128.43
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F13D7606A321
-	for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 16:56:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F13D7606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A81606A332
+	for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 16:56:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C1A81606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=z2OMStry
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4bb702a7548so76508505e9.1
-        for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 08:56:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HpR+eVAr
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a207b02a2cso59860795e9.1
+        for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 08:56:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795798568; x=1796403368; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795798570; x=1796403370; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=tBQuv6Lhdi7fEtiV2oM4BKslPIEAViTQUedU+aiaIxU=;
-        b=z2OMStry22xjvmqtMZfosvTIIHex7Z8dR0SfoP6Xm4Xw4DJEjYYLCZAPfn6AiJC9Sr
-         vn7MKGI3Nel3020LDgQVa1ZITUYnlIi/X/4VatHzHxMknrsSEYHF03AeHSxyPXo1BFMT
-         IRwm97uZCHX5SqPZmVuDc8kjbvEadRCTotBVUOge/2N3Q+zle3i0cjhKAK6z5AkTDdnk
-         fVxITI0uUTZXnm7AoFCauZ5SZuCBjrOXR55CsHjpBv68R05H/MeRMug8TbxW6dOw0sdo
-         ObY8OArgd3J2sJmMf/1TE/yqFeItbKfMfsUHHjiMZ5n81YmdIOQQV+Q/cg7Sp9Z8lGZr
-         GktQ==
+        bh=ipkmKJKWGNB6mDs2u9bY6uizcIe+dVA2X22JdmXX2qw=;
+        b=HpR+eVArZ+EyQHAYDMzBO5rPOqE7655kRJGqqR8HL5RH75aSLfHEVNL8dUkPTZHaTy
+         xghnof1U2D5QM8q+W/U+Qna6cj5GQQQkTp9herBeFCM7V7+wF6kkm08XBV7MIuqoVCLv
+         IUt+M746lJFaWFFdHWU+RPKn1huWa/xqJw/gMa/VyqYAvLo0khovXnmWpGgLHDFW0AGW
+         MHuj7CW33+5hlYrFZXAL68efvnZm36mKnP11zYWHOBSKFmzqtv4pH+A53B2GBuJ2L4/n
+         GA8ihX0UCZqajLUcmiXyPkLUKhkrLvvnAGl1Vit3msniw9nwa+R8uKQ6fETASVjpPmkj
+         1WeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795798568; x=1796403368;
+        d=1e100.net; s=20260707; t=1795798570; x=1796403370;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=tBQuv6Lhdi7fEtiV2oM4BKslPIEAViTQUedU+aiaIxU=;
-        b=Irlk2mlWK/zpt6Xc46vveUuLxUgE3Fpg5Oe+izpVy0+0c4T9wzWn9siu+FNdh910Q8
-         OWomHv3zBCJUHCc6q+pyjkndGoWa4A5jN+FzLdLU2IpPLqnwoIQ84jfPzwIB3kTJTM6o
-         N9Zt6PPC9OXlNo2Dbgcq0hNrWpqlUFE10EZ/t71WQYXMttfV7WxxWqghxz6vMTAm5dz4
-         dVHMEmJ06iBkfmxe/TKf+GBuGt+zwcbmFl/mQyk44Qv7yZC9jQG9Ort9MkSnvMASE29j
-         4iQfFSsql8bFTbILgY1Td18GBfjevpnSoJxza3+b90gLJ5UVqLzaqzjh9MlO7e6LniKZ
-         XCCA==
-X-Gm-Message-State: APuU4Z+JEsniDuXf+nW4BeNb7BxhO81w1PA56rXuGoec/BYh6UbENOJZ
-	Adgeeom5opvrh74i2qZj0PRPwynRTlIeInX4IrK+OOq5NI22b7gh+nd4FyOmpBoB4w8=
-X-Gm-Gg: AZFdTZcG0xYvApKp24wbVjDKEEvGIXCy3MzKa6Scjt0SI6sqp1nm5sTb5oQeH+B4zby
-	HWjsdjW5bhPwsziTgIkeg0oXJ0npdXDLHAhDomMbT4YHt31ieyFUj/0R1kYfqANuuguBiirlt4Q
-	0ljtmmx/dV4THh+zKPXZyzVyOXwptkiq80Ofgoy+yBnisbLFn29mNqMtlauBQ97LEhJ2BqlpBTr
-	zPk+8PNRyVpLVSogiPTSYWVTb0+a1dZYk5KndoLNj8TLz2aB7fAvQVodI6FRBD9QIksHmfNX5sT
-	spu4UvFMuTtp+PTevmR2s0Kqi5oHcMPH7I5KZh92xuFPqUCKgas0Hz/NjhFSMwJUugdXF0dazBD
-	q7chTYekDZWihbF4pKWFxo+lcd1Y1yKCbCPuej1CtbtcBtpzLVv/UnNkRgXFr1HzJJNZF/lVUjL
-	abMZBKS4zeRpFhPRHNFdluxezJxH/SA8EraRdbdriL54ev6s0q9Z0CAG7EQWUhmt9vRAfzTEovI
-	9g6rP3LTtO25FK1s3pSu02av3m85lVULRqZZ6kw0P1uTrv8ZixeU36WrcGx+1RFvHdr1fMPPRDL
-	d/MZPXssDpTSNQ0EBuRtkv/WqDy8xdQ6v9u3nf+yp91bS1I0MX3nIlRpXTvEmyUzElEHO/bf3my
-	ywEfLebg=
-X-Received: by 2002:a05:600c:1d86:b0:4bb:6a5a:7824 with SMTP id 5b1f17b1804b1-4bb8892099amr546093415e9.30.1795798568353;
-        Fri, 27 Nov 2026 08:56:08 -0800 (PST)
+        bh=ipkmKJKWGNB6mDs2u9bY6uizcIe+dVA2X22JdmXX2qw=;
+        b=tr7YTf2Xco8+YfuPLfvkcm04FKC7xMKwxgWuEwn8/W+TthK6EHD4jyQH/6p6NF9YRs
+         1ltmVTlsgCMYNQtacC/ohwkXTkpwkFql4ShIHELuTyIGjbV+teVc0AOmlTTf3Hk1cy/1
+         Uawzr8e/Ln9ScjNzzZBqL/lshMli4HF+vzJKqysm5FUEp1kssprA9R2Yn7oIcDWxlb66
+         hc52uZfE1On1PPKecqt9DuibFmdy6/jSzLHEs1X1Qp9KyA6kI9Azm39r0XeuQoULSXeN
+         OwjdcGvLj9ShNgOVkdNS3uuzl2EwUHPKiCD433vS0WX2znrSCfSG53wuheSQRzCO+b3b
+         Pktg==
+X-Gm-Message-State: APuU4Z/EEqP222TQLVVDqQUBGeZ4+9oRJz848y7lDmoeiAwSY6BjqovU
+	hrv9e3THJoYD8vKcIjw3D5gYTWeMXtz04PAWFkAvoCyefCh90G2mqBw7v5uruqgsOFc=
+X-Gm-Gg: AZFdTZcX+I6ulddEjM/zsk+QygpSKoKjDx3BaBg8ylRQ+h8/8Mw+sZ6fl28C4hRTlqJ
+	gAkyezCothTp5ZAb4InX7+UQP+8w2q1OxQndGJIX0MOszUus0AN03xA+gKVj2JIOqgmnH5llJZS
+	/B2QFJsX/pkG3DQdkBkRvZfqbKQNbLMO1AXGjKvhhPVMPJxuYDFISw6MBLkD69hMX55/mIRhYbc
+	PRqFKWouiG1lF5fiG1TmI7plnzdzJIszn/TxoviWQrzM79FRPZc+E7rSZB/aT+fgCev1nXSTeMc
+	yEP9ZzU43NqdzJjTlfOpx7EOVCfWILNALqxUXIeD1O/w8h6gmtDcU/krYhuvmL3JUFK96t2ZAdd
+	+kmlF+rtUsPazHS4TBvbs30R4wNdTsv9UDaEC16iK3tDy+aMO4UeVNnB/FOboR5pWyX9Z8FVPpb
+	iSgB/FPbG7R/HQ8/EFEDP2hflvpBVj7NsSNIJWPzEPktxBLWJInOIWAH4DbD1r7SNDnG0W8BLI0
+	/e7SGXcfiawEwwjJoBlUJiEzePu8EZV6QUTHNNQdsUFyuqCbVVkPE+cf05NFZ5Tm/X6qcktcYlM
+	NNNJkZcICGSvi6bhXEwUJbz1bQZh8W9XShqkxFEGwdhuBBZDhu76ifwRFtLD/soasQXPReY0b1S
+	bVo9SLX0=
+X-Received: by 2002:a05:600d:6510:10b0:4a1:811c:8078 with SMTP id 5b1f17b1804b1-4bb8881de57mr352984235e9.26.1795798570113;
+        Fri, 27 Nov 2026 08:56:10 -0800 (PST)
 Received: from localhost (bl20-90-91.dsl.telepac.pt. [2.81.90.91])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb85399d52sm677062805e9.6.2026.11.27.08.56.07
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb884ab091sm979838655e9.11.2026.11.27.08.56.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2026 08:56:08 -0800 (PST)
+        Fri, 27 Nov 2026 08:56:09 -0800 (PST)
 From: =?UTF-8?q?V=C3=ADtor=20Hugo=20Silva?= <vitorhg20080@gmail.com>
 To: linux-serial@vger.kernel.org
 Cc: gregkh@linuxfoundation.org,
@@ -86,9 +86,9 @@ Cc: gregkh@linuxfoundation.org,
 	linux-riscv@lists.infradead.org,
 	sashiko-reviews@lists.linux.dev,
 	=?UTF-8?q?V=C3=ADtor=20Hugo=20Silva?= <vitorhg20080@gmail.com>
-Subject: [PATCH RFC 2/4] serial: esp32: Fix ESP32-S3 baud rate prescaler calculation
-Date: Fri, 27 Nov 2026 16:55:50 +0000
-Message-ID: <20261127165552.133713-2-vitorhg20080@gmail.com>
+Subject: [PATCH RFC 3/4] serial: esp32: Deliver and mask receive break interrupts
+Date: Fri, 27 Nov 2026 16:55:51 +0000
+Message-ID: <20261127165552.133713-3-vitorhg20080@gmail.com>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261127165552.133713-1-vitorhg20080@gmail.com>
 References: <20261125233020.1380594-11-vitorhg20080@gmail.com>
@@ -105,101 +105,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The ESP32-S3 encodes the SCLK prescaler as divisor minus one. At the
-maximum unscaled integer UART divider, the driver can program a
-prescaler it did not use in the baud calculation. At lower rates the
-prescaler can also exceed its register field.
+Pass a hardware break to the TTY layer when uart_handle_break()
+leaves it unhandled. This lets the line discipline apply the break
+handling configured in termios.
 
-Select the smallest prescaler that fits the UART divider, including
-its fractional part, and reject an out-of-range prescaler before
-programming the registers. Round up the minimum baud rate to avoid
-advertising a rate the hardware cannot generate.
+Mask the break interrupt together with the RX FIFO interrupt in
+stop_rx() so a break cannot restart receive handling. Leave the TX
+interrupt mask unchanged.
 
-A mocked register test covered the divider boundary and rejected
-38 baud while accepting 39 baud with a 40 MHz reference clock.
+A mocked interrupt test verified break delivery, handling by the
+serial core and the resulting interrupt enable mask.
 
 Signed-off-by: Vítor Hugo Silva <vitorhg20080@gmail.com>
 ---
- drivers/tty/serial/esp32_uart.c | 40 ++++++++++++++++++---------------
- 1 file changed, 22 insertions(+), 18 deletions(-)
+ drivers/tty/serial/esp32_uart.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_uart.c
-index 895d0ec..0e7128a 100644
+index 0e7128a..40acff7 100644
 --- a/drivers/tty/serial/esp32_uart.c
 +++ b/drivers/tty/serial/esp32_uart.c
-@@ -8,6 +8,7 @@
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/irq.h>
-+#include <linux/math.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-@@ -447,35 +448,35 @@ static void esp32_uart_shutdown(struct uart_port *port)
+@@ -317,7 +317,8 @@ static void esp32_uart_rxint(struct uart_port *port)
+ 		    (esp32_uart_read(port, UART_INT_ST_REG) & UART_BRK_DET_INT)) {
+ 			esp32_uart_write(port, UART_INT_CLR_REG, UART_BRK_DET_INT);
+ 			++port->icount.brk;
+-			uart_handle_break(port);
++			if (!uart_handle_break(port))
++				tty_insert_flip_char(tty_port, 0, TTY_BREAK);
+ 		} else {
+ 			if (uart_handle_sysrq_char(port, (unsigned char)rx))
+ 				continue;
+@@ -403,7 +404,7 @@ static void esp32_uart_stop_rx(struct uart_port *port)
+ 	u32 int_ena;
  
- static bool esp32_uart_set_baud(struct uart_port *port, u32 baud)
- {
-+	u32 div_mask = port_variant(port)->clkdiv_mask;
- 	u32 sclk = port->uartclk;
--	u32 div;
-+	u32 div, frag;
- 
- 	if (!baud || baud > sclk)
- 		return false;
- 
- 	div = sclk / baud;
--
- 	if (port_variant(port)->has_clkconf) {
--		u32 sclk_div = div / port_variant(port)->clkdiv_mask;
-+		/* The SCLK field encodes the divisor minus one. */
-+		u32 sclk_div = div / (div_mask + 1);
- 
--		if (div > port_variant(port)->clkdiv_mask) {
--			sclk /= (sclk_div + 1);
--			div = sclk / baud;
--		}
-+		if (sclk_div > FIELD_MAX(ESP32S3_UART_SCLK_DIV_NUM))
-+			return false;
-+
-+		sclk /= sclk_div + 1;
-+		div = sclk / baud;
- 		esp32_uart_write(port, ESP32S3_UART_CLK_CONF_REG,
- 				 FIELD_PREP(ESP32S3_UART_SCLK_DIV_NUM, sclk_div) |
- 				 ESP32S3_UART_CLK_CONF_DEFAULT);
- 	}
- 
--	if (div <= port_variant(port)->clkdiv_mask) {
--		u32 frag = (sclk * 16) / baud - div * 16;
--
--		esp32_uart_write(port, UART_CLKDIV_REG,
--				 div | FIELD_PREP(UART_CLKDIV_FRAG, frag));
--		return true;
--	}
-+	if (div > div_mask)
-+		return false;
- 
--	return false;
-+	frag = (sclk * 16) / baud - div * 16;
-+	esp32_uart_write(port, UART_CLKDIV_REG,
-+			 div | FIELD_PREP(UART_CLKDIV_FRAG, frag));
-+	return true;
+ 	int_ena = esp32_uart_read(port, UART_INT_ENA_REG);
+-	int_ena &= ~UART_RXFIFO_FULL_INT;
++	int_ena &= ~(UART_RXFIFO_FULL_INT | UART_BRK_DET_INT);
+ 	esp32_uart_write(port, UART_INT_ENA_REG, int_ena);
  }
  
- static void esp32p4_uart_limit_baud_rate(struct ktermios *termios,
-@@ -514,10 +515,13 @@ static void esp32_uart_set_termios(struct uart_port *port,
- 
- 	termios->c_cflag &= ~CMSPAR;
- 
--	if (port_variant(port)->has_clkconf)
--		max_div *= FIELD_MAX(ESP32S3_UART_SCLK_DIV_NUM);
-+	if (port_variant(port)->has_clkconf) {
-+		max_div *= FIELD_MAX(ESP32S3_UART_SCLK_DIV_NUM) + 1;
-+		min_baud = DIV_ROUND_UP(port->uartclk, max_div);
-+	} else {
-+		min_baud = port->uartclk / max_div;
-+	}
- 
--	min_baud = port->uartclk / max_div;
- 	max_baud = port->uartclk / 16;
- 	if (port_variant(port) == &esp32p4_variant)
- 		esp32p4_uart_limit_baud_rate(termios, old, min_baud, max_baud);
