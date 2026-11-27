@@ -1,78 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=119.15.109.137
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.121
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795778770;
-	b=Iozbum5il0eSoYxkcvZRAVkRHE4j/n0aBoknDrtqTy+p3uHj4M3y6bOZNpZNHXfyoA/d
-	 rBxdes1OzIGrXgvKBUuS3Dac9+f6uvHXb1N9/zHL0vKYsc8mZ9R2C+wH/P2MnsWuKx7Aa
-	 dnqTsZi6szxskFbcBLH3X2X8+m7LS1BZrEjUMc5GMm0L9laQevssaGFMImJChIICzwIvA
-	 zuTrftMYaKLg/enD4wDaNtYsmFXBty3gJ4cpyAR7Q/DKsE02JcK1DtVhUyIb2mBlXPnG1
-	 PX3c5H6RqO3y+wuBXYTxD3dGmGNNrVZoYSeCNYjS805xODgU0iHaMPEe7VdlGXp7I+g==
+	t=1795785047;
+	b=xLpXCANszE7I+D3bGbom+CHcoEk+DKbVzY52dyuRRgzH4WJrKDwMowU7lXXDwyHn8sep
+	 law9tUhhDUviJTWqWzNhoTjuF/kWQWI3My8Y12FBQDopN24JwvQIWSgLxkgNsHye3A3GC
+	 F83X3cS7beaOwETkvEKjlNzFEtICdNVAX6NMyDHpiXM5VC2hyEKGdupzkgvJU+XzM+li6
+	 ddCIt7S3dRC7trX6+Td/XCDH9Q41jNeV7MrBsWdRDvGQdZSMk/hxGkzS/BSv/uFLN8VUa
+	 K5S8SJvWve0pvxSm2VUVO6v/CbIUinVBqdoanovaITHzw+AOLFGpDbOq2ZjRzL/gJRQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795778770;
-	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:X-Spam;
-	bh=v9sb71Kl68g0Rq0utYtKxsaYTR3AAMwhH149FGZ6d3U=;
-	b=CQknqPkEHBbQWocJ8GSwNL/zMkV78KMF6333jqK74uEf/KIF3Wk+W+6K96+Mwquioh8A
-	 gp9fG5k3Occfi7OHEhe54i5ZKtW+stDrJ8QydwbiAmRrYKHeQtyUQrhXLIUB4xm/kPOgy
-	 y1RFid+9/xrLosHFq/9FCyvBmZJEsUz0q/3hJzhXFiRDW5/6OqFWLPTvU7NymDfdcUbK3
-	 6ZYOubzfUdXMpT+C/tR2CfnQfKTnO5ZVr1Qua/LSvKI5ulul/6rqZF3LkVXc1jKuTLjNq
-	 kIXZa0kiqRzzmBPHeWlIzkMoJvL8ztWFPuzBG1hMpT34N655Ktg4zDnGQ049xxbUIWQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795785047;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
+	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=ZFxfAAA6GwTz51RC5rJw8wfbBqlOQRlWMUcxU0I/V0E=;
+	b=v/Yw3ZX3vujTHkAJNpsAAbrDE/blU9RZMYRo712MHLHMEF5AyppsItIAaXvDHb7Gcggb
+	 B/wbuNZ1Ys1Upu2Czz6bO/erjb4V2NQOOxcEcLJVHjVShWG2pgXXKt0Nf5LL8bSeVPIbX
+	 dqcGK8UX0PReTT09jpFA96EYZsMQRwdPLRWVDjpLQmF6d3fznWUde8NCaXP0uQQnUMptR
+	 Ud4AwJ+fI7gYbH1lcfaYj7bFv6FSIxTuhYcy3Kg/qdhtDPfD36NY1ubiKaxG4PWTAEl9B
+	 Sk/1fRiSOn1uy1sthA3o0eOjJ0e68ui55fbf/ETvqGjnFoycbIboTMLu8Kuh60R/lbw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=d-silva.org;
-	spf=pass smtp.mailfrom=d-silva.org;
-	dkim=pass header.d=d-silva.org header.i=@d-silva.org header.a=rsa-sha256 header.s=2025a header.b=y6Yn2lrp;
-	arc=none smtp.remote-ip=119.15.109.137
-Received: from www.nmnhosting.com (watt.d-silva.org [119.15.109.137])
+	dmarc=pass header.from=protonmail.ch;
+	spf=pass smtp.mailfrom=protonmail.ch;
+	dkim=pass header.d=protonmail.ch header.i=@protonmail.ch header.a=rsa-sha256 header.s=protonmail3 header.b=grn3HwCD;
+	arc=none smtp.remote-ip=79.135.106.121
+Received: from mail-106121.protonmail.ch (mail-106121.protonmail.ch [79.135.106.121])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93499606A31C;
-	Fri, 27 Nov 2026 11:26:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 93499606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=d-silva.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=d-silva.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842CA606A321
+	for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 13:10:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 842CA606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=d-silva.org header.i=@d-silva.org header.a=rsa-sha256 header.s=2025a header.b=y6Yn2lrp
-Received: from Hawking.lan (hawking.lan [10.0.1.4])
-	by www.nmnhosting.com (Postfix) with ESMTP id F36D14C998;
-	Fri, 27 Nov 2026 22:26:04 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=d-silva.org; s=2025a;
-	t=1795778765;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=v9sb71Kl68g0Rq0utYtKxsaYTR3AAMwhH149FGZ6d3U=;
-	b=y6Yn2lrpWIKV24oU547aMM7jPunxwwPNFSRtfAgVrxMbdGxDzOZjVwhDtSkdY/155biu8j
-	8db6YvQyOkKiKaRQ347dgjVxCG+s5JnjkYJrIVdw3ZloukR8FTVMOC+vSWZ808ryunUcZ4
-	nPltYgt+JK5tMvjt+tHmidBKa7p4oFj8pT6X7PJJKHN3lvP+ICr+qu+DmYBf0R4HPyp9t/
-	glYdmNxkfXdUDDRhQr1e1Or8VPnYqXJqq5bdIx+QVkImob+zZg0WK8tzcKCe0jcVw8rsyE
-	pU5cw5Zp+h5H4S+0w2YdYMUvR071So0sXc8har9B720ZpMpwS00B6ACTEuaaBg==
-From: Alastair D'Silva <alastair@d-silva.org>
-To: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
-Cc: linux-serial@vger.kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	andriy.shevchenko@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	Andre Przywara <andre.przywara@arm.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Enzo Adriano <enzo.adriano.code@gmail.com>,
-	Alastair D'Silva <alastair@d-silva.org>
-Subject: Re: [PATCH v2 4/4] serial: 8250_dw: Add Allwinner A733 UART
-Date: Fri, 27 Nov 2026 22:26:04 +1100
-Message-ID: <20261127112604.2585595-1-alastair@d-silva.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <a3505ad8e74a08faa270881f0efbfe0d0d82d6e0.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
-References: <cover.1792439398.git.vinicius.eduardo.pedrosa@gmail.com> <a3505ad8e74a08faa270881f0efbfe0d0d82d6e0.1792439398.git.vinicius.eduardo.pedrosa@gmail.com>
+	dkim=pass (2048-bit key) header.d=protonmail.ch header.i=@protonmail.ch header.a=rsa-sha256 header.s=protonmail3 header.b=grn3HwCD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.ch;
+	s=protonmail3; t=1795785043; x=1796044243;
+	bh=ZFxfAAA6GwTz51RC5rJw8wfbBqlOQRlWMUcxU0I/V0E=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=grn3HwCDTOorQ5DALp09B0V9rgT7HOcv09Ofyb9FXml+uMHqwhYYArjSOQMVzhiKS
+	 nSD6DHlU4jffGsj6H48yMf8lRqAxTsfI9khmN69QNMoGU+uBuMdkSAKOTWzCCSLvyE
+	 96BNClbPVfSAqHyYxohYacXF9qYwgKWc6PHCJYHktHHIIVePz72+RhM+EXQbIg15oo
+	 M20FCW1jcvEDPKzKFmtdO+Se3BaooawElpyxhKuBTk2RSj0oMTjc5SALYS+O3I3/UJ
+	 8sEBjNFW6yUY+KUpgxUA9tfBwuFfGCQpta0G6CTUL+EuBW47NtP1Ye3ykXnwACiaY+
+	 UWiZNY6WQ05TQ==
+Date: Fri, 27 Nov 2026 13:10:35 +0000
+To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+From: Ben Grisdale <bengris32@protonmail.ch>
+Cc: rva333@protonmail.com, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Philipp Zabel <p.zabel@pengutronix.de>, Daniel Lezcano <daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH 0/8] arm64: mediatek: initial support for mt6768
+Message-ID: <20261127131027.6af2d515@ben-desktop>
+In-Reply-To: <20261126-6768-init-v1-0-abc364a2447e@protonmail.com>
+References: <20261126-6768-init-v1-0-abc364a2447e@protonmail.com>
+Feedback-ID: 27291966:user:proton
+X-Pm-Message-ID: edd5e5751e2e69693495bd2942b0edb1496e65e7
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -82,41 +64,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 19 Oct 2026 17:06:13 -0300, Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com> wrote:
-> On the A733, dw8250_set_termios() stops the UART clock around
-> clk_set_rate() on every termios change that reaches the driver. If TX is
-> active at that moment, the character being shifted out is corrupted.
->
-> No baud rate change is required to trigger the problem. Toggling only
-> CLOCAL or CSTOPB 300 times during continuous console output corrupted
-> bytes in every run without the quirk and in none with it.
->
-> Use the existing SKIP_SET_RATE quirk, as the JH7100 and SG2044 UARTs do.
->
-> Signed-off-by: Vinicius Pedrosa <vinicius.eduardo.pedrosa@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 4c86aaf9c121..718ec44135e4 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -906,6 +906,7 @@ static const struct dw8250_platform_data dw8250_tda54 = {
->  
->  static const struct of_device_id dw8250_of_match[] = {
->  	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
-> +	{ .compatible = "allwinner,sun60i-a733-uart", .data = &dw8250_skip_set_rate_data },
->  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
->  	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
->  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+On Thu, 26 Nov 2026 14:39:53 +0200
+"Roman Vivchar via B4 Relay" <devnull+rva333.protonmail.com@kernel.org> wro=
+te:
 
-Tested on Xunlong OrangePi 4 Pro (Allwinner A733):
-- UART0 (2500000.serial, ttyS0, base_baud = 1500000) boots to shell and
-  echoes interactive console input at 115200 baud.
+> This series adds basic support for the MediaTek mt6768 SoC and Xiaomi
+> Redmi Note 9 smartphone (codenamed "merlin").
+>=20
+> The mt6768 is a 64-bit SoC featuring six Cortex-A55 and two Cortex-A75
+> cores, typically paired with LPDDR4X memory and found in low to mid range
+> phones.
+>=20
+> This series requires custom TF-A and U-Boot forks, because the device
+> shipped with broken PSCI implementation and bootloader that pollutes dtb.
+> TF-A: https://github.com/mt6768-mainline/arm-trusted-firmware
+> U-Boot: https://github.com/mt6768-mainline/u-boot
+>=20
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
 
-Reviewed-by: Alastair D'Silva <alastair@d-silva.org>
-Tested-by: Alastair D'Silva <alastair@d-silva.org> # OrangePi 4 Pro
+Whole series,
+
+Reviewed-by: Ben Grisdale <bengris32@protonmail.ch>
+
+Best regards,
+Ben Grisdale
+
