@@ -1,97 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.51
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795794991;
-	b=OTjhPLJBeIWFiTOTV67tZMINkkp99zkF69Is0A0kfDz/XMdxQR3qont/Vyuqk+xHHxQ7
-	 gew7MIlh/TL6347oFrX89cE7XRKhY8A2HGxyatG8bNDddKGalXN2NQoTW93dVImdG2BmB
-	 yMmDWLRZLVh/usVPh1DBvHEGgPZrUuhvE1yu+it6eq7ZdH2o3oBCReo2lb4xJQLSvfsI3
-	 0p+947APZu2NtShJCBNVTtY57Wc+Onw6OkW2Q9fzNlWbpAq5j9UGmXyriOjoXz8njRNM7
-	 yU1aG+1f+i8xulX4NZ0kwCaeOqhRnnXYgu4CiG4zCAd0Pu2LZzVTlbei+k98d5INIxw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795794991;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=Va7mmJMRyV8C2mf4qXe8YFNGI85O0e3HsmDcruX7rYs=;
-	b=FKjUTG4Okka7EH8MfnW9wi4f4g4pRtzvdKqTJADD9C9jZbkD2u8yIMk0R6xBNHjqTZA+
-	 7Q/+RlqfLHY63zdEEuB0wbYkP6p8eHACZjWVjZuUyNOuNboDksN9lL0C5ktIGHJCL6FZ+
-	 ykceBFHmQT1VYFkxKsJZkzqxD9KMUfhLrkBUfiq8lmhazxoZCicQPdIbovzv9HggFCZIw
-	 XsAkzNX2G04c4aF5a86dcB19exN1BdKHgWEYp8wnorOGVGrp8dxP1TYcc2nmm1VE2fzvE
-	 Y8snQbhEBycpbICewXQWg83E2twCszjpRZBA7wlX4+SoxpXMJXUDAE1T8TQUpb3htyw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="p7aI5/lr";
-	arc=none smtp.remote-ip=209.85.221.51
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.228.16
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795795416;
+	b=wFOondvl13PDwLju16UXR/7xLQn4m+zlJ9lUQ8Hz4rxMNc7pSiDTHxldMwT3XZEW2SpW
+	 DiWE1qRYyzniW6fUWc0Loz5yfaPQXm6UdgCQjFr2u2Q7ajtlgEuoo3C6EEnkAThScB3AK
+	 OPSClp8WXOL4scJ6/3WqTKpocnob6YNUHL/KYfNmCqZSYV0ioFSkSLw31W34SVF+EEAc0
+	 eYXe2c/Ki9/l0d0WemBMStESoWB3xKa6jAt2uq37JQCkj6opp5+mZwWKN8VuJXuaMNVQn
+	 UMmlL3/igiDmFItyl7O0DGeSn50EzGZMScOoSeSMsc89VIgNjpM/tsL08qWo0ulzLbA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795795416;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-EOPAttributedMessage:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-LD-Processed:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=9prKf1io9NyLIshrFb/kwvgcmB4vFRZFXC8ubabMRts=;
+	b=Y6Ah9R2qMoE67btlYo85THuFP3gXGQSwRbT+W1oZePCxKxAwoau4y6Rz8exruw1pi6T6
+	 +0Ab3lk3YQcNU1ZjW6C9aAWgKD8ckuLF1ld5Tapx4jfPjQqe+7syskLw1L7oJVOHqWozT
+	 Xwm5ncuLGcsHSXEqJ9A6lXrXYgpv7wTfpwHwYZOznwzViFxhieJbOD4Q7x2PgBBZNh7vP
+	 0tWU8S3E+XUhpKfzFhTGDOnDX0mkzkKhtmua8EeT5j00Zo9KTXyz9aIK4/rGY1i8b4/V4
+	 HPoYBgwPQRBbqTAl5IDxZuF/RmSrwBrSDsy7qM4PxiILdUXF2HN96Q2+7+YsDYr25Kw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=renesas.com;
+	spf=pass smtp.mailfrom=renesas.com;
+	dkim=pass header.d=renesas.com header.i=@renesas.com header.a=rsa-sha256 header.s=selector1 header.b=Nx8ADg6Z;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.228.16
+Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010016.outbound.protection.outlook.com [52.101.228.16])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DC76606A323
-	for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 15:56:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2DC76606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21F6C606A31C;
+	Fri, 27 Nov 2026 16:03:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 21F6C606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=p7aI5/lr
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-492f0a1b685so5913478f8f.0
-        for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2026 07:56:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795794989; x=1796399789; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Va7mmJMRyV8C2mf4qXe8YFNGI85O0e3HsmDcruX7rYs=;
-        b=p7aI5/lrjhOg+QJOFzNmbjMeqdKVhTpuCet9BXJAQLKH8yo5ZkAVgO4uDWlUkb592o
-         PZkfrVGhwWvboOUKBk3JohIvWm3G25l2xBAU3je94W6ziFNDGoH/2lnBjJp/TaioVcKX
-         5adtrqys66vBCLOXWcexMCybdwyKN0bFSCYHbrp/atc1/NO2ij4dO+2oSCv/RPo58Aub
-         1/ubKF39kif/EohUN9wGFKmQ9tdHjpGyyJieCFPAp9bw4JBmr21NCRu/4p3XtLus51rC
-         FSy3DU31o7ilAJd6OF1ZbPChEsQLx5F0kKMZUd8D4nO5oNU1DkjTzQnWeq92QftS/vl4
-         aeCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795794989; x=1796399789;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Va7mmJMRyV8C2mf4qXe8YFNGI85O0e3HsmDcruX7rYs=;
-        b=L7+4qrFxalG1q30i8H8oN7+qHrRknZ10xVU9oFzAdRPNzTEduvWbFgsFEqccsTIcAn
-         kvszL8SOrrlWDBfe544DsRBJIBrPhHGWg95kumn8sKyNgJDRNh2jjnQF94Fdn9kHI8v4
-         xs74N2silVj5zOl4jHxd48PQt3opBdgJJ4at1A8dG9tl10hEh4wl9+Lb7mpj8VP4sHv2
-         lOsGMgk8RBDOZRMfvN0YoLcoCw4JZYG5/ru6cXzfaulkMgGsJm5oUF6qq42QTO/Oq9CS
-         Pmw9fkpXtpNpylb+HoaODXiRJQy2Rgc27Q8MnSzrbSZtMPJ1iIC41cymWWmCes+oGTaV
-         GhDg==
-X-Gm-Message-State: APuU4Z/i3+M95ochbrn10glzV5F9mQqiPk7U3MNxbf6Xu4h3aIs0LKHo
-	knQswvwKyM2FpaDk7gA4pyBFgLRxygyhqo1Id5M6MLhDw9NxH0UzhSAgLEvNTTwrJF0=
-X-Gm-Gg: AZFdTZfMpyroWpaQN0Br2Cyd1sdCTNhnLjGDmmBD0JHBnPboUBJ6AyN1sQWfu6257PR
-	MeG6kV0bl3d4khcR6U1jUcfWy4et6aVmjNVSn4ALG8RTkquWY0cLpykFSpXGhXlE0duw6uEbdqI
-	ewA/ZM63S8COe4cD80zOXaz65BP6gNSRi0CqZD2HqpNUdDWBJC3UFdEw/NJuKXod04z8zXj9+cu
-	I4CmYXUK/abMhJtkUJOYz/dDvXatcsI20FfVhhTCWyT0gCMp1AopbZKkwiquyzQYDHssa/ugzXU
-	I0ohcSe8fqeWNZ2dRLhsbE0js5Ev0p3+gZFtNj95pLzKoLTXsmA2JguAkgmWC98lhMj7kuv/c/P
-	exvfRs6fLBuCQ5uDTZU94GZizuW0aGNK3jJQRmwRvW4CaM1kGsC2fiaDsWTq9yMry8bVHhhCKdV
-	vI3vAUttpclKPE1v+4KeGC0y8b860OmbQEYgl6JhIipTIYpim9IhQ1k+cU97AfxEhAy6uprI+B4
-	xUV8o1i+atKS5EEkt6urgLmwrssSqOrP/GEqT5GGjbOxLy1lKtQiiWqEy18q+6sPUK3MSdcPqe/
-	D+2gSg+F4/CB7AByyQZHUS0osHZOFEX9fOoQc/yaNcnrGpPyFQ7Viiw2th6uU4KmkdTRfLGXPXi
-	rwd0l5Ks=
-X-Received: by 2002:a5d:64e5:0:b0:4a4:f208:6a37 with SMTP id ffacd0b85a97d-4abb4e642fdmr49567529f8f.42.1795794989438;
-        Fri, 27 Nov 2026 07:56:29 -0800 (PST)
-Received: from localhost (bl20-90-91.dsl.telepac.pt. [2.81.90.91])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6b110ba3sm39382661f8f.35.2026.11.27.07.56.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2026 07:56:29 -0800 (PST)
-From: =?UTF-8?q?V=C3=ADtor=20Hugo=20Silva?= <vitorhg20080@gmail.com>
-To: linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	linux-riscv@lists.infradead.org,
-	sashiko-reviews@lists.linux.dev,
-	=?UTF-8?q?V=C3=ADtor=20Hugo=20Silva?= <vitorhg20080@gmail.com>
-Subject: [PATCH RFC v2] serial: esp32: Rearm TX interrupts when the FIFO is full
-Date: Fri, 27 Nov 2026 15:56:23 +0000
-Message-ID: <20261127155623.129706-1-vitorhg20080@gmail.com>
-X-Mailer: git-send-email 2.56.1
-In-Reply-To: <20261125233020.1380594-13-vitorhg20080@gmail.com>
-References: <20261125233020.1380594-13-vitorhg20080@gmail.com>
+	dkim=pass (1024-bit key, unprotected) header.d=renesas.com header.i=@renesas.com header.a=rsa-sha256 header.s=selector1 header.b=Nx8ADg6Z
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=sVJgaVfjDa9gflB/233niR1fbfvDI3kTiMUJdmNOvkHBq5hzB38G+RyIle5DY4oVfDPQYMP7ZrorFBpAEzpZsxoxQd4IbNNzaDR9J7Zi0RKJKp9CyzRB/GoTuPbxDuYCSgwtft3XfRQ1yv+hDNy9K5xzFBs7/Ium1LbLy70snySiOZmcFKP9xyYcKoyRnYKzsTRkbEKqPCiS/o4LTh8EI/UoevVVbok+0VWtMpLq+8r8m+HiCUDxyXwM9K4FtJ1PIaq6+E2UJUq2VG9mqrD4t6kfC0ntf/sCvq7Io2nEIna7hg0ZqcIXZmKfrMXWaVcW5u2/M8VnfbUTvHYZZ3cCvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9prKf1io9NyLIshrFb/kwvgcmB4vFRZFXC8ubabMRts=;
+ b=GYTpS08M2d6SeFYTxPPyPThCFc5fGVQPGJSrWB7lLJfFUvV0f13VFskos1Z/mWne3r2U6jKqPi1s2L8h2yQKi0JZ75JhahBB5TOTePBGKv+NgOfDOamMg5Sa7P7jy2syDaupPuJSsWvmp+hRx0U2spv8LIaV8khTEJISHd9oGXnFonPm/2/BLO/mHOaVzhnR5xIhn/xsRdWr/jz/CbyjZK0mgaeU7pn6sedJoksjo5DXrTe31MN/LwNlkaEm/a96Rhdgi1SkJJHrumU7wjSkvGS52wYjlEj4Zm4FgTFEupqzOGG5OLK1oMXC9H/PtVARpgg5dsiW5Ek620V52jafZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 8.62.32.50) smtp.rcpttodomain=bp.renesas.com smtp.mailfrom=renesas.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=renesas.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9prKf1io9NyLIshrFb/kwvgcmB4vFRZFXC8ubabMRts=;
+ b=Nx8ADg6ZhNiBg2TUE8AAtzssapkVzxF+BFptJoSLd97sUMxfqbEJP63fujCDNEL8MfUCW9JK81jzDlJPR3i4Y7Emvoi0QVT22CLTE/3xkShhx7dUYkhshUSFFAUY54SZFWw8gbu9aOE5tXFUM9nNe3IZK2fOIrJyqkLIL87fB7A=
+Received: from TY4P286CA0094.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:369::13)
+ by OSCPR01MB13063.jpnprd01.prod.outlook.com (2603:1096:604:32d::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.11; Fri, 27 Nov
+ 2026 16:03:27 +0000
+Received: from TYO1EPF00005024.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:369:cafe::23) by TY4P286CA0094.outlook.office365.com
+ (2603:1096:405:369::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.9 via Frontend Transport; Fri, 27
+ Nov 2026 16:03:27 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 8.62.32.50) smtp.mailfrom=renesas.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=renesas.com;
+Received-SPF: Pass (protection.outlook.com: domain of renesas.com designates
+ 8.62.32.50 as permitted sender) receiver=protection.outlook.com;
+ client-ip=8.62.32.50; helo=ejcrelay005p.adwin.renesas.com; pr=E
+Received: from ejcrelay005p.adwin.renesas.com (8.62.32.50) by
+ TYO1EPF00005024.mail.protection.outlook.com (10.167.240.21) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.688.5
+ via Frontend Transport; Fri, 27 Nov 2026 16:03:27 +0000
+Received: from [192.168.1.200] (DEU-5CG63502GH.adwin.renesas.com [10.226.92.79])
+	by ejcrelay005p.adwin.renesas.com (Postfix) with ESMTP id 18990300029D;
+	Sat, 28 Nov 2026 01:03:21 +0900 (JST)
+From: Diogo Ivo <diogo.ivo.sx@renesas.com>
+Subject: [PATCH 0/3] tty: serial: sh-sci: set the RSCI RX FIFO trigger to
+ half the FIFO
+Date: Fri, 27 Nov 2026 16:03:06 +0000
+Message-Id: <20261127-divo-ssgrlpcsrc-2996-rsci-rx-fixes-v1-0-cad6ce9f83bc@renesas.com>
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Post: <mailto:linux-serial@vger.kernel.org>
@@ -101,83 +102,94 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-serial+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/5WOQQ6CMBBFr0K6dkxblFpX3sOwgDJAjVIygw2Gc
+ HcLnsDly/95/y+CkTyyuGaLIIyefRgSqEMmXF8NHYJvEgstdaGUNtD4GIC5o+fomBxoawsgdh5
+ ohtbPyJAbVZ3MWRlpnEiikXAPkude/pjf9QPdtJm3Ru95CvTZX0S19f4ajAokyCa/tGjRWFffC
+ Afkio8uvES5rusXLP3yO+gAAAA=
+X-Change-ID: 20261127-divo-ssgrlpcsrc-2996-rsci-rx-fixes-371a4751707c
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, 
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>, 
+ Wolfram Sang <wsa+renesas@sang-engineering.com>, 
+ Biju Das <biju.das.jz@bp.renesas.com>, 
+ Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-renesas-soc@vger.kernel.org, Diogo Ivo <diogo.ivo.sx@renesas.com>, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795795401; l=1714;
+ i=diogo.ivo.sx@renesas.com; s=20240529; h=from:subject:message-id;
+ bh=ayEkCepphAfoVxuDCBJI352bc3fKv4EtyF+Y5T6dr5g=;
+ b=YAFKRbZfGpCCgI2EjRGu4VvHarhUx2OsQkhbBeEohGL71sKnf3GZbU/5z8HPA1wc3dFEC58CG
+ hRpF/JMgkyRAvuZQ817xtogP7fsBbXn57aXohhUmf62OUDUoJ/2waUc
+X-Developer-Key: i=diogo.ivo.sx@renesas.com; a=ed25519;
+ pk=BRGXhMh1q5KDlZ9y2B8SodFFY8FGupal+NMtJPwRpUQ=
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: TYO1EPF00005024:EE_|OSCPR01MB13063:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6d0b40c6-d9d7-421c-83cf-08df4c9ff977
+X-LD-Processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|23010399003|1800799024|82310400026|376014|10067099003|56012099006|261102123227099003|261026140227099003|261021123027099003|261028144727099003|261022105027099003|261022075727099003|261021121427099003|261009223027099003|18002099003|11063799006|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	nHlvGQg+tmqLbnve8xmhPxTX7ly/J3HL3eFMhH2FqG6055UUsaNrqnH+qVF62iDIdPnE/2mji9liFtZ6GilH4e1oTGPRa944TGM/R9Jp5i6emrBY6q44lt5McbFvlMp+TtbHyY69VOmO5Pd7jD89Xfli3zzWCsKm3F+jaIAWbmrWmQ+NRwU/8wMNj70/ThWZaXaJTLEgOaGwhu2CDAnwT9Rx2KofHNyXGwRB8RNY8nHcQA+sP+rhhucy4locwlk8ebSkzU9aLbQBn81F0vUwxR+/CzxXJTbLn+t5Qwk6Xyg05PlFwhsukFGPwzoitIY9DLof2vJqA0NWYe/MJoY+srKnZoDA4i31eRLOvDgGNTzXYahaRMMPO0nH0C6bLvEd4rs98jYyao+gEqHEAP50E/eUMuMe0d1wIrJ3zRUjkzgo4vUtvU3PMwCJMjy2XL4hkvHF2XfteBs/DXpx3Q3a+Qq2O0gqsf2EIpdiNVG8Ed/KggTDCi0FcmYy3pxw5JbPMc+EIK+CM2o8MKHGfp/TOvkBMXFmFH6vmaUVd8QgU5BjUFi67JiS/fkd1NYdbOrv1dpJOD3De8K/PNyzWoO//F1pUsOFAYr9dlNrsOEvyJSYhsPUqE07bbqpFJp5XRAT6OGZ6oESZ+uC0xKcl0XW+2RyOCu20bG6tawFKyqomQYp6MPAr73TL2kMBDZoXR9V1WA3kk2pznfKNMx5M1HbUQ==
+X-Forefront-Antispam-Report:
+	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay005p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(1800799024)(82310400026)(376014)(10067099003)(56012099006)(261102123227099003)(261026140227099003)(261021123027099003)(261028144727099003)(261022105027099003)(261022075727099003)(261021121427099003)(261009223027099003)(18002099003)(11063799006)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	gbzXdxd6lXBkU8MU5N4PNytuDCoXSbMMZSSNaU+cTHz6Oc89n/SroRGWmqUkbkmSCEcdVT8+N9wdaNUI4cfs+Lfcbl9dGd3LfVg/IWkd+3oCMMSQzT6Cxo8GpoBIRVnnRURjeF7K0L+Ze5ME6PcvpW1ARRotrLEzOTrev9mFRx+052cQrhLM/9zjR+++s2gP30ml19SWRaE8eSFOEBfqa41i9LpOu3aFOJHbNjnidyC//gFjCCHLOBTwnTm1zqea8Bp3b/E3N6ppIeqLHIjS39aAPuB4WDsvvClIQu35vggce2TX7Djv0oTuWyuz6HLpiySVBz3c5X+HVIC7PPgvo2doGZzHVMUTXARClJNcNJLbVA2lpRhC4VWdFa9EavaiWqC3ElBNMmRGP2fkoxc079Lckk/JJzhTtFklshX3NsLJeBwxXcmRfjwUETNEfFyz
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 16:03:27.8257
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d0b40c6-d9d7-421c-83cf-08df4c9ff977
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=53d82571-da19-47e4-9cb4-625a166a4a2a;Ip=[8.62.32.50];Helo=[ejcrelay005p.adwin.renesas.com]
+X-MS-Exchange-CrossTenant-AuthSource: TYO1EPF00005024.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSCPR01MB13063
 
-When transmission starts with a full FIFO, queued data can be left
-waiting with the TX interrupt disabled. Keep the TX FIFO empty
-interrupt enabled while a high-priority character is pending or while
-transmission can progress on queued data.
+The RSCI port types ask for a RX FIFO trigger equal to their FIFO size,
+which rsci_scif_set_rtrg() clamps to fifosize - 1. RDRF is raised once
+the FIFO holds at least RTRG bytes, so the receive interrupt arrives
+with a single byte of space left, causing overruns at 1152000 baud on
+RZ/T2H, and at 115200 baud on RZ/G3L.
 
-Use UART_TX_NOSTOP so the driver controls TX interrupt masking. If a
-deferred x_char is sent while normal transmission is stopped, mask the
-TX interrupt and leave the queued data for the next start_tx() call.
-This prevents repeated TX interrupts while the queue is stopped.
+Every other port with a FIFO triggers at half of it, SCIF at 8 of 16 and
+HSCIF at 64 of 128. The only exceptions are SCIFA and SCIFB which set it
+to 1 because they have no hardware FIFO timeout and a higher trigger
+would leave bytes in the FIFO.
 
-Hold the port lock in the TX interrupt handler as required by the
-serial core TX helpers.
+Trigger at half the FIFO for RSCI as well, 8 of 16 for RSCI_PORT_SCIF16
+and 16 of 32 for the RSCI_PORT_SCIF32 types. The series splits this into
+three patches, one for each RSCI port type, in order to make backporting
+easier.
 
-A mocked FIFO test verified the deferred x_char case, IRQ masking and
-TX restart. Normal serial console operation was tested on the
-Waveshare ESP32-P4-Module-DEV-KIT.
+For the first patch, adjusting RZ/T2H, some changes are needed in order
+to apply it to 6.18 stable since mainline has diverged due to commits
+3a3ab10245b6 ("serial: sh-sci: Update rx_trigger size for RZ/T2H RSCI") and
+d53f4aa9edaa ("serial: sh-sci: Rename port SCI_PORT_RSCI->RSCI_PORT_SCIF16"). 
 
-AI assisted with driver development.
-
-Signed-off-by: Vítor Hugo Silva <vitorhg20080@gmail.com>
+Signed-off-by: Diogo Ivo <diogo.ivo.sx@renesas.com>
 ---
-Changes in v2:
-- Keep TX IRQ masking in the driver and mask the IRQ after sending a
-  deferred x_char while TX is stopped.
-- Verify the stopped-TX sequence with a mocked FIFO and run a serial
-  console regression test on the ESP32-P4.
+Diogo Ivo (3):
+      tty: serial: sh-sci: set the RSCI RX FIFO trigger to half the FIFO on T2H
+      tty: serial: sh-sci: set the RSCI RX FIFO trigger to half the FIFO on G3E
+      tty: serial: sh-sci: set the RSCI RX FIFO trigger to half the FIFO on G3L
 
-This replaces patch 12/19 and applies after patches 10 and 11 from v1.
-v1: https://lore.kernel.org/linux-serial/20261125233020.1380594-13-vitorhg20080@gmail.com/
+ drivers/tty/serial/sh-sci.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+---
+base-commit: 27fc36c7e3e22d67db77f8076020cb4c5080668e
+change-id: 20261127-divo-ssgrlpcsrc-2996-rsci-rx-fixes-371a4751707c
 
- drivers/tty/serial/esp32_uart.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+Best regards,
+--  
+Diogo Ivo <diogo.ivo.sx@renesas.com>
 
-diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_uart.c
-index 304e134..2058bd6 100644
---- a/drivers/tty/serial/esp32_uart.c
-+++ b/drivers/tty/serial/esp32_uart.c
-@@ -354,25 +354,31 @@ static void esp32_uart_transmit_buffer(struct uart_port *port)
- 	unsigned int pending;
- 	u8 ch;
- 
--	if (tx_fifo_used >= ESP32_UART_TX_FIFO_SIZE)
--		return;
--
--	pending = uart_port_tx_limited(port, ch,
--				       ESP32_UART_TX_FIFO_SIZE - tx_fifo_used,
--				       true, esp32_uart_put_char(port, ch),
--				       ({}));
--	if (pending) {
-+	tx_fifo_used = min_t(u32, tx_fifo_used, ESP32_UART_TX_FIFO_SIZE);
-+	pending = uart_port_tx_limited_flags(port, ch, UART_TX_NOSTOP,
-+					    ESP32_UART_TX_FIFO_SIZE - tx_fifo_used,
-+					    true, esp32_uart_put_char(port, ch),
-+					    ({}));
-+
-+	/* Keep TX IRQs enabled while there is sendable data. */
-+	if (port->x_char || (pending && !uart_tx_stopped(port))) {
- 		u32 int_ena;
- 
- 		int_ena = esp32_uart_read(port, UART_INT_ENA_REG);
- 		int_ena |= UART_TXFIFO_EMPTY_INT;
- 		esp32_uart_write(port, UART_INT_ENA_REG, int_ena);
-+	} else {
-+		esp32_uart_stop_tx(port);
- 	}
- }
- 
- static void esp32_uart_txint(struct uart_port *port)
- {
-+	unsigned long flags;
-+
-+	uart_port_lock_irqsave(port, &flags);
- 	esp32_uart_transmit_buffer(port);
-+	uart_port_unlock_irqrestore(port, flags);
- }
- 
- static irqreturn_t esp32_uart_int(int irq, void *dev_id)
